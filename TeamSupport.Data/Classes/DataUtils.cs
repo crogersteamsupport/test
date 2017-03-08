@@ -286,7 +286,7 @@ namespace TeamSupport.Data
 					builder.Append("(CASE WHEN ISDATE (CustomValue) = 1 THEN (SELECT CAST(RTRIM(CustomValue) AS Datetime)) END"); //good
 					break;
 				case CustomFieldType.Boolean:
-					builder.Append("CAST(NULLIF(RTRIM(CustomValue), '') AS BIT");
+                    builder.Append("CAST(ISNULL(NULLIF(RTRIM(CustomValue), ''), 'False') AS BIT");
 					break;
 				case CustomFieldType.Number:
                     builder.Append("TRY_CAST(NULLIF(RTRIM(CustomValue), '') AS decimal");

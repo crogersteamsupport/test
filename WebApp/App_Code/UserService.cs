@@ -295,15 +295,6 @@ namespace TSWebServices
             user.InOffice = value;
             user.Collection.Save();
             return value;
-            /*
-            WaterCooler watercooler = new WaterCooler(loginUser);
-            WaterCoolerItem item = watercooler.AddNewWaterCoolerItem();
-            item.Message = string.Format("<strong>{0}</strong> {1}", user.FirstLastName, user.InOffice ? "is now in the office." : "has left the office.");
-            item.OrganizationID = user.OrganizationID;
-            item.TimeStamp = DateTime.UtcNow;
-            item.UserID = user.UserID;
-            watercooler.Save();
-            */
         }
 
         [WebMethod]
@@ -1411,7 +1402,7 @@ namespace TSWebServices
                     officesetting = string.Format("<span class='ts-icon ts-icon-online-small user-tooltip' title='{0}' userid='{1}'></span>", u.InOfficeComment, u.UserID);
 
 
-                    html.AppendFormat(@"<li>
+                html.AppendFormat(@"<li>
                     <div class='row'>
                         <div class='col-xs-2 pl0'>
                             <div class='avatar'>
@@ -1587,6 +1578,7 @@ namespace TSWebServices
             {
                 CalEvent cal = new CalEvent();
                 cal.color = "blue";
+
                 cal.title = r.Description;
                 cal.start = ((DateTime)r.GetProxy().DueDate).ToString("o");
                 cal.end = null;
@@ -1631,7 +1623,10 @@ namespace TSWebServices
                         }
                         else
                             continue;
-
+                    case ReferenceType.Tasks:
+                        cal.title = r.Description;
+                        cal.description = string.Empty;
+                        break;
                 }
 
 

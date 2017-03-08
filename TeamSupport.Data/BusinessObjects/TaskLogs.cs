@@ -24,16 +24,16 @@ namespace TeamSupport.Data
   
   public partial class TaskLogs
   {
-        public static void AddTaskLog(LoginUser loginUser, int reminderID, string description)
+        public static void AddTaskLog(LoginUser loginUser, int taskID, string description)
         {
             TaskLogs taskLogs = new TaskLogs(loginUser);
             TaskLog taskLog = taskLogs.AddNewTaskLog();
             taskLog.Description = description;
-            taskLog.TaskID = reminderID;
+            taskLog.TaskID = taskID;
             taskLogs.Save();
         }
 
-        public void LoadByReminderID(int reminderID, int start)
+        public void LoadByTaskID(int taskID, int start)
         {
             int end = start + 49;
             using (SqlCommand command = new SqlCommand())
@@ -56,7 +56,7 @@ namespace TeamSupport.Data
                                         LEFT JOIN Users u 
                                             ON u.UserID = tl.CreatorID
                                     WHERE
-                                        tl.TaskID = @ReminderID
+                                        tl.TaskID = @TaskID
                                 ) as temp
                         ) as results
                     WHERE
@@ -66,7 +66,7 @@ namespace TeamSupport.Data
 
                                 ";
                 command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@ReminderID", reminderID);
+                command.Parameters.AddWithValue("@TaskID", taskID);
                 command.Parameters.AddWithValue("@start", start);
                 command.Parameters.AddWithValue("@end", end);
                 Fill(command);

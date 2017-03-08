@@ -13,13 +13,13 @@ namespace TeamSupport.Data
   
   public partial class TaskAssociations
   {
-    public void DeleteAssociation(int reminderID, int refID, ReferenceType refType)
+    public void DeleteAssociation(int taskID, int refID, ReferenceType refType)
     {
         using (SqlCommand command = new SqlCommand())
         {
-            command.CommandText = "DELETE FROM TaskAssociations WHERE (ReminderID = @ReminderID) AND (RefID = @RefID) AND (RefType = @RefType)";
+            command.CommandText = "DELETE FROM TaskAssociations WHERE (TaskID = @TaskID) AND (RefID = @RefID) AND (RefType = @RefType)";
             command.CommandType = CommandType.Text;
-            command.Parameters.AddWithValue("@ReminderID", reminderID);
+            command.Parameters.AddWithValue("@TaskID", taskID);
             command.Parameters.AddWithValue("@RefID", refID);
             command.Parameters.AddWithValue("@RefType", (int)refType);
             ExecuteNonQuery(command, "TaskAssociations");
@@ -31,13 +31,13 @@ namespace TeamSupport.Data
         //ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Organizations, organizationID, description);
     }
 
-        public void DeleteByReminderIDOnly(int reminderID)
+        public void DeleteByReminderIDOnly(int taskID)
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "DELETE TaskAssociations WHERE ReminderID = @ReminderID";
+                command.CommandText = "DELETE TaskAssociations WHERE TaskID = @TaskID";
                 command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@ReminderID", reminderID);
+                command.Parameters.AddWithValue("@TaskID", taskID);
                 ExecuteNonQuery(command, "TaskAssociations");
             }
         }

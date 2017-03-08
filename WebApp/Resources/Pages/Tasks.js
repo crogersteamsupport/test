@@ -18,6 +18,7 @@ function fetchTasks(callback) {
     showLoadingIndicator();
 
     parent.Ts.Services.Task.LoadPage(_start, _pageSize, _currentTab, function (pageData) {
+        debugger;
 
         $('.searchresults').fadeTo(0, 1);
 
@@ -328,6 +329,7 @@ $(document).ready(function () {
     });
 
     Handlebars.registerHelper("formatRow", function (task) {
+        debugger;
         var cssClasses = null;
 
         if (task.TaskDueDate != null) {

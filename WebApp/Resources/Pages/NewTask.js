@@ -12,6 +12,8 @@ var _taskParentID;
 var _parentTaskName;
 
 $(document).ready(function () {
+    parent.Ts.MainPage.highlightNewTaskTab(true);
+
     $('body').layout({
         defaults: {
             spacing_open: 0,
@@ -58,6 +60,8 @@ $(document).ready(function () {
           .appendTo(parentName)
 
         $('.parentLinkContainer').prepend(parentName);
+
+        $('#mainHeader').text('Subtask Information');
     }
 
     $('.parentLinkContainer').on('click', '.parentLink', function (e) {
@@ -639,15 +643,15 @@ $(document).ready(function () {
 
         var taskInfo = new Object();
         taskInfo.TaskParentID = _taskParentID;
-        taskInfo.TaskName = $("#inputName").val();
+        taskInfo.Name = $("#inputName").val();
         taskInfo.Description = $("#Description").val();
         if ($("#ddlUser").val() != -1) {
             taskInfo.UserID = $("#ddlUser").val();
         }
-        taskInfo.TaskIsComplete = $("#cbComplete").prop('checked');
-        taskInfo.TaskDueDate = $("#DueDate").val();
+        taskInfo.IsComplete = $("#cbComplete").prop('checked');
+        taskInfo.DueDate = $("#DueDate").val();
         taskInfo.IsDismissed = !$("#cbReminder").prop('checked');
-        taskInfo.DueDate = $("#ReminderDate").val();
+        taskInfo.ReminderDate = $("#ReminderDate").val();
 
         taskInfo.Tickets = new Array();
         $('#commentatt:first').find('.ticket-queue').find('.ticket-removable-item').each(function () {
@@ -698,6 +702,7 @@ $(document).ready(function () {
                 });
             }
             parent.Ts.MainPage.openNewTask(newTask.ReminderID);
+            parent.Ts.MainPage.highlightNewTaskTab(false);
             parent.Ts.MainPage.closenewTaskTab();
         });
         $(this).parent().removeClass("saving");

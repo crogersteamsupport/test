@@ -13,7 +13,7 @@ namespace TeamSupport.Data
   public class TaskAssociationProxy
   {
     public TaskAssociationProxy() {}
-    [DataMember] public int ReminderID { get; set; }
+    [DataMember] public int TaskID { get; set; }
     [DataMember] public int RefID { get; set; }
     [DataMember] public int RefType { get; set; }
     [DataMember] public int CreatorID { get; set; }
@@ -29,7 +29,7 @@ namespace TeamSupport.Data
       result.CreatorID = this.CreatorID;
       result.RefType = this.RefType;
       result.RefID = this.RefID;
-      result.ReminderID = this.ReminderID;
+      result.TaskID = this.TaskID;
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        

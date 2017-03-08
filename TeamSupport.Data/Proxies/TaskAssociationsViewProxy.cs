@@ -13,7 +13,7 @@ namespace TeamSupport.Data
   public class TaskAssociationsViewItemProxy
   {
     public TaskAssociationsViewItemProxy() {}
-    [DataMember] public int ReminderID { get; set; }
+    [DataMember] public int TaskID { get; set; }
     [DataMember] public int RefID { get; set; }
     [DataMember] public int RefType { get; set; }
     [DataMember] public int? TicketNumber { get; set; }
@@ -40,7 +40,7 @@ namespace TeamSupport.Data
       result.TicketNumber = this.TicketNumber;
       result.RefType = this.RefType;
       result.RefID = this.RefID;
-      result.ReminderID = this.ReminderID;
+      result.TaskID = this.TaskID;
        
        
        

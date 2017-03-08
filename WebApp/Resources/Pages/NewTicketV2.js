@@ -883,7 +883,7 @@ function SetupDescriptionEditor() {
         });
 
         $('#rcdtokScreen').click(function (e) {
-            parent.Ts.Services.Tickets.StartArchivingScreen(sessionId, function (resultID) {
+            parent.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
                 $('#rcdtokScreen').hide();
                 $('#stoptokScreen').show();
                 $('#deletetokScreen').hide();
@@ -2513,7 +2513,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
                 groupContainer.removeClass('hasCloseError');
             }
 
-            if (field.IsFirstIndexSelect == true && value == "") {
+            if (field.IsFirstIndexSelect == true && value == "" || field.ListValues.split("|")[0] == value) {
                 groupContainer.addClass('isEmpty');
             }
             else {

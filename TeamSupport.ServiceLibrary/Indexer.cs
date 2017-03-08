@@ -38,7 +38,13 @@ namespace TeamSupport.ServiceLibrary
                 }
                 else
                 {
-                    orgs.LoadByNeedsIndexRebuilt(minutesSinceLastActive ?? 30, daysSinceLastRebuild ?? 14);
+                    int days = daysSinceLastRebuild ?? 14;
+                    if (DateTime.Now.Hour > 6)
+                    {
+                        days = 100;
+                    }
+
+                    orgs.LoadByNeedsIndexRebuilt(minutesSinceLastActive ?? 30, days);
                     result = orgs.IsEmpty ? null : orgs[0];
                     if (result != null)
                     {
@@ -59,13 +65,16 @@ namespace TeamSupport.ServiceLibrary
             return Settings.ReadInt("RebuilderMode", 0) == 1;
         }
 
+        private bool _isVerbose = false;
+        private int _idToLog = 0;
+
         private void UnlockIndex(int organizationID)
         {
             SqlCommand command = new SqlCommand();
             command.CommandText = "UPDATE Organizations SET IsIndexLocked = 0 WHERE OrganizationID = @OrganizationID";
             command.Parameters.AddWithValue("OrganizationID", organizationID);
             SqlExecutor.ExecuteNonQuery(LoginUser, command);
-            Logs.WriteEvent("Unlocked index for " + organizationID.ToString());
+            LogVerbose("Unlocked index for " + organizationID.ToString());
         }
 
         private void UnmarkIndexRebuild(int organizationID)
@@ -74,7 +83,7 @@ namespace TeamSupport.ServiceLibrary
             command.CommandText = "UPDATE Organizations SET IsRebuildingIndex = 0 WHERE OrganizationID = @OrganizationID";
             command.Parameters.AddWithValue("OrganizationID", organizationID);
             SqlExecutor.ExecuteNonQuery(LoginUser, command);
-            Logs.WriteEvent("Unmarked index rebuild for " + organizationID.ToString());
+            LogVerbose("Unmarked index rebuild for " + organizationID.ToString());
         }
 
         private bool ObtainLock(int organizationID)
@@ -86,7 +95,7 @@ namespace TeamSupport.ServiceLibrary
                 command.CommandText = "UPDATE Organizations SET IsIndexLocked = 1 WHERE IsIndexLocked = 0 AND OrganizationID = @OrganizationID";
                 command.Parameters.AddWithValue("OrganizationID", organizationID);
                 result = SqlExecutor.ExecuteNonQuery(LoginUser, command) > 0;
-                Logs.WriteEvent("Locked index for " + organizationID.ToString());
+                LogVerbose("Locked index for " + organizationID.ToString());
             }
             return result;
         }
@@ -121,6 +130,13 @@ namespace TeamSupport.ServiceLibrary
                         continue;
                     }
 
+                    _isVerbose = Settings.ReadBool("VerboseLogging", false);
+                    int idToLog = Settings.ReadInt("VerboseLoggingOrg", 0);
+                    if (_isVerbose && idToLog > 0)
+                    {
+                        _isVerbose = organization.OrganizationID == idToLog;
+                    }
+
                     try
                     {
                         ProcessOrganization(organization, isRebuilder);
@@ -152,15 +168,15 @@ namespace TeamSupport.ServiceLibrary
 
             try
             {
-                Logs.WriteLine();
-                Logs.WriteLine();
+                LogVerbose("");
+                LogVerbose("");
                 if (isRebuilder)
                 {
-                    Logs.WriteEvent(string.Format("Started rebuilding index for org: {0}", org.OrganizationID.ToString()));
+                    LogVerbose(string.Format("Started rebuilding index for org: {0}", org.OrganizationID.ToString()));
                 }
                 else
                 {
-                    Logs.WriteEvent(string.Format("Started Indexing for org: {0}", org.OrganizationID.ToString()));
+                    LogVerbose(string.Format("Started Indexing for org: {0}", org.OrganizationID.ToString()));
                 }
 
                 ProcessIndex(org, ReferenceType.Tickets, isRebuilder);
@@ -172,12 +188,12 @@ namespace TeamSupport.ServiceLibrary
                 ProcessIndex(org, ReferenceType.Contacts, isRebuilder);
                 ProcessIndex(org, ReferenceType.Assets, isRebuilder);
                 ProcessIndex(org, ReferenceType.Products, isRebuilder);
-                Logs.WriteEvent("Finished Processing");
+                LogVerbose("Finished Processing");
 
                 if (isRebuilder && !IsStopped)
                 {
                     org.LastIndexRebuilt = DateTime.UtcNow;
-                    Logs.WriteEvent("LastIndexRebuilt Updated");
+                    LogVerbose("LastIndexRebuilt Updated");
                     org.Collection.Save();
                 }
             }
@@ -278,14 +294,14 @@ namespace TeamSupport.ServiceLibrary
             string mainIndexPath = Path.Combine(root, organization.OrganizationID.ToString() + indexPath);
             if (isRebuilder) indexPath = "\\Rebuild" + indexPath;
             string path = Path.Combine(Settings.ReadString("Tickets Index Path", "c:\\Indexes"), organization.OrganizationID.ToString() + indexPath);
-            Logs.WriteEvent("Path: " + path);
+            LogVerbose("Path: " + path);
 
             bool isNew = !System.IO.Directory.Exists(path);
 
             if (isNew)
             {
                 Directory.CreateDirectory(path);
-                Logs.WriteEvent("Creating path: " + path);
+                LogVerbose("Creating path: " + path);
             }
 
             if (isRebuilder) DeleteIndex(path);
@@ -310,7 +326,7 @@ namespace TeamSupport.ServiceLibrary
             options.TextFlags = TextFlags.dtsoTfRecognizeDates;
             options.NoiseWordFile = noiseFile;
             options.Save();
-            Logs.WriteEvent("Processing " + tableName);
+            LogVerbose("Processing " + tableName);
             using (IndexJob job = new IndexJob())
             {
                 job.DataSourceToIndex = indexDataSource;
@@ -366,7 +382,7 @@ namespace TeamSupport.ServiceLibrary
 
         private void DeleteIndex(string path)
         {
-            Logs.WriteEvent("Deleting Index Files: " + path);
+            LogVerbose("Deleting Index Files: " + path);
 
             while (true)
             {
@@ -422,11 +438,11 @@ namespace TeamSupport.ServiceLibrary
 
                     if (Directory.Exists(indexPath))
                     {
-                        Logs.WriteEvent("Deleting: " + indexPath);
+                        LogVerbose("Deleting: " + indexPath);
                         Directory.Delete(indexPath, true);
                     }
 
-                    Logs.WriteEvent(string.Format("Moving files from {0} to {1}", rebuiltPath, indexPath));
+                    LogVerbose(string.Format("Moving files from {0} to {1}", rebuiltPath, indexPath));
                     Directory.Move(rebuiltPath, indexPath);
                 }
                 finally
@@ -449,29 +465,29 @@ namespace TeamSupport.ServiceLibrary
             if (dataSource.UpdatedItems.Count < 1) return;
 
             string updateSql = "UPDATE " + tableName + " SET NeedsIndexing = 0 WHERE " + primaryKeyName + " IN (" + DataUtils.IntArrayToCommaString(dataSource.UpdatedItems.ToArray()) + ")";
-            Logs.WriteEvent(updateSql);
+            LogVerbose(updateSql);
             SqlCommand command = new SqlCommand();
             command.CommandText = updateSql;
             command.CommandType = System.Data.CommandType.Text;
 
             SqlExecutor.ExecuteNonQuery(LoginUser, command);
-            Logs.WriteEvent(tableName + " Indexes Statuses UPdated");
+            LogVerbose(tableName + " Indexes Statuses UPdated");
         }
 
         private void RemoveOldIndexItems(LoginUser loginUser, string indexPath, Organization organization, ReferenceType referenceType, string deletedIndexItemsFileName)
         {
-            Logs.WriteEvent("Removing deleted items:  " + referenceType.ToString());
+            LogVerbose("Removing deleted items:  " + referenceType.ToString());
             if (!Directory.Exists(indexPath))
             {
                 Logs.WriteEvent("Path does not exist:  " + indexPath);
                 return;
             }
             DeletedIndexItems items = new DeletedIndexItems(loginUser);
-            Logs.WriteEvent(string.Format("Retrieving deleted items:  RefType: {0}, OrgID: {1}", referenceType.ToString(), organization.OrganizationID.ToString()));
+            LogVerbose(string.Format("Retrieving deleted items:  RefType: {0}, OrgID: {1}", referenceType.ToString(), organization.OrganizationID.ToString()));
             items.LoadByReferenceType(referenceType, organization.OrganizationID);
             if (items.IsEmpty)
             {
-                Logs.WriteEvent("No Items to delete");
+                LogVerbose("No Items to delete");
                 return;
             }
 
@@ -486,12 +502,12 @@ namespace TeamSupport.ServiceLibrary
             if (File.Exists(fileName)) File.Delete(fileName);
             using (StreamWriter writer = new StreamWriter(fileName))
             {
-                Logs.WriteEvent("Adding IDs to delete file: " + builder.ToString());
+                LogVerbose("Adding IDs to delete file: " + builder.ToString());
                 writer.Write(builder.ToString());
             }
 
 
-            Logs.WriteEvent("Deleting Items");
+            LogVerbose("Deleting Items");
             using (IndexJob job = new IndexJob())
             {
                 job.IndexPath = indexPath;
@@ -503,14 +519,19 @@ namespace TeamSupport.ServiceLibrary
                 job.Execute();
             }
 
-            Logs.WriteEvent("Items deleted");
+            LogVerbose("Items deleted");
             UpdateHealth();
             items.DeleteAll();
             items.Save();
-            Logs.WriteEvent("Finished Removing Old Indexes - OrgID = " + organization.OrganizationID + " - " + referenceType.ToString());
+            LogVerbose("Finished Removing Old Indexes - OrgID = " + organization.OrganizationID + " - " + referenceType.ToString());
         }
-
+        private void LogVerbose(string message)
+        {
+            if (_isVerbose) Logs.WriteEvent(message);
+        }
     }
+
+    
 
 
 }

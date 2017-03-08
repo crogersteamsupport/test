@@ -78,7 +78,7 @@ namespace TSWebServices
             info.Attachments = GetAttachments(ticket);
 
             TaskService taskService = new TaskService();
-            info.Tasks = taskService.GetTasksByTicketID(info.Ticket.TicketID).ToArray();
+            info.Tasks = taskService.GetTasksByTicketID(info.Ticket.TicketID);
 
             Reminders reminders = new Reminders(ticket.Collection.LoginUser);
             reminders.LoadByItemAll(ReferenceType.Tickets, ticket.TicketID, TSAuthentication.UserID);
@@ -1281,7 +1281,7 @@ namespace TSWebServices
             [DataMember]
             public PluginProxy[] Plugins { get; set; }
             [DataMember]
-            public ClientTask[] Tasks { get; set; }
+            public List<TaskDTO> Tasks { get; set; }
         }
 
         [DataContract]
