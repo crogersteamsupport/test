@@ -43,6 +43,7 @@ $(document).ready(function () {
 
     function LoadProperties() {
         window.parent.parent.Ts.Services.Task.GetTask(_reminderID, function (task) {
+            debugger;
             if (_isAdmin || task.CreatorID == window.parent.parent.Ts.System.User.UserID || task.UserID == window.parent.parent.Ts.System.User.UserID) {
                 $('#taskDelete').show();
             }
@@ -50,8 +51,8 @@ $(document).ready(function () {
                 $('#taskDelete').hide();
             }
 
-            if (task.TaskName) {
-                $('#taskName').text(ellipseString(task.TaskName, 73));
+            if (task.Name) {
+                $('#taskName').text(ellipseString(task.Name, 73));
             }
             else if (task.Description) {
                 $('#taskName').text(ellipseString(task.Description, 73));
