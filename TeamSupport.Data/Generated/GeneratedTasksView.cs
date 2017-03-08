@@ -638,7 +638,7 @@ namespace TeamSupport.Data
       {
         command.CommandText = "SET NOCOUNT OFF; SELECT [TaskID], [OrganizationID], [Name], [Description], [DueDate], [UserID], [IsComplete], [DateCompleted], [ParentID], [IsDismissed], [HasEmailSent], [ReminderDueDate], [TaskParentName], [UserName], [Creator], [CreatorID], [DateCreated], [ModifierID], [DateModified] FROM [dbo].[TasksView] WHERE ([TaskID] = @TaskID);";
         command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("taskID", taskID);
+        command.Parameters.AddWithValue("@TaskID", taskID);
         Fill(command);
       }
     }
