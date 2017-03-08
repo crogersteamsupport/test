@@ -697,12 +697,12 @@ $(document).ready(function () {
             if (attcontainer.length > 0) {
                 attcontainer.each(function (i, o) {
                     var data = $(o).data('data');
-                    data.url = '../../../Upload/Tasks/' + newTask.ReminderID;
+                    data.url = '../../../Upload/Tasks/' + newTask.TaskID;
                     data.jqXHR = data.submit();
                     $(o).data('data', data);
                 });
             }
-            parent.Ts.MainPage.openNewTask(newTask.ReminderID);
+            parent.Ts.MainPage.openNewTask(newTask.TaskID);
             parent.Ts.MainPage.highlightNewTaskTab(false);
             parent.Ts.MainPage.closenewTaskTab();
         });

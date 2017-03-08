@@ -262,6 +262,8 @@ namespace TSWebServices
             reminder.RefType = ReferenceType.Tasks;
             reminder.RefID = taskID;
             reminder.HasEmailSent = false;
+            reminder.UserID = loginUser.UserID;
+            reminder.CreatorID = loginUser.UserID;
 
             reminderHelper.Save();
 
