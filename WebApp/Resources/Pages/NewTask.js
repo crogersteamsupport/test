@@ -56,7 +56,7 @@ $(document).ready(function () {
         $('<a>')
           .attr('href', '#')
           .addClass('parentLink')
-          .data('reminderid', _taskParentID)
+          .data('taskID', _taskParentID)
           .text(_parentTaskName + ' >')
           .appendTo(parentName)
 
@@ -68,7 +68,7 @@ $(document).ready(function () {
     $('.parentLinkContainer').on('click', '.parentLink', function (e) {
         e.preventDefault();
 
-        var id = $(this).data('reminderid');
+        var id = $(this).data('taskID');
         parent.Ts.System.logAction('New Task - View Parent Task');
         parent.Ts.MainPage.openNewTask(id);
     });

@@ -2187,10 +2187,10 @@ function () { }, function (e) { console.log(e) });
             }
         }
     },
-    openNewTask: function (reminderID) {
-        var query = "?reminderid=" + reminderID;
-        mainFrame.Ts.Services.Task.GetShortNameFromID(reminderID, function (result) {
-            this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Task, reminderID, result, true, true, false, null, null, query, null);
+    openNewTask: function (taskID) {
+        var query = "?taskID=" + taskID;
+        mainFrame.Ts.Services.Task.GetShortNameFromID(taskID, function (result) {
+            this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Task, taskID, result, true, true, false, null, null, query, null);
         });
     },
     //closeNewTask: function (reminderID) {
