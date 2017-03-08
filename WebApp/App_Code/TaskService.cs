@@ -55,57 +55,54 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public List<ClientTask> GetCustomerTasks(int from, int count, int organizationID)
+        public List<TaskDTO> GetCustomerTasks(int from, int count, int organizationID)
         {
+            List<TaskDTO> result = new List<TaskDTO>();
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Tasks results = new Tasks(loginUser);
+            Tasks taskHelper = new Tasks(loginUser);
 
-            results.LoadByCompany(from, count, organizationID);
-
-            //return convertToClientTasksList(results.GetTaskProxies(), loginUser);
-            return null;
+            result = taskHelper.LoadByCompany(from, count, organizationID);
+            return convertToClientTasksList(result, loginUser);
         }
 
         [WebMethod]
-        public List<ClientTask> GetContactTasks(int from, int count, int contactID)
+        public List<TaskDTO> GetContactTasks(int from, int count, int contactID)
         {
+            List<TaskDTO> result = new List<TaskDTO>();
+
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Tasks results = new Tasks(loginUser);
+            Tasks taskHelper = new Tasks(loginUser);
 
-            results.LoadByContact(from, count, contactID);
-
-            //return convertToClientTasksList(results.GetTaskProxies(), loginUser);
-            return null;
+            result = taskHelper.LoadByContact(from, count, contactID);
+            return convertToClientTasksList(result, loginUser);
         }
 
         [WebMethod]
         public List<TaskDTO> GetUserTasks(int from, int count, int userID)
         {
+            List<TaskDTO> result = new List<TaskDTO>();
+
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Tasks results = new Tasks(loginUser);
+            Tasks taskHelper = new Tasks(loginUser);
 
-            results.LoadByUser(from, count, userID);
-
-            //return convertToClientTasksList(results.GetTaskProxies(), loginUser);
-            return null;
-
+            result = taskHelper.LoadByUser(from, count, userID);
+            return convertToClientTasksList(result, loginUser);
         }
 
         public List<TaskDTO> GetTasksByTicketID(int ticketID)
         {
+            List<TaskDTO> result = new List<TaskDTO>();
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<string> resultItems = new List<string>();
 
-            Tasks results = new Tasks(loginUser);
-            List<TaskDTO> tasks = results.LoadByTicketID(ticketID);
+            Tasks taskHelper = new Tasks(loginUser);
+            result = taskHelper.LoadByTicketID(ticketID);
 
-            return convertToClientTasksList(tasks, loginUser);
+            return convertToClientTasksList(result, loginUser);
         }
 
         public List<TaskDTO> convertToClientTasksList(List<TaskDTO> tasks, LoginUser loginUser)
         {
-            List<ClientTask> clientTasks = new List<ClientTask>();
-
             if (tasks.Any())
             {
                 for (int x = 0; x < tasks.Count(); x++)
