@@ -32,28 +32,27 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public List<ClientTask> GetTasks(int from, int count, pageTab tab)
+        public List<TaskDTO> GetTasks(int from, int count, pageTab tab)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            
-            Tasks results = new Tasks(loginUser);
+            List<TaskDTO> taskList = new List<TaskDTO>();
+
+            Tasks tasksHelper = new Tasks(loginUser);
             if (tab == pageTab.mytasks)
             {
-                results.LoadMyTasks(from, count, loginUser.UserID, true, false);
+                taskList = tasksHelper.LoadMyTasks(from, count, loginUser.UserID, true, false);
             }
             else if (tab == pageTab.assigned)
             {
-                results.LoadAssignedTasks(from, count, loginUser.UserID, true, false);
+                taskList = tasksHelper.LoadAssignedTasks(from, count, loginUser.UserID, true, false);
                 //results.LoadCompleted(from, count, loginUser.UserID, false, true);
             }
             else if (tab == pageTab.completed)
             {
-                results.LoadCompleted(from, count, loginUser.UserID, false, true);
+                taskList = tasksHelper.LoadCompleted(from, count, loginUser.UserID, false, true);
             }
 
-            TaskProxy[] tasksProxies = results.GetTaskProxies();
-
-            return convertToClientTasksList(tasksProxies, loginUser);
+            return convertToClientTasksList(taskList, loginUser);
         }
 
         [WebMethod]
@@ -64,7 +63,8 @@ namespace TSWebServices
 
             results.LoadByCompany(from, count, organizationID);
 
-            return convertToClientTasksList(results.GetTaskProxies(), loginUser);
+            //return convertToClientTasksList(results.GetTaskProxies(), loginUser);
+            return null;
         }
 
         [WebMethod]
@@ -75,22 +75,24 @@ namespace TSWebServices
 
             results.LoadByContact(from, count, contactID);
 
-            return convertToClientTasksList(results.GetTaskProxies(), loginUser);
+            //return convertToClientTasksList(results.GetTaskProxies(), loginUser);
+            return null;
         }
 
         [WebMethod]
-        public List<ClientTask> GetUserTasks(int from, int count, int userID)
+        public List<TaskDTO> GetUserTasks(int from, int count, int userID)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Tasks results = new Tasks(loginUser);
 
             results.LoadByUser(from, count, userID);
 
-            return convertToClientTasksList(results.GetTaskProxies(), loginUser);
+            //return convertToClientTasksList(results.GetTaskProxies(), loginUser);
+            return null;
 
         }
 
-        public List<ClientTask> GetTasksByTicketID(int ticketID)
+        public List<TaskDTO> GetTasksByTicketID(int ticketID)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<string> resultItems = new List<string>();
@@ -98,26 +100,24 @@ namespace TSWebServices
             Tasks results = new Tasks(loginUser);
             List<TaskDTO> tasks = results.LoadByTicketID(ticketID);
 
-            return convertToClientTasksList(results.GetTaskProxies(), loginUser);
+            return convertToClientTasksList(tasks, loginUser);
         }
 
-        public List<ClientTask> convertToClientTasksList(TaskProxy[] taskProxies, LoginUser loginUser)
+        public List<TaskDTO> convertToClientTasksList(List<TaskDTO> tasks, LoginUser loginUser)
         {
             List<ClientTask> clientTasks = new List<ClientTask>();
 
-            if (taskProxies.Any())
+            if (tasks.Any())
             {
-                for (int x = 0; x < taskProxies.Length; x++)
+                for (int x = 0; x < tasks.Count(); x++)
                 {
-                    ClientTask task = new ClientTask();
-                    task.SubTasks = new List<ClientTask>();
+                    TaskDTO task = new TaskDTO();
+                    task.SubTasks = new List<TaskDTO>();
 
-                    task.Task = taskProxies[x];
-
-                    if (task.Task.UserID.HasValue)
+                    if (task.UserID.HasValue)
                     {
                         Users userHelper = new Users(loginUser);
-                        userHelper.LoadByUserID((int)task.Task.UserID);
+                        userHelper.LoadByUserID((int)task.UserID);
 
                         if (userHelper.Any())
                         {
@@ -125,21 +125,18 @@ namespace TSWebServices
                         }
                     }
 
-                    task.Associations = LoadAssociations(task.Task.TaskID);
-
-                    clientTasks.Add(task);
+                    task.Associations = LoadAssociations(task.TaskID);
                 }
 
             }
 
-            return clientTasks;
+            return tasks;
         }
 
         [WebMethod]
         public TasksModel LoadPage(int start, int pageSize, pageTab tab)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-
             TasksModel result = new TasksModel();
 
             switch (tab)
@@ -193,9 +190,9 @@ namespace TSWebServices
 
 
         [WebMethod]
-        public TasksViewItemProxy GetTask(int taksID)
+        public TasksViewItemProxy GetTask(int taskID)
         {
-            TasksViewItem task = TasksView.GetTasksViewItem(TSAuthentication.GetLoginUser(), taksID);
+            TasksViewItem task = TasksView.GetTasksViewItem(TSAuthentication.GetLoginUser(), taskID);
             if (task.OrganizationID != TSAuthentication.OrganizationID) return null;
             return task.GetProxy();
         }
@@ -720,9 +717,9 @@ namespace TSWebServices
     [DataContract(Namespace = "http://teamsupport.com/")]
     public class ClientTask
     {
-        public TaskProxy Task { get; set; }
+        public TaskDTO Task { get; set; }
         public ReminderProxy Reminder { get; set; }
-        public List<ClientTask> SubTasks { get; set; }
+        public List<TaskDTO> SubTasks { get; set; }
         public TaskAssociationsViewItemProxy[] Associations { get; set; }
         public string AssignedTo { get; set; }
     }
@@ -733,13 +730,13 @@ namespace TSWebServices
         [DataMember]
         public int AssignedCount { get; set; }
         [DataMember]
-        public List<ClientTask> AssignedItems { get; set; }
-        [DataMember]
         public int CreatedCount { get; set; }
         [DataMember]
-        public List<ClientTask> CreatedItems { get; set; }
+        public List<TaskDTO> AssignedItems { get; set; }
         [DataMember]
-        public List<ClientTask> CompletedItems { get; set; }
+        public List<TaskDTO> CreatedItems { get; set; }
+        [DataMember]
+        public List<TaskDTO> CompletedItems { get; set; }
     }
 
     [DataContract(Namespace = "http://teamsupport.com/")]
