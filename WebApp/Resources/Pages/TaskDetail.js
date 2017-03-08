@@ -44,7 +44,7 @@ $(document).ready(function () {
     function LoadProperties() {
         window.parent.parent.Ts.Services.Task.GetTask(_taskID, function (task) {
             debugger;
-            if (_isAdmin || task.CreatorID == window.parent.parent.Ts.System.User.UserID || task.UserID == window.parent.parent.Ts.System.User.UserID) {
+            if (_isAdmin || task.CreatorID == window.parent.parent.Ts.System.User.UserID) {
                 $('#taskDelete').show();
             }
             else {
