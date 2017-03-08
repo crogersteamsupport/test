@@ -43,6 +43,7 @@ $(document).ready(function () {
 
     function LoadProperties() {
         window.parent.parent.Ts.Services.Task.GetTask(_reminderID, function (task) {
+            debugger;
             if (_isAdmin || task.CreatorID == window.parent.parent.Ts.System.User.UserID || task.UserID == window.parent.parent.Ts.System.User.UserID) {
                 $('#taskDelete').show();
             }
@@ -50,8 +51,8 @@ $(document).ready(function () {
                 $('#taskDelete').hide();
             }
 
-            if (task.TaskName) {
-                $('#taskName').text(ellipseString(task.TaskName, 73));
+            if (task.Name) {
+                $('#taskName').text(ellipseString(task.Name, 73));
             }
             else if (task.Description) {
                 $('#taskName').text(ellipseString(task.Description, 73));
@@ -59,12 +60,13 @@ $(document).ready(function () {
             else {
                 $('#taskName').text(task.ReminderID);
             }
+
             _taskName = $('#taskName').text();
 
             $('#fieldUser').text(task.UserName == "" ? "Unassigned" : task.UserName);
             $('#fieldUser').data('field', task.UserID);
 
-            if (task.TaskIsComplete) {
+            if (task.IsComplete) {
                 $('#fieldComplete').text("Yes");
                 $('#taskComplete').html("<i class='fa fa-check'></i>");
                 $('#taskComplete').addClass("completedButton");
@@ -80,9 +82,9 @@ $(document).ready(function () {
                 $('#taskComplete').attr("data-original-title", "Complete this task");
                 $('#taskComplete').tooltip('fixTitle');
             }
-            $('#fieldDueDate').html(task.TaskDueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.TaskDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>');
+            $('#fieldDueDate').html(task.DueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>');
             $('#fieldReminder').text(task.IsDismissed ? "No" : "Yes");
-            $('#fieldReminderDate').html(task.DueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearReminderDate" class="col-xs-1 fa fa-times clearDate"></i>');
+            $('#fieldReminderDate').html(task.ReminderDueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.ReminderDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearReminderDate" class="col-xs-1 fa fa-times clearDate"></i>');
             if (task.IsDismissed) {
                 $('#reminderDateGroup').hide();
             }
@@ -92,12 +94,9 @@ $(document).ready(function () {
 
             $('#fieldCreator').text(task.Creator);
             $('#fieldDateCreated').text(window.parent.parent.Ts.Utils.getMsDate(task.DateCreated).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
-            //$('#fieldModifier').text(task.ModifierName);
-            //$('#fieldDateModified').text(window.parent.parent.Ts.Utils.getMsDate(task.DateModified).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
-
             $('#fieldDescription').html(task.Description != null && task.Description != "" ? task.Description : "Empty");
 
-            if (task.TaskParentID)
+            if (task.ParentID)
             {
                 $('#subtasksDiv').hide();
                 var parentName = $('<h6>')
@@ -106,7 +105,7 @@ $(document).ready(function () {
                 $('<a>')
                   .attr('href', '#')
                   .addClass('parentLink')
-                  .data('reminderid', task.TaskParentID)
+                  .data('reminderid', task.ParentID)
                   .text(task.TaskParentName + ' >')
                   .appendTo(parentName)
                     
@@ -281,8 +280,8 @@ $(document).ready(function () {
         window.parent.parent.Ts.Services.Task.LoadSubtasks(_reminderID, function (subtasks) {
             for (var i = 0; i < subtasks.length; i++) {
                 var displayName;
-                if (subtasks[i].TaskName) {
-                    displayName = ellipseString(subtasks[i].TaskName, 40);
+                if (subtasks[i].Name) {
+                    displayName = ellipseString(subtasks[i].Name, 40);
                 }
                 else if (subtasks[i].Description) {
                     displayName = ellipseString(subtasks[i].Description, 40);

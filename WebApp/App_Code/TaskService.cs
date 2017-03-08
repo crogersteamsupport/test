@@ -45,7 +45,6 @@ namespace TSWebServices
             else if (tab == pageTab.assigned)
             {
                 taskList = tasksHelper.LoadAssignedTasks(from, count, loginUser.UserID, true, false);
-                //results.LoadCompleted(from, count, loginUser.UserID, false, true);
             }
             else if (tab == pageTab.completed)
             {
@@ -598,19 +597,19 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public void ClearReminderDate(int reminderID)
+        public void ClearReminderDate(int taskID)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminder task = Reminders.GetReminder(loginUser, reminderID);
+            Reminder reminder = Reminders.GetReminderByTaskID(loginUser, taskID);
             StringBuilder description = new StringBuilder();
             description.Append("Changed Reminder Date to None.");
-            task.DueDate = null;
-            task.Collection.Save();
-            TaskLogs.AddTaskLog(loginUser, reminderID, description.ToString());
+            reminder.DueDate = null;
+            reminder.Collection.Save();
+            TaskLogs.AddTaskLog(loginUser, taskID, description.ToString());
 
-            if (task.UserID != null && loginUser.UserID != task.UserID)
+            if (reminder.UserID != null && loginUser.UserID != reminder.UserID)
             {
-                SendModifiedNotification(loginUser.UserID, task.ReminderID);
+                SendModifiedNotification(loginUser.UserID, reminder.RefID);
             }
         }
 

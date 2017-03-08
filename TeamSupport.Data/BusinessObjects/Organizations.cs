@@ -3150,21 +3150,72 @@ ORDER BY
                             AND SettingKey = 'NewTicketFieldsOrder'
 
                         INSERT INTO
-                            TaskAssociations
+	                        Tasks
+	                        (
+		                        OrganizationID,
+		                        Name,
+		                        Description,
+		                        DueDate,
+		                        UserID,
+		                        IsComplete,
+		                        DateCompleted,
+		                        CreatorID,
+		                        DateCreated,
+		                        ReminderID,
+		                        ModifierID,
+		                        DateModified
+	                        )
                         SELECT
-                            r.ReminderID,
-                            r.RefID,
-                            r.RefType,
-                            -5,
-                            GETUTCDATE()
+	                        r.OrganizationID,
+	                        r.Description,
+	                        r.Description,
+	                        r.DueDate,
+	                        r.UserID,
+	                        r.HasEmailSent,
+	                        r.DueDate,
+	                        r.CreatorID,
+	                        r.DateCreated,
+	                        r.ReminderID,
+	                        -5,
+	                        GETUTCDATE()
                         FROM
-                            Reminders r
-                            LEFT JOIN TaskAssociations ta
-                                ON r.ReminderID = ta.ReminderID
+	                        Reminders r
+	                        JOIN Organizations o
+		                        ON r.OrganizationID = o.OrganizationID
+	                        LEFT JOIN Tasks t
+		                        ON r.ReminderID = t.ReminderID
                         WHERE
                             r.OrganizationID = @organizationID
                             AND r.RefType NOT IN (59,60,61)
-                            AND ta.ReminderID IS NULL
+	                        AND t.TaskID IS NULL
+
+                        INSERT INTO
+	                        TaskAssociations
+	                        (
+		                        TaskID,
+		                        RefID,
+		                        RefType,
+		                        CreatorID,
+		                        DateCreated
+	                        )
+                        SELECT
+	                        t.TaskID,
+	                        r.RefID,
+	                        r.RefType,
+	                        r.CreatorID,
+	                        r.DateCreated
+                        FROM
+	                        Reminders r
+	                        JOIN Organizations o
+		                        ON r.OrganizationID = o.OrganizationID
+	                        JOIN Tasks t
+		                        ON r.ReminderID = t.ReminderID
+	                        LEFT JOIN TaskAssociations ta
+		                        ON t.TaskID = ta.TaskID
+                        WHERE
+                            r.OrganizationID = @organizationID
+                            AND r.RefType NOT IN (59,60,61)
+	                        AND ta.TaskID IS NULL
 
                         UPDATE
 	                        u

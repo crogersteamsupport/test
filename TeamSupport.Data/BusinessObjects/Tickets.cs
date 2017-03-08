@@ -689,43 +689,43 @@ AND ot.TicketID = @TicketID
                 ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Assets");
             }
 
-            try
-            {
-                TicketLinkToJira linkToJira = new TicketLinkToJira(loginUser);
-                linkToJira.LoadByTicketID(this.TicketID);
+            //try
+            //{
+            //    TicketLinkToJira linkToJira = new TicketLinkToJira(loginUser);
+            //    linkToJira.LoadByTicketID(this.TicketID);
 
-                if (linkToJira.Count > 0)
-                {
-                    TicketLinkToJiraItemProxy originalTicketJiraLink = linkToJira[0].GetProxy();
-                    TicketLinkToJira clonedTicketJiraLink = new TicketLinkToJira(loginUser);
-                    TicketLinkToJiraItem clonedJiraLink = clonedTicketJiraLink.AddNewTicketLinkToJiraItem();
-                    clonedJiraLink.TicketID = cloneTicketId;
-                    clonedJiraLink.SyncWithJira = originalTicketJiraLink.SyncWithJira;
-                    clonedJiraLink.JiraID = originalTicketJiraLink.JiraID;
-                    clonedJiraLink.JiraKey = originalTicketJiraLink.JiraKey;
-                    clonedJiraLink.JiraLinkURL = originalTicketJiraLink.JiraLinkURL;
-                    clonedJiraLink.JiraStatus = originalTicketJiraLink.JiraStatus;
-                    clonedJiraLink.CreatorID = originalTicketJiraLink.CreatorID;
-                    clonedJiraLink.CrmLinkID = originalTicketJiraLink.CrmLinkID;
+            //    if (linkToJira.Count > 0)
+            //    {
+            //        TicketLinkToJiraItemProxy originalTicketJiraLink = linkToJira[0].GetProxy();
+            //        TicketLinkToJira clonedTicketJiraLink = new TicketLinkToJira(loginUser);
+            //        TicketLinkToJiraItem clonedJiraLink = clonedTicketJiraLink.AddNewTicketLinkToJiraItem();
+            //        clonedJiraLink.TicketID = cloneTicketId;
+            //        clonedJiraLink.SyncWithJira = originalTicketJiraLink.SyncWithJira;
+            //        clonedJiraLink.JiraID = originalTicketJiraLink.JiraID;
+            //        clonedJiraLink.JiraKey = originalTicketJiraLink.JiraKey;
+            //        clonedJiraLink.JiraLinkURL = originalTicketJiraLink.JiraLinkURL;
+            //        clonedJiraLink.JiraStatus = originalTicketJiraLink.JiraStatus;
+            //        clonedJiraLink.CreatorID = originalTicketJiraLink.CreatorID;
+            //        clonedJiraLink.CrmLinkID = originalTicketJiraLink.CrmLinkID;
 
-                    DateTime dt;
+            //        DateTime dt;
 
-                    if (DateTime.TryParse((originalTicketJiraLink.DateModifiedByJiraSync.ToString()).Replace("UTC", "GMT"), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
-                    {
-                        clonedJiraLink.DateModifiedByJiraSync = dt.ToUniversalTime();
-                    }
+            //        if (DateTime.TryParse((originalTicketJiraLink.DateModifiedByJiraSync.ToString()).Replace("UTC", "GMT"), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
+            //        {
+            //            clonedJiraLink.DateModifiedByJiraSync = dt.ToUniversalTime();
+            //        }
 
-                    clonedJiraLink.Collection.Save();
+            //        clonedJiraLink.Collection.Save();
 
-                    DeleteEmailPostsByTicketId(cloneTicketId);
-                }
-            }
-            catch (Exception ex)
-            {
-                actionLog = string.Format("Failed to clone ticket {0} Jira Link into {1}.", this.TicketNumber, clone.TicketNumber);
-                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
-                ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - JiraLink");
-            }
+            //        DeleteEmailPostsByTicketId(cloneTicketId);
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    actionLog = string.Format("Failed to clone ticket {0} Jira Link into {1}.", this.TicketNumber, clone.TicketNumber);
+            //    ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+            //    ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - JiraLink");
+            //}
 
             try
             {
@@ -836,6 +836,7 @@ AND ot.TicketID = @TicketID
                 if (sourcePropertyInfo.CanWrite
                     && sourcePropertyInfo.Name.ToLower() != "basecollection"
                     && sourcePropertyInfo.Name.ToLower() != "ticketnumber"
+                    && sourcePropertyInfo.Name.ToLower() != "salesforceid"
                     && sourcePropertyInfo.PropertyType != typeof(DateTime)
                     && sourcePropertyInfo.PropertyType != typeof(DateTime?))
                 {
