@@ -135,7 +135,11 @@ namespace TeamSupport.Data
                         AND R.RefType = 61
                 WHERE
                     ST.CreatorID = @UserID
-                    AND ST.UserID <> @UserID
+                    AND 
+                    (
+                        ST.UserID IS NULL
+                        OR ST.UserID <> @UserID
+                    )
                     AND ST.IsComplete = 0";
 
             string pageQuery = @"
