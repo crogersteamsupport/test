@@ -282,7 +282,6 @@ $(document).ready(function () {
 
     function LoadTasks() {
         parent.Ts.Services.Task.GetUserTasks(0, 20, userID, function (tasks) {
-            console.log(tasks);
             var data = { taskList: tasks };
             var source = $("#user-tasks-template").html();
             var template = Handlebars.compile(source);
@@ -311,8 +310,6 @@ $(document).ready(function () {
         if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
             LoadRatings(ratingFilter, $('#tblRatings tbody > tr').length + 1);
         }
-
-
     });
 
     $('#ddlRatingProductFamily').change(function () {
@@ -330,7 +327,6 @@ $(document).ready(function () {
     });
 
     $('#taskContainer').on('click', 'a.tasklink', function (e) {
-        debugger;
         e.preventDefault();
         var id = $(this).data('taskid');
         parent.Ts.System.logAction('Tasks Page - View Task');
@@ -432,6 +428,11 @@ Handlebars.registerHelper("mapAssociation", function (association) {
         case 22:
             associationName = association.User;
             iconClass = "userIcon";
+            functionName = 'window.parent.parent.Ts.MainPage.openUser(' + association.RefID + '); return false;'
+            break;
+        case 32:
+            associationName = association.Contact;
+            iconClass = "contactIcon";
             functionName = 'window.parent.parent.Ts.MainPage.openNewContact(' + association.RefID + '); return false;'
             break;
         default:

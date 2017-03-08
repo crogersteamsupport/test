@@ -105,9 +105,8 @@ namespace TSWebServices
         {
             if (tasks.Any())
             {
-                for (int x = 0; x < tasks.Count(); x++)
+                foreach (var task in tasks)
                 {
-                    TaskDTO task = new TaskDTO();
                     task.SubTasks = new List<TaskDTO>();
 
                     if (task.UserID.HasValue)

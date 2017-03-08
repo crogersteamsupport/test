@@ -18,8 +18,6 @@ function fetchTasks(callback) {
     showLoadingIndicator();
 
     parent.Ts.Services.Task.LoadPage(_start, _pageSize, _currentTab, function (pageData) {
-        debugger;
-
         $('.searchresults').fadeTo(0, 1);
 
         switch (_currentTab) {
@@ -122,10 +120,8 @@ function insertSearchResults(container, tasks) {
                 source = $("#mytask-table-template").html();
         }
 
-        //var source = $("#task-template").html();
         var template = Handlebars.compile(source);
         data = { taskList: tasks };
-        console.log(data);
 
         $("#handlebarsTaskList").html(template(data));
 
@@ -329,7 +325,6 @@ $(document).ready(function () {
     });
 
     Handlebars.registerHelper("formatRow", function (task) {
-        debugger;
         var cssClasses = null;
 
         if (task.TaskDueDate != null) {
@@ -355,11 +350,6 @@ $(document).ready(function () {
         var iconClass = '';
 
         switch (association.RefType) {
-            //case 3: leaving attachments off for now
-            //    associationName = association.Attachment;
-            //    iconClass = attIcon;
-            //    refcode = '<i class="fa fa-paperclip" title="' + association.Attachment + '"></i>'
-            //    break;
             case 6:
                 associationName = association.Group;
                 iconClass = "groupIcon";
