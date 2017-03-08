@@ -94,9 +94,6 @@ $(document).ready(function () {
 
             $('#fieldCreator').text(task.Creator);
             $('#fieldDateCreated').text(window.parent.parent.Ts.Utils.getMsDate(task.DateCreated).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
-            //$('#fieldModifier').text(task.ModifierName);
-            //$('#fieldDateModified').text(window.parent.parent.Ts.Utils.getMsDate(task.DateModified).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
-
             $('#fieldDescription').html(task.Description != null && task.Description != "" ? task.Description : "Empty");
 
             if (task.ParentID)

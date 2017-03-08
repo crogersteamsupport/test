@@ -230,6 +230,7 @@ namespace TeamSupport.Data
                 , ReminderID
                 , ModifierID
                 , DateModified
+                , ReminderDueDate
             FROM 
                 r
             WHERE

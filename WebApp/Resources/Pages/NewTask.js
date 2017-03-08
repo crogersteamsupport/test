@@ -38,6 +38,7 @@ $(document).ready(function () {
         });
     };
 
+    debugger;
     _taskParentID = window.parent.parent.Ts.Utils.getQueryValue("taskparentid", window);
     _parentTaskName = window.parent.parent.Ts.Utils.getQueryValue("parenttaskname", window);
 
@@ -642,7 +643,7 @@ $(document).ready(function () {
         parent.Ts.System.logAction('New Task - Save New Task');
 
         var taskInfo = new Object();
-        taskInfo.TaskParentID = _taskParentID;
+        taskInfo.ParentID = _taskParentID;
         taskInfo.Name = $("#inputName").val();
         taskInfo.Description = $("#Description").val();
         if ($("#ddlUser").val() != -1) {
