@@ -39,7 +39,7 @@ Partial Class JustArticle
 
     Public Function DisplayArticle(ByVal ArticleID As String, ByVal OrganizationID As String) As String
 
-        Dim sqlStatement As String = "select Body, ModifiedDate, PublicView from WikiArticles where ArticleID = @ArticleID and OrganizationID = @OrganizationID"
+        Dim sqlStatement As String = "select Body, ModifiedDate, PublicView from WikiArticles where ArticleID = @ArticleID and OrganizationID = @OrganizationID and IsDeleted = 0"
 
         Dim connection As New SqlConnection(ConfigurationManager.ConnectionStrings("TeamSupportConnectionString").ConnectionString)
 
