@@ -94,12 +94,9 @@ $(document).ready(function () {
 
             $('#fieldCreator').text(task.Creator);
             $('#fieldDateCreated').text(window.parent.parent.Ts.Utils.getMsDate(task.DateCreated).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
-            //$('#fieldModifier').text(task.ModifierName);
-            //$('#fieldDateModified').text(window.parent.parent.Ts.Utils.getMsDate(task.DateModified).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
-
             $('#fieldDescription').html(task.Description != null && task.Description != "" ? task.Description : "Empty");
 
-            if (task.TaskParentID)
+            if (task.ParentID)
             {
                 $('#subtasksDiv').hide();
                 var parentName = $('<h6>')
@@ -108,7 +105,7 @@ $(document).ready(function () {
                 $('<a>')
                   .attr('href', '#')
                   .addClass('parentLink')
-                  .data('reminderid', task.TaskParentID)
+                  .data('reminderid', task.ParentID)
                   .text(task.TaskParentName + ' >')
                   .appendTo(parentName)
                     
@@ -283,8 +280,8 @@ $(document).ready(function () {
         window.parent.parent.Ts.Services.Task.LoadSubtasks(_reminderID, function (subtasks) {
             for (var i = 0; i < subtasks.length; i++) {
                 var displayName;
-                if (subtasks[i].TaskName) {
-                    displayName = ellipseString(subtasks[i].TaskName, 40);
+                if (subtasks[i].Name) {
+                    displayName = ellipseString(subtasks[i].Name, 40);
                 }
                 else if (subtasks[i].Description) {
                     displayName = ellipseString(subtasks[i].Description, 40);
