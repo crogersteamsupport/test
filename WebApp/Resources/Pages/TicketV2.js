@@ -3215,23 +3215,22 @@ function AddReminders(reminders) {
 }
 
 function AddTasks(tasks) {
+    debugger;
     var tasksDiv = $("#ticket-task-span");
     tasksDiv.empty();
 
     for (var i = 0; i < tasks.length; i++) {
-        var _TaskName = tasks[i].Task.TaskName;
+        var _TaskName = tasks[i].Name;
 
-        if (tasks[i].Task.TaskName == null) {
-            if (tasks[i].Task.Description == null || tasks[i].Task.Description == "") {
+        if (tasks[i].Name == null) {
+            if (tasks[i].Description == null || tasks[i].Description == "") {
                 _TaskName = 'No Title';
             }
             else {
-                _TaskName = tasks[i].Task.Description;
+                _TaskName = tasks[i].Description;
             }
         }
-        //var label = '<span class="TaskAnchor" data-placement="left">' + ellipseString(tasks[i].Description, 30) + '<br>' + tasks[i].DueDate.localeFormat(window.parent.Ts.Utils.getDateTimePattern()) + '</span';
-        //label = '<span class="UserAnchor" data-userid="' + customers[i].UserID + '" data-placement="left" data-ticketid="' + _ticketID + '">' + customers[i].Contact + '</span><br/><span class="OrgAnchor" data-orgid="' + customers[i].OrganizationID + '" data-placement="left">' + customers[i].Company + '</span>';
-        var reminderElem = PrependTask(tasksDiv, tasks[i].Task.ReminderID, _TaskName, tasks[i].Task);
+        var reminderElem = PrependTask(tasksDiv, tasks[i].TaskID, _TaskName, tasks[i]);
     };
 }
 

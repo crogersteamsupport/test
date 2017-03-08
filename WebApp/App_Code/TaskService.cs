@@ -45,7 +45,6 @@ namespace TSWebServices
             else if (tab == pageTab.assigned)
             {
                 taskList = tasksHelper.LoadAssignedTasks(from, count, loginUser.UserID, true, false);
-                //results.LoadCompleted(from, count, loginUser.UserID, false, true);
             }
             else if (tab == pageTab.completed)
             {
