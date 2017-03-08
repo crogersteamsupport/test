@@ -2369,7 +2369,7 @@ function SetupTagsSection() {
 
 function PrependTask(parent, id, value, data) {
     var _compiledTaskTemplate = Handlebars.compile($("#task-record").html());
-    var taskHTML = _compiledTaskTemplate({ id: id, value: value, completed: data.TaskIsComplete });
+    var taskHTML = _compiledTaskTemplate({ id: id, value: value, completed: data.IsComplete });
     return $(taskHTML).prependTo(parent).data('task', data);
 }
 

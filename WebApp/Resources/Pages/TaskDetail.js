@@ -60,12 +60,13 @@ $(document).ready(function () {
             else {
                 $('#taskName').text(task.ReminderID);
             }
+
             _taskName = $('#taskName').text();
 
             $('#fieldUser').text(task.UserName == "" ? "Unassigned" : task.UserName);
             $('#fieldUser').data('field', task.UserID);
 
-            if (task.TaskIsComplete) {
+            if (task.IsComplete) {
                 $('#fieldComplete').text("Yes");
                 $('#taskComplete').html("<i class='fa fa-check'></i>");
                 $('#taskComplete').addClass("completedButton");
