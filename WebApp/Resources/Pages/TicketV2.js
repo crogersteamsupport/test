@@ -3191,17 +3191,6 @@ function SetupTasksSection() {
         parent.Ts.Services.Task.SetTaskIsCompleted(id, checked);
     });
 
-    //$('#ticket-task-span').on('click', '.tag-item', function (e) {
-    //    var reminder = $(this).data('tag');
-    //    $('#reminderID').text(reminder.ReminderID);
-    //    //var selectizeControl = $reminderSelect[0].selectize;
-    //    //selectizeControl.addItem(1839999);
-    //    $('#ticket-reminder-title').val(reminder.Description);
-    //    var date = reminder.DueDate == null ? null : window.parent.Ts.Utils.getMsDate(reminder.DueDate);
-    //    $('#ticket-reminder-date').val(date.localeFormat(window.parent.Ts.Utils.getDateTimePattern()));
-    //    if (!reminderClose)
-    //        $('#RemindersModal').modal('show');
-    //});
 }
 
 function AddReminders(reminders) {
