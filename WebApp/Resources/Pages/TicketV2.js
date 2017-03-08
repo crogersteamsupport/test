@@ -3136,7 +3136,7 @@ function SetupRemindersSection() {
 function SetupTasksSection() {
     AddTasks(_ticketInfo.Tasks);
     $('#ticket-task-span').on('click', '.change-task-status', function (e) {
-        var id = $(this).data('reminderid');
+        var id = $(this).data('taskID');
         var checkbox = $(this);
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Ticket Page - Change Task Status');
@@ -3178,13 +3178,13 @@ function SetupTasksSection() {
 
     $('.taskContainer').on('click', 'a.tasklink', function (e) {
         e.preventDefault();
-        var id = $(this).data('reminderid');
+        var id = $(this).data('taskID');
         parent.Ts.System.logAction('Tasks Page - View Task');
         parent.Ts.MainPage.openNewTask(id);
     });
 
     $('#TaskList').on('click', '.change-task-status', function (e) {
-        var id = $(this).data('reminderid');
+        var id = $(this).data('taskID');
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Tasks Page - Change Task Status');
 

@@ -202,7 +202,7 @@ $(document).ready(function () {
 
     $('#TaskList').on('click', 'a.tasklink', function (e) {
         e.preventDefault();
-        var id = $(this).data('reminderid');
+        var id = $(this).data('taskid');
         parent.Ts.System.logAction('Tasks Page - View Task');
         parent.Ts.MainPage.openNewTask(id);
 
@@ -282,7 +282,7 @@ $(document).ready(function () {
     });
 
     $('#TaskList').on('click', '.change-task-status', function (e) {
-        var id = $(this).data('reminderid');
+        var id = $(this).data('taskid');
         var checkbox = $(this);
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Tasks Page - Change Task Status');

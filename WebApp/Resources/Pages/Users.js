@@ -331,13 +331,13 @@ $(document).ready(function () {
 
     $('#taskContainer').on('click', 'a.tasklink', function (e) {
         e.preventDefault();
-        var id = $(this).data('reminderid');
+        var id = $(this).data('taskID');
         parent.Ts.System.logAction('Tasks Page - View Task');
         parent.Ts.MainPage.openNewTask(id);
     });
 
     $('#taskContainer').on('click', '.change-task-status', function (e) {
-        var id = $(this).data('reminderid');
+        var id = $(this).data('taskID');
         var checkbox = $(this);
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Contact Page - Change Task Status');
