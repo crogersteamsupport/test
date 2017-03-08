@@ -25,7 +25,7 @@ $(document).ready(function () {
         }
     });
 
-    _taskID = window.parent.parent.Ts.Utils.getQueryValue("reminderid", window);
+    _taskID = window.parent.parent.Ts.Utils.getQueryValue("taskid", window);
     parent.privateServices.SetUserSetting('SelectedTaskID', _taskID);
     var _isAdmin = window.parent.parent.Ts.System.User.IsSystemAdmin;
 

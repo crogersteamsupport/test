@@ -180,18 +180,18 @@
 <script id="user-tasks-template" type="text/x-handlers-template">
     {{#taskList}}
     test
-    <tr class="{{formatRow this.Task}}">
+    <tr class="{{formatRow this}}">
         <td>
-            <input {{taskComplete Task.TaskDateCompleted}} type="checkbox" class="change-task-status" data-reminderid="{{Task.ReminderID}}" />
+            <input {{taskComplete DateCompleted}} type="checkbox" class="change-task-status" data-taskid="{{TaskID}}" />
         </td>
         <td>
-            <a href="#" class="tasklink" id="cb{{Task.ReminderID}}" data-reminderid="{{Task.ReminderID}}">
-                {{formatTaskName this.Task}}
+            <a href="#" class="tasklink" id="cb{{TaskID}}" data-taskid="{{TaskID}}">
+                {{Name}}
             </a>
         </td>
         <td>{{AssignedTo}}</td>
-        <td>{{formatDate Task.TaskDueDate}}</</td>
-        <td>{{formatDate Task.DueDate}}</td>
+        <td>{{formatDate DueDate}}</</td>
+        <td>{{formatDate ReminderDueDate}}</td>
         <td>
             {{#Associations}}
             {{mapAssociation this}}
