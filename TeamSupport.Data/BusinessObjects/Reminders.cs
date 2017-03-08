@@ -108,6 +108,35 @@ namespace TeamSupport.Data
                 Fill(command);
             }
         }
+
+        public void LoadByTaskID(int taskID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+                SELECT
+                    *
+                FROM
+                    Reminders
+                WHERE
+                    RefType = 61
+                    AND RefID = @TaskID";
+
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@TaskID", taskID);
+                Fill(command);
+            }
+        }
+
+        public static Reminder GetReminderByTaskID(LoginUser loginUser, int taskID)
+        {
+            Reminders reminders = new Reminders(loginUser);
+            reminders.LoadByTaskID(taskID);
+            if (reminders.IsEmpty)
+                return null;
+            else
+                return reminders[0];
+        }
     }
 
 }

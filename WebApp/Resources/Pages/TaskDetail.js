@@ -82,9 +82,9 @@ $(document).ready(function () {
                 $('#taskComplete').attr("data-original-title", "Complete this task");
                 $('#taskComplete').tooltip('fixTitle');
             }
-            $('#fieldDueDate').html(task.TaskDueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.TaskDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>');
+            $('#fieldDueDate').html(task.DueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>');
             $('#fieldReminder').text(task.IsDismissed ? "No" : "Yes");
-            $('#fieldReminderDate').html(task.DueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearReminderDate" class="col-xs-1 fa fa-times clearDate"></i>');
+            $('#fieldReminderDate').html(task.ReminderDueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.ReminderDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearReminderDate" class="col-xs-1 fa fa-times clearDate"></i>');
             if (task.IsDismissed) {
                 $('#reminderDateGroup').hide();
             }
