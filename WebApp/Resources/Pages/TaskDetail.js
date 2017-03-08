@@ -25,7 +25,7 @@ $(document).ready(function () {
         }
     });
 
-    _taskID = window.parent.parent.Ts.Utils.getQueryValue("reminderid", window);
+    _taskID = window.parent.parent.Ts.Utils.getQueryValue("taskid", window);
     parent.privateServices.SetUserSetting('SelectedTaskID', _taskID);
     var _isAdmin = window.parent.parent.Ts.System.User.IsSystemAdmin;
 
@@ -58,7 +58,7 @@ $(document).ready(function () {
                 $('#Name').text(ellipseString(task.Description, 73));
             }
             else {
-                $('#Name').text(task.ReminderID);
+                $('#Name').text(task.TaskID);
             }
 
             _Name = $('#Name').text();
@@ -679,7 +679,7 @@ $(document).ready(function () {
               .click(function (e) {
                   var value = top.Ts.Utils.getMsDate(input.val());
                   container.remove();
-                  window.parent.parent.Ts.Services.Task.SetTaskDueDate(_taskID, value, function (result) {
+                  window.parent.parent.Ts.Services.Task.SetDueDate(_taskID, value, function (result) {
                       var date = result === null ? null : top.Ts.Utils.getMsDate(result);
                       parent.html((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>'))
                       $('#taskEdit').removeClass("disabled");
@@ -763,7 +763,7 @@ $(document).ready(function () {
               .click(function (e) {
                   var value = top.Ts.Utils.getMsDate(input.val());
                   container.remove();
-                  window.parent.parent.Ts.Services.Task.SetDueDate(_taskID, value, function (result) {
+                  window.parent.parent.Ts.Services.Task.SetReminderDueDate(_taskID, value, function (result) {
                       var date = result === null ? null : top.Ts.Utils.getMsDate(result);
                       parent.html((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern()) + '<i id="clearReminderDate" class="col-xs-1 fa fa-times clearDate"></i>'))
                       $('#taskEdit').removeClass("disabled");

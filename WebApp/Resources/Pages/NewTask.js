@@ -247,24 +247,6 @@ $(document).ready(function () {
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
 
-    $('#associationsContainer').on('click', '.associationDelete', function (e) {
-        e.preventDefault();
-        if (confirm('Are you sure you would like to remove this task association?')) {
-            window.parent.parent.Ts.System.logAction('New Task - Delete Association');
-            var blockDiv = $(this).parent();
-            if (blockDiv.data('attachmentID')) {
-                parent.privateServices.DeleteAttachment(blockDiv.data('attachmentID'), function (e) {
-                    blockDiv.hide();
-                });
-            }
-            else {
-                window.parent.parent.Ts.Services.Task.DeleteAssociation(_reminderID, blockDiv.data('refID'), blockDiv.data('refType'), function (result) {
-                    blockDiv.hide();
-                });
-            }
-        }
-    });
-
     var execGetCustomer = null;
     function getCustomers(request, response) {
         if (execGetCustomer) { execGetCustomer._executor.abort(); }
