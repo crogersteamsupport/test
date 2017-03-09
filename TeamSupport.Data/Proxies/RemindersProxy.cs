@@ -18,8 +18,8 @@ namespace TeamSupport.Data
     [DataMember] public ReferenceType RefType { get; set; }
     [DataMember] public int RefID { get; set; }
     [DataMember] public string Description { get; set; }
-    [DataMember] public DateTime? DueDate { get; set; }
-    [DataMember] public int? UserID { get; set; }
+    [DataMember] public DateTime DueDate { get; set; }
+    [DataMember] public int UserID { get; set; }
     [DataMember] public bool IsDismissed { get; set; }
     [DataMember] public bool HasEmailSent { get; set; }
     [DataMember] public int CreatorID { get; set; }
@@ -42,9 +42,9 @@ namespace TeamSupport.Data
       result.OrganizationID = this.OrganizationID;
       result.ReminderID = this.ReminderID;
        
+      result.DueDate = DateTime.SpecifyKind(this.DueDateUtc, DateTimeKind.Utc);
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
-      result.DueDate = this.DueDateUtc == null ? this.DueDateUtc : DateTime.SpecifyKind((DateTime)this.DueDateUtc, DateTimeKind.Utc); 
        
       return result;
     }	

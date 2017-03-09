@@ -24,11 +24,6 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("HasEmailSent", "HasEmailSent", false, false, false);
       _fieldMap.AddMap("CreatorID", "CreatorID", false, false, false);
       _fieldMap.AddMap("DateCreated", "DateCreated", false, false, false);
-      _fieldMap.AddMap("TaskName", "TaskName", false, false, false);
-      _fieldMap.AddMap("TaskDueDate", "TaskDueDate", false, false, false);
-      _fieldMap.AddMap("TaskIsComplete", "TaskIsComplete", false, false, false);
-      _fieldMap.AddMap("TaskDateCompleted", "TaskDateCompleted", false, false, false);
-      _fieldMap.AddMap("TaskParentID", "TaskParentID", false, false, false);
             
     }
   }

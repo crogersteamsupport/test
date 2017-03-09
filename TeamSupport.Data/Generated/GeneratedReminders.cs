@@ -34,12 +34,6 @@ namespace TeamSupport.Data
     
 
     
-    public int? UserID
-    {
-      get { return Row["UserID"] != DBNull.Value ? (int?)Row["UserID"] : null; }
-      set { Row["UserID"] = CheckValue("UserID", value); }
-    }
-    
 
     
     public int CreatorID
@@ -58,6 +52,12 @@ namespace TeamSupport.Data
     {
       get { return (bool)Row["IsDismissed"]; }
       set { Row["IsDismissed"] = CheckValue("IsDismissed", value); }
+    }
+    
+    public int UserID
+    {
+      get { return (int)Row["UserID"]; }
+      set { Row["UserID"] = CheckValue("UserID", value); }
     }
     
     public string Description
@@ -91,17 +91,6 @@ namespace TeamSupport.Data
     
 
     
-    public DateTime? DueDate
-    {
-      get { return Row["DueDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["DueDate"]) : null; }
-      set { Row["DueDate"] = CheckValue("DueDate", value); }
-    }
-
-    public DateTime? DueDateUtc
-    {
-      get { return Row["DueDate"] != DBNull.Value ? (DateTime?)Row["DueDate"] : null; }
-    }
-    
 
     
     public DateTime DateCreated
@@ -113,6 +102,17 @@ namespace TeamSupport.Data
     public DateTime DateCreatedUtc
     {
       get { return (DateTime)Row["DateCreated"]; }
+    }
+    
+    public DateTime DueDate
+    {
+      get { return DateToLocal((DateTime)Row["DueDate"]); }
+      set { Row["DueDate"] = CheckValue("DueDate", value); }
+    }
+
+    public DateTime DueDateUtc
+    {
+      get { return (DateTime)Row["DueDate"]; }
     }
     
 
