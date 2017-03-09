@@ -291,9 +291,9 @@ namespace TSWebServices
 
             newTask.Collection.Save();
 
-            if (info.ReminderDate != null)
+            if (info.Reminder != null)
             {
-                Reminder reminder = CreateReminder(loginUser, newTask.TaskID, info.Name, TimeZoneInfo.ConvertTimeToUtc((DateTime)info.ReminderDate), info.IsDismissed);
+                Reminder reminder = CreateReminder(loginUser, newTask.TaskID, info.Name, TimeZoneInfo.ConvertTimeToUtc((DateTime)info.Reminder), info.IsDismissed);
                 if (reminder != null)
                 {
                     Tasks taskHelper = new Tasks(loginUser);
@@ -773,7 +773,7 @@ namespace TSWebServices
         [DataMember]
         public bool IsDismissed { get; set; }
         [DataMember]
-        public DateTime? ReminderDate { get; set; }
+        public DateTime? Reminder { get; set; }
         [DataMember]
         public List<int> Tickets { get; set; }
         [DataMember]

@@ -3204,7 +3204,6 @@ function AddReminders(reminders) {
 }
 
 function AddTasks(tasks) {
-    debugger;
     var tasksDiv = $("#ticket-task-span");
     tasksDiv.empty();
 
