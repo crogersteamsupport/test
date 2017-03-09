@@ -3171,7 +3171,11 @@ ORDER BY
 	                        r.Description,
 	                        r.DueDate,
 	                        r.UserID,
-	                        r.HasEmailSent,
+	                        CASE
+		                        WHEN r.IsDismissed = 1 THEN 1
+		                        WHEN r.HasEmailSent = 1 THEN 1
+		                        ELSE 0
+	                        END AS BIT,
 	                        r.DueDate,
 	                        r.CreatorID,
 	                        r.DateCreated,
