@@ -92,8 +92,7 @@ namespace TeamSupport.Data
                         }
                     }
 
-                    NextRun = dateOnly.Add(timeOnly.TimeOfDay);
-                    NextRun = NextRun.Value.AddDays(initialDayDiff);
+                    NextRun = dateOnly.Add(timeOnly.TimeOfDay).AddDays(initialDayDiff);
 
                     if (NextRun.Value.DayOfWeek != dayOfWeek)
                     {
