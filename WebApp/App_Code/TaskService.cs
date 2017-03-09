@@ -642,6 +642,7 @@ namespace TSWebServices
             StringBuilder description = new StringBuilder();
             description.Append("Changed Reminder Date to None.");
             reminder.Delete();
+            reminder.Collection.Save();
             TaskLogs.AddTaskLog(loginUser, taskID, "Reminder deleted");
 
             SendModifiedNotification(loginUser.UserID, taskID);
