@@ -581,15 +581,25 @@ namespace TSWebServices
         public bool SetIsDismissed(int taskID, bool value)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminder task = Reminders.GetReminderByTaskID(loginUser, taskID);
-            task.IsDismissed = value;
-            task.Collection.Save();
+            Reminder reminder = Reminders.GetReminderByTaskID(loginUser, taskID);
+            if (reminder == null)
+            {
+                Task task = Tasks.GetTask(loginUser, taskID);
+                reminder = CreateReminder(loginUser, taskID, task.Name, task.DueDate, value);
+                task.ReminderID = reminder.ReminderID;
+                task.Collection.Save();
+            }
+            else
+            {
+                reminder.IsDismissed = value;
+                reminder.Collection.Save();
+            }
             string description = String.Format("{0} set task is dismissed to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
             TaskLogs.AddTaskLog(loginUser, taskID, description);
 
-            if (task.UserID != null && loginUser.UserID != task.UserID)
+            if (reminder.UserID != null && loginUser.UserID != reminder.UserID)
             {
-                SendModifiedNotification(loginUser.UserID, task.RefID);
+                SendModifiedNotification(loginUser.UserID, reminder.RefID);
             }
 
             return value;
