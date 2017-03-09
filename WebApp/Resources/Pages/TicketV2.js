@@ -3136,7 +3136,7 @@ function SetupRemindersSection() {
 function SetupTasksSection() {
     AddTasks(_ticketInfo.Tasks);
     $('#ticket-task-span').on('click', '.change-task-status', function (e) {
-        var id = $(this).data('taskID');
+        var id = $(this).data('taskid');
         var checkbox = $(this);
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Ticket Page - Change Task Status');
