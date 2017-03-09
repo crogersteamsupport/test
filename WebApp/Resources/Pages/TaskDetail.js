@@ -698,25 +698,6 @@ $(document).ready(function () {
         $('#taskEdit').addClass("disabled");
     });
 
-    //$('#fieldReminder').click(function (e) {
-    //    if (!$(this).hasClass('editable'))
-    //        return false;
-    //    window.parent.parent.Ts.Services.Task.SetIsDismissed(_taskID, ($(this).text() !== 'No'), function (result) {
-    //        top.Ts.System.logAction('Task Detail - Toggle IsDismissed');
-    //        $('#fieldReminder').text((result === true ? 'No' : 'Yes'));
-    //        if (result) {
-    //            $('#reminderDateGroup').hide();
-    //        }
-    //        else {
-    //            $('#reminderDateGroup').show();
-    //        }
-    //    },
-    //    function (error) {
-    //        header.show();
-    //        alert('There was an error saving the task is dismissed.');
-    //    });
-    //});
-
     $('#fieldReminder').on('click', '#clearReminderDate', function (e) {
         e.stopPropagation();
         window.parent.parent.Ts.Services.Task.ClearReminderDate(_taskID, function () {

@@ -607,34 +607,6 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public bool SetIsDismissed(int taskID, bool value)
-        {
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminder reminder = Reminders.GetReminderByTaskID(loginUser, taskID);
-            if (reminder == null)
-            {
-                Task task = Tasks.GetTask(loginUser, taskID);
-                reminder = CreateReminder(loginUser, taskID, task.Name, (DateTime)task.DueDate, value);
-                task.ReminderID = reminder.ReminderID;
-                task.Collection.Save();
-            }
-            else
-            {
-                reminder.IsDismissed = value;
-                reminder.Collection.Save();
-            }
-            string description = String.Format("{0} set task is dismissed to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
-            TaskLogs.AddTaskLog(loginUser, taskID, description);
-
-            if (reminder.UserID != null && loginUser.UserID != reminder.UserID)
-            {
-                SendModifiedNotification(loginUser.UserID, reminder.RefID);
-            }
-
-            return value;
-        }
-
-        [WebMethod]
         public void ClearReminderDate(int taskID)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
