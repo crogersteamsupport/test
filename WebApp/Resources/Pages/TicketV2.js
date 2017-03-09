@@ -2369,7 +2369,7 @@ function SetupTagsSection() {
 
 function PrependTask(parent, id, value, data) {
     var _compiledTaskTemplate = Handlebars.compile($("#task-record").html());
-    var taskHTML = _compiledTaskTemplate({ id: id, value: value, completed: data.IsComplete });
+    var taskHTML = _compiledTaskTemplate({ id: id, value: value, IsComplete: data.IsComplete });
     return $(taskHTML).prependTo(parent).data('task', data);
 }
 
@@ -4367,17 +4367,8 @@ function CreateHandleBarHelpers() {
         }
     });
 
-    Handlebars.registerHelper("taskComplete", function (completed) {
-        var result = '';
-
-        if (completed != null) {
-            if (completed == true)
-            {
-                result = 'checked="checked"';
-            }
-        }
-        
-        return result;
+    Handlebars.registerHelper("taskComplete", function (isComplete) {
+        return isComplete == true ? ' checked="checked"' : '';
     });
 };
 
