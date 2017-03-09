@@ -294,7 +294,17 @@ namespace TSWebServices
             if (info.ReminderDate != null)
             {
                 Reminder reminder = CreateReminder(loginUser, newTask.TaskID, info.Name, TimeZoneInfo.ConvertTimeToUtc((DateTime)info.ReminderDate), info.IsDismissed);
-                if (reminder != null) newTask.ReminderID = reminder.ReminderID;
+                if (reminder != null)
+                {
+                    Tasks taskHelper = new Tasks(loginUser);
+                    taskHelper.LoadByTaskID(newTask.TaskID);
+
+                    if (taskHelper.Any())
+                    {
+                        taskHelper[0].ReminderID = reminder.ReminderID;
+                        taskHelper.Save();
+                    }
+                }
             }
 
             foreach (int ticketID in info.Tickets)
