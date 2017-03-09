@@ -3178,13 +3178,13 @@ function SetupTasksSection() {
 
     $('.taskContainer').on('click', 'a.tasklink', function (e) {
         e.preventDefault();
-        var id = $(this).data('taskID');
+        var id = $(this).data('taskid');
         parent.Ts.System.logAction('Tasks Page - View Task');
         parent.Ts.MainPage.openNewTask(id);
     });
 
     $('#TaskList').on('click', '.change-task-status', function (e) {
-        var id = $(this).data('taskID');
+        var id = $(this).data('taskid');
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Tasks Page - Change Task Status');
 
