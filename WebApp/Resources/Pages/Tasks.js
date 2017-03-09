@@ -309,26 +309,11 @@ $(document).ready(function () {
         else return null;
     });
 
-    Handlebars.registerHelper("formatTaskName", function (Task) {
-        var name = Task.TaskName;
-
-        if (Task.TaskName == null) {
-            if (Task.Description == null || Task.Description == "") {
-                name = 'No Title';
-            }
-            else {
-                name = Task.Description;
-            }
-        }
-
-        return name;
-    });
-
     Handlebars.registerHelper("formatRow", function (task) {
         var cssClasses = null;
 
-        if (task.TaskDueDate != null) {
-            if (task.TaskIsComplete != true && new Date() > new Date(task.TaskDueDate)) {
+        if (task.DueDate != null) {
+            if (task.IsComplete != true && new Date() > new Date(task.DueDate)) {
                 cssClasses = 'danger';
             }
             else {
@@ -339,8 +324,8 @@ $(document).ready(function () {
         return cssClasses;
     });
 
-    Handlebars.registerHelper("taskComplete", function (taskdate) {
-        return taskdate != null ? ' checked="checked"' : '';
+    Handlebars.registerHelper("taskComplete", function (isComplete) {
+        return isComplete == true ? ' checked="checked"' : '';
     });
 
     Handlebars.registerHelper("mapAssociation", function (association) {
