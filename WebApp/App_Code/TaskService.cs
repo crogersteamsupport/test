@@ -566,18 +566,32 @@ namespace TSWebServices
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Reminder reminder = Reminders.GetReminderByTaskID(loginUser, taskID);
             StringBuilder description = new StringBuilder();
-            if (reminder.DueDate == null)
+
+            if (reminder != null)
             {
-                description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", "Unassigned", ((DateTime)value).ToString(GetDateFormatNormal())));
+                if (reminder.DueDate == null)
+                {
+                    description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", "Unassigned", ((DateTime)value).ToString(GetDateFormatNormal())));
+                }
+                else
+                {
+                    description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", ((DateTime)reminder.DueDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
+                }
+                reminder.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)value);
+                reminder.HasEmailSent = false;
+                reminder.Collection.Save();
+                TaskLogs.AddTaskLog(loginUser, taskID, description.ToString());
             }
             else
             {
-                description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", ((DateTime)reminder.DueDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
+                if (reminder == null)
+                {
+                    Task task = Tasks.GetTask(loginUser, taskID);
+                    reminder = CreateReminder(loginUser, taskID, task.Name, TimeZoneInfo.ConvertTimeToUtc((DateTime)value), false);
+                    task.ReminderID = reminder.ReminderID;
+                    task.Collection.Save();
+                }
             }
-            reminder.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)value);
-            reminder.HasEmailSent = false;
-            reminder.Collection.Save();
-            TaskLogs.AddTaskLog(loginUser, taskID, description.ToString());
 
             //if (task.UserID != null && loginUser.UserID != task.UserID)
             //{
