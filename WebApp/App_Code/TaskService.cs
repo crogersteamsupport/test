@@ -246,7 +246,7 @@ namespace TSWebServices
             return us.DateTimeFormat.ShortDatePattern;
         }
 
-        private Reminder CreateReminder(LoginUser loginUser, int taskID, string taskName, DateTime? reminderDate, bool isDismissed)
+        private Reminder CreateReminder(LoginUser loginUser, int taskID, string taskName, DateTime reminderDate, bool isDismissed)
         {
             Reminders reminderHelper = new Reminders(loginUser);
             Reminder reminder = reminderHelper.AddNewReminder();
@@ -609,7 +609,7 @@ namespace TSWebServices
             if (reminder == null)
             {
                 Task task = Tasks.GetTask(loginUser, taskID);
-                reminder = CreateReminder(loginUser, taskID, task.Name, task.DueDate, value);
+                reminder = CreateReminder(loginUser, taskID, task.Name, (DateTime)task.DueDate, value);
                 task.ReminderID = reminder.ReminderID;
                 task.Collection.Save();
             }
@@ -636,14 +636,10 @@ namespace TSWebServices
             Reminder reminder = Reminders.GetReminderByTaskID(loginUser, taskID);
             StringBuilder description = new StringBuilder();
             description.Append("Changed Reminder Date to None.");
-            reminder.DueDate = null;
-            reminder.Collection.Save();
-            TaskLogs.AddTaskLog(loginUser, taskID, description.ToString());
+            reminder.Delete();
+            TaskLogs.AddTaskLog(loginUser, taskID, "Reminder deleted");
 
-            if (reminder.UserID != null && loginUser.UserID != reminder.UserID)
-            {
-                SendModifiedNotification(loginUser.UserID, reminder.RefID);
-            }
+            SendModifiedNotification(loginUser.UserID, taskID);
         }
 
         [WebMethod]
