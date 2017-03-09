@@ -359,11 +359,13 @@ namespace TeamSupport.Data
                        LEFT JOIN Reminders R
                            ON ST.TaskID = R.RefID
                            AND R.RefType = 61
-                       JOIN TaskAssociations ta
-                           ON ST.TaskID = ta.TaskID
-                   WHERE
-                       ta.RefType = 9
-                       AND ta.RefID = @organizationID";
+                      WHERE
+	                    ST.TaskID in 
+                        (
+		                    select TaskID FROM TaskAssociations TA
+		                    Where TA.RefType = 9
+                            AND TA.RefID = @organizationID
+                        )";
 
             string pageQuery = @"
                WITH 
@@ -424,7 +426,7 @@ namespace TeamSupport.Data
                            ELSE ST.Name END AS Name,
                        ST.UserID,
                        ST.ModifierID,
-        ST.DateModified,
+                        ST.DateModified,
                        R.ReminderID
                    FROM
                        Tasks ST
@@ -433,11 +435,13 @@ namespace TeamSupport.Data
                        LEFT JOIN Reminders R
                            ON ST.TaskID = R.RefID
                            AND R.RefType = 61
-                       JOIN TaskAssociations ta
-                           ON ST.TaskID = ta.TaskID
                    WHERE
-                       ta.RefType = 32
-                       AND ta.RefID = @contactID";
+	                    ST.TaskID in 
+                        (
+		                    select TaskID FROM TaskAssociations TA
+		                    Where TA.RefType = 32
+                            AND TA.RefID = @contactID
+                        )";
 
             string pageQuery = @"
                WITH 
@@ -471,7 +475,7 @@ namespace TeamSupport.Data
 
             using (IDbConnection db = new SqlConnection(LoginUser.ConnectionString))
             {
-                result = (List<TaskDTO>)db.Query<TaskDTO>(query.ToString(), new { @contactID = contactID});
+                result = (List<TaskDTO>)db.Query<TaskDTO>(query.ToString(), new { @contactID = contactID });
             }
 
             return result;
@@ -508,12 +512,12 @@ namespace TeamSupport.Data
                        LEFT JOIN Reminders R
                            ON ST.TaskID = R.RefID
                            AND R.RefType = 61
-                       JOIN TaskAssociations ta
-                           ON ST.TaskID = ta.TaskID
-                   WHERE
-                       (
-                            ta.RefType = 22
-                          AND ta.RefID = @userID
+                       WHERE
+	                    ST.TaskID in 
+                        (
+		                    select TaskID FROM TaskAssociations TA
+		                    Where TA.RefType = 22
+                            AND TA.RefID = @userID
                         )
                         OR ST.UserID = @userID";
 
@@ -548,7 +552,7 @@ namespace TeamSupport.Data
 
             using (IDbConnection db = new SqlConnection(LoginUser.ConnectionString))
             {
-                result = (List<TaskDTO>)db.Query<TaskDTO>(query.ToString(), new { @userID = userID});
+                result = (List<TaskDTO>)db.Query<TaskDTO>(query.ToString(), new { @userID = userID });
             }
 
             return result;
