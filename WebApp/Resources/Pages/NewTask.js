@@ -56,7 +56,7 @@ $(document).ready(function () {
         $('<a>')
           .attr('href', '#')
           .addClass('parentLink')
-          .data('reminderid', _taskParentID)
+          .data('taskID', _taskParentID)
           .text(_parentTaskName + ' >')
           .appendTo(parentName)
 
@@ -68,7 +68,7 @@ $(document).ready(function () {
     $('.parentLinkContainer').on('click', '.parentLink', function (e) {
         e.preventDefault();
 
-        var id = $(this).data('reminderid');
+        var id = $(this).data('taskID');
         parent.Ts.System.logAction('New Task - View Parent Task');
         parent.Ts.MainPage.openNewTask(id);
     });
@@ -246,24 +246,6 @@ $(document).ready(function () {
         $(this).parent().find(".arrow-up").css('left', '150px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
-
-    $('#associationsContainer').on('click', '.associationDelete', function (e) {
-        e.preventDefault();
-        if (confirm('Are you sure you would like to remove this task association?')) {
-            window.parent.parent.Ts.System.logAction('New Task - Delete Association');
-            var blockDiv = $(this).parent();
-            if (blockDiv.data('attachmentID')) {
-                parent.privateServices.DeleteAttachment(blockDiv.data('attachmentID'), function (e) {
-                    blockDiv.hide();
-                });
-            }
-            else {
-                window.parent.parent.Ts.Services.Task.DeleteAssociation(_reminderID, blockDiv.data('refID'), blockDiv.data('refType'), function (result) {
-                    blockDiv.hide();
-                });
-            }
-        }
-    });
 
     var execGetCustomer = null;
     function getCustomers(request, response) {
@@ -697,12 +679,12 @@ $(document).ready(function () {
             if (attcontainer.length > 0) {
                 attcontainer.each(function (i, o) {
                     var data = $(o).data('data');
-                    data.url = '../../../Upload/Tasks/' + newTask.ReminderID;
+                    data.url = '../../../Upload/Tasks/' + newTask.TaskID;
                     data.jqXHR = data.submit();
                     $(o).data('data', data);
                 });
             }
-            parent.Ts.MainPage.openNewTask(newTask.ReminderID);
+            parent.Ts.MainPage.openNewTask(newTask.TaskID);
             parent.Ts.MainPage.highlightNewTaskTab(false);
             parent.Ts.MainPage.closenewTaskTab();
         });

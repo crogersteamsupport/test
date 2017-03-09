@@ -55,62 +55,58 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public List<ClientTask> GetCustomerTasks(int from, int count, int organizationID)
+        public List<TaskDTO> GetCustomerTasks(int from, int count, int organizationID)
         {
+            List<TaskDTO> result = new List<TaskDTO>();
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Tasks results = new Tasks(loginUser);
+            Tasks taskHelper = new Tasks(loginUser);
 
-            results.LoadByCompany(from, count, organizationID);
-
-            //return convertToClientTasksList(results.GetTaskProxies(), loginUser);
-            return null;
+            result = taskHelper.LoadByCompany(from, count, organizationID);
+            return convertToClientTasksList(result, loginUser);
         }
 
         [WebMethod]
-        public List<ClientTask> GetContactTasks(int from, int count, int contactID)
+        public List<TaskDTO> GetContactTasks(int from, int count, int contactID)
         {
+            List<TaskDTO> result = new List<TaskDTO>();
+
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Tasks results = new Tasks(loginUser);
+            Tasks taskHelper = new Tasks(loginUser);
 
-            results.LoadByContact(from, count, contactID);
-
-            //return convertToClientTasksList(results.GetTaskProxies(), loginUser);
-            return null;
+            result = taskHelper.LoadByContact(from, count, contactID);
+            return convertToClientTasksList(result, loginUser);
         }
 
         [WebMethod]
         public List<TaskDTO> GetUserTasks(int from, int count, int userID)
         {
+            List<TaskDTO> result = new List<TaskDTO>();
+
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Tasks results = new Tasks(loginUser);
+            Tasks taskHelper = new Tasks(loginUser);
 
-            results.LoadByUser(from, count, userID);
-
-            //return convertToClientTasksList(results.GetTaskProxies(), loginUser);
-            return null;
-
+            result = taskHelper.LoadByUser(from, count, userID);
+            return convertToClientTasksList(result, loginUser);
         }
 
         public List<TaskDTO> GetTasksByTicketID(int ticketID)
         {
+            List<TaskDTO> result = new List<TaskDTO>();
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<string> resultItems = new List<string>();
 
-            Tasks results = new Tasks(loginUser);
-            List<TaskDTO> tasks = results.LoadByTicketID(ticketID);
+            Tasks taskHelper = new Tasks(loginUser);
+            result = taskHelper.LoadByTicketID(ticketID);
 
-            return convertToClientTasksList(tasks, loginUser);
+            return convertToClientTasksList(result, loginUser);
         }
 
         public List<TaskDTO> convertToClientTasksList(List<TaskDTO> tasks, LoginUser loginUser)
         {
-            List<ClientTask> clientTasks = new List<ClientTask>();
-
             if (tasks.Any())
             {
-                for (int x = 0; x < tasks.Count(); x++)
+                foreach (var task in tasks)
                 {
-                    TaskDTO task = new TaskDTO();
                     task.SubTasks = new List<TaskDTO>();
 
                     if (task.UserID.HasValue)
@@ -262,6 +258,8 @@ namespace TSWebServices
             reminder.RefType = ReferenceType.Tasks;
             reminder.RefID = taskID;
             reminder.HasEmailSent = false;
+            reminder.UserID = loginUser.UserID;
+            reminder.CreatorID = loginUser.UserID;
 
             reminderHelper.Save();
 
@@ -553,21 +551,22 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string SetTaskDueDate(int taskID, object value)
+        public string SetReminderDueDate(int taskID, object value)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Task task = Tasks.GetTask(loginUser, taskID);
+            Reminder reminder = Reminders.GetReminderByTaskID(loginUser, taskID);
             StringBuilder description = new StringBuilder();
-            if (task.DueDate == null)
+            if (reminder.DueDate == null)
             {
                 description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", "Unassigned", ((DateTime)value).ToString(GetDateFormatNormal())));
             }
             else
             {
-                description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", ((DateTime)task.DueDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
+                description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", ((DateTime)reminder.DueDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
             }
-            task.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)value);
-            task.Collection.Save();
+            reminder.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)value);
+            reminder.HasEmailSent = false;
+            reminder.Collection.Save();
             TaskLogs.AddTaskLog(loginUser, taskID, description.ToString());
 
             //if (task.UserID != null && loginUser.UserID != task.UserID)
@@ -575,22 +574,22 @@ namespace TSWebServices
             //    SendModifiedNotification(loginUser.UserID, task.ReminderID);
             //}
 
-            return value.ToString() != "" ? task.DueDate.ToString() : null;
+            return value.ToString() != "" ? reminder.DueDate.ToString() : null;
         }
 
         [WebMethod]
-        public bool SetIsDismissed(int reminderID, bool value)
+        public bool SetIsDismissed(int taskID, bool value)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminder task = Reminders.GetReminder(loginUser, reminderID);
+            Reminder task = Reminders.GetReminderByTaskID(loginUser, taskID);
             task.IsDismissed = value;
             task.Collection.Save();
             string description = String.Format("{0} set task is dismissed to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
-            TaskLogs.AddTaskLog(loginUser, reminderID, description);
+            TaskLogs.AddTaskLog(loginUser, taskID, description);
 
             if (task.UserID != null && loginUser.UserID != task.UserID)
             {
-                SendModifiedNotification(loginUser.UserID, task.ReminderID);
+                SendModifiedNotification(loginUser.UserID, task.RefID);
             }
 
             return value;
@@ -614,27 +613,26 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string SetDueDate(int reminderID, object value)
+        public string SetDueDate(int taskID, object value)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminder task = Reminders.GetReminder(loginUser, reminderID);
+            Task task = Tasks.GetTask(loginUser, taskID);
             StringBuilder description = new StringBuilder();
             if (task.DueDate == null)
             {
-                description.Append(String.Format("Changed Reminder Date from \"{0}\" to \"{1}\".", "Unassigned", ((DateTime)value).ToString(GetDateFormatNormal())));
+                description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", "Unassigned", ((DateTime)value).ToString(GetDateFormatNormal())));
             }
             else
             {
-                description.Append(String.Format("Changed Reminder Date from \"{0}\" to \"{1}\".", ((DateTime)task.DueDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
+                description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", ((DateTime)task.DueDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
             }
             task.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)value);
-            task.HasEmailSent = false;
             task.Collection.Save();
-            TaskLogs.AddTaskLog(loginUser, reminderID, description.ToString());
+            TaskLogs.AddTaskLog(loginUser, taskID, description.ToString());
 
             if (task.UserID != null && loginUser.UserID != task.UserID)
             {
-                SendModifiedNotification(loginUser.UserID, task.ReminderID);
+                SendModifiedNotification(loginUser.UserID, task.TaskID);
             }
 
             return value.ToString() != "" ? task.DueDate.ToString() : null;

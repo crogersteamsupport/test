@@ -66,236 +66,236 @@ namespace TeamSupport.Data
             }
         }
 
-        public void LoadByCompany(int from, int count, int organizationID)
-        {
-            //Paging implemented but currently excluded
+     //   public void LoadByCompany(int from, int count, int organizationID)
+     //   {
+     //       //Paging implemented but currently excluded
 
-            string completeQuery = @"
-                SELECT
-                    ST.CreatorID,
-                    ST.DateCreated,
-                    ST.Description,
-                    ST.DueDate,
-                    R.DueDate AS 'ReminderDueDate',
-                    R.IsDismissed,
-                    ST.OrganizationID,
-                    ST.TaskID,
-                    ST.DateCompleted,
-                    ST.IsComplete,
-                    ST.ParentID,
-                    CASE WHEN T.Name is not null THEN T.Name + ' > ' + ST.Name
-                        ELSE ST.Name END AS Name,
-                    ST.UserID,
-                    ST.ModifierID,
-					ST.DateModified,
-                    R.ReminderID
-                FROM
-                    Tasks ST
-                    LEFT JOIN Tasks T 
-                        ON ST.ParentID = T.TaskID
-                    LEFT JOIN Reminders R
-                        ON ST.TaskID = R.RefID
-                        AND R.RefType = 61
-                    JOIN TaskAssociations ta
-                        ON ST.TaskID = ta.TaskID
-                WHERE
-                    ta.RefType = 9
-                    AND ta.RefID = @organizationID";
+     //       string completeQuery = @"
+     //           SELECT
+     //               ST.CreatorID,
+     //               ST.DateCreated,
+     //               ST.Description,
+     //               ST.DueDate,
+     //               R.DueDate AS 'ReminderDueDate',
+     //               R.IsDismissed,
+     //               ST.OrganizationID,
+     //               ST.TaskID,
+     //               ST.DateCompleted,
+     //               ST.IsComplete,
+     //               ST.ParentID,
+     //               CASE WHEN T.Name is not null THEN T.Name + ' > ' + ST.Name
+     //                   ELSE ST.Name END AS Name,
+     //               ST.UserID,
+     //               ST.ModifierID,
+					//ST.DateModified,
+     //               R.ReminderID
+     //           FROM
+     //               Tasks ST
+     //               LEFT JOIN Tasks T 
+     //                   ON ST.ParentID = T.TaskID
+     //               LEFT JOIN Reminders R
+     //                   ON ST.TaskID = R.RefID
+     //                   AND R.RefType = 61
+     //               JOIN TaskAssociations ta
+     //                   ON ST.TaskID = ta.TaskID
+     //           WHERE
+     //               ta.RefType = 9
+     //               AND ta.RefID = @organizationID";
 
-            string pageQuery = @"
-            WITH 
-                q AS ({0}),
-                t AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY IsComplete asc, CASE WHEN DueDate IS NULL THEN 1 ELSE 0 END, IsComplete ASC, DueDate, ReminderDueDate) AS 'RowNum' FROM q)
-            SELECT
-                TaskID
-                , OrganizationID
-                , Description
-                , DueDate
-                , UserID
-                , IsDismissed
-                , CreatorID
-                , DateCreated
-                , Name
-                , ReminderDueDate
-                , IsComplete
-                , DateCompleted
-                , ParentID
-                , ModifierID
-                , DateModified
-                , ReminderID
-            FROM 
-                t";
-            //WHERE
-            //    RowNum BETWEEN @From AND @To";
+     //       string pageQuery = @"
+     //       WITH 
+     //           q AS ({0}),
+     //           t AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY IsComplete asc, CASE WHEN DueDate IS NULL THEN 1 ELSE 0 END, IsComplete ASC, DueDate, ReminderDueDate) AS 'RowNum' FROM q)
+     //       SELECT
+     //           TaskID
+     //           , OrganizationID
+     //           , Description
+     //           , DueDate
+     //           , UserID
+     //           , IsDismissed
+     //           , CreatorID
+     //           , DateCreated
+     //           , Name
+     //           , ReminderDueDate
+     //           , IsComplete
+     //           , DateCompleted
+     //           , ParentID
+     //           , ModifierID
+     //           , DateModified
+     //           , ReminderID
+     //       FROM 
+     //           t";
+     //       //WHERE
+     //       //    RowNum BETWEEN @From AND @To";
 
-            StringBuilder query;
+     //       StringBuilder query;
 
-            query = new StringBuilder(string.Format(pageQuery, completeQuery));
+     //       query = new StringBuilder(string.Format(pageQuery, completeQuery));
 
-            using (SqlCommand command = new SqlCommand())
-            {
-                command.CommandText = query.ToString();
-                command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@organizationID", organizationID);
-                //command.Parameters.AddWithValue("@From", from + 1);
-                //command.Parameters.AddWithValue("@To", from + count);
-                Fill(command);
-            }
-        }
+     //       using (SqlCommand command = new SqlCommand())
+     //       {
+     //           command.CommandText = query.ToString();
+     //           command.CommandType = CommandType.Text;
+     //           command.Parameters.AddWithValue("@organizationID", organizationID);
+     //           //command.Parameters.AddWithValue("@From", from + 1);
+     //           //command.Parameters.AddWithValue("@To", from + count);
+     //           Fill(command);
+     //       }
+     //   }
 
-        public void LoadByContact(int from, int count, int contactID)
-        {
-            //Paging has been written for but is currently excluded.
+     //   public void LoadByContact(int from, int count, int contactID)
+     //   {
+     //       //Paging has been written for but is currently excluded.
 
-            string completeQuery = @"
-                SELECT
-                    ST.CreatorID,
-                    ST.DateCreated,
-                    ST.Description,
-                    ST.DueDate,
-                    R.DueDate AS 'ReminderDueDate',
-                    R.IsDismissed,
-                    ST.OrganizationID,
-                    ST.TaskID,
-                    ST.DateCompleted,
-                    ST.IsComplete,
-                    ST.ParentID,
-                    CASE WHEN T.Name is not null THEN T.Name + ' > ' + ST.Name
-                        ELSE ST.Name END AS Name,
-                    ST.UserID,
-                    ST.ModifierID,
-					ST.DateModified,
-                    R.ReminderID
-                FROM
-                    Tasks ST
-                    LEFT JOIN Tasks T 
-                        ON ST.ParentID = T.TaskID
-                    LEFT JOIN Reminders R
-                        ON ST.TaskID = R.RefID
-                        AND R.RefType = 61
-                    JOIN TaskAssociations ta
-                        ON ST.TaskID = ta.TaskID
-                WHERE
-                    ta.RefType = 32
-                    AND ta.RefID = @contactID";
+     //       string completeQuery = @"
+     //           SELECT
+     //               ST.CreatorID,
+     //               ST.DateCreated,
+     //               ST.Description,
+     //               ST.DueDate,
+     //               R.DueDate AS 'ReminderDueDate',
+     //               R.IsDismissed,
+     //               ST.OrganizationID,
+     //               ST.TaskID,
+     //               ST.DateCompleted,
+     //               ST.IsComplete,
+     //               ST.ParentID,
+     //               CASE WHEN T.Name is not null THEN T.Name + ' > ' + ST.Name
+     //                   ELSE ST.Name END AS Name,
+     //               ST.UserID,
+     //               ST.ModifierID,
+					//ST.DateModified,
+     //               R.ReminderID
+     //           FROM
+     //               Tasks ST
+     //               LEFT JOIN Tasks T 
+     //                   ON ST.ParentID = T.TaskID
+     //               LEFT JOIN Reminders R
+     //                   ON ST.TaskID = R.RefID
+     //                   AND R.RefType = 61
+     //               JOIN TaskAssociations ta
+     //                   ON ST.TaskID = ta.TaskID
+     //           WHERE
+     //               ta.RefType = 32
+     //               AND ta.RefID = @contactID";
 
-            string pageQuery = @"
-            WITH 
-                q AS ({0}),
-                t AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY IsComplete asc, CASE WHEN DueDate IS NULL THEN 1 ELSE 0 END, IsComplete ASC, DueDate, ReminderDueDate) AS 'RowNum' FROM q)
-            SELECT
-                TaskID
-                , OrganizationID
-                , Description
-                , DueDate
-                , UserID
-                , IsDismissed
-                , CreatorID
-                , DateCreated
-                , Name
-                , ReminderDueDate
-                , IsComplete
-                , DateCompleted
-                , ParentID
-                , ModifierID
-                , DateModified
-                , ReminderID
-            FROM 
-                t";
-            //WHERE
-            //    RowNum BETWEEN @From AND @To;
+     //       string pageQuery = @"
+     //       WITH 
+     //           q AS ({0}),
+     //           t AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY IsComplete asc, CASE WHEN DueDate IS NULL THEN 1 ELSE 0 END, IsComplete ASC, DueDate, ReminderDueDate) AS 'RowNum' FROM q)
+     //       SELECT
+     //           TaskID
+     //           , OrganizationID
+     //           , Description
+     //           , DueDate
+     //           , UserID
+     //           , IsDismissed
+     //           , CreatorID
+     //           , DateCreated
+     //           , Name
+     //           , ReminderDueDate
+     //           , IsComplete
+     //           , DateCompleted
+     //           , ParentID
+     //           , ModifierID
+     //           , DateModified
+     //           , ReminderID
+     //       FROM 
+     //           t";
+     //       //WHERE
+     //       //    RowNum BETWEEN @From AND @To;
 
-            StringBuilder query;
+     //       StringBuilder query;
 
-            query = new StringBuilder(string.Format(pageQuery, completeQuery));
+     //       query = new StringBuilder(string.Format(pageQuery, completeQuery));
 
-            using (SqlCommand command = new SqlCommand())
-            {
-                command.CommandText = query.ToString();
-                command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@contactID", contactID);
-                //command.Parameters.AddWithValue("@From", from + 1);
-                //command.Parameters.AddWithValue("@To", from + count);
-                Fill(command);
-            }
-        }
+     //       using (SqlCommand command = new SqlCommand())
+     //       {
+     //           command.CommandText = query.ToString();
+     //           command.CommandType = CommandType.Text;
+     //           command.Parameters.AddWithValue("@contactID", contactID);
+     //           //command.Parameters.AddWithValue("@From", from + 1);
+     //           //command.Parameters.AddWithValue("@To", from + count);
+     //           Fill(command);
+     //       }
+     //   }
 
-        public void LoadByUser(int from, int count, int userID)
-        {
-            //Paging has been written for but is currently excluded.
+     //   public void LoadByUser(int from, int count, int userID)
+     //   {
+     //       //Paging has been written for but is currently excluded.
 
-            string completeQuery = @"
-                SELECT
-                    ST.CreatorID,
-                    ST.DateCreated,
-                    ST.Description,
-                    ST.DueDate,
-                    R.DueDate AS 'ReminderDueDate',
-                    R.IsDismissed,
-                    ST.OrganizationID,
-                    ST.TaskID,
-                    ST.DateCompleted,
-                    ST.IsComplete,
-                    ST.ParentID,
-                    CASE WHEN T.Name is not null THEN T.Name + ' > ' + ST.Name
-                        ELSE ST.Name END AS Name,
-                    ST.UserID,
-                    ST.ModifierID,
-					ST.DateModified,
-                    R.ReminderID
-                FROM
-                    Tasks ST
-                    LEFT JOIN Tasks T 
-                        ON ST.ParentID = T.TaskID
-                    LEFT JOIN Reminders R
-                        ON ST.TaskID = R.RefID
-                        AND R.RefType = 61
-                    JOIN TaskAssociations ta
-                        ON ST.TaskID = ta.TaskID
-                WHERE
-                    ta.RefType = 22
-                    AND ta.RefID = @userID";
+     //       string completeQuery = @"
+     //           SELECT
+     //               ST.CreatorID,
+     //               ST.DateCreated,
+     //               ST.Description,
+     //               ST.DueDate,
+     //               R.DueDate AS 'ReminderDueDate',
+     //               R.IsDismissed,
+     //               ST.OrganizationID,
+     //               ST.TaskID,
+     //               ST.DateCompleted,
+     //               ST.IsComplete,
+     //               ST.ParentID,
+     //               CASE WHEN T.Name is not null THEN T.Name + ' > ' + ST.Name
+     //                   ELSE ST.Name END AS Name,
+     //               ST.UserID,
+     //               ST.ModifierID,
+					//ST.DateModified,
+     //               R.ReminderID
+     //           FROM
+     //               Tasks ST
+     //               LEFT JOIN Tasks T 
+     //                   ON ST.ParentID = T.TaskID
+     //               LEFT JOIN Reminders R
+     //                   ON ST.TaskID = R.RefID
+     //                   AND R.RefType = 61
+     //               JOIN TaskAssociations ta
+     //                   ON ST.TaskID = ta.TaskID
+     //           WHERE
+     //               ta.RefType = 22
+     //               AND ta.RefID = @userID";
 
-            string pageQuery = @"
-            WITH 
-                q AS ({0}),
-                t AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY IsComplete asc, CASE WHEN DueDate IS NULL THEN 1 ELSE 0 END, IsComplete ASC, DueDate, ReminderDueDate) AS 'RowNum' FROM q)
-            SELECT
-                TaskID
-                , OrganizationID
-                , Description
-                , DueDate
-                , UserID
-                , IsDismissed
-                , CreatorID
-                , DateCreated
-                , Name
-                , ReminderDueDate
-                , IsComplete
-                , DateCompleted
-                , ParentID
-                , ModifierID
-                , DateModified
-                , ReminderID
-            FROM 
-                t";
-            //WHERE
-            //    RowNum BETWEEN @From AND @To;
+     //       string pageQuery = @"
+     //       WITH 
+     //           q AS ({0}),
+     //           t AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY IsComplete asc, CASE WHEN DueDate IS NULL THEN 1 ELSE 0 END, IsComplete ASC, DueDate, ReminderDueDate) AS 'RowNum' FROM q)
+     //       SELECT
+     //           TaskID
+     //           , OrganizationID
+     //           , Description
+     //           , DueDate
+     //           , UserID
+     //           , IsDismissed
+     //           , CreatorID
+     //           , DateCreated
+     //           , Name
+     //           , ReminderDueDate
+     //           , IsComplete
+     //           , DateCompleted
+     //           , ParentID
+     //           , ModifierID
+     //           , DateModified
+     //           , ReminderID
+     //       FROM 
+     //           t";
+     //       //WHERE
+     //       //    RowNum BETWEEN @From AND @To;
 
-            StringBuilder query;
+     //       StringBuilder query;
 
-            query = new StringBuilder(string.Format(pageQuery, completeQuery));
+     //       query = new StringBuilder(string.Format(pageQuery, completeQuery));
 
-            using (SqlCommand command = new SqlCommand())
-            {
-                command.CommandText = query.ToString();
-                command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@userID", userID);
-                //command.Parameters.AddWithValue("@From", from + 1);
-                //command.Parameters.AddWithValue("@To", from + count);
-                Fill(command);
-            }
-        }
+     //       using (SqlCommand command = new SqlCommand())
+     //       {
+     //           command.CommandText = query.ToString();
+     //           command.CommandType = CommandType.Text;
+     //           command.Parameters.AddWithValue("@userID", userID);
+     //           //command.Parameters.AddWithValue("@From", from + 1);
+     //           //command.Parameters.AddWithValue("@To", from + count);
+     //           Fill(command);
+     //       }
+     //   }
 
         public void LoadCompleteAssociatedToCompany(int from, int count, int organizationID)
         {

@@ -753,6 +753,7 @@ namespace TeamSupport.Services
         }
 
         Task task = Tasks.GetTask(UserSession.LoginUser, taskID);
+        if (task.CreatorID != UserSession.CurrentUser.UserID && !UserSession.CurrentUser.IsSystemAdmin) return;
 
         string description = String.Format("{0} deleted task {1} ", UserSession.CurrentUser.FirstLastName, task.Description);
         ActionLogs.AddActionLog(UserSession.LoginUser, ActionLogType.Delete, ReferenceType.Tasks, taskID, description);

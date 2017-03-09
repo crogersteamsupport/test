@@ -175,7 +175,7 @@
     })
   .on("click", ".tasklink", function (e) {
       e.preventDefault();
-      var id = $(this).data('reminderid');
+      var id = $(this).data('taskID');
       parent.Ts.System.logAction('Ticket Page - View Task');
       parent.Ts.MainPage.openNewTask(id);
   })
