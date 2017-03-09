@@ -253,7 +253,12 @@ namespace TSWebServices
 
             reminder.DateCreated = DateTime.UtcNow;
             reminder.Description = taskName;
-            reminder.DueDate = reminderDate;
+            DateTime reminderDueDate = DateTime.Now;
+            if (reminderDate != null)
+            {
+                reminderDueDate = (DateTime)reminderDate;
+            }
+            reminder.DueDate = reminderDueDate;
             reminder.IsDismissed = isDismissed;
             reminder.RefType = ReferenceType.Tasks;
             reminder.RefID = taskID;
