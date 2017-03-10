@@ -56,6 +56,15 @@ namespace TeamSupport.Data
 			{
 				dateOnly = StartDateUtc > LastRunUtc ? StartDateUtc.Date : ((DateTime)LastRunUtc).Date;
                 initialDayDiff = ((DateTime)LastRunUtc).DayOfWeek - ((DateTime)LastRun).DayOfWeek;
+
+                //Difference in day (due to the UTC) between Sund-Sat or Sat-Sun will be handled here because the substraction will return 6 or -6, we only need to know if it's 1 or -1 (day ahead or day behind)
+                if (initialDayDiff == -6) //Sun (0) back to Sat (6)
+                {
+                    initialDayDiff = 1;
+                } else if (initialDayDiff == 6) //Sat (6) onto Sun (0)
+                {
+                    initialDayDiff = -1;
+                }
             }
 
 			switch ((ScheduledReportFrequency)RecurrencyId)
