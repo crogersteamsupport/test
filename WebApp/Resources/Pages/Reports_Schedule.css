@@ -4,7 +4,7 @@
 
 body#tinymce {
     height:300px;
-    overflow: scroll !important;
+    overflow: auto;
 }
 
 .reports-header {

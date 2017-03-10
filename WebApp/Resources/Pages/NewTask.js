@@ -12,6 +12,16 @@ var _taskParentID;
 var _parentTaskName;
 
 $(document).ready(function () {
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.src = ('https:' === document.location.protocol ? 'https://' : 'http://') + 'www.dropbox.com/static/api/1/dropbox.js';
+    var firstScript = document.getElementsByTagName('script')[0];
+    script.setAttribute('data-app-key', 'ebdoql1dhyy7l72');
+    script.setAttribute('id', 'dropboxjs');
+    if (window.parent.Ts.System.User.OrganizationID != 1150007)
+        firstScript.parentNode.insertBefore(script, firstScript);
+
     parent.Ts.MainPage.highlightNewTaskTab(true);
 
     $('body').layout({
@@ -634,7 +644,7 @@ $(document).ready(function () {
         taskInfo.IsComplete = $("#cbComplete").prop('checked');
         taskInfo.DueDate = $("#DueDate").val();
         taskInfo.IsDismissed = !$("#cbReminder").prop('checked');
-        taskInfo.ReminderDate = $("#ReminderDate").val();
+        taskInfo.Reminder = $("#Reminder").val();
 
         taskInfo.Tickets = new Array();
         $('#commentatt:first').find('.ticket-queue').find('.ticket-removable-item').each(function () {

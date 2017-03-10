@@ -89,8 +89,7 @@ namespace TeamSupport.Data
                     JOIN TaskAssociations TA
                         ON ST.TaskID = ta.TaskID
                     LEFT JOIN Reminders R
-                        ON T.TaskID = R.RefID
-                        AND R.RefType = 61
+                        ON ST.ReminderID = R.ReminderID
                 WHERE
                     TA.RefType = 17 
                     AND TA.RefID = @TicketID";
@@ -131,8 +130,7 @@ namespace TeamSupport.Data
                     LEFT JOIN Tasks T 
                         ON ST.ParentID = T.TaskID
                     LEFT JOIN Reminders R
-                        ON ST.TaskID = R.RefID
-                        AND R.RefType = 61
+                        ON ST.ReminderID = R.ReminderID
                 WHERE
                     ST.CreatorID = @UserID
                     AND 
@@ -207,8 +205,7 @@ namespace TeamSupport.Data
                     LEFT JOIN Tasks T 
                         ON ST.ParentID = T.TaskID
                     LEFT JOIN Reminders R
-                        ON ST.TaskID = R.RefID
-                        AND R.RefType = 61
+                        ON ST.ReminderID = R.ReminderID
                 WHERE
                     ST.UserID = @UserID
                     AND ST.IsComplete = 0";
@@ -279,8 +276,7 @@ namespace TeamSupport.Data
                     LEFT JOIN Tasks T 
                         ON ST.ParentID = T.TaskID
                     LEFT JOIN Reminders R
-                        ON ST.TaskID = R.RefID
-                        AND R.RefType = 61
+                        ON ST.ReminderID = R.ReminderID
                 WHERE
                     (
                         ST.CreatorID = @UserID
@@ -357,8 +353,7 @@ namespace TeamSupport.Data
                        LEFT JOIN Tasks T 
                            ON ST.ParentID = T.TaskID
                        LEFT JOIN Reminders R
-                           ON ST.TaskID = R.RefID
-                           AND R.RefType = 61
+                           ON ST.ReminderID = R.ReminderID
                       WHERE
 	                    ST.TaskID in 
                         (
@@ -433,8 +428,7 @@ namespace TeamSupport.Data
                        LEFT JOIN Tasks T 
                            ON ST.ParentID = T.TaskID
                        LEFT JOIN Reminders R
-                           ON ST.TaskID = R.RefID
-                           AND R.RefType = 61
+                           ON ST.ReminderID = R.ReminderID
                    WHERE
 	                    ST.TaskID in 
                         (
@@ -510,8 +504,7 @@ namespace TeamSupport.Data
                        LEFT JOIN Tasks T 
                            ON ST.ParentID = T.TaskID
                        LEFT JOIN Reminders R
-                           ON ST.TaskID = R.RefID
-                           AND R.RefType = 61
+                          ON ST.ReminderID = R.ReminderID
                        WHERE
 	                    ST.TaskID in 
                         (

@@ -182,6 +182,18 @@ function onShow() {
 }
 
 $(document).ready(function () {
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.src = ('https:' === document.location.protocol ? 'https://' : 'http://') + 'www.dropbox.com/static/api/1/dropbox.js';
+    var firstScript = document.getElementsByTagName('script')[0];
+    script.setAttribute('data-app-key', 'ebdoql1dhyy7l72');
+    script.setAttribute('id', 'dropboxjs');
+    //if (window.parent.Ts.System.User.OrganizationID != 1150007)
+    //    firstScript.parentNode.insertBefore(script, firstScript);
+    //slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
+
+
     $('#tasks-Refresh').click(function (e) {
         _start = 0;
         fetchTasks(function () {
@@ -309,26 +321,11 @@ $(document).ready(function () {
         else return null;
     });
 
-    Handlebars.registerHelper("formatTaskName", function (Task) {
-        var name = Task.TaskName;
-
-        if (Task.TaskName == null) {
-            if (Task.Description == null || Task.Description == "") {
-                name = 'No Title';
-            }
-            else {
-                name = Task.Description;
-            }
-        }
-
-        return name;
-    });
-
     Handlebars.registerHelper("formatRow", function (task) {
         var cssClasses = null;
 
-        if (task.TaskDueDate != null) {
-            if (task.TaskIsComplete != true && new Date() > new Date(task.TaskDueDate)) {
+        if (task.DueDate != null) {
+            if (task.IsComplete != true && new Date() > new Date(task.DueDate)) {
                 cssClasses = 'danger';
             }
             else {
@@ -339,8 +336,8 @@ $(document).ready(function () {
         return cssClasses;
     });
 
-    Handlebars.registerHelper("taskComplete", function (taskdate) {
-        return taskdate != null ? ' checked="checked"' : '';
+    Handlebars.registerHelper("taskComplete", function (isComplete) {
+        return isComplete == true ? ' checked="checked"' : '';
     });
 
     Handlebars.registerHelper("mapAssociation", function (association) {

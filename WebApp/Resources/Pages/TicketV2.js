@@ -2369,7 +2369,7 @@ function SetupTagsSection() {
 
 function PrependTask(parent, id, value, data) {
     var _compiledTaskTemplate = Handlebars.compile($("#task-record").html());
-    var taskHTML = _compiledTaskTemplate({ id: id, value: value, completed: data.IsComplete });
+    var taskHTML = _compiledTaskTemplate({ id: id, value: value, IsComplete: data.IsComplete });
     return $(taskHTML).prependTo(parent).data('task', data);
 }
 
@@ -3136,7 +3136,7 @@ function SetupRemindersSection() {
 function SetupTasksSection() {
     AddTasks(_ticketInfo.Tasks);
     $('#ticket-task-span').on('click', '.change-task-status', function (e) {
-        var id = $(this).data('taskID');
+        var id = $(this).data('taskid');
         var checkbox = $(this);
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Ticket Page - Change Task Status');
@@ -3204,7 +3204,6 @@ function AddReminders(reminders) {
 }
 
 function AddTasks(tasks) {
-    debugger;
     var tasksDiv = $("#ticket-task-span");
     tasksDiv.empty();
 
@@ -4367,17 +4366,8 @@ function CreateHandleBarHelpers() {
         }
     });
 
-    Handlebars.registerHelper("taskComplete", function (completed) {
-        var result = '';
-
-        if (completed != null) {
-            if (completed == true)
-            {
-                result = 'checked="checked"';
-            }
-        }
-        
-        return result;
+    Handlebars.registerHelper("taskComplete", function (isComplete) {
+        return isComplete == true ? ' checked="checked"' : '';
     });
 };
 

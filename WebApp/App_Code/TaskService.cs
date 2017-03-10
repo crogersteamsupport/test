@@ -246,14 +246,19 @@ namespace TSWebServices
             return us.DateTimeFormat.ShortDatePattern;
         }
 
-        private Reminder CreateReminder(LoginUser loginUser, int taskID, string taskName, DateTime? reminderDate, bool isDismissed)
+        private Reminder CreateReminder(LoginUser loginUser, int taskID, string taskName, DateTime reminderDate, bool isDismissed)
         {
             Reminders reminderHelper = new Reminders(loginUser);
             Reminder reminder = reminderHelper.AddNewReminder();
 
             reminder.DateCreated = DateTime.UtcNow;
             reminder.Description = taskName;
-            reminder.DueDate = reminderDate;
+            DateTime reminderDueDate = DateTime.Now;
+            if (reminderDate != null)
+            {
+                reminderDueDate = (DateTime)reminderDate;
+            }
+            reminder.DueDate = reminderDueDate;
             reminder.IsDismissed = isDismissed;
             reminder.RefType = ReferenceType.Tasks;
             reminder.RefID = taskID;
@@ -291,10 +296,20 @@ namespace TSWebServices
 
             newTask.Collection.Save();
 
-            if (info.ReminderDate != null)
+            if (info.Reminder != null)
             {
-                Reminder reminder = CreateReminder(loginUser, newTask.TaskID, info.Name, TimeZoneInfo.ConvertTimeToUtc((DateTime)info.ReminderDate), info.IsDismissed);
-                if (reminder != null) newTask.ReminderID = reminder.ReminderID;
+                Reminder reminder = CreateReminder(loginUser, newTask.TaskID, info.Name, TimeZoneInfo.ConvertTimeToUtc((DateTime)info.Reminder), info.IsDismissed);
+                if (reminder != null)
+                {
+                    Tasks taskHelper = new Tasks(loginUser);
+                    taskHelper.LoadByTaskID(newTask.TaskID);
+
+                    if (taskHelper.Any())
+                    {
+                        taskHelper[0].ReminderID = reminder.ReminderID;
+                        taskHelper.Save();
+                    }
+                }
             }
 
             foreach (int ticketID in info.Tickets)
@@ -556,18 +571,32 @@ namespace TSWebServices
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Reminder reminder = Reminders.GetReminderByTaskID(loginUser, taskID);
             StringBuilder description = new StringBuilder();
-            if (reminder.DueDate == null)
+
+            if (reminder != null)
             {
-                description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", "Unassigned", ((DateTime)value).ToString(GetDateFormatNormal())));
+                if (reminder.DueDate == null)
+                {
+                    description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", "Unassigned", ((DateTime)value).ToString(GetDateFormatNormal())));
+                }
+                else
+                {
+                    description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", ((DateTime)reminder.DueDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
+                }
+                reminder.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)value);
+                reminder.HasEmailSent = false;
+                reminder.Collection.Save();
+                TaskLogs.AddTaskLog(loginUser, taskID, description.ToString());
             }
             else
             {
-                description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", ((DateTime)reminder.DueDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
+                if (reminder == null)
+                {
+                    Task task = Tasks.GetTask(loginUser, taskID);
+                    reminder = CreateReminder(loginUser, taskID, task.Name, TimeZoneInfo.ConvertTimeToUtc((DateTime)value), false);
+                    task.ReminderID = reminder.ReminderID;
+                    task.Collection.Save();
+                }
             }
-            reminder.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)value);
-            reminder.HasEmailSent = false;
-            reminder.Collection.Save();
-            TaskLogs.AddTaskLog(loginUser, taskID, description.ToString());
 
             //if (task.UserID != null && loginUser.UserID != task.UserID)
             //{
@@ -578,38 +607,17 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public bool SetIsDismissed(int taskID, bool value)
-        {
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Reminder task = Reminders.GetReminderByTaskID(loginUser, taskID);
-            task.IsDismissed = value;
-            task.Collection.Save();
-            string description = String.Format("{0} set task is dismissed to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
-            TaskLogs.AddTaskLog(loginUser, taskID, description);
-
-            if (task.UserID != null && loginUser.UserID != task.UserID)
-            {
-                SendModifiedNotification(loginUser.UserID, task.RefID);
-            }
-
-            return value;
-        }
-
-        [WebMethod]
         public void ClearReminderDate(int taskID)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Reminder reminder = Reminders.GetReminderByTaskID(loginUser, taskID);
             StringBuilder description = new StringBuilder();
             description.Append("Changed Reminder Date to None.");
-            reminder.DueDate = null;
+            reminder.Delete();
             reminder.Collection.Save();
-            TaskLogs.AddTaskLog(loginUser, taskID, description.ToString());
+            TaskLogs.AddTaskLog(loginUser, taskID, "Reminder deleted");
 
-            if (reminder.UserID != null && loginUser.UserID != reminder.UserID)
-            {
-                SendModifiedNotification(loginUser.UserID, reminder.RefID);
-            }
+            SendModifiedNotification(loginUser.UserID, taskID);
         }
 
         [WebMethod]
@@ -753,7 +761,7 @@ namespace TSWebServices
         [DataMember]
         public bool IsDismissed { get; set; }
         [DataMember]
-        public DateTime? ReminderDate { get; set; }
+        public DateTime? Reminder { get; set; }
         [DataMember]
         public List<int> Tickets { get; set; }
         [DataMember]
