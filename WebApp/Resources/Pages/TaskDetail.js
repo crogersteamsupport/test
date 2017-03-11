@@ -5,6 +5,16 @@ var _historyLoaded = 0;
 var _subtasksLoaded = 0;
 
 $(document).ready(function () {
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.src = ('https:' === document.location.protocol ? 'https://' : 'http://') + 'www.dropbox.com/static/api/1/dropbox.js';
+    var firstScript = document.getElementsByTagName('script')[0];
+    script.setAttribute('data-app-key', 'ebdoql1dhyy7l72');
+    script.setAttribute('id', 'dropboxjs');
+    if (window.parent.Ts.System.User.OrganizationID != 1150007)
+        firstScript.parentNode.insertBefore(script, firstScript);
+
     _taskDetailPage = new TaskDetailPage();
     _taskDetailPage.refresh();
     $('.task-tooltip').tooltip({ placement: 'bottom', container: 'body' });

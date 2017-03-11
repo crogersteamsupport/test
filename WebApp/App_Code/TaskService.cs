@@ -265,6 +265,7 @@ namespace TSWebServices
             reminder.HasEmailSent = false;
             reminder.UserID = loginUser.UserID;
             reminder.CreatorID = loginUser.UserID;
+            reminder.OrganizationID = loginUser.OrganizationID;
 
             reminderHelper.Save();
 
@@ -298,7 +299,7 @@ namespace TSWebServices
 
             if (info.Reminder != null)
             {
-                Reminder reminder = CreateReminder(loginUser, newTask.TaskID, info.Name, TimeZoneInfo.ConvertTimeToUtc((DateTime)info.Reminder), info.IsDismissed);
+                Reminder reminder = CreateReminder(loginUser, newTask.TaskID, info.Name, TimeZoneInfo.ConvertTimeToUtc((DateTime)info.Reminder), false);
                 if (reminder != null)
                 {
                     Tasks taskHelper = new Tasks(loginUser);
@@ -584,6 +585,7 @@ namespace TSWebServices
                     description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", ((DateTime)reminder.DueDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
                 }
                 reminder.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)value);
+                reminder.IsDismissed = false;
                 reminder.HasEmailSent = false;
                 reminder.Collection.Save();
                 TaskLogs.AddTaskLog(loginUser, taskID, description.ToString());

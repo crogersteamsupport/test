@@ -85,7 +85,7 @@ function LoadCompleted(tasks) {
     if (_start == 0) {
         insertSearchResults(container, tasks);
         if (tasks.length == 0) {
-            $$('.results-empty').show();
+            $('.results-empty').show();
             $('.results').hide();
         }
     }
@@ -182,6 +182,18 @@ function onShow() {
 }
 
 $(document).ready(function () {
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.src = ('https:' === document.location.protocol ? 'https://' : 'http://') + 'www.dropbox.com/static/api/1/dropbox.js';
+    var firstScript = document.getElementsByTagName('script')[0];
+    script.setAttribute('data-app-key', 'ebdoql1dhyy7l72');
+    script.setAttribute('id', 'dropboxjs');
+    //if (window.parent.Ts.System.User.OrganizationID != 1150007)
+    //    firstScript.parentNode.insertBefore(script, firstScript);
+    //slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
+
+
     $('#tasks-Refresh').click(function (e) {
         _start = 0;
         fetchTasks(function () {
