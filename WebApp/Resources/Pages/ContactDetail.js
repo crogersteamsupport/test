@@ -2198,8 +2198,8 @@ $(document).ready(function () {
         return cssClasses;
     });
 
-    Handlebars.registerHelper("taskComplete", function (taskdate) {
-        return taskdate != null ? ' checked="checked"' : '';
+    Handlebars.registerHelper("taskComplete", function (isComplete) {
+        return isComplete == true ? ' checked="checked"' : '';
     });
 
     Handlebars.registerHelper("mapAssociation", function (association) {

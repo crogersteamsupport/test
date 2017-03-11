@@ -146,7 +146,7 @@
     {{#taskList}}
     <tr class="{{formatRow this}}">
         <td>
-            <input {{taskComplete DateCompleted}} type="checkbox" class="change-task-status" data-taskid="{{TaskID}}" />
+            <input {{taskComplete IsComplete}} type="checkbox" class="change-task-status" data-taskid="{{TaskID}}" />
         </td>
         <td>
             <a href="#" class="tasklink" id="cb{{TaskID}}" data-taskid="{{TaskID}}">

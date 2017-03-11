@@ -377,7 +377,7 @@ Handlebars.registerHelper("formatDate", function (datetime) {
 Handlebars.registerHelper("formatRow", function (task) {
     var cssClasses = null;
 
-    if (task.TaskDueDate != null) {
+    if (task.DueDate != null) {
         if (task.IsComplete != true && new Date() > new Date(task.DueDate)) {
             cssClasses = 'danger';
         }
@@ -389,8 +389,8 @@ Handlebars.registerHelper("formatRow", function (task) {
     return cssClasses;
 });
 
-Handlebars.registerHelper("taskComplete", function (taskdate) {
-    return taskdate != null ? ' checked="checked"' : '';
+Handlebars.registerHelper("taskComplete", function (isComplete) {
+    return isComplete == true ? ' checked="checked"' : '';
 });
 
 Handlebars.registerHelper("mapAssociation", function (association) {
@@ -400,11 +400,6 @@ Handlebars.registerHelper("mapAssociation", function (association) {
     var iconClass = '';
 
     switch (association.RefType) {
-        //case 3: leaving attachments off for now
-        //    associationName = association.Attachment;
-        //    iconClass = attIcon;
-        //    refcode = '<i class="fa fa-paperclip" title="' + association.Attachment + '"></i>'
-        //    break;
         case 6:
             associationName = association.Group;
             iconClass = "groupIcon";

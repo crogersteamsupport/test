@@ -1,850 +1,595 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReminder
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectReminder
 
 (
-  @TaskID int
+  @ReminderID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
+    [ReminderID],
     [OrganizationID],
-    [Name],
+    [RefType],
+    [RefID],
     [Description],
     [DueDate],
     [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
     [IsDismissed],
     [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
     [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified]
-  FROM [dbo].[TasksView]
-  WHERE ([TaskID] = @TaskID)
+    [DateCreated]
+  FROM [dbo].[Reminders]
+  WHERE ([ReminderID] = @ReminderID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReminder
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertReminder
 
 (
-  @TaskID int,
   @OrganizationID int,
-  @Name nvarchar(1000),
+  @RefType int,
+  @RefID int,
   @Description nvarchar(4000),
   @DueDate datetime,
   @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
   @IsDismissed bit,
   @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
   @CreatorID int,
   @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TasksView]
+  INSERT INTO [dbo].[Reminders]
   (
-    [TaskID],
     [OrganizationID],
-    [Name],
+    [RefType],
+    [RefID],
     [Description],
     [DueDate],
     [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
     [IsDismissed],
     [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
     [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified])
+    [DateCreated])
   VALUES (
-    @TaskID,
     @OrganizationID,
-    @Name,
+    @RefType,
+    @RefID,
     @Description,
     @DueDate,
     @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @ParentID,
     @IsDismissed,
     @HasEmailSent,
-    @ReminderDueDate,
-    @TaskParentName,
-    @UserName,
-    @Creator,
     @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified)
+    @DateCreated)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReminder
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateReminder
 
 (
-  @TaskID int,
+  @ReminderID int,
   @OrganizationID int,
-  @Name nvarchar(1000),
+  @RefType int,
+  @RefID int,
   @Description nvarchar(4000),
   @DueDate datetime,
   @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
   @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @ModifierID int,
-  @DateModified datetime
+  @HasEmailSent bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TasksView]
+  UPDATE [dbo].[Reminders]
   SET
     [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
     [Description] = @Description,
     [DueDate] = @DueDate,
     [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [ParentID] = @ParentID,
     [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent,
-    [ReminderDueDate] = @ReminderDueDate,
-    [TaskParentName] = @TaskParentName,
-    [UserName] = @UserName,
-    [Creator] = @Creator,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified
-  WHERE ([TaskID] = @TaskID)
+    [HasEmailSent] = @HasEmailSent
+  WHERE ([ReminderID] = @ReminderID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReminder
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteReminder
 
 (
-  @TaskID int
+  @ReminderID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TasksView]
-  WHERE ([TaskID] = @TaskID)
+  DELETE FROM [dbo].[Reminders]
+  WHERE ([ReminderID] = @ReminderID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReminder
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectReminder
 
 (
-  @TaskID int
+  @ReminderID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
+    [ReminderID],
     [OrganizationID],
-    [Name],
+    [RefType],
+    [RefID],
     [Description],
     [DueDate],
     [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
     [IsDismissed],
     [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
     [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified]
-  FROM [dbo].[TasksView]
-  WHERE ([TaskID] = @TaskID)
+    [DateCreated]
+  FROM [dbo].[Reminders]
+  WHERE ([ReminderID] = @ReminderID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReminder
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertReminder
 
 (
-  @TaskID int,
   @OrganizationID int,
-  @Name nvarchar(1000),
+  @RefType int,
+  @RefID int,
   @Description nvarchar(4000),
   @DueDate datetime,
   @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
   @IsDismissed bit,
   @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
   @CreatorID int,
   @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TasksView]
+  INSERT INTO [dbo].[Reminders]
   (
-    [TaskID],
     [OrganizationID],
-    [Name],
+    [RefType],
+    [RefID],
     [Description],
     [DueDate],
     [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
     [IsDismissed],
     [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
     [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified])
+    [DateCreated])
   VALUES (
-    @TaskID,
     @OrganizationID,
-    @Name,
+    @RefType,
+    @RefID,
     @Description,
     @DueDate,
     @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @ParentID,
     @IsDismissed,
     @HasEmailSent,
-    @ReminderDueDate,
-    @TaskParentName,
-    @UserName,
-    @Creator,
     @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified)
+    @DateCreated)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReminder
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateReminder
 
 (
-  @TaskID int,
+  @ReminderID int,
   @OrganizationID int,
-  @Name nvarchar(1000),
+  @RefType int,
+  @RefID int,
   @Description nvarchar(4000),
   @DueDate datetime,
   @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
   @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @ModifierID int,
-  @DateModified datetime
+  @HasEmailSent bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TasksView]
+  UPDATE [dbo].[Reminders]
   SET
     [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
     [Description] = @Description,
     [DueDate] = @DueDate,
     [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [ParentID] = @ParentID,
     [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent,
-    [ReminderDueDate] = @ReminderDueDate,
-    [TaskParentName] = @TaskParentName,
-    [UserName] = @UserName,
-    [Creator] = @Creator,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified
-  WHERE ([TaskID] = @TaskID)
+    [HasEmailSent] = @HasEmailSent
+  WHERE ([ReminderID] = @ReminderID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReminder
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteReminder
 
 (
-  @TaskID int
+  @ReminderID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TasksView]
-  WHERE ([TaskID] = @TaskID)
+  DELETE FROM [dbo].[Reminders]
+  WHERE ([ReminderID] = @ReminderID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReminder
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectReminder
 
 (
-  @TaskID int
+  @ReminderID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
+    [ReminderID],
     [OrganizationID],
-    [Name],
+    [RefType],
+    [RefID],
     [Description],
     [DueDate],
     [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
     [IsDismissed],
     [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
     [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified]
-  FROM [dbo].[TasksView]
-  WHERE ([TaskID] = @TaskID)
+    [DateCreated]
+  FROM [dbo].[Reminders]
+  WHERE ([ReminderID] = @ReminderID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReminder
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertReminder
 
 (
-  @TaskID int,
   @OrganizationID int,
-  @Name nvarchar(1000),
+  @RefType int,
+  @RefID int,
   @Description nvarchar(4000),
   @DueDate datetime,
   @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
   @IsDismissed bit,
   @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
   @CreatorID int,
   @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TasksView]
+  INSERT INTO [dbo].[Reminders]
   (
-    [TaskID],
     [OrganizationID],
-    [Name],
+    [RefType],
+    [RefID],
     [Description],
     [DueDate],
     [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
     [IsDismissed],
     [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
     [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified])
+    [DateCreated])
   VALUES (
-    @TaskID,
     @OrganizationID,
-    @Name,
+    @RefType,
+    @RefID,
     @Description,
     @DueDate,
     @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @ParentID,
     @IsDismissed,
     @HasEmailSent,
-    @ReminderDueDate,
-    @TaskParentName,
-    @UserName,
-    @Creator,
     @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified)
+    @DateCreated)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReminder
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateReminder
 
 (
-  @TaskID int,
+  @ReminderID int,
   @OrganizationID int,
-  @Name nvarchar(1000),
+  @RefType int,
+  @RefID int,
   @Description nvarchar(4000),
   @DueDate datetime,
   @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
   @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @ModifierID int,
-  @DateModified datetime
+  @HasEmailSent bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TasksView]
+  UPDATE [dbo].[Reminders]
   SET
     [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
     [Description] = @Description,
     [DueDate] = @DueDate,
     [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [ParentID] = @ParentID,
     [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent,
-    [ReminderDueDate] = @ReminderDueDate,
-    [TaskParentName] = @TaskParentName,
-    [UserName] = @UserName,
-    [Creator] = @Creator,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified
-  WHERE ([TaskID] = @TaskID)
+    [HasEmailSent] = @HasEmailSent
+  WHERE ([ReminderID] = @ReminderID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReminder
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteReminder
 
 (
-  @TaskID int
+  @ReminderID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TasksView]
-  WHERE ([TaskID] = @TaskID)
+  DELETE FROM [dbo].[Reminders]
+  WHERE ([ReminderID] = @ReminderID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReminder
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectReminder
 
 (
-  @TaskID int
+  @ReminderID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
+    [ReminderID],
     [OrganizationID],
-    [Name],
+    [RefType],
+    [RefID],
     [Description],
     [DueDate],
     [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
     [IsDismissed],
     [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
     [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified]
-  FROM [dbo].[TasksView]
-  WHERE ([TaskID] = @TaskID)
+    [DateCreated]
+  FROM [dbo].[Reminders]
+  WHERE ([ReminderID] = @ReminderID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReminder
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertReminder
 
 (
-  @TaskID int,
   @OrganizationID int,
-  @Name nvarchar(1000),
+  @RefType int,
+  @RefID int,
   @Description nvarchar(4000),
   @DueDate datetime,
   @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
   @IsDismissed bit,
   @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
   @CreatorID int,
   @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TasksView]
+  INSERT INTO [dbo].[Reminders]
   (
-    [TaskID],
     [OrganizationID],
-    [Name],
+    [RefType],
+    [RefID],
     [Description],
     [DueDate],
     [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
     [IsDismissed],
     [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
     [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified])
+    [DateCreated])
   VALUES (
-    @TaskID,
     @OrganizationID,
-    @Name,
+    @RefType,
+    @RefID,
     @Description,
     @DueDate,
     @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @ParentID,
     @IsDismissed,
     @HasEmailSent,
-    @ReminderDueDate,
-    @TaskParentName,
-    @UserName,
-    @Creator,
     @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified)
+    @DateCreated)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReminder
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateReminder
 
 (
-  @TaskID int,
+  @ReminderID int,
   @OrganizationID int,
-  @Name nvarchar(1000),
+  @RefType int,
+  @RefID int,
   @Description nvarchar(4000),
   @DueDate datetime,
   @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
   @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @ModifierID int,
-  @DateModified datetime
+  @HasEmailSent bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TasksView]
+  UPDATE [dbo].[Reminders]
   SET
     [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
     [Description] = @Description,
     [DueDate] = @DueDate,
     [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [ParentID] = @ParentID,
     [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent,
-    [ReminderDueDate] = @ReminderDueDate,
-    [TaskParentName] = @TaskParentName,
-    [UserName] = @UserName,
-    [Creator] = @Creator,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified
-  WHERE ([TaskID] = @TaskID)
+    [HasEmailSent] = @HasEmailSent
+  WHERE ([ReminderID] = @ReminderID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReminder
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteReminder
 
 (
-  @TaskID int
+  @ReminderID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TasksView]
-  WHERE ([TaskID] = @TaskID)
+  DELETE FROM [dbo].[Reminders]
+  WHERE ([ReminderID] = @ReminderID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReminder
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectReminder
 
 (
-  @TaskID int
+  @ReminderID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
+    [ReminderID],
     [OrganizationID],
-    [Name],
+    [RefType],
+    [RefID],
     [Description],
     [DueDate],
     [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
     [IsDismissed],
     [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
     [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified]
-  FROM [dbo].[TasksView]
-  WHERE ([TaskID] = @TaskID)
+    [DateCreated]
+  FROM [dbo].[Reminders]
+  WHERE ([ReminderID] = @ReminderID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReminder
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertReminder
 
 (
-  @TaskID int,
   @OrganizationID int,
-  @Name nvarchar(1000),
+  @RefType int,
+  @RefID int,
   @Description nvarchar(4000),
   @DueDate datetime,
   @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
   @IsDismissed bit,
   @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
   @CreatorID int,
   @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TasksView]
+  INSERT INTO [dbo].[Reminders]
   (
-    [TaskID],
     [OrganizationID],
-    [Name],
+    [RefType],
+    [RefID],
     [Description],
     [DueDate],
     [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
     [IsDismissed],
     [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
     [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified])
+    [DateCreated])
   VALUES (
-    @TaskID,
     @OrganizationID,
-    @Name,
+    @RefType,
+    @RefID,
     @Description,
     @DueDate,
     @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @ParentID,
     @IsDismissed,
     @HasEmailSent,
-    @ReminderDueDate,
-    @TaskParentName,
-    @UserName,
-    @Creator,
     @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified)
+    @DateCreated)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReminder
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateReminder
 
 (
-  @TaskID int,
+  @ReminderID int,
   @OrganizationID int,
-  @Name nvarchar(1000),
+  @RefType int,
+  @RefID int,
   @Description nvarchar(4000),
   @DueDate datetime,
   @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
   @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @ModifierID int,
-  @DateModified datetime
+  @HasEmailSent bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TasksView]
+  UPDATE [dbo].[Reminders]
   SET
     [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
     [Description] = @Description,
     [DueDate] = @DueDate,
     [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [ParentID] = @ParentID,
     [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent,
-    [ReminderDueDate] = @ReminderDueDate,
-    [TaskParentName] = @TaskParentName,
-    [UserName] = @UserName,
-    [Creator] = @Creator,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified
-  WHERE ([TaskID] = @TaskID)
+    [HasEmailSent] = @HasEmailSent
+  WHERE ([ReminderID] = @ReminderID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReminder
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteReminder
 
 (
-  @TaskID int
+  @ReminderID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TasksView]
-  WHERE ([TaskID] = @TaskID)
+  DELETE FROM [dbo].[Reminders]
+  WHERE ([ReminderID] = @ReminderID)
 GO
 
 
