@@ -85,7 +85,7 @@ function LoadCompleted(tasks) {
     if (_start == 0) {
         insertSearchResults(container, tasks);
         if (tasks.length == 0) {
-            $$('.results-empty').show();
+            $('.results-empty').show();
             $('.results').hide();
         }
     }
