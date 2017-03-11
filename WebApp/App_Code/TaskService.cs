@@ -467,6 +467,8 @@ namespace TSWebServices
                 if (reminder != null)
                 {
                     reminder.Delete();
+                    reminder.Collection.Save();
+                    task.ReminderID = null;
                 }
                 task.UserID = null;
             }
@@ -475,12 +477,13 @@ namespace TSWebServices
                 if (reminder != null)
                 {
                     reminder.UserID = value;
+                    reminder.Collection.Save();
                 }
                 task.UserID = value;
             }
 
             task.Collection.Save();
-            reminder.Collection.Save();
+            
             User u = Users.GetUser(loginUser, value);
             string description = String.Format("{0} set task user to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, u == null ? "Unassigned" : u.FirstLastName);
             TaskLogs.AddTaskLog(loginUser, taskID, description);
