@@ -1191,7 +1191,7 @@ namespace TeamSupport.Data
 
         public static MailMessage GetTaskOldUser(LoginUser loginUser, UsersViewItem modifier, UsersViewItem oldUser, UsersViewItem owner, TasksViewItem task)
         {
-            EmailTemplate template = GetTemplate(loginUser, task.OrganizationID, 38, -1);
+            EmailTemplate template = GetTemplate(loginUser, task.OrganizationID, 39, -1);
             template.ReplaceCommonParameters().ReplaceFields("Modifier", modifier).ReplaceFields("OldOwner", oldUser).ReplaceFields("Owner", owner);
             template.ReplaceParameter("TaskName", task.Name);
             template.ReplaceParameter("TaskDescription", task.Description);
