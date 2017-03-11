@@ -449,6 +449,8 @@ namespace TSWebServices
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Task task = Tasks.GetTask(loginUser, taskID);
 
+            Reminder reminder = Reminders.GetReminderByTaskID(loginUser, taskID);
+
             if (task.UserID != null && loginUser.UserID != task.UserID && value != task.UserID)
             {
                 SendOldUserNotification(loginUser.UserID, (int)task.UserID, task.TaskID);
@@ -459,15 +461,26 @@ namespace TSWebServices
                 SendAssignedNotification(loginUser.UserID, task.TaskID);
             }
 
+            //User is being set to unassigned
             if (value == -1)
             {
+                if (reminder != null)
+                {
+                    reminder.Delete();
+                }
                 task.UserID = null;
             }
             else
             {
+                if (reminder != null)
+                {
+                    reminder.UserID = value;
+                }
                 task.UserID = value;
             }
+
             task.Collection.Save();
+            reminder.Collection.Save();
             User u = Users.GetUser(loginUser, value);
             string description = String.Format("{0} set task user to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, u == null ? "Unassigned" : u.FirstLastName);
             TaskLogs.AddTaskLog(loginUser, taskID, description);
