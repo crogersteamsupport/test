@@ -265,6 +265,7 @@ namespace TSWebServices
             reminder.HasEmailSent = false;
             reminder.UserID = loginUser.UserID;
             reminder.CreatorID = loginUser.UserID;
+            reminder.OrganizationID = loginUser.OrganizationID;
 
             reminderHelper.Save();
 
