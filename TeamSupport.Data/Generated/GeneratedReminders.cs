@@ -74,8 +74,8 @@ namespace TeamSupport.Data
     
     public ReferenceType RefType
     {
-      get { return (ReferenceType)Row["RefType"]; }
-      set { Row["RefType"] = CheckValue("RefType", value); }
+        get { return (ReferenceType)Row["RefType"]; }
+        set { Row["RefType"] = CheckValue("RefType", value); }
     }
     
     public int OrganizationID
@@ -179,28 +179,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int reminderID)
     {
-      BeforeDBDelete(reminderID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Reminders] WHERE ([ReminderID] = @ReminderID);";
         deleteCommand.Parameters.Add("ReminderID", SqlDbType.Int);
         deleteCommand.Parameters["ReminderID"].Value = reminderID;
 
+        BeforeDBDelete(reminderID);
         BeforeRowDelete(reminderID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(reminderID);
-      }
-      AfterDBDelete(reminderID);
-      
-    }
+        AfterDBDelete(reminderID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("RemindersSave");

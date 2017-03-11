@@ -662,13 +662,13 @@ namespace TSWebServices
             return statuses.GetTicketStatusProxies();
         }
 
-		[WebMethod]
-		public TicketStatusProxy[] GetTicketStatusesOrderedByTicketTypeName()
-		{
-			TicketStatuses statuses = new TicketStatuses(TSAuthentication.GetLoginUser());
-			statuses.LoadByOrganizationIDOnTicketType(TSAuthentication.OrganizationID);
-			return statuses.GetTicketStatusProxies();
-		}
+        [WebMethod]
+        public TicketStatusProxy[] GetTicketStatusesOrderedByTicketTypeName()
+        {
+            TicketStatuses statuses = new TicketStatuses(TSAuthentication.GetLoginUser());
+            statuses.LoadByOrganizationIDOnTicketType(TSAuthentication.OrganizationID);
+            return statuses.GetTicketStatusProxies();
+        }
 
         [WebMethod]
         public TicketNextStatusProxy[] GetNextTicketStatuses()
@@ -832,32 +832,32 @@ namespace TSWebServices
         {
             try
             {
-				LoginUser loginUser = TSAuthentication.GetLoginUser();
-				Stopwatch stopWatch = Stopwatch.StartNew();
-				SearchResults results = TicketsView.GetQuickSearchTicketResults(searchTerm, loginUser, filter);
-				stopWatch.Stop();
-				NR.Agent.NewRelic.RecordMetric("Custom/SearchTickets", stopWatch.ElapsedMilliseconds);
+                LoginUser loginUser = TSAuthentication.GetLoginUser();
+                Stopwatch stopWatch = Stopwatch.StartNew();
+                SearchResults results = TicketsView.GetQuickSearchTicketResults(searchTerm, loginUser, filter);
+                stopWatch.Stop();
+                NR.Agent.NewRelic.RecordMetric("Custom/SearchTickets", stopWatch.ElapsedMilliseconds);
 
-				//Only record the custom parameter in NR if the search took longer than 3 seconds (I'm using this arbitrarily, seems appropiate)
-				if (stopWatch.ElapsedMilliseconds > 500)
-				{
-					NR.Agent.NewRelic.AddCustomParameter("SearchTickets-OrgId", TSAuthentication.OrganizationID);
-					NR.Agent.NewRelic.AddCustomParameter("SearchTickets-Term", searchTerm);
-				}
+                //Only record the custom parameter in NR if the search took longer than 3 seconds (I'm using this arbitrarily, seems appropiate)
+                if (stopWatch.ElapsedMilliseconds > 500)
+                {
+                    NR.Agent.NewRelic.AddCustomParameter("SearchTickets-OrgId", TSAuthentication.OrganizationID);
+                    NR.Agent.NewRelic.AddCustomParameter("SearchTickets-Term", searchTerm);
+                }
 
-				List<AutocompleteItem> items = new List<AutocompleteItem>();
+                List<AutocompleteItem> items = new List<AutocompleteItem>();
 
-				stopWatch.Restart();
-				for (int i = 0; i < results.Count; i++)
+                stopWatch.Restart();
+                for (int i = 0; i < results.Count; i++)
                 {
                     results.GetNthDoc(i);
 
                     items.Add(new AutocompleteItem(results.CurrentItem.DisplayName, results.CurrentItem.UserFields["TicketNumber"].ToString(), results.CurrentItem.UserFields["TicketID"].ToString()));
                 }
-				stopWatch.Stop();
-				NR.Agent.NewRelic.RecordMetric("Custom/SearchTicketsPullData", stopWatch.ElapsedMilliseconds);
+                stopWatch.Stop();
+                NR.Agent.NewRelic.RecordMetric("Custom/SearchTicketsPullData", stopWatch.ElapsedMilliseconds);
 
-				return items.ToArray();
+                return items.ToArray();
             }
             catch (Exception ex)
             {
@@ -1270,33 +1270,33 @@ namespace TSWebServices
             ticket.Collection.Save();
         }
 
-		[WebMethod]
-		public void ShowTicketPreviewPane()
-		{
-			const string UserSettingsKey = "ShowTicketPreviewPane";
-			LoginUser user = TSAuthentication.GetLoginUser();
+        [WebMethod]
+        public void ShowTicketPreviewPane()
+        {
+            const string UserSettingsKey = "ShowTicketPreviewPane";
+            LoginUser user = TSAuthentication.GetLoginUser();
 
-			UserSettings settings = new UserSettings(user);
-			settings.LoadByUserSettingKey(user.UserID, UserSettingsKey);
+            UserSettings settings = new UserSettings(user);
+            settings.LoadByUserSettingKey(user.UserID, UserSettingsKey);
 
-			if (settings.Any())
-			{
-				string newValue = settings[0].SettingValue == "0" ? "1" : "0";
+            if (settings.Any())
+            {
+                string newValue = settings[0].SettingValue == "0" ? "1" : "0";
 
-				settings[0].SettingValue = newValue;
-				settings.Save();
-			}
-			else
-			{
-				settings = new UserSettings(TSAuthentication.GetLoginUser());
-				UserSetting setting = settings.AddNewUserSetting();
-				setting.UserID = user.UserID;
-				setting.SettingKey = UserSettingsKey;
-				setting.SettingValue = "0";
+                settings[0].SettingValue = newValue;
+                settings.Save();
+            }
+            else
+            {
+                settings = new UserSettings(TSAuthentication.GetLoginUser());
+                UserSetting setting = settings.AddNewUserSetting();
+                setting.UserID = user.UserID;
+                setting.SettingKey = UserSettingsKey;
+                setting.SettingValue = "0";
 
-				settings.Save();
-			}
-		}
+                settings.Save();
+            }
+        }
 
         [WebMethod]
         public void DeleteAction(int actionID)
@@ -1877,10 +1877,10 @@ namespace TSWebServices
         [WebMethod]
         public string SetJiraIssueKey(int ticketID, string jiraIssueKey)
         {
-			LoginUser loginUser = TSAuthentication.GetLoginUser();
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
             string result = SetSyncWithJira(loginUser, ticketID, jiraIssueKey);
 
-			return result;
+            return result;
         }
 
         [WebMethod]
@@ -1889,8 +1889,8 @@ namespace TSWebServices
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             string result = SetSyncWithJira(loginUser, ticketID, null);
 
-			return result;
-		}
+            return result;
+        }
 
         [WebMethod]
         public bool UnSetSyncWithJira(int ticketID)
@@ -1919,13 +1919,12 @@ namespace TSWebServices
                         {
                             if (ticketLinktoJiraProxy.JiraID != null && !String.IsNullOrEmpty(ticketLinktoJiraProxy.JiraKey))
                             {
-                                Jira.JiraClient jiraClient = new Jira.JiraClient(crmRow["HostName"].ToString(), crmRow["Username"].ToString(), crmRow["Password"].ToString());
-                                Jira.IssueRef issueRef = new Jira.IssueRef();
-                                issueRef.id = ticketLinktoJiraProxy.JiraID.ToString();
-                                issueRef.key = ticketLinktoJiraProxy.JiraKey;
-
                                 try
                                 {
+                                    Jira.JiraClient jiraClient = new Jira.JiraClient(crmRow["HostName"].ToString(), crmRow["Username"].ToString(), crmRow["Password"].ToString());
+                                    Jira.IssueRef issueRef = new Jira.IssueRef();
+                                    issueRef.id = ticketLinktoJiraProxy.JiraID.ToString();
+                                    issueRef.key = ticketLinktoJiraProxy.JiraKey;
                                     var issue = jiraClient.LoadIssue(issueRef);
 
                                     if (issue != null)
@@ -1951,6 +1950,14 @@ namespace TSWebServices
                                         jiraException.Data.Add("JiraId", ticketLinktoJiraProxy.JiraID);
                                         jiraException.Data.Add("JiraKey", ticketLinktoJiraProxy.JiraKey);
                                         throw jiraException;
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    //Check if the exception is that the URI is invalid, if so then still delete the crmlink in TS, the customer might have deleted their instance settings, we still need to be able to delete the link in our side.
+                                    if (!ex.Message.ToLower().Trim().Contains("invalid uri") && !ex.Message.ToLower().Trim().Contains("uri could not be determined"))
+                                    {
+                                        throw ex;
                                     }
                                 }
                             }
@@ -2385,7 +2392,7 @@ namespace TSWebServices
                 customer.OrganizationID = contact.OrganizationID;
                 customer.Contact = contact.FirstName + " " + contact.LastName;
                 customer.UserID = contact.UserID;
-					 if (!(bool)contact.OrganizationActive || !contact.IsActive || contact.OrganizationSAExpirationDateUtc < DateTime.UtcNow)
+                if (!(bool)contact.OrganizationActive || !contact.IsActive || contact.OrganizationSAExpirationDateUtc < DateTime.UtcNow)
                 {
                     customer.Flag = true;
                 }
@@ -2399,7 +2406,7 @@ namespace TSWebServices
                 customer.Company = organization.Name;
                 customer.OrganizationID = organization.OrganizationID;
                 customer.UserID = null;
-					 if (!organization.IsActive || organization.SAExpirationDateUtc < DateTime.UtcNow)
+                if (!organization.IsActive || organization.SAExpirationDateUtc < DateTime.UtcNow)
                 {
                     customer.Flag = true;
                 }
@@ -2625,19 +2632,19 @@ WHERE t.TicketID = @TicketID
         }
 
 
-		[WebMethod]
-		public void SetTicketVisibility(string ticketIDs, bool value)
-		{
-			int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
+        [WebMethod]
+        public void SetTicketVisibility(string ticketIDs, bool value)
+        {
+            int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
 
-			foreach (int ticketID in ids)
-			{
-				SetIsVisibleOnPortal(ticketID, value);
-			}
+            foreach (int ticketID in ids)
+            {
+                SetIsVisibleOnPortal(ticketID, value);
+            }
 
-		}
+        }
 
-		[WebMethod]
+        [WebMethod]
         public void SetTicketSubcribes(string ticketIDs, bool value)
         {
             int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
@@ -2819,40 +2826,40 @@ WHERE t.TicketID = @TicketID
             ActionLogs logs = new ActionLogs(ticket.Collection.LoginUser);
 
             logs.LoadByTicketID(ticketID);
-			List<ActionLogProxy> logsArray = logs.GetActionLogProxies().ToList();
+            List<ActionLogProxy> logsArray = logs.GetActionLogProxies().ToList();
 
-			foreach(var log in logsArray.Where(p => p.CreatorID < 0))
-			{
-				switch (log.CreatorID)
-				{
-					case (int)SystemUser.API:
-						log.CreatorName = SystemUser.API.ToString();
-						break;
-					case (int)SystemUser.CRM:
-						//hack: vv. only way right now to know if the actionlog was added by Jira. We'll need to do something about this (creating a user for each service or crm)
-						//		As of right now March 2016, this is the only error logged from Jira.vb UpdateTicketWithIssueData(), so we specifically check that text in the Description,
-						//		we need to update this as needed if something there (or other integrations are handled here) changes
-						if (log.OrganizationID == null && log.Description.ToLower().StartsWith("updated ticket with jira issue key:"))
-						{
-							log.CreatorName = IntegrationType.Jira.ToString() + " Integration";
-						}
-						break;
-				}
-			}
+            foreach (var log in logsArray.Where(p => p.CreatorID < 0))
+            {
+                switch (log.CreatorID)
+                {
+                    case (int)SystemUser.API:
+                        log.CreatorName = SystemUser.API.ToString();
+                        break;
+                    case (int)SystemUser.CRM:
+                        //hack: vv. only way right now to know if the actionlog was added by Jira. We'll need to do something about this (creating a user for each service or crm)
+                        //		As of right now March 2016, this is the only error logged from Jira.vb UpdateTicketWithIssueData(), so we specifically check that text in the Description,
+                        //		we need to update this as needed if something there (or other integrations are handled here) changes
+                        if (log.OrganizationID == null && log.Description.ToLower().StartsWith("updated ticket with jira issue key:"))
+                        {
+                            log.CreatorName = IntegrationType.Jira.ToString() + " Integration";
+                        }
+                        break;
+                }
+            }
 
-			//TODO: vv. Right now we are only pulling and displaying in the Ticket history the Jira Integration changes. Later we'll have to add the others, here and for the Company/Contact pages.
-			CRMLinkErrors integrationErrors = new CRMLinkErrors(ticket.Collection.LoginUser);
-			integrationErrors.LoadByTicketID(ticketID, IntegrationType.Jira.ToString(), isCleared: false);
+            //TODO: vv. Right now we are only pulling and displaying in the Ticket history the Jira Integration changes. Later we'll have to add the others, here and for the Company/Contact pages.
+            CRMLinkErrors integrationErrors = new CRMLinkErrors(ticket.Collection.LoginUser);
+            integrationErrors.LoadByTicketID(ticketID, IntegrationType.Jira.ToString(), isCleared: false);
 
-			if (integrationErrors != null && integrationErrors.Any() && integrationErrors.Count > 0)
-			{
-				//Get the IntegrationLogs, then translate them to a List<ActionLogProxy>
-				List<ActionLogProxy> logsIntegrationArray = integrationErrors.TranslateToActionLog();
-				logsArray.AddRange(logsIntegrationArray);
-			}
+            if (integrationErrors != null && integrationErrors.Any() && integrationErrors.Count > 0)
+            {
+                //Get the IntegrationLogs, then translate them to a List<ActionLogProxy>
+                List<ActionLogProxy> logsIntegrationArray = integrationErrors.TranslateToActionLog();
+                logsArray.AddRange(logsIntegrationArray);
+            }
 
-			return logsArray.OrderByDescending(o => o.DateCreated).ToArray();
-		}
+            return logsArray.OrderByDescending(o => o.DateCreated).ToArray();
+        }
 
         [WebMethod]
         public TicketInfo GetTicketInfo(int ticketNumber)
@@ -2885,7 +2892,7 @@ WHERE t.TicketID = @TicketID
             info.Queuers = GetQueuers(ticket);
 
             Reminders reminders = new Reminders(ticket.Collection.LoginUser);
-				reminders.LoadByItem(ReferenceType.Tickets, ticket.TicketID, TSAuthentication.UserID);
+            reminders.LoadByItem(ReferenceType.Tickets, ticket.TicketID, TSAuthentication.UserID);
             info.Reminders = reminders.GetReminderProxies();
 
             Assets assets = new Assets(ticket.Collection.LoginUser);
@@ -3067,6 +3074,11 @@ WHERE t.TicketID = @TicketID
                 item.Ticket1ID = ticketID1;
                 item.Ticket2ID = ticketID2;
                 item.Collection.Save();
+
+                string description = "Ticket " + ticket2.TicketNumber + " related";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket1.TicketID, description);
+                description = "Ticket " + ticket1.TicketNumber + " related";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket2.TicketID, description);
             }
             else if (isTicket1Parent == true) // parent
             {
@@ -3090,6 +3102,11 @@ WHERE t.TicketID = @TicketID
 
                 ticket2.ParentID = ticket1.TicketID;
                 ticket2.Collection.Save();
+
+                string description = "Ticket " + ticket2.TicketNumber + " added as child";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket1.TicketID, description);
+                description = "Ticket " + ticket1.TicketNumber + " added as parent";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket2.TicketID, description);
             }
             else // child
             {
@@ -3104,6 +3121,11 @@ WHERE t.TicketID = @TicketID
 
                 ticket1.ParentID = ticket2.TicketID;
                 ticket1.Collection.Save();
+
+                string description = "Ticket " + ticket2.TicketNumber + " added as parent";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket1.TicketID, description);
+                description = "Ticket " + ticket1.TicketNumber + " added as child";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket2.TicketID, description);
             }
             return GetRelatedTickets(ticket1.TicketID);
 
@@ -3169,18 +3191,33 @@ WHERE t.TicketID = @TicketID
             {
                 item.Delete();
                 item.Collection.Save();
+
+                string description = "Ticket " + ticket2.TicketNumber + " relation removed";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket1.TicketID, description);
+                description = "Ticket " + ticket1.TicketNumber + " relation removed";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket2.TicketID, description);
             }
 
             if (ticket1.ParentID != null && ticket1.ParentID == (int)ticketID2)
             {
                 ticket1.ParentID = null;
                 ticket1.Collection.Save();
+
+                string description = "Ticket " + ticket2.TicketNumber + " removed as parent";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket1.TicketID, description);
+                description = "Ticket " + ticket1.TicketNumber + " removed as child";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket2.TicketID, description);
             }
 
             if (ticket2.ParentID != null && ticket2.ParentID == (int)ticketID1)
             {
                 ticket2.ParentID = null;
                 ticket2.Collection.Save();
+
+                string description = "Ticket " + ticket2.TicketNumber + " removed as child";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket1.TicketID, description);
+                description = "Ticket " + ticket1.TicketNumber + " removed as parent";
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket2.TicketID, description);
             }
 
             return true;
@@ -3781,7 +3818,7 @@ WHERE t.TicketID = @TicketID
                 log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
                 log.Collection.Save();
 
-                errLocation = string.Format("Error deleting losing ticket from database. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+                errLocation = string.Format("We have encountered a possible error merging your tickets. Please check and ensure the loser was deleted and the tickets merged as expected. If not or if you have any concerns please contact support.");
             }
 
             try
@@ -3939,7 +3976,7 @@ WHERE t.TicketID = @TicketID
         public List<string> GetSessionInfo()
         {
             var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
-				//var OpenTok = new OpenTok(45228242, "058e12ca5b9139d08c18f4fe1ece434635a4abfb");
+            //var OpenTok = new OpenTok(45228242, "058e12ca5b9139d08c18f4fe1ece434635a4abfb");
             // Create a session that uses the OpenTok Media Router (which is required for archiving)
             var session = OpenTok.CreateSession(mediaMode: MediaMode.ROUTED, archiveMode: ArchiveMode.MANUAL);
             var token = OpenTok.GenerateToken(session.Id, Role.PUBLISHER);
@@ -3949,15 +3986,15 @@ WHERE t.TicketID = @TicketID
             //var archive = OpenTok.StartArchive(session.Id);
             values.Add(session.Id);
             values.Add(token);
-				values.Add(SystemSettings.GetTokApiKey());
+            values.Add(SystemSettings.GetTokApiKey());
             return values;
         }
 
         [WebMethod]
         public string StartArchiving(string sessionId)
         {
-			   //var OpenTok = new OpenTok(45228242, "058e12ca5b9139d08c18f4fe1ece434635a4abfb");
-				var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
+            //var OpenTok = new OpenTok(45228242, "058e12ca5b9139d08c18f4fe1ece434635a4abfb");
+            var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
 
             // Create a session that uses the OpenTok Media Router (which is required for archiving)
             //var session = OpenTok.CreateSession(mediaMode: MediaMode.ROUTED);
@@ -3967,12 +4004,19 @@ WHERE t.TicketID = @TicketID
             return archive.Id.ToString();
         }
 
+        [WebMethod]
+        public string StartArchivingScreen(string sessionId)
+        {
+            var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
+            var archive = OpenTok.StartArchive(sessionId, "", true, true, OutputMode.INDIVIDUAL);
+            return archive.Id.ToString();
+        }
 
         [WebMethod]
         public string StopArchiving(string archiveId)
         {
-			  //var OpenTok = new OpenTok(45228242, "058e12ca5b9139d08c18f4fe1ece434635a4abfb");
-			  var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
+            //var OpenTok = new OpenTok(45228242, "058e12ca5b9139d08c18f4fe1ece434635a4abfb");
+            var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
 
             // Create a session that uses the OpenTok Media Router (which is required for archiving)
             //var session = OpenTok.CreateSession(mediaMode: MediaMode.ROUTED);
@@ -3986,22 +4030,22 @@ WHERE t.TicketID = @TicketID
             }
             while (OpenTok.GetArchive(archiveId).Status != ArchiveStatus.UPLOADED);
 
-				TokStorageItem ts = (new TokStorage(TSAuthentication.GetLoginUser())).AddNewTokStorageItem();
-				ts.AmazonPath = string.Format("https://s3.amazonaws.com/{2}/{0}/{1}/archive.mp4", SystemSettings.GetTokApiKey(), archive.Id, SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "AWS-VideoBucket", ""));
-				ts.CreatedDate = DateTime.Now;
-				ts.CreatorID = TSAuthentication.GetLoginUser().UserID;
-				ts.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
-				ts.ArchiveID = archive.Id.ToString();
-				ts.Collection.Save();
+            TokStorageItem ts = (new TokStorage(TSAuthentication.GetLoginUser())).AddNewTokStorageItem();
+            ts.AmazonPath = string.Format("https://s3.amazonaws.com/{2}/{0}/{1}/archive.mp4", SystemSettings.GetTokApiKey(), archive.Id, SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "AWS-VideoBucket", ""));
+            ts.CreatedDate = DateTime.Now;
+            ts.CreatorID = TSAuthentication.GetLoginUser().UserID;
+            ts.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
+            ts.ArchiveID = archive.Id.ToString();
+            ts.Collection.Save();
 
-				return string.Format("https://s3.amazonaws.com/{2}/{0}/{1}/archive.mp4", SystemSettings.GetTokApiKey(), archive.Id.ToString(), SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "AWS-VideoBucket", ""));
+            return string.Format("https://s3.amazonaws.com/{2}/{0}/{1}/archive.mp4", SystemSettings.GetTokApiKey(), archive.Id.ToString(), SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "AWS-VideoBucket", ""));
 
         }
 
         [WebMethod]
         public bool DeleteArchive(string archiveId)
         {
-			  var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
+            var OpenTok = new OpenTok(Int32.Parse(SystemSettings.GetTokApiKey()), SystemSettings.GetTokApiSecret());
 
             // Create a session that uses the OpenTok Media Router (which is required for archiving)
             //var session = OpenTok.CreateSession(mediaMode: MediaMode.ROUTED);
@@ -4020,7 +4064,7 @@ WHERE t.TicketID = @TicketID
 
         private string SetSyncWithJira(LoginUser loginUser, int ticketId, string jiraIssueKey)
         {
-			dynamic result = new ExpandoObject();
+            dynamic result = new ExpandoObject();
 
             TicketLinkToJira ticketLinkToJira = new TicketLinkToJira(loginUser);
             ticketLinkToJira.LoadByTicketID(ticketId);
@@ -4038,38 +4082,38 @@ WHERE t.TicketID = @TicketID
                     TicketsViewItem ticket = TicketsView.GetTicketsViewItem(loginUser, ticketId);
                     ticketLinkToJiraItem.CrmLinkID = CRMLinkTable.GetIdBy(ticket.OrganizationID, IntegrationType.Jira.ToString().ToLower(), ticket.ProductID, loginUser);
 
-					//If product is not associated to an instance then get the 'default' instance
-					if (ticketLinkToJiraItem.CrmLinkID == null || ticketLinkToJiraItem.CrmLinkID <= 0)
-					{
-						CRMLinkTable crmlink = new CRMLinkTable(loginUser);
-						crmlink.LoadByOrganizationID(TSAuthentication.OrganizationID);
+                    //If product is not associated to an instance then get the 'default' instance
+                    if (ticketLinkToJiraItem.CrmLinkID == null || ticketLinkToJiraItem.CrmLinkID <= 0)
+                    {
+                        CRMLinkTable crmlink = new CRMLinkTable(loginUser);
+                        crmlink.LoadByOrganizationID(TSAuthentication.OrganizationID);
 
-						ticketLinkToJiraItem.CrmLinkID = crmlink.Where(p => p.InstanceName == "Default"
-																			&& p.CRMType.ToLower() == IntegrationType.Jira.ToString().ToLower())
-																			.Select(p => p.CRMLinkID).FirstOrDefault();
-					}
+                        ticketLinkToJiraItem.CrmLinkID = crmlink.Where(p => p.InstanceName == "Default"
+                                                                            && p.CRMType.ToLower() == IntegrationType.Jira.ToString().ToLower())
+                                                                            .Select(p => p.CRMLinkID).FirstOrDefault();
+                    }
 
                     if (ticketLinkToJiraItem.CrmLinkID != null && ticketLinkToJiraItem.CrmLinkID > 0)
                     {
                         ticketLinkToJiraItem.Collection.Save();
-						result.IsSuccessful = true;
-						result.Error = null;
+                        result.IsSuccessful = true;
+                        result.Error = null;
                     }
-					else
-					{
-						result.IsSuccessful = false;
-						result.Error = "A Jira Instance associated to this ticket's product or a Default Jira Instance was not found.";
-					}
+                    else
+                    {
+                        result.IsSuccessful = false;
+                        result.Error = "A Jira Instance associated to this ticket's product or a Default Jira Instance was not found.";
+                    }
                 }
                 catch (Exception ex)
                 {
-					result.IsSuccessful = false;
-					result.Error = ex.Message;
-					ExceptionLogs.LogException(loginUser, ex, "SetJiraIssueKey");
+                    result.IsSuccessful = false;
+                    result.Error = ex.Message;
+                    ExceptionLogs.LogException(loginUser, ex, "SetJiraIssueKey");
                 }
             }
 
-			return JsonConvert.SerializeObject(result);
+            return JsonConvert.SerializeObject(result);
         }
 
         [WebMethod]
@@ -4462,10 +4506,10 @@ WHERE t.TicketID = @TicketID
             this.LastPing = user.LastPing == null ? user.LastPing : DateTime.SpecifyKind((DateTime)user.LastPing, DateTimeKind.Local);
         }
 
-		  public UserInfo()
-		  {
+        public UserInfo()
+        {
 
-		  }
+        }
     }
 
     [DataContract]

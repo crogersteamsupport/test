@@ -781,6 +781,11 @@ namespace TSWebServices
             org.ProductType = (ProductType)productType;
             org.IsInventoryEnabled = org.ProductType == ProductType.Enterprise;
             org.Collection.Save();
+
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Organizations orgHelper = new Organizations(loginUser);
+            orgHelper.MigrateOrgType(loginUser, orgID, org.ProductType);
+
         }
 
         [WebMethod]

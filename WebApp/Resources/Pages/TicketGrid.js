@@ -767,13 +767,15 @@ TicketGrid = function (options) {
 	function getItemMetadata(index, data) {
 		if (data[index] == null) return;
 		var ticket = data[index];
-
+		var hasWarning = ticket['SlaWarningTime'] && ticket['SlaWarningTime'] < 0;
+		var hasViolation = ticket['SlaViolationTime'] && ticket['SlaViolationTime'] < 0;
 		var result = 'ticket-grid-row';
+
 		if (ticket) {
-			if (ticket['SlaWarningTime'] && ticket['SlaWarningTime'] < 0) {
+			if (hasViolation) {
 				result = result + ' ticket-grid-row-violated';
 			}
-			else if (ticket['SlaViolationTime'] && ticket['SlaViolationTime'] < 0) {
+			else if (hasWarning) {
 				result = result + ' ticket-grid-row-warning';
 			}
 

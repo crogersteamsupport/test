@@ -15,7 +15,7 @@ namespace TeamSupport.Data
     public ReminderProxy() {}
     [DataMember] public int ReminderID { get; set; }
     [DataMember] public int OrganizationID { get; set; }
-    [DataMember] public ReferenceType RefType { get; set; }
+    [DataMember] public int RefType { get; set; }
     [DataMember] public int RefID { get; set; }
     [DataMember] public string Description { get; set; }
     [DataMember] public DateTime DueDate { get; set; }

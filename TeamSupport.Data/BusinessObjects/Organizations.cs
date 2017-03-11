@@ -301,6 +301,60 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
             if (organizations.IsEmpty) return null;
             else return organizations[0].OrganizationID;
         }
+
+        public static Organization GetCompanyByDomain(int parentOrganizationID, string emailDomain, LoginUser loginUser)
+        {
+            Organization result = null;
+
+            Organizations organizations = new Organizations(loginUser);
+            organizations.LoadByParentID(parentOrganizationID, true);
+
+            if (organizations.Any())
+            {
+                List<KeyValuePair<int, string>> organizationSubDomainList = new List<KeyValuePair<int, string>>();
+
+                //Takes all the suborganizations of the parent org and parses out the subdomains into a list for comparison
+                foreach (var org in organizations.Distinct())
+                {
+                    if (!String.IsNullOrEmpty(org.CompanyDomains))
+                    {
+                        List<string> companydomains = org.CompanyDomains.Split(',').ToList();
+
+                        foreach (var domain in companydomains)
+                        {
+                            organizationSubDomainList.Add(new KeyValuePair<int, string>(org.OrganizationID, domain));
+                        }
+                    }
+                }
+
+                //assigns subdomain of organization if match is found
+                if (organizationSubDomainList.Any())
+                {
+                    var subOrgList = organizationSubDomainList.Where(m => m.Value.Trim() == emailDomain);
+
+                    if (subOrgList.Any())
+                    {
+                        result = organizations.Where(m => m.OrganizationID == subOrgList.First().Key).First();
+                    }
+                }
+            }
+
+            //if we still don't have a suborganizationID assigned to result check if there is unknown company, otherwise create one
+            if (result == null)
+            {
+                if (organizations.Any())
+                {
+                    var unknownCompanies = organizations.Where(m => m.Name.Contains("_Unknown Company"));
+                    if (unknownCompanies.Any())
+                    {
+                        result = unknownCompanies.First();
+                    }
+                }
+            }
+
+            return result;
+        }
+
     }
 
     public class SignUpParams
@@ -3070,6 +3124,147 @@ ORDER BY
 
                 Organizations organizations = new Organizations(loginUser);
                 return (int)organizations.ExecuteScalar(command, "Organizations");
+            }
+        }
+
+        public void MigrateOrgType(LoginUser loginUser, int organizationID, ProductType productType) {
+            using (SqlCommand command = new SqlCommand())
+            {
+                if (productType == ProductType.Enterprise)
+                {
+                    command.CommandText = @"
+                        UPDATE
+				            OrganizationSettings
+                        SET
+                            SettingValue = REPLACE(SettingValue, '""CatID"":""Reminders"",""CatName"":""Reminders""', '""CatID"":""Tasks"",""CatName"":""Tasks""')
+                        WHERE
+				            OrganizationID = @organizationID
+                            AND SettingKey = 'TicketFieldsOrder'
+
+                        UPDATE
+				            OrganizationSettings
+                        SET
+                            SettingValue = REPLACE(SettingValue, ',{""CatID"":""Reminders"",""CatName"":""Reminders"",""Disabled"":""false""}', '')
+                        WHERE
+				            OrganizationID = @organizationID
+                            AND SettingKey = 'NewTicketFieldsOrder'
+
+                        INSERT INTO
+	                        Tasks
+	                        (
+		                        OrganizationID,
+		                        Name,
+		                        Description,
+		                        DueDate,
+		                        UserID,
+		                        IsComplete,
+		                        DateCompleted,
+		                        CreatorID,
+		                        DateCreated,
+		                        ReminderID,
+		                        ModifierID,
+		                        DateModified
+	                        )
+                        SELECT
+	                        r.OrganizationID,
+	                        r.Description,
+	                        r.Description,
+	                        r.DueDate,
+	                        r.UserID,
+	                        CASE
+		                        WHEN r.IsDismissed = 1 THEN 1
+		                        WHEN r.HasEmailSent = 1 THEN 1
+		                        ELSE 0
+	                        END AS BIT,
+	                        r.DueDate,
+	                        r.CreatorID,
+	                        r.DateCreated,
+	                        r.ReminderID,
+	                        -5,
+	                        GETUTCDATE()
+                        FROM
+	                        Reminders r
+	                        JOIN Organizations o
+		                        ON r.OrganizationID = o.OrganizationID
+	                        LEFT JOIN Tasks t
+		                        ON r.ReminderID = t.ReminderID
+                        WHERE
+                            r.OrganizationID = @organizationID
+                            AND r.RefType NOT IN (59,60,61)
+	                        AND t.TaskID IS NULL
+
+                        INSERT INTO
+	                        TaskAssociations
+	                        (
+		                        TaskID,
+		                        RefID,
+		                        RefType,
+		                        CreatorID,
+		                        DateCreated
+	                        )
+                        SELECT
+	                        t.TaskID,
+	                        r.RefID,
+	                        r.RefType,
+	                        r.CreatorID,
+	                        r.DateCreated
+                        FROM
+	                        Reminders r
+	                        JOIN Organizations o
+		                        ON r.OrganizationID = o.OrganizationID
+	                        JOIN Tasks t
+		                        ON r.ReminderID = t.ReminderID
+	                        LEFT JOIN TaskAssociations ta
+		                        ON t.TaskID = ta.TaskID
+                        WHERE
+                            r.OrganizationID = @organizationID
+                            AND r.RefType NOT IN (59,60,61)
+	                        AND ta.TaskID IS NULL
+
+                        UPDATE
+	                        u
+                        SET
+	                        u.MenuItems = u.MenuItems + ',mniTasks'
+                        FROM
+	                        Users u
+                        WHERE
+	                        u.OrganizationID = @organizationID
+	                        AND u.MenuItems IS NOT NULL
+                    ";
+                }
+                else
+                {
+                    command.CommandText = @"
+                        UPDATE
+				            OrganizationSettings
+                        SET
+                            SettingValue = REPLACE(SettingValue, '""CatID"":""Tasks"",""CatName"":""Tasks""', '""CatID"":""Reminders"",""CatName"":""Reminders""')
+                        WHERE
+				            OrganizationID = @organizationID
+                            AND SettingKey = 'TicketFieldsOrder'
+
+                        UPDATE
+				            OrganizationSettings
+                        SET
+                            SettingValue = SettingValue + ',{""CatID"":""Reminders"",""CatName"":""Reminders"",""Disabled"":""false""}'
+                        WHERE
+				            OrganizationID = @organizationID
+                            AND SettingKey = 'NewTicketFieldsOrder'
+
+                        UPDATE
+	                        u
+                        SET
+	                        u.MenuItems = REPLACE(u.MenuItems, ',mniTasks', '')
+                        FROM
+	                        Users u
+                        WHERE
+	                        u.OrganizationID = @organizationID
+	                        AND u.MenuItems IS NOT NULL
+                    ";
+                }
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@organizationID", organizationID);
+                ExecuteNonQuery(command, "OrganizationSettings");
             }
         }
 

@@ -29,7 +29,7 @@ namespace TeamSupport.Data
       {
         using (SqlCommand command = new SqlCommand())
         {
-            command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationID], [AmazonPath], [CreatedDate], [CreatorID], [ArchiveID], [Transcoded] FROM [dbo].[TokStorage] WHERE ([Transcoded] = 0);";
+            command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationID], [AmazonPath], [CreatedDate], [CreatorID], [ArchiveID], [Transcoded] FROM [dbo].[TokStorage] WHERE ([Transcoded] = 0)";
             command.CommandType = CommandType.Text;
             Fill(command);
         }

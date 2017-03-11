@@ -101,41 +101,41 @@ namespace TeamSupport.Handlers
           }
 
           files[i].SaveAs(Path.Combine(path, fileName));
-          if (refType != ReferenceType.None && _id != null)
-          {
-            Attachment attachment = (new Attachments(TSAuthentication.GetLoginUser())).AddNewAttachment();
-            attachment.RefType = refType;
-            attachment.RefID = (int)_id;
-            attachment.OrganizationID = TSAuthentication.OrganizationID;
-            attachment.FileName = fileName;
-            attachment.Path = Path.Combine(path, fileName);
-            attachment.FileType = files[i].ContentType;
-            attachment.FileSize = files[i].ContentLength;
-            if (context.Request.Form["description"] != null)
-                attachment.Description = context.Request.Form["description"].Replace("\n","<br />");
-            if (context.Request.Form["productFamilyID"] != null && context.Request.Form["productFamilyID"] != "-1")
-                attachment.ProductFamilyID = Int32.Parse(context.Request.Form["productFamilyID"]);
-
-            result.Add(new UploadResult(fileName, attachment.FileType, attachment.FileSize));
-            attachment.Collection.Save();
-          }
-          else
-          {
-            switch (refType)
+            if (refType != ReferenceType.None && _id != null)
             {
-              case ReferenceType.Imports:
-                //Not saving import till user click on import button saving both imports and mappings
-                //Import import = (new Imports(TSAuthentication.GetLoginUser())).AddNewImport();
-                //import.RefType = (ReferenceType)Convert.ToInt32(context.Request.Form["refType"]);
-                //import.FileName = fileName;
-                //import.OrganizationID = TSAuthentication.OrganizationID;
-                //import.Collection.Save();
-                result.Add(new UploadResult(fileName, files[i].ContentType, files[i].ContentLength));
-                break;
-              default:
-                break;
+                Attachment attachment = (new Attachments(TSAuthentication.GetLoginUser())).AddNewAttachment();
+                attachment.RefType = refType;
+                attachment.RefID = (int)_id;
+                attachment.OrganizationID = TSAuthentication.OrganizationID;
+                attachment.FileName = fileName;
+                attachment.Path = Path.Combine(path, fileName);
+                attachment.FileType = files[i].ContentType;
+                attachment.FileSize = files[i].ContentLength;
+                if (context.Request.Form["description"] != null)
+                    attachment.Description = context.Request.Form["description"].Replace("\n", "<br />");
+                if (context.Request.Form["productFamilyID"] != null && context.Request.Form["productFamilyID"] != "-1")
+                    attachment.ProductFamilyID = Int32.Parse(context.Request.Form["productFamilyID"]);
+
+                attachment.Collection.Save();
+                result.Add(new UploadResult(fileName, attachment.FileType, attachment.FileSize, attachment.AttachmentID));
             }
-          }
+            else
+            {
+                switch (refType)
+                {
+                    case ReferenceType.Imports:
+                        //Not saving import till user click on import button saving both imports and mappings
+                        //Import import = (new Imports(TSAuthentication.GetLoginUser())).AddNewImport();
+                        //import.RefType = (ReferenceType)Convert.ToInt32(context.Request.Form["refType"]);
+                        //import.FileName = fileName;
+                        //import.OrganizationID = TSAuthentication.OrganizationID;
+                        //import.Collection.Save();
+                        result.Add(new UploadResult(fileName, files[i].ContentType, files[i].ContentLength));
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
       }
       context.Response.Clear();

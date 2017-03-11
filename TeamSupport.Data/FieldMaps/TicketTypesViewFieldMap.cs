@@ -26,6 +26,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
       _fieldMap.AddMap("ProductFamilyID", "ProductLineID", false, false, false);
       _fieldMap.AddMap("ProductFamilyName", "ProductLineName", false, false, false);
+      _fieldMap.AddMap("IsActive", "IsActive", false, false, false);
             
     }
   }

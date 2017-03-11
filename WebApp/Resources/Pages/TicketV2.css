@@ -714,7 +714,7 @@
     .ts-icon-sla-bad { background-position: -512px 0px; }
     .nonrequired-field-error-font {color: #cd0a0a !important}
     .ticket-closed { font-style: italic; text-decoration:line-through;}
-    .hasError label, .hasError .selectize-input {color: #cd0a0a !important}
+    .hasError label, .hasError .selectize-input {color: #cd0a0a !important; font-weight: bold}
     .hasError .selectize-input { border: 1px solid #a94442 !important; }
 
     .fieldError label, .fieldError .selectize-input {color: #cd0a0a !important}
@@ -732,7 +732,7 @@
         max-height: 150px;
     }
 
-    .tagContainer {
+    .tagContainer,.taskContainer {
         background-color: #FFF;
         /*border: 1px solid #CCC;
         box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;*/
@@ -950,3 +950,15 @@
 .slaPausedIcon {
     color: #428bca !important;
 }
+
+.wcTooltip
+{
+    color: #3276B1;
+    margin-right: 10px;
+}
+
+.new-task {
+    margin-bottom:0px !important;
+}
+
+label { font-size: 11px; }

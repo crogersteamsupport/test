@@ -569,10 +569,12 @@ $(document).ready(function () {
   	window.parent.Ts.Services.Organizations.LoadEMailAlternateByOrgID(window.parent.Ts.System.Organization.OrganizationID, function (email) {
   	    $('<option>').attr('value', '-1').text('Not Set').appendTo(select);
   	    for (var i = 0; i < email.length; i++) {
-  	        var opt = $('<option>').attr('value', i).text(email[i].SendingEMailAddress);
-  	        if (header.text() == email[i].SendingEMailAddress)
-  	            opt.attr('selected', 'selected');
+  	        if (email[i].SendingEMailAddress != null) {
+  	            var opt = $('<option>').attr('value', i).text(email[i].SendingEMailAddress);
+  	            if (header.text() == email[i].SendingEMailAddress)
+  	                opt.attr('selected', 'selected');
   	            opt.appendTo(select);
+  	        }
   	    }
   	});
 

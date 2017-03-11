@@ -1,81 +1,84 @@
 ﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title></title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="../Css/jquery-ui-bs3.min.css" rel="stylesheet" type="text/css" />
-  <link href="../Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
-  <link href="../Css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css" />
-  <link href="../Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-  <link href="../Css/tsbs.css" rel="stylesheet" type="text/css" />
-	<link href="../Css/ts.editor.css" rel="stylesheet" />
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../Css/jquery-ui-bs3.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css" />
+    <link href="../Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Css/tsbs.css" rel="stylesheet" type="text/css" />
+    <link href="../Css/ts.editor.css" rel="stylesheet" />
     <link href="../Css/selectize.bootstrap3.css" rel="stylesheet" />
-  <!--[if IE]><link href="../Css/tsbs-ie.css" rel="stylesheet" type="text/css" /><![endif]-->
-  <link href="customerdetail.css" rel="stylesheet" type="text/css" />
+    <!--[if IE]><link href="../Css/tsbs-ie.css" rel="stylesheet" type="text/css" /><![endif]-->
+    <link href="customerdetail.css" rel="stylesheet" type="text/css" />
     <script src="../Js/Ts/ts.pendo.js" type="text/javascript"></script>
-  <script src="../Js/jquery-1.11.0.min.js" type="text/javascript"></script>
-  <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
-  <script src="../Js/bootstrap3.min.js" type="text/javascript"></script>
-  <script src="../Js/respond.js" type="text/javascript"></script>
-  <script src="../Js/highcharts.js"></script>
-  <script src="../Js/highcharts-more.js"></script>
-  <script src="../Js/jquery.placeholder.js" type="text/javascript"></script>
-  <script src="../../../tinymce/tinymce.min.js" type="text/javascript"></script>
-  <script src="../../../tinymce/jquery.tinymce.min.js" type="text/javascript"></script>
-  <script src="../Js/moment.min.js" type="text/javascript"></script>
-  <script src="../Js/bootstrap-datetimepicker.js" type="text/javascript"></script>
-  <script src="../Js/jquery.layout.min.js" type="text/javascript"></script>
-  <script src="../Js/jquery.iframe-transport.js" type="text/javascript"></script>
-  <script src="../Js/jquery.fileupload.js" type="text/javascript"></script>
-  <script src="../Js/jquery.maskedinput.min.js" type="text/javascript"></script>
+    <script src="../Js/jquery-1.11.0.min.js" type="text/javascript"></script>
+    <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
+    <script src="../Js/bootstrap3.min.js" type="text/javascript"></script>
+    <script src="../Js/respond.js" type="text/javascript"></script>
+    <script src="../Js/highcharts.js"></script>
+    <script src="../Js/highcharts-more.js"></script>
+    <script src="../Js/jquery.placeholder.js" type="text/javascript"></script>
+    <script src="../../../tinymce/tinymce.min.js" type="text/javascript"></script>
+    <script src="../../../tinymce/jquery.tinymce.min.js" type="text/javascript"></script>
+    <script src="../Js/moment.min.js" type="text/javascript"></script>
+    <script src="../Js/bootstrap-datetimepicker.js" type="text/javascript"></script>
+    <script src="../Js/jquery.layout.min.js" type="text/javascript"></script>
+    <script src="../Js/jquery.iframe-transport.js" type="text/javascript"></script>
+    <script src="../Js/jquery.fileupload.js" type="text/javascript"></script>
+    <script src="../Js/jquery.maskedinput.min.js" type="text/javascript"></script>
     <script src="../Js/handlebars.js" type="text/javascript"></script>
     <script src="../Js/selectize.min.js"></script>
     <script src="../Js/Ts/ts.ui.hovers.js"></script>
-  <script src="customerdetail.js" type="text/javascript"></script>
+    <script src="customerdetail.js" type="text/javascript"></script>
 </head>
 <body>
-  <div class="ui-layout-north">
-    <div class="pageheader">
-      <div class="header-nav">
-        <div class="pull-right">
-          <div class="btn-toolbar" role="toolbar">
-            <div class="btn-group">
-              <button class="btn btn-primary customer-tooltip" type="button" title="Edit this company"
-                id="customerEdit"><i class="fa fa-pencil"></i>&nbsp;Edit</button>
+    <div class="ui-layout-north">
+        <div class="pageheader">
+            <div class="header-nav">
+                <div class="pull-right">
+                    <div class="btn-toolbar" role="toolbar">
+                        <div class="btn-group">
+                            <button class="btn btn-primary customer-tooltip" type="button" title="Edit this company"
+                                    id="customerEdit">
+                                <i class="fa fa-pencil"></i>&nbsp;Edit
+                            </button>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-default customer-tooltip" type="button" title="Refresh this company" id="customerRefresh"><i class="fa fa-refresh"></i></button>
+                            <button class="btn btn-default customer-tooltip" type="button" title="Switch to parent view" id="customerParentView"><i class="fa fa-male"></i></button>
+                            <button style="display: none;" class="btn btn-default customer-tooltip" type="button" title="Switch to child view" id="customerNormalView"><i class="fa fa-child"></i></button>
+                            <button id="Company-Merge" class="btn btn-default customer-tooltip" title="Merge this company" type="button" data-toggle="modal" data-target="#MergeModal">
+                                <i class="fa fa-exchange"></i> Merge
+                            </button>
+                            <button class="btn btn-default customer-tooltip" type="button" title="Subscribe to this company" id="customerSubscribe"><i class="fa fa-rss"></i></button>
+                            <button class="btn btn-default customer-tooltip" type="button" title="Add a reminder" data-target="#modalReminder" data-toggle="modal" id="customerReminder"><i class="fa fa-bell"></i></button>
+                            <button class="btn btn-default customer-tooltip" type="button" title="Delete" id="customerDelete"><i class="fa fa-trash-o"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <span id="companyName"></span>
             </div>
-            <div class="btn-group">
-              <button class="btn btn-default customer-tooltip" type="button" title="Refresh this company" id="customerRefresh"><i class="fa fa-refresh"></i></button>
-              <button class="btn btn-default customer-tooltip" type="button" title="Switch to parent view" id="customerParentView"><i class="fa fa-male"></i></button>
-              <button style="display: none;" class="btn btn-default customer-tooltip" type="button" title="Switch to child view" id="customerNormalView"><i class="fa fa-child"></i></button>
-					<button id="Company-Merge" class="btn btn-default customer-tooltip" title="Merge this company" type="button" data-toggle="modal" data-target="#MergeModal">
-						<i class="fa fa-exchange"></i> Merge
-					</button>
-              <button class="btn btn-default customer-tooltip" type="button" title="Subscribe to this company" id="customerSubscribe"><i class="fa fa-rss"></i></button>
-              <button class="btn btn-default customer-tooltip" type="button" title="Add a reminder" data-target="#modalReminder" data-toggle="modal" id="customerReminder"><i class="fa fa-bell"></i></button>
-              <button class="btn btn-default customer-tooltip" type="button" title="Delete" id="customerDelete"><i class="fa fa-trash-o"></i></button>
+            <div class="main-nav">
+                <ul class="nav nav-tabs" id="companyTabs">
+                    <li><a href="#company-overview" data-toggle="tab">Details</a></li>
+                    <li><a href="#company-children" data-toggle="tab" style="display: none;">Children</a></li>
+                    <li><a href="#company-contacts" data-toggle="tab">Contacts</a></li>
+                    <li><a href="#company-tickets" data-toggle="tab">Tickets</a></li>
+                    <li><a href="#company-notes" data-toggle="tab">Notes</a></li>
+                    <li><a href="#company-attachments" data-toggle="tab">Files</a></li>
+                    <li><a href="#company-products" data-toggle="tab">Products</a></li>
+                    <li><a href="#company-inventory" data-toggle="tab">Inventory</a></li>
+                    <li><a href="#company-watercooler" data-toggle="tab">Watercooler</a></li>
+                    <li id="ratingsTab"><a href="#company-ratings" data-toggle="tab">Ratings</a></li>
+                    <li id="calendarTab"><a href="#company-calendar" data-toggle="tab">Calendar</a></li>
+                    <li id="slaTab"><a href="#company-sla" data-toggle="tab">SLA</a></li>
+                    <li id="taskTab"><a href="#company-tasks" data-toggle="tab">Tasks</a></li>
+                </ul>
             </div>
-          </div>
         </div>
-        <span id="companyName"></span>
-      </div>
-      <div class="main-nav">
-        <ul class="nav nav-tabs" id="companyTabs">
-          <li><a href="#company-overview" data-toggle="tab">Details</a></li>
-          <li><a href="#company-children" data-toggle="tab" style="display: none;">Children</a></li>
-          <li><a href="#company-contacts" data-toggle="tab">Contacts</a></li>
-          <li><a href="#company-tickets" data-toggle="tab">Tickets</a></li>
-          <li><a href="#company-notes" data-toggle="tab">Notes</a></li>
-          <li><a href="#company-attachments" data-toggle="tab">Files</a></li>
-          <li><a href="#company-products" data-toggle="tab">Products</a></li>
-          <li><a href="#company-inventory" data-toggle="tab">Inventory</a></li>
-          <li><a href="#company-watercooler" data-toggle="tab">Watercooler</a></li>
-          <li id="ratingsTab"><a href="#company-ratings" data-toggle="tab">Ratings</a></li>
-          <li id="calendarTab"><a href="#company-calendar" data-toggle="tab">Calendar</a></li>
-          <li id="slaTab"><a href="#company-sla" data-toggle="tab">SLA</a></li>
-        </ul>
-      </div>
     </div>
-  </div>
     <div class="ui-layout-center">
         <div class="maincontainer">
             <div class="tab-content">
@@ -771,282 +774,314 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-  <div class="modal fade" id="modalReminder">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title">Add Reminder</h4>
-        </div>
-        <div class="modal-body">
-          <form class="form-horizontal">
-          <div class="form-group">
-            <label for="inputName" class="col-md-4 control-label">What is this reminder all about?</label>
-            <div class="col-md-8">
-              <input class="col-md-10 form-control" id="reminderDesc">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="phoneNumber" class="col-md-4 control-label">When do you want to be reminded?</label>
-            <div class="col-md-8">
-                    <input class="col-md-10 form-control datetimepicker" id="reminderDate">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="phoneExt" class="col-md-4 control-label">Who do you want to remind?</label>
-            <div class="col-md-8">
-              <select class="form-control" id="reminderUsers"></select>
-            </div>
-          </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="btnSaveReminder">Save</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-      <!-- /.modal-content -->
-    </div>
-  </div>
-  <div class="modal fade" id="modalAssign">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title" id="modalAssignTitle">Assign asset</h4>
-        </div>
-        <div class="modal-body">
-          <form class="form-horizontal">
-          <div class="form-group" id="inputAssetDiv">
-            <label for="inputAsset" class="col-md-4 control-label">Asset to assign:</label>
-            <div class="col-md-8">
-              <input class="col-md-10 form-control" id="inputAsset" placeholder="Enter partial name or serial number then select asset from list">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="dateShipped" class="col-md-4 control-label">Date Shipped:</label>
-            <div class="col-md-8">
-              <input class="col-md-10 form-control" id="dateShipped">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="shippingMethod" class="col-md-4 control-label">Shipping method:</label>
-            <div class="col-md-8">
-              <select class="form-control" id="shippingMethod">
-                <option value="FedEx">FedEx</option>              
-                <option value="UPS">UPS</option>              
-                <option value="USPS">USPS</option>              
-                <option value="Other">Other</option>              
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="trackingNumber" class="col-md-4 control-label">Tracking Number:</label>
-            <div class="col-md-8">
-              <input class="col-md-10 form-control" id="trackingNumber" placeholder="Tracking Number">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="referenceNumber" class="col-md-4 control-label">Reference Number:</label>
-            <div class="col-md-8">
-              <input class="col-md-10 form-control" id="referenceNumber" placeholder="Reference Number (PO etc.)">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="comments" class="col-md-4 control-label">Comments:</label>
-            <div class="col-md-8">
-              <textarea class="col-md-10 form-control" id="comments" placeholder="Comments about assigning this asset."></textarea>
-            </div>
-          </div>
-        </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="btnSaveAssign">Save</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal" id="btnClose">Close</button>
-        </div>
-      </div>
-      <!-- /.modal-content -->
-    </div>
-  </div>
-  <div class="modal fade" id="modalPhone">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title">Add Phone Number</h4>
-        </div>
-        <div class="modal-body">
-          <form class="form-horizontal">
-          <div class="form-group">
-            <label for="inputName" class="col-md-4 control-label">Phone Type</label>
-            <div class="col-md-8">
-              <select class="form-control" id="phoneType"></select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="phoneNumber" class="col-md-4 control-label">Phone Number</label>
-            <div class="col-md-8">
-              <input class="col-md-10 form-control" id="phoneNumber">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="phoneExt" class="col-md-4 control-label">Ext</label>
-            <div class="col-md-8">
-              <input class="col-md-3 form-control" id="phoneExt">
-            </div>
-          </div>
-          <input type="hidden" id="phoneID" value="-1"></input>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="btnPhoneSave">Save</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-      <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-  </div>
-  <div class="modal fade" id="modalAddress">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title">Add Address</h4>
-        </div>
-        <div class="modal-body">
-          <form class="form-horizontal">
-          <div class="form-group">
-            <label for="inputName" class="col-md-4 control-label">Description</label>
-            <div class="col-md-8">
-              <input class="col-md-10 form-control" id="addressDesc">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="inputName" class="col-md-4 control-label">Address Line 1</label>
-            <div class="col-md-8">
-              <input class="col-md-3 form-control" id="address1">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="inputName" class="col-md-4 control-label">Address Line 2</label>
-            <div class="col-md-8">
-              <input class="col-md-3 form-control" id="address2">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="inputName" class="col-md-4 control-label">Address Line 3</label>
-            <div class="col-md-8">
-              <input class="col-md-3 form-control" id="address3">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="inputName" class="col-md-4 control-label">City</label>
-            <div class="col-md-8">
-              <input class="col-md-3 form-control" id="addressCity">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="inputName" class="col-md-4 control-label">State</label>
-            <div class="col-md-8">
-              <input class="col-md-3 form-control" id="addressState">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="inputName" class="col-md-4 control-label">Zip / Postal</label>
-            <div class="col-md-8">
-              <input class="col-md-3 form-control" id="addressZip">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="inputName" class="col-md-4 control-label">Country</label>
-            <div class="col-md-8">
-              <input class="col-md-3 form-control" id="addressCountry">
-            </div>
-          </div>
-          <input type="hidden" id="addressID" value="-1" />
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="btnAddressSave">Save</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-      <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-  </div>
-  <div id="MergeModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MergeModalTitle" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="MergeModalTitle">Merge Companies</h4>
-        </div>
-        <div class="modal-body">
-          <div style="border: 1px solid #fbfbfb;padding:10px;background-color: #fbfbfb;">
-            <h4>1. You have selected the "loser" of the merge</h4>
-            <p>All the contacts, tickets, notes, files, products, assets, watercooler messages, ratings and calendar entris of this company will be moved to the "winner" you choose below. The "loser" will then be deleted.</p>
-          </div>
+                <div class="tab-pane fade" id="company-tasks">
+                    <div class="row">
+                        <div class="col-xs-12" id="taskContainer">
 
-          <div style="border: 1px solid #fbfbfb;padding:10px;background-color: #fbfbfb;">
-            <h4>2. Next choose the Company you want to keep the "winner"</h4>
-            <p>You can only choose one Company. If you'd like to merge more than two companies together just go through the merge process again after the merge you are performing now is done.</p>
-          </div>
-
-          <input type="text" id="Company-Merge-search" class="form-control" placeholder="Search for the company you want to merge ..." />
-
-          <div class="ui-helper-hidden" id="dialog-companymerge-preview" style="padding-top: 10px;">
-			 	<div id="companymerge-preview-details">Here is some basic information about the company you have selected :</div>
-          </div>
-
-          <div class="ui-helper-hidden" id="dialog-companymerge-warning" style="padding-top:10px;">
-            <h4>3. Finally, click "OK" to merge these Companies.</h4>
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" id="dialog-companymerge-confirm"> I understand that I will be deleting the losing company, and there is no recovery from that action.
-              </label>
+                            <div class="box">
+                                <div class="box-header">
+                                </div>
+                                <div class="box-content">
+                                    <div class="row">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <td></td>
+                                                    <td>Name</td>
+                                                    <td>Assigned To</td>
+                                                    <td>Due</td>
+                                                    <td>Reminder Date</td>
+                                                    <td>Associations</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tasks"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-		  	<div class="merge-processing" hidden><i class="fa fa-spinner fa-spin"></i>&nbsp; Merging...</div>
-          <div id="merge-success" class="alert alert-success" role="alert" style="display:none;">Merge Successfull!</div>
-          <div id="merge-error" class="alert alert-danger" role="alert" style="display:none;">There was an error merging your companies.  Please try again.</div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button id="company-merge-complete" type="button" class="btn btn-primary">OK</button>
-        </div>
-      </div>
     </div>
-  </div>
-
-<!--    <div class="modal fade" id="modalAlert">
+    <div class="modal fade" id="modalReminder">
         <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-              <h4 class="modal-title">Alert Message</h4>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Add Reminder</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="inputName" class="col-md-4 control-label">What is this reminder all about?</label>
+                            <div class="col-md-8">
+                                <input class="col-md-10 form-control" id="reminderDesc">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="phoneNumber" class="col-md-4 control-label">When do you want to be reminded?</label>
+                            <div class="col-md-8">
+                                <input class="col-md-10 form-control datetimepicker" id="reminderDate">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="phoneExt" class="col-md-4 control-label">Who do you want to remind?</label>
+                            <div class="col-md-8">
+                                <select class="form-control" id="reminderUsers"></select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btnSaveReminder">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
             </div>
-            <div class="modal-body">
-                <div id="modalAlertMessage"></div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary" data-toggle="tooltip" data-dismiss="modal" title="Close Alert" id="alertClose">Close</button>
-              <button type="button" class="btn btn-primary" data-toggle="tooltip" title="Snooze Alert" id="alertSnooze">Snooze</button>
-              <button type="button" class="btn btn-primary" data-toggle="tooltip" title="Dismiss Alert" id="alertDismiss">Dismiss</button>
-            </div>
-          </div>
-          
+            <!-- /.modal-content -->
         </div>
-        
-      </div>-->
+    </div>
+    <div class="modal fade" id="modalAssign">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="modalAssignTitle">Assign asset</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group" id="inputAssetDiv">
+                            <label for="inputAsset" class="col-md-4 control-label">Asset to assign:</label>
+                            <div class="col-md-8">
+                                <input class="col-md-10 form-control" id="inputAsset" placeholder="Enter partial name or serial number then select asset from list">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="dateShipped" class="col-md-4 control-label">Date Shipped:</label>
+                            <div class="col-md-8">
+                                <input class="col-md-10 form-control" id="dateShipped">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="shippingMethod" class="col-md-4 control-label">Shipping method:</label>
+                            <div class="col-md-8">
+                                <select class="form-control" id="shippingMethod">
+                                    <option value="FedEx">FedEx</option>
+                                    <option value="UPS">UPS</option>
+                                    <option value="USPS">USPS</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="trackingNumber" class="col-md-4 control-label">Tracking Number:</label>
+                            <div class="col-md-8">
+                                <input class="col-md-10 form-control" id="trackingNumber" placeholder="Tracking Number">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="referenceNumber" class="col-md-4 control-label">Reference Number:</label>
+                            <div class="col-md-8">
+                                <input class="col-md-10 form-control" id="referenceNumber" placeholder="Reference Number (PO etc.)">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="comments" class="col-md-4 control-label">Comments:</label>
+                            <div class="col-md-8">
+                                <textarea class="col-md-10 form-control" id="comments" placeholder="Comments about assigning this asset."></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btnSaveAssign">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="btnClose">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+    </div>
+    <div class="modal fade" id="modalPhone">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Add Phone Number</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="inputName" class="col-md-4 control-label">Phone Type</label>
+                            <div class="col-md-8">
+                                <select class="form-control" id="phoneType"></select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="phoneNumber" class="col-md-4 control-label">Phone Number</label>
+                            <div class="col-md-8">
+                                <input class="col-md-10 form-control" id="phoneNumber">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="phoneExt" class="col-md-4 control-label">Ext</label>
+                            <div class="col-md-8">
+                                <input class="col-md-3 form-control" id="phoneExt">
+                            </div>
+                        </div>
+                        <input type="hidden" id="phoneID" value="-1"></input>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btnPhoneSave">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="modalAddress">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Add Address</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="inputName" class="col-md-4 control-label">Description</label>
+                            <div class="col-md-8">
+                                <input class="col-md-10 form-control" id="addressDesc">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputName" class="col-md-4 control-label">Address Line 1</label>
+                            <div class="col-md-8">
+                                <input class="col-md-3 form-control" id="address1">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputName" class="col-md-4 control-label">Address Line 2</label>
+                            <div class="col-md-8">
+                                <input class="col-md-3 form-control" id="address2">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputName" class="col-md-4 control-label">Address Line 3</label>
+                            <div class="col-md-8">
+                                <input class="col-md-3 form-control" id="address3">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputName" class="col-md-4 control-label">City</label>
+                            <div class="col-md-8">
+                                <input class="col-md-3 form-control" id="addressCity">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputName" class="col-md-4 control-label">State</label>
+                            <div class="col-md-8">
+                                <input class="col-md-3 form-control" id="addressState">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputName" class="col-md-4 control-label">Zip / Postal</label>
+                            <div class="col-md-8">
+                                <input class="col-md-3 form-control" id="addressZip">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputName" class="col-md-4 control-label">Country</label>
+                            <div class="col-md-8">
+                                <input class="col-md-3 form-control" id="addressCountry">
+                            </div>
+                        </div>
+                        <input type="hidden" id="addressID" value="-1" />
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btnAddressSave">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <div id="MergeModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MergeModalTitle" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="MergeModalTitle">Merge Companies</h4>
+                </div>
+                <div class="modal-body">
+                    <div style="border: 1px solid #fbfbfb;padding:10px;background-color: #fbfbfb;">
+                        <h4>1. You have selected the "loser" of the merge</h4>
+                        <p>All the contacts, tickets, notes, files, products, assets, watercooler messages, ratings and calendar entris of this company will be moved to the "winner" you choose below. The "loser" will then be deleted.</p>
+                    </div>
 
-<div id="dialog" title="Alert Message">
-    <div id="modalAlertMessage"></div>
-</div>
+                    <div style="border: 1px solid #fbfbfb;padding:10px;background-color: #fbfbfb;">
+                        <h4>2. Next choose the Company you want to keep the "winner"</h4>
+                        <p>You can only choose one Company. If you'd like to merge more than two companies together just go through the merge process again after the merge you are performing now is done.</p>
+                    </div>
+
+                    <input type="text" id="Company-Merge-search" class="form-control" placeholder="Search for the company you want to merge ..." />
+
+                    <div class="ui-helper-hidden" id="dialog-companymerge-preview" style="padding-top: 10px;">
+                        <div id="companymerge-preview-details">Here is some basic information about the company you have selected :</div>
+                    </div>
+
+                    <div class="ui-helper-hidden" id="dialog-companymerge-warning" style="padding-top:10px;">
+                        <h4>3. Finally, click "OK" to merge these Companies.</h4>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" id="dialog-companymerge-confirm"> I understand that I will be deleting the losing company, and there is no recovery from that action.
+                            </label>
+                        </div>
+                    </div>
+                    <div class="merge-processing" hidden><i class="fa fa-spinner fa-spin"></i>&nbsp; Merging...</div>
+                    <div id="merge-success" class="alert alert-success" role="alert" style="display:none;">Merge Successfull!</div>
+                    <div id="merge-error" class="alert alert-danger" role="alert" style="display:none;">There was an error merging your companies.  Please try again.</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button id="company-merge-complete" type="button" class="btn btn-primary">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dialog" title="Alert Message">
+        <div id="modalAlertMessage"></div>
+    </div>
 
 </body>
 </html>
+<script id="company-task-table-template" type="text/x-handlebars-template">
+    
+</script>
+<script id="company-tasks-template" type="text/x-handlers-template">
+    {{#taskList}}
+    <tr class="{{formatRow this}}">
+        <td>
+            <input {{taskComplete IsComplete}} type="checkbox" class="change-task-status" data-taskid="{{TaskID}}" />
+        </td>
+        <td>
+            <a href="#" class="tasklink" id="cb{{TaskID}}" data-taskid="{{TaskID}}">
+                {{Name}}
+            </a>
+        </td>
+        <td>{{AssignedTo}}</td>
+        <td>{{formatDate DueDate}}</</td>
+        <td>{{formatDate ReminderDueDate}}</td>
+        <td>
+            {{#Associations}}
+            {{mapAssociation this}}
+            {{/Associations}}
+        </td>
+    </tr>
+    {{/taskList}}
+</script>

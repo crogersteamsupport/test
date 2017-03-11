@@ -32,7 +32,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
             convert_urls: true,
             autoresize_bottom_margin: 20,
             remove_script_host: false,
-            relative_urls: true,
+            relative_urls: false,
             template_external_list_url: "tinymce/jscripts/template_list.js",
             external_link_list_url: "tinymce/jscripts/link_list.js",
             external_image_list_url: "tinymce/jscripts/image_list.js",
@@ -303,6 +303,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
                     //image: '../images/nav/16/knowledge.png',
                     icon: 'awesome fa fa-book',
                     onclick: function () {
+                        console.log(element.SuggestedSolutionDefaultInput)
                         suggestedSolutions(element.SuggestedSolutionDefaultInput, function (ticketID, isArticle) {
                             if (isArticle) {
                                 _mainFrame.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
@@ -506,7 +507,7 @@ The following steps will refresh your browser<br><br> \
     });
 }
 
-var initScheduledReportEditor = function (element, init) {
+var initScheduledReportEditor = function (element, init, postinit) {
     var editorOptions = {
         plugins: "autoresize paste link code textcolor table codesample",
         toolbar1: "insertPasteImage insertTicket image insertDropBox insertUser | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
@@ -517,7 +518,7 @@ var initScheduledReportEditor = function (element, init) {
         content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css,Reports_Schedule.css",
         body_class: "ui-widget ui-widget-content",
         convert_urls: true,
-        autoresize_bottom_margin: 20,
+        autoresize_bottom_margin: 0,
         remove_script_host: false,
         relative_urls: false,
         template_external_list_url: "tinymce/jscripts/template_list.js",
@@ -547,6 +548,8 @@ var initScheduledReportEditor = function (element, init) {
                     else if (_mainFrame.Ts.System.Organization.FontSize != "0") {
                         ed.execCommand("FontSize", false, _mainFrame.Ts.System.Organization.FontSizeDescription);
                     }
+
+                    if (postinit) postinit();
                 });
             });
 

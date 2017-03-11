@@ -142,22 +142,22 @@ $(document).ready(function () {
     _isParentView = _mainFrame.Ts.Utils.getQueryValue("parentView", window);
 
     _mainFrame.Ts.Services.Customers.CanAccessCustomer(organizationID, function (result) {
-    	if (!result) {
-    		var url = window.location.href;
-    		if (url.indexOf('.') > -1) {
-    			url = url.substring(0, url.lastIndexOf('/') + 1);
-    		}
-    		window.location = url + 'NoCustomerAccess.html';
-    		return;
-    	}
+        if (!result) {
+            var url = window.location.href;
+            if (url.indexOf('.') > -1) {
+                url = url.substring(0, url.lastIndexOf('/') + 1);
+            }
+            window.location = url + 'NoCustomerAccess.html';
+            return;
+        }
 
-	 });
+    });
 
     if (_isParentView) {
         _isParentView = true;
         $('#customerParentView').hide();
         $('#customerNormalView').show();
-        
+
         $('#customerEdit').hide();
         $('#Company-Merge').hide();
         $('#customerSubscribe').hide();
@@ -177,6 +177,10 @@ $(document).ready(function () {
     }
     else {
         _isParentView = false;
+
+        if (_mainFrame.Ts.System.Organization.ProductType == _mainFrame.Ts.ProductType.Enterprise) {
+            $('#customerReminder').hide();
+        }
     }
     noteID = _mainFrame.Ts.Utils.getQueryValue("noteid", window);
     var _isAdmin = _mainFrame.Ts.System.User.IsSystemAdmin && (organizationID != _mainFrame.Ts.System.User.OrganizationID);
@@ -187,6 +191,10 @@ $(document).ready(function () {
     if (_mainFrame.Ts.System.Organization.UseProductFamilies) {
         LoadProductFamilies();
         $('.productFamilyRow, .productFamilyColumn, .productLineRow').show();
+    }
+
+    if (_mainFrame.Ts.System.Organization.ProductType == _mainFrame.Ts.ProductType.Enterprise) {
+        $('#taskTab').show();
     }
 
     LoadNotes();
@@ -240,17 +248,15 @@ $(document).ready(function () {
     });
 
 
-    if (!_mainFrame.Ts.System.User.CanEditCompany && !_isAdmin) 
-    {
+    if (!_mainFrame.Ts.System.User.CanEditCompany && !_isAdmin) {
         $('#productToggle').hide();
     }
 
-    if (!_mainFrame.Ts.System.Organization.IsInventoryEnabled)
-    {
+    if (!_mainFrame.Ts.System.Organization.IsInventoryEnabled) {
         $('#companyTabs a[href="#company-products"]').hide();
         $('#companyTabs a[href="#company-inventory"]').hide();
     }
-    $(".maincontainer").on("keypress", "input",(function (evt) {
+    $(".maincontainer").on("keypress", "input", (function (evt) {
         //Deterime where our character code is coming from within the event
         var charCode = evt.charCode || evt.keyCode;
         if (charCode == 13) { //Enter key's keycode
@@ -268,11 +274,10 @@ $(document).ready(function () {
 
     $('#historyRefresh').on('click', function () {
         _mainFrame.Ts.System.logAction('Customer Detail - History Refresh');
-            LoadHistory(1);
+        LoadHistory(1);
     });
 
-    if (noteID != null)
-    {
+    if (noteID != null) {
         $('#companyTabs a:first').tab('show');
         $('#companyTabs a[href="#company-notes"]').tab('show');
         openNote(noteID);
@@ -291,33 +296,30 @@ $(document).ready(function () {
     }
 
     if (!_isAdmin) {
-    	$('#customerDelete').hide();
-    	$('#Company-Merge').hide();
-	 }
+        $('#customerDelete').hide();
+        $('#Company-Merge').hide();
+    }
 
     if (!_isAdmin && !_mainFrame.Ts.System.User.CanCreateContact) {
         $('.contact-action-add').hide();
     }
 
 
-    if (_mainFrame.Ts.System.User.OrganizationID == organizationID)
-    {
+    if (_mainFrame.Ts.System.User.OrganizationID == organizationID) {
         $('#groupSupportUser').hide();
         $('#groupSupportGroup').hide();
-    }else{
+    } else {
         $('#groupTimezone').hide();
         $('#groupPortalGroup').hide();
     }
-    
+
     $('#customerEdit').click(function (e) {
         _mainFrame.Ts.System.logAction('Customer Detail - Customer Edit');
-        if (_isUnknown)
-        {
+        if (_isUnknown) {
             $('#fieldActive').toggleClass("editable");
             $('#fieldPortalAccess').toggleClass("editable");
         }
-        else
-        {
+        else {
             $('.userProperties p').toggleClass("editable");
             $('.customProperties p').toggleClass("editable");
             $("#phonePanel #editmenu").toggleClass("hiddenmenu");
@@ -330,9 +332,9 @@ $(document).ready(function () {
         $(this).toggleClass("btn-primary");
         $(this).toggleClass("btn-success");
         if ($(this).hasClass("btn-primary"))
-        	$(this).html('<i class="fa fa-pencil"></i> Edit');
-		  else
-        	$(this).html('<i class="fa fa-pencil"></i> Save');
+            $(this).html('<i class="fa fa-pencil"></i> Edit');
+        else
+            $(this).html('<i class="fa fa-pencil"></i> Save');
 
         $('#companyTabs a:first').tab('show');
         if ((!_isAdmin && !_mainFrame.Ts.System.User.IsPortalUser) || (!_mainFrame.Ts.System.User.CanEditCompany && !_isAdmin)) {
@@ -393,12 +395,12 @@ $(document).ready(function () {
 
     $('#fieldWebsite').click(function (e) {
         if ($(this).hasClass('link')) {
-          if ($('#fieldWebsite').text().toLowerCase().lastIndexOf('http://', 0) === 0 || $('#fieldWebsite').text().toLowerCase().lastIndexOf('https://', 0) === 0)
+            if ($('#fieldWebsite').text().toLowerCase().lastIndexOf('http://', 0) === 0 || $('#fieldWebsite').text().toLowerCase().lastIndexOf('https://', 0) === 0)
                 window.open($('#fieldWebsite').text(), '_blank');
             else
                 window.open('http://' + $('#fieldWebsite').text(), '_blank');
 
-            
+
             return;
         }
         else {
@@ -527,7 +529,7 @@ $(document).ready(function () {
           .click(function (e) {
               var value = $(this).prev().find('input').val();
               _mainFrame.Ts.System.logAction('Customer Detail - Save Support Hours Edit');
-              _mainFrame.Ts.Services.Customers.SetCompanySupportHours(organizationID, value != "" ? value : 0 , function (result) {
+              _mainFrame.Ts.Services.Customers.SetCompanySupportHours(organizationID, value != "" ? value : 0, function (result) {
                   header.text(result);
                   $('#customerEdit').removeClass("disabled");
               },
@@ -653,7 +655,7 @@ $(document).ready(function () {
             .datetimepicker({ pickTime: false, format: _dateFormat })
           .appendTo(container1)
           .focus();
-       
+
 
         $('<i>')
           .addClass('col-xs-1 fa fa-times')
@@ -663,7 +665,7 @@ $(document).ready(function () {
               $('#customerEdit').removeClass("disabled");
           })
           .insertAfter(container1);
-        
+
 
         $('<i>')
           .addClass('col-xs-1 fa fa-check')
@@ -742,54 +744,54 @@ $(document).ready(function () {
     });
 
     $('#fieldParentCompany').click(function (e) {
-      e.preventDefault();
-      if (!$(this).hasClass('editable'))
-        return false;
-      var header = $(this).hide();
-      _mainFrame.Ts.System.logAction('Customer Detail - Edit Parent Company');
-      var container = $('<div>')
-        .insertAfter(header);
+        e.preventDefault();
+        if (!$(this).hasClass('editable'))
+            return false;
+        var header = $(this).hide();
+        _mainFrame.Ts.System.logAction('Customer Detail - Edit Parent Company');
+        var container = $('<div>')
+          .insertAfter(header);
 
-      var container1 = $('<div>')
-          .addClass('col-xs-9')
-        .appendTo(container);
+        var container1 = $('<div>')
+            .addClass('col-xs-9')
+          .appendTo(container);
 
-      var select = $('<select>').addClass('form-control').attr('id', 'ddlParentCompany').appendTo(container1);
-      _mainFrame.Ts.Services.Customers.LoadOrgUsers(organizationID, function (contacts) {
-        $('<option>').attr('value', '-1').text('Unassigned').appendTo(select);
-        for (var i = 0; i < contacts.length; i++) {
-          var opt = $('<option>').attr('value', contacts[i].UserID).text(contacts[i].FirstName + " " + contacts[i].LastName).data('o', contacts[i]);
-          if (header.data('field') == contacts[i].UserID)
-            opt.attr('selected', 'selected');
-          opt.appendTo(select);
-        }
-      });
-
-
-      $('<i>')
-        .addClass('col-xs-1 fa fa-times')
-        .click(function (e) {
-          $(this).closest('div').remove();
-          header.show();
-          $('#customerEdit').removeClass("disabled");
-        })
-        .insertAfter(container1);
-      $('#ddlPrimaryContact').on('change', function () {
-        var value = $(this).val();
-        var name = this.options[this.selectedIndex].innerHTML;
-        container.remove();
-        _mainFrame.Ts.System.logAction('Customer Detail - Save Primary Contact Edit');
-        _mainFrame.Ts.Services.Customers.SetCompanyPrimaryContact(organizationID, value, function (result) {
-          header.data('field', result);
-          header.text(name);
-          header.show();
-          $('#customerEdit').removeClass("disabled");
-        }, function () {
-          alert("There was a problem saving your company property.");
-          $('#customerEdit').removeClass("disabled");
+        var select = $('<select>').addClass('form-control').attr('id', 'ddlParentCompany').appendTo(container1);
+        _mainFrame.Ts.Services.Customers.LoadOrgUsers(organizationID, function (contacts) {
+            $('<option>').attr('value', '-1').text('Unassigned').appendTo(select);
+            for (var i = 0; i < contacts.length; i++) {
+                var opt = $('<option>').attr('value', contacts[i].UserID).text(contacts[i].FirstName + " " + contacts[i].LastName).data('o', contacts[i]);
+                if (header.data('field') == contacts[i].UserID)
+                    opt.attr('selected', 'selected');
+                opt.appendTo(select);
+            }
         });
-      });
-      $('#customerEdit').addClass("disabled");
+
+
+        $('<i>')
+          .addClass('col-xs-1 fa fa-times')
+          .click(function (e) {
+              $(this).closest('div').remove();
+              header.show();
+              $('#customerEdit').removeClass("disabled");
+          })
+          .insertAfter(container1);
+        $('#ddlPrimaryContact').on('change', function () {
+            var value = $(this).val();
+            var name = this.options[this.selectedIndex].innerHTML;
+            container.remove();
+            _mainFrame.Ts.System.logAction('Customer Detail - Save Primary Contact Edit');
+            _mainFrame.Ts.Services.Customers.SetCompanyPrimaryContact(organizationID, value, function (result) {
+                header.data('field', result);
+                header.text(name);
+                header.show();
+                $('#customerEdit').removeClass("disabled");
+            }, function () {
+                alert("There was a problem saving your company property.");
+                $('#customerEdit').removeClass("disabled");
+            });
+        });
+        $('#customerEdit').addClass("disabled");
     });
 
 
@@ -1104,34 +1106,32 @@ $(document).ready(function () {
     $('#productCustomer').val(organizationID);
 
     _mainFrame.Ts.Services.Organizations.GetOrganization(organizationID, function (org) {
-        if (_isParentView)
-        {
+        if (_isParentView) {
             $('#companyName').text(org.Name + ' (Parent View)');
         }
-        else
-        {
+        else {
             $('#companyName').text(org.Name);
         }
 
-      var hasCustomerInsights = _mainFrame.Ts.System.Organization.IsCustomerInsightsActive;
+        var hasCustomerInsights = _mainFrame.Ts.System.Organization.IsCustomerInsightsActive;
 
-      if (hasCustomerInsights) {
-        var companyLogoPath = "../../../dc/" + org.ParentID + "/companylogo/" + organizationID + "/80";
-        $('#companyLogo').attr("src", companyLogoPath);
+        if (hasCustomerInsights) {
+            var companyLogoPath = "../../../dc/" + org.ParentID + "/companylogo/" + organizationID + "/80";
+            $('#companyLogo').attr("src", companyLogoPath);
 
-        $("#companyLogo").error(function () {
-          $(this).hide();
-        })
-      }
-      else {
-        $('#companyLogo').hide();
-      }
+            $("#companyLogo").error(function () {
+                $(this).hide();
+            })
+        }
+        else {
+            $('#companyLogo').hide();
+        }
 
-      _orgParentId = org.ParentID;
+        _orgParentId = org.ParentID;
     });
 
     $("input[type=text], textarea").autoGrow();
-  
+
     $.valHooks.textarea = {
         get: function (elem) {
             return elem.value.replace(/\r\n|\r|\n/g, "<br />");
@@ -1142,11 +1142,11 @@ $(document).ready(function () {
 
     $('.contact-action-add').click(function (e) {
         e.preventDefault();
-        _mainFrame.Ts.MainPage.newCustomer("customer",organizationID);
+        _mainFrame.Ts.MainPage.newCustomer("customer", organizationID);
     });
 
     $('#productProduct').change(function () {
-        LoadProductVersions($(this).val(),-1);
+        LoadProductVersions($(this).val(), -1);
     });
 
     $('#btnProductSave').click(function (e) {
@@ -1179,23 +1179,22 @@ $(document).ready(function () {
                 case "checkbox":
                     field.Value = $(this).prop('checked');
                     break;
-                //case "date":
-                //    field.Value = $(this).val() == "" ? null : _mainFrame.Ts.Utils.getMsDate($(this).val());
-                //    break;
-                //case "time":
-                //    field.Value = $(this).val() == "" ? null : _mainFrame.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
-                //    break;
-                //case "datetime":
-                //    field.Value = $(this).val() == "" ? null : _mainFrame.Ts.Utils.getMsDate($(this).val());
-                //    break;
+                    //case "date":
+                    //    field.Value = $(this).val() == "" ? null : _mainFrame.Ts.Utils.getMsDate($(this).val());
+                    //    break;
+                    //case "time":
+                    //    field.Value = $(this).val() == "" ? null : _mainFrame.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
+                    //    break;
+                    //case "datetime":
+                    //    field.Value = $(this).val() == "" ? null : _mainFrame.Ts.Utils.getMsDate($(this).val());
+                    //    break;
                 default:
                     field.Value = $(this).val();
             }
             productInfo.Fields[productInfo.Fields.length] = field;
         });
 
-        if (hasError == 0)
-        {
+        if (hasError == 0) {
             _mainFrame.Ts.Services.Customers.SaveProduct(parent.JSON.stringify(productInfo), function (prod) {
                 LoadProducts();
                 $('#btnProductSave').text("Save Product");
@@ -1251,7 +1250,7 @@ $(document).ready(function () {
     }
 
     _mainFrame.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
-        _dateFormat = dateformat.replace('D','DD').replace('DDD','DD');
+        _dateFormat = dateformat.replace('D', 'DD').replace('DDD', 'DD');
         $('.datepicker').attr("data-format", _dateFormat);
         $('.datepicker').datetimepicker({ pickTime: false, format: _dateFormat });
 
@@ -1278,56 +1277,56 @@ $(document).ready(function () {
     });
 
     var getAssets = function (request, response) {
-      if (_execGetAsset) { _execGetAsset._executor.abort(); }
-      _execGetAsset = _mainFrame.Ts.Services.Organizations.GetWarehouseAssets(request.term, function (result) { response(result); });
+        if (_execGetAsset) { _execGetAsset._executor.abort(); }
+        _execGetAsset = _mainFrame.Ts.Services.Organizations.GetWarehouseAssets(request.term, function (result) { response(result); });
     }
 
     $('#inputAsset').autocomplete({
-      open: function () {
-        $('.ui-menu').width($('#inputAsset').width());
-      },
-      minLength: 2,
-      source: getAssets,
-      select: function (event, ui) {
-        $(this).data('item', ui.item);
-      }
+        open: function () {
+            $('.ui-menu').width($('#inputAsset').width());
+        },
+        minLength: 2,
+        source: getAssets,
+        select: function (event, ui) {
+            $(this).data('item', ui.item);
+        }
     });
 
     $('#btnSaveAssign').click(function (e) {
-      if ($('#inputAsset').data('item') && $('#dateShipped').val()) {
-        var assetAssignmentInfo = new Object();
+        if ($('#inputAsset').data('item') && $('#dateShipped').val()) {
+            var assetAssignmentInfo = new Object();
 
-        assetAssignmentInfo.RefID = organizationID;
-        assetAssignmentInfo.RefType = 9;
-        assetAssignmentInfo.DateShipped = $('#dateShipped').val();
-        assetAssignmentInfo.TrackingNumber = $('#trackingNumber').val();
-        assetAssignmentInfo.ShippingMethod = $('#shippingMethod').val();
-        assetAssignmentInfo.ReferenceNumber = $('#referenceNumber').val();
-        assetAssignmentInfo.Comments = $('#comments').val();
-        assetAssignmentInfo.AssigneeName = $('#fieldName').text();
+            assetAssignmentInfo.RefID = organizationID;
+            assetAssignmentInfo.RefType = 9;
+            assetAssignmentInfo.DateShipped = $('#dateShipped').val();
+            assetAssignmentInfo.TrackingNumber = $('#trackingNumber').val();
+            assetAssignmentInfo.ShippingMethod = $('#shippingMethod').val();
+            assetAssignmentInfo.ReferenceNumber = $('#referenceNumber').val();
+            assetAssignmentInfo.Comments = $('#comments').val();
+            assetAssignmentInfo.AssigneeName = $('#fieldName').text();
 
-        _mainFrame.Ts.Services.Assets.AssignAsset($('#inputAsset').data('item').id, parent.JSON.stringify(assetAssignmentInfo), function (assetHtml) {
-          _mainFrame.Ts.System.logAction('Customer Detail - Asset Assigned');
-          $('#modalAssign').modal('hide');
-          $('.assetList').prepend(assetHtml);
-        }, function () {
-          alert('There was an error assigning this asset.  Please try again.');
-        });
-      }
-      else {
-        if (!$('#inputAsset').data('item')) {
-          alert("Please select a valid asset to assign to this customer.");
+            _mainFrame.Ts.Services.Assets.AssignAsset($('#inputAsset').data('item').id, parent.JSON.stringify(assetAssignmentInfo), function (assetHtml) {
+                _mainFrame.Ts.System.logAction('Customer Detail - Asset Assigned');
+                $('#modalAssign').modal('hide');
+                $('.assetList').prepend(assetHtml);
+            }, function () {
+                alert('There was an error assigning this asset.  Please try again.');
+            });
         }
         else {
-          alert("Please enter a valid date shipped.");
+            if (!$('#inputAsset').data('item')) {
+                alert("Please select a valid asset to assign to this customer.");
+            }
+            else {
+                alert("Please enter a valid date shipped.");
+            }
         }
-      }
-      //    if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
-      //      _mainFrame.Ts.Services.System.EditReminder(null, _mainFrame.Ts.ReferenceTypes.Organizations, organizationID, $('#reminderDesc').val(), _mainFrame.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val());
-      //      $('#modalReminder').modal('hide');
-      //    }
-      //    else
-      //      alert("Please fill in all the fields");
+        //    if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
+        //      _mainFrame.Ts.Services.System.EditReminder(null, _mainFrame.Ts.ReferenceTypes.Organizations, organizationID, $('#reminderDesc').val(), _mainFrame.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val());
+        //      $('#modalReminder').modal('hide');
+        //    }
+        //    else
+        //      alert("Please fill in all the fields");
     });
 
     $('#tblSLATriggers').on('click', '.slaTriggerEdit', function (e) {
@@ -1350,17 +1349,16 @@ $(document).ready(function () {
             $('#btnProductSave').text("Save");
             _mainFrame.Ts.Services.Customers.LoadCustomProductFields(product, function (custField) {
                 for (var i = 0; i < custField.length; i++) {
-                	if (custField[i].FieldType == 2)
-                	{
-                		if (custField[i].Value == "True")
-                		$('#' + custField[i].CustomFieldID).prop('checked', true);
-                	}
-                    //else if (custField[i].FieldType == 5)
-                    //{
-                    //    var date = field.value == null ? null : _mainFrame.Ts.Utils.getMsDate(field.Value);
-                    //    $('#' + custField[i].CustomFieldID).val(date.localeFormat(_mainFrame.Ts.Utils.getDatePattern()));
-                    //}
-                        
+                    if (custField[i].FieldType == 2) {
+                        if (custField[i].Value == "True")
+                            $('#' + custField[i].CustomFieldID).prop('checked', true);
+                    }
+                        //else if (custField[i].FieldType == 5)
+                        //{
+                        //    var date = field.value == null ? null : _mainFrame.Ts.Utils.getMsDate(field.Value);
+                        //    $('#' + custField[i].CustomFieldID).val(date.localeFormat(_mainFrame.Ts.Utils.getDatePattern()));
+                        //}
+
                     else
                         $('#' + custField[i].CustomFieldID).val(custField[i].Value);
                 }
@@ -1416,10 +1414,10 @@ $(document).ready(function () {
         $('.customField:visible').each(function () {
             switch ($(this).attr("type")) {
                 case "checkbox":
-                    $(this).prop('checked',false);
+                    $(this).prop('checked', false);
                     break;
                 default:
-                   $(this).val('');
+                    $(this).val('');
             }
         });
         $('#productForm').toggle();
@@ -1432,7 +1430,7 @@ $(document).ready(function () {
             parent.privateServices.DeleteOrganizationProduct($(this).parent().parent().attr('id'), false, function (e) {
                 LoadProducts();
             });
-            
+
         }
     });
 
@@ -1475,8 +1473,7 @@ $(document).ready(function () {
         _mainFrame.Ts.System.logAction('Customer Detail - Switch to parent view');
         var href = window.location.href;
         var i = window.location.href.indexOf('parentView');
-        if (i != -1)
-        {
+        if (i != -1) {
             href = href.substring(0, i - 1);
         }
         window.location.href = href + "&parentView=1";
@@ -1493,91 +1490,90 @@ $(document).ready(function () {
     });
 
     var getCustomers = function (request, response) {
-    	if (_execGetCustomer) { _execGetCustomer._executor.abort(); }
-    	_execGetCustomer = _mainFrame.Ts.Services.Organizations.GetOrganizationForTicket(request.term, function (result) { response(result); });
+        if (_execGetCustomer) { _execGetCustomer._executor.abort(); }
+        _execGetCustomer = _mainFrame.Ts.Services.Organizations.GetOrganizationForTicket(request.term, function (result) { response(result); });
     }
 
     $("#Company-Merge-search").autocomplete({
-    	minLength: 2,
-    	source: getCustomers,
-    	select: function (event, ui) {
-    		if (ui.item.id == organizationID) {
-    			alert("Sorry, but you can not merge this company into itself.");
-    			return;
-    		}
+        minLength: 2,
+        source: getCustomers,
+        select: function (event, ui) {
+            if (ui.item.id == organizationID) {
+                alert("Sorry, but you can not merge this company into itself.");
+                return;
+            }
 
-    		$(this).data('organizationid', ui.item.id).removeClass('ui-autocomplete-loading');
+            $(this).data('organizationid', ui.item.id).removeClass('ui-autocomplete-loading');
 
-    		try {
-    			_mainFrame.Ts.Services.Organizations.GetOrganization(ui.item.id, function (info) {
-    				var descriptionString = info.Description;
+            try {
+                _mainFrame.Ts.Services.Organizations.GetOrganization(ui.item.id, function (info) {
+                    var descriptionString = info.Description;
 
-    				if (descriptionString == null)
-    				{
-    					descriptionString = "";
-    				}
+                    if (descriptionString == null) {
+                        descriptionString = "";
+                    }
 
-    				if (ellipseString(descriptionString, 30).indexOf("<img src") !== -1)
-    					descriptionString = "This company description starts off with an embedded/linked image. We have disabled this for the preview.";
-    				else if (ellipseString(descriptionString, 30).indexOf(".viewscreencast.com") !== -1)
-    					descriptionString = "This company description starts off with an embedded recorded video.  We have disabled this for the preview.";
-    				else
-    					descriptionString = ellipseString(descriptionString, 30);
+                    if (ellipseString(descriptionString, 30).indexOf("<img src") !== -1)
+                        descriptionString = "This company description starts off with an embedded/linked image. We have disabled this for the preview.";
+                    else if (ellipseString(descriptionString, 30).indexOf(".viewscreencast.com") !== -1)
+                        descriptionString = "This company description starts off with an embedded recorded video.  We have disabled this for the preview.";
+                    else
+                        descriptionString = ellipseString(descriptionString, 30);
 
-    				var companyPreviewName = "<div><strong>Company Name:</strong> " + info.Name + "</div>";
-    				var companyPreviewWebsite = "<div><strong>Company Website:</strong> " + info.Website + "</div>";
-    				var companyPreviewDesc = "<div><strong>Company Desciption Sample:</strong> " + descriptionString + "</div>";
+                    var companyPreviewName = "<div><strong>Company Name:</strong> " + info.Name + "</div>";
+                    var companyPreviewWebsite = "<div><strong>Company Website:</strong> " + info.Website + "</div>";
+                    var companyPreviewDesc = "<div><strong>Company Desciption Sample:</strong> " + descriptionString + "</div>";
 
-    				$('#companymerge-preview-details').after(companyPreviewName + companyPreviewWebsite + companyPreviewDesc);
-    				$('#dialog-companymerge-preview').show();
-    				$('#dialog-companymerge-warning').show();
-    				$(".dialog-companymerge").dialog("widget").find(".ui-dialog-buttonpane").find(":button:contains('OK')").prop("disabled", false).removeClass("ui-state-disabled");
-    			})
-    		}
-    		catch (e) {
-    			alert("Sorry, there was a problem loading the information for that company.");
-    		}
-    	},
-    	position: { my: "right top", at: "right bottom", collision: "fit flip" }
+                    $('#companymerge-preview-details').after(companyPreviewName + companyPreviewWebsite + companyPreviewDesc);
+                    $('#dialog-companymerge-preview').show();
+                    $('#dialog-companymerge-warning').show();
+                    $(".dialog-companymerge").dialog("widget").find(".ui-dialog-buttonpane").find(":button:contains('OK')").prop("disabled", false).removeClass("ui-state-disabled");
+                })
+            }
+            catch (e) {
+                alert("Sorry, there was a problem loading the information for that company.");
+            }
+        },
+        position: { my: "right top", at: "right bottom", collision: "fit flip" }
     });
 
     $('#company-merge-complete').click(function (e) {
-    	e.preventDefault();
-    	$('#company-merge-complete').attr('disabled', 'disabled');
-    	if ($('#Company-Merge-search').val() == "") {
-    		alert("Please select a valid company to merge");
-    		$('#company-merge-complete').removeAttr('disabled');
-    		return;
-    	}
+        e.preventDefault();
+        $('#company-merge-complete').attr('disabled', 'disabled');
+        if ($('#Company-Merge-search').val() == "") {
+            alert("Please select a valid company to merge");
+            $('#company-merge-complete').removeAttr('disabled');
+            return;
+        }
 
-    	if ($('#dialog-companymerge-confirm').prop("checked")) {
-    		var winningID = $('#Company-Merge-search').data('organizationid');
-    		//var winningCompanyName = $('#Company-Merge-search').data('organizationname');
-    		var JSTop = top;
-    		//var window = window;
-    		$('.merge-processing').show();
-    		_mainFrame.Ts.Services.Customers.MergeCompanies(winningID, organizationID, function (result) {
-    			$('.merge-processing').hide();
-    			$('#company-merge-complete').removeAttr('disabled');
-    			if (result != "")
-    				alert(result);
-    			else {
-    				$('#MergeModal').modal('hide');
-    				JS_mainFrame.Ts.MainPage.closeNewCustomerTab(organizationID);
-    				JS_mainFrame.Ts.MainPage.openNewCustomer(winningID);
-    				//window.location = window.location;
-    				//window.parent.ticketSocket.server.ticketUpdate(organizationID + "," + winningID, "merge", userFullName);
-    			}
-    		});
-    		//_mainFrame.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, MergeSuccessEvent(_ticketNumber, winningTicketNumber),
-    		//  function () {
-    		//  $('#merge-error').show();
-    		//});
-    	}
-    	else {
-    		alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
-    		$('#company-merge-complete').removeAttr('disabled');
-		 }
+        if ($('#dialog-companymerge-confirm').prop("checked")) {
+            var winningID = $('#Company-Merge-search').data('organizationid');
+            //var winningCompanyName = $('#Company-Merge-search').data('organizationname');
+            var JSTop = top;
+            //var window = window;
+            $('.merge-processing').show();
+            _mainFrame.Ts.Services.Customers.MergeCompanies(winningID, organizationID, function (result) {
+                $('.merge-processing').hide();
+                $('#company-merge-complete').removeAttr('disabled');
+                if (result != "")
+                    alert(result);
+                else {
+                    $('#MergeModal').modal('hide');
+                    JS_mainFrame.Ts.MainPage.closeNewCustomerTab(organizationID);
+                    JS_mainFrame.Ts.MainPage.openNewCustomer(winningID);
+                    //window.location = window.location;
+                    //window.parent.ticketSocket.server.ticketUpdate(organizationID + "," + winningID, "merge", userFullName);
+                }
+            });
+            //_mainFrame.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, MergeSuccessEvent(_ticketNumber, winningTicketNumber),
+            //  function () {
+            //  $('#merge-error').show();
+            //});
+        }
+        else {
+            alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
+            $('#company-merge-complete').removeAttr('disabled');
+        }
     });
 
     $('#customerDelete').click(function (e) {
@@ -1656,6 +1652,26 @@ $(document).ready(function () {
             alert("Please fill in all the fields");
     });
 
+    $('#taskContainer').on('click', 'a.tasklink', function (e) {
+        e.preventDefault();
+        var id = $(this).data('taskid');
+        parent.Ts.System.logAction('Tasks Page - View Task');
+        parent.Ts.MainPage.openNewTask(id);
+    });
+
+    $('#taskContainer').on('click', '.change-task-status', function (e) {
+        var id = $(this).data('taskid');
+        var checkbox = $(this);
+        var checked = $(this).prop("checked");
+        parent.Ts.System.logAction('Customer Page - Change Task Status');
+
+        parent.Ts.Services.Task.SetTaskIsCompleted(id, checked, function (data) {
+            if (data.IncompleteSubtasks) {
+                checkbox.prop("checked", false);
+                alert('There are subtasks pending completion, please finish them before completing the parent task.')
+            }
+        });
+    });
 
     $("#btnPhoneSave").click(function (e) {
         var phoneInfo = new Object();
@@ -1735,7 +1751,7 @@ $(document).ready(function () {
             //$('#fieldNoteDesc').val(desc);
             $('#fieldNoteID').val(note.NoteID);
             $('#noteCustomerAlert').prop('checked', note.IsAlert);
-            $('#btnNotesSave').text("Edit Note");
+            $('#btnNotesSave').text("Save");
             $('#btnNotesCancel').show();
             $('#noteForm').show();
             $('#fieldNoteDesc').tinymce().setContent(desc);
@@ -1754,10 +1770,10 @@ $(document).ready(function () {
         e.stopPropagation();
         if (confirm('Are you sure you would like to remove this note?')) {
             _mainFrame.Ts.System.logAction('Customer Detail - Delete Note');
-            parent.privateServices.DeleteNote($(this).parent().parent().attr('id'), function(){
+            parent.privateServices.DeleteNote($(this).parent().parent().attr('id'), function () {
                 LoadNotes();
                 $('.noteDesc').toggle(false);
-                });
+            });
         }
     });
 
@@ -1768,7 +1784,7 @@ $(document).ready(function () {
         $('#tblNotes tbody tr').removeClass("active");
 
         $(this).addClass("active");
-        
+
         $('.noteDesc').toggle();
         $('.noteDesc').html("<strong>Description</strong> <p>" + desc + "</p>");
     });
@@ -1786,7 +1802,7 @@ $(document).ready(function () {
             parent.privateServices.DeleteAttachment($(this).parent().parent().attr('id'), function (e) {
                 LoadFiles();
             });
-            
+
         }
     });
 
@@ -1809,7 +1825,7 @@ $(document).ready(function () {
         var description = $('#fieldNoteDesc').val();
         var noteID = $('#fieldNoteID').val();
         var isAlert = $('#noteCustomerAlert').prop('checked');
-        if ((title.length || description.length) < 1){
+        if ((title.length || description.length) < 1) {
             alert("Please fill in all the required information");
             return;
         }
@@ -1914,7 +1930,7 @@ $(document).ready(function () {
             alert('There was an error uploading "' + data.files[0].name + '".');
         },
         progress: function (e, data) {
-            data.context.find('.progress-bar').css('width', parseInt(data.loaded / data.total * 100, 10) +'%');
+            data.context.find('.progress-bar').css('width', parseInt(data.loaded / data.total * 100, 10) + '%');
         },
         start: function (e, data) {
             $('.progress').show();
@@ -1948,7 +1964,7 @@ $(document).ready(function () {
     $('#cbActive').click(function (e) {
         _mainFrame.Ts.Services.Users.SetInactiveFilter(_mainFrame.Ts.System.User.UserID, $('#cbActive').prop('checked') ? true : false, function (result) {
             _mainFrame.Ts.System.logAction('User Info - Changed Filter Inactive Setting');
-        }, 
+        },
               function (error) {
                   alert('There was an error saving the user filter inaactive setting.');
                   item.next().hide();
@@ -2013,7 +2029,7 @@ $(document).ready(function () {
         _mainFrame.Ts.Services.Customers.GetCustomValues(organizationID, _mainFrame.Ts.ReferenceTypes.Organizations, function (html) {
             //$('#customProperties').append(html);
             appendCustomValues(html);
-            });
+        });
     }
 
     function LoadProperties() {
@@ -2033,7 +2049,7 @@ $(document).ready(function () {
             $('#fieldSLA').text(result.SLA);
             $('#fieldSLA').data('field', result.orgproxy.SlaLevelID);
             $('#fieldSupportHours').text(result.orgproxy.SupportHoursMonth);
-            $('#fieldDescription').html(result.orgproxy.Description != null && result.orgproxy.Description != ""? result.orgproxy.Description : "Empty");
+            $('#fieldDescription').html(result.orgproxy.Description != null && result.orgproxy.Description != "" ? result.orgproxy.Description : "Empty");
             $('#fieldAPIToken').text(result.orgproxy.WebServiceID);
             $('#fieldOrgID').text(result.orgproxy.OrganizationID);
             $('#fieldPrimaryContact').text(result.PrimaryUser == "" ? "Empty" : result.PrimaryUser);
@@ -2047,8 +2063,7 @@ $(document).ready(function () {
             $('#fieldTimeZone').text(result.orgproxy.TimeZoneID == "" ? "Central Standard Time" : result.orgproxy.TimeZoneID);
             $('#fieldTimeZone').data('field', result.orgproxy.TimeZoneID);
 
-            if (!_isAdmin || result.orgproxy.IsActive == false)
-            {
+            if (!_isAdmin || result.orgproxy.IsActive == false) {
                 $('#groupInactive').hide();
             }
 
@@ -2068,7 +2083,7 @@ $(document).ready(function () {
 
     function LoadAddresses(reload) {
         $('#addressPanel').empty();
-        _mainFrame.Ts.Services.Customers.LoadAddresses(organizationID,_mainFrame.Ts.ReferenceTypes.Organizations, function (address) {
+        _mainFrame.Ts.Services.Customers.LoadAddresses(organizationID, _mainFrame.Ts.ReferenceTypes.Organizations, function (address) {
             for (var i = 0; i < address.length; i++) {
                 $('#addressPanel').append("<div class='form-group content'> \
                                         <label for='inputName' class='col-xs-4 control-label'>" + address[i].Description + "</label> \
@@ -2157,23 +2172,23 @@ $(document).ready(function () {
 
     function LoadHistory(start) {
 
-        if(start == 1)
+        if (start == 1)
             $('#tblHistory tbody').empty();
 
-            _mainFrame.Ts.Services.Customers.LoadHistory(organizationID, start, function (history) {
-                for (var i = 0; i < history.length; i++) {
-                    $('<tr>').html('<td>' + history[i].DateCreated.localeFormat(_mainFrame.Ts.Utils.getDateTimePattern()) + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td>')
-                    .appendTo('#tblHistory > tbody:last');
-                    //$('#tblHistory tr:last').after('<tr><td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td></tr>');
-                }
-                if(history.length == 50)
-                    $('<button>').text("Load More").addClass('btn-link')
-                    .click(function (e){
-                        LoadHistory($('#tblHistory tbody > tr').length+1);
-                        $(this).remove();
-                    })
-                   .appendTo('#tblHistory > tbody:last');
-            });
+        _mainFrame.Ts.Services.Customers.LoadHistory(organizationID, start, function (history) {
+            for (var i = 0; i < history.length; i++) {
+                $('<tr>').html('<td>' + history[i].DateCreated.localeFormat(_mainFrame.Ts.Utils.getDateTimePattern()) + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td>')
+                .appendTo('#tblHistory > tbody:last');
+                //$('#tblHistory tr:last').after('<tr><td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td></tr>');
+            }
+            if (history.length == 50)
+                $('<button>').text("Load More").addClass('btn-link')
+                .click(function (e) {
+                    LoadHistory($('#tblHistory tbody > tr').length + 1);
+                    $(this).remove();
+                })
+               .appendTo('#tblHistory > tbody:last');
+        });
     }
 
     function LoadFiles() {
@@ -2227,17 +2242,16 @@ $(document).ready(function () {
 
     function LoadRatings(ratingOption, start) {
 
-        if(start == 1)
+        if (start == 1)
             $('#tblRatings tbody').empty();
-        _mainFrame.Ts.Services.Customers.LoadAgentRatings2(organizationID, ratingOption, $('#tblRatings tbody > tr').length + 1,_mainFrame.Ts.ReferenceTypes.Organizations, $('#ddlRatingProductFamily').val(), function (ratings) {
+        _mainFrame.Ts.Services.Customers.LoadAgentRatings2(organizationID, ratingOption, $('#tblRatings tbody > tr').length + 1, _mainFrame.Ts.ReferenceTypes.Organizations, $('#ddlRatingProductFamily').val(), function (ratings) {
             var agents = "";
             for (var i = 0; i < ratings.length; i++) {
-                    for (var j = 0; j < ratings[i].users.length; j++)
-                {
+                for (var j = 0; j < ratings[i].users.length; j++) {
                     if (j != 0)
                         agents = agents + ", ";
 
-                        agents = agents + '<a href="#" target="_blank" onclick="_mainFrame.Ts.MainPage.openUser(' + ratings[i].users[j].UserID + '); return false;">' + ratings[i].users[j].FirstName + ' ' + ratings[i].users[j].LastName + '</a>';
+                    agents = agents + '<a href="#" target="_blank" onclick="_mainFrame.Ts.MainPage.openUser(' + ratings[i].users[j].UserID + '); return false;">' + ratings[i].users[j].FirstName + ' ' + ratings[i].users[j].LastName + '</a>';
                 }
 
                 var tr = $('<tr>')
@@ -2263,7 +2277,7 @@ $(document).ready(function () {
         _mainFrame.Ts.Services.Customers.LoadRatingPercents2(organizationID, _mainFrame.Ts.ReferenceTypes.Organizations, $('#ddlRatingProductFamily').val(), function (results) {
             $('#negativePercent').text(results[0] + "%");
             $('#neutralPercent').text(results[1] + "%");
-            $('#positivePercent').text(results[2] + "%" );
+            $('#positivePercent').text(results[2] + "%");
         });
     }
 
@@ -2276,7 +2290,7 @@ $(document).ready(function () {
         ratingFilter = 0;
     });
     $('#negativeImage').click(function () {
-        LoadRatings(-1,1 );
+        LoadRatings(-1, 1);
         ratingFilter = -1;
     });
     $('#viewAll').click(function () {
@@ -2288,15 +2302,14 @@ $(document).ready(function () {
         LoadRatings(ratingFilter, 1);
     });
 
-    function LoadPhoneNumbers(reload)
-    {
+    function LoadPhoneNumbers(reload) {
         $('#phonePanel').empty();
-        _mainFrame.Ts.Services.Customers.LoadPhoneNumbers(organizationID,_mainFrame.Ts.ReferenceTypes.Organizations, function (phone) {
+        _mainFrame.Ts.Services.Customers.LoadPhoneNumbers(organizationID, _mainFrame.Ts.ReferenceTypes.Organizations, function (phone) {
             for (var i = 0; i < phone.length; i++) {
                 $('#phonePanel').append("<div class='form-group content'> \
                                         <label for='inputName' class='col-xs-4 control-label'>" + phone[i].PhoneTypeName + "</label> \
                                         <div class='col-xs-5 '> \
-                                            <p class='form-control-static '><a href='tel:"+phone[i].Number+"'>" + phone[i].Number + "</a>" + ((phone[i].Extension != null && phone[i].Extension != '') ? ' Ext:' + phone[i].Extension : '') + "</p> \
+                                            <p class='form-control-static '><a href='tel:"+ phone[i].Number + "'>" + phone[i].Number + "</a>" + ((phone[i].Extension != null && phone[i].Extension != '') ? ' Ext:' + phone[i].Extension : '') + "</p> \
                                         </div> \
                                         <div id='editmenu' class='col-xs-2 hiddenmenu'> \
                                             <p class='form-control-static'> \
@@ -2306,7 +2319,7 @@ $(document).ready(function () {
                                         </div> \
                                     </div>");
             }
-            if(reload != undefined)
+            if (reload != undefined)
                 $("#phonePanel #editmenu").toggleClass("hiddenmenu");
         });
     }
@@ -2324,7 +2337,7 @@ $(document).ready(function () {
         _mainFrame.Ts.Services.Customers.LoadProductTypes(function (pt) {
             for (var i = 0; i < pt.length; i++) {
                 if (i == 0)
-                    LoadProductVersions(pt[i].ProductID,-1);
+                    LoadProductVersions(pt[i].ProductID, -1);
                 $('<option>').attr('value', pt[i].ProductID).text(pt[i].Name).data('o', pt[i]).appendTo('#productProduct');
             }
         });
@@ -2332,7 +2345,7 @@ $(document).ready(function () {
 
     function LoadProductVersions(productID, selVal) {
         $("#productVersion").empty();
-        
+
         _mainFrame.Ts.Services.Customers.LoadProductVersions(productID, function (pt) {
             $('<option>').attr('value', '-1').text('Unassigned').appendTo('#productVersion');
             for (var i = 0; i < pt.length; i++) {
@@ -2377,7 +2390,7 @@ $(document).ready(function () {
         _mainFrame.Ts.MainPage.openNewCustomer(id);
 
         _mainFrame.Ts.Services.Customers.UpdateRecentlyViewed('o' + id, function (resultHtml) {
-  
+
         });
 
     });
@@ -2432,7 +2445,7 @@ $(document).ready(function () {
             _slaSortColumn = "SlaTicketType";
         } else if (_slaSortColumn.toLowerCase() == "severity") {
             _slaSortColumn = "SlaSeverity";
-}
+        }
 
         var sortIcon = $(this).children(i);
 
@@ -2516,6 +2529,16 @@ $(document).ready(function () {
         });
     }
 
+    function LoadTasks() {
+
+        parent.Ts.Services.Task.GetCustomerTasks(0, 20, organizationID, function (tasks) {
+            var data = { taskList: tasks };
+            var source = $("#company-tasks-template").html();
+            var template = Handlebars.compile(source);
+            $("#tasks").html(template(data));
+        });
+    }
+
     $('#tblSLAViolations').on('click', '.slaView', function (e) {
         e.preventDefault();
         _mainFrame.Ts.System.logAction('Customer Detail - View Ticket Sla Violated');
@@ -2535,25 +2558,22 @@ $(document).ready(function () {
                     $('#productsContainer').addClass('expandProductsContainer');
                 }
             });
-            }
+        }
 
         $('#tblProducts tbody').empty();
         _mainFrame.Ts.Services.Customers.LoadProducts2(organizationID, _productsSortColumn, _productsSortDirection, _isParentView, function (product) {
             for (var i = 0; i < product.length; i++) {
                 var customfields = "";
-                for (var p = 0; p < product[i].CustomFields.length; p++)
-                {
-                    customfields = customfields + "<td>" + product[i].CustomFields[p]  + "</td>";
+                for (var p = 0; p < product[i].CustomFields.length; p++) {
+                    customfields = customfields + "<td>" + product[i].CustomFields[p] + "</td>";
                 }
 
                 var html;
 
-                if (!_isParentView && (_mainFrame.Ts.System.User.CanEditCompany || _isAdmin))
-                {
+                if (!_isParentView && (_mainFrame.Ts.System.User.CanEditCompany || _isAdmin)) {
                     html = '<td><i class="fa fa-edit productEdit"></i></td><td><i class="fa fa-trash-o productDelete"></i></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td>' + product[i].SlaAssigned + '</td><td>' + product[i].DateCreated + '</td>' + customfields;
                 }
-                else
-                {
+                else {
                     html = '<td></td><td></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].SlaAssigned + '</td><td>' + product[i].ReleaseDate + '</td><td>' + product[i].DateCreated + '</td>' + customfields
                 }
                 var tr = $('<tr>')
@@ -2620,7 +2640,7 @@ $(document).ready(function () {
 
             var chartData = [];
             var dummy = chartString.split(",");
-            var openCount=0;
+            var openCount = 0;
 
             for (var i = 0; i < dummy.length; i++) {
                 chartData.push([dummy[i], parseFloat(dummy[i + 1])]);
@@ -2637,43 +2657,43 @@ $(document).ready(function () {
                 for (var i = 0; i < chartData.length; i++) {
                     openCount = openCount + chartData[i][1];
                 }
-            $('#openChart').highcharts({
-                chart: {
-                    plotBackgroundColor: null,
-                    plotBorderWidth: null,
-                    plotShadow: false,
-                    height: 250,
-                },
-                credits: {
-                    enabled: false
-                },
-                title: {
-                    text: 'Open Tickets ' + openCount,
-                    style: {
-                        "fontSize": "14px"
-                    }
-                },
-                tooltip: {
-                    pointFormat: '{series.name}: {point.y} - <b>{point.percentage:.0f}%</b>'
-                },
-                plotOptions: {
-                    pie: {
-                        allowPointSelect: true,
-                        cursor: 'pointer',
-                        dataLabels: {
-                            enabled: false
+                $('#openChart').highcharts({
+                    chart: {
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        height: 250,
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    title: {
+                        text: 'Open Tickets ' + openCount,
+                        style: {
+                            "fontSize": "14px"
                         }
-                    }
-                },
-                series: [{
-                    type: 'pie',
-                    name: 'Open Tickets',
-                    data: []
-                }]
-            });
+                    },
+                    tooltip: {
+                        pointFormat: '{series.name}: {point.y} - <b>{point.percentage:.0f}%</b>'
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                enabled: false
+                            }
+                        }
+                    },
+                    series: [{
+                        type: 'pie',
+                        name: 'Open Tickets',
+                        data: []
+                    }]
+                });
 
-            var chart = $('#openChart').highcharts();
-            chart.series[0].setData(chartData);
+                var chart = $('#openChart').highcharts();
+                chart.series[0].setData(chartData);
 
 
 
@@ -2701,64 +2721,62 @@ $(document).ready(function () {
                 for (var i = 0; i < chartData.length; i++) {
                     closedCount = closedCount + chartData[i][1];
                 }
-            $('#closedChart').highcharts({
-                chart: {
-                    plotBackgroundColor: null,
-                    plotBorderWidth: null,
-                    plotShadow: false,
-                    height: 250,
-                },
-                credits: {
-                    enabled: false
-                },
-                title: {
-                    text: 'Closed Tickets ' + closedCount,
-                    style: {
-                        "fontSize": "14px"
-                    }
-
-                },
-                tooltip: {
-                    pointFormat: '{series.name}: {point.y} - <b>{point.percentage:.0f}%</b>'
-                },
-                plotOptions: {
-                    pie: {
-                        allowPointSelect: true,
-                        cursor: 'pointer',
-                        dataLabels: {
-                            enabled: false
+                $('#closedChart').highcharts({
+                    chart: {
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        height: 250,
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    title: {
+                        text: 'Closed Tickets ' + closedCount,
+                        style: {
+                            "fontSize": "14px"
                         }
-                    }
-                },
-                series: [{
-                    type: 'pie',
-                    name: 'Closed Tickets',
-                    data: []
-                }]
-            });
 
-            var chart = $('#closedChart').highcharts();
-            chart.series[0].setData(chartData);
+                    },
+                    tooltip: {
+                        pointFormat: '{series.name}: {point.y} - <b>{point.percentage:.0f}%</b>'
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                enabled: false
+                            }
+                        }
+                    },
+                    series: [{
+                        type: 'pie',
+                        name: 'Closed Tickets',
+                        data: []
+                    }]
+                });
+
+                var chart = $('#closedChart').highcharts();
+                chart.series[0].setData(chartData);
             }
         });
 
         _mainFrame.Ts.Services.Organizations.LoadCDISettings(_mainFrame.Ts.System.Organization.OrganizationID, function (cdi) {
-            if (cdi == null)
-            {
+            if (cdi == null) {
                 greenLimit = 70;
                 yellowLimit = 85
             }
-                else
-            {
-            greenLimit = cdi.GreenUpperRange == null ? 70 : cdi.GreenUpperRange;
-            yellowLimit = cdi.YellowUpperRange == null ? 85 : cdi.YellowUpperRange;
+            else {
+                greenLimit = cdi.GreenUpperRange == null ? 70 : cdi.GreenUpperRange;
+                yellowLimit = cdi.YellowUpperRange == null ? 85 : cdi.YellowUpperRange;
             }
         });
 
         _mainFrame.Ts.Services.Customers.LoadCDI2(organizationID, _isParentView, function (cdiValue) {
             var chartData = [];
             chartData.push(cdiValue);
-            
+
             _mainFrame.Ts.Services.Customers.GetCustDistIndexTrend(organizationID, function (trend) {
                 $('#csiChart').highcharts({
 
@@ -2872,7 +2890,7 @@ $(document).ready(function () {
 
 
 
-        }); 
+        });
     }
     $("[rel='tooltip']").tooltip();
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -2923,6 +2941,10 @@ $(document).ready(function () {
         else if (e.target.innerHTML == "SLA") {
             LoadSLATriggersGrid();
             LoadSLAViolationsGrid();
+        }
+        else if (e.target.innerHTML == "Tasks") {
+            LoadTasks();
+            _viewingContacts = false;
         }
     })
 
@@ -3097,8 +3119,7 @@ var appendCustomValues = function (fields) {
             $('#customPropRow').hide();
         }
 
-        for (var c = 0; c < categories.length; c++)
-        {
+        for (var c = 0; c < categories.length; c++) {
             var custom = $('<div>').insertBefore($('#customPropRow'));
 
             var box = $('<div>').addClass('box').appendTo(custom);
@@ -3114,8 +3135,7 @@ var appendCustomValues = function (fields) {
 
             for (var i = 0; i < fields.length; i++) {
 
-                if (categories[c].CustomFieldCategoryID == fields[i].CustomFieldCategoryID)
-                {
+                if (categories[c].CustomFieldCategoryID == fields[i].CustomFieldCategoryID) {
                     var item = null;
                     var field = fields[i];
                     var div = $('<div>').addClass('form-group').data('field', field);
@@ -3174,8 +3194,8 @@ var appendCustomValues = function (fields) {
     }
     //var containerL = $('#customPropertiesL').empty();
     //var containerR = $('#customPropertiesR').empty();
-    
-    
+
+
 }
 
 var appendCustomEditCombo = function (field, element) {
@@ -3351,68 +3371,66 @@ var appendCustomEdit = function (field, element) {
       .addClass('form-control-static editable')
       .appendTo(div)
       .click(function (e) {
-        if ($(this).has('a') && !$(this).hasClass('editable'))
-        {
-            return;
-        }
-        else
-            {
-          e.preventDefault();
-          if (!$(this).hasClass('editable'))
-              return false;
-          var parent = $(this).hide();
-          _mainFrame.Ts.System.logAction('Customer Detail - Edit Custom Textbox');
-          var container = $('<div>')
-            .insertAfter(parent);
-
-          var container1 = $('<div>')
-          .addClass('col-xs-9')
-          .appendTo(container);
-
-          var fieldValue = parent.closest('.form-group').data('field').Value;
-          var input = $('<input type="text">')
-            .addClass('col-xs-10 form-control')
-            .val(fieldValue == "Empty" ? "" : fieldValue)
-            .appendTo(container1)
-            .focus();
-
-          if (field.Mask) {
-            input.mask(field.Mask);
-            input.attr("placeholder", field.Mask);
+          if ($(this).has('a') && !$(this).hasClass('editable')) {
+              return;
           }
+          else {
+              e.preventDefault();
+              if (!$(this).hasClass('editable'))
+                  return false;
+              var parent = $(this).hide();
+              _mainFrame.Ts.System.logAction('Customer Detail - Edit Custom Textbox');
+              var container = $('<div>')
+                .insertAfter(parent);
 
-          $('<i>')
-            .addClass('col-xs-1 fa fa-times')
-            .click(function (e) {
-                $(this).closest('div').remove();
-                parent.show();
-                $('#customerEdit').removeClass("disabled");
-            })
-            .insertAfter(container1);
-          $('<i>')
-            .addClass('col-xs-1 fa fa-check')
-            .click(function (e) {
-                var value = input.val();
-                container.remove();
-                if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                    result.parent().addClass('has-error');
-                }
-                else {
-                    result.parent().removeClass('has-error');
-                }
-                _mainFrame.Ts.System.logAction('Customer Detail - Save Custom Textbox Edit');
-                _mainFrame.Ts.Services.System.SaveCustomValue(field.CustomFieldID, organizationID, value, function (result) {
-                    parent.closest('.form-group').data('field', result);
-                    parent.html((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : getUrls(result.Value)));
+              var container1 = $('<div>')
+              .addClass('col-xs-9')
+              .appendTo(container);
+
+              var fieldValue = parent.closest('.form-group').data('field').Value;
+              var input = $('<input type="text">')
+                .addClass('col-xs-10 form-control')
+                .val(fieldValue == "Empty" ? "" : fieldValue)
+                .appendTo(container1)
+                .focus();
+
+              if (field.Mask) {
+                  input.mask(field.Mask);
+                  input.attr("placeholder", field.Mask);
+              }
+
+              $('<i>')
+                .addClass('col-xs-1 fa fa-times')
+                .click(function (e) {
+                    $(this).closest('div').remove();
+                    parent.show();
                     $('#customerEdit').removeClass("disabled");
-                }, function () {
-                    alert("There was a problem saving your contact property.");
-                    $('#customerEdit').removeClass("disabled");
-                });
-                parent.show();
-            })
-            .insertAfter(container1);
-          $('#customerEdit').addClass("disabled");
+                })
+                .insertAfter(container1);
+              $('<i>')
+                .addClass('col-xs-1 fa fa-check')
+                .click(function (e) {
+                    var value = input.val();
+                    container.remove();
+                    if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                        result.parent().addClass('has-error');
+                    }
+                    else {
+                        result.parent().removeClass('has-error');
+                    }
+                    _mainFrame.Ts.System.logAction('Customer Detail - Save Custom Textbox Edit');
+                    _mainFrame.Ts.Services.System.SaveCustomValue(field.CustomFieldID, organizationID, value, function (result) {
+                        parent.closest('.form-group').data('field', result);
+                        parent.html((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : getUrls(result.Value)));
+                        $('#customerEdit').removeClass("disabled");
+                    }, function () {
+                        alert("There was a problem saving your contact property.");
+                        $('#customerEdit').removeClass("disabled");
+                    });
+                    parent.show();
+                })
+                .insertAfter(container1);
+              $('#customerEdit').addClass("disabled");
           }
       });
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
@@ -3594,7 +3612,7 @@ var appendCustomEditTime = function (field, element) {
           var input = $('<input type="text">')
             .addClass('col-xs-10 form-control')
             .val(fieldValue === null ? '' : fieldValue.localeFormat(_mainFrame.Ts.Utils.getTimePattern()))
-            .datetimepicker({pickDate: false})
+            .datetimepicker({ pickDate: false })
 
             .appendTo(container1)
             .focus();
@@ -3743,61 +3761,61 @@ function openNote(noteID) {
 }
 
 function GetTinyMCEFontName(fontFamily) {
-  var result = '';
-  switch (fontFamily) {
-    case 1:
-      result = "'andale mono', times";
-      break;
-    case 2:
-      result = "arial, helvetica, sans-serif";
-      break;
-    case 3:
-      result = "'arial black', 'avant garde'";
-      break;
-    case 4:
-      result = "'book antiqua', palatino";
-      break;
-    case 5:
-      result = "'comic sans ms', sans-serif";
-      break;
-    case 6:
-      result = "'courier new', courier";
-      break;
-    case 7:
-      result = "georgia, palatino";
-      break;
-    case 8:
-      result = "helvetica";
-      break;
-    case 9:
-      result = "impact, chicago";
-      break;
-    case 10:
-      result = "symbol";
-      break;
-    case 11:
-      result = "tahoma, arial, helvetica, sans-serif";
-      break;
-    case 12:
-      result = "terminal, monaco";
-      break;
-    case 13:
-      result = "'times new roman', times";
-      break;
-    case 14:
-      result = "'trebuchet ms', geneva";
-      break;
-    case 15:
-      result = "verdana, geneva";
-      break;
-    case 16:
-      result = "webdings";
-      break;
-    case 17:
-      result = "wingdings, 'zapf dingbats'";
-      break;
-  }
-  return result;
+    var result = '';
+    switch (fontFamily) {
+        case 1:
+            result = "'andale mono', times";
+            break;
+        case 2:
+            result = "arial, helvetica, sans-serif";
+            break;
+        case 3:
+            result = "'arial black', 'avant garde'";
+            break;
+        case 4:
+            result = "'book antiqua', palatino";
+            break;
+        case 5:
+            result = "'comic sans ms', sans-serif";
+            break;
+        case 6:
+            result = "'courier new', courier";
+            break;
+        case 7:
+            result = "georgia, palatino";
+            break;
+        case 8:
+            result = "helvetica";
+            break;
+        case 9:
+            result = "impact, chicago";
+            break;
+        case 10:
+            result = "symbol";
+            break;
+        case 11:
+            result = "tahoma, arial, helvetica, sans-serif";
+            break;
+        case 12:
+            result = "terminal, monaco";
+            break;
+        case 13:
+            result = "'times new roman', times";
+            break;
+        case 14:
+            result = "'trebuchet ms', geneva";
+            break;
+        case 15:
+            result = "verdana, geneva";
+            break;
+        case 16:
+            result = "webdings";
+            break;
+        case 17:
+            result = "wingdings, 'zapf dingbats'";
+            break;
+    }
+    return result;
 }
 
 function SetupParentSection(parents) {
@@ -3959,8 +3977,7 @@ function SetupParentSection(parents) {
     //});
 
     $('#company-Parent').on('click', 'span.tagRemove', function (e) {
-        if (confirm('Are you sure you would like to remove this parent company?'))
-        {
+        if (confirm('Are you sure you would like to remove this parent company?')) {
             var self = $(this);
             var data = self.parent().data().tag;
 
@@ -3974,6 +3991,80 @@ function SetupParentSection(parents) {
         else {
             _mainFrame.Ts.System.logAction('Customer Detail - Remove Parent - Cancelled.');
         }
+    });
+
+    Handlebars.registerHelper("formatDate", function (datetime) {
+        if (datetime != null) {
+            return parent.Ts.Utils.getMsDate(datetime).localeFormat(parent.Ts.Utils.getDatePattern());
+        }
+        else return null;
+    });
+
+    Handlebars.registerHelper("formatRow", function (task) {
+        var cssClasses = null;
+
+        if (task.DueDate != null) {
+            if (task.IsComplete != true && new Date() > new Date(task.DueDate)) {
+                cssClasses = 'danger';
+            }
+            else {
+                return null;
+            }
+        }
+
+        return cssClasses;
+    });
+
+    Handlebars.registerHelper("taskComplete", function (isComplete) {
+        return isComplete == true ? ' checked="checked"' : '';
+    });
+
+    Handlebars.registerHelper("mapAssociation", function (association) {
+        var result = '';
+        var functionName = '';
+        var associationName = '';
+        var iconClass = '';
+
+        switch (association.RefType) {
+            case 6:
+                associationName = association.Group;
+                iconClass = "groupIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openGroup(' + association.RefID + '); return false;';
+                break;
+            case 9:
+                associationName = association.Company;
+                iconClass = "companyIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openNewCustomer(' + association.RefID + '); return false;';
+                break;
+            case 13:
+                associationName = association.Product;
+                iconClass = "productIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openNewProduct(' + association.RefID + '); return false;';
+                break;
+            case 17:
+                associationName = association.TicketName;
+                iconClass = "ticketIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openTicketByID(' + association.RefID + '); return false;'
+                break;
+            case 22:
+                associationName = association.User;
+                iconClass = "userIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openUser(' + association.RefID + '); return false;'
+                break;
+            case 32:
+                associationName = association.Contact;
+                iconClass = "contactIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openNewContact(' + association.RefID + '); return false;'
+                break;
+            default:
+                functionName = null;
+        }
+
+        if (functionName != null) {
+            result = '<span><a target="_blank" class="ui-state-default ts-link ' + iconClass + '" href="#" onclick="' + functionName + '" title="' + associationName + '"></a></span>'
+        }
+
+        return new Handlebars.SafeString(result);
     });
 };
 

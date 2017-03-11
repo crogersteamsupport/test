@@ -178,7 +178,7 @@ namespace TSWebServices
 
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
 
-				path = String.Format("/dc/{0}/UserAvatar/{1}/73/{2}", user.OrganizationID, userID, Guid.NewGuid()); 
+				path = String.Format("/dc/{0}/UserAvatar/{1}/120/{2}", user.OrganizationID, userID, Guid.NewGuid()); 
             return path;
         }
 
@@ -288,6 +288,16 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public bool UpdateSpecificUserStatus(int userID, bool value)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            user.InOffice = value;
+            user.Collection.Save();
+            return value;
+        }
+
+        [WebMethod]
         public UserProxy ToggleUserStatus()
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
@@ -309,6 +319,15 @@ namespace TSWebServices
         public ChatUserSettingProxy ToggleUserChatStatus()
         {
             ChatUserSetting setting = ChatUserSettings.GetChatUserSetting(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
+            setting.IsAvailable = !setting.IsAvailable;
+            setting.Collection.Save();
+            return setting.GetProxy();
+        }
+
+        [WebMethod]
+        public ChatUserSettingProxy ToggleSpecifiedUserChatStatus(int userID)
+        {
+            ChatUserSetting setting = ChatUserSettings.GetChatUserSetting(TSAuthentication.GetLoginUser(), userID);
             setting.IsAvailable = !setting.IsAvailable;
             setting.Collection.Save();
             return setting.GetProxy();
@@ -1378,12 +1397,12 @@ namespace TSWebServices
                 }
 
                 if (!u.InOffice)
-                    officesetting = string.Format("<span class='ts-icon ts-icon-offline-small user-tooltip' title={0}></span>", u.InOfficeComment);
+                    officesetting = string.Format("<span class='ts-icon ts-icon-offline-small user-tooltip' title='{0}' userid='{1}'></span>", u.InOfficeComment, u.UserID);
                 else
-                    officesetting = string.Format("<span class='ts-icon ts-icon-online-small user-tooltip' title={0}></span>", u.InOfficeComment);
+                    officesetting = string.Format("<span class='ts-icon ts-icon-online-small user-tooltip' title='{0}' userid='{1}'></span>", u.InOfficeComment, u.UserID);
 
 
-                    html.AppendFormat(@"<li>
+                html.AppendFormat(@"<li>
                     <div class='row'>
                         <div class='col-xs-2 pl0'>
                             <div class='avatar'>
@@ -1559,6 +1578,7 @@ namespace TSWebServices
             {
                 CalEvent cal = new CalEvent();
                 cal.color = "blue";
+
                 cal.title = r.Description;
                 cal.start = ((DateTime)r.GetProxy().DueDate).ToString("o");
                 cal.end = null;
@@ -1603,7 +1623,10 @@ namespace TSWebServices
                         }
                         else
                             continue;
-
+                    case ReferenceType.Tasks:
+                        cal.title = r.Description;
+                        cal.description = string.Empty;
+                        break;
                 }
 
 
@@ -1955,7 +1978,7 @@ namespace TSWebServices
                 cal.StartDateUTC = startDate;
 
                 if (info.end != null)
-                {
+                { 
                     var endDate = (new DateTime(1970, 1, 1)).AddMilliseconds(double.Parse(info.end));
 
                     if (info.allDay)
@@ -1969,6 +1992,8 @@ namespace TSWebServices
                         cal.EndDateUTC = endDate;
                     }
                 }
+
+
                 cal.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
                 cal.Title = info.title;
                 cal.Description = info.description;

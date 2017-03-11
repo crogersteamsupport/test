@@ -34,8 +34,8 @@
         var divPreview = container.find("div.preview");
 
         //What size to make the preview window (defaults to existing width/height if specified in 'style' attribute)
-        var previewFallbackWidth = 73;
-        var previewFallbackHeight = 73;
+        var previewFallbackWidth = 200;
+        var previewFallbackHeight = 200;
 
         //Allow the div to override the default width and height in the style attribute
         var previewMaxWidth = (divPreview.attr('style') != null && divPreview.attr('style').indexOf('width') > -1) ? divPreview.width() : previewFallbackWidth;
@@ -108,8 +108,8 @@
             var query = '?';
 
             //Add final size, if specified.
-            query += 'maxwidth=73&';
-            query += 'maxheight=73&';
+            query += 'maxwidth=200&';
+            query += 'maxheight=200&';
 
             //Add crop rectangle
             query += 'crop=(' + coords.x + ',' + coords.y + ',' + coords.x2 + ',' + coords.y2 + ')&cropxunits=' + image.width() + '&cropyunits=' + image.height()
@@ -178,7 +178,7 @@
                 <div style="margin-top: 2em;">Preview your photo:</div>
                 <div style="width:73px; text-align:center; ">
                 
-                    <div class="preview" style="width:73px;height:73px;border: 1px solid black">
+                    <div class="preview" style="width:200px;height:200px;border: 1px solid black">
                     </div>
 
                     <input id='img1' type="hidden" class="result" value="" runat="server" />

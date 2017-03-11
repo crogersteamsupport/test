@@ -77,6 +77,8 @@ html, body { height: 100%; margin: 0px; padding: 0px; overflow: hidden; }
 @media (min-width: 992px) { .container { max-width: 1920px; } }
 @media (min-width: 768px) { .container { max-width: 1920px; }}
 
+@media (max-width: 720px) { img { max-width: 100%; height: auto; } }
+
 
 /* Box styles */
 .box { margin-top: 15px; background-color:#fff; border: 1px solid #fff;   border-top: 5px solid #fff; border-top-left-radius: 5px; border-top-right-radius: 5px; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; }
@@ -255,6 +257,16 @@ fieldset[disabled] .btn-default.active {
 .pt0 {padding-top: 0px !important;}
 .pl0 {padding-left: 0px !important;}
 .p0 {padding: 0px !important;}
+/* Added default border and bold red for error labels*/
+input.error {
+    border-color: #a94442;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+}
+label.error {
+    color: #a94442;
+    font-weight: bold;
+}
+
 .maincontainer .nav-tabs > li.active > a, .maincontainer .nav-tabs > li.active > a:hover, .maincontainer .nav-tabs > li.active > a:focus{
     color:white;
     background-color: #1E7DCC;

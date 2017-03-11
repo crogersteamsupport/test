@@ -1,4 +1,6 @@
-﻿$(document).ready(function () {
+﻿var ticketWidget = null;
+
+$(document).ready(function () {
     LoadOrder();
     CreateDOMEvents();
     LoadPluginTemplate('ticket');
@@ -14,7 +16,6 @@
     });
 
     var _pluginID = -1;
-    var ticketWidget = null;
 
     function LoadOrder() {
         //get ticket categories and append them to list

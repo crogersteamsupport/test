@@ -33,7 +33,9 @@ namespace TeamSupport.Data
         TempImages,
         CustomerHubLogo,
         ScheduledReports,
-        ScheduledReportsLogs
+        ScheduledReportsLogs,
+        ChatUploads,
+        Tasks
     };
 
     /// <summary>
@@ -128,7 +130,9 @@ namespace TeamSupport.Data
 		case Folder.CustomerHubLogo: result = "Images\\HubLogo"; break;
         case Folder.ScheduledReports: result = "ScheduledReports"; break;
         case Folder.ScheduledReportsLogs: result = "ScheduledReports\\Logs"; break;
-		default: result = ""; break;
+        case Folder.ChatUploads: result = "ChatAttachments"; break;
+        case Folder.Tasks: result = "Tasks"; break;
+        default: result = ""; break;
       }
       return result;
     }
@@ -151,7 +155,9 @@ namespace TeamSupport.Data
         case Folder.UserAttachments: result = ReferenceType.Users; break;
         case Folder.AssetAttachments: result = ReferenceType.Assets; break;
         case Folder.Imports: result = ReferenceType.Imports; break;
-				case Folder.CustomerHubLogo: result = ReferenceType.CustomerHubLogo; break;
+		case Folder.CustomerHubLogo: result = ReferenceType.CustomerHubLogo; break;
+        case Folder.ChatUploads: result = ReferenceType.ChatAttachments; break;
+        case Folder.Tasks: result = ReferenceType.Tasks; break;
         default: result = ReferenceType.None; break;
       }
       return result;

@@ -49,11 +49,23 @@ namespace TeamSupport.Data
 			DateTime dateOnly = StartDateUtc.Date;
 			DateTime timeOnly = default(DateTime).Add(StartDateUtc.TimeOfDay);
 			DayOfWeek dayOfWeek = DayOfWeek.Sunday;
+            int dayDiff = 0;
+            int initialDayDiff = StartDateUtc.DayOfWeek - StartDate.DayOfWeek;
 
-			if (LastRunUtc != null)
+            if (LastRunUtc != null)
 			{
 				dateOnly = StartDateUtc > LastRunUtc ? StartDateUtc.Date : ((DateTime)LastRunUtc).Date;
-			}
+                initialDayDiff = ((DateTime)LastRunUtc).DayOfWeek - ((DateTime)LastRun).DayOfWeek;
+
+                //Difference in day (due to the UTC) between Sund-Sat or Sat-Sun will be handled here because the substraction will return 6 or -6, we only need to know if it's 1 or -1 (day ahead or day behind)
+                if (initialDayDiff == -6) //Sun (0) back to Sat (6)
+                {
+                    initialDayDiff = 1;
+                } else if (initialDayDiff == 6) //Sat (6) onto Sun (0)
+                {
+                    initialDayDiff = -1;
+                }
+            }
 
 			switch ((ScheduledReportFrequency)RecurrencyId)
 			{
@@ -74,10 +86,11 @@ namespace TeamSupport.Data
                     }
                     else
                     {
+                        int totalDaysInAWeek = 7;
+                        int totalDays = (byte)Every * totalDaysInAWeek;
+
                         while (dateOnly < DateTime.UtcNow)
                         {
-                            int totalDaysInAWeek = 7;
-                            int totalDays = (byte)Every * totalDaysInAWeek;
                             dateOnly = dateOnly.AddDays(totalDays);
 
                             if (dateOnly.DayOfWeek != dayOfWeek)
@@ -88,8 +101,14 @@ namespace TeamSupport.Data
                         }
                     }
 
-                    NextRun = dateOnly.Add(timeOnly.TimeOfDay);
+                    NextRun = dateOnly.Add(timeOnly.TimeOfDay).AddDays(initialDayDiff);
 
+                    if (NextRun.Value.DayOfWeek != dayOfWeek)
+                    {
+                        dayDiff = dayOfWeek - NextRun.Value.DayOfWeek;
+                        NextRun = dateOnly.AddDays(dayDiff).Add(timeOnly.TimeOfDay);
+                    }
+                    
                     break;
 				case ScheduledReportFrequency.Monthly:
                     //we need: startdate, every, weekday (1:Sun, ..., 7:Sat), 
@@ -100,7 +119,7 @@ namespace TeamSupport.Data
 
 					while (dateOnly < DateTime.UtcNow)
 					{
-						if (Monthday < 5 && Weekday != null)
+						if (Monthday < 5 && Weekday != null && Weekday > 0)
 						{
 							int totalDaysInAWeek = 7;
 							dayOfWeek = (DayOfWeek)(byte)Weekday - 1;
@@ -134,6 +153,24 @@ namespace TeamSupport.Data
 					}
 
 					NextRun = dateOnly.Add(timeOnly.TimeOfDay);
+
+                    if (Monthday < 5 && Weekday != null && Weekday > 0 && NextRun.Value.DayOfWeek != dayOfWeek)
+                    {
+                        dayDiff = dayOfWeek - NextRun.Value.DayOfWeek;
+                        NextRun = dateOnly.AddDays(dayDiff).Add(timeOnly.TimeOfDay);
+                    }
+
+                    dayDiff = (int)(dateOnly.Date - NextRun.Value.Date).TotalDays;
+
+                    if (dayDiff != 0)
+                    {
+                        NextRun = dateOnly.AddDays(dayDiff).Add(timeOnly.TimeOfDay);
+                    }
+
+                    if (NextRunUtc.Value.DayOfYear < NextRun.Value.DayOfYear)
+                    {
+                        NextRun = NextRun.Value.AddDays(1);
+                    }
 
 					break;
                 case ScheduledReportFrequency.Daily:

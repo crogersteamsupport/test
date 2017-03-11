@@ -152,7 +152,6 @@ UserPage = function () {
     $('#chatUser').text((user.IsChatUser == true ? 'Yes' : 'No'));
     $('#activatedOn').text(user.ActivatedOn.toDateString());
     $('#userInfo').html((user.UserInformation == '' ? 'No Additional Information' : user.UserInformation.replace(/\n\r?/g, '<br />')));
-    $('#userTicketPageVersion').text((user.IsClassicView == true ? 'Yes' : 'No'));
     if (user.verificationPhoneNumber !== null && user.verificationPhoneNumber !== "") $('#userTwoFactorCell').text(user.verificationPhoneNumber);
 
     if (user.LinkedIn == '')
@@ -195,7 +194,8 @@ UserPage = function () {
 
     if (window.parent.parent.Ts.System.Organization.ProductType == window.parent.parent.Ts.ProductType.Express || window.parent.parent.Ts.System.Organization.ProductType == window.parent.parent.Ts.ProductType.HelpDesk) {
       $('#mniProducts').hide();
-    }
+      $('#mniTasks').hide();
+  }
 
     if (user.IsSystemAdmin == false) {
       $('#mniAdmin').hide();
@@ -226,13 +226,15 @@ UserPage = function () {
 
     var types = window.parent.parent.Ts.Cache.getTicketTypes();
     for (var i = 0; i < types.length; i++) {
-      var ttmi = $('<li>').attr('id', 'mniTicketType_' + types[i].TicketTypeID);
-      $('<label>')
-        .addClass('checkbox')
-        .text(types[i].Name)
-        .append($('<input>').attr('type', 'checkbox'))
-        .appendTo(ttmi);
-      ttmi.appendTo('#ulTicketTypes');
+        if (types[i].IsActive) {
+            var ttmi = $('<li>').attr('id', 'mniTicketType_' + types[i].TicketTypeID);
+            $('<label>')
+              .addClass('checkbox')
+              .text(types[i].Name)
+              .append($('<input>').attr('type', 'checkbox'))
+              .appendTo(ttmi);
+            ttmi.appendTo('#ulTicketTypes');
+        }
     }
 
   }

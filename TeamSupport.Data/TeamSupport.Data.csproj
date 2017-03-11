@@ -146,6 +146,10 @@
     <Reference Include="CsQuery">
       <HintPath>..\packages\CsQuery.1.3.4\lib\net40\CsQuery.dll</HintPath>
     </Reference>
+    <Reference Include="Dapper, Version=1.50.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.50.2\lib\net45\Dapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="dtSearchNetApi3, Version=1.0.4350.18713, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\dtSearch\dtSearchNetApi3.dll</HintPath>
@@ -192,6 +196,7 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="TidyNet, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\TidyNet-1.0.1\TidyNet.dll</HintPath>
@@ -302,6 +307,13 @@
     <Compile Include="BusinessObjects\SlaViolationHistory.cs" />
     <Compile Include="BusinessObjects\TagLinks.cs" />
     <Compile Include="BusinessObjects\Tags.cs" />
+    <Compile Include="BusinessObjects\TaskAssociations.cs" />
+    <Compile Include="BusinessObjects\TaskAssociationsView.cs" />
+    <Compile Include="BusinessObjects\TaskEmailPostHistory.cs" />
+    <Compile Include="BusinessObjects\TaskEmailPosts.cs" />
+    <Compile Include="BusinessObjects\TaskLogs.cs" />
+    <Compile Include="BusinessObjects\Tasks.cs" />
+    <Compile Include="BusinessObjects\TasksView.cs" />
     <Compile Include="BusinessObjects\TicketAutomationActions.cs" />
     <Compile Include="BusinessObjects\TicketAutomationHistory.cs" />
     <Compile Include="BusinessObjects\TicketAutomationPossibleActions.cs" />
@@ -341,6 +353,7 @@
     <Compile Include="Classes\SqlExecutor.cs" />
     <Compile Include="Classes\TeamSupportSync.cs" />
     <Compile Include="Classes\TSEventLog.cs" />
+    <Compile Include="DataTransferObjects\Tasks.cs" />
     <Compile Include="FieldMaps\ActionLinkToJiraFieldMap.cs" />
     <Compile Include="FieldMaps\AgentRatingsFieldMap.cs" />
     <Compile Include="FieldMaps\AgentRatingsOptionsFieldMap.cs" />
@@ -422,6 +435,13 @@
     <Compile Include="FieldMaps\SlaViolationHistoryFieldMap.cs" />
     <Compile Include="FieldMaps\TagLinksFieldMap.cs" />
     <Compile Include="FieldMaps\TagsFieldMap.cs" />
+    <Compile Include="FieldMaps\TaskAssociationsFieldMap.cs" />
+    <Compile Include="FieldMaps\TaskAssociationsViewFieldMap.cs" />
+    <Compile Include="FieldMaps\TaskEmailPostHistoryFieldMap.cs" />
+    <Compile Include="FieldMaps\TaskEmailPostsFieldMap.cs" />
+    <Compile Include="FieldMaps\TaskLogsFieldMap.cs" />
+    <Compile Include="FieldMaps\TasksFieldMap.cs" />
+    <Compile Include="FieldMaps\TasksViewFieldMap.cs" />
     <Compile Include="FieldMaps\TicketAutomationActionsFieldMap.cs" />
     <Compile Include="FieldMaps\TicketAutomationHistoryFieldMap.cs" />
     <Compile Include="FieldMaps\TicketAutomationPossibleActionsFieldMap.cs" />
@@ -719,6 +739,13 @@
     <Compile Include="Generated\GeneratedSystemSettings.cs" />
     <Compile Include="Generated\GeneratedTagLinks.cs" />
     <Compile Include="Generated\GeneratedTags.cs" />
+    <Compile Include="Generated\GeneratedTaskAssociations.cs" />
+    <Compile Include="Generated\GeneratedTaskAssociationsView.cs" />
+    <Compile Include="Generated\GeneratedTaskEmailPostHistory.cs" />
+    <Compile Include="Generated\GeneratedTaskEmailPosts.cs" />
+    <Compile Include="Generated\GeneratedTaskLogs.cs" />
+    <Compile Include="Generated\GeneratedTasks.cs" />
+    <Compile Include="Generated\GeneratedTasksView.cs" />
     <Compile Include="Generated\GeneratedTechDocs.cs" />
     <Compile Include="Generated\GeneratedTicketAutomationActions.cs" />
     <Compile Include="Generated\GeneratedTicketAutomationHistory.cs" />
@@ -793,6 +820,13 @@
     <Compile Include="Proxies\SlaPausedTimesProxy.cs" />
     <Compile Include="Proxies\SlaTicketsProxy.cs" />
     <Compile Include="Proxies\SlaViolationHistoryProxy.cs" />
+    <Compile Include="Proxies\TaskAssociationsProxy.cs" />
+    <Compile Include="Proxies\TaskAssociationsViewProxy.cs" />
+    <Compile Include="Proxies\TaskEmailPostHistoryProxy.cs" />
+    <Compile Include="Proxies\TaskEmailPostsProxy.cs" />
+    <Compile Include="Proxies\TaskLogsProxy.cs" />
+    <Compile Include="Proxies\TasksProxy.cs" />
+    <Compile Include="Proxies\TasksViewProxy.cs" />
     <Compile Include="Proxies\TicketTimeLineViewProxy.cs" />
     <Compile Include="Proxies\TicketTypesViewProxy.cs" />
     <Compile Include="Proxies\TokStorageProxy.cs" />

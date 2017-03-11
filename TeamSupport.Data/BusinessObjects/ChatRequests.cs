@@ -62,7 +62,27 @@ AND u.OrganizationID = @OrganizationID";
       }
     }
 
-    public void LoadByChatID(int chatID, ChatRequestType type)
+        public static bool AreOperatorsAvailable(LoginUser loginUser, int organizationID)
+        {
+            ChatRequests requests = new ChatRequests(loginUser);
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+SELECT COUNT(*) FROM ChatUserSettings cus 
+LEFT JOIN Users u ON u.UserID = cus.UserID
+WHERE cus.IsAvailable = 1
+AND u.IsChatUser = 1
+AND u.OrganizationID = @OrganizationID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                object o = requests.ExecuteScalar(command);
+                int count = o == DBNull.Value ? 0 : (int)o;
+                return count > 0;
+            }
+        }
+
+        public void LoadByChatID(int chatID, ChatRequestType type)
     {
       using (SqlCommand command = new SqlCommand())
       {
@@ -107,12 +127,51 @@ ORDER BY cr.DateCreated ASC
       }
     }
 
-    /// <summary>
-    /// Load chat requests for a user
-    /// </summary>
-    /// <param name="userID">The user</param>
-    /// <param name="organizationID">The user's organization</param>
-    public int GetLastRequestID(int userID, int organizationID)
+        /// <summary>
+        /// Load chat requests for a user
+        /// </summary>
+        /// <param name="userID">The user</param>
+        /// <param name="organizationID">The user's organization</param>
+        public void LoadPendingRequests(int userID, int organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"  
+                                        SELECT *
+                                        FROM ChatRequests cr
+                                            LEFT JOIN ChatClients cc
+                                            ON cc.ChatClientID = cr.RequestorID
+                                        WHERE cr.IsAccepted = 0
+	                                        AND cr.OrganizationID = @OrganizationID
+                                            AND ((DATEADD(second, @Seconds, cc.LastPing) > GETUTCDATE() OR cc.LastPing IS NULL  OR cr.RequestorType = 0) AND DATEADD(minute, 30, cr.DateCreated) > GETUTCDATE())
+	                                        AND (
+		                                        cr.GroupID IS NULL
+		                                        OR cr.GroupID IN (
+			                                        SELECT GroupID
+			                                        FROM GroupUsers
+			                                        WHERE UserID = @UserID
+			                                        )
+		                                        )
+	                                        AND (
+		                                        cr.TargetUserID IS NULL
+		                                        OR cr.TargetUserID = @UserID
+		                                        )
+                                        ORDER BY cr.DateCreated DESC
+                                        ";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@UserID", userID);
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@Seconds", StayAliveSeconds);
+                Fill(command);
+            }
+        }
+
+        /// <summary>
+        /// Load chat requests for a user
+        /// </summary>
+        /// <param name="userID">The user</param>
+        /// <param name="organizationID">The user's organization</param>
+        public int GetLastRequestID(int userID, int organizationID)
     {
       using (SqlCommand command = new SqlCommand())
       {
@@ -196,7 +255,28 @@ ORDER BY cr.DateCreated ASC";
       // SetLastRequestID(userID, organizationID);
     }
 
-    public static int GetRequestCountInLastDays(LoginUser loginUser, int organizationID, int days)
+    public void LoadActiveChatsByUserId(int userID, int organizationID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+                SELECT DISTINCT c.* FROM ChatRequests c 
+                LEFT JOIN ChatParticipants cp ON cp.ChatID = c.ChatID
+                WHERE cp.ParticipantID = @UserID
+                AND cp.ParticipantType = 0
+                AND c.OrganizationID = @OrganizationID
+                AND cp.DateLeft IS NULL
+                AND c.RequestType = 0
+                ORDER BY C.DATECREATED DESC
+                ";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@UserID", userID);
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
+            Fill(command);
+        }
+    }
+
+        public static int GetRequestCountInLastDays(LoginUser loginUser, int organizationID, int days)
     { 
       SqlCommand command = new SqlCommand();
       command.CommandText = "SELECT COUNT(*) FROM ChatRequests cr WHERE cr.OrganizationID = @OrganizationID AND DATEDIFF(day, DateCreated, GETUTCDATE()) < @Days";
@@ -268,16 +348,18 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
         client.LinkedUserID = users[0].UserID;
         try
         {
-          client.CompanyName = Organizations.GetOrganization(loginUser, users[0].OrganizationID).Name;
+            client.CompanyName = Organizations.GetOrganization(loginUser, users[0].OrganizationID).Name;
         }
         catch (Exception)
         {
-          client.CompanyName = "";
+            client.CompanyName = "";
         }
       }
       else
-      { 
-        client.CompanyName = "";
+      {
+        string emailDomain = email.Substring(email.LastIndexOf('@') + 1);
+        Organization org = Organization.GetCompanyByDomain(organizationID, emailDomain, loginUser);
+        client.CompanyName = (org == null) ? org.Name : "";
       }
       client.Collection.Save();
 
