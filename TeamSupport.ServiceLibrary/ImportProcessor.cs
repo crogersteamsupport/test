@@ -398,7 +398,7 @@ namespace TeamSupport.ServiceLibrary
         action.Name = "";
         action.TicketID = ticketID;
 		  action.ImportID = ReadString("ActionImportID", string.Empty);
-        action.TimeSpent = ReadIntNull("TimeSpent", action.TimeSpent.ToString());
+        action.TimeSpent = ReadIntNull("MinutesSpent", action.TimeSpent.ToString());
 
         action.Pinned = ReadBool("IsPinned", action.Pinned.ToString());
 		  action.ImportFileID = import.ImportID;
