@@ -52,10 +52,10 @@ $(document).ready(function () {
 
     debugger;
     _taskParentID = window.parent.parent.Ts.Utils.getQueryValue("taskparentid", window);
-    _parentTaskName = window.parent.parent.Ts.Utils.getQueryValue("parenttaskname", window);
+    _parentTaskName = decodeURI(escape(window.parent.parent.Ts.Utils.getQueryValue("parenttaskname", window)));
 
     _ticketNumber = window.parent.parent.Ts.Utils.getQueryValue("ticketnumber", window);
-    _encodedTicketName = window.parent.parent.Ts.Utils.getQueryValue("ticketname", window);
+    _ticketName = decodeURI(escape(window.parent.parent.Ts.Utils.getQueryValue("ticketname", window)));
 
     _refType = window.parent.parent.Ts.Utils.getQueryValue("reftype", window);
     _refID = window.parent.parent.Ts.Utils.getQueryValue("refid", window);
@@ -729,7 +729,7 @@ $(document).ready(function () {
                         .appendTo($('#taskForm').find('.ticket-queue')).data('Ticket', _refID);
 
                 $('<span>')
-                .text(_ticketNumber + ": " + decodeURIComponent(_encodedTicketName))
+                .text(_ticketNumber + ": " + _ticketName)
                 .addClass('filename')
                 .appendTo(bg);
 

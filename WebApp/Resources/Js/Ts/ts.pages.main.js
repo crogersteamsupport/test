@@ -2153,14 +2153,14 @@ function () { }, function (e) { console.log(e) });
     newTask: function (taskParentID, parentTaskName) {
         var query;
         if (taskParentID != undefined)
-            query = "?taskparentid=" + taskParentID + "&parenttaskname=" + parentTaskName;
+            query = "?taskparentid=" + taskParentID + "&parenttaskname=" + encodeURI(parentTaskName);
         this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewTask, 'newTask', 'Add Task', true, true, true, null, null, query, null);
     },
     newTaskFromSource: function (refType, refID, ticketName, ticketNumber)
     {
         var query;
         if (refType && refID) {
-            var encodedTicketName = encodeURIComponent(ticketName);
+            var encodedTicketName = encodeURI(ticketName);
             query = "?reftype=" + refType + "&refid=" + refID + "&ticketname=" + encodedTicketName + "&ticketnumber=" + ticketNumber;
             this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewTaskFromSource, 'newTask', 'Add Task', true, true, true, null, null, query, null);
         };
