@@ -1624,7 +1624,7 @@ namespace TSWebServices
                         else
                             continue;
                     case ReferenceType.Tasks:
-                        cal.title = r.TaskName;
+                        cal.title = r.Description;
                         cal.description = string.Empty;
                         break;
                 }

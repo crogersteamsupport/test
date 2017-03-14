@@ -110,7 +110,7 @@
         if (_organizationUseProductFamily)
         {
              //If is a ticket template show product family
-            var nonTicketTemplateIDs = [8, 9, 10, 11, 12, 13, 14, 17, 18, 19, 23, 24];
+            var nonTicketTemplateIDs = [8, 9, 10, 11, 12, 13, 14, 17, 18, 19, 23, 24, 35, 36, 37, 38, 39];
             if (nonTicketTemplateIDs.indexOf(parseInt(emailTemplateID)) < 0) {
                 $('.ProductFamilyList').show();
             }

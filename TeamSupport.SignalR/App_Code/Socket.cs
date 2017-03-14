@@ -25,7 +25,7 @@ public class Socket : Hub
     {
     }
 
-    public override Task OnDisconnected(bool closed)
+    public override System.Threading.Tasks.Task OnDisconnected(bool closed)
     {
         LoginUser loginUser = new LoginUser(connString, -1, -1, null);
         try
@@ -55,7 +55,7 @@ public class Socket : Hub
         }
     }
 
-    public override Task OnConnected()
+    public override System.Threading.Tasks.Task OnConnected()
     {
         LoginUser loginUser = new LoginUser(connString, -1, -1, null);
         try
@@ -287,7 +287,7 @@ public class TicketSocket : Hub
     {
     }
 
-    public override Task OnDisconnected(bool closed)
+    public override System.Threading.Tasks.Task OnDisconnected(bool closed)
     {
         LoginUser loginUser = new LoginUser(connString, -1, -1, null);
         try
@@ -311,7 +311,7 @@ public class TicketSocket : Hub
         }
     }
 
-    public override Task OnConnected()
+    public override System.Threading.Tasks.Task OnConnected()
     {
         LoginUser loginUser = new LoginUser(connString, -1, -1, null);
         try

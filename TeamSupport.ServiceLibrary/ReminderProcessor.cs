@@ -89,12 +89,12 @@ namespace TeamSupport.ServiceLibrary
           ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, contact.UserID, description);
           break;
         case ReferenceType.Tasks:
-          TasksViewItem task = TasksView.GetTasksViewItem(LoginUser, reminder.ReminderID);
+          TasksViewItem task = TasksView.GetTasksViewItem(LoginUser, reminder.RefID);
           if (task == null) return;
           message = EmailTemplates.GetReminderTaskEmail(LoginUser, reminder, user, task);
-          description = String.Format("Reminder sent to {0} for Task {1}", message.To.ToString(), task.TaskName);
+          description = String.Format("Reminder sent to {0} for Task {1}", message.To.ToString(), task.Name);
           Logs.WriteEvent(description);
-          ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tasks, reminder.ReminderID, description);
+          ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tasks, task.TaskID, description);
           ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, (int)reminder.UserID, description);
           break;
         default:

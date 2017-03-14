@@ -141,9 +141,9 @@ namespace TeamSupport.Data
         return table;
 
       }
-      catch (Exception)
+      catch (Exception ex)
       {
-        _log.AppendMessage("Unable to open table '" + tableName + "'");
+        _log.AppendMessage("Unable to open table '" + tableName + "' - " + ex.Message);
         return null;
       }
     }

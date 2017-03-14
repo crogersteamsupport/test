@@ -68,7 +68,7 @@
                     <li id="taskTab"><a href="#user-tasks" data-toggle="tab">Tasks</a></li>
                 </ul>
             </div>
-            <div class="tab-content">
+            <div class="tab-content" style="overflow-y:auto;">
                 <div class="tab-pane fade in active" id="user-information">
                     <iframe id="infoIframe" scrolling="no" src="" frameborder="0" onload="autoResize();" width="100%"></iframe>
                 </div>
@@ -180,18 +180,18 @@
 <script id="user-tasks-template" type="text/x-handlers-template">
     {{#taskList}}
     test
-    <tr class="{{formatRow this.Task}}">
+    <tr class="{{formatRow this}}">
         <td>
-            <input {{taskComplete Task.TaskDateCompleted}} type="checkbox" class="change-task-status" data-reminderid="{{Task.ReminderID}}" />
+            <input {{taskComplete IsComplete}} type="checkbox" class="change-task-status" data-taskid="{{TaskID}}" />
         </td>
         <td>
-            <a href="#" class="tasklink" id="cb{{Task.ReminderID}}" data-reminderid="{{Task.ReminderID}}">
-                {{formatTaskName this.Task}}
+            <a href="#" class="tasklink" id="cb{{TaskID}}" data-taskid="{{TaskID}}">
+                {{Name}}
             </a>
         </td>
         <td>{{AssignedTo}}</td>
-        <td>{{formatDate Task.TaskDueDate}}</</td>
-        <td>{{formatDate Task.DueDate}}</td>
+        <td>{{formatDate DueDate}}</</td>
+        <td>{{formatDate ReminderDueDate}}</td>
         <td>
             {{#Associations}}
             {{mapAssociation this}}

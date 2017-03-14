@@ -17,7 +17,7 @@ namespace TeamSupport.Data
     [DataMember] public int TaskEmailPostType { get; set; }
     [DataMember] public int HoldTime { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
-    [DataMember] public int ReminderID { get; set; }
+    [DataMember] public int TaskID { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public string LockProcessID { get; set; }
     [DataMember] public int? OldUserID { get; set; }
@@ -32,7 +32,7 @@ namespace TeamSupport.Data
       result.OldUserID = this.OldUserID;
       result.LockProcessID = this.LockProcessID;
       result.CreatorID = this.CreatorID;
-      result.ReminderID = this.ReminderID;
+      result.TaskID = this.TaskID;
       result.HoldTime = this.HoldTime;
       result.TaskEmailPostType = this.TaskEmailPostType;
       result.TaskEmailPostID = this.TaskEmailPostID;

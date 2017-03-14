@@ -665,8 +665,8 @@
                     </script>
                     <script id="task-record" type="text/x-handlebars-template">
                         <div class="checkbox">
-                            <input id="task-{{id}}" class="change-task-status" type="checkbox" data-reminderid="{{id}}" {{taskComplete completed}}/>
-                            <label for="task-{{id}}"><a href="#" class="tasklink" data-reminderid="{{id}}">{{{value}}}</a></label>
+                            <input id="task-{{id}}" class="change-task-status" type="checkbox" data-taskid="{{id}}" {{taskComplete IsComplete}}/>
+                            <label for="task-{{id}}"><a href="#" class="tasklink" data-taskid="{{id}}">{{{value}}}</a></label>
                         </div>
                     </script>
                     <script id="ticket-group-Inventory" type="text/x-handlebars-template">
