@@ -287,8 +287,9 @@ function setupChat(chatID, participantID, callback) {
 
         if (e.which == 13) {
             var isIE = /*@cc_on!@*/false || !!document.documentMode;
+            var isEdge = !isIE && !!window.StyleMedia;
 
-            if (!isIE) {
+            if (!isIE && !isEdge) {
                 $("#message-form").submit();
             }
         } else {
