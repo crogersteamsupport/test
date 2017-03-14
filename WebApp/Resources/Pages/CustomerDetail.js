@@ -116,11 +116,6 @@ $(document).ready(function () {
     customerDetailPage.refresh();
     $('.customer-tooltip').tooltip({ placement: 'bottom', container: 'body' });
 
-
-    initEditor($('#fieldNoteDesc'), function (ed) {
-        $('#fieldNoteDesc').tinymce().focus();
-    });
-
     $('input, textarea').placeholder();
     $('body').layout({
         defaults: {
@@ -1094,8 +1089,14 @@ $(document).ready(function () {
 
     $('#noteToggle').click(function (e) {
         _mainFrame.Ts.System.logAction('Customer Detail - Toggle Note Form');
+        if ($('#noteForm:visible').length == 0)
+        {
+            initEditor($('#fieldNoteDesc'), function (ed) {
+                $('#fieldNoteDesc').tinymce().focus();
+            });
+            $('#fieldNoteTitle').focus();
+        }
         $('#noteForm').toggle();
-        $('#fieldNoteTitle').focus();
     });
 
     $('#fileToggle').click(function (e) {
@@ -1814,6 +1815,10 @@ $(document).ready(function () {
         $('#fieldNoteID').val('-1');
         $('#noteCustomerAlert').prop('checked', false);
         $('#btnNotesSave').text("Save");
+        for (var i = tinymce.editors.length - 1 ; i > -1 ; i--) {
+            var ed_id = tinymce.editors[i].id;
+            tinyMCE.execCommand("mceRemoveEditor", true, ed_id);
+        }
         $('#noteForm').toggle();
         _mainFrame.Ts.System.logAction('Customer Detail - Cancel Note Edit / Add');
     });
@@ -1840,6 +1845,10 @@ $(document).ready(function () {
             $('#btnNotesSave').text("Save");
             LoadNotes();
             $('#noteForm').toggle();
+            for (var i = tinymce.editors.length - 1 ; i > -1 ; i--) {
+                var ed_id = tinymce.editors[i].id;
+                tinyMCE.execCommand("mceRemoveEditor", true, ed_id);
+            }
             $("#btnNotesSave").removeProp('disabled');
         });
     });
