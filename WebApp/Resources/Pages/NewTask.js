@@ -10,8 +10,10 @@
 
 var _taskParentID;
 var _parentTaskName;
+var _newTaskID;
 
 $(document).ready(function () {
+    _newTaskID = null;
     var script = document.createElement('script');
     script.type = 'text/javascript';
     script.async = true;
@@ -50,10 +52,10 @@ $(document).ready(function () {
 
     debugger;
     _taskParentID = window.parent.parent.Ts.Utils.getQueryValue("taskparentid", window);
-    _parentTaskName = window.parent.parent.Ts.Utils.getQueryValue("parenttaskname", window);
+    _parentTaskName = decodeURI(escape(window.parent.parent.Ts.Utils.getQueryValue("parenttaskname", window)));
 
     _ticketNumber = window.parent.parent.Ts.Utils.getQueryValue("ticketnumber", window);
-    _encodedTicketName = window.parent.parent.Ts.Utils.getQueryValue("ticketname", window);
+    _ticketName = decodeURI(escape(window.parent.parent.Ts.Utils.getQueryValue("ticketname", window)));
 
     _refType = window.parent.parent.Ts.Utils.getQueryValue("reftype", window);
     _refID = window.parent.parent.Ts.Utils.getQueryValue("refid", window);
@@ -604,7 +606,7 @@ $(document).ready(function () {
             alert('There was an error uploading "' + data.files[0].name + '".');
         },
         progress: function (e, data) {
-            data.context.find('.progress').progressbar('value', parseInt(data.loaded / data.total * 100, 10));
+            data.context.find('.progress').progressbar('value', parseInt(data.loaded / data.total * 90, 10));
         },
         start: function (e, data) {
             $(this).parent().parent().find('.progress').progressbar().show();
@@ -618,6 +620,9 @@ $(document).ready(function () {
             $('.faketextcontainer').show();
             $('#messagecontents').val('');
             resetDisplay();
+            parent.Ts.MainPage.openNewTask(_newTaskID);
+            parent.Ts.MainPage.highlightNewTaskTab(false);
+            parent.Ts.MainPage.closenewTaskTab();
         }
     });
 
@@ -687,6 +692,7 @@ $(document).ready(function () {
 
         window.parent.parent.Ts.Services.Task.NewTask(parent.JSON.stringify(taskInfo), function (newTask) {
             if (attcontainer.length > 0) {
+                _newTaskID = newTask.TaskID;
                 attcontainer.each(function (i, o) {
                     var data = $(o).data('data');
                     data.url = '../../../Upload/Tasks/' + newTask.TaskID;
@@ -694,9 +700,11 @@ $(document).ready(function () {
                     $(o).data('data', data);
                 });
             }
-            parent.Ts.MainPage.openNewTask(newTask.TaskID);
-            parent.Ts.MainPage.highlightNewTaskTab(false);
-            parent.Ts.MainPage.closenewTaskTab();
+            else {
+                parent.Ts.MainPage.openNewTask(newTask.TaskID);
+                parent.Ts.MainPage.highlightNewTaskTab(false);
+                parent.Ts.MainPage.closenewTaskTab();
+            }
         });
         $(this).parent().removeClass("saving");
         $('.frame-content').animate({ scrollTop: 0 }, 600);
@@ -721,7 +729,7 @@ $(document).ready(function () {
                         .appendTo($('#taskForm').find('.ticket-queue')).data('Ticket', _refID);
 
                 $('<span>')
-                .text(_ticketNumber + ": " + decodeURIComponent(_encodedTicketName))
+                .text(_ticketNumber + ": " + _ticketName)
                 .addClass('filename')
                 .appendTo(bg);
 
