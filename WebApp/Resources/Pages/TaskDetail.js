@@ -884,14 +884,14 @@ $(document).ready(function () {
     });
 
     $('#subtasksAdd').click(function (e) {
-        //e.preventDefault();
+        e.preventDefault();
         parent.Ts.System.logAction('Tasks Detail Page - New Task');
         parent.Ts.MainPage.newTask(_taskID, _Name);
 
     });
 
     $('#tblSubtasks').on('click', '.subtaskCheckBox', function (e) {
-        //e.preventDefault();
+        e.preventDefault();
 
         var id = $(this).data('taskID');
 
