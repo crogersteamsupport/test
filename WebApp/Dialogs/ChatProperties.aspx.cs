@@ -52,7 +52,7 @@ public partial class Dialogs_ChatProperties : BaseDialogPage
         imgUnavailable.ImageUrl = String.Format("../dc/{0}/images/chat/chat_unavailable", _organizationID.ToString());
         imgLogo.ImageUrl = String.Format("../dc/{0}/images/chat/chat_logo", _organizationID.ToString());
 
-        textChatIntro.Text = Settings.OrganizationDB.ReadString("ChatIntroMessage", "How can we help you today?");
+        textChatIntro.Text = Settings.OrganizationDB.ReadString("ChatIntroMessage", "Welcome to our live chat!");
         cbChatTOKScreenEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTOKScreenEnabled", true);
         cbChatTOKVoiceEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTOKVoiceEnabled", true);
         cbChatTOKVideoEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTOKVideoEnabled", true);
