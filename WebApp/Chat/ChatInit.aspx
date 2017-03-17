@@ -13,7 +13,7 @@
 </head>
 <body>
     <div class="panel panel-default chatRequestForm" style="display:none;">
-        <div class="panel-heading">How can we help you today?</div>
+        <div class="panel-heading">Welcome to our live chat!</div>
         <div class="panel-body">
             <form id="newChatForm" class="container">
                 <div class="row">
