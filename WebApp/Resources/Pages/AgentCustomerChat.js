@@ -1,7 +1,7 @@
 ﻿var _activeChatID = null;
 var dateFormat;
 var _intervalUpdateActiveChats = null;
-var isTOKEnabled;
+var isTOKEnabledForBrowser;
 var _isChatWindowActive = true;
 var _isChatWindowPotentiallyHidden = false;
 
@@ -14,8 +14,7 @@ $(document).ready(function () {
     var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0 || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification);
     var isIE = /*@cc_on!@*/false || !!document.documentMode;
     var isEdge = !isIE && !!window.StyleMedia;
-    isTOKEnabled = !isSafari && !isEdge;
-    EnableTOKButtons(isTOKEnabled);
+    isTOKEnabledForBrowser = !isSafari && !isEdge;
 
     window.parent.Ts.Services.Customers.GetDateFormat(false, function (format) {
         dateFormat = format.replace("yyyy", "yy");
@@ -49,14 +48,27 @@ $(document).ready(function () {
     SetupTOK();
 
     function GetChatSettings() {
-        parent.Ts.Services.Chat.GetAgentChatProperties(function (data) {
-            if (!data.TOKScreenEnabled)
-                $('#chat-tok-screen').hide();
-            if (!data.TOKVideoEnabled)
-                $('#chat-tok-video').hide();
-            if (!data.TOKVoiceEnabled)
-                $('#chat-tok-audio').hide();
-        });
+        var enableAudio = true;
+        var enableVideo = true;
+        var enableScreen = true;
+
+        if (!isTOKEnabledForBrowser) {
+            enableAudio = false;
+            enableVideo = false;
+            enableScreen = false;
+            EnableTOKButtons(enableAudio, enableVideo, enableScreen);
+        } else {
+            parent.Ts.Services.Chat.GetAgentChatProperties(function (data) {
+                if (!data.TOKScreenEnabled)
+                    enableScreen = false;
+                if (!data.TOKVideoEnabled)
+                    enableVideo = false;
+                if (!data.TOKVoiceEnabled)
+                    enableAudio = false;
+
+                EnableTOKButtons(enableAudio, enableVideo, enableScreen);
+            });
+        }
     }
 
     function SetupChatRequests() {
@@ -141,7 +153,7 @@ $(document).ready(function () {
     }
 
     function AcceptRequest(ChatRequestID, innerString, parentEl) {
-        parent.Ts.Services.Chat.AcceptRequest(ChatRequestID, isTOKEnabled, function (chatId) {
+        parent.Ts.Services.Chat.AcceptRequest(ChatRequestID, isTOKEnabledForBrowser, function (chatId) {
             setupChat(pusherKey, chatId, createMessageElement, function (channel) {
                 //console.log(channel);
             });
@@ -231,7 +243,7 @@ $(document).ready(function () {
             _intervalUpdateActiveChats = setInterval('EnableDisableTicketMenu();', 5200);
         });
 
-        EnableTOKButtons(isTOKEnabled);
+        GetChatSettings();
     }
 
     function ScrollMessages(animated) {
@@ -267,7 +279,7 @@ $(document).ready(function () {
                         $('.media-list').empty();
                         $('.chat-intro').empty();
                         _activeChatID = null;
-                        EnableTOKButtons(isTOKEnabled);
+                        GetChatSettings();
                     }
                     else console.log('Error closing chat.')
                 });
@@ -589,26 +601,26 @@ function EnableDisableTicketMenu() {
     }
 }
 
-function EnableTOKButtons(enable) {
+function EnableTOKButtons(enableAudio, enableVideo, enableScreen) {
     var audio = $('#chat-tok-audio > .btn-primary');
     var video = $('#chat-tok-video > .btn-primary');
     var screen = $('#chat-tok-screen > .btn-primary');
 
-    if (enable && audio.hasClass('disabled')) {
+    if (enableAudio && audio.hasClass('disabled')) {
         audio.removeClass('disabled');
-    } else if (!enable && !audio.hasClass('disabled')) {
+    } else if (!enableAudio && !audio.hasClass('disabled')) {
         audio.addClass('disabled');
     }
 
-    if (enable && video.hasClass('disabled')) {
+    if (enableVideo && video.hasClass('disabled')) {
         video.removeClass('disabled');
-    } else if (!enable && !video.hasClass('disabled')) {
+    } else if (!enableVideo && !video.hasClass('disabled')) {
         video.addClass('disabled');
     }
 
-    if (enable && screen.hasClass('disabled')) {
+    if (enableScreen && screen.hasClass('disabled')) {
         screen.removeClass('disabled');
-    } else if (!enable && !screen.hasClass('disabled')) {
+    } else if (!enableScreen && !screen.hasClass('disabled')) {
         screen.addClass('disabled');
     }
 }

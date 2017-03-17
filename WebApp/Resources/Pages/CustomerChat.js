@@ -46,6 +46,7 @@ $(document).ready(function () {
             }
 
             DisplayTOKButtons(data.isAgentTOKEnabled && isCustomerTOKEnabled);
+            GetChatSettings(chatID);
 
             if (data.isAgentTOKEnabled && !isCustomerTOKEnabled) {
                 _toktimer = setTimeout(function () {
@@ -56,10 +57,13 @@ $(document).ready(function () {
         });
     });
 
+    //The order of the following 3 statements matter, do not change.
+    SetupTOK();
+    DisplayTOKButtons(!isSafari && !isEdge);
     GetChatSettings(chatID);
+
     loadInitialMessages(chatID);
     SetupChatUploads(chatID, participantID);
-    SetupTOK();
 
     $("#message-form").submit(function (e) {
         e.preventDefault();
@@ -78,8 +82,6 @@ $(document).ready(function () {
             });
         }
     });
-
-    DisplayTOKButtons(!isSafari && !isEdge);
 
     //TODO:  Not centering correclty
     //$('#chat-tok-audio').tooltip({
