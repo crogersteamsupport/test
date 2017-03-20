@@ -219,47 +219,47 @@ namespace TeamSupport.Handlers
         private void ProcessTicketSearch(HttpContext context, int parentID, int userID, string searchTerm)
         {
             SearchResults ticketResults = TicketsView.GetHubSearchTicketResults(searchTerm, LoginUser.Anonymous, parentID);
-            List<TicketSearchItem> result = GetTicketResults(ticketResults, LoginUser.Anonymous, userID, parentID);
-            WriteJson(context, result);
+            //List<TicketSearchItem> result = GetTicketResults(ticketResults, LoginUser.Anonymous, userID, parentID);
+            WriteJson(context, ticketResults);
         }
 
-        private List<TicketSearchItem> GetTicketResults(SearchResults results, LoginUser loginUser, int userID, int parentID)
-		{
-			List<TicketSearchItem> items = new List<TicketSearchItem>();
-			int customerID = 0;
-			User user = Users.GetUser(loginUser, userID);
-			if (user != null) customerID = user.OrganizationID; 
+  //      private List<TicketSearchItem> GetTicketResults(SearchResults results, LoginUser loginUser, int userID, int parentID)
+		//{
+		//	List<TicketSearchItem> items = new List<TicketSearchItem>();
+		//	int customerID = 0;
+		//	User user = Users.GetUser(loginUser, userID);
+		//	if (user != null) customerID = user.OrganizationID; 
 
-			for (int i = 0; i < results.Count; i++)
-			{
-				results.GetNthDoc(i);
-				int ticketID = int.Parse(results.CurrentItem.Filename);
-				if (ticketID > 0)
-				{
-					TicketsView ticketsViewHelper = new TicketsView(loginUser);
-					ticketsViewHelper.loadhub.LoadHubKBByID(ticketID, parentID, customerID);
+		//	for (int i = 0; i < results.Count; i++)
+		//	{
+		//		results.GetNthDoc(i);
+		//		int ticketID = int.Parse(results.CurrentItem.Filename);
+		//		if (ticketID > 0)
+		//		{
+		//			TicketsView ticketsViewHelper = new TicketsView(loginUser);
+		//			ticketsViewHelper.LoadHubKBByID(ticketID, parentID, customerID);
 
-					if (ticketsViewHelper.Any())
-					{
-						KBSearchItem item = new KBSearchItem();
-						item.HitRating = results.CurrentItem.ScorePercent;
-						item.Article = ticketsViewHelper[0].GetProxy();
+		//			if (ticketsViewHelper.Any())
+		//			{
+		//				KBSearchItem item = new KBSearchItem();
+		//				item.HitRating = results.CurrentItem.ScorePercent;
+		//				item.Article = ticketsViewHelper[0].GetProxy();
 
-						TicketRatings ratings = new TicketRatings(loginUser);
-						ratings.LoadByTicketID(ticketID);
+		//				TicketRatings ratings = new TicketRatings(loginUser);
+		//				ratings.LoadByTicketID(ticketID);
 
-						if (ratings.Any())
-						{
-							TicketRating rating = ratings[0];
-							item.VoteRating = rating.ThumbsUp;
-						}
+		//				if (ratings.Any())
+		//				{
+		//					TicketRating rating = ratings[0];
+		//					item.VoteRating = rating.ThumbsUp;
+		//				}
 
-						items.Add(item);
-					}
-				}
-			}
-			return items;
-		}
+		//				items.Add(item);
+		//			}
+		//		}
+		//	}
+		//	return items;
+		//}
 
         #region classes
 
