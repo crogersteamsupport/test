@@ -132,7 +132,7 @@ namespace TSWebServices
             catch (Exception ex)
             {
                 SignInResult errorResult = new SignInResult();
-                errorResult.Error = "There was a error signing you in. Please verify your email and password and try again.";
+                errorResult.Error = "There was a error signing you in. Please verify your email and password and try again." + ex.InnerException;
                 errorResult.Result = LoginResult.Fail;
                 return JsonConvert.SerializeObject(errorResult);
             }
