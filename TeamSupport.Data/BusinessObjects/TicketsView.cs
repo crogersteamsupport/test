@@ -740,7 +740,7 @@ ORDER BY TicketNumber DESC";
         public void LoadByTicketTypeID(int ticketTypeID, int organizationId, NameValueCollection filters)
         {
             //Get the column names
-			LoadColumns("TicketsView");
+            LoadColumns("TicketsView");
 
             using (SqlCommand command = new SqlCommand())
             {
@@ -765,7 +765,7 @@ ORDER BY TicketNumber DESC";
 
         public void LoadByTicketIDList(int organizationId, int ticketTypeId, List<int> ticketIds)
         {
-			string orderBy = "ORDER BY TicketNumber";
+            string orderBy = "ORDER BY TicketNumber";
             string sql = string.Empty;
 
             using (SqlCommand command = new SqlCommand())
@@ -787,9 +787,9 @@ ORDER BY TicketNumber DESC";
         public void LoadAllTicketIds(int organizationId, NameValueCollection filters, int? PageNumber = null, int? PageSize = null)
         {
             //Get the column names
-			LoadColumns("TicketsView");
+            LoadColumns("TicketsView");
 
-			string orderBy = "ORDER BY TicketNumber";
+            string orderBy = "ORDER BY TicketNumber";
             string sql = string.Empty;
 
             using (SqlCommand command = new SqlCommand())
@@ -1499,7 +1499,8 @@ ORDER BY TicketNumber DESC";
             {
                 builder.Append(" AND (tv.ForumCategory IS NOT NULL)");
             }
-            else if (filter.ForumCategoryID == null){
+            else if (filter.ForumCategoryID == null)
+            {
                 builder.Append(" AND (tv.ForumCategory IS NULL)");
             }
 
@@ -1742,6 +1743,48 @@ ORDER BY TicketNumber DESC";
                 job.Execute();
 
                 return job.Results;
+            }
+        }
+
+        public static SearchResults GetHubSearchTicketResults(string searchTerm, LoginUser loginUser, int parentOrgID)
+        {
+            Options options = new Options();
+            options.TextFlags = TextFlags.dtsoTfRecognizeDates;
+
+            using (SearchJob job = new SearchJob())
+            {
+                searchTerm = searchTerm.Trim();
+                job.Request = searchTerm;
+                job.FieldWeights = "TicketNumber: 5000, Name: 1000";
+
+                StringBuilder conditions = new StringBuilder();
+
+                AppendTicketRightsConditions(loginUser, conditions);
+
+                job.BooleanConditions = conditions.ToString();
+                job.MaxFilesToRetrieve = 25;
+                job.AutoStopLimit = 100000;
+                job.TimeoutSeconds = 10;
+                job.SearchFlags =
+                  SearchFlags.dtsSearchStemming |
+                  SearchFlags.dtsSearchDelayDocInfo;
+
+                int num = 0;
+                if (!int.TryParse(searchTerm, out num))
+                {
+                    job.Fuzziness = 1;
+                    job.Request = job.Request + "*";
+                    job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchSelectMostRecent;
+                    //job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy | SearchFlags.dtsSearchSelectMostRecent;
+                }
+
+
+                if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
+                job.IndexesToSearch.Add(DataUtils.GetPortalTicketsIndexPath(loginUser, parentOrgID));
+                job.Execute();
+
+                return job.Results;
+
             }
         }
 

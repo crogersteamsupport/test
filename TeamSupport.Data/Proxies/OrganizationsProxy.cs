@@ -116,7 +116,7 @@ namespace TeamSupport.Data
     [DataMember] public bool AutoAssignCustomerWithAssetOnTickets { get; set; }
     [DataMember] public bool AutoAssociateCustomerToTicketBasedOnAssetAssignment { get; set; }
     [DataMember] public bool RequireGroupAssignmentOnTickets { get; set; }
-
+    [DataMember] public bool AlertContactNoEmail { get; set; }
     }
   
   public partial class Organization : BaseItem
@@ -124,6 +124,7 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.AlertContactNoEmail = this.AlertContactNoEmail;
       result.RequireGroupAssignmentOnTickets = this.RequireGroupAssignmentOnTickets;
       result.AutoAssociateCustomerToTicketBasedOnAssetAssignment = this.AutoAssociateCustomerToTicketBasedOnAssetAssignment;
       result.AutoAssignCustomerWithAssetOnTickets = this.AutoAssignCustomerWithAssetOnTickets;

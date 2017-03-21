@@ -27,7 +27,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
         	toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect styleselect | bold italic underline strikethrough blockquote codesample | code | table",
             statusbar: true,
             gecko_spellcheck: true,
-            extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type],table[class=table|border:1],iframe[src|width|height|frameborder|webkitallowfullscreen|mozallowfullscreen|allowfullscreen]",
+            extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type],iframe[src|width|height|frameborder|webkitallowfullscreen|mozallowfullscreen|allowfullscreen]",
             content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
             convert_urls: true,
             autoresize_bottom_margin: 20,

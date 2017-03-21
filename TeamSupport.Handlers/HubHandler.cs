@@ -108,6 +108,7 @@ namespace TeamSupport.Handlers
 			{
 				case "search/kb": ProcessKBSearch(context, parentID, userID, searchTerm); break;
 				case "search/wiki": ProcessWikiSearch(context, parentID, userID, searchTerm); break;
+                case "search/ticket": ProcessTicketSearch(context, parentID, userID, searchTerm); break;
 				default:
 					break;
 			}
@@ -145,7 +146,7 @@ namespace TeamSupport.Handlers
 		private void ProcessKBSearch(HttpContext context, int parentID, int userID, string searchTerm)
 		{
 			SearchResults kbResults = TicketsView.GetHubSearchKBResults(searchTerm, LoginUser.Anonymous, parentID);
-			List<KBSearchItem> result = GetKBResults(kbResults, LoginUser.Anonymous, userID, parentID);//.OrderByDescending(t => t.HitRating);
+			List<KBSearchItem> result = GetKBResults(kbResults, LoginUser.Anonymous, userID, parentID);
 			WriteJson(context, result);
 		}
 
@@ -190,7 +191,7 @@ namespace TeamSupport.Handlers
 		private void ProcessWikiSearch(HttpContext context, int parentID, int userID, string searchTerm)
 		{
 			SearchResults wikiResults = WikiArticlesView.GetPortalSearchWikiResults(searchTerm, LoginUser.Anonymous, parentID);
-			List<WikiSearchItem> result = GetWikiResults(wikiResults, LoginUser.Anonymous, userID, parentID);//.OrderByDescending(t => t.HitRating));
+			List<WikiSearchItem> result = GetWikiResults(wikiResults, LoginUser.Anonymous, userID, parentID);
 			WriteJson(context, result);
 		}
 
@@ -215,9 +216,62 @@ namespace TeamSupport.Handlers
 			return items;
 		}
 
-		#region classes
+        private void ProcessTicketSearch(HttpContext context, int parentID, int userID, string searchTerm)
+        {
+            SearchResults ticketResults = TicketsView.GetHubSearchTicketResults(searchTerm, LoginUser.Anonymous, parentID);
+            //List<TicketSearchItem> result = GetTicketResults(ticketResults, LoginUser.Anonymous, userID, parentID);
+            WriteJson(context, ticketResults);
+        }
 
-		public class KBSearchItem
+  //      private List<TicketSearchItem> GetTicketResults(SearchResults results, LoginUser loginUser, int userID, int parentID)
+		//{
+		//	List<TicketSearchItem> items = new List<TicketSearchItem>();
+		//	int customerID = 0;
+		//	User user = Users.GetUser(loginUser, userID);
+		//	if (user != null) customerID = user.OrganizationID; 
+
+		//	for (int i = 0; i < results.Count; i++)
+		//	{
+		//		results.GetNthDoc(i);
+		//		int ticketID = int.Parse(results.CurrentItem.Filename);
+		//		if (ticketID > 0)
+		//		{
+		//			TicketsView ticketsViewHelper = new TicketsView(loginUser);
+		//			ticketsViewHelper.LoadHubKBByID(ticketID, parentID, customerID);
+
+		//			if (ticketsViewHelper.Any())
+		//			{
+		//				KBSearchItem item = new KBSearchItem();
+		//				item.HitRating = results.CurrentItem.ScorePercent;
+		//				item.Article = ticketsViewHelper[0].GetProxy();
+
+		//				TicketRatings ratings = new TicketRatings(loginUser);
+		//				ratings.LoadByTicketID(ticketID);
+
+		//				if (ratings.Any())
+		//				{
+		//					TicketRating rating = ratings[0];
+		//					item.VoteRating = rating.ThumbsUp;
+		//				}
+
+		//				items.Add(item);
+		//			}
+		//		}
+		//	}
+		//	return items;
+		//}
+
+        #region classes
+
+        public class TicketSearchItem
+        {
+            public int HitRating { get; set; }
+            public int? VoteRating { get; set; }
+            public int Views { get; set; }
+            public TicketsViewItemProxy Article { get; set; }
+        }
+
+        public class KBSearchItem
 		{
 			public int HitRating { get; set; }
 			public int? VoteRating { get; set; }

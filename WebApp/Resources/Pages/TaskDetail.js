@@ -318,16 +318,16 @@ $(document).ready(function () {
                 var userCel = $('<td>').append(subtasks[i].UserName).appendTo(row);
 
                 var dueDateCel;
-                if (subtasks[i].TaskDueDate)
+                if (subtasks[i].DueDate)
                 {
-                    dueDateCel = $('<td>').append(subtasks[i].TaskDueDate.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern())).appendTo(row);
+                    dueDateCel = $('<td>').append(subtasks[i].DueDate.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern())).appendTo(row);
                 }
                 else
                 {
                     dueDateCel = $('<td>').append('None').appendTo(row);
                 }
 
-                //$('<tr>').html('<td>' + subtasks[i].Name + '</td><td>' + subtasks[i].UserID + '</td><td>' + subtasks[i].TaskDueDate.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '</td>')
+                //$('<tr>').html('<td>' + subtasks[i].Name + '</td><td>' + subtasks[i].UserID + '</td><td>' + subtasks[i].DueDate.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '</td>')
                 
                 //$('#tblHistory tr:last').after('<tr><td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td></tr>');
             }
@@ -884,14 +884,14 @@ $(document).ready(function () {
     });
 
     $('#subtasksAdd').click(function (e) {
-        //e.preventDefault();
+        e.preventDefault();
         parent.Ts.System.logAction('Tasks Detail Page - New Task');
         parent.Ts.MainPage.newTask(_taskID, _Name);
 
     });
 
     $('#tblSubtasks').on('click', '.subtaskCheckBox', function (e) {
-        //e.preventDefault();
+        e.preventDefault();
 
         var id = $(this).data('taskID');
 

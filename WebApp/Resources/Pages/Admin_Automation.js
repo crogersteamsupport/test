@@ -416,12 +416,26 @@ AdminAuto = function () {
     });
 
 
-    if (fieldID) { fields.combobox('setValue', fieldID); }
+    if (fieldID)
+    {
+        if (fields.find('option[value="'+ fieldID+'"]').length > 0)
+        {
+            fields.combobox('setValue', fieldID);
+        }
+            else
+            fields.combobox('setValue', -999);
+    }
     var measures = $('<select>').addClass('condition-measure').appendTo(div).width('125px');
     loadComboMeasure(measures).combobox({ selected: function (e, ui) { isModified(true); } });
     if (measure) { measures.combobox('setValue', measure); }
     $('<span>').addClass('condition-value-container').appendTo(div);
     createConditionValue(div, fields.find('option:selected').data('field'), value);
+
+    if (fields.find('option[value="' + fieldID + '"]').length == 0) {
+        div.find('.condition-value-container').parent().find('.condition-custom-value').combobox('setValue', fieldID)
+    }
+    
+
     $('<span>').addClass('ts-icon ts-icon-remove').appendTo(div).click(function (e) {
       $(this).parent().remove(); isModified(true); parent.parent.Ts.System.logAction('Admin Automation - Condition Removed');
     });
@@ -431,13 +445,29 @@ AdminAuto = function () {
   }
 
   function createConditionValue(condition, field, value) {
-    var container = condition.find('.condition-value-container').empty();
+      var container = condition.find('.condition-value-container').empty();
+      condition.find('.condition-custom-value').remove();
+
     if (!field) return;
 
     var execGetFieldValues = null;
     function getFieldValues(request, response) {
       if (execGetFieldValues) { execGetFieldValues._executor.abort(); }
       execGetFieldValues = parent.parent.Ts.Services.System.GetLookupDisplayNames(condition.find('.condition-field').val(), request.term, function (result) { response(result); $(this).removeClass('ui-autocomplete-loading'); });
+    }
+
+    if (field.FieldID == -999)
+    {
+        var select = $('<select>')
+          .addClass('condition-custom-value')
+          .insertBefore(container.prev());
+
+        for (var i = 0; i < field.ListValues.length; i++) {
+            var customField = field.ListValues[i].split(':');
+            $('<option>').attr('value', customField[1]).text(customField[0]).appendTo(select);
+        }
+        select.combobox({ selected: function (e, ui) { isModified(true); } })
+
     }
 
     if (field.DataType == 'bit') {
@@ -486,7 +516,10 @@ AdminAuto = function () {
         proxy = new parent.parent.TeamSupport.Data.TicketAutomationTriggerLogicItemProxy();
         proxy.TriggerID = -1;
         proxy.TableID = $(this).find('.condition-field option:selected').data('field').TableID;
-        proxy.FieldID = $(this).find('.condition-field').val();
+        if($(this).find('.condition-field').val() != "-999")
+            proxy.FieldID = $(this).find('.condition-field').val();
+        else
+            proxy.FieldID = $(this).find('.condition-custom-value').val();
         proxy.IsCustom = $(this).find('.condition-field option:selected').data('field').IsCustom;
         proxy.Measure = $(this).find('.condition-measure').val();
         proxy.TestValue = $(this).find('.condition-value').val();

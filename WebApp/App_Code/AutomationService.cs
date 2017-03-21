@@ -47,6 +47,15 @@ namespace TSWebServices
       CustomFields customs = new CustomFields(fields.LoginUser);
       customs.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Tickets);
 
+      CustomFields orgfields = new CustomFields(fields.LoginUser);
+      orgfields.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Organizations);
+      List<string> orgCustomFields = new List<string>();
+      foreach (CustomField c in orgfields)
+      {
+        orgCustomFields.Add(c.Name +":"+c.CustomFieldID);
+      }
+
+
       TicketTypes ticketTypes = new TicketTypes(fields.LoginUser);
       ticketTypes.LoadAllPositions(TSAuthentication.OrganizationID);
 
@@ -221,7 +230,7 @@ namespace TSWebServices
 			AutoFieldItem afiAgentRatings = new AutoFieldItem();
 			afiAgentRatings.Alias = "Agent Rating";
 			afiAgentRatings.DataType = "list";
-			afiAgentRatings.FieldID = 999;
+			afiAgentRatings.FieldID = 101009;
 			afiAgentRatings.FieldName = "AgentRating";
 			afiAgentRatings.IsCustom = false;
 			afiAgentRatings.IsVisible = true;
@@ -238,7 +247,7 @@ namespace TSWebServices
             AutoFieldItem afiCDIValue = new AutoFieldItem();
             afiCDIValue.Alias = "Customer CDI Value";
             afiCDIValue.DataType = "text";
-            afiCDIValue.FieldID = 999;
+            afiCDIValue.FieldID = 101010;
             afiCDIValue.FieldName = "Customer CDI Value";
             afiCDIValue.IsCustom = false;
             afiCDIValue.IsVisible = true;
@@ -255,7 +264,7 @@ namespace TSWebServices
             AutoFieldItem afiCDITrend = new AutoFieldItem();
             afiCDITrend.Alias = "Customer CDI Trend";
             afiCDITrend.DataType = "text";
-            afiCDITrend.FieldID = 999;
+            afiCDITrend.FieldID = 101011;
             afiCDITrend.FieldName = "Customer CDI Trend";
             afiCDITrend.IsCustom = false;
             afiCDITrend.IsVisible = true;
@@ -272,7 +281,7 @@ namespace TSWebServices
             AutoFieldItem afiServiceLevelName = new AutoFieldItem();
             afiServiceLevelName.Alias = "Service Level Name";
             afiServiceLevelName.DataType = "text";
-            afiServiceLevelName.FieldID = 999;
+            afiServiceLevelName.FieldID = 101012;
             afiServiceLevelName.FieldName = "Service Level Name";
             afiServiceLevelName.IsCustom = false;
             afiServiceLevelName.IsVisible = true;
@@ -289,7 +298,7 @@ namespace TSWebServices
             AutoFieldItem afiServiceExpirationDate = new AutoFieldItem();
             afiServiceExpirationDate.Alias = "Service Expiration Date";
             afiServiceExpirationDate.DataType = "datetime";
-            afiServiceExpirationDate.FieldID = 999;
+            afiServiceExpirationDate.FieldID = 101013;
             afiServiceExpirationDate.FieldName = "Service Expiration Date";
             afiServiceExpirationDate.IsCustom = false;
             afiServiceExpirationDate.IsVisible = true;
@@ -306,7 +315,7 @@ namespace TSWebServices
             AutoFieldItem afiCustomerIsActive = new AutoFieldItem();
             afiCustomerIsActive.Alias = "Customer Is Active";
             afiCustomerIsActive.DataType = "bit";
-            afiCustomerIsActive.FieldID = 999;
+            afiCustomerIsActive.FieldID = 101014;
             afiCustomerIsActive.FieldName = "Customer Is Active";
             afiCustomerIsActive.IsCustom = false;
             afiCustomerIsActive.IsVisible = true;
@@ -319,6 +328,24 @@ namespace TSWebServices
             afiCustomerIsActive.AuxID = null;
             afiCustomerIsActive.OtherTrigger = "organizations.active";
             fieldItems.Add(afiCustomerIsActive);
+
+            AutoFieldItem afiCustomerCustomValue = new AutoFieldItem();
+            afiCustomerCustomValue.Alias = "Customer Custom Value";
+            afiCustomerCustomValue.DataType = "text";
+            afiCustomerCustomValue.FieldID = -999;
+            afiCustomerCustomValue.FieldName = "Customer Custom Value";
+            afiCustomerCustomValue.IsCustom = false;
+            afiCustomerCustomValue.IsVisible = true;
+            afiCustomerCustomValue.ListValues = orgCustomFields.ToArray();
+            afiCustomerCustomValue.LookupTableID = null;
+            afiCustomerCustomValue.Size = 0;
+            afiCustomerCustomValue.Description = "";
+            afiCustomerCustomValue.TableID = -2;
+            afiCustomerCustomValue.RefType = ReferenceType.Tickets;
+            afiCustomerCustomValue.AuxID = null;
+            afiCustomerCustomValue.OtherTrigger = "organizations.customvalue";
+            fieldItems.Add(afiCustomerCustomValue);
+            AutoFieldItem afiCustomerServiceExpired = new AutoFieldItem();            afiCustomerServiceExpired.Alias = "Customer Service Expired";            afiCustomerServiceExpired.DataType = "bit";            afiCustomerServiceExpired.FieldID = 101015;            afiCustomerServiceExpired.FieldName = "Customer Service Expired";            afiCustomerServiceExpired.IsCustom = false;            afiCustomerServiceExpired.IsVisible = true;            afiCustomerServiceExpired.ListValues = null;            afiCustomerServiceExpired.LookupTableID = null;            afiCustomerServiceExpired.Size = 0;            afiCustomerServiceExpired.Description = "";            afiCustomerServiceExpired.TableID = -2;            afiCustomerServiceExpired.RefType = ReferenceType.Tickets;            afiCustomerServiceExpired.AuxID = null;            afiCustomerServiceExpired.OtherTrigger = "organizations.serviceexpired";            fieldItems.Add(afiCustomerServiceExpired);
 
             result.Fields = fieldItems.ToArray();
 
