@@ -1,26 +1,29 @@
 ﻿var session;
 var token;
-var recordingID;
 var apiKey;
 var sessionId;
-var tokurl;
 var publisher;
 var screenSharingPublisher;
-var videoURL;
 var tokTimer;
-var archiveID;
 var stream;
 var sharedSessionID;
 var sharedApiKey;
 var sharedToken;
 var tokpopup;
+var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0 || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification);
+var isIE = /*@cc_on!@*/false || !!document.documentMode;
+var isEdge = !isIE && !!window.StyleMedia;
+var isScreenShareDisabled = false;
+var movingAvg = null;
 
 function SetupTOK() {
-    if (BrowserDetect.browser == "Explorer" || BrowserDetect.browser == "Safari") {
+    if (isSafari || isEdge) {
         $('#chat-tok-video').hide();
         $('#chat-tok-audio').hide();
         $('#chat-tok-screen').hide();
     }
+
+    $('#agentVoiceMeter').hide();
 
     $('#chat-tok-video').click(function (e) {
         publishTOKVideo(function () {
@@ -35,14 +38,13 @@ function SetupTOK() {
     });
 
     $('#chat-tok-screen').click(function (e) {
-        publishTOKScreen();
+        if (!isScreenShareDisabled) {
+            publishTOKScreen();
+        }
     });
 }
 
 function publishTOKVideo(callback) {
-    //if (session !== undefined || publisher !== undefined)
-    //    stopTOKStream();
-
     if (OT.checkSystemRequirements() == 1) {
         var dynamicPub = $("#publisher");
 
@@ -63,6 +65,7 @@ function publishTOKVideo(callback) {
             session.connect(token, function (error) {
                 publisher = OT.initPublisher(dynamicPub.attr('id'), {
                     insertMode: 'append',
+                    style: { buttonDisplayMode: 'off' },
                     width: '100%',
                     height: '100%'
                 });
@@ -93,6 +96,13 @@ function publishTOKAudio(callback) {
 
         $('.panel-body').height('calc(100vh - 172px)');
         $('#tokStreamControls').show();
+        var isIE = /*@cc_on!@*/false || !!document.documentMode;
+        var isEdge = !isIE && !!window.StyleMedia;
+
+        if (!isIE && !isEdge) {
+            $('#agentVoiceMeter').show();
+        }
+
         $('#tokStatusText').text('Requesting Live Session...');
 
         var data = { chatID: _activeChatID };
@@ -106,6 +116,7 @@ function publishTOKAudio(callback) {
                 publisher = OT.initPublisher(dynamicPub.attr('id'), {
                     videoSource: null,
                     insertMode: 'append',
+                    style: { buttonDisplayMode: 'off' },
                     width: '100%',
                     height: '100%'
                 });
@@ -113,25 +124,21 @@ function publishTOKAudio(callback) {
             });
 
             session.on("connectionDestroyed", function (event) {
-                debugger
                 stopTOKStream(event);
             });
 
             callback();
         },
         function (error) {
-            consol.log(error.message)
+            console.log(error.message)
         });
     }
     else {
-        alert("Your client does not support video recording.")
+        alert("Your client does not support audio.")
     }
 }
 
 function publishTOKScreen() {
-    //if (session !== undefined || publisher !== undefined)
-    //    stopTOKStream();
-
     var dynamicPub = $("#screenShare");
     $("#screenRecordingContainer").show();
     dynamicPub.show();
@@ -141,19 +148,21 @@ function publishTOKScreen() {
     var clonedVid = $('#screenTwo').clone();
     clonedVid.attr("id", "screenOneClone");
 
-
     OT.registerScreenSharingExtension('chrome', 'laehkaldepkacogpkokmimggbepafabg', 2);
 
     OT.checkScreenSharingCapability(function (response) {
         if (!response.supported || response.extensionRegistered === false) {
             alert("This browser does not support screen sharing");
-        } else if (response.extensionInstalled === false && BrowserDetect.browser != "Mozilla") {
+        } else if (response.extensionInstalled === false) {
+            var isChrome = !!window.chrome && !!window.chrome.webstore;
+            var isFirefox = typeof InstallTrigger !== 'undefined';
+
             // prompt to install the response.extensionRequired extension
 
-            if (BrowserDetect.browser == "Chrome") {
+            if (isChrome) {
                 $('#ChromeInstallModal').modal('show');
             }
-            else if (BrowserDetect.browser == "Firefox") {
+            else if (typeof InstallTrigger !== 'undefined') {
                 $('#FireFoxInstallModal').modal('show');
             }
 
@@ -216,8 +225,8 @@ function subscribeToVideoStream() {
         stopTOKStream();
 
     var tokenURI = encodeURIComponent(sharedToken);
-
     tokpopup = window.open('https://release-chat.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSharedSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+    $('#videoRequest').remove();
 
     setTimeout(function () {
         if (!tokpopup || tokpopup.outerHeight === 0) {
@@ -227,6 +236,7 @@ function subscribeToVideoStream() {
         } else {
             publishTOKVideo(function () {
                 pressenceChannel.trigger('client-tok-video-user-accept', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+                $('#tokStatusText').text(_agentName + ' has joined live session.');
             });
         }
     }, 25);
@@ -236,20 +246,83 @@ function subscribeToAudioStream() {
     if (session !== undefined || publisher !== undefined)
         stopTOKStream();
 
-    var tokenURI = encodeURIComponent(sharedToken);
-    tokpopup = window.open('https://release-chat.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSharedSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+    if (isIE || isEdge) {
+        var tokenURI = encodeURIComponent(sharedToken);
+        tokpopup = window.open('https://release-chat.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSharedSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+        $('#audioRequest').remove();
+        setTimeout(function () {
+            if (!tokpopup || tokpopup.outerHeight === 0) {
+                alert("Popup Blocker is enabled! Please add this site to your exception list.");
+            } else {
+                publishTOKAudio(function () {
+                    pressenceChannel.trigger('client-tok-audio-user-accept', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+                    $('#tokStatusText').text(_agentName + ' has joined live session.');
+                });
+            }
+        }, 500);
+    } else {
+        ReceiveAudioStream(sharedSessionID, sharedToken);
+        $('#audioRequest').remove();
 
-    setTimeout(function () {
-        if (!tokpopup || tokpopup.outerHeight === 0) {
-            //First Checking Condition Works For IE & Firefox
-            //Second Checking Condition Works For Chrome
-            alert("Popup Blocker is enabled! Please add this site to your exception list.");
-        } else {
-            publishTOKAudio(function () {
-                pressenceChannel.trigger('client-tok-audio-user-accept', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+        publishTOKAudio(function () {
+            pressenceChannel.trigger('client-tok-audio-user-accept', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+            $('#tokStatusText').text(_agentName + ' has joined live session.');
+        });
+    }
+}
+
+function ReceiveAudioStream(sessionID, token) {
+    var data = { chatID: 1 };
+    IssueAjaxRequest("GetTOKSessionInfoClient", data,
+    function (resultID) {
+        apiKey = resultID[2];
+
+        var dynamicPub = $("#audioTOKContainer");
+        dynamicPub.show();
+        dynamicPub.attr("id", "tempContainer");
+        dynamicPub.attr("width", "100%");
+        dynamicPub.attr("height", "100%");
+
+        if (dynamicPub.length == 0)
+            dynamicPub = $("#tempContainer");
+
+        var stream = OT.initSession(apiKey, sessionID);
+        stream.connect(token, function (error) {
+            var subscribeProperties = {
+                insertMode: 'append',
+                style: {
+                    buttonDisplayMode: 'off',
+                    audioLevelDisplayMode: 'off'
+                },
+                width: '100%',
+                height: '0px',
+                audioVolume: 100,
+                subscribeToAudio: true
+            };
+            stream.on('streamCreated', function (event) {
+                stream.subscribe(event.stream, dynamicPub.attr('id'), subscribeProperties);
+                var subscriber = stream.subscribe(event.stream, dynamicPub.attr('id'), subscribeProperties);
+                dynamicPub.hide();
+
+                subscriber.on('audioLevelUpdated', function (event) {
+                    if (movingAvg === null || movingAvg <= event.audioLevel) {
+                        movingAvg = event.audioLevel;
+                    } else {
+                        movingAvg = 0.7 * movingAvg + 0.3 * event.audioLevel;
+                    }
+
+                    // 1.5 scaling to map the -30 - 0 dBm range to [0,1]
+                    var logLevel = (Math.log(movingAvg) / Math.LN10) / 1.5 + 1;
+                    logLevel = Math.min(Math.max(logLevel, 0), 1);
+                    document.getElementById('agentVoiceMeter').value = logLevel;
+                });
             });
-        }
-    }, 25);
+
+            stream.on('streamDestroyed', function (event) {
+                stopTOKStream(event);
+            });
+        });
+    });
 }
 
 function subscribeToScreenStream() {
@@ -258,6 +331,9 @@ function subscribeToScreenStream() {
 
     var tokenURI = encodeURIComponent(sharedToken);
     tokpopup = window.open('https://release-chat.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSharedSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+    $('#screenRequest').remove();
+    DisableScreenShare(true);
+    muteTOKStream();
 
     setTimeout(function () {
         if (!tokpopup || tokpopup.outerHeight === 0) {
@@ -267,6 +343,7 @@ function subscribeToScreenStream() {
         } else {
             publishTOKAudio(function () {
                 pressenceChannel.trigger('client-tok-audio-user-accept', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+                $('#tokStatusText').text(_agentName + ' has joined live session.');
             });
         }
     }, 25);
@@ -278,7 +355,7 @@ function startVideoStreaming() {
 };
 
 function startAudioStreaming() {
-    //Send a signal over Pusher to any parties to notify of screen sharing stream.
+    //Send a signal over Pusher to any parties to notify of customer audio sharing stream.
     pressenceChannel.trigger('client-tok-audio-user', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
 };
 
@@ -296,15 +373,21 @@ function stopScreenStreaming() {
 }
 
 function stopTOKStream(e) {
-    debugger
     $('#tokStatusText').text('Ending live session...');
-    session.unpublish(publisher);
-    session.disconnect();
-    publisher.destroy();
-    session = undefined;
-    publisher = undefined;
+
+    if (session !== undefined || publisher !== undefined) {
+        session.unpublish(publisher);
+        session.disconnect();
+        publisher.destroy();
+        session = undefined;
+        publisher = undefined;
+    }
+    
     $('#tokStreamControls').hide();
+    document.getElementById('agentVoiceMeter').value = 0;
+    $('#agentVoiceMeter').hide();
     $('.panel-body').height('calc(100vh - 95px)');
+    DisableScreenShare(false);
 
     if (tokpopup)
         tokpopup.close();
@@ -321,3 +404,14 @@ function unmuteTOKStream(e) {
     $('#muteStream').show();
     $('#unmuteStream').hide();
 };
+
+function DisableScreenShare(disable) {
+    var screen = $('.dropdown-menu li:contains(Screen)');
+    isScreenShareDisabled = disable;
+
+    if (disable) {
+        screen.addClass('disabled');
+    } else {
+        screen.removeClass('disabled');
+    }
+}

@@ -1,20 +1,22 @@
-﻿$(document).ready(function () {
-    var chatID = Ts.Utils.getQueryValue("uid", window);
-    var chatOffline = false;
-    var chatGuid = { chatGuid: chatID };
+﻿var chatOffline = false;
 
-    GetChatSettings(chatID);
+$(document).ready(function () {
+    var chatID = Ts.Utils.getQueryValue("uid", window);
+    var chatGuid = { chatGuid: chatID };
 
     IssueAjaxRequest("CheckChatStatus", { chatGuid: chatID },
     function (result) {
-        console.log(result)
-        chatOffline = result;
-        if (result) 
+        chatOffline = !result;
+
+        if (chatOffline) {
+            $('.panel-heading').text("Live Chat is not available at this time.");
+            $('.chatOfflineWarning').show();
+        } else {
             $('.chatOfflineWarning').hide();
-        else 
-            $('.chatRequestForm').show();
+        }
         
         $('.chatRequestForm').show();
+        GetChatSettings(chatID);
     },
     function (error) {
         console.log(error)
@@ -26,7 +28,7 @@
         $(this).prop("disabled", true);
         var contactInfo = { chatGuid: chatID, fName: $('#userFirstName').val(), lName: $('#userLastName').val(), email: $('#userEmail').val(), description: $('#userIssue').val() };
 
-        if (!chatOffline) {
+        if (chatOffline) {
             IssueAjaxRequest("OfflineChat", contactInfo,
             function (result) {
                 console.log(result)
@@ -47,7 +49,6 @@
             });
         }
     });
-  
 });
 
 function GetChatSettings(chatID) {
@@ -55,7 +56,11 @@ function GetChatSettings(chatID) {
 
     IssueAjaxRequest("GetClientChatPropertiesByChatGUID", chatObject,
     function (result) {
-        $('.panel-heading').text(result.ChatIntro);
+        if (!chatOffline) {
+            $('.panel-heading').text(result.ChatIntro);
+        }
+
+        $("input:text:visible:first").focus();
     },
     function (error) {
 

@@ -1,12 +1,20 @@
 ﻿var _activeChatID = null;
 var dateFormat;
 var _intervalUpdateActiveChats = null;
+var isTOKEnabledForBrowser;
+var _isChatWindowActive = true;
+var _isChatWindowPotentiallyHidden = false;
+
 $(document).ready(function () {
     //apiKey = "45228242";
     var chatInfoObject = {};
     var pusherKey = null;
     var contactID = null;
     var uploadPath = '../../../Upload/ChatAttachments/';
+    var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0 || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification);
+    var isIE = /*@cc_on!@*/false || !!document.documentMode;
+    var isEdge = !isIE && !!window.StyleMedia;
+    isTOKEnabledForBrowser = !isSafari && !isEdge;
 
     window.parent.Ts.Services.Customers.GetDateFormat(false, function (format) {
         dateFormat = format.replace("yyyy", "yy");
@@ -40,14 +48,27 @@ $(document).ready(function () {
     SetupTOK();
 
     function GetChatSettings() {
-        parent.Ts.Services.Chat.GetAgentChatProperties(function (data) {
-            if (!data.TOKScreenEnabled)
-                $('#chat-tok-screen').hide();
-            if (!data.TOKVideoEnabled)
-                $('#chat-tok-video').hide();
-            if (!data.TOKVoiceEnabled)
-                $('#chat-tok-audio').hide();
-        });
+        var enableAudio = true;
+        var enableVideo = true;
+        var enableScreen = true;
+
+        if (!isTOKEnabledForBrowser) {
+            enableAudio = false;
+            enableVideo = false;
+            enableScreen = false;
+            EnableTOKButtons(enableAudio, enableVideo, enableScreen);
+        } else {
+            parent.Ts.Services.Chat.GetAgentChatProperties(function (data) {
+                if (!data.TOKScreenEnabled)
+                    enableScreen = false;
+                if (!data.TOKVideoEnabled)
+                    enableVideo = false;
+                if (!data.TOKVoiceEnabled)
+                    enableAudio = false;
+
+                EnableTOKButtons(enableAudio, enableVideo, enableScreen);
+            });
+        }
     }
 
     function SetupChatRequests() {
@@ -132,7 +153,7 @@ $(document).ready(function () {
     }
 
     function AcceptRequest(ChatRequestID, innerString, parentEl) {
-        parent.Ts.Services.Chat.AcceptRequest(ChatRequestID, function (chatId) {
+        parent.Ts.Services.Chat.AcceptRequest(ChatRequestID, isTOKEnabledForBrowser, function (chatId) {
             setupChat(pusherKey, chatId, createMessageElement, function (channel) {
                 //console.log(channel);
             });
@@ -162,7 +183,6 @@ $(document).ready(function () {
     }
 
     function createMessageElement(messageData, scrollView) {
-        //console.log(messageData)
         if (messageData.ChatID == _activeChatID) {
             var messageTemplate = $("#message-template").html();
             var compiledTemplate = messageTemplate
@@ -176,6 +196,14 @@ $(document).ready(function () {
 
             $('.media-list').append(compiledTemplate);
             if (scrollView) ScrollMessages(true);
+
+            //If message is coming from the customer
+            if (messageData.CreatorType == 1 && (!_isChatWindowActive || _isChatWindowPotentiallyHidden)) {
+                if (screenSharingPublisher !== undefined) {
+                    BlinkWindowTitle();
+                    NewChatMessageAlert();
+                }
+            }
         }
         else {
             $('#active-chat_' + messageData.ChatID).addClass('list-group-item-info');
@@ -184,7 +212,6 @@ $(document).ready(function () {
 
     function SetActiveChat(chatID) {
         parent.Ts.Services.Chat.GetChatDetails(chatID, function (chat) {
-            //console.log(chat);
             chatInfoObject = chat;
             if (chat.InitiatorUserID !== null) {
                 contactID = chat.InitiatorUserID;
@@ -215,6 +242,8 @@ $(document).ready(function () {
 
             _intervalUpdateActiveChats = setInterval('EnableDisableTicketMenu();', 5200);
         });
+
+        GetChatSettings();
     }
 
     function ScrollMessages(animated) {
@@ -226,13 +255,17 @@ $(document).ready(function () {
 
     $("#message-form").submit(function (e) {
         e.preventDefault();
-        $('#new-message').prop("disabled", true);
-        doneTyping();
-        parent.Ts.Services.Chat.AddAgentMessage('presence-' + _activeChatID, $('#message').val(), _activeChatID, function (data) {
-            $('#message').val('');
-            $('#new-message').prop("disabled", false);
-        });
+        var messageString = $('#message').val();
+        messageString = messageString.trim();
 
+        if (messageString !== '') {
+            $('#new-message').prop("disabled", true);
+            doneTyping();
+            parent.Ts.Services.Chat.AddAgentMessage('presence-' + _activeChatID, messageString, _activeChatID, function (data) {
+                $('#message').val('');
+                $('#new-message').prop("disabled", false);
+            });
+        }
     });
 
     function SetupToolbar() {
@@ -246,6 +279,7 @@ $(document).ready(function () {
                         $('.media-list').empty();
                         $('.chat-intro').empty();
                         _activeChatID = null;
+                        GetChatSettings();
                     }
                     else console.log('Error closing chat.')
                 });
@@ -414,9 +448,6 @@ $(document).ready(function () {
                 else console.log('Error opening associated ticket.')
             });
         });
-
-
-
     }
 
     var execSuggestedSolutions = null;
@@ -526,10 +557,21 @@ $(document).ready(function () {
 
     $('#message').keydown(function (e) {
         if (e.which == 13) {
+            doneTyping();
             $("#message-form").submit();
         } else {
             //nothing here for now
         }
+    });
+
+    $("#jquery_jplayer_1").jPlayer({
+        ready: function (event) {
+            $(this).jPlayer("setMedia", {
+                mp3: "../vcr/1_9_0/Audio/chime.mp3"
+            });
+        },
+        loop: false,
+        swfPath: ""
     });
 });
 
@@ -559,6 +601,78 @@ function EnableDisableTicketMenu() {
     }
 }
 
+function EnableTOKButtons(enableAudio, enableVideo, enableScreen) {
+    var audio = $('#chat-tok-audio > .btn-primary');
+    var video = $('#chat-tok-video > .btn-primary');
+    var screen = $('#chat-tok-screen > .btn-primary');
+
+    if (enableAudio && audio.hasClass('disabled')) {
+        audio.removeClass('disabled');
+    } else if (!enableAudio && !audio.hasClass('disabled')) {
+        audio.addClass('disabled');
+    }
+
+    if (enableVideo && video.hasClass('disabled')) {
+        video.removeClass('disabled');
+    } else if (!enableVideo && !video.hasClass('disabled')) {
+        video.addClass('disabled');
+    }
+
+    if (enableScreen && screen.hasClass('disabled')) {
+        screen.removeClass('disabled');
+    } else if (!enableScreen && !screen.hasClass('disabled')) {
+        screen.addClass('disabled');
+    }
+}
+
+function NewChatMessageAlert() {
+    // Let's check if the browser supports notifications
+    if (!("Notification" in window)) {
+        $("#jquery_jplayer_1").jPlayer("setMedia", {
+            mp3: "../vcr/1_9_0/Audio/chime.mp3"
+        }).jPlayer("play", 0);
+    }
+        // Let's check whether notification permissions have already been granted
+    else if (Notification.permission === "granted") {
+        ShowNotificationMessage();
+    }
+        // Otherwise, we need to ask the user for permission
+    else if (Notification.permission !== 'denied') {
+        Notification.requestPermission(function (permission) {
+            ShowNotificationMessage();
+        });
+    }
+}
+
+function ShowNotificationMessage() {
+    var options = {
+        body: "New Chat Message!",
+        icon: "https://app.teamsupport.com/images/icons/TeamSupportLogo16.png",
+        tag: "chat" + _activeChatID
+    }
+    var notification = new Notification("TeamSupport", options);
+    notification.onshow = function () { setTimeout(function () { notification.close(); }, 5000) };
+}
+
+function BlinkWindowTitle() {
+    var oldTitle = document.title;
+    var msg = "New Message!";
+    var timeoutId;
+    var blink = function () { document.title = document.title == msg ? ' ' : msg; };
+    var clear = function () {
+        clearInterval(timeoutId);
+        document.title = oldTitle;
+        window.onmousemove = null;
+        timeoutId = null;
+    };
+    return function () {
+        if (!timeoutId) {
+            timeoutId = setInterval(blink, 1000);
+            window.onmousemove = clear;
+        }
+    };
+};
+
 $(document).bind('dragover', function (e) {
     var dropZone = $('.current-chat'),
         timeout = window.dropZoneTimeout;
@@ -586,3 +700,152 @@ $(document).bind('dragover', function (e) {
         dropZone.removeClass('in hover');
     }, 100);
 });
+
+//This function checks the window visibility (if it is minimized or not)
+(function () {
+    var hidden = "hidden";
+
+    // Standards:
+    if (hidden in document)
+        document.addEventListener("visibilitychange", onchange);
+    else if ((hidden = "mozHidden") in document)
+        document.addEventListener("mozvisibilitychange", onchange);
+    else if ((hidden = "webkitHidden") in document)
+        document.addEventListener("webkitvisibilitychange", onchange);
+    else if ((hidden = "msHidden") in document)
+        document.addEventListener("msvisibilitychange", onchange);
+        // IE 9 and lower:
+    else if ("onfocusin" in document)
+        document.onfocusin = document.onfocusout = onchange;
+        // All others:
+    else
+        window.onpageshow = window.onpagehide
+        = window.onfocus = window.onblur = onchange;
+
+    function onchange(evt) {
+        var v = "visible", h = "hidden",
+            evtMap = {
+                focus: v, focusin: v, pageshow: v, blur: h, focusout: h, pagehide: h
+            };
+
+        evt = evt || window.event;
+        if (evt.type in evtMap) {
+            document.body.className = evtMap[evt.type];
+        } else {
+            document.body.className = this[hidden] ? "hidden" : "visible";
+        }
+
+        _isChatWindowActive = document.body.className == "visible";
+    }
+
+    // set the initial state (but only if browser supports the Page Visibility API)
+    if (document[hidden] !== undefined)
+        onchange({ type: document[hidden] ? "blur" : "focus" });
+})();
+
+//These will check if the window has focus or not (minimized or not)
+$(window).focus(function () {
+    _isChatWindowActive = true;
+}).blur(function () {
+    _isChatWindowActive = false;
+});
+
+function addEvent(obj, evType, fn, isCapturing) {
+    if (isCapturing == null) isCapturing = false;
+    if (obj.addEventListener) {
+        // Firefox
+        obj.addEventListener(evType, fn, isCapturing);
+        return true;
+    } else if (obj.attachEvent) {
+        // MSIE
+        var r = obj.attachEvent('on' + evType, fn);
+        return r;
+    } else {
+        return false;
+    }
+}
+
+var potentialPageVisibility = {
+    pageVisibilityChangeThreshold: 3 * 3600, // in seconds
+    init: function () {
+        function setAsNotHidden() {
+            var dispatchEventRequired = document.potentialHidden;
+            document.potentialHidden = false;
+            document.potentiallyHiddenSince = 0;
+            if (dispatchEventRequired) dispatchPageVisibilityChangeEvent();
+        }
+
+        function initPotentiallyHiddenDetection() {
+            if (!hasFocusLocal) {
+                // the window does not has the focus => check for  user activity in the window
+                lastActionDate = new Date();
+                if (timeoutHandler != null) {
+                    clearTimeout(timeoutHandler);
+                }
+                timeoutHandler = setTimeout(checkPageVisibility, potentialPageVisibility.pageVisibilityChangeThreshold * 1000 + 100); // +100 ms to avoid rounding issues under Firefox
+            }
+        }
+
+        function dispatchPageVisibilityChangeEvent() {
+            unifiedVisilityChangeEventDispatchAllowed = false;
+            var evt = document.createEvent("Event");
+            evt.initEvent("potentialvisilitychange", true, true);
+            document.dispatchEvent(evt);
+        }
+
+        function checkPageVisibility() {
+            var potentialHiddenDuration = (hasFocusLocal || lastActionDate == null ? 0 : Math.floor((new Date().getTime() - lastActionDate.getTime()) / 1000));
+            document.potentiallyHiddenSince = potentialHiddenDuration;
+            if (potentialHiddenDuration >= potentialPageVisibility.pageVisibilityChangeThreshold && !document.potentialHidden) {
+                // page visibility change threshold raiched => raise the even
+                document.potentialHidden = true;
+                dispatchPageVisibilityChangeEvent();
+            }
+
+            _isChatWindowPotentiallyHidden = document.potentialHidden;
+        }
+
+        var lastActionDate = null;
+        var hasFocusLocal = true;
+        var hasMouseOver = true;
+        document.potentialHidden = false;
+        document.potentiallyHiddenSince = 0;
+        var timeoutHandler = null;
+
+        addEvent(document, "pageshow", function (event) {
+            document.getElementById("x").innerHTML += "pageshow/doc:<br>";
+        });
+        addEvent(document, "pagehide", function (event) {
+            document.getElementById("x").innerHTML += "pagehide/doc:<br>";
+        });
+        addEvent(window, "pageshow", function (event) {
+            document.getElementById("x").innerHTML += "pageshow/win:<br>"; // raised when the page first shows
+        });
+        addEvent(window, "pagehide", function (event) {
+            document.getElementById("x").innerHTML += "pagehide/win:<br>"; // not raised
+        });
+        addEvent(document, "mousemove", function (event) {
+            lastActionDate = new Date();
+        });
+        addEvent(document, "mouseover", function (event) {
+            hasMouseOver = true;
+            setAsNotHidden();
+        });
+        addEvent(document, "mouseout", function (event) {
+            hasMouseOver = false;
+            initPotentiallyHiddenDetection();
+        });
+        addEvent(window, "blur", function (event) {
+            hasFocusLocal = false;
+            initPotentiallyHiddenDetection();
+        });
+        addEvent(window, "focus", function (event) {
+            hasFocusLocal = true;
+            setAsNotHidden();
+        });
+        setAsNotHidden();
+    }
+}
+
+potentialPageVisibility.pageVisibilityChangeThreshold = 1;
+potentialPageVisibility.init();
