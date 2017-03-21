@@ -422,7 +422,7 @@
                         refstring += '<a href="#" target="_blank" onclick="parent.Ts.MainPage.openNewCustomer(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
                         break;
                     case 3:
-                        refstring += '<a href="#" target="_blank" onclick="parent.Ts.MainPage.openNewContact(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
+                        refstring += '<a href="#" target="_blank" onclick="parent.Ts.MainPage.openUser(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
                         break;
                     case 4:
                         refstring += '<a href="#" target="_blank" onclick="parent.Ts.MainPage.openGroup(' + event.references[i].RefID + '); return false;">' + event.references[i].displayName + '</a><br/>';
