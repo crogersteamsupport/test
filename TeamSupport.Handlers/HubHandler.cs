@@ -219,56 +219,51 @@ namespace TeamSupport.Handlers
         private void ProcessTicketSearch(HttpContext context, int parentID, int userID, string searchTerm)
         {
             SearchResults ticketResults = TicketsView.GetHubSearchTicketResults(searchTerm, LoginUser.Anonymous, parentID);
-            //List<TicketSearchItem> result = GetTicketResults(ticketResults, LoginUser.Anonymous, userID, parentID);
+            List<TicketSearchItem> result = GetTicketResults(ticketResults, LoginUser.Anonymous, userID, parentID);
             WriteJson(context, ticketResults);
         }
 
-  //      private List<TicketSearchItem> GetTicketResults(SearchResults results, LoginUser loginUser, int userID, int parentID)
-		//{
-		//	List<TicketSearchItem> items = new List<TicketSearchItem>();
-		//	int customerID = 0;
-		//	User user = Users.GetUser(loginUser, userID);
-		//	if (user != null) customerID = user.OrganizationID; 
+              private List<TicketSearchItem> GetTicketResults(SearchResults results, LoginUser loginUser, int userID, int parentID)
+        {
+        	List<TicketSearchItem> items = new List<TicketSearchItem>();
+        	int customerID = 0;
+        	User user = Users.GetUser(loginUser, userID);
+        	if (user != null) customerID = user.OrganizationID; 
 
-		//	for (int i = 0; i < results.Count; i++)
-		//	{
-		//		results.GetNthDoc(i);
-		//		int ticketID = int.Parse(results.CurrentItem.Filename);
-		//		if (ticketID > 0)
-		//		{
-		//			TicketsView ticketsViewHelper = new TicketsView(loginUser);
-		//			ticketsViewHelper.LoadHubKBByID(ticketID, parentID, customerID);
+        	for (int i = 0; i < results.Count; i++)
+        	{
+        		results.GetNthDoc(i);
+        		int ticketID = int.Parse(results.CurrentItem.Filename);
+        		if (ticketID > 0)
+        		{
+                    List<CustomPortalColumnProxy> portalColumns = CustomPortalColumns.GetDefaultColumns(parentID);
 
-		//			if (ticketsViewHelper.Any())
-		//			{
-		//				KBSearchItem item = new KBSearchItem();
-		//				item.HitRating = results.CurrentItem.ScorePercent;
-		//				item.Article = ticketsViewHelper[0].GetProxy();
+                    TicketLoadFilter filters = new TicketLoadFilter();
+                    filters.CustomerID = loginUser.OrganizationID;
+                    filters.IsVisibleOnPortal = true;
+                    filters.ForumCategoryID = null;
 
-		//				TicketRatings ratings = new TicketRatings(loginUser);
-		//				ratings.LoadByTicketID(ticketID);
+                    TicketsView ticketsViewHelper = new TicketsView(loginUser);
+        			ticketsViewHelper.LoadHubtickets(loginUser, parentID, filters, portalColumns, 0, 100000000);
 
-		//				if (ratings.Any())
-		//				{
-		//					TicketRating rating = ratings[0];
-		//					item.VoteRating = rating.ThumbsUp;
-		//				}
+        			if (ticketsViewHelper.Any())
+        			{
+        				TicketSearchItem item = new TicketSearchItem();
+        				item.HitRating = results.CurrentItem.ScorePercent;
 
-		//				items.Add(item);
-		//			}
-		//		}
-		//	}
-		//	return items;
-		//}
+        				items.Add(item);
+        			}
+        		}
+        	}
+        	return items;
+    }
 
-        #region classes
+    #region classes
 
-        public class TicketSearchItem
+    public class TicketSearchItem
         {
             public int HitRating { get; set; }
-            public int? VoteRating { get; set; }
-            public int Views { get; set; }
-            public TicketsViewItemProxy Article { get; set; }
+            public TicketsViewItemProxy Ticket { get; set; }
         }
 
         public class KBSearchItem

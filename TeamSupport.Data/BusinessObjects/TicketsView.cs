@@ -1748,9 +1748,10 @@ ORDER BY TicketNumber DESC";
 
         public static SearchResults GetHubSearchTicketResults(string searchTerm, LoginUser loginUser, int parentOrgID)
         {
-            Options options = new Options();
-            options.TextFlags = TextFlags.dtsoTfRecognizeDates;
-
+            Options options = new Options()
+            {
+                TextFlags = TextFlags.dtsoTfRecognizeDates
+            };
             using (SearchJob job = new SearchJob())
             {
                 searchTerm = searchTerm.Trim();
