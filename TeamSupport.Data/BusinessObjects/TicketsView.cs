@@ -1748,44 +1748,32 @@ ORDER BY TicketNumber DESC";
 
         public static SearchResults GetHubSearchTicketResults(string searchTerm, LoginUser loginUser, int parentOrgID)
         {
-            Options options = new Options()
-            {
-                TextFlags = TextFlags.dtsoTfRecognizeDates
-            };
+            Options options = new Options();
+            options.TextFlags = TextFlags.dtsoTfRecognizeDates;
             using (SearchJob job = new SearchJob())
             {
-                searchTerm = searchTerm.Trim();
-                job.Request = searchTerm;
-                job.FieldWeights = "TicketNumber: 5000, Name: 1000";
-
                 StringBuilder conditions = new StringBuilder();
+                conditions.Append(" (IsVisibleOnPortal::True)");
 
-                AppendTicketRightsConditions(loginUser, conditions);
-
+                job.Request = searchTerm;
+                job.FieldWeights = "Name: 1000";
                 job.BooleanConditions = conditions.ToString();
-                job.MaxFilesToRetrieve = 25;
-                job.AutoStopLimit = 100000;
-                job.TimeoutSeconds = 10;
-                job.SearchFlags =
-                  SearchFlags.dtsSearchStemming |
-                  SearchFlags.dtsSearchDelayDocInfo;
+                job.TimeoutSeconds = 30;
+                job.SearchFlags = SearchFlags.dtsSearchDelayDocInfo;
 
                 int num = 0;
                 if (!int.TryParse(searchTerm, out num))
                 {
-                    job.Fuzziness = 1;
-                    job.Request = job.Request + "*";
-                    job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchSelectMostRecent;
-                    //job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy | SearchFlags.dtsSearchSelectMostRecent;
+                    job.SearchFlags = job.SearchFlags |
+                        SearchFlags.dtsSearchPositionalScoring |
+                        SearchFlags.dtsSearchAutoTermWeight;
                 }
-
 
                 if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
                 job.IndexesToSearch.Add(DataUtils.GetPortalTicketsIndexPath(loginUser, parentOrgID));
                 job.Execute();
 
                 return job.Results;
-
             }
         }
 
