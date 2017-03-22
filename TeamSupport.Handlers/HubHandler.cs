@@ -257,6 +257,7 @@ namespace TeamSupport.Handlers
                                 item.Ticket = new TicketsViewItemProxy();
                                 item.Ticket.TicketID = ticket.TicketID;
                                 item.Ticket.Name = ticket.Name;
+                                item.Ticket.TicketNumber = ticket.TicketNumber;
                                
                                 item.HitRating = results.CurrentItem.ScorePercent;
 
