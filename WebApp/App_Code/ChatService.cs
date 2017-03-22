@@ -46,7 +46,7 @@ namespace TSWebServices
             Chat chat = GetChat(chatID);
             ChatSettingsModel model = new ChatSettingsModel();
 
-            model.ChatIntro = OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatIntroMessage", "How can I help you today?");
+            model.ChatIntro = OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatIntroMessage", "Welcome to our live chat!");
             model.TOKScreenEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatTOKScreenEnabled", "true"));
             model.TOKVoiceEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatTOKVoiceEnabled", "true"));
             model.TOKVideoEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatTOKVideoEnabled", "true"));
@@ -61,7 +61,7 @@ namespace TSWebServices
             Organization org = GetOrganization(chatGuid);
             ChatSettingsModel model = new ChatSettingsModel();
 
-            model.ChatIntro = OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatIntroMessage", "How can I help you today?");
+            model.ChatIntro = OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatIntroMessage", "Welcome to our live chat!");
             model.TOKScreenEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKScreenEnabled", "true"));
             model.TOKVoiceEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKVoiceEnabled", "true"));
             model.TOKVideoEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKVideoEnabled", "true"));
@@ -197,9 +197,9 @@ namespace TSWebServices
                 user_info = new
                 {
                     name = client.FirstName + ' ' + client.LastName,
-                    company = client.CompanyName
+                    company = client.CompanyName,
+                    chatId = chatId
                 }
-
             };
 
             var auth = pusher.Authenticate(channel_name, socket_id, channelData);
@@ -219,7 +219,6 @@ namespace TSWebServices
             chatMessage.PosterID = userID;
             chatMessage.PosterType = ChatParticipantType.External;
             chatMessage.Collection.Save();
-            //Users.UpdateUserActivityTime(loginUser, userID);
 
             ChatViewMessage newMessage = new ChatViewMessage(chatMessage.GetProxy(), GetLinkedUserInfo(userID, ChatParticipantType.External));
             var result = pusher.Trigger(channelName, "new-comment", newMessage);
@@ -275,6 +274,7 @@ namespace TSWebServices
             else return JsonConvert.SerializeObject(users[0].GetProxy());
         }
 
+        [Obsolete("This method seems deprecated")]
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string DisconnectUser(string channelName, int chatID, int userID)
@@ -289,7 +289,6 @@ namespace TSWebServices
             chatMessage.PosterType = ChatParticipantType.External;
             chatMessage.IsNotification = true;
             chatMessage.Collection.Save();
-            //Users.UpdateUserActivityTime(loginUser, userID);
 
             ChatViewMessage newMessage = new ChatViewMessage(chatMessage.GetProxy(), GetLinkedUserInfo(userID, ChatParticipantType.External));
 
@@ -306,7 +305,7 @@ namespace TSWebServices
         {
             ChatSettingsModel model = new ChatSettingsModel();
 
-            model.ChatIntro = Settings.OrganizationDB.ReadString("ChatIntroMessage", "How can we help you today?");
+            model.ChatIntro = Settings.OrganizationDB.ReadString("ChatIntroMessage", "Welcome to our live chat!");
             model.TOKScreenEnabled = Settings.OrganizationDB.ReadBool("ChatTOKScreenEnabled", true);
             model.TOKVoiceEnabled = Settings.OrganizationDB.ReadBool("ChatTOKVoiceEnabled", true);
             model.TOKVideoEnabled = Settings.OrganizationDB.ReadBool("ChatTOKVideoEnabled", true);
@@ -357,10 +356,10 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public int AcceptRequest(int chatRequestID)
+        public int AcceptRequest(int chatRequestID, bool isTOKEnabled)
         {
             int chatID = ChatRequests.AcceptRequest(loginUser, loginUser.UserID, chatRequestID, HttpContext.Current.Request.UserHostAddress);
-            var result = pusher.Trigger("presence-" + chatID, "agent-joined", null);
+            var result = pusher.Trigger("presence-" + chatID, "agent-joined", new { isAgentTOKEnabled = isTOKEnabled });
             var result2 = pusher.Trigger("chat-requests-" + loginUser.GetOrganization().ChatID, "chat-request-accepted", chatRequestID);
             return chatID;
         }
@@ -523,7 +522,6 @@ namespace TSWebServices
             ChatMessageProxy message = Chats.LeaveChat(loginUser, loginUser.UserID, ChatParticipantType.User, chatID);
             User user = loginUser.GetUser();
             ChatViewMessage newMessage = new ChatViewMessage(message, new ParticipantInfoView(user.UserID, user.FirstName, user.LastName, user.Email, loginUser.GetOrganization().Name));
-
             var result = pusher.Trigger(channelName, "new-comment", newMessage);
             return true;
         }
