@@ -807,7 +807,7 @@ ORDER BY TicketNumber DESC";
             }
         }
 
-        public void LoadHubtickets(LoginUser loginUser, int organizationID, TicketLoadFilter filter, List<CustomPortalColumnProxy> portalColumns, int from, int to)
+        public void LoadHubtickets(LoginUser loginUser, int userID, int organizationID, TicketLoadFilter filter, List<CustomPortalColumnProxy> portalColumns, int from, int to)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -834,7 +834,7 @@ ORDER BY TicketNumber DESC";
                 string fields = BuildCustomPortalColumns(loginUser, portalColumns);
 
                 StringBuilder where = new StringBuilder();
-                GetHubFilterWhereClause(loginUser, organizationID, filter, command, where);
+                GetHubFilterWhereClause(loginUser, userID, organizationID, filter, command, where);
 
                 string query = @"
 
@@ -978,30 +978,41 @@ ORDER BY TicketNumber DESC";
 
         private string BuildCustomPortalColumns(LoginUser loginUser, List<CustomPortalColumnProxy> columns)
         {
-            StringBuilder builder = new StringBuilder();
-            TimeSpan offset = loginUser.Offset;
-            TicketTypes ticketTypes = new TicketTypes(loginUser);
-            ticketTypes.LoadByOrganizationID(loginUser.OrganizationID);
-            ReportTableFields tableFields = new ReportTableFields(loginUser);
-            tableFields.LoadAll();
-            string fieldName = "tv.TicketID";
-            string customFieldNameTemplate = ",( SELECT CustomValue FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = tv.TicketID))";
-
-            builder.Append("tv.[TicketID] as hiddenTicketID, tv.[TicketNumber] as hiddenTicketNumber");
-
-            foreach (CustomPortalColumnProxy column in columns.OrderBy(c => c.Position))
+            if (columns == null)
             {
-                if (column.CustomFieldID != null)
-                {
-                    CustomField customField = (CustomField)CustomFields.GetCustomField(loginUser, (int)column.CustomFieldID);
-                    fieldName = string.Format(customFieldNameTemplate, column.CustomFieldID);
+                return "tv.Name, tv.TicketID, tv.TicketNumber";
+            }
+            else
+            {
+                StringBuilder builder = new StringBuilder();
+                TimeSpan offset = loginUser.Offset;
+                TicketTypes ticketTypes = new TicketTypes(loginUser);
+                ticketTypes.LoadByOrganizationID(loginUser.OrganizationID);
+                ReportTableFields tableFields = new ReportTableFields(loginUser);
+                tableFields.LoadAll();
+                string fieldName = "tv.TicketID";
+                string customFieldNameTemplate = ",( SELECT CustomValue FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = tv.TicketID))";
 
-                    if (customField.AuxID > 0)
+                builder.Append("tv.[TicketID] as hiddenTicketID, tv.[TicketNumber] as hiddenTicketNumber");
+
+                foreach (CustomPortalColumnProxy column in columns.OrderBy(c => c.Position))
+                {
+                    if (column.CustomFieldID != null)
                     {
-                        TicketType ticketType = ticketTypes.FindByTicketTypeID(customField.AuxID);
-                        if (ticketType != null && ticketType.OrganizationID == customField.OrganizationID)
+                        CustomField customField = (CustomField)CustomFields.GetCustomField(loginUser, (int)column.CustomFieldID);
+                        fieldName = string.Format(customFieldNameTemplate, column.CustomFieldID);
+
+                        if (customField.AuxID > 0)
                         {
-                            builder.Append(string.Format("{0} AS [{1} ({2})]", fieldName, customField.Name, ticketType.Name));
+                            TicketType ticketType = ticketTypes.FindByTicketTypeID(customField.AuxID);
+                            if (ticketType != null && ticketType.OrganizationID == customField.OrganizationID)
+                            {
+                                builder.Append(string.Format("{0} AS [{1} ({2})]", fieldName, customField.Name, ticketType.Name));
+                            }
+                            else
+                            {
+                                builder.Append(string.Format("{0} AS [{1}]", fieldName, customField.Name));
+                            }
                         }
                         else
                         {
@@ -1010,17 +1021,13 @@ ORDER BY TicketNumber DESC";
                     }
                     else
                     {
-                        builder.Append(string.Format("{0} AS [{1}]", fieldName, customField.Name));
+                        ReportTableField tableField = tableFields.FindByReportTableFieldID((int)column.StockFieldID);
+                        builder.Append(string.Format(", tv.{0} as [{1}]", tableField.FieldName, tableField.Alias));
                     }
                 }
-                else
-                {
-                    ReportTableField tableField = tableFields.FindByReportTableFieldID((int)column.StockFieldID);
-                    builder.Append(string.Format(", tv.{0} as [{1}]", tableField.FieldName, tableField.Alias));
-                }
-            }
 
-            return builder.ToString();
+                return builder.ToString();
+            }
         }
 
         public void LoadAllSlaViolations()
@@ -1474,7 +1481,7 @@ ORDER BY TicketNumber DESC";
             }
         }
 
-        private static void GetHubFilterWhereClause(LoginUser loginUser, int OrganizationID, TicketLoadFilter filter, SqlCommand command, StringBuilder builder)
+        private static void GetHubFilterWhereClause(LoginUser loginUser, int UserID, int OrganizationID, TicketLoadFilter filter, SqlCommand command, StringBuilder builder)
         {
             builder.Append(" FROM TicketsView tv WHERE (tv.OrganizationID = @OrganizationID)");
             AddTicketParameter("TicketTypeID", filter.TicketTypeID, false, builder, command);
@@ -1535,7 +1542,8 @@ ORDER BY TicketNumber DESC";
 
             if (filter.CustomerID != null)
             {
-                User userAcount = loginUser.GetUser();
+
+                User userAcount = Users.GetUser(loginUser, UserID);
                 if (!userAcount.PortalLimitOrgChildrenTickets)
                 {
                     builder.Append(" AND (EXISTS(SELECT * FROM OrganizationTickets ot WHERE (ot.OrganizationID = @CustomerID OR ot.OrganizationID in(SELECT CustomerID FROM CustomerRelationships WHERE RelatedCustomerID = @CustomerID)) AND (ot.TicketID = tv.TicketID)))");
@@ -1590,13 +1598,13 @@ ORDER BY TicketNumber DESC";
 
             string rightsClause = "";
 
-            User user = Users.GetUser(loginUser, loginUser.UserID);
+            User user = Users.GetUser(loginUser, UserID);
             switch (user.TicketRights)
             {
                 case TicketRightType.All:
                     break;
                 case TicketRightType.Assigned:
-                    builder.Append(" AND (tv.UserID=" + loginUser.UserID.ToString() + " OR tv.IsKnowledgeBase=1) ");
+                    builder.Append(" AND (tv.UserID=" + UserID.ToString() + " OR tv.IsKnowledgeBase=1) ");
                     break;
                 case TicketRightType.Groups:
                     rightsClause = @" AND ({0}
@@ -1604,14 +1612,14 @@ ORDER BY TicketNumber DESC";
               (tv.IsKnowledgeBase = 1) OR
               (tv.UserID IS NULL AND tv.GroupID IS NULL)) ";
                     Groups groups = new Groups(loginUser);
-                    groups.LoadByUserID(loginUser.UserID);
+                    groups.LoadByUserID(user.UserID);
                     List<int> groupList = new List<int>();
                     foreach (Group group in groups)
                     {
                         groupList.Add(group.GroupID);
                     }
                     string groupString = groupList.Count < 1 ? "" : string.Format("(tv.GroupID IN ({0})) OR ", DataUtils.IntArrayToCommaString(groupList.ToArray()));
-                    builder.Append(string.Format(rightsClause, groupString, loginUser.UserID.ToString()));
+                    builder.Append(string.Format(rightsClause, groupString, user.UserID.ToString()));
                     break;
                 case TicketRightType.Customers:
                     rightsClause = @" AND (TicketID in (
@@ -1620,7 +1628,7 @@ ORDER BY TicketNumber DESC";
             WHERE uro.UserID={0}) OR
             tv.UserID = {0} OR
             tv.IsKnowledgeBase = 1)";
-                    builder.Append(string.Format(rightsClause, loginUser.UserID.ToString()));
+                    builder.Append(string.Format(rightsClause, user.UserID.ToString()));
                     break;
                 default:
                     break;

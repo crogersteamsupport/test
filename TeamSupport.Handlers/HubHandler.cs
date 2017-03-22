@@ -225,10 +225,21 @@ namespace TeamSupport.Handlers
 
         private List<TicketSearchItem> GetTicketResults(SearchResults results, LoginUser loginUser, int userID, int parentID)
         {
+
             List<TicketSearchItem> items = new List<TicketSearchItem>();
             int customerID = 0;
             User user = Users.GetUser(loginUser, userID);
             if (user != null) customerID = user.OrganizationID;
+
+            //List<CustomPortalColumnProxy> portalColumns = CustomPortalColumns.GetDefaultColumns(parentID);
+
+            TicketLoadFilter filters = new TicketLoadFilter();
+            filters.CustomerID = user.OrganizationID;
+            filters.IsVisibleOnPortal = true;
+            filters.ForumCategoryID = null;
+
+            TicketsView ticketsViewHelper = new TicketsView(loginUser);
+            ticketsViewHelper.LoadHubtickets(loginUser, userID, parentID, filters, null, 0, 100000000);
 
             for (int i = 0; i < results.Count; i++)
             {
@@ -236,25 +247,26 @@ namespace TeamSupport.Handlers
                 int ticketID = int.Parse(results.CurrentItem.Filename);
                 if (ticketID > 0)
                 {
-                    List<CustomPortalColumnProxy> portalColumns = CustomPortalColumns.GetDefaultColumns(parentID);
-
-                    TicketLoadFilter filters = new TicketLoadFilter();
-                    filters.CustomerID = loginUser.OrganizationID;
-                    filters.IsVisibleOnPortal = true;
-                    filters.ForumCategoryID = null;
-
-                    TicketsView ticketsViewHelper = new TicketsView(loginUser);
-                    ticketsViewHelper.LoadHubtickets(loginUser, parentID, filters, portalColumns, 0, 100000000);
-
                     if (ticketsViewHelper.Any())
                     {
-                        TicketSearchItem item = new TicketSearchItem();
-                        item.HitRating = results.CurrentItem.ScorePercent;
+                        foreach (var ticket in ticketsViewHelper)
+                        {
+                            if (ticket.TicketID == ticketID)
+                            {
+                                TicketSearchItem item = new TicketSearchItem();
+                                item.Ticket = new TicketsViewItemProxy();
+                                item.Ticket.TicketID = ticket.TicketID;
+                                item.Ticket.Name = ticket.Name;
+                               
+                                item.HitRating = results.CurrentItem.ScorePercent;
 
-                        items.Add(item);
+                                items.Add(item);
+                            }
+                        }
                     }
                 }
             }
+
             return items;
         }
 
