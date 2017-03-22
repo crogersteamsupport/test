@@ -82,21 +82,23 @@
                                 <button type="button" id="muteStream" class="btn btn-primary" title="Mute Audio" onClick="muteTOKStream()"><i class="fa fa-microphone"></i></button>
                                 <button type="button" id="unmuteStream" class="btn btn-danger" title="UnMute Audio" style="display:none;" onClick="unmuteTOKStream()"><i class="fa fa-microphone-slash"></i></button>
                                 <button type="button" id="stopStream" class="btn btn-danger" title="Stop Streaming" onClick="stopTOKStream()"><i class="fa fa-stop"></i></button>
+                                <meter id="subscriberMeter" value="0"></meter>
                             </div>
+                            <div id="audioTOKContainer"></div>
                             <div class="btn-group btn-group-justified tok-controls" role="group" aria-label="...">
                                 <div id="chat-tok-audio" class="btn-group" role="group">
-                                    <button type="button" class="btn btn-primary">
-                                        <span class="fa fa-phone">Go to Audio</span>
+                                    <button type="button" class="btn btn-primary" title="Public Beta">
+                                        <span class="fa fa-phone">Go to Audio (Public Beta)</span>
                                     </button>
                                 </div>
                                 <div id="chat-tok-video" class="btn-group" role="group">
-                                    <button type="button" class="btn btn-primary">
-                                        <span class="fa fa-video-camera">Go to Video</span>
+                                    <button type="button" class="btn btn-primary" title="Public Beta">
+                                        <span class="fa fa-video-camera">Go to Video (Public Beta)</span>
                                     </button>
                                 </div>
                                 <div id="chat-tok-screen" class="btn-group" role="group">
-                                    <button type="button" class="btn btn-primary">
-                                        <span class="fa fa-desktop">Share Screen</span>
+                                    <button type="button" class="btn btn-primary" title="Public Beta">
+                                        <span class="fa fa-desktop">Share Screen (Public Beta)</span>
                                     </button>
                                 </div>
                             </div>
@@ -113,6 +115,8 @@
                 </div>
             </div>
         </div>
+        <div id="x"></div>
+        <div id="jquery_jplayer_1" class="jp-jplayer"></div>
     </div>
     <div id="chat-add-user-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="userModalTitle" aria-hidden="true">
         <div class="modal-dialog">
@@ -130,7 +134,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button id="add-user-save" type="button" class="btn btn-primary">Save</button>
+                    <button id="add-user-save" type="button" class="btn btn-primary">Start</button>
                 </div>
             </div>
         </div>
@@ -268,7 +272,7 @@
         </li>
     </script>
     <script id="tok-video-template" type="text/x-custom-template">
-        <li class="media">
+        <li id="videoRequest" class="media">
             <div class="media-body">
                 <div class="media">
                     <img class="pull-left media-object img-circle user-avatar" src="../images/blank_avatar.png">
@@ -283,7 +287,7 @@
         </li>
     </script>
     <script id="tok-audio-template" type="text/x-custom-template">
-        <li class="media">
+        <li id="audioRequest" class="media">
             <div class="media-body">
                 <div class="media">
                     <img class="pull-left media-object img-circle user-avatar" src="../images/blank_avatar.png">
@@ -298,7 +302,7 @@
         </li>
     </script>
     <script id="tok-screen-template" type="text/x-custom-template">
-        <li class="media">
+        <li id="screenRequest" class="media">
             <div class="media-body">
                 <div class="media">
                     <img class="pull-left media-object img-circle user-avatar" src="../images/blank_avatar.png">
@@ -328,5 +332,7 @@
             </div>
         </li>
     </script>
+
+    <script src="vcr/1_9_0/Js/jquery.jplayer.min.js" type="text/javascript"></script>
 </body>
 </html>
