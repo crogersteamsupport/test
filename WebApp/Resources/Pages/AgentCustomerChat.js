@@ -37,7 +37,9 @@ $(document).ready(function () {
         pusherKey = key;
         SetupChatRequests();
         subscribeToNewChatRequest(pusherKey, function (request) {
-            SetupPendingRequest(request.chatRequest, true);
+            if (request.userIdInvited === undefined || request.userIdInvited == top.Ts.System.User.UserID) {
+                SetupPendingRequest(request.chatRequest, true);
+            }
         });
 
         $('.page-loading').hide().next().show();
