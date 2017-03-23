@@ -1,8 +1,13 @@
 ﻿var isTyping = false;
 var channel;
 var customerName;
+var siteUrl;
 
 function setupChat(pusherKey, chatID, newCommentCallback, callback) {
+    var windowUrl = window.location.href;
+    var arr = windowUrl.split("/");
+    siteUrl = arr[0] + "//" + arr[2];
+
     var channelName = 'presence-' + chatID;
     var service = '/Services/ChatService.asmx/';
     var pusher = new Pusher(pusherKey, {
@@ -106,7 +111,8 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
 
         if (isIE || isEdge) {
             var tokenURI = encodeURIComponent(sharedToken);
-            tokpopup = window.open('https://release-chat.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=250,height=100');
+            tokpopup = window.open(siteUrl + '/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=250,height=100');
+
             setTimeout(function () {
                 if (!tokpopup || tokpopup.outerHeight === 0) {
                     //First Checking Condition Works For IE & Firefox
@@ -127,7 +133,7 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
         var tokenURI = encodeURIComponent(sharedToken);
-        tokpopup = window.open('https://release-chat.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+        tokpopup = window.open(siteUrl + '/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
 
         setTimeout(function () {
             if (!tokpopup || tokpopup.outerHeight === 0) {

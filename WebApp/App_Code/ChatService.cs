@@ -496,7 +496,16 @@ namespace TSWebServices
         [WebMethod]
         public void RequestInvite(int chatID, int userID)
         {
-            ChatRequests.RequestInvite(loginUser, chatID, userID);
+            ChatRequest request = ChatRequests.RequestInvite(loginUser, chatID, userID);
+            Organization organization = loginUser.GetOrganization();
+
+            pusher.Trigger("chat-requests-" + organization.ChatID, "new-chat-request",
+                new {
+                    message = string.Format("{0} {1} is inviting you to a chat!", loginUser.GetUser().FirstName, loginUser.GetUser().LastName),
+                    title = "Chat Invite",
+                    theme = "ui-state-error",
+                    chatRequest = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID, request.ChatID), GetChatMessages(request.ChatID)),
+                    userIdInvited = userID});
         }
 
         [WebMethod]

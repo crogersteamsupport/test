@@ -412,7 +412,9 @@ function SetupTicketProperties() {
     //Type
     var types = parent.Ts.Cache.getTicketTypes();
     for (var i = 0; i < types.length; i++) {
-        AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name);
+        if (types[i].IsActive) {
+            AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name);
+        }
     }
 
     _lastTicketTypeID = types[0].TicketTypeID;

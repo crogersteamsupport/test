@@ -10,8 +10,12 @@ var sharedApiKey;
 var sharedToken;
 var tokpopup;
 var movingAvg = null;
+var siteUrl;
 
 function SetupTOK() {
+    var windowUrl = window.location.href;
+    var arr = windowUrl.split("/");
+    siteUrl = arr[0] + "//" + arr[2];
     var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0 || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification);
     var isIE = /*@cc_on!@*/false || !!document.documentMode;
     var isEdge = !isIE && !!window.StyleMedia;
@@ -226,7 +230,7 @@ function subscribeToVideoStream() {
         stopTOKStream();
 
     var tokenURI = encodeURIComponent(sharedToken);
-    tokpopup = window.open('https://release-chat.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSharedSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+    tokpopup = window.open(siteUrl + '/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSharedSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
     $('#videoRequest').remove();
 
     setTimeout(function () {
@@ -252,7 +256,7 @@ function subscribeToAudioStream() {
 
     if (isIE || isEdge) {
         var tokenURI = encodeURIComponent(sharedToken);
-        tokpopup = window.open('https://release-chat.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSharedSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+        tokpopup = window.open(siteUrl + '/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSharedSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
         $('#audioRequest').remove();
 
         setTimeout(function () {
@@ -333,7 +337,7 @@ function subscribeToScreenStream() {
         stopTOKStream();
 
     var tokenURI = encodeURIComponent(sharedToken);
-    tokpopup = window.open('https://release-chat.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSharedSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+    tokpopup = window.open(siteUrl + '/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSharedSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
     $('#screenRequest').remove();
     var screen = $('#chat-tok-screen > .btn-primary');
     screen.addClass('disabled');
