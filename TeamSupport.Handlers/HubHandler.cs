@@ -258,6 +258,7 @@ namespace TeamSupport.Handlers
                                 item.Ticket.TicketID = ticket.TicketID;
                                 item.Ticket.Name = ticket.Name;
                                 item.Ticket.TicketNumber = ticket.TicketNumber;
+                                item.Ticket.DateCreated = ticket.DateCreated;
                                
                                 item.HitRating = results.CurrentItem.ScorePercent;
 
