@@ -8,6 +8,7 @@ var _agentName;
 var _isChatWindowActive = true;
 var _isChatWindowPotentiallyHidden = false;
 var siteUrl;
+var _agentHasJoined = false;
 
 $(document).ready(function () {
     var windowUrl = window.location.href;
@@ -30,16 +31,19 @@ $(document).ready(function () {
         _timer = setTimeout(function () {
             var data = { chatID: chatID }
 
-            IssueAjaxRequest("MissedChat", data,
-            function (result) {
-                window.location.replace('ChatThankYou.html');
-            },
-            function (error) {
-                console.log(error)
-            });
+            if (!_agentHasJoined) {
+                IssueAjaxRequest("MissedChat", data,
+                    function (result) {
+                        window.location.replace('ChatThankYou.html');
+                    },
+                    function (error) {
+                        console.log(error)
+                    });
+            }
         }, 180000);
 
         channel.bind('agent-joined', function (data) {
+            _agentHasJoined = true;
             $('#operator-message').remove();
             clearTimeout(_timer);
 
