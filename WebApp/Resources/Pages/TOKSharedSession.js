@@ -30,6 +30,7 @@
                 else {
                     stream.subscribe(event.stream, dynamicPub.attr('id'), {
                         insertMode: 'append',
+                        style: { buttonDisplayMode: 'off' },
                         width: '100%',
                         height: '0px'
                     });
