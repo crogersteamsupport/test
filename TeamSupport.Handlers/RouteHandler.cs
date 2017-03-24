@@ -41,9 +41,8 @@ namespace TeamSupport.Handlers
         private void ProcessGetRoute(HttpContext context, string[] segments)
         {
             /*
-             * Three types of routes
-             * 
              * Query string will include filters
+             * Filter can include standard Display filter for abbreviated version, this does not have to be honored in implementation. Example: ?d=1
              * 
              * Examples for verb GET:
              * 
@@ -103,7 +102,7 @@ namespace TeamSupport.Handlers
             Object[] parms = new object[] { context };
             Type type = Type.GetType("TeamSupport.Handlers.Routes." + segments[0] + "Route");
             if (type == null) throw new Exception("Type not implemented.");
-            MethodInfo method = type.GetMethod("Post" + segments[0]); 
+            MethodInfo method = type.GetMethod("Post" + segments[0]);
             if (method == null) throw new Exception("Method not implemented.");
             method.Invoke(null, parms);
         }

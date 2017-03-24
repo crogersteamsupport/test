@@ -17,7 +17,8 @@ namespace TeamSupport.Handlers.Routes
         public static void GetTickets(HttpContext context)
         {
             SqlCommand command = new SqlCommand();
-            command.CommandText = "SELECT * FROM Tickets WHERE OrganizationID = @OrganizationID";
+            if (context.Request.QueryString["d"] == "1") command.CommandText = "SELECT TicketID, TicketNumber, Name FROM Tickets WHERE OrganizationID = @OrganizationID";
+            else command.CommandText = "SELECT * FROM Tickets WHERE OrganizationID = @OrganizationID";
             command.Parameters.AddWithValue("OrganizationID", TSAuthentication.OrganizationID);
             ExpandoObject[] tickets = SqlExecutor.GetExpandoObject(TSAuthentication.GetLoginUser(), command);
             WriteJson(context, tickets);
