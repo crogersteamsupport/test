@@ -980,7 +980,7 @@ ORDER BY TicketNumber DESC";
         {
             if (columns == null)
             {
-                return "tv.Name, tv.TicketID, tv.TicketNumber";
+                return "tv.Name, tv.TicketID, tv.TicketNumber, tv.DateCreated";
             }
             else
             {
@@ -1764,7 +1764,7 @@ ORDER BY TicketNumber DESC";
                 conditions.Append(" (IsVisibleOnPortal::True)");
 
                 job.Request = searchTerm;
-                job.FieldWeights = "Name: 1000";
+                job.FieldWeights = "TicketNumber: 5000, Name: 1000";
                 job.BooleanConditions = conditions.ToString();
                 job.TimeoutSeconds = 30;
                 job.SearchFlags = SearchFlags.dtsSearchDelayDocInfo;

@@ -345,7 +345,23 @@ namespace TSWebServices
             afiCustomerCustomValue.AuxID = null;
             afiCustomerCustomValue.OtherTrigger = "organizations.customvalue";
             fieldItems.Add(afiCustomerCustomValue);
-            AutoFieldItem afiCustomerServiceExpired = new AutoFieldItem();            afiCustomerServiceExpired.Alias = "Customer Service Expired";            afiCustomerServiceExpired.DataType = "bit";            afiCustomerServiceExpired.FieldID = 101015;            afiCustomerServiceExpired.FieldName = "Customer Service Expired";            afiCustomerServiceExpired.IsCustom = false;            afiCustomerServiceExpired.IsVisible = true;            afiCustomerServiceExpired.ListValues = null;            afiCustomerServiceExpired.LookupTableID = null;            afiCustomerServiceExpired.Size = 0;            afiCustomerServiceExpired.Description = "";            afiCustomerServiceExpired.TableID = -2;            afiCustomerServiceExpired.RefType = ReferenceType.Tickets;            afiCustomerServiceExpired.AuxID = null;            afiCustomerServiceExpired.OtherTrigger = "organizations.serviceexpired";            fieldItems.Add(afiCustomerServiceExpired);
+
+            AutoFieldItem afiCustomerServiceExpired = new AutoFieldItem();
+            afiCustomerServiceExpired.Alias = "Customer Service Expired";
+            afiCustomerServiceExpired.DataType = "bit";
+            afiCustomerServiceExpired.FieldID = 101015;
+            afiCustomerServiceExpired.FieldName = "Customer Service Expired";
+            afiCustomerServiceExpired.IsCustom = false;
+            afiCustomerServiceExpired.IsVisible = true;
+            afiCustomerServiceExpired.ListValues = null;
+            afiCustomerServiceExpired.LookupTableID = null;
+            afiCustomerServiceExpired.Size = 0;
+            afiCustomerServiceExpired.Description = "";
+            afiCustomerServiceExpired.TableID = -2;
+            afiCustomerServiceExpired.RefType = ReferenceType.Tickets;
+            afiCustomerServiceExpired.AuxID = null;
+            afiCustomerServiceExpired.OtherTrigger = "organizations.serviceexpired";
+            fieldItems.Add(afiCustomerServiceExpired);
 
             result.Fields = fieldItems.ToArray();
 
