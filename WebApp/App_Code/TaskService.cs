@@ -289,17 +289,13 @@ namespace TSWebServices
 
             if (newTask.IsComplete) newTask.DateCompleted = DateTime.UtcNow;
 
-
-            if (info.DueDate != null)
-            {
-                newTask.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)info.DueDate);
-            }
+            newTask.DueDate = DataUtils.DateToUtc(loginUser, info.DueDate);
 
             newTask.Collection.Save();
 
             if (info.Reminder != null)
             {
-                Reminder reminder = CreateReminder(loginUser, newTask.TaskID, info.Name, TimeZoneInfo.ConvertTimeToUtc((DateTime)info.Reminder), false);
+                Reminder reminder = CreateReminder(loginUser, newTask.TaskID, info.Name, DataUtils.DateToUtc(loginUser, (DateTime)info.Reminder), false);
                 if (reminder != null)
                 {
                     Tasks taskHelper = new Tasks(loginUser);
@@ -589,18 +585,19 @@ namespace TSWebServices
             Reminder reminder = Reminders.GetReminderByTaskID(loginUser, taskID);
             StringBuilder description = new StringBuilder();
             Task task = Tasks.GetTask(loginUser, taskID);
+            DateTime reminderDueDate = DateTime.SpecifyKind((DateTime)value, DateTimeKind.Unspecified);
 
             if (reminder != null)
             {
                 if (reminder.DueDate == null)
                 {
-                    description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", "Unassigned", ((DateTime)value).ToString(GetDateFormatNormal())));
+                    description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", "Unassigned", (reminderDueDate).ToString(GetDateFormatNormal())));
                 }
                 else
                 {
-                    description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", ((DateTime)reminder.DueDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
+                    description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", ((DateTime)reminder.DueDate).ToString(GetDateFormatNormal()), (reminderDueDate).ToString(GetDateFormatNormal())));
                 }
-                reminder.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)value);
+                reminder.DueDate = DataUtils.DateToUtc(loginUser, reminderDueDate);
                 reminder.IsDismissed = false;
                 reminder.HasEmailSent = false;
                 reminder.Collection.Save();
@@ -610,7 +607,7 @@ namespace TSWebServices
             {
                 if (reminder == null)
                 {
-                    reminder = CreateReminder(loginUser, taskID, task.Name, TimeZoneInfo.ConvertTimeToUtc((DateTime)value), false);
+                    reminder = CreateReminder(loginUser, taskID, task.Name, DataUtils.DateToUtc(loginUser, reminderDueDate), false);
                     task.ReminderID = reminder.ReminderID;
                     task.Collection.Save();
                 }
@@ -644,15 +641,17 @@ namespace TSWebServices
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Task task = Tasks.GetTask(loginUser, taskID);
             StringBuilder description = new StringBuilder();
+            DateTime dueDate = DateTime.SpecifyKind((DateTime)value, DateTimeKind.Unspecified);
+
             if (task.DueDate == null)
             {
-                description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", "Unassigned", ((DateTime)value).ToString(GetDateFormatNormal())));
+                description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", "Unassigned", (dueDate).ToString(GetDateFormatNormal())));
             }
             else
             {
-                description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", ((DateTime)task.DueDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
+                description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", ((DateTime)task.DueDate).ToString(GetDateFormatNormal()), (dueDate).ToString(GetDateFormatNormal())));
             }
-            task.DueDate = TimeZoneInfo.ConvertTimeToUtc((DateTime)value);
+            task.DueDate = DataUtils.DateToUtc(loginUser, dueDate);
             task.Collection.Save();
             TaskLogs.AddTaskLog(loginUser, taskID, description.ToString());
 

@@ -412,7 +412,9 @@ function SetupTicketProperties() {
     //Type
     var types = parent.Ts.Cache.getTicketTypes();
     for (var i = 0; i < types.length; i++) {
-        AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name);
+        if (types[i].IsActive) {
+            AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name);
+        }
     }
 
     _lastTicketTypeID = types[0].TicketTypeID;
@@ -674,7 +676,7 @@ function SaveTicket() {
                     }
                     else {
                         parent.Ts.Services.TicketPage.CheckContactEmails(_ticketID, function (isInvalid) {
-                            if (!isInvalid)
+                            if (!isInvalid && window.parent.Ts.System.Organization.AlertContactNoEmail)
                                 alert("At least one of the contacts associated with this ticket does not have an email address defined or is inactive, and will not receive any emails about this ticket.");
 
                             if (_doClose != true) parent.Ts.MainPage.openTicketByID(result[0]);
@@ -2499,7 +2501,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
         onItemAdd: function (value, $item) {
             if (field.IsRequired && field.IsFirstIndexSelect == true && (value == "" || field.ListValues.split("|")[0] == value)) {
                 groupContainer.addClass('hasError');
-            }
+}
             else {
                 groupContainer.removeClass('hasError');
             }
@@ -2513,7 +2515,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
                 groupContainer.removeClass('hasCloseError');
             }
 
-            if (field.IsFirstIndexSelect == true && value == "" || field.ListValues.split("|")[0] == value) {
+            if (field.IsFirstIndexSelect == true && value == "" || (field.IsFirstIndexSelect == true && field.ListValues.split("|")[0] == value)) {
                 groupContainer.addClass('isEmpty');
             }
             else {

@@ -1,44 +1,62 @@
 ﻿var session;
 var token;
-var recordingID;
 var apiKey;
 var sessionId;
-var tokurl;
 var publisher;
 var screenSharingPublisher;
-var videoURL;
 var tokTimer;
-var archiveID;
-
 var sharedSessionID;
 var sharedApiKey;
 var sharedToken;
 var tokpopup;
+var movingAvg = null;
+var siteUrl;
 
 function SetupTOK() {
-    if (BrowserDetect.browser == "Explorer" || BrowserDetect.browser == "Safari") {
+    var windowUrl = window.location.href;
+    var arr = windowUrl.split("/");
+    siteUrl = arr[0] + "//" + arr[2];
+    var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0 || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification);
+    var isIE = /*@cc_on!@*/false || !!document.documentMode;
+    var isEdge = !isIE && !!window.StyleMedia;
+
+    if (isSafari || isEdge) {
         $('#chat-tok-video').hide();
         $('#chat-tok-audio').hide();
         $('#chat-tok-screen').hide();
     }
 
+    $('#subscriberMeter').hide();
+
     $('#chat-tok-video').click(function (e) {
-        top.Ts.System.logAction('Chat - Video Call Button Clicked');
-        publishTOKVideo(function () {
-            startVideoStreaming();
-        });
+        var video = $('#chat-tok-video > .btn-primary');
+
+        if (!video.hasClass('disabled')) {
+            top.Ts.System.logAction('Chat - Video Call Button Clicked');
+            publishTOKVideo(function () {
+                startVideoStreaming();
+            });
+        }
     });
 
     $('#chat-tok-audio').click(function (e) {
-        top.Ts.System.logAction('Chat -Audio Call Button Clicked');
-        publishTOKAudio(function () {
-            startAudioStreaming();
-        });
+        var audio = $('#chat-tok-audio > .btn-primary');
+
+        if (!audio.hasClass('disabled')) {
+            top.Ts.System.logAction('Chat -Audio Call Button Clicked');
+            publishTOKAudio(function () {
+                startAudioStreaming();
+            });
+        }
     });
 
     $('#chat-tok-screen').click(function (e) {
-        top.Ts.System.logAction('Chat - Share Screen Button Clicked');
-        publishTOKScreen();
+        var screen = $('#chat-tok-screen > .btn-primary');
+
+        if (!screen.hasClass('disabled')) {
+            top.Ts.System.logAction('Chat - Share Screen Button Clicked');
+            publishTOKScreen();
+        }
     });
 }
 
@@ -65,6 +83,7 @@ function publishTOKVideo(callback) {
             session.connect(token, function (error) {
                 publisher = OT.initPublisher(dynamicPub.attr('id'), {
                     insertMode: 'append',
+                    style: { buttonDisplayMode: 'off' },
                     width: '100%',
                     height: '100%'
                 });
@@ -84,9 +103,6 @@ function publishTOKVideo(callback) {
 }
 
 function publishTOKAudio(callback) {
-    //if (session !== undefined || publisher !== undefined)
-    //    stopTOKStream();
-
     if (OT.checkSystemRequirements() == 1) {
         var dynamicPub = $("#publisher");
 
@@ -95,6 +111,13 @@ function publishTOKAudio(callback) {
 
         $('.current-chat-area').height('calc(100vh - 225px)');
         $('#tokStreamControls').show();
+        var isIE = /*@cc_on!@*/false || !!document.documentMode;
+        var isEdge = !isIE && !!window.StyleMedia;
+
+        if (!isIE && !isEdge) {
+            $('#subscriberMeter').show();
+        }
+        
         $('#tokStatusText').text('Requesting Live Session...');
 
         top.Ts.Services.Chat.GetTOKSessionInfo(function (resultID) {
@@ -106,6 +129,7 @@ function publishTOKAudio(callback) {
                 publisher = OT.initPublisher(dynamicPub.attr('id'), {
                     videoSource: null,
                     insertMode: 'append',
+                    style: { buttonDisplayMode: 'off' },
                     width: '100%',
                     height: '100%'
                 });
@@ -113,7 +137,6 @@ function publishTOKAudio(callback) {
             });
 
             session.on("connectionDestroyed", function (event) {
-                debugger
                 stopTOKStream(event);
             });
 
@@ -121,7 +144,7 @@ function publishTOKAudio(callback) {
         });
     }
     else {
-        alert("Your client does not support video recording.")
+        alert("Your client does not support audio.")
     }
 }
 
@@ -207,7 +230,9 @@ function subscribeToVideoStream() {
         stopTOKStream();
 
     var tokenURI = encodeURIComponent(sharedToken);
-    tokpopup = window.open('https://release-chat.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSharedSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+    tokpopup = window.open(siteUrl + '/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSharedSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+    $('#videoRequest').remove();
+
     setTimeout(function () {
         if (!tokpopup || tokpopup.outerHeight === 0) {
             //First Checking Condition Works For IE & Firefox
@@ -216,31 +241,95 @@ function subscribeToVideoStream() {
         } else {
             publishTOKVideo(function () {
                 channel.trigger('client-tok-video-accept', { userName: channel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+                $('#tokStatusText').text(customerName + ' has joined live session.');
             });
         }
     }, 25);
-
 }
 
 function subscribeToAudioStream() {
     if (session !== undefined || publisher !== undefined)
         stopTOKStream();
 
-    var tokenURI = encodeURIComponent(sharedToken);
-    tokpopup = window.open('https://release-chat.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSharedSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+    var isIE = /*@cc_on!@*/false || !!document.documentMode;
+    var isEdge = !isIE && !!window.StyleMedia;
 
-    //Account for popup blockers
-    setTimeout(function () {
-        if (!tokpopup || tokpopup.outerHeight === 0) {
-            //First Checking Condition Works For IE & Firefox
-            //Second Checking Condition Works For Chrome
-            alert("Popup Blocker is enabled! Please add this site to your exception list.");
-        } else {
-            publishTOKAudio(function () {
-                channel.trigger('client-tok-audio-accept', { userName: channel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    if (isIE || isEdge) {
+        var tokenURI = encodeURIComponent(sharedToken);
+        tokpopup = window.open(siteUrl + '/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSharedSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+        $('#audioRequest').remove();
+
+        setTimeout(function () {
+            if (!tokpopup || tokpopup.outerHeight === 0) {
+                alert("Popup Blocker is enabled! Please add this site to your exception list.");
+            } else {
+                publishTOKAudio(function () {
+                    channel.trigger('client-tok-audio-accept', { userName: channel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+                    $('#tokStatusText').text(customerName + ' has joined live session.');
+                });
+            }
+        }, 500);
+    } else {
+        ReceiveAudioStream(sharedSessionID, sharedToken);
+        $('#audioRequest').remove();
+
+        publishTOKAudio(function () {
+            channel.trigger('client-tok-audio-accept', { userName: channel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+            $('#tokStatusText').text(customerName + ' has joined live session.');
+        });
+    }
+}
+
+function ReceiveAudioStream(sessionID, token) {
+    top.Ts.Services.Chat.GetTOKSessionInfo(function (resultID) {
+        apiKey = resultID[2];
+
+        var dynamicPub = $("#audioTOKContainer");
+        dynamicPub.show();
+        dynamicPub.attr("id", "tempContainer");
+        dynamicPub.attr("width", "100%");
+        dynamicPub.attr("height", "100%");
+
+        if (dynamicPub.length == 0)
+            dynamicPub = $("#tempContainer");
+
+        var session = OT.initSession(apiKey, sessionID);
+        session.connect(token, function (error) {
+            var subscribeProperties = {
+                insertMode: 'append',
+                style: {
+                    buttonDisplayMode: 'off',
+                    audioLevelDisplayMode: 'off'
+                },
+                width: '100%',
+                height: '0px',
+                audioVolume: 100,
+                subscribeToAudio: true
+            };
+            session.on('streamCreated', function (event) {
+                session.subscribe(event.stream, dynamicPub.attr('id'), subscribeProperties);
+                var subscriber = session.subscribe(event.stream, dynamicPub.attr('id'), subscribeProperties);
+                dynamicPub.hide();
+
+                subscriber.on('audioLevelUpdated', function (event) {
+                    if (movingAvg === null || movingAvg <= event.audioLevel) {
+                        movingAvg = event.audioLevel;
+                    } else {
+                        movingAvg = 0.7 * movingAvg + 0.3 * event.audioLevel;
+                    }
+
+                    // 1.5 scaling to map the -30 - 0 dBm range to [0,1]
+                    var logLevel = (Math.log(movingAvg) / Math.LN10) / 1.5 + 1;
+                    logLevel = Math.min(Math.max(logLevel, 0), 1);
+                    document.getElementById('subscriberMeter').value = logLevel;
+                });
             });
-        }
-    }, 25);
+
+            session.on('streamDestroyed', function (event) {
+                stopTOKStream(event);
+            });
+        });
+    });
 }
 
 function subscribeToScreenStream() {
@@ -248,7 +337,11 @@ function subscribeToScreenStream() {
         stopTOKStream();
 
     var tokenURI = encodeURIComponent(sharedToken);
-    tokpopup = window.open('https://release-chat.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSharedSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+    tokpopup = window.open(siteUrl + '/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSharedSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+    $('#screenRequest').remove();
+    var screen = $('#chat-tok-screen > .btn-primary');
+    screen.addClass('disabled');
+    muteTOKStream();
 
     //Account for popup blockers
     setTimeout(function () {
@@ -268,7 +361,7 @@ function startVideoStreaming() {
 };
 
 function startAudioStreaming() {
-    //Send a signal over Pusher to any parties to notify of screen sharing stream.
+    //Send a signal over Pusher to any parties to notify of agent audio sharing stream.
     channel.trigger('client-tok-audio', { userName: channel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
 };
 
@@ -278,16 +371,22 @@ function startScreenStreaming() {
 };
 
 function stopTOKStream(e) {
-    debugger
     $('#tokStatusText').text('Ending live session...');
-    session.unpublish(publisher);
-    session.disconnect();
-    publisher.destroy();
-    session = undefined;
-    publisher = undefined;
+
+    if (session !== undefined || publisher !== undefined) {
+        session.unpublish(publisher);
+        session.disconnect();
+        publisher.destroy();
+        session = undefined;
+        publisher = undefined;
+    }
 
     $('#tokStreamControls').hide();
+    document.getElementById('subscriberMeter').value = 0;
+    $('#subscriberMeter').hide();
+
     $('.current-chat-area').height('height: calc(100vh - 155px);');
+    EnableTOKButtons(isTOKEnabled);
 
     if(tokpopup)
         tokpopup.close();

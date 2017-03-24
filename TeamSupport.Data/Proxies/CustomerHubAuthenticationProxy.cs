@@ -30,6 +30,7 @@ namespace TeamSupport.Data
     [DataMember] public bool RequireTermsAndConditions { get; set; }
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int? ModifierID { get; set; }
+    [DataMember] public bool AnonymousChatAccess { get; set; }
           
   }
   
@@ -38,6 +39,7 @@ namespace TeamSupport.Data
     public CustomerHubAuthenticationItemProxy GetProxy()
     {
       CustomerHubAuthenticationItemProxy result = new CustomerHubAuthenticationItemProxy();
+      result.AnonymousChatAccess = this.AnonymousChatAccess;
       result.ModifierID = this.ModifierID;
       result.RequireTermsAndConditions = this.RequireTermsAndConditions;
       result.HonorSupportExpiration = this.HonorSupportExpiration;
