@@ -254,6 +254,10 @@ $(document).ready(function () {
         if ($('#chat-leave').hasClass("disabled")) {
             $('#chat-leave').removeClass("disabled");
         }
+
+        if ($('#chat-customer').hasClass("disabled")) {
+            $('#chat-customer').removeClass("disabled");
+        }
     }
 
     function ScrollMessages(animated) {
@@ -292,6 +296,7 @@ $(document).ready(function () {
                         GetChatSettings();
                         $('#chat-invite').addClass("disabled");
                         $('#chat-leave').addClass("disabled");
+                        $('#chat-customer').addClass("disabled");
                     }
                     else console.log('Error closing chat.')
                 });
@@ -463,6 +468,8 @@ $(document).ready(function () {
 
         $('#chat-invite').addClass("disabled");
         $('#chat-leave').addClass("disabled");
+        $('#chat-customer').addClass("disabled");
+        $('#chat-customer').show();
     }
 
     var execSuggestedSolutions = null;
