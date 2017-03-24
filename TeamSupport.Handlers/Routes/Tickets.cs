@@ -23,5 +23,21 @@ namespace TeamSupport.Handlers.Routes
             WriteCommand(context, command);
         }
 
+        public static void GetTicketsByID(HttpContext context, int id)
+        {
+            SqlCommand command = new SqlCommand();
+            command.CommandText = "SELECT * FROM Tickets WHERE TicketID = @TicketID AND OrganizationID = @OrganizationID";
+            command.Parameters.AddWithValue("TicketID", id);
+            command.Parameters.AddWithValue("OrganizationID", TSAuthentication.OrganizationID);
+            ExpandoObject[] tickets = SqlExecutor.GetExpandoObject(TSAuthentication.GetLoginUser(), command);
+
+            command = new SqlCommand();
+            command.CommandText = "SELECT Description FROM Actions WHERE TicketID = @TicketID";
+            command.Parameters.AddWithValue("TicketID", id);
+            ExpandoObject[] actions = SqlExecutor.GetExpandoObject(TSAuthentication.GetLoginUser(), command);
+
+            (tickets[0] as dynamic).Actions = actions;
+            WriteJson(context, tickets);
+        }
     }
 }
