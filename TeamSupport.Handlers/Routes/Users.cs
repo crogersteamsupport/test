@@ -17,7 +17,7 @@ namespace TeamSupport.Handlers.Routes
         public static void GetUsers(HttpContext context)
         {
             SqlCommand command = new SqlCommand();
-            if (context.Request.QueryString["d"] == "1") command.CommandText = "SELECT FirstName, LastName, Email, UserID FROM Users WHERE OrganizationID = @OrganizationID";
+            if (IsDisplay(context)) command.CommandText = "SELECT FirstName, LastName, Email, UserID FROM Users WHERE OrganizationID = @OrganizationID";
             else command.CommandText = "SELECT * FROM Users WHERE OrganizationID = @OrganizationID";
             command.Parameters.AddWithValue("OrganizationID", TSAuthentication.OrganizationID);
             ExpandoObject[] users = SqlExecutor.GetExpandoObject(TSAuthentication.GetLoginUser() , command);

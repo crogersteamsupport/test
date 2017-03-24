@@ -51,5 +51,10 @@ namespace TeamSupport.Handlers.Routes
             }
             return segments.ToArray();
         }
+
+        protected static bool IsDisplay(HttpContext context)
+        {
+            return context.Request.QueryString["d"] == "1"
+        }
     }
 }
