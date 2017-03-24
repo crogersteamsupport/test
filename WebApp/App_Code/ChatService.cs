@@ -142,6 +142,10 @@ namespace TSWebServices
         public void MissedChat(int chatID)
         {
             ChatRequestProxy request = GetChatRequest(chatID);
+
+            //Clear the chat from the pending chats if this is already a missed chat
+            var result = pusher.Trigger("chat-requests-" + loginUser.GetOrganization().ChatID, "chat-request-accepted", request.ChatRequestID);
+
             Organization _organization = Organizations.GetOrganization(loginUser, request.OrganizationID);
             ChatClient client = ChatClients.GetChatClient(LoginUser.Anonymous, request.RequestorID);
 
