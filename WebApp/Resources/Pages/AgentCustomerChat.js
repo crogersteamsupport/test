@@ -199,12 +199,14 @@ $(document).ready(function () {
             $('.media-list').append(compiledTemplate);
             if (scrollView) ScrollMessages(true);
 
-            //If message is coming from the customer
+            //If message is coming from the customer and we are in screenshare
             if (messageData.CreatorType == 1 && (!_isChatWindowActive || _isChatWindowPotentiallyHidden)) {
                 if (screenSharingPublisher !== undefined) {
                     BlinkWindowTitle();
                     NewChatMessageAlert();
                 }
+            } else if (messageData.CreatorType == 1) {
+                CustomerMessageSound();
             }
         }
         else {
@@ -585,16 +587,6 @@ $(document).ready(function () {
             //nothing here for now
         }
     });
-
-    $("#jquery_jplayer_1").jPlayer({
-        ready: function (event) {
-            $(this).jPlayer("setMedia", {
-                mp3: "../vcr/1_9_0/Audio/chime.mp3"
-            });
-        },
-        loop: false,
-        swfPath: ""
-    });
 });
 
 function EnableDisableTicketMenu() {
@@ -651,7 +643,7 @@ function NewChatMessageAlert() {
     // Let's check if the browser supports notifications
     if (!("Notification" in window)) {
         $("#jquery_jplayer_1").jPlayer("setMedia", {
-            mp3: "../vcr/1_9_0/Audio/chime.mp3"
+            mp3: "../Audio/chime.mp3"
         }).jPlayer("play", 0);
     }
         // Let's check whether notification permissions have already been granted
@@ -664,6 +656,21 @@ function NewChatMessageAlert() {
             ShowNotificationMessage();
         });
     }
+}
+
+function CustomerMessageSound() {
+    $("#jquery_jplayer_1").jPlayer({
+        ready: function () {
+            $(this).jPlayer("setMedia", {
+                mp3: "../Audio/chime.mp3"
+            });
+        },
+        loop: false,
+        swfPath: "vcr/1_9_0/Js"
+    });
+    $("#jquery_jplayer_1").jPlayer("setMedia", {
+        mp3: "../Audio/chime.mp3"
+    }).jPlayer("play", 0);
 }
 
 function ShowNotificationMessage() {
