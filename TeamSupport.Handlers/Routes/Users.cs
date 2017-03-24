@@ -20,8 +20,7 @@ namespace TeamSupport.Handlers.Routes
             if (IsDisplay(context)) command.CommandText = "SELECT FirstName, LastName, Email, UserID FROM Users WHERE OrganizationID = @OrganizationID";
             else command.CommandText = "SELECT * FROM Users WHERE OrganizationID = @OrganizationID";
             command.Parameters.AddWithValue("OrganizationID", TSAuthentication.OrganizationID);
-            ExpandoObject[] users = SqlExecutor.GetExpandoObject(TSAuthentication.GetLoginUser() , command);
-            WriteJson(context, users);
+            WriteCommand(context, command);
         }
 
         public static void GetUsersByID(HttpContext context, int id)
@@ -30,8 +29,7 @@ namespace TeamSupport.Handlers.Routes
             command.CommandText = "SELECT * FROM Users WHERE UserID = @UserID AND OrganizationID = @OrganizationID";
             command.Parameters.AddWithValue("UserID", id);
             command.Parameters.AddWithValue("OrganizationID", TSAuthentication.OrganizationID);
-            ExpandoObject[] users = SqlExecutor.GetExpandoObject(TSAuthentication.GetLoginUser(), command);
-            WriteJson(context, users);
+            WriteCommand(context, command);
         }
     }
 }

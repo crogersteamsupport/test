@@ -20,8 +20,7 @@ namespace TeamSupport.Handlers.Routes
             if (IsDisplay(context)) command.CommandText = "SELECT TicketID, TicketNumber, Name FROM Tickets WHERE OrganizationID = @OrganizationID";
             else command.CommandText = "SELECT * FROM Tickets WHERE OrganizationID = @OrganizationID";
             command.Parameters.AddWithValue("OrganizationID", TSAuthentication.OrganizationID);
-            ExpandoObject[] tickets = SqlExecutor.GetExpandoObject(TSAuthentication.GetLoginUser(), command);
-            WriteJson(context, tickets);
+            WriteCommand(context, command);
         }
 
     }

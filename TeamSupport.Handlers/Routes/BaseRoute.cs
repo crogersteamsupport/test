@@ -5,7 +5,10 @@ using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO;
-
+using System.Data.SqlClient;
+using System.Dynamic;
+using TeamSupport.Data;
+using TeamSupport.WebUtils;
 
 
 namespace TeamSupport.Handlers.Routes
@@ -54,7 +57,14 @@ namespace TeamSupport.Handlers.Routes
 
         protected static bool IsDisplay(HttpContext context)
         {
-            return context.Request.QueryString["d"] == "1"
+            return context.Request.QueryString["d"] == "1";
+        }
+
+        protected static void WriteCommand(HttpContext context, SqlCommand command)
+        {
+            ExpandoObject[] result = SqlExecutor.GetExpandoObject(TSAuthentication.GetLoginUser(), command);
+            WriteJson(context, result);
+
         }
     }
 }

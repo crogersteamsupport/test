@@ -19,8 +19,7 @@ namespace TeamSupport.Handlers.Routes
             SqlCommand command = new SqlCommand();
             command.CommandText = "SELECT * FROM Groups WHERE OrganizationID = @OrganizationID";
             command.Parameters.AddWithValue("OrganizationID", TSAuthentication.OrganizationID);
-            ExpandoObject[] groups = SqlExecutor.GetExpandoObject(TSAuthentication.GetLoginUser() , command);
-            WriteJson(context, groups);
+            WriteCommand(context, command);
         }
 
         public static void GetGroupsByID(HttpContext context, int id)
@@ -29,8 +28,7 @@ namespace TeamSupport.Handlers.Routes
             command.CommandText = "SELECT * FROM Groups WHERE GroupID = @GroupID AND OrganizationID = @OrganizationID";
             command.Parameters.AddWithValue("GroupID", id);
             command.Parameters.AddWithValue("OrganizationID", TSAuthentication.OrganizationID);
-            ExpandoObject[] groups = SqlExecutor.GetExpandoObject(TSAuthentication.GetLoginUser(), command);
-            WriteJson(context, groups);
+            WriteCommand(context, command);
         }
     }
 }

@@ -19,8 +19,7 @@ namespace TeamSupport.Handlers.Routes
             SqlCommand command = new SqlCommand();
             command.CommandText = "SELECT * FROM TicketTypes WHERE OrganizationID = @OrganizationID";
             command.Parameters.AddWithValue("OrganizationID", TSAuthentication.OrganizationID);
-            ExpandoObject[] types = SqlExecutor.GetExpandoObject(TSAuthentication.GetLoginUser() , command);
-            WriteJson(context, types);
+            WriteCommand(context, command);
         }
 
         public static void GetTicketTypesByID(HttpContext context, int id)
@@ -29,8 +28,7 @@ namespace TeamSupport.Handlers.Routes
             command.CommandText = "SELECT * FROM TicketTypes WHERE TicketTypeID = @TicketTypeID AND OrganizationID = @OrganizationID";
             command.Parameters.AddWithValue("TicketTypeID", id);
             command.Parameters.AddWithValue("OrganizationID", TSAuthentication.OrganizationID);
-            ExpandoObject[] types = SqlExecutor.GetExpandoObject(TSAuthentication.GetLoginUser(), command);
-            WriteJson(context, types);
+            WriteCommand(context, command);
         }
     }
 }
