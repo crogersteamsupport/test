@@ -176,16 +176,13 @@ $(document).ready(function () {
             $('.list-group-item-success').removeClass('list-group-item-success');
             $(this).addClass('list-group-item-success')
                     .removeClass('list-group-item-info');
-
-            _activeChatID = chatID;
-            SetActiveChat(_activeChatID);
         });
 
         $('#chats-accepted').append(anchor);
     }
 
-    function createMessageElement(messageData, scrollView) {
-        if (messageData.ChatID == _activeChatID) {
+    function createMessageElement(messageData, scrollView, isAgentAcceptedInvitation) {
+        if (messageData.ChatID == _activeChatID && !isAgentAcceptedInvitation) {
             var messageTemplate = $("#message-template").html();
             var compiledTemplate = messageTemplate
                                     .replace('{{MessageDirection}}', 'left')
@@ -209,7 +206,22 @@ $(document).ready(function () {
                 CustomerMessageSound();
             }
         }
-        else {
+        else if (messageData.info.chatId == _activeChatID && isAgentAcceptedInvitation) {
+            var messageTemplate = $("#message-template").html();
+            var dateTimeString = new Date().toLocaleString();
+            dateTimeString = dateTimeString.replace(",", "");
+            var compiledTemplate = messageTemplate
+                                    .replace('{{MessageDirection}}', 'left')
+                                    .replace('{{UserName}}', messageData.info.name)
+                                    .replace('{{Avatar}}', (messageData.id !== null)
+                                                                    ? '../../../dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.id + '/48/1470773158079'
+                                                                    : '../images/blank_avatar.png')
+                                    .replace('{{Message}}', messageData.info.name + " has joined the chat.")
+                                    .replace('{{Date}}', dateTimeString);
+
+            $('.media-list').append(compiledTemplate);
+            if (scrollView) ScrollMessages(true);
+        } else {
             $('#active-chat_' + messageData.ChatID).addClass('list-group-item-info');
         }
     }
@@ -232,7 +244,7 @@ $(document).ready(function () {
             $('.chat-intro').append('<p>Initiated By: ' + chat.InitiatorMessage + '</p>');
 
             for (i = 0; i < chat.Messages.length; i++) {
-                createMessageElement(chat.Messages[i], false);
+                createMessageElement(chat.Messages[i], false, false);
             }
             ScrollMessages(false);
 

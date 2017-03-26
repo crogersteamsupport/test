@@ -708,22 +708,24 @@ Ts.Pages.Main.prototype = {
                 
                 request_channel.bind('new-chat-request', function (data) {
 
-                    var menuID = self.MainMenu.getSelected().getId();
-                    var isMain = mainTabs.find(0, Ts.Ui.Tabs.Tab.Type.Main).getIsSelected();
-                    if (!isMain || menuID != 'mniChat') self.MainMenu.find('mniChat', 'chat').setIsHighlighted(true);
+                    if (data.userIdInvited === undefined || data.userIdInvited == top.Ts.System.User.UserID) {
+                        var menuID = self.MainMenu.getSelected().getId();
+                        var isMain = mainTabs.find(0, Ts.Ui.Tabs.Tab.Type.Main).getIsSelected();
+                        if (!isMain || menuID != 'mniChat') self.MainMenu.find('mniChat', 'chat').setIsHighlighted(true);
 
-                    window.focus();
-                    $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
-                    alert(data.message);
+                        window.focus();
+                        $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "../Audio/drop.mp3" }).jPlayer("play", 0);
+                        alert(data.message);
 
-                    window.focus();
+                        window.focus();
 
-                    $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
-                    $.jGrowl(data.message, {
-                        life: 5000,
-                        theme: data.theme,
-                        header: data.title
-                    });
+                        $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "../Audio/drop.mp3" }).jPlayer("play", 0);
+                        $.jGrowl(data.message, {
+                            life: 5000,
+                            theme: data.theme,
+                            header: data.title
+                        });
+                    }
                 });
 
             });

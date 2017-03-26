@@ -29,7 +29,7 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
     });
 
     channel.bind('new-comment', function (data) {
-        newCommentCallback(data, true);
+        newCommentCallback(data, true, false);
     });
 
     var typeTemplate;
@@ -113,6 +113,7 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
             var tokenURI = encodeURIComponent(sharedToken);
             tokpopup = window.open(siteUrl + '/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=250,height=100');
 
+
             setTimeout(function () {
                 if (!tokpopup || tokpopup.outerHeight === 0) {
                     //First Checking Condition Works For IE & Firefox
@@ -144,6 +145,13 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
 
             }
         }, 25);
+    });
+
+    //Used for the accepted invitations to the current chat.
+    channel.bind('pusher:member_added', function (member) {
+        if (member !== null && member.info !== null && member.info.isAgent !== null && member.info.isAgent) {
+            newCommentCallback(member, true, true);
+        }
     });
 
     var typingTimer;

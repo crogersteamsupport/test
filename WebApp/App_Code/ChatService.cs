@@ -379,7 +379,8 @@ namespace TSWebServices
                 user_info = new
                 {
                     name = loginUser.GetUserFullName(),
-                    isAgent = true
+                    isAgent = true,
+                    chatId = chatId
                 }
 
             };
