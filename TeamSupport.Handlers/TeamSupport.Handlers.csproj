@@ -152,13 +152,6 @@
     <Compile Include="ContentHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="RouteHandler.cs" />
-    <Compile Include="Routes\BaseRoute.cs" />
-    <Compile Include="Routes\Groups.cs" />
-    <Compile Include="Routes\Users.cs" />
-    <Compile Include="Routes\TicketTypes.cs" />
-    <Compile Include="Routes\TicketStatuses.cs" />
-    <Compile Include="Routes\Tickets.cs" />
     <Compile Include="TSHighrise.cs" />
     <Compile Include="TSHubSpot.cs" />
     <Compile Include="UserStatusHandler.cs" />
