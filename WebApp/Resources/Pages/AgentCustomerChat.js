@@ -199,12 +199,14 @@ $(document).ready(function () {
             $('.media-list').append(compiledTemplate);
             if (scrollView) ScrollMessages(true);
 
-            //If message is coming from the customer
+            //If message is coming from the customer and we are in screenshare
             if (messageData.CreatorType == 1 && (!_isChatWindowActive || _isChatWindowPotentiallyHidden)) {
                 if (screenSharingPublisher !== undefined) {
                     BlinkWindowTitle();
                     NewChatMessageAlert();
                 }
+            } else if (messageData.CreatorType == 1) {
+                CustomerMessageSound();
             }
         }
         else {
@@ -246,6 +248,18 @@ $(document).ready(function () {
         });
 
         GetChatSettings();
+
+        if ($('#chat-invite').hasClass("disabled")) {
+            $('#chat-invite').removeClass("disabled");
+        }
+
+        if ($('#chat-leave').hasClass("disabled")) {
+            $('#chat-leave').removeClass("disabled");
+        }
+
+        if ($('#chat-customer').hasClass("disabled")) {
+            $('#chat-customer').removeClass("disabled");
+        }
     }
 
     function ScrollMessages(animated) {
@@ -282,6 +296,9 @@ $(document).ready(function () {
                         $('.chat-intro').empty();
                         _activeChatID = null;
                         GetChatSettings();
+                        $('#chat-invite').addClass("disabled");
+                        $('#chat-leave').addClass("disabled");
+                        $('#chat-customer').addClass("disabled");
                     }
                     else console.log('Error closing chat.')
                 });
@@ -450,6 +467,11 @@ $(document).ready(function () {
                 else console.log('Error opening associated ticket.')
             });
         });
+
+        $('#chat-invite').addClass("disabled");
+        $('#chat-leave').addClass("disabled");
+        $('#chat-customer').addClass("disabled");
+        $('#chat-customer').show();
     }
 
     var execSuggestedSolutions = null;
@@ -565,16 +587,6 @@ $(document).ready(function () {
             //nothing here for now
         }
     });
-
-    $("#jquery_jplayer_1").jPlayer({
-        ready: function (event) {
-            $(this).jPlayer("setMedia", {
-                mp3: "../vcr/1_9_0/Audio/chime.mp3"
-            });
-        },
-        loop: false,
-        swfPath: ""
-    });
 });
 
 function EnableDisableTicketMenu() {
@@ -631,7 +643,7 @@ function NewChatMessageAlert() {
     // Let's check if the browser supports notifications
     if (!("Notification" in window)) {
         $("#jquery_jplayer_1").jPlayer("setMedia", {
-            mp3: "../vcr/1_9_0/Audio/chime.mp3"
+            mp3: "../Audio/chime.mp3"
         }).jPlayer("play", 0);
     }
         // Let's check whether notification permissions have already been granted
@@ -643,6 +655,26 @@ function NewChatMessageAlert() {
         Notification.requestPermission(function (permission) {
             ShowNotificationMessage();
         });
+    }
+}
+
+function CustomerMessageSound() {
+    var menuID = parent.Ts.MainPage.MainMenu.getSelected().getId().toLowerCase();
+    var isMain = parent.Ts.MainPage.MainTabs.find(0, parent.Ts.Ui.Tabs.Tab.Type.Main).getIsSelected();
+
+    if (menuID !== 'mnichat' || (menuID === 'mnichat' && !isMain)) {
+        $("#jquery_jplayer_1").jPlayer({
+            ready: function () {
+                $(this).jPlayer("setMedia", {
+                    mp3: "../Audio/chime.mp3"
+                });
+            },
+            loop: false,
+            swfPath: "vcr/1_9_0/Js"
+        });
+        $("#jquery_jplayer_1").jPlayer("setMedia", {
+            mp3: "../Audio/chime.mp3"
+        }).jPlayer("play", 0);
     }
 }
 
