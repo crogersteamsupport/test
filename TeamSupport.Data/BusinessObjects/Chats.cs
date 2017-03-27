@@ -95,7 +95,7 @@ namespace TeamSupport.Data
         {
             Chat chat = Chats.GetChat(loginUser, chatID);
             ChatParticipant self = ChatParticipants.GetChatParticipant(loginUser, id, type, chatID);
-            if (self == null) return null;
+            if (self == null || self.DateLeft != null) return null;
 
             self.DateLeft = DateTime.UtcNow;
             self.Collection.Save();

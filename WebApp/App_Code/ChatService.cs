@@ -363,8 +363,13 @@ namespace TSWebServices
         public int AcceptRequest(int chatRequestID, bool isTOKEnabled)
         {
             int chatID = ChatRequests.AcceptRequest(loginUser, loginUser.UserID, chatRequestID, HttpContext.Current.Request.UserHostAddress);
-            var result = pusher.Trigger("presence-" + chatID, "agent-joined", new { isAgentTOKEnabled = isTOKEnabled });
-            var result2 = pusher.Trigger("chat-requests-" + loginUser.GetOrganization().ChatID, "chat-request-accepted", chatRequestID);
+
+            if (chatID > 0)
+            {
+                var result = pusher.Trigger("presence-" + chatID, "agent-joined", new { isAgentTOKEnabled = isTOKEnabled });
+                var result2 = pusher.Trigger("chat-requests-" + loginUser.GetOrganization().ChatID, "chat-request-accepted", chatRequestID);
+            }
+
             return chatID;
         }
 
@@ -534,9 +539,14 @@ namespace TSWebServices
             Chat chat = Chats.GetChat(loginUser, chatID);
             if (chat.OrganizationID != loginUser.OrganizationID) return false;
             ChatMessageProxy message = Chats.LeaveChat(loginUser, loginUser.UserID, ChatParticipantType.User, chatID);
-            User user = loginUser.GetUser();
-            ChatViewMessage newMessage = new ChatViewMessage(message, new ParticipantInfoView(user.UserID, user.FirstName, user.LastName, user.Email, loginUser.GetOrganization().Name));
-            var result = pusher.Trigger(channelName, "new-comment", newMessage);
+
+            if (message != null)
+            {
+                User user = loginUser.GetUser();
+                ChatViewMessage newMessage = new ChatViewMessage(message, new ParticipantInfoView(user.UserID, user.FirstName, user.LastName, user.Email, loginUser.GetOrganization().Name));
+                var result = pusher.Trigger(channelName, "new-comment", newMessage);
+            }
+
             return true;
         }
 
@@ -545,9 +555,13 @@ namespace TSWebServices
         {
             Chat chat = Chats.GetChat(loginUser, chatID);
             ChatMessageProxy message = Chats.LeaveChat(loginUser, userID, ChatParticipantType.External, chatID);
-            ChatViewMessage newMessage = new ChatViewMessage(message, GetLinkedUserInfo(userID, ChatParticipantType.External));
 
-            var result = pusher.Trigger(channelName, "new-comment", newMessage);
+            if (message != null)
+            {
+                ChatViewMessage newMessage = new ChatViewMessage(message, GetLinkedUserInfo(userID, ChatParticipantType.External));
+                var result = pusher.Trigger(channelName, "new-comment", newMessage);
+            }
+
             return true;
         }
 
@@ -977,6 +991,7 @@ namespace TSWebServices
             public int? CreatorID { get; set; }
             public ChatParticipantType CreatorType { get; set; }
             public string CreatorDisplayName { get; set; }
+            public string CreatorInitials { get; set; }
             public DateTime DateCreated { get; set; }
             public string Message { get; set; }
             public bool IsNotification { get; set; }
@@ -992,6 +1007,7 @@ namespace TSWebServices
                 CreatorID = userInfo.UserID;
                 CreatorType = message.PosterType;
                 CreatorDisplayName = string.Format("{0} {1}", userInfo.FirstName, userInfo.LastName);
+                CreatorInitials = string.Format("{0}{1}", (!string.IsNullOrEmpty(userInfo.FirstName)) ? userInfo.FirstName.Substring(0,1).ToUpper() : "", (!string.IsNullOrEmpty(userInfo.LastName)) ? userInfo.LastName.Substring(0,1).ToUpper() : "");
                 Message = message.Message;
                 IsNotification = message.IsNotification;
                 ChatID = message.ChatID;
