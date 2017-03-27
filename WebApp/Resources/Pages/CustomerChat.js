@@ -135,10 +135,16 @@ function createMessage(message)
 
 function createMessageElement(messageData, direction) {
     var userAvatar = '../vcr/1_9_0/images/blank_avatar.png';
-    if (messageData.CreatorID !== null && showAvatars) userAvatar = '../dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.CreatorID + '/48/1469829040429';
+
+    if (messageData.CreatorID !== null && showAvatars) {
+        userAvatar = '../dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.CreatorID + '/48/1469829040429';
+    } else if (messageData.CreatorID !== null && !showAvatars) {
+        userAvatar = '../dc/' + chatInfoObject.OrganizationID + '/InitialAvatar/' + messageData.CreatorInitials + '/48/1469829040429';
+    }
 
     $('#chat-body').append('<div class="answer ' + direction + '"> <div class="avatar"> <img src="'+ userAvatar +'" alt="User name">  </div>' +
                         '<div class="name">' + messageData.CreatorDisplayName + '</div>  <div class="text">' + messageData.Message + '</div> <div class="time">' + moment(messageData.DateCreated).format('MM/DD/YYYY hh:mm A') + '</div></div>');
+
     $('#typing').remove();
 
     //If the message comes from the Agent
