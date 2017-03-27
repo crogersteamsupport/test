@@ -353,7 +353,7 @@ function IssueAjaxRequest(method, data, successCallback, errorCallback) {
 }
 
 function SetupChatUploads(chatID, participantID) {
-    var uploadPath = '../../../Upload/ChatAttachments/';
+    var uploadPath = '../../../ChatUpload/ChatAttachments/' + chatInfoObject.OrganizationID + '/';
     $('#hiddenAttachmentInput').fileupload({
         dropZone: $('.panel-default'),
         add: function (e, data) {
