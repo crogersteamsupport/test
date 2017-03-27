@@ -70,8 +70,7 @@ $(document).ready(function () {
     DisplayTOKButtons(!isSafari && !isEdge);
     GetChatSettings(chatID);
 
-    loadInitialMessages(chatID);
-    SetupChatUploads(chatID, participantID);
+    loadInitialMessages(chatID, participantID);
 
     $("#message-form").submit(function (e) {
         e.preventDefault();
@@ -321,12 +320,13 @@ function doneTyping() {
     isTyping = false;
 }
 
-function loadInitialMessages(chatID) {
+function loadInitialMessages(chatID, participantID) {
     var chatObject = { chatID: chatID };
 
     IssueAjaxRequest("GetChatInfo", chatObject,
     function (result) {
         chatInfoObject = result;
+        SetupChatUploads(chatID, participantID);
     },
     function (error) {
 
