@@ -156,15 +156,22 @@ $(document).ready(function () {
 
     function AcceptRequest(ChatRequestID, innerString, parentEl) {
         parent.Ts.Services.Chat.AcceptRequest(ChatRequestID, isTOKEnabledForBrowser, function (chatId) {
-            setupChat(pusherKey, chatId, createMessageElement, function (channel) {
-                //console.log(channel);
-            });
+            // check chatId to verify the chat has not been accepted already
+            if (chatId > 0) {
+                setupChat(pusherKey, chatId, createMessageElement, function (channel) {
+                    //console.log(channel);
+                });
 
-            parentEl.remove();
-            MoveAcceptedRequest(innerString, chatId);
+                parentEl.remove();
+                MoveAcceptedRequest(innerString, chatId);
 
-            _activeChatID = chatId;
-            SetActiveChat(_activeChatID);
+                _activeChatID = chatId;
+                SetActiveChat(_activeChatID);
+            } else {
+                alert("The chat has been accepted already by another agent.");
+                parentEl.remove();
+            }
+            
         });
     }
 

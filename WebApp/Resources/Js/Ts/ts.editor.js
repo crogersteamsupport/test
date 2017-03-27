@@ -509,7 +509,7 @@ The following steps will refresh your browser<br><br> \
 
 var initScheduledReportEditor = function (element, init, postinit) {
     var editorOptions = {
-        plugins: "autoresize paste link code textcolor table codesample",
+        plugins: "autoresize paste link code textcolor table codesample lists",
         toolbar1: "insertPasteImage insertTicket image insertDropBox insertUser | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
         toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect | bold italic underline strikethrough blockquote codesample | code | table",
         statusbar: false,
