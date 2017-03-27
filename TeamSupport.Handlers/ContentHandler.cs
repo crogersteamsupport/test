@@ -427,8 +427,9 @@ namespace TeamSupport.Handlers
 
 		private void ProcessInitialAvatar(HttpContext context, string[] segments, int organizationID)
 		{
+            //https://app.na2.teamsupport.com/dc/{OrgID}/initialavatar/{Text}/{Size}
 
-			string initial = segments[2].ToUpper();
+            string initial = segments[2].ToUpper();
 			int size = int.Parse(segments[3]);
 			string cacheFileName = "";
 			string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "Initials");
