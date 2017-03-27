@@ -782,13 +782,17 @@ $(document).bind('dragover', function (e) {
             };
 
         evt = evt || window.event;
-        if (evt.type in evtMap) {
-            document.body.className = evtMap[evt.type];
-        } else {
-            document.body.className = this[hidden] ? "hidden" : "visible";
-        }
 
-        _isChatWindowActive = document.body.className == "visible";
+        try {
+            if (evt.type in evtMap) {
+                document.body.className = evtMap[evt.type];
+            } else {
+                document.body.className = this[hidden] ? "hidden" : "visible";
+            }
+
+            _isChatWindowActive = document.body.className == "visible";
+        } catch (err) {
+        }
     }
 
     // set the initial state (but only if browser supports the Page Visibility API)
