@@ -2,6 +2,7 @@
 var channel;
 var customerName;
 var siteUrl;
+var _typingTimer;
 
 function setupChat(pusherKey, chatID, newCommentCallback, callback) {
     var windowUrl = window.location.href;
@@ -154,21 +155,26 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
         }
     });
 
-    var typingTimer;
     var doneTypingInterval = 5000;
     var $input = $('#message');
 
     //on keyup, start the countdown
-    $input.on('keyup', function () {
-        clearTimeout(typingTimer);
-        typingTimer = setTimeout(doneTyping, doneTypingInterval);
+    $input.on('keyup', function (e) {
+        clearTimeout(_typingTimer);
+
+        if (e.which != 13) {
+            _typingTimer = setTimeout(doneTyping, doneTypingInterval);
+        } else {
+            isTyping = false;
+        }
     });
 
     //on keydown, clear the countdown 
     $input.on('keydown', function (e) {
         if (!isTyping) {
             isTyping = true;
-            clearTimeout(typingTimer);
+            clearTimeout(_typingTimer);
+
             if (channel !== null && e.which != 13)
                 var triggered = channel.trigger('client-agent-typing', { userName: channel.members.me.info.name });
         }
@@ -196,10 +202,22 @@ function subscribeToNewChatRequest(pusherKey, newRequestCallback) {
     var request_channel = pusher.subscribe('chat-requests-' + chatGUID);
 
     request_channel.bind('new-chat-request', function (data) {
-        newRequestCallback(data);
+        try {
+            console.log('chat-request-request: ' + data.toString());
+            newRequestCallback(data);
+            console.log('chat-request-request - newRequestCallback');
+        } catch (error) {
+            console.log(error.message);
+        }
     });
 
     request_channel.bind('chat-request-accepted', function (data) {
-        $('#chats-requests > #' + data).remove();
+        try {
+            console.log('chat-request-accepted: ' + data.toString());
+            $('#chats-requests > #' + data).remove();
+            console.log('chat-request-accepted - removed from pending');
+        } catch (error) {
+            console.log(error.message);
+        }
     });
 }
