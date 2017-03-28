@@ -234,6 +234,7 @@ function setupChat(chatID, participantID, callback) {
         if (isIE || isEdge) {
             var tokenURI = encodeURIComponent(sharedToken);
             tokpopup = window.open(siteUrl + '/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=250,height=100');
+
             setTimeout(function () {
                 if (!tokpopup || tokpopup.outerHeight === 0) {
                     //First Checking Condition Works For IE & Firefox

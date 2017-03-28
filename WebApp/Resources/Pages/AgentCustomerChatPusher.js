@@ -202,10 +202,22 @@ function subscribeToNewChatRequest(pusherKey, newRequestCallback) {
     var request_channel = pusher.subscribe('chat-requests-' + chatGUID);
 
     request_channel.bind('new-chat-request', function (data) {
-        newRequestCallback(data);
+        try {
+            console.log('chat-request-request: ' + data.toString());
+            newRequestCallback(data);
+            console.log('chat-request-request - newRequestCallback');
+        } catch (error) {
+            console.log(error.message);
+        }
     });
 
     request_channel.bind('chat-request-accepted', function (data) {
-        $('#chats-requests > #' + data).remove();
+        try {
+            console.log('chat-request-accepted: ' + data.toString());
+            $('#chats-requests > #' + data).remove();
+            console.log('chat-request-accepted - removed from pending');
+        } catch (error) {
+            console.log(error.message);
+        }
     });
 }
