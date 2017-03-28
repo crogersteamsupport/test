@@ -196,6 +196,9 @@ $(document).ready(function () {
             $('.list-group-item-success').removeClass('list-group-item-success');
             $(this).addClass('list-group-item-success')
                     .removeClass('list-group-item-info');
+
+            _activeChatID = chatID;
+            SetActiveChat(_activeChatID);
         });
 
         $('#chats-accepted').append(anchor);
