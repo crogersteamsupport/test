@@ -950,6 +950,7 @@ namespace TSWebServices
             public string InitiatorMessage { get; set; }
             public string InitiatorDisplayName { get; set; }
             public string InitiatorEmail { get; set; }
+            public string InitiatorInitials { get; set; }
             public string Description { get; set; }
             public List<ChatViewMessage> Messages { get; set; }
 
@@ -970,6 +971,7 @@ namespace TSWebServices
                 :   string.Format("{0} {1}, {2} ({3})", initiator.FirstName, initiator.LastName, initiator.CompanyName, initiator.Email);
 
                 InitiatorDisplayName = string.Format("{0} {1}", initiator.FirstName, initiator.LastName);
+                InitiatorInitials = string.Format("{0}{1}", (!string.IsNullOrEmpty(initiator.FirstName)) ? initiator.FirstName.Substring(0, 1).ToUpper() : "", (!string.IsNullOrEmpty(initiator.LastName)) ? initiator.LastName.Substring(0, 1).ToUpper() : "");
                 InitiatorEmail = initiator.Email;
                 Description = request.Message;
                 CompanyName = initiator.CompanyName;

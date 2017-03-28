@@ -332,6 +332,8 @@ function loadInitialMessages(chatID, participantID) {
     function (result) {
         chatInfoObject = result;
         SetupChatUploads(chatID, participantID);
+        var messageData = { CreatorID: chatInfoObject.InitiatorUserID, CreatorInitials: chatInfoObject.InitiatorInitials, CreatorDisplayName: chatInfoObject.InitiatorDisplayName, Message: chatInfoObject.Description, DateCreated: chatInfoObject.DateCreated };
+        createMessageElement(messageData, 'right');
     },
     function (error) {
 
