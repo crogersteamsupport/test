@@ -674,7 +674,7 @@ function CreateNewActionLI() {
             isFormValid(function (isValid) {
                 if (isValid) {
                     window.parent.Ts.Services.TicketPage.CheckContactEmails(_ticketID, function (result) {
-                        if (!result)
+                        if (!result && window.parent.Ts.System.Organization.AlertContactNoEmail)
                             alert("At least one of the contacts associated with this ticket does not have an email address defined or is inactive, and will not receive any emails about this ticket.");
                         SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
                             if (result) {
@@ -2369,7 +2369,7 @@ function SetupTagsSection() {
 
 function PrependTask(parent, id, value, data) {
     var _compiledTaskTemplate = Handlebars.compile($("#task-record").html());
-    var taskHTML = _compiledTaskTemplate({ id: id, value: value, completed: data.TaskIsComplete });
+    var taskHTML = _compiledTaskTemplate({ id: id, value: value, IsComplete: data.IsComplete });
     return $(taskHTML).prependTo(parent).data('task', data);
 }
 
@@ -3136,7 +3136,7 @@ function SetupRemindersSection() {
 function SetupTasksSection() {
     AddTasks(_ticketInfo.Tasks);
     $('#ticket-task-span').on('click', '.change-task-status', function (e) {
-        var id = $(this).data('reminderid');
+        var id = $(this).data('taskid');
         var checkbox = $(this);
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Ticket Page - Change Task Status');
@@ -3178,30 +3178,19 @@ function SetupTasksSection() {
 
     $('.taskContainer').on('click', 'a.tasklink', function (e) {
         e.preventDefault();
-        var id = $(this).data('reminderid');
+        var id = $(this).data('taskid');
         parent.Ts.System.logAction('Tasks Page - View Task');
         parent.Ts.MainPage.openNewTask(id);
     });
 
     $('#TaskList').on('click', '.change-task-status', function (e) {
-        var id = $(this).data('reminderid');
+        var id = $(this).data('taskid');
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Tasks Page - Change Task Status');
 
         parent.Ts.Services.Task.SetTaskIsCompleted(id, checked);
     });
 
-    //$('#ticket-task-span').on('click', '.tag-item', function (e) {
-    //    var reminder = $(this).data('tag');
-    //    $('#reminderID').text(reminder.ReminderID);
-    //    //var selectizeControl = $reminderSelect[0].selectize;
-    //    //selectizeControl.addItem(1839999);
-    //    $('#ticket-reminder-title').val(reminder.Description);
-    //    var date = reminder.DueDate == null ? null : window.parent.Ts.Utils.getMsDate(reminder.DueDate);
-    //    $('#ticket-reminder-date').val(date.localeFormat(window.parent.Ts.Utils.getDateTimePattern()));
-    //    if (!reminderClose)
-    //        $('#RemindersModal').modal('show');
-    //});
 }
 
 function AddReminders(reminders) {
@@ -3219,19 +3208,17 @@ function AddTasks(tasks) {
     tasksDiv.empty();
 
     for (var i = 0; i < tasks.length; i++) {
-        var _TaskName = tasks[i].Task.TaskName;
+        var _TaskName = tasks[i].Name;
 
-        if (tasks[i].Task.TaskName == null) {
-            if (tasks[i].Task.Description == null || tasks[i].Task.Description == "") {
+        if (tasks[i].Name == null) {
+            if (tasks[i].Description == null || tasks[i].Description == "") {
                 _TaskName = 'No Title';
             }
             else {
-                _TaskName = tasks[i].Task.Description;
+                _TaskName = tasks[i].Description;
             }
         }
-        //var label = '<span class="TaskAnchor" data-placement="left">' + ellipseString(tasks[i].Description, 30) + '<br>' + tasks[i].DueDate.localeFormat(window.parent.Ts.Utils.getDateTimePattern()) + '</span';
-        //label = '<span class="UserAnchor" data-userid="' + customers[i].UserID + '" data-placement="left" data-ticketid="' + _ticketID + '">' + customers[i].Contact + '</span><br/><span class="OrgAnchor" data-orgid="' + customers[i].OrganizationID + '" data-placement="left">' + customers[i].Company + '</span>';
-        var reminderElem = PrependTask(tasksDiv, tasks[i].Task.ReminderID, _TaskName, tasks[i].Task);
+        var reminderElem = PrependTask(tasksDiv, tasks[i].TaskID, _TaskName, tasks[i]);
     };
 }
 
@@ -4379,17 +4366,8 @@ function CreateHandleBarHelpers() {
         }
     });
 
-    Handlebars.registerHelper("taskComplete", function (completed) {
-        var result = '';
-
-        if (completed != null) {
-            if (completed == true)
-            {
-                result = 'checked="checked"';
-            }
-        }
-        
-        return result;
+    Handlebars.registerHelper("taskComplete", function (isComplete) {
+        return isComplete == true ? ' checked="checked"' : '';
     });
 };
 
@@ -4608,10 +4586,13 @@ function CreateTimeLineDelegates() {
 
                 if (result) {
                     badgeDiv.html('<div class="bgcolor-green"><span class="bgcolor-green">&nbsp;</span><a href="#" class="action-option-visible">Public</a></div>');
-                    window.parent.Ts.Services.TicketPage.CheckContactEmails(_ticketID, function (isInvalid) {
-                        if (!isInvalid)
-                            alert("At least one of the contacts associated with this ticket does not have an email address defined or is inactive, and will not receive any emails about this ticket.");
-                    });
+                    
+                    if (window.parent.Ts.System.Organization.AlertContactNoEmail){
+                        window.parent.Ts.Services.TicketPage.CheckContactEmails(_ticketID, function (isInvalid) {
+                            if (!isInvalid && window.parent.Ts.System.Organization.AlertContactNoEmail)
+                                alert("At least one of the contacts associated with this ticket does not have an email address defined or is inactive, and will not receive any emails about this ticket.");
+                        });
+                    }
                 }
                 else {
                     badgeDiv.html('<div class="bgcolor-orange"><span class="bgcolor-orange">&nbsp;</span><a href="#" class="action-option-visible">Private</a></div>');

@@ -94,7 +94,7 @@ namespace TeamSupport.ServiceLibrary
           currentApiCallCount++;
           settings.WriteInt(apiCallCountKey, currentApiCallCount);
           
-          using (var reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.ASCII))
+          using (var reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8))
           {
             responseText = reader.ReadToEnd();
           }

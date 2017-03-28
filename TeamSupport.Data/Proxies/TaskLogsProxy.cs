@@ -20,7 +20,6 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
-    [DataMember] public string CreatorName { get; set; }
           
   }
   
@@ -38,8 +37,7 @@ namespace TeamSupport.Data
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
-      result.CreatorName = this.CreatorName;
- 
+       
       return result;
     }	
   }

@@ -95,7 +95,7 @@ $(document).ready(function () {
         }
     });
 
-    $('.user-container').on('dblclick', '.ts-icon-offline-small', function (e) {
+    $('.user-container').on('click', '.ts-icon-offline-small', function (e) {
         if (parent.Ts.System.User.IsSystemAdmin) {
             var item = $(this);
             parent.Ts.Services.Users.UpdateSpecificUserStatus($(this).attr('userid'), true, function (result) {
@@ -282,7 +282,6 @@ $(document).ready(function () {
 
     function LoadTasks() {
         parent.Ts.Services.Task.GetUserTasks(0, 20, userID, function (tasks) {
-            console.log(tasks);
             var data = { taskList: tasks };
             var source = $("#user-tasks-template").html();
             var template = Handlebars.compile(source);
@@ -311,8 +310,6 @@ $(document).ready(function () {
         if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
             LoadRatings(ratingFilter, $('#tblRatings tbody > tr').length + 1);
         }
-
-
     });
 
     $('#ddlRatingProductFamily').change(function () {
@@ -331,13 +328,14 @@ $(document).ready(function () {
 
     $('#taskContainer').on('click', 'a.tasklink', function (e) {
         e.preventDefault();
-        var id = $(this).data('reminderid');
+        var id = $(this).data('taskid');
         parent.Ts.System.logAction('Tasks Page - View Task');
         parent.Ts.MainPage.openNewTask(id);
     });
 
     $('#taskContainer').on('click', '.change-task-status', function (e) {
-        var id = $(this).data('reminderid');
+
+        var id = $(this).data('taskid');
         var checkbox = $(this);
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Contact Page - Change Task Status');
@@ -376,26 +374,11 @@ Handlebars.registerHelper("formatDate", function (datetime) {
     else return null;
 });
 
-Handlebars.registerHelper("formatTaskName", function (Task) {
-    var name = Task.TaskName;
-
-    if (Task.TaskName == null) {
-        if (Task.Description == null || Task.Description == "") {
-            name = 'No Title';
-        }
-        else {
-            name = Task.Description;
-        }
-    }
-
-    return name;
-});
-
 Handlebars.registerHelper("formatRow", function (task) {
     var cssClasses = null;
 
-    if (task.TaskDueDate != null) {
-        if (task.TaskIsComplete != true && new Date() > new Date(task.TaskDueDate)) {
+    if (task.DueDate != null) {
+        if (task.IsComplete != true && new Date() > new Date(task.DueDate)) {
             cssClasses = 'danger';
         }
         else {
@@ -406,8 +389,8 @@ Handlebars.registerHelper("formatRow", function (task) {
     return cssClasses;
 });
 
-Handlebars.registerHelper("taskComplete", function (taskdate) {
-    return taskdate != null ? ' checked="checked"' : '';
+Handlebars.registerHelper("taskComplete", function (isComplete) {
+    return isComplete == true ? ' checked="checked"' : '';
 });
 
 Handlebars.registerHelper("mapAssociation", function (association) {
@@ -417,11 +400,6 @@ Handlebars.registerHelper("mapAssociation", function (association) {
     var iconClass = '';
 
     switch (association.RefType) {
-        //case 3: leaving attachments off for now
-        //    associationName = association.Attachment;
-        //    iconClass = attIcon;
-        //    refcode = '<i class="fa fa-paperclip" title="' + association.Attachment + '"></i>'
-        //    break;
         case 6:
             associationName = association.Group;
             iconClass = "groupIcon";
@@ -445,6 +423,11 @@ Handlebars.registerHelper("mapAssociation", function (association) {
         case 22:
             associationName = association.User;
             iconClass = "userIcon";
+            functionName = 'window.parent.parent.Ts.MainPage.openUser(' + association.RefID + '); return false;'
+            break;
+        case 32:
+            associationName = association.Contact;
+            iconClass = "contactIcon";
             functionName = 'window.parent.parent.Ts.MainPage.openNewContact(' + association.RefID + '); return false;'
             break;
         default:

@@ -1,10 +1,20 @@
 ﻿var _taskDetailPage = null;
-var _reminderID = null;
-var _taskName = null;
+var _taskID = null;
+var _Name = null;
 var _historyLoaded = 0;
 var _subtasksLoaded = 0;
 
 $(document).ready(function () {
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.src = ('https:' === document.location.protocol ? 'https://' : 'http://') + 'www.dropbox.com/static/api/1/dropbox.js';
+    var firstScript = document.getElementsByTagName('script')[0];
+    script.setAttribute('data-app-key', 'ebdoql1dhyy7l72');
+    script.setAttribute('id', 'dropboxjs');
+    if (window.parent.Ts.System.User.OrganizationID != 1150007)
+        firstScript.parentNode.insertBefore(script, firstScript);
+
     _taskDetailPage = new TaskDetailPage();
     _taskDetailPage.refresh();
     $('.task-tooltip').tooltip({ placement: 'bottom', container: 'body' });
@@ -25,8 +35,8 @@ $(document).ready(function () {
         }
     });
 
-    _reminderID = window.parent.parent.Ts.Utils.getQueryValue("reminderid", window);
-    parent.privateServices.SetUserSetting('SelectedReminderID', _reminderID);
+    _taskID = window.parent.parent.Ts.Utils.getQueryValue("taskid", window);
+    parent.privateServices.SetUserSetting('SelectedTaskID', _taskID);
     var _isAdmin = window.parent.parent.Ts.System.User.IsSystemAdmin;
 
     LoadProperties();
@@ -42,29 +52,30 @@ $(document).ready(function () {
     };
 
     function LoadProperties() {
-        window.parent.parent.Ts.Services.Task.GetTask(_reminderID, function (task) {
-            if (_isAdmin || task.CreatorID == window.parent.parent.Ts.System.User.UserID || task.UserID == window.parent.parent.Ts.System.User.UserID) {
+        window.parent.parent.Ts.Services.Task.GetTask(_taskID, function (task) {
+            if (_isAdmin || task.CreatorID == window.parent.parent.Ts.System.User.UserID) {
                 $('#taskDelete').show();
             }
             else {
                 $('#taskDelete').hide();
             }
 
-            if (task.TaskName) {
-                $('#taskName').text(ellipseString(task.TaskName, 73));
+            if (task.Name) {
+                $('#Name').text(ellipseString(task.Name, 73));
             }
             else if (task.Description) {
-                $('#taskName').text(ellipseString(task.Description, 73));
+                $('#Name').text(ellipseString(task.Description, 73));
             }
             else {
-                $('#taskName').text(task.ReminderID);
+                $('#Name').text(task.TaskID);
             }
-            _taskName = $('#taskName').text();
 
-            $('#fieldUser').text(task.UserName == "" ? "Unassigned" : task.UserName);
+            _Name = $('#Name').text();
+
+            $('#fieldUser').text(task.UserName == null ? "Unassigned" : task.UserName);
             $('#fieldUser').data('field', task.UserID);
 
-            if (task.TaskIsComplete) {
+            if (task.IsComplete) {
                 $('#fieldComplete').text("Yes");
                 $('#taskComplete').html("<i class='fa fa-check'></i>");
                 $('#taskComplete').addClass("completedButton");
@@ -80,10 +91,9 @@ $(document).ready(function () {
                 $('#taskComplete').attr("data-original-title", "Complete this task");
                 $('#taskComplete').tooltip('fixTitle');
             }
-            $('#fieldDueDate').html(task.TaskDueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.TaskDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>');
-            $('#fieldReminder').text(task.IsDismissed ? "No" : "Yes");
-            $('#fieldReminderDate').html(task.DueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearReminderDate" class="col-xs-1 fa fa-times clearDate"></i>');
-            if (task.IsDismissed) {
+            $('#fieldDueDate').html(task.DueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>');
+            $('#fieldReminder').html(task.ReminderDueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.ReminderDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearReminderDate" class="col-xs-1 fa fa-times clearDate"></i>');
+            if (task.IsComplete) {
                 $('#reminderDateGroup').hide();
             }
             else {
@@ -92,12 +102,9 @@ $(document).ready(function () {
 
             $('#fieldCreator').text(task.Creator);
             $('#fieldDateCreated').text(window.parent.parent.Ts.Utils.getMsDate(task.DateCreated).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
-            //$('#fieldModifier').text(task.ModifierName);
-            //$('#fieldDateModified').text(window.parent.parent.Ts.Utils.getMsDate(task.DateModified).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
-
             $('#fieldDescription').html(task.Description != null && task.Description != "" ? task.Description : "Empty");
 
-            if (task.TaskParentID)
+            if (task.ParentID)
             {
                 $('#subtasksDiv').hide();
                 var parentName = $('<h6>')
@@ -106,7 +113,7 @@ $(document).ready(function () {
                 $('<a>')
                   .attr('href', '#')
                   .addClass('parentLink')
-                  .data('reminderid', task.TaskParentID)
+                  .data('taskID', task.ParentID)
                   .text(task.TaskParentName + ' >')
                   .appendTo(parentName)
                     
@@ -142,7 +149,7 @@ $(document).ready(function () {
     }
 
     function LoadAssociations() {
-        window.parent.parent.Ts.Services.Task.GetAttachments(_reminderID, function (attachments) {
+        window.parent.parent.Ts.Services.Task.GetAttachments(_taskID, function (attachments) {
             var attdiv = $('#associationsContainer');
             attdiv.empty();
             //if (attachments.length > 0) {
@@ -187,7 +194,7 @@ $(document).ready(function () {
                 .appendTo(blockDiv);
             }
 
-            window.parent.parent.Ts.Services.Task.LoadAssociations(_reminderID, function (associations) {
+            window.parent.parent.Ts.Services.Task.LoadAssociations(_taskID, function (associations) {
                 for (var i = 0; i < associations.length; i++) {
                     var blockDiv = $('<div>')
                     .data('refID', associations[i].RefID)
@@ -278,17 +285,17 @@ $(document).ready(function () {
     function LoadSubtasks() {
         $('#tblSubtasks tbody').empty();
 
-        window.parent.parent.Ts.Services.Task.LoadSubtasks(_reminderID, function (subtasks) {
+        window.parent.parent.Ts.Services.Task.LoadSubtasks(_taskID, function (subtasks) {
             for (var i = 0; i < subtasks.length; i++) {
                 var displayName;
-                if (subtasks[i].TaskName) {
-                    displayName = ellipseString(subtasks[i].TaskName, 40);
+                if (subtasks[i].Name) {
+                    displayName = ellipseString(subtasks[i].Name, 40);
                 }
                 else if (subtasks[i].Description) {
                     displayName = ellipseString(subtasks[i].Description, 40);
                 }
                 else {
-                    displayName = subtasks[i].ReminderID;
+                    displayName = subtasks[i].TaskID;
                 }
                 
                 var row = $('<tr>').appendTo('#tblSubtasks > tbody:last');
@@ -297,30 +304,30 @@ $(document).ready(function () {
                     .prop('type', 'checkbox')
                     .prop('checked', subtasks[i].TaskIsComplete)
                     .addClass('subtaskCheckBox')
-                    .data('reminderid', subtasks[i].ReminderID)
+                    .data('taskID', subtasks[i].TaskID)
                     .appendTo(checkBoxCel)
 
                 var nameCel = $('<td>').appendTo(row);
                 $('<a>')
                   .attr('href', '#')
                   .addClass('tasklink')
-                  .data('reminderid', subtasks[i].ReminderID)
+                  .data('taskID', subtasks[i].TaskID)
                   .text(displayName)
                   .appendTo(nameCel)
 
                 var userCel = $('<td>').append(subtasks[i].UserName).appendTo(row);
 
                 var dueDateCel;
-                if (subtasks[i].TaskDueDate)
+                if (subtasks[i].DueDate)
                 {
-                    dueDateCel = $('<td>').append(subtasks[i].TaskDueDate.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern())).appendTo(row);
+                    dueDateCel = $('<td>').append(subtasks[i].DueDate.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern())).appendTo(row);
                 }
                 else
                 {
                     dueDateCel = $('<td>').append('None').appendTo(row);
                 }
 
-                //$('<tr>').html('<td>' + subtasks[i].TaskName + '</td><td>' + subtasks[i].UserID + '</td><td>' + subtasks[i].TaskDueDate.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '</td>')
+                //$('<tr>').html('<td>' + subtasks[i].Name + '</td><td>' + subtasks[i].UserID + '</td><td>' + subtasks[i].DueDate.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '</td>')
                 
                 //$('#tblHistory tr:last').after('<tr><td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td></tr>');
             }
@@ -338,7 +345,7 @@ $(document).ready(function () {
         if (start == 1)
             $('#tblHistory tbody').empty();
 
-        window.parent.parent.Ts.Services.Task.LoadHistory(_reminderID, start, function (history) {
+        window.parent.parent.Ts.Services.Task.LoadHistory(_taskID, start, function (history) {
             for (var i = 0; i < history.length; i++) {
                 $('<tr>').html('<td>' + history[i].DateCreated.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td>')
                 .appendTo('#tblHistory > tbody:last');
@@ -361,11 +368,11 @@ $(document).ready(function () {
 
     $('#taskDelete').click(function (e) {
         if (confirm('Are you sure you would like to remove this task and all its subtasks?')) {
-            parent.privateServices.DeleteTask(_reminderID, function (e) {
+            parent.privateServices.DeleteTask(_taskID, function (e) {
                 window.parent.parent.Ts.System.logAction('Task Detail - Delete Task');
                 //if (window.parent.document.getElementById('iframe-mniCustomers'))
                 //    window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
-                _mainFrame.Ts.MainPage.closeNewTaskTab(_reminderID);
+                _mainFrame.Ts.MainPage.closeNewTaskTab(_taskID);
                 //_mainFrame.Ts.MainPage.closeNewContact(userID);
             });
 
@@ -376,14 +383,14 @@ $(document).ready(function () {
     $('#taskComplete').click(function (e) {
         if ($(this).html() !== '<i class="fa fa-check"></i>')
         {
-            window.parent.parent.Ts.Services.Task.GetIncompleteSubtasks(_reminderID, function (result) {
+            window.parent.parent.Ts.Services.Task.GetIncompleteSubtasks(_taskID, function (result) {
                 if (result)
                 {
                     alert('Please complete all the subtasks before completing this task.')
                 }
                 else
                 {
-                    window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, true, function (result) {
+                    window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_taskID, true, function (result) {
                         top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
                             $('#fieldComplete').text("Yes");
                             $('#taskComplete').html("<i class='fa fa-check'></i>");
@@ -391,6 +398,7 @@ $(document).ready(function () {
                             $('#taskComplete').removeClass("emptyButton");
                             $('#taskComplete').attr("data-original-title", "Uncomplete this task");
                             $('#taskComplete').tooltip('fixTitle');
+                            $('#reminderDateGroup').hide();
                     },
                     function (error) {
                         header.show();
@@ -405,7 +413,7 @@ $(document).ready(function () {
         }
         else
         {
-            window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, false, function (result) {
+            window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_taskID, false, function (result) {
                 top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
                 $('#fieldComplete').text("No");
                 $('#taskComplete').html("Mark Completed");
@@ -413,6 +421,7 @@ $(document).ready(function () {
                 $('#taskComplete').removeClass("completedButton");
                 $('#taskComplete').attr("data-original-title", "Complete this task");
                 $('#taskComplete').tooltip('fixTitle');
+                $('#reminderDateGroup').show();
             },
             function (error) {
                 header.show();
@@ -422,7 +431,7 @@ $(document).ready(function () {
     });
 
     //$('#taskEdit').click(function (e) {
-    //    $('p, #taskName').toggleClass("editable");
+    //    $('p, #Name').toggleClass("editable");
     //    $(this).toggleClass("btn-primary");
     //    $(this).toggleClass("btn-success");
     //    if ($(this).hasClass("btn-primary"))
@@ -431,7 +440,7 @@ $(document).ready(function () {
     //        $(this).html('<i class="fa fa-pencil"></i> Save');
     //});
 
-    $('#taskName').click(function (e) {
+    $('#Name').click(function (e) {
         e.preventDefault();
         if (!$(this).hasClass('editable'))
             return false;
@@ -447,7 +456,7 @@ $(document).ready(function () {
 
         $('<input type="text">')
           .addClass('col-xs-10 form-control')
-          .val(_taskName)
+          .val(_Name)
           .appendTo(container1)
           .focus();
 
@@ -456,17 +465,17 @@ $(document).ready(function () {
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
-              $('#taskName').removeClass("disabled");
+              $('#Name').removeClass("disabled");
           })
           .insertAfter(container1);
         $('<i>')
           .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
               window.parent.parent.Ts.System.logAction('Task Detail - Save Name');
-              window.parent.parent.Ts.Services.Task.SetName(_reminderID, $(this).prev().find('input').val(), function (result) {
-                  _taskName = result;
+              window.parent.parent.Ts.Services.Task.SetName(_taskID, $(this).prev().find('input').val(), function (result) {
+                  _Name = result;
                   header.text(result);
-                  $('#taskName').text(result);
+                  $('#Name').text(result);
                   $('#taskEdit').removeClass("disabled");
               },
               function (error) {
@@ -488,7 +497,7 @@ $(document).ready(function () {
             return false;
         var header = $(this).hide();
         window.parent.parent.Ts.System.logAction('Task Detail - Edit Description');
-        window.parent.parent.Ts.Services.Task.GetTask(_reminderID, function (task) {
+        window.parent.parent.Ts.Services.Task.GetTask(_taskID, function (task) {
             var desc = task.Description;
             desc = desc.replace(/<br\s?\/?>/g, "\n");
             //        $('#fieldDesc').tinymce().setContent(desc);
@@ -515,7 +524,7 @@ $(document).ready(function () {
         $('#btnDescriptionSave').click(function (e) {
             e.preventDefault();
             window.parent.parent.Ts.System.logAction('Task Detail - Save Description Edit');
-            window.parent.parent.Ts.Services.Task.SetDescription(_reminderID, $(this).prev().find('textarea').val(), function (result) {
+            window.parent.parent.Ts.Services.Task.SetDescription(_taskID, $(this).prev().find('textarea').val(), function (result) {
                 header.html(result);
                 $('#taskEdit').removeClass("disabled");
             },
@@ -571,7 +580,7 @@ $(document).ready(function () {
             var name = this.options[this.selectedIndex].innerHTML;
             container.remove();
             window.parent.parent.Ts.System.logAction('Task Detail - Save User');
-            window.parent.parent.Ts.Services.Task.SetUser(_reminderID, value, function (result) {
+            window.parent.parent.Ts.Services.Task.SetUser(_taskID, value, function (result) {
                 header.data('field', result);
                 header.text(name);
                 header.show();
@@ -589,14 +598,14 @@ $(document).ready(function () {
             return false;
         if ($(this).text() !== 'Yes')
         {
-            window.parent.parent.Ts.Services.Task.GetIncompleteSubtasks(_reminderID, function (result) {
+            window.parent.parent.Ts.Services.Task.GetIncompleteSubtasks(_taskID, function (result) {
                 if (result)
                 {
                     alert('Please complete all the subtasks before completing this task.')
                 }
                 else
                 {
-                    window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'Yes'), function (result) {
+                    window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_taskID, ($(this).text() !== 'Yes'), function (result) {
                         top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
                         $('#fieldComplete').text("Yes");
                         $('#taskComplete').html("<i class='fa fa-check'></i>");
@@ -618,7 +627,7 @@ $(document).ready(function () {
         }
         else
         {
-            window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_reminderID, ($(this).text() !== 'Yes'), function (result) {
+            window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_taskID, ($(this).text() !== 'Yes'), function (result) {
                 top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
                 $('#fieldComplete').text("No");
                 $('#taskComplete').html("Mark Completed");
@@ -636,7 +645,7 @@ $(document).ready(function () {
 
     $('#fieldDueDate').on('click', '#clearDueDate', function (e) {
         e.stopPropagation();
-        window.parent.parent.Ts.Services.Task.ClearDueDate(_reminderID, function () {
+        window.parent.parent.Ts.Services.Task.ClearDueDate(_taskID, function () {
             top.Ts.System.logAction('Task Detail - Clear Due Date');
             $('#fieldDueDate').text("None");
         },
@@ -680,7 +689,7 @@ $(document).ready(function () {
               .click(function (e) {
                   var value = top.Ts.Utils.getMsDate(input.val());
                   container.remove();
-                  window.parent.parent.Ts.Services.Task.SetTaskDueDate(_reminderID, value, function (result) {
+                  window.parent.parent.Ts.Services.Task.SetDueDate(_taskID, value, function (result) {
                       var date = result === null ? null : top.Ts.Utils.getMsDate(result);
                       parent.html((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>'))
                       $('#taskEdit').removeClass("disabled");
@@ -699,30 +708,11 @@ $(document).ready(function () {
         $('#taskEdit').addClass("disabled");
     });
 
-    $('#fieldReminder').click(function (e) {
-        if (!$(this).hasClass('editable'))
-            return false;
-        window.parent.parent.Ts.Services.Task.SetIsDismissed(_reminderID, ($(this).text() !== 'No'), function (result) {
-            top.Ts.System.logAction('Task Detail - Toggle IsDismissed');
-            $('#fieldReminder').text((result === true ? 'No' : 'Yes'));
-            if (result) {
-                $('#reminderDateGroup').hide();
-            }
-            else {
-                $('#reminderDateGroup').show();
-            }
-        },
-        function (error) {
-            header.show();
-            alert('There was an error saving the task is dismissed.');
-        });
-    });
-
-    $('#fieldReminderDate').on('click', '#clearReminderDate', function (e) {
+    $('#fieldReminder').on('click', '#clearReminderDate', function (e) {
         e.stopPropagation();
-        window.parent.parent.Ts.Services.Task.ClearReminderDate(_reminderID, function () {
+        window.parent.parent.Ts.Services.Task.ClearReminderDate(_taskID, function () {
             top.Ts.System.logAction('Task Detail - Clear Reminder Date');
-            $('#fieldReminderDate').text("None");
+            $('#fieldReminder').text("None");
         },
         function (error) {
             header.show();
@@ -730,7 +720,7 @@ $(document).ready(function () {
         });
     });
 
-    $('#fieldReminderDate').click(function (e) {
+    $('#fieldReminder').click(function (e) {
         e.preventDefault();
         if (!$(this).hasClass('editable'))
             return false;
@@ -764,7 +754,7 @@ $(document).ready(function () {
               .click(function (e) {
                   var value = top.Ts.Utils.getMsDate(input.val());
                   container.remove();
-                  window.parent.parent.Ts.Services.Task.SetDueDate(_reminderID, value, function (result) {
+                  window.parent.parent.Ts.Services.Task.SetReminderDueDate(_taskID, value, function (result) {
                       var date = result === null ? null : top.Ts.Utils.getMsDate(result);
                       parent.html((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern()) + '<i id="clearReminderDate" class="col-xs-1 fa fa-times clearDate"></i>'))
                       $('#taskEdit').removeClass("disabled");
@@ -886,7 +876,7 @@ $(document).ready(function () {
                 });
             }
             else {
-                window.parent.parent.Ts.Services.Task.DeleteAssociation(_reminderID, blockDiv.data('refID'), blockDiv.data('refType'), function (result) {
+                window.parent.parent.Ts.Services.Task.DeleteAssociation(_taskID, blockDiv.data('refID'), blockDiv.data('refType'), function (result) {
                     blockDiv.hide();
                 });
             }
@@ -894,16 +884,16 @@ $(document).ready(function () {
     });
 
     $('#subtasksAdd').click(function (e) {
-        //e.preventDefault();
+        e.preventDefault();
         parent.Ts.System.logAction('Tasks Detail Page - New Task');
-        parent.Ts.MainPage.newTask(_reminderID, _taskName);
+        parent.Ts.MainPage.newTask(_taskID, _Name);
 
     });
 
     $('#tblSubtasks').on('click', '.subtaskCheckBox', function (e) {
-        //e.preventDefault();
+        e.preventDefault();
 
-        var id = $(this).data('reminderid');
+        var id = $(this).data('taskID');
 
         if ($(this).is(':checked')) {
             parent.Ts.System.logAction('Task Detail Page - Complete Subtask');
@@ -923,7 +913,7 @@ $(document).ready(function () {
     $('#tblSubtasks').on('click', '.tasklink', function (e) {
         e.preventDefault();
 
-        var id = $(this).data('reminderid');
+        var id = $(this).data('taskID');
         parent.Ts.System.logAction('Task Detail Page - View Subtask');
         parent.Ts.MainPage.openNewTask(id);
 
@@ -937,7 +927,7 @@ $(document).ready(function () {
     $('.header-nav').on('click', '.parentLink', function (e) {
         e.preventDefault();
 
-        var id = $(this).data('reminderid');
+        var id = $(this).data('taskID');
         parent.Ts.System.logAction('Task Detail Page - View Parent Task');
         parent.Ts.MainPage.openNewTask(id);
     });
@@ -995,7 +985,7 @@ $(document).ready(function () {
         source: getUsers,
         select: function (event, ui) {
             if (ui.item) {
-                window.parent.parent.Ts.Services.Task.AddAssociation(_reminderID, ui.item.id, window.parent.parent.Ts.ReferenceTypes.Users, function (success) {
+                window.parent.parent.Ts.Services.Task.AddAssociation(_taskID, ui.item.id, window.parent.parent.Ts.ReferenceTypes.Users, function (success) {
                     if (success) {
                         var attdiv = $('#associationsContainer');
                         var blockDiv = $('<div>')
@@ -1045,7 +1035,7 @@ $(document).ready(function () {
         source: getCustomers,
         select: function (event, ui) {
             if (ui.item) {
-                window.parent.parent.Ts.Services.Task.AddAssociation(_reminderID, ui.item.id, window.parent.parent.Ts.ReferenceTypes.Organizations, function (success) {
+                window.parent.parent.Ts.Services.Task.AddAssociation(_taskID, ui.item.id, window.parent.parent.Ts.ReferenceTypes.Organizations, function (success) {
                     if (success) {
                         var attdiv = $('#associationsContainer');
                         var blockDiv = $('<div>')
@@ -1095,7 +1085,7 @@ $(document).ready(function () {
         source: getContacts,
         select: function (event, ui) {
             if (ui.item) {
-                window.parent.parent.Ts.Services.Task.AddAssociation(_reminderID, ui.item.id, window.parent.parent.Ts.ReferenceTypes.Contacts, function (success) {
+                window.parent.parent.Ts.Services.Task.AddAssociation(_taskID, ui.item.id, window.parent.parent.Ts.ReferenceTypes.Contacts, function (success) {
                     if (success) {
                         var attdiv = $('#associationsContainer');
                         var blockDiv = $('<div>')
@@ -1143,7 +1133,7 @@ $(document).ready(function () {
     .autocomplete({
         minLength: 2, source: getTicketsByTerm, delay: 300,
         select: function (event, ui) {
-            window.parent.parent.Ts.Services.Task.AddAssociation(_reminderID, ui.item.data, window.parent.parent.Ts.ReferenceTypes.Tickets, function (success) {
+            window.parent.parent.Ts.Services.Task.AddAssociation(_taskID, ui.item.data, window.parent.parent.Ts.ReferenceTypes.Tickets, function (success) {
                 if (success) {
                     var attdiv = $('#associationsContainer');
                     //if (attachments.length > 0) {
@@ -1199,7 +1189,7 @@ $(document).ready(function () {
         source: getGroupsByTerm,
         select: function (event, ui) {
             if (ui.item) {
-                window.parent.parent.Ts.Services.Task.AddAssociation(_reminderID, ui.item.id, window.parent.parent.Ts.ReferenceTypes.Groups, function (success) {
+                window.parent.parent.Ts.Services.Task.AddAssociation(_taskID, ui.item.id, window.parent.parent.Ts.ReferenceTypes.Groups, function (success) {
                     if (success) {
                         var attdiv = $('#associationsContainer');
                         var blockDiv = $('<div>')
@@ -1250,7 +1240,7 @@ $(document).ready(function () {
         source: getProductByTerm,
         select: function (event, ui) {
             if (ui.item) {
-                window.parent.parent.Ts.Services.Task.AddAssociation(_reminderID, ui.item.id, window.parent.parent.Ts.ReferenceTypes.Products, function (success) {
+                window.parent.parent.Ts.Services.Task.AddAssociation(_taskID, ui.item.id, window.parent.parent.Ts.ReferenceTypes.Products, function (success) {
                     if (success) {
                         var attdiv = $('#associationsContainer');
                         var blockDiv = $('<div>')
@@ -1334,7 +1324,7 @@ $(document).ready(function () {
 
             $('.upload-queue div.ticket-removable-item').each(function (i, o) {
                 var data = $(o).data('data');
-                data.url = '../../../Upload/Tasks/' + _reminderID;
+                data.url = '../../../Upload/Tasks/' + _taskID;
                 data.jqXHR = data.submit();
                 $(o).data('data', data);
             });
@@ -1397,7 +1387,7 @@ $(document).ready(function () {
         LoadHistory(1);
     });
 
-    //$('.taskProperties p, #taskName').toggleClass("editable");
+    //$('.taskProperties p, #Name').toggleClass("editable");
 });
 
 

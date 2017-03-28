@@ -1,6 +1,14 @@
 ﻿var isTyping = false;
 var channel;
+var customerName;
+var siteUrl;
+var _typingTimer;
+
 function setupChat(pusherKey, chatID, newCommentCallback, callback) {
+    var windowUrl = window.location.href;
+    var arr = windowUrl.split("/");
+    siteUrl = arr[0] + "//" + arr[2];
+
     var channelName = 'presence-' + chatID;
     var service = '/Services/ChatService.asmx/';
     var pusher = new Pusher(pusherKey, {
@@ -12,17 +20,9 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
     });
     channel = pusher.subscribe(channelName);
 
-    //channel.bind('pusher:subscription_succeeded', function () {
-    //    //console.log(channel.members);
-    //});
-
-    //channel.bind('pusher:member_added', function (member) {
-    //    //$('#scopeMessage').remove();
-    //    //createMessage(member.info.name + ' joined the chat.')
-    //});
-
     channel.bind('pusher:member_removed', function (member) {
-        parent.Ts.Services.Chat.RemoveUser('presence-' + _activeChatID, _activeChatID, member.id, function (success) { });
+        var chatId = member.info.chatId;
+        parent.Ts.Services.Chat.RemoveUser('presence-' + chatId, chatId, member.id, function (success) { });
     });
 
     channel.bind('pusher:subscription_error', function (status) {
@@ -30,25 +30,31 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
     });
 
     channel.bind('new-comment', function (data) {
-        newCommentCallback(data, true);
+        newCommentCallback(data, true, false);
     });
 
     var typeTemplate;
     channel.bind('client-user-typing', function (data) {
-        var messageTemplate = $("#typing-template").html();
-        typeTemplate = messageTemplate
-                                .replace('{{MessageDirection}}', 'left')
-                                .replace('{{UserName}}', data.userName)
-                                .replace('{{Avatar}}', '../images/blank_avatar.png')
-                                .replace('{{message}}', data.userName + ' is typing...')
-                                .replace('{{Date}}', moment().format(dateFormat + ' hh:mm A'));
+        if (data.chatID == _activeChatID) {
+            var messageTemplate = $("#typing-template").html();
+            typeTemplate = messageTemplate
+                                    .replace('{{MessageDirection}}', 'left')
+                                    .replace('{{UserName}}', data.userName)
+                                    .replace('{{Avatar}}', '../images/blank_avatar.png')
+                                    .replace('{{message}}', data.userName + ' is typing...')
+                                    .replace('{{Date}}', moment().format(dateFormat + ' hh:mm A'));
 
-        $('.media-list').append(typeTemplate);
-        ScrollMessages(true);
+            $('.media-list').append(typeTemplate);
+            ScrollMessages(true);
+        }
     });
 
     channel.bind('client-user-stop-typing', function (data) {
         $('#typing').remove();
+    });
+
+    channel.bind('client-tok-enabled', function (data) {
+        EnableTOKButtons(data.isCustomerTOKEnabled && isTOKEnabled);
     });
 
     channel.bind('client-tok-screen-user', function (data) {
@@ -61,6 +67,7 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
         sharedApiKey = data.apiKey;
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
+        customerName = data.userName;
         ScrollMessages(true);
     });
 
@@ -75,13 +82,14 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
         sharedApiKey = data.apiKey;
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
+        customerName = data.userName;
         ScrollMessages(true);
     });
 
     channel.bind('client-tok-audio-user', function (data) {
         var messageTemplate = $("#tok-audio-template").html();
         var compiledTemplate = messageTemplate
-                                .replace('{{message}}', data.userName + ' wants to have a audio call with you. ')
+                                .replace('{{message}}', data.userName + ' wants to have an audio call with you. ')
                                 .replace('{{Date}}', moment().format(dateFormat + ' hh:mm A'))
                                 .replace('{{UserName}}', data.userName);
         $('.media-list').append(compiledTemplate);
@@ -89,29 +97,36 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
         sharedApiKey = data.apiKey;
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
+        customerName = data.userName;
         ScrollMessages(true);
     });
 
     channel.bind('client-tok-audio-user-accept', function (data) {
-        debugger
-        //console.log(data);
         $('#tokStatusText').text(data.userName + ' has joined live session.');
         sharedApiKey = data.apiKey;
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
-        var tokenURI = encodeURIComponent(sharedToken);
-        tokpopup = window.open('https://release-chat.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
-        
-        //Account for popup blockers
-        setTimeout(function () {
-            if (!tokpopup || tokpopup.outerHeight === 0) {
-                //First Checking Condition Works For IE & Firefox
-                //Second Checking Condition Works For Chrome
-                alert("Popup Blocker is enabled! Please add this site to your exception list.");
-            } else {
 
-            }
-        }, 25);
+        var isIE = /*@cc_on!@*/false || !!document.documentMode;
+        var isEdge = !isIE && !!window.StyleMedia;
+
+        if (isIE || isEdge) {
+            var tokenURI = encodeURIComponent(sharedToken);
+            tokpopup = window.open(siteUrl + '/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=250,height=100');
+
+
+            setTimeout(function () {
+                if (!tokpopup || tokpopup.outerHeight === 0) {
+                    //First Checking Condition Works For IE & Firefox
+                    //Second Checking Condition Works For Chrome
+                    alert("Popup Blocker is enabled! Please add this site to your exception list.");
+                } else {
+    
+                }
+            }, 500);
+        } else {
+            ReceiveAudioStream(sharedSessionID, sharedToken);
+        }
     });
 
     channel.bind('client-tok-video-user-accept', function (data) {
@@ -120,7 +135,7 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
         sharedToken = data.token;
         sharedSessionID = data.sessionId;
         var tokenURI = encodeURIComponent(sharedToken);
-        tokpopup = window.open('https://release-chat.teamsupport.com/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
+        tokpopup = window.open(siteUrl + '/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
 
         setTimeout(function () {
             if (!tokpopup || tokpopup.outerHeight === 0) {
@@ -133,29 +148,35 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
         }, 25);
     });
 
+    //Used for the accepted invitations to the current chat.
+    channel.bind('pusher:member_added', function (member) {
+        if (member !== null && member.info !== null && member.info.isAgent !== null && member.info.isAgent) {
+            newCommentCallback(member, true, true);
+        }
+    });
 
-    //channel.bind('client-tok-ended', function (data) {
-    //    stopTOKStream();
-    //});
-
-
-    var typingTimer;
     var doneTypingInterval = 5000;
     var $input = $('#message');
 
     //on keyup, start the countdown
-    $input.on('keyup', function () {
-        clearTimeout(typingTimer);
-        typingTimer = setTimeout(doneTyping, doneTypingInterval);
+    $input.on('keyup', function (e) {
+        clearTimeout(_typingTimer);
+
+        if (e.which != 13) {
+            _typingTimer = setTimeout(doneTyping, doneTypingInterval);
+        } else {
+            isTyping = false;
+        }
     });
 
     //on keydown, clear the countdown 
-    $input.on('keydown', function () {
+    $input.on('keydown', function (e) {
         if (!isTyping) {
             isTyping = true;
-            clearTimeout(typingTimer);
-            if (channel !== null)
-                var triggered = channel.trigger('client-agent-typing', channel.members.me.info.name + ' is typing...');
+            clearTimeout(_typingTimer);
+
+            if (channel !== null && e.which != 13)
+                var triggered = channel.trigger('client-agent-typing', { userName: channel.members.me.info.name });
         }
     });
 
@@ -170,7 +191,6 @@ function ScrollMessages(animated) {
 }
 
 function doneTyping() {
-    //$('#typing').hide();
     if (channel !== null)
         var triggered = channel.trigger('client-agent-stop-typing', channel.members.me.info.name + ' is typing...');
     isTyping = false;
@@ -182,10 +202,22 @@ function subscribeToNewChatRequest(pusherKey, newRequestCallback) {
     var request_channel = pusher.subscribe('chat-requests-' + chatGUID);
 
     request_channel.bind('new-chat-request', function (data) {
-        newRequestCallback(data);
+        try {
+            console.log('chat-request-request: ' + data.toString());
+            newRequestCallback(data);
+            console.log('chat-request-request - newRequestCallback');
+        } catch (error) {
+            console.log(error.message);
+        }
     });
 
     request_channel.bind('chat-request-accepted', function (data) {
-        $('#chats-requests > #' + data).remove();
+        try {
+            console.log('chat-request-accepted: ' + data.toString());
+            $('#chats-requests > #' + data).remove();
+            console.log('chat-request-accepted - removed from pending');
+        } catch (error) {
+            console.log(error.message);
+        }
     });
 }

@@ -46,7 +46,7 @@ namespace TeamSupport.Data
 
     public partial class TaskAssociationsView
     {
-        public void LoadByReminderIDOnly(int ReminderID)
+        public void LoadByTaskIDOnly(int taskID)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -56,10 +56,10 @@ namespace TeamSupport.Data
                 FROM 
                     TaskAssociationsView
                 WHERE 
-                    ReminderID = @ReminderID
+                    TaskID = @TaskID
                 ORDER BY RefType";
                 command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@ReminderID", ReminderID);
+                command.Parameters.AddWithValue("@TaskID", taskID);
                 Fill(command);
             }
         }

@@ -116,11 +116,6 @@ $(document).ready(function () {
     customerDetailPage.refresh();
     $('.customer-tooltip').tooltip({ placement: 'bottom', container: 'body' });
 
-
-    initEditor($('#fieldNoteDesc'), function (ed) {
-        $('#fieldNoteDesc').tinymce().focus();
-    });
-
     $('input, textarea').placeholder();
     $('body').layout({
         defaults: {
@@ -1094,8 +1089,14 @@ $(document).ready(function () {
 
     $('#noteToggle').click(function (e) {
         _mainFrame.Ts.System.logAction('Customer Detail - Toggle Note Form');
+        if ($('#noteForm:visible').length == 0)
+        {
+            initEditor($('#fieldNoteDesc'), function (ed) {
+                $('#fieldNoteDesc').tinymce().focus();
+            });
+            $('#fieldNoteTitle').focus();
+        }
         $('#noteForm').toggle();
-        $('#fieldNoteTitle').focus();
     });
 
     $('#fileToggle').click(function (e) {
@@ -1654,13 +1655,13 @@ $(document).ready(function () {
 
     $('#taskContainer').on('click', 'a.tasklink', function (e) {
         e.preventDefault();
-        var id = $(this).data('reminderid');
+        var id = $(this).data('taskid');
         parent.Ts.System.logAction('Tasks Page - View Task');
         parent.Ts.MainPage.openNewTask(id);
     });
 
     $('#taskContainer').on('click', '.change-task-status', function (e) {
-        var id = $(this).data('reminderid');
+        var id = $(this).data('taskid');
         var checkbox = $(this);
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Customer Page - Change Task Status');
@@ -1813,7 +1814,11 @@ $(document).ready(function () {
         $('#fieldNoteDesc').val('');
         $('#fieldNoteID').val('-1');
         $('#noteCustomerAlert').prop('checked', false);
-        $('#btnNotesSave').text("Save Note");
+        $('#btnNotesSave').text("Save");
+        for (var i = tinymce.editors.length - 1 ; i > -1 ; i--) {
+            var ed_id = tinymce.editors[i].id;
+            tinyMCE.execCommand("mceRemoveEditor", true, ed_id);
+        }
         $('#noteForm').toggle();
         _mainFrame.Ts.System.logAction('Customer Detail - Cancel Note Edit / Add');
     });
@@ -1837,9 +1842,13 @@ $(document).ready(function () {
             $('#fieldNoteID').val('-1');
             $('#ddlNoteProductFamily').val('-1');
             $('#noteCustomerAlert').prop('checked', false);
-            $('#btnNotesSave').text("Save Note");
+            $('#btnNotesSave').text("Save");
             LoadNotes();
             $('#noteForm').toggle();
+            for (var i = tinymce.editors.length - 1 ; i > -1 ; i--) {
+                var ed_id = tinymce.editors[i].id;
+                tinyMCE.execCommand("mceRemoveEditor", true, ed_id);
+            }
             $("#btnNotesSave").removeProp('disabled');
         });
     });
@@ -4000,26 +4009,11 @@ function SetupParentSection(parents) {
         else return null;
     });
 
-    Handlebars.registerHelper("formatTaskName", function (Task) {
-        var name = Task.TaskName;
-
-        if (Task.TaskName == null) {
-            if (Task.Description == null || Task.Description == "") {
-                name = 'No Title';
-            }
-            else {
-                name = Task.Description;
-            }
-        }
-
-        return name;
-    });
-
     Handlebars.registerHelper("formatRow", function (task) {
         var cssClasses = null;
 
-        if (task.TaskDueDate != null) {
-            if (task.TaskIsComplete != true && new Date() > new Date(task.TaskDueDate)) {
+        if (task.DueDate != null) {
+            if (task.IsComplete != true && new Date() > new Date(task.DueDate)) {
                 cssClasses = 'danger';
             }
             else {
@@ -4030,8 +4024,8 @@ function SetupParentSection(parents) {
         return cssClasses;
     });
 
-    Handlebars.registerHelper("taskComplete", function (taskdate) {
-        return taskdate != null ? ' checked="checked"' : '';
+    Handlebars.registerHelper("taskComplete", function (isComplete) {
+        return isComplete == true ? ' checked="checked"' : '';
     });
 
     Handlebars.registerHelper("mapAssociation", function (association) {
@@ -4041,11 +4035,6 @@ function SetupParentSection(parents) {
         var iconClass = '';
 
         switch (association.RefType) {
-            //case 3: leaving attachments off for now
-            //    associationName = association.Attachment;
-            //    iconClass = attIcon;
-            //    refcode = '<i class="fa fa-paperclip" title="' + association.Attachment + '"></i>'
-            //    break;
             case 6:
                 associationName = association.Group;
                 iconClass = "groupIcon";
@@ -4069,6 +4058,11 @@ function SetupParentSection(parents) {
             case 22:
                 associationName = association.User;
                 iconClass = "userIcon";
+                functionName = 'window.parent.parent.Ts.MainPage.openUser(' + association.RefID + '); return false;'
+                break;
+            case 32:
+                associationName = association.Contact;
+                iconClass = "contactIcon";
                 functionName = 'window.parent.parent.Ts.MainPage.openNewContact(' + association.RefID + '); return false;'
                 break;
             default:

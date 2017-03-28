@@ -10,8 +10,20 @@
 
 var _taskParentID;
 var _parentTaskName;
+var _newTaskID;
 
 $(document).ready(function () {
+    _newTaskID = null;
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.src = ('https:' === document.location.protocol ? 'https://' : 'http://') + 'www.dropbox.com/static/api/1/dropbox.js';
+    var firstScript = document.getElementsByTagName('script')[0];
+    script.setAttribute('data-app-key', 'ebdoql1dhyy7l72');
+    script.setAttribute('id', 'dropboxjs');
+    if (window.parent.Ts.System.User.OrganizationID != 1150007)
+        firstScript.parentNode.insertBefore(script, firstScript);
+
     parent.Ts.MainPage.highlightNewTaskTab(true);
 
     $('body').layout({
@@ -38,11 +50,12 @@ $(document).ready(function () {
         });
     };
 
+    debugger;
     _taskParentID = window.parent.parent.Ts.Utils.getQueryValue("taskparentid", window);
-    _parentTaskName = window.parent.parent.Ts.Utils.getQueryValue("parenttaskname", window);
+    _parentTaskName = decodeURI(escape(window.parent.parent.Ts.Utils.getQueryValue("parenttaskname", window)));
 
     _ticketNumber = window.parent.parent.Ts.Utils.getQueryValue("ticketnumber", window);
-    _encodedTicketName = window.parent.parent.Ts.Utils.getQueryValue("ticketname", window);
+    _ticketName = decodeURI(escape(window.parent.parent.Ts.Utils.getQueryValue("ticketname", window)));
 
     _refType = window.parent.parent.Ts.Utils.getQueryValue("reftype", window);
     _refID = window.parent.parent.Ts.Utils.getQueryValue("refid", window);
@@ -55,7 +68,7 @@ $(document).ready(function () {
         $('<a>')
           .attr('href', '#')
           .addClass('parentLink')
-          .data('reminderid', _taskParentID)
+          .data('taskID', _taskParentID)
           .text(_parentTaskName + ' >')
           .appendTo(parentName)
 
@@ -67,7 +80,7 @@ $(document).ready(function () {
     $('.parentLinkContainer').on('click', '.parentLink', function (e) {
         e.preventDefault();
 
-        var id = $(this).data('reminderid');
+        var id = $(this).data('taskID');
         parent.Ts.System.logAction('New Task - View Parent Task');
         parent.Ts.MainPage.openNewTask(id);
     });
@@ -245,24 +258,6 @@ $(document).ready(function () {
         $(this).parent().find(".arrow-up").css('left', '150px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
-
-    $('#associationsContainer').on('click', '.associationDelete', function (e) {
-        e.preventDefault();
-        if (confirm('Are you sure you would like to remove this task association?')) {
-            window.parent.parent.Ts.System.logAction('New Task - Delete Association');
-            var blockDiv = $(this).parent();
-            if (blockDiv.data('attachmentID')) {
-                parent.privateServices.DeleteAttachment(blockDiv.data('attachmentID'), function (e) {
-                    blockDiv.hide();
-                });
-            }
-            else {
-                window.parent.parent.Ts.Services.Task.DeleteAssociation(_reminderID, blockDiv.data('refID'), blockDiv.data('refType'), function (result) {
-                    blockDiv.hide();
-                });
-            }
-        }
-    });
 
     var execGetCustomer = null;
     function getCustomers(request, response) {
@@ -611,7 +606,7 @@ $(document).ready(function () {
             alert('There was an error uploading "' + data.files[0].name + '".');
         },
         progress: function (e, data) {
-            data.context.find('.progress').progressbar('value', parseInt(data.loaded / data.total * 100, 10));
+            data.context.find('.progress').progressbar('value', parseInt(data.loaded / data.total * 90, 10));
         },
         start: function (e, data) {
             $(this).parent().parent().find('.progress').progressbar().show();
@@ -625,6 +620,9 @@ $(document).ready(function () {
             $('.faketextcontainer').show();
             $('#messagecontents').val('');
             resetDisplay();
+            parent.Ts.MainPage.openNewTask(_newTaskID);
+            parent.Ts.MainPage.highlightNewTaskTab(false);
+            parent.Ts.MainPage.closenewTaskTab();
         }
     });
 
@@ -642,16 +640,16 @@ $(document).ready(function () {
         parent.Ts.System.logAction('New Task - Save New Task');
 
         var taskInfo = new Object();
-        taskInfo.TaskParentID = _taskParentID;
-        taskInfo.TaskName = $("#inputName").val();
+        taskInfo.ParentID = _taskParentID;
+        taskInfo.Name = $("#inputName").val();
         taskInfo.Description = $("#Description").val();
         if ($("#ddlUser").val() != -1) {
             taskInfo.UserID = $("#ddlUser").val();
         }
-        taskInfo.TaskIsComplete = $("#cbComplete").prop('checked');
-        taskInfo.TaskDueDate = $("#DueDate").val();
+        taskInfo.IsComplete = $("#cbComplete").prop('checked');
+        taskInfo.DueDate = $("#DueDate").val();
         taskInfo.IsDismissed = !$("#cbReminder").prop('checked');
-        taskInfo.DueDate = $("#ReminderDate").val();
+        taskInfo.Reminder = $("#Reminder").val();
 
         taskInfo.Tickets = new Array();
         $('#commentatt:first').find('.ticket-queue').find('.ticket-removable-item').each(function () {
@@ -694,16 +692,19 @@ $(document).ready(function () {
 
         window.parent.parent.Ts.Services.Task.NewTask(parent.JSON.stringify(taskInfo), function (newTask) {
             if (attcontainer.length > 0) {
+                _newTaskID = newTask.TaskID;
                 attcontainer.each(function (i, o) {
                     var data = $(o).data('data');
-                    data.url = '../../../Upload/Tasks/' + newTask.ReminderID;
+                    data.url = '../../../Upload/Tasks/' + newTask.TaskID;
                     data.jqXHR = data.submit();
                     $(o).data('data', data);
                 });
             }
-            parent.Ts.MainPage.openNewTask(newTask.ReminderID);
-            parent.Ts.MainPage.highlightNewTaskTab(false);
-            parent.Ts.MainPage.closenewTaskTab();
+            else {
+                parent.Ts.MainPage.openNewTask(newTask.TaskID);
+                parent.Ts.MainPage.highlightNewTaskTab(false);
+                parent.Ts.MainPage.closenewTaskTab();
+            }
         });
         $(this).parent().removeClass("saving");
         $('.frame-content').animate({ scrollTop: 0 }, 600);
@@ -728,7 +729,7 @@ $(document).ready(function () {
                         .appendTo($('#taskForm').find('.ticket-queue')).data('Ticket', _refID);
 
                 $('<span>')
-                .text(_ticketNumber + ": " + decodeURIComponent(_encodedTicketName))
+                .text(_ticketNumber + ": " + _ticketName)
                 .addClass('filename')
                 .appendTo(bg);
 

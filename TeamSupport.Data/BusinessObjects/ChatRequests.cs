@@ -403,10 +403,10 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
       request.Collection.Save();
     }
 
-    public static void RequestInvite(LoginUser loginUser, int chatID, int userID)
+    public static ChatRequest RequestInvite(LoginUser loginUser, int chatID, int userID)
     {
       User user = Users.GetUser(loginUser, userID);
-      if (user == null || user.OrganizationID != loginUser.OrganizationID) return;
+      if (user == null || user.OrganizationID != loginUser.OrganizationID) return null;
       ChatRequest request = (new ChatRequests(loginUser)).AddNewChatRequest();
       request.RequestorID = loginUser.UserID;
       request.RequestorType = ChatParticipantType.User;
@@ -418,6 +418,8 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
       request.RequestType = ChatRequestType.Invitation;
       request.GroupID = null;
       request.Collection.Save();
+
+        return request;
     }
     
   }

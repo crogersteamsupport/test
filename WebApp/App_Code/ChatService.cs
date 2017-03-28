@@ -46,7 +46,7 @@ namespace TSWebServices
             Chat chat = GetChat(chatID);
             ChatSettingsModel model = new ChatSettingsModel();
 
-            model.ChatIntro = OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatIntroMessage", "How can I help you today?");
+            model.ChatIntro = OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatIntroMessage", "Welcome to our live chat!");
             model.TOKScreenEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatTOKScreenEnabled", "true"));
             model.TOKVoiceEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatTOKVoiceEnabled", "true"));
             model.TOKVideoEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatTOKVideoEnabled", "true"));
@@ -61,7 +61,7 @@ namespace TSWebServices
             Organization org = GetOrganization(chatGuid);
             ChatSettingsModel model = new ChatSettingsModel();
 
-            model.ChatIntro = OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatIntroMessage", "How can I help you today?");
+            model.ChatIntro = OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatIntroMessage", "Welcome to our live chat!");
             model.TOKScreenEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKScreenEnabled", "true"));
             model.TOKVoiceEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKVoiceEnabled", "true"));
             model.TOKVideoEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKVideoEnabled", "true"));
@@ -142,6 +142,10 @@ namespace TSWebServices
         public void MissedChat(int chatID)
         {
             ChatRequestProxy request = GetChatRequest(chatID);
+
+            //Clear the chat from the pending chats if this is already a missed chat
+            var result = pusher.Trigger("chat-requests-" + loginUser.GetOrganization().ChatID, "chat-request-accepted", request.ChatRequestID);
+
             Organization _organization = Organizations.GetOrganization(loginUser, request.OrganizationID);
             ChatClient client = ChatClients.GetChatClient(LoginUser.Anonymous, request.RequestorID);
 
@@ -197,9 +201,9 @@ namespace TSWebServices
                 user_info = new
                 {
                     name = client.FirstName + ' ' + client.LastName,
-                    company = client.CompanyName
+                    company = client.CompanyName,
+                    chatId = chatId
                 }
-
             };
 
             var auth = pusher.Authenticate(channel_name, socket_id, channelData);
@@ -219,7 +223,6 @@ namespace TSWebServices
             chatMessage.PosterID = userID;
             chatMessage.PosterType = ChatParticipantType.External;
             chatMessage.Collection.Save();
-            //Users.UpdateUserActivityTime(loginUser, userID);
 
             ChatViewMessage newMessage = new ChatViewMessage(chatMessage.GetProxy(), GetLinkedUserInfo(userID, ChatParticipantType.External));
             var result = pusher.Trigger(channelName, "new-comment", newMessage);
@@ -245,9 +248,9 @@ namespace TSWebServices
             string attachmentHTML = "";
 
             if (attachment.FileType.StartsWith("image/"))
-                attachmentHTML = string.Format("<img src='../../../dc/{0}/chatattachments/{1}/{2}' class='img-responsive' alt='{3}'>", TSAuthentication.OrganizationID, chatID, attachmentID, attachment.FileName);
+                attachmentHTML = string.Format("<img src='../../../dc/{0}/chatattachments/{1}/{2}' class='img-responsive' alt='{3}'>", attachment.OrganizationID, chatID, attachmentID, attachment.FileName);
             else
-                attachmentHTML = string.Format("<a target='_blank' href='../../../dc/{0}/chatattachments/{1}/{2}'>{3}</a>", TSAuthentication.OrganizationID, chatID, attachmentID, attachment.FileName);
+                attachmentHTML = string.Format("<a target='_blank' href='../../../dc/{0}/chatattachments/{1}/{2}'>{3}</a>", attachment.OrganizationID, chatID, attachmentID, attachment.FileName);
 
             ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();
             chatMessage.Message = attachmentHTML;
@@ -275,6 +278,7 @@ namespace TSWebServices
             else return JsonConvert.SerializeObject(users[0].GetProxy());
         }
 
+        [Obsolete("This method seems deprecated")]
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string DisconnectUser(string channelName, int chatID, int userID)
@@ -289,7 +293,6 @@ namespace TSWebServices
             chatMessage.PosterType = ChatParticipantType.External;
             chatMessage.IsNotification = true;
             chatMessage.Collection.Save();
-            //Users.UpdateUserActivityTime(loginUser, userID);
 
             ChatViewMessage newMessage = new ChatViewMessage(chatMessage.GetProxy(), GetLinkedUserInfo(userID, ChatParticipantType.External));
 
@@ -306,7 +309,7 @@ namespace TSWebServices
         {
             ChatSettingsModel model = new ChatSettingsModel();
 
-            model.ChatIntro = Settings.OrganizationDB.ReadString("ChatIntroMessage", "How can we help you today?");
+            model.ChatIntro = Settings.OrganizationDB.ReadString("ChatIntroMessage", "Welcome to our live chat!");
             model.TOKScreenEnabled = Settings.OrganizationDB.ReadBool("ChatTOKScreenEnabled", true);
             model.TOKVoiceEnabled = Settings.OrganizationDB.ReadBool("ChatTOKVoiceEnabled", true);
             model.TOKVideoEnabled = Settings.OrganizationDB.ReadBool("ChatTOKVideoEnabled", true);
@@ -357,11 +360,16 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public int AcceptRequest(int chatRequestID)
+        public int AcceptRequest(int chatRequestID, bool isTOKEnabled)
         {
             int chatID = ChatRequests.AcceptRequest(loginUser, loginUser.UserID, chatRequestID, HttpContext.Current.Request.UserHostAddress);
-            var result = pusher.Trigger("presence-" + chatID, "agent-joined", null);
-            var result2 = pusher.Trigger("chat-requests-" + loginUser.GetOrganization().ChatID, "chat-request-accepted", chatRequestID);
+
+            if (chatID > 0)
+            {
+                var result = pusher.Trigger("presence-" + chatID, "agent-joined", new { isAgentTOKEnabled = isTOKEnabled });
+                var result2 = pusher.Trigger("chat-requests-" + loginUser.GetOrganization().ChatID, "chat-request-accepted", chatRequestID);
+            }
+
             return chatID;
         }
 
@@ -376,7 +384,8 @@ namespace TSWebServices
                 user_info = new
                 {
                     name = loginUser.GetUserFullName(),
-                    isAgent = true
+                    isAgent = true,
+                    chatId = chatId
                 }
 
             };
@@ -497,7 +506,16 @@ namespace TSWebServices
         [WebMethod]
         public void RequestInvite(int chatID, int userID)
         {
-            ChatRequests.RequestInvite(loginUser, chatID, userID);
+            ChatRequest request = ChatRequests.RequestInvite(loginUser, chatID, userID);
+            Organization organization = loginUser.GetOrganization();
+
+            pusher.Trigger("chat-requests-" + organization.ChatID, "new-chat-request",
+                new {
+                    message = string.Format("{0} {1} is inviting you to a chat!", loginUser.GetUser().FirstName, loginUser.GetUser().LastName),
+                    title = "Chat Invite",
+                    theme = "ui-state-error",
+                    chatRequest = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID, request.ChatID), GetChatMessages(request.ChatID)),
+                    userIdInvited = userID});
         }
 
         [WebMethod]
@@ -521,10 +539,14 @@ namespace TSWebServices
             Chat chat = Chats.GetChat(loginUser, chatID);
             if (chat.OrganizationID != loginUser.OrganizationID) return false;
             ChatMessageProxy message = Chats.LeaveChat(loginUser, loginUser.UserID, ChatParticipantType.User, chatID);
-            User user = loginUser.GetUser();
-            ChatViewMessage newMessage = new ChatViewMessage(message, new ParticipantInfoView(user.UserID, user.FirstName, user.LastName, user.Email, loginUser.GetOrganization().Name));
 
-            var result = pusher.Trigger(channelName, "new-comment", newMessage);
+            if (message != null)
+            {
+                User user = loginUser.GetUser();
+                ChatViewMessage newMessage = new ChatViewMessage(message, new ParticipantInfoView(user.UserID, user.FirstName, user.LastName, user.Email, loginUser.GetOrganization().Name), hasLeft: true);
+                var result = pusher.Trigger(channelName, "new-comment", newMessage);
+            }
+
             return true;
         }
 
@@ -533,9 +555,13 @@ namespace TSWebServices
         {
             Chat chat = Chats.GetChat(loginUser, chatID);
             ChatMessageProxy message = Chats.LeaveChat(loginUser, userID, ChatParticipantType.External, chatID);
-            ChatViewMessage newMessage = new ChatViewMessage(message, GetLinkedUserInfo(userID, ChatParticipantType.External));
 
-            var result = pusher.Trigger(channelName, "new-comment", newMessage);
+            if (message != null)
+            {
+                ChatViewMessage newMessage = new ChatViewMessage(message, GetLinkedUserInfo(userID, ChatParticipantType.External), hasLeft: true);
+                var result = pusher.Trigger(channelName, "new-comment", newMessage);
+            }
+
             return true;
         }
 
@@ -965,24 +991,28 @@ namespace TSWebServices
             public int? CreatorID { get; set; }
             public ChatParticipantType CreatorType { get; set; }
             public string CreatorDisplayName { get; set; }
+            public string CreatorInitials { get; set; }
             public DateTime DateCreated { get; set; }
             public string Message { get; set; }
             public bool IsNotification { get; set; }
+            public bool HasLeft { get; set; }
 
             public ChatViewMessage()
             {
 
             }
-            public ChatViewMessage(ChatMessageProxy message, ParticipantInfoView userInfo)
+            public ChatViewMessage(ChatMessageProxy message, ParticipantInfoView userInfo, bool hasLeft = false)
             {
                 MessageID = message.ChatMessageID;
                 DateCreated = message.DateCreated;
                 CreatorID = userInfo.UserID;
                 CreatorType = message.PosterType;
                 CreatorDisplayName = string.Format("{0} {1}", userInfo.FirstName, userInfo.LastName);
+                CreatorInitials = string.Format("{0}{1}", (!string.IsNullOrEmpty(userInfo.FirstName)) ? userInfo.FirstName.Substring(0,1).ToUpper() : "", (!string.IsNullOrEmpty(userInfo.LastName)) ? userInfo.LastName.Substring(0,1).ToUpper() : "");
                 Message = message.Message;
                 IsNotification = message.IsNotification;
                 ChatID = message.ChatID;
+                HasLeft = hasLeft;
             }
         }
 
