@@ -144,7 +144,6 @@ $(document).ready(function () {
     }
 
     function doneTyping() {
-        //$('#typing').hide();
         if (channel !== null)
             var triggered = channel.trigger('client-agent-stop-typing', channel.members.me.info.name + ' is typing...');
         isTyping = false;
@@ -376,8 +375,6 @@ $(document).ready(function () {
         $('#chat-suggestions').click(function (e) {
             e.preventDefault();
             suggestedSolutions(function (ticketID, isArticle) {
-                //console.log(ticketID + ' ' + isArticle);
-
                 if (isArticle) {
                     top.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
                         if (result === null) {
@@ -600,7 +597,6 @@ $(document).ready(function () {
 
     $('#message').keydown(function (e) {
         if (e.which == 13) {
-            doneTyping();
             $("#message-form").submit();
         } else {
             //nothing here for now

@@ -9,6 +9,7 @@ var _isChatWindowActive = true;
 var _isChatWindowPotentiallyHidden = false;
 var siteUrl;
 var _agentHasJoined = false;
+var _typingTimer;                //timer identifier
 
 $(document).ready(function () {
     var windowUrl = window.location.href;
@@ -76,6 +77,7 @@ $(document).ready(function () {
         e.preventDefault();
         if ($('#message').val() !== '') {
             $('#send-message').prop("disabled", true);
+            clearTimeout(_typingTimer);
             doneTyping();
             var messageData = { channelName: 'presence-' + chatID, message: $('#message').val(), chatID: chatID, userID: participantID };
 
@@ -111,7 +113,6 @@ function GetChatSettings(chatID) {
     
     IssueAjaxRequest("GetClientChatPropertiesByChatID", chatObject,
     function (result) {
-        //console.log(result)
         if (!result.TOKScreenEnabled)
             $('.dropdown-menu li:contains(Screen)').hide();
         if (!result.TOKVideoEnabled)
@@ -170,19 +171,18 @@ function setupChat(chatID, participantID, callback) {
     });
     pressenceChannel = pusher.subscribe(channelName);
 
-    pressenceChannel.bind('pusher:subscription_succeeded', function () {
-        //console.log(channel.members);
-    });
+    //pressenceChannel.bind('pusher:subscription_succeeded', function () {
+    //    //console.log(channel.members);
+    //});
 
     pressenceChannel.bind('pusher:member_added', function (member) {
         $('#operator-message').remove();
         createMessage(member.info.name + ' joined the chat.')
     });
 
-
-    pressenceChannel.bind('pusher:subscription_error', function (status) {
-        console.log(status);
-    });
+    //pressenceChannel.bind('pusher:subscription_error', function (status) {
+    //    console.log(status);
+    //});
 
     pressenceChannel.bind('new-comment', function (data) {
         $('#typing').remove();
@@ -274,6 +274,7 @@ function setupChat(chatID, participantID, callback) {
     pressenceChannel.bind('client-agent-typing', function (data) {
         $('#chat-body').append('<div id="typing" class="answer left"> <div class="avatar"><img src="../vcr/1_9_0/images/blank_avatar.png" alt="User name"></div>' +
                     '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' is typing...</div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
+        $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
     });
 
     //pressenceChannel.bind('client-tok-ended', function (data) {
@@ -281,22 +282,23 @@ function setupChat(chatID, participantID, callback) {
     //    channel.trigger('client-tok-ended', { userName: channel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
     //});
 
-
-    var typingTimer;                //timer identifier
     var doneTypingInterval = 5000;  //time in ms, 5 second for example
     var $input = $('#message');
 
     //on keyup, start the countdown
-    $input.on('keyup', function () {
-        clearTimeout(typingTimer);
-        typingTimer = setTimeout(doneTyping, doneTypingInterval);
+    $input.on('keyup', function (e) {
+        clearTimeout(_typingTimer);
+
+        if (e.which != 13) {
+            _typingTimer = setTimeout(doneTyping, doneTypingInterval);
+        }
     });
 
     //on keydown, clear the countdown 
     $input.on('keydown', function (e) {
         if (!isTyping) {
             isTyping = true;
-            clearTimeout(typingTimer);
+            clearTimeout(_typingTimer);
             var triggered = pressenceChannel.trigger('client-user-typing', { userName: pressenceChannel.members.me.info.name, chatID: _activeChatID });
         }
 
