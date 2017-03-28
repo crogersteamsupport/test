@@ -47,6 +47,7 @@ namespace TeamSupport.Handlers
             }
             catch (Exception ex)
             {
+                context.Response.Write(ex.StackTrace);
                 context.Response.Write(ex.Message);
             }
 

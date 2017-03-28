@@ -53,7 +53,7 @@ namespace TeamSupport.Handlers
                         Attachment attachment = (new Attachments(TSAuthentication.GetLoginUser())).AddNewAttachment();
                         attachment.RefType = refType;
                         attachment.RefID = (int)itemID;
-                        attachment.OrganizationID = TSAuthentication.OrganizationID;
+                        attachment.OrganizationID = organizationID;
                         attachment.FileName = fileName;
                         attachment.Path = Path.Combine(path, fileName);
                         attachment.FileType = files[i].ContentType;

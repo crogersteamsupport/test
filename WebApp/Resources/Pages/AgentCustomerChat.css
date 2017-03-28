@@ -60,6 +60,10 @@
     height: calc(100vh - 155px);
 }
 
+.panel-footer {
+    margin-right: 15px;
+}
+
 .current-chat-footer {
     position: fixed;
     bottom: 0;
@@ -68,7 +72,6 @@
 .user-avatar {
     width: 48px;
 }
-
 
 .hover {
   border: 3px dashed #ccc;
@@ -119,7 +122,6 @@ a { cursor: pointer; }
 {
     pointer-events: none;
     cursor: default;
-    color: gray !important;
 }
 
 meter#subscriberMeter::-webkit-meter-optimum-value {
