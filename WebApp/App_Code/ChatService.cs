@@ -543,7 +543,7 @@ namespace TSWebServices
             if (message != null)
             {
                 User user = loginUser.GetUser();
-                ChatViewMessage newMessage = new ChatViewMessage(message, new ParticipantInfoView(user.UserID, user.FirstName, user.LastName, user.Email, loginUser.GetOrganization().Name));
+                ChatViewMessage newMessage = new ChatViewMessage(message, new ParticipantInfoView(user.UserID, user.FirstName, user.LastName, user.Email, loginUser.GetOrganization().Name), hasLeft: true);
                 var result = pusher.Trigger(channelName, "new-comment", newMessage);
             }
 
@@ -558,7 +558,7 @@ namespace TSWebServices
 
             if (message != null)
             {
-                ChatViewMessage newMessage = new ChatViewMessage(message, GetLinkedUserInfo(userID, ChatParticipantType.External));
+                ChatViewMessage newMessage = new ChatViewMessage(message, GetLinkedUserInfo(userID, ChatParticipantType.External), hasLeft: true);
                 var result = pusher.Trigger(channelName, "new-comment", newMessage);
             }
 
@@ -995,12 +995,13 @@ namespace TSWebServices
             public DateTime DateCreated { get; set; }
             public string Message { get; set; }
             public bool IsNotification { get; set; }
+            public bool HasLeft { get; set; }
 
             public ChatViewMessage()
             {
 
             }
-            public ChatViewMessage(ChatMessageProxy message, ParticipantInfoView userInfo)
+            public ChatViewMessage(ChatMessageProxy message, ParticipantInfoView userInfo, bool hasLeft = false)
             {
                 MessageID = message.ChatMessageID;
                 DateCreated = message.DateCreated;
@@ -1011,6 +1012,7 @@ namespace TSWebServices
                 Message = message.Message;
                 IsNotification = message.IsNotification;
                 ChatID = message.ChatID;
+                HasLeft = hasLeft;
             }
         }
 

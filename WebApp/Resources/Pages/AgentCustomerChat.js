@@ -45,31 +45,45 @@ $(document).ready(function () {
         $('.page-loading').hide().next().show();
     });
 
-    GetChatSettings();
+    GetChatSettings(true);
     SetupToolbar();
     SetupTOK();
 
-    function GetChatSettings() {
-        var enableAudio = true;
-        var enableVideo = true;
-        var enableScreen = true;
-
-        if (!isTOKEnabledForBrowser) {
-            enableAudio = false;
-            enableVideo = false;
-            enableScreen = false;
-            EnableTOKButtons(enableAudio, enableVideo, enableScreen);
+    function GetChatSettings(isInit) {
+        if (isInit) {
+            _activeChatID = null;
+            EnableTOKButtons(false, false, false, isInit);
+            EnableDisableTicketMenu();
+            $('#chat-invite').addClass("disabled");
+            $('#chat-leave').addClass("disabled");
+            $('#chat-customer').addClass("disabled");
+            $('#chat-customer').show();
+            $('#chat-suggestions').addClass("disabled");
+            $('#chat-attachment').addClass("disabled");
         } else {
-            parent.Ts.Services.Chat.GetAgentChatProperties(function (data) {
-                if (!data.TOKScreenEnabled)
-                    enableScreen = false;
-                if (!data.TOKVideoEnabled)
-                    enableVideo = false;
-                if (!data.TOKVoiceEnabled)
-                    enableAudio = false;
+            $('#chat-suggestions').removeClass("disabled");
+            $('#chat-attachment').removeClass("disabled");
+            var enableAudio = true;
+            var enableVideo = true;
+            var enableScreen = true;
 
-                EnableTOKButtons(enableAudio, enableVideo, enableScreen);
-            });
+            if (!isTOKEnabledForBrowser) {
+                enableAudio = false;
+                enableVideo = false;
+                enableScreen = false;
+                EnableTOKButtons(enableAudio, enableVideo, enableScreen, isInit);
+            } else {
+                parent.Ts.Services.Chat.GetAgentChatProperties(function (data) {
+                    if (!data.TOKScreenEnabled)
+                        enableScreen = false;
+                    if (!data.TOKVideoEnabled)
+                        enableVideo = false;
+                    if (!data.TOKVoiceEnabled)
+                        enableAudio = false;
+
+                    EnableTOKButtons(enableAudio, enableVideo, enableScreen, isInit);
+                });
+            }
         }
     }
 
@@ -189,27 +203,36 @@ $(document).ready(function () {
 
     function createMessageElement(messageData, scrollView, isAgentAcceptedInvitation) {
         if (messageData.ChatID == _activeChatID && !isAgentAcceptedInvitation) {
-            var messageTemplate = $("#message-template").html();
-            var compiledTemplate = messageTemplate
-                                    .replace('{{MessageDirection}}', 'left')
-                                    .replace('{{UserName}}', messageData.CreatorDisplayName)
-                                    .replace('{{Avatar}}', (messageData.CreatorID !== null)
-                                                                    ? '../../../dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.CreatorID + '/48/1470773158079'
-                                                                    : '../images/blank_avatar.png')
-                                    .replace('{{Message}}', messageData.Message)
-                                    .replace('{{Date}}', moment(messageData.DateCreated).format(dateFormat + ' hh:mm A'));
+            var chatUserLeft = ((messageData.CreatorID !== null) ? messageData.CreatorID.toString() : 'customer');
 
-            $('.media-list').append(compiledTemplate);
-            if (scrollView) ScrollMessages(true);
+            if ((messageData.HasLeft && !$("#" + chatUserLeft + 'HasLeft').length > 0)
+                || (!messageData.HasLeft)) {
+                var messageTemplate = $("#message-template").html();
+                var compiledTemplate = messageTemplate
+                                        .replace('{{MessageDirection}}', 'left')
+                                        .replace('{{UserName}}', messageData.CreatorDisplayName)
+                                        .replace('{{Avatar}}', (messageData.CreatorID !== null)
+                                                                        ? '../../../dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.CreatorID + '/48/1470773158079'
+                                                                        : '../images/blank_avatar.png')
+                                        .replace('{{Message}}', messageData.Message)
+                                        .replace('{{Date}}', moment(messageData.DateCreated).format(dateFormat + ' hh:mm A'));
 
-            //If message is coming from the customer and we are in screenshare
-            if (messageData.CreatorType == 1 && (!_isChatWindowActive || _isChatWindowPotentiallyHidden)) {
-                if (screenSharingPublisher !== undefined) {
-                    BlinkWindowTitle();
-                    NewChatMessageAlert();
+                if (messageData.HasLeft) {
+                    compiledTemplate = compiledTemplate.replace('{{HasLeftChat}}', 'id=' + chatUserLeft + 'HasLeft');
                 }
-            } else if (messageData.CreatorType == 1) {
-                CustomerMessageSound();
+
+                $('.media-list').append(compiledTemplate);
+                if (scrollView) ScrollMessages(true);
+
+                //If message is coming from the customer and we are in screenshare
+                if (messageData.CreatorType == 1 && (!_isChatWindowActive || _isChatWindowPotentiallyHidden)) {
+                    if (screenSharingPublisher !== undefined) {
+                        BlinkWindowTitle();
+                        NewChatMessageAlert();
+                    }
+                } else if (messageData.CreatorType == 1) {
+                    CustomerMessageSound();
+                }
             }
         }
         else if (messageData.info.chatId == _activeChatID && isAgentAcceptedInvitation) {
@@ -265,7 +288,7 @@ $(document).ready(function () {
             _intervalUpdateActiveChats = setInterval('EnableDisableTicketMenu();', 5200);
         });
 
-        GetChatSettings();
+        GetChatSettings(false);
 
         if ($('#chat-invite').hasClass("disabled")) {
             $('#chat-invite').removeClass("disabled");
@@ -277,6 +300,14 @@ $(document).ready(function () {
 
         if ($('#chat-customer').hasClass("disabled")) {
             $('#chat-customer').removeClass("disabled");
+        }
+
+        if ($('#chat-suggestions').hasClass("disabled")) {
+            $('#chat-suggestions').removeClass("disabled");
+        }
+
+        if ($('#chat-attachment').hasClass("disabled")) {
+            $('#chat-attachment').removeClass("disabled");
         }
     }
 
@@ -313,7 +344,7 @@ $(document).ready(function () {
                         $('.media-list').empty();
                         $('.chat-intro').empty();
                         _activeChatID = null;
-                        GetChatSettings();
+                        GetChatSettings(true);
                         $('#chat-invite').addClass("disabled");
                         $('#chat-leave').addClass("disabled");
                         $('#chat-customer').addClass("disabled");
@@ -630,27 +661,40 @@ function EnableDisableTicketMenu() {
     }
 }
 
-function EnableTOKButtons(enableAudio, enableVideo, enableScreen) {
+function EnableTOKButtons(enableAudio, enableVideo, enableScreen, isChatInit) {
+    var featureDisabledTooltip = 'This feature is disabled.  It can be enabled within the Admin section.'
     var audio = $('#chat-tok-audio > .btn-primary');
     var video = $('#chat-tok-video > .btn-primary');
     var screen = $('#chat-tok-screen > .btn-primary');
 
     if (enableAudio && audio.hasClass('disabled')) {
         audio.removeClass('disabled');
+        $('#chat-tok-audio').attr('title', '');
     } else if (!enableAudio && !audio.hasClass('disabled')) {
         audio.addClass('disabled');
+        if (!isChatInit) {
+            $('#chat-tok-audio').attr('title', featureDisabledTooltip);
+        }
     }
 
     if (enableVideo && video.hasClass('disabled')) {
         video.removeClass('disabled');
+        $('#chat-tok-video').attr('title', '');
     } else if (!enableVideo && !video.hasClass('disabled')) {
         video.addClass('disabled');
+        if (!isChatInit) {
+            $('#chat-tok-video').attr('title', featureDisabledTooltip);
+        }
     }
 
     if (enableScreen && screen.hasClass('disabled')) {
         screen.removeClass('disabled');
+        $('#chat-tok-screen').attr('title', '');
     } else if (!enableScreen && !screen.hasClass('disabled')) {
         screen.addClass('disabled');
+        if (!isChatInit) {
+            $('#chat-tok-screen').attr('title', featureDisabledTooltip);
+        }
     }
 }
 

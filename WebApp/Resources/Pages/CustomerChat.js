@@ -128,9 +128,11 @@ function GetChatSettings(chatID) {
     });
 }
 
-function createMessage(message)
+function createMessage(message, agent)
 {
-    $('.chat-intro').append('<p>'+ message +'</p>');
+    if (!$("#agent" + agent).length) {
+        $('.chat-intro').append('<p id="agent' + agent + '">' + message + '</p>');
+    }
 }
 
 function createMessageElement(messageData, direction) {
@@ -177,7 +179,7 @@ function setupChat(chatID, participantID, callback) {
 
     pressenceChannel.bind('pusher:member_added', function (member) {
         $('#operator-message').remove();
-        createMessage(member.info.name + ' joined the chat.')
+        createMessage(member.info.name + ' joined the chat.', member.id);
     });
 
     //pressenceChannel.bind('pusher:subscription_error', function (status) {
