@@ -509,6 +509,7 @@
     .wc-avatar {
         border: medium none;
         margin: 4px 0px 0px -58px;
+        height: 48px;
     }
 
     div.timeline-header > .user-avatar,
