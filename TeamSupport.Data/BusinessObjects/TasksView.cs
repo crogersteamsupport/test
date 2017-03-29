@@ -7,22 +7,22 @@ using System.Data.SqlClient;
 
 namespace TeamSupport.Data
 {
-  public partial class TasksViewItem
-  {
-  }
-  
-  public partial class TasksView
-  {
-    public void LoadByParentID(int ParentID)
+    public partial class TasksViewItem
     {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT * FROM TasksView WHERE ParentID = @ParentID ORDER BY DueDate";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@ParentID", ParentID);
-        Fill(command);
-      }
     }
-  }
-  
+
+    public partial class TasksView
+    {
+        public void LoadByParentID(int ParentID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT * FROM TasksView WHERE ParentID = @ParentID ORDER BY DueDate";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ParentID", ParentID);
+                Fill(command);
+            }
+        }
+    }
+
 }

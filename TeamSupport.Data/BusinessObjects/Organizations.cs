@@ -3127,7 +3127,8 @@ ORDER BY
             }
         }
 
-        public void MigrateOrgType(LoginUser loginUser, int organizationID, ProductType productType) {
+        public void MigrateOrgType(LoginUser loginUser, int organizationID, ProductType productType)
+        {
             using (SqlCommand command = new SqlCommand())
             {
                 if (productType == ProductType.Enterprise)
