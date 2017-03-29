@@ -248,9 +248,9 @@ namespace TSWebServices
             string attachmentHTML = "";
 
             if (attachment.FileType.StartsWith("image/"))
-                attachmentHTML = string.Format("<img src='../../../dc/{0}/chatattachments/{1}/{2}' class='img-responsive' alt='{3}'>", attachment.OrganizationID, chatID, attachmentID, attachment.FileName);
+                attachmentHTML = string.Format("<img src='" + SystemSettings.GetAppUrl() + "/dc/{0}/chatattachments/{1}/{2}' class='img-responsive' alt='{3}'>", attachment.OrganizationID, chatID, attachmentID, attachment.FileName);
             else
-                attachmentHTML = string.Format("<a target='_blank' href='../../../dc/{0}/chatattachments/{1}/{2}'>{3}</a>", attachment.OrganizationID, chatID, attachmentID, attachment.FileName);
+                attachmentHTML = string.Format("<a target='_blank' href='" + SystemSettings.GetAppUrl() + "/dc/{0}/chatattachments/{1}/{2}'>{3}</a>", attachment.OrganizationID, chatID, attachmentID, attachment.FileName);
 
             ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();
             chatMessage.Message = attachmentHTML;
@@ -258,7 +258,6 @@ namespace TSWebServices
             chatMessage.PosterID = userID;
             chatMessage.PosterType = ChatParticipantType.External;
             chatMessage.Collection.Save();
-            //Users.UpdateUserActivityTime(loginUser, userID);
 
             ChatViewMessage newMessage = new ChatViewMessage(chatMessage.GetProxy(), GetLinkedUserInfo(userID, ChatParticipantType.External));
 
