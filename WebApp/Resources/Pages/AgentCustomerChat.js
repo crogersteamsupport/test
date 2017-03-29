@@ -10,7 +10,7 @@ $(document).ready(function () {
     var chatInfoObject = {};
     var pusherKey = null;
     var contactID = null;
-    var uploadPath = '../../../Upload/ChatAttachments/';
+    var uploadPath = '../../../ChatUpload/ChatAttachments/' + top.Ts.System.User.OrganizationID + '/';
     var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0 || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification);
     var isIE = /*@cc_on!@*/false || !!document.documentMode;
     var isEdge = !isIE && !!window.StyleMedia;
