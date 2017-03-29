@@ -1792,6 +1792,11 @@ namespace TeamSupport.Data
             return GetIndexPath(loginUser) + "\\ProductVersions";
         }
 
+        public static string GetTasksIndexPath(LoginUser loginUser)
+        {
+            return GetIndexPath(loginUser) + "\\Tasks";
+        }
+
         public static string GetWaterCoolerIndexPath(LoginUser loginUser)
         {
             return GetIndexPath(loginUser) + "\\WaterCooler";
@@ -1901,6 +1906,20 @@ namespace TeamSupport.Data
         }
 
         public static string GetProductVersionsEquivalentFieldName(string ticketFieldName)
+        {
+            string result = string.Empty;
+
+            switch (ticketFieldName)
+            {
+                default:
+                    result = ticketFieldName;
+                    break;
+            }
+
+            return result;
+        }
+
+        public static string GetTasksEquivalentFieldName(string ticketFieldName)
         {
             string result = string.Empty;
 

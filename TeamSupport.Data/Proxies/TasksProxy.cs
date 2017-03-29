@@ -45,6 +45,8 @@ namespace TeamSupport.Data
         public bool IsDismissed { get; set; }
         [DataMember]
         public DateTime? ReminderDueDate { get; set; }
+        [DataMember]
+        public bool NeedsIndexing { get; set; }
 
     }
 
@@ -53,6 +55,7 @@ namespace TeamSupport.Data
         public TaskProxy GetProxy()
         {
             TaskProxy result = new TaskProxy();
+            result.NeedsIndexing = this.NeedsIndexing;
             result.IsDismissed = this.IsDismissed;
             result.ReminderDueDate = this.ReminderDueDate;
             result.ReminderID = this.ReminderID;

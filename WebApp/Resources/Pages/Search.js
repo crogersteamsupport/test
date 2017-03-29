@@ -35,6 +35,27 @@ $(document).ready(function () {
     $('.checkbox').click(function () { HandleStandardFilterClickEvent(); });
     $('#search-options-add-filter').click(function () { HandleAddFilterClickEvent(); });
     $('#search-options-add-sorter').click(function () { HandleAddSorterClickEvent(); });
+    $('#search-results').on('click', '.change-task-status', function () {
+        parent.Ts.System.logAction('Search - Change Task Status');
+        var id = $(this).attr('id');
+        var checkbox = $(this);
+        var checked = $(this).prop('checked');
+        var name = $(this).attr('name');
+
+        parent.Ts.Services.Task.SetTaskIsCompleted(id, checked, function (data) {
+            if (data.IncompleteSubtasks) {
+                checkbox.prop("checked", false);
+                alert('There are subtasks pending completion, please finish them before completing the parent task.')
+            }
+            else if (checked) {
+                $('#task' + id).html('<strike>' + name + '</strike>');
+            }
+            else {
+                $('#task' + id).html(name);
+            }
+        });
+    });
+
 });
 
 function LoadAdvancedOptions() {
@@ -63,6 +84,7 @@ function LoadStandardFilters() {
 
         if (parent.Ts.System.Organization.ProductType > 1) {
             $('#search-standard-filters').append($('<input id="include-product-versions" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()" /> Product Versions<br />'));
+            $('#search-standard-filters').append($('<input id="include-tasks" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()" /> Tasks<br />'));
         }
 
         $('#search-standard-filters').append($('<input id="include-water-cooler" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()"/> Water Cooler<br />'));
@@ -77,6 +99,7 @@ function LoadStandardFilters() {
         $('#include-wikis').prop('checked', _advancedSearchOptions.Wikis);
         $('#include-notes').prop('checked', _advancedSearchOptions.Notes);
         $('#include-product-versions').prop('checked', _advancedSearchOptions.ProductVersions);
+        $('#include-tasks').prop('checked', _advancedSearchOptions.Tasks);
         $('#include-water-cooler').prop('checked', _advancedSearchOptions.WaterCooler);
 
         if (
@@ -85,6 +108,7 @@ function LoadStandardFilters() {
           && $('#include-wikis').prop('checked')
           && ($('#include-notes').length == 0 || $('#include-notes').prop('checked'))
           && ($('#include-product-versions').length == 0 || $('#include-product-versions').prop('checked'))
+          && ($('#include-tasks').length == 0 || $('#include-tasks').prop('checked'))
           && ($('#include-water-cooler').length == 0 || $('#include-water-cooler').prop('checked'))
         ) {
             $('#include-all').prop('checked', true);
@@ -579,64 +603,90 @@ function showSearchResults(results) {
         var iconPath = "";
         var onClickHandler = "";
         var subText = "";
+
+        var text = '>' + results.Items[i].DisplayName;
+
         switch (results.Items[i].TypeID) {
             case 1: //Tickets
-                iconPath = "/vcr/1_9_0/images/nav/16/tickets.png";
+                iconPath = '<img alt="Result item icon" src="/vcr/1_9_0/images/nav/16/tickets.png" />';
                 onClickHandler = "parent.Ts.MainPage.openTicket(" + results.Items[i].Number + ", true)";
                 subText = '<h2>Status: ' + results.Items[i].Status + ' </h2>' +
                         '<h2>Severity: ' + results.Items[i].Severity + '</h2>';
                 break;
             case 2: //KnowledgeBase
-                iconPath = "/vcr/1_9_0/images/nav/16/knowledge.png";
+                iconPath = '<img alt="Result item icon" src="/vcr/1_9_0/images/nav/16/knowledge.png" />';
                 onClickHandler = "parent.Ts.MainPage.openTicket(" + results.Items[i].Number + ", true)";
                 subText = '<h2>Status: ' + results.Items[i].Status + ' </h2>' +
                         '<h2>Severity: ' + results.Items[i].Severity + '</h2>';
                 break;
             case 3: //Wikis
-                iconPath = "/vcr/1_9_0/images/nav/16/wiki.png";
+                iconPath = '<img alt="Result item icon" src="/vcr/1_9_0/images/nav/16/wiki.png" />';
                 onClickHandler = "parent.Ts.MainPage.openWiki(" + results.Items[i].ID + ", true)";
                 subText = '<h2>Created by: ' + results.Items[i].Creator + ' </h2>' +
                         '<h2>Modified by: ' + results.Items[i].Modifier + '</h2>';
                 break;
             case 4: //CustomerNotes
-                iconPath = "/vcr/1_9_0/images/nav/16/customers.png";
+                iconPath = '<img alt="Result item icon" src="/vcr/1_9_0/images/nav/16/customers.png" />';
                 //onClickHandler = "parent.Ts.MainPage.openCustomerNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ", true)";
                 onClickHandler = "parent.Ts.MainPage.openNewCustomerNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ")";
                 subText = '<h2>Created by: ' + results.Items[i].Creator + ' </h2>' +
                         '<h2>Modified on: ' + results.Items[i].DateModified + '</h2>';
                 break;
             case 5: //ProductVersions
-                iconPath = "/vcr/1_9_0/images/nav/16/products.png";
+                iconPath = '<img alt="Result item icon" src="/vcr/1_9_0/images/nav/16/products.png" />';
                 onClickHandler = "parent.Ts.MainPage.openNewProductVersion(" + results.Items[i].ID + ")";
                 subText = '<h2>Status: ' + results.Items[i].Status + ' </h2>' +
                         '<h2>Modified on: ' + results.Items[i].DateModified + '</h2>';
                 break;
             case 6: //WaterCooler
-                iconPath = "/vcr/1_9_0/images/nav/16/watercooler.png";
+                iconPath = '<img alt="Result item icon" src="/vcr/1_9_0/images/nav/16/watercooler.png" />';
                 onClickHandler = "parent.Ts.MainPage.openWaterCoolerInstance(" + results.Items[i].ID + ", " + results.Items[i].RefType + ", " + results.Items[i].AttachmentID + ")";
                 subText = '<h2>Posted by: ' + results.Items[i].Creator + ' </h2>' +
                         '<h2>Posted on: ' + results.Items[i].DateModified + '</h2>';
                 break;
             case 7: //ContactNotes
-                iconPath = "/vcr/1_9_0/images/nav/16/customers.png";
+                iconPath = '<img alt="Result item icon" src="/vcr/1_9_0/images/nav/16/customers.png" />';
                 onClickHandler = "parent.Ts.MainPage.openNewContactNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ")";
                 subText = '<h2>Created by: ' + results.Items[i].Creator + ' </h2>' +
                         '<h2>Modified on: ' + results.Items[i].DateModified + '</h2>';
                 break;
+            case 8: //Tasks
+                if (results.Items[i].IsComplete) {
+                    iconPath = '<input type="checkbox" class="change-task-status" id="' + results.Items[i].ID + '" name="' + results.Items[i].DisplayName + '" checked />';
+                    text = ' id="task' + results.Items[i].ID + '"><strike>' + results.Items[i].DisplayName + '</strike>';
+                    subText = '<h2>Assigned to: ' + results.Items[i].UserName + ' </h2>' +
+                            '<h2>Completed on: ' + window.parent.parent.Ts.Utils.getMsDate(results.Items[i].DateCompleted).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '</h2>';
+                }
+                else {
+                    iconPath = '<input type="checkbox" class="change-task-status" id="' + results.Items[i].ID + '" name="' + results.Items[i].DisplayName + '" />';
+                    text = ' id="task' + results.Items[i].ID + '">' + results.Items[i].DisplayName;
+                    if (results.Items[i].IsPastDue) {
+                        subText = '<h2>Assigned to: ' + results.Items[i].UserName + ' </h2>' +
+                                '<h2>Due Date: <span  style="color:red;">' + window.parent.parent.Ts.Utils.getMsDate(results.Items[i].DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '</span></h2>';
+                    }
+                    else if (results.Items[i].DueDate) {
+                        subText = '<h2>Assigned to: ' + results.Items[i].UserName + ' </h2>' +
+                                '<h2>Due Date: ' + window.parent.parent.Ts.Utils.getMsDate(results.Items[i].DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '</h2>';
+                    }
+                    else {
+                        subText = '<h2>Assigned to: ' + results.Items[i].UserName + ' </h2>' +
+                                '<h2>Due Date: None</h2>';
+                    }
+                }
+                onClickHandler = "parent.Ts.MainPage.openNewTask(" + results.Items[i].ID + ")";
+                break;
         }
-
-        var text = results.Items[i].DisplayName;
 
         html = html +
         '<div class="resultItem">' +
           '<div class="resultItem-left">' +
             '<div class="resultItem-icon">' +
-              '<img alt="Result item icon" src="' + iconPath + '" />' +
+              iconPath +
               '<h2>' + results.Items[i].ScorePercent + '%</h2>' +
             '</div>' +
             '<div class="resultItem-text">' +
               '<h1>' +
-                '<a href="#" onclick="' + onClickHandler + '; return false;" class="ts-link">' + text + '</a>' +
+                '<a href="#" onclick="' + onClickHandler + '; return false;" class="ts-link"' + text + '</a>' +
               '</h1>' +
               subText +
             '</div>' +
@@ -694,6 +744,7 @@ function HandleStandardFilterClickEvent() {
       && $('#include-wikis').prop('checked')
       && ($('#include-notes').length == 0 || $('#include-notes').prop('checked'))
       && ($('#include-product-versions').length == 0 || $('#include-product-versions').prop('checked'))
+      && ($('#include-tasks').length == 0 || $('#include-tasks').prop('checked'))
       && ($('#include-water-cooler').length == 0 || $('#include-water-cooler').prop('checked'))
     ) {
         $('#include-all').prop('checked', true)
@@ -708,6 +759,7 @@ function HandleStandardFilterClickEvent() {
 
     var includeNotes = false;
     var includeProductVersions = false;
+    var includeTasks = false;
     var includeWaterCooler = false;
 
     if ($('#include-notes').length > 0) {
@@ -716,6 +768,10 @@ function HandleStandardFilterClickEvent() {
 
     if ($('#include-product-versions').length > 0) {
         includeProductVersions = $('#include-product-versions').prop('checked');
+    }
+
+    if ($('#include-tasks').length > 0) {
+        includeTasks = $('#include-tasks').prop('checked');
     }
 
     if ($('#include-water-cooler').length > 0) {
@@ -730,6 +786,7 @@ function HandleStandardFilterClickEvent() {
           includeWikis,
           includeNotes,
           includeProductVersions,
+          includeTasks,
           includeWaterCooler
         );
     }
@@ -740,6 +797,7 @@ function HandleStandardFilterClickEvent() {
           includeWikis,
           includeNotes,
           includeProductVersions,
+          includeTasks,
           includeWaterCooler,
           function (result) {
               _standardFilterID = result;

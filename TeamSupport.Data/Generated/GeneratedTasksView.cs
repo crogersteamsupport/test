@@ -77,6 +77,12 @@ namespace TeamSupport.Data
 
 
 
+        public bool NeedsIndexing
+        {
+            get { return (bool)Row["NeedsIndexing"]; }
+            set { Row["NeedsIndexing"] = CheckValue("NeedsIndexing", value); }
+        }
+
         public int ModifierID
         {
             get { return (int)Row["ModifierID"]; }
@@ -262,7 +268,7 @@ namespace TeamSupport.Data
             updateCommand.Connection = connection;
             //updateCommand.Transaction = transaction;
             updateCommand.CommandType = CommandType.Text;
-            updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TasksView] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [DueDate] = @DueDate,    [UserID] = @UserID,    [IsComplete] = @IsComplete,    [DateCompleted] = @DateCompleted,    [ParentID] = @ParentID,    [IsDismissed] = @IsDismissed,    [HasEmailSent] = @HasEmailSent,    [ReminderDueDate] = @ReminderDueDate,    [TaskParentName] = @TaskParentName,    [UserName] = @UserName,    [Creator] = @Creator,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified  WHERE ([TaskID] = @TaskID);";
+            updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TasksView] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [DueDate] = @DueDate,    [UserID] = @UserID,    [IsComplete] = @IsComplete,    [DateCompleted] = @DateCompleted,    [ParentID] = @ParentID,    [IsDismissed] = @IsDismissed,    [HasEmailSent] = @HasEmailSent,    [ReminderDueDate] = @ReminderDueDate,    [TaskParentName] = @TaskParentName,    [UserName] = @UserName,    [Creator] = @Creator,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [NeedsIndexing] = @NeedsIndexing  WHERE ([TaskID] = @TaskID);";
 
 
             tempParameter = updateCommand.Parameters.Add("TaskID", SqlDbType.Int, 4);
@@ -384,13 +390,27 @@ namespace TeamSupport.Data
                 tempParameter.Scale = 23;
             }
 
+            tempParameter = updateCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
+            if (tempParameter.SqlDbType == SqlDbType.Float)
+            {
+                tempParameter.Precision = 255;
+                tempParameter.Scale = 255;
+            }
+
 
             SqlCommand insertCommand = connection.CreateCommand();
             insertCommand.Connection = connection;
             //insertCommand.Transaction = transaction;
             insertCommand.CommandType = CommandType.Text;
-            insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TasksView] (    [TaskID],    [OrganizationID],    [Name],    [Description],    [DueDate],    [UserID],    [IsComplete],    [DateCompleted],    [ParentID],    [IsDismissed],    [HasEmailSent],    [ReminderDueDate],    [TaskParentName],    [UserName],    [Creator],    [CreatorID],    [DateCreated],    [ModifierID],    [DateModified]) VALUES ( @TaskID, @OrganizationID, @Name, @Description, @DueDate, @UserID, @IsComplete, @DateCompleted, @ParentID, @IsDismissed, @HasEmailSent, @ReminderDueDate, @TaskParentName, @UserName, @Creator, @CreatorID, @DateCreated, @ModifierID, @DateModified); SET @Identity = SCOPE_IDENTITY();";
+            insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TasksView] (    [TaskID],    [OrganizationID],    [Name],    [Description],    [DueDate],    [UserID],    [IsComplete],    [DateCompleted],    [ParentID],    [IsDismissed],    [HasEmailSent],    [ReminderDueDate],    [TaskParentName],    [UserName],    [Creator],    [CreatorID],    [DateCreated],    [ModifierID],    [DateModified],    [NeedsIndexing]) VALUES ( @TaskID, @OrganizationID, @Name, @Description, @DueDate, @UserID, @IsComplete, @DateCompleted, @ParentID, @IsDismissed, @HasEmailSent, @ReminderDueDate, @TaskParentName, @UserName, @Creator, @CreatorID, @DateCreated, @ModifierID, @DateModified, @NeedsIndexing); SET @Identity = SCOPE_IDENTITY();";
 
+
+            tempParameter = insertCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
+            if (tempParameter.SqlDbType == SqlDbType.Float)
+            {
+                tempParameter.Precision = 255;
+                tempParameter.Scale = 255;
+            }
 
             tempParameter = insertCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
             if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -637,7 +657,7 @@ namespace TeamSupport.Data
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "SET NOCOUNT OFF; SELECT [TaskID], [OrganizationID], [Name], [Description], [DueDate], [UserID], [IsComplete], [DateCompleted], [ParentID], [IsDismissed], [HasEmailSent], [ReminderDueDate], [TaskParentName], [UserName], [Creator], [CreatorID], [DateCreated], [ModifierID], [DateModified] FROM [dbo].[TasksView] WHERE ([TaskID] = @TaskID);";
+                command.CommandText = "SET NOCOUNT OFF; SELECT [TaskID], [OrganizationID], [Name], [Description], [DueDate], [UserID], [IsComplete], [DateCompleted], [ParentID], [IsDismissed], [HasEmailSent], [ReminderDueDate], [TaskParentName], [UserName], [Creator], [CreatorID], [DateCreated], [ModifierID], [DateModified], [NeedsIndexing] FROM [dbo].[TasksView] WHERE ([TaskID] = @TaskID);";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("taskID", taskID);
                 Fill(command);

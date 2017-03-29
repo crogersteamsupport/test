@@ -45,6 +45,7 @@ namespace TSWebServices
             bool hasNonWikiFilters = false;
             bool hasNonNotesFilters = false;
             bool hasNonProductVersionsFilters = false;
+            bool hasNonTasksFilters = false;
             bool hasNonWaterCoolerFilters = false;
 
             bool hasIndexesToSearch = GetHasIndexesToSearch(
@@ -53,6 +54,7 @@ namespace TSWebServices
                                         ref hasNonWikiFilters,
                                         ref hasNonNotesFilters,
                                         ref hasNonProductVersionsFilters,
+                                        ref hasNonTasksFilters,
                                         ref hasNonWaterCoolerFilters);
 
             if (hasIndexesToSearch)
@@ -64,6 +66,7 @@ namespace TSWebServices
                 string wikisQuery = string.Empty;
                 string notesQuery = string.Empty;
                 string productVersionsQuery = string.Empty;
+                string tasksQuery = string.Empty;
                 string waterCoolerQuery = string.Empty;
 
                 string orderByClause = string.Empty;
@@ -74,6 +77,7 @@ namespace TSWebServices
                 string selectWikisFields = string.Empty;
                 string selectNotesFields = string.Empty;
                 string selectProductVersionsFields = string.Empty;
+                string selectTasksFields = string.Empty;
                 string selectWaterCoolerFields = string.Empty;
 
                 orderByClause = GetOrderByClause(loginUser,
@@ -83,6 +87,7 @@ namespace TSWebServices
                                                  ref selectWikisFields,
                                                  ref selectNotesFields,
                                                  ref selectProductVersionsFields,
+                                                 ref selectTasksFields,
                                                  ref selectWaterCoolerFields);
 
                 SqlCommand command = new SqlCommand();
@@ -180,6 +185,27 @@ namespace TSWebServices
                     }
                 }
 
+                if (searchStandardFilter.Tasks && !hasNonTasksFilters)
+                {
+                    List<SqlDataRecord> dtSearchTasksResultsList = TasksView.GetSearchResultsList(searchTerm, loginUser);
+
+                    if (dtSearchTasksResultsList.Count > 0)
+                    {
+                        bool includesPreviousQuery = false;
+                        if (ticketsQuery.Length > 0 || wikisQuery.Length > 0 || notesQuery.Length > 0 || productVersionsQuery.Length > 0)
+                        {
+                            includesPreviousQuery = true;
+                        }
+
+                        tasksQuery = GetTasksQuery(includesPreviousQuery, loginUser, selectTasksFields);
+
+                        SqlParameter dtSearchTasksResultsTable = new SqlParameter("@dtSearchTasksResultsTable", SqlDbType.Structured);
+                        dtSearchTasksResultsTable.TypeName = "dtSearch_results_tbltype";
+                        dtSearchTasksResultsTable.Value = dtSearchTasksResultsList;
+                        command.Parameters.Add(dtSearchTasksResultsTable);
+                    }
+                }
+
                 if (searchStandardFilter.WaterCooler && !hasNonWaterCoolerFilters)
                 {
                     List<SqlDataRecord> dtSearchWaterCoolerResultsList = WaterCoolerView.GetSearchResultsList(searchTerm, loginUser);
@@ -187,7 +213,7 @@ namespace TSWebServices
                     if (dtSearchWaterCoolerResultsList.Count > 0)
                     {
                         bool includesPreviousQuery = false;
-                        if (ticketsQuery.Length > 0 || wikisQuery.Length > 0 || notesQuery.Length > 0 || productVersionsQuery.Length > 0)
+                        if (ticketsQuery.Length > 0 || wikisQuery.Length > 0 || notesQuery.Length > 0 || productVersionsQuery.Length > 0 || tasksQuery.Length > 0)
                         {
                             includesPreviousQuery = true;
                         }
@@ -229,11 +255,12 @@ namespace TSWebServices
         {5}
         {6}
         {7}
+        {8}
         
         SET @resultsCount = @@RowCount
 
         SELECT
-          {8}
+          {9}
         FROM 
           @TempItems ti 
           LEFT JOIN dbo.TicketsView tv 
@@ -248,6 +275,9 @@ namespace TSWebServices
           LEFT JOIN dbo.ProductVersionsView pvv
             ON ti.source = 14
             AND ti.recordID = pvv.ProductVersionID
+          LEFT JOIN dbo.TasksView tsk
+            ON ti.source = 61
+            AND ti.recordID = tsk.TaskID
           LEFT JOIN dbo.NewWaterCoolerView wcv
             ON ti.source = 38
             AND ti.recordID = wcv.MessageID
@@ -265,6 +295,7 @@ namespace TSWebServices
                   wikisQuery,
                   notesQuery,
                   productVersionsQuery,
+                  tasksQuery,
                   waterCoolerQuery,
                   orderByClause,
                   fieldsList);
@@ -363,6 +394,37 @@ namespace TSWebServices
                             resultItem.TypeID = 5;
 
                             break;
+                        case ReferenceType.Tasks:
+                            resultItem.ID = (int)row["TaskID"];
+                            resultItem.IsComplete = Convert.ToBoolean(row["IsComplete"]);
+                            resultItem.UserName = row["UserName"].ToString();
+                            resultItem.IsPastDue = Convert.ToBoolean(row["IsPastDue"]);
+                            resultItem.TypeID = 8;
+
+                            if (string.IsNullOrEmpty(row["TaskParentName"].ToString()))
+                            {
+                                resultItem.DisplayName = row["TaskName"].ToString();
+                            }
+                            else
+                            {
+                                resultItem.DisplayName = row["TaskParentName"].ToString() + " > " + row["TaskName"].ToString();
+                            }
+
+                            if (!string.IsNullOrEmpty(row["DateCompleted"].ToString()))
+                            {
+                                resultItem.DateCompleted = DataUtils.DateToLocal(loginUser, Convert.ToDateTime(row["DateCompleted"]));
+                            }
+
+                            if (string.IsNullOrEmpty(resultItem.UserName))
+                            {
+                                resultItem.UserName = "Unassigned";
+                            }
+
+                            if (!string.IsNullOrEmpty(row["DueDate"].ToString()))
+                            {
+                                resultItem.DueDate = DataUtils.DateToLocal(loginUser, Convert.ToDateTime(row["DueDate"]));
+                            }
+                            break;
                         case ReferenceType.WaterCooler:
                             int messageParent = (int)row["MessageParent"];
                             resultItem.ID = messageParent == -1 ? (int)row["MessageID"] : messageParent;
@@ -423,16 +485,20 @@ namespace TSWebServices
           ref bool hasNonWikiFilters,
           ref bool hasNonNotesFilters,
           ref bool hasNonProductVersionsFilters,
+          ref bool hasNonTasksFilters,
           ref bool hasNonWaterCoolerFilters)
         {
             bool result = false;
 
+            //The NonTable filters allows us to exclude searching objects that will never match a filter
+            //as it is bein applied in fields that do not belong to them.
             GetHasNonTableFilters(
               searchStandardFilter,
               loginUser,
               ref hasNonWikiFilters,
               ref hasNonNotesFilters,
               ref hasNonProductVersionsFilters,
+              ref hasNonTasksFilters,
               ref hasNonWaterCoolerFilters);
 
             if (
@@ -441,6 +507,7 @@ namespace TSWebServices
               || (searchStandardFilter.Wikis && !hasNonWikiFilters)
               || (searchStandardFilter.Notes && !hasNonNotesFilters)
               || (searchStandardFilter.ProductVersions && !hasNonProductVersionsFilters)
+              || (searchStandardFilter.Tasks && !hasNonTasksFilters)
               || (searchStandardFilter.WaterCooler && !hasNonWaterCoolerFilters)
             )
             {
@@ -654,6 +721,37 @@ namespace TSWebServices
             return resultBuilder.ToString();
         }
 
+        private string GetTasksQuery(bool includePreviousQuery, LoginUser loginUser, string selectTasksFields)
+        {
+            StringBuilder resultBuilder = new StringBuilder();
+
+            if (includePreviousQuery)
+            {
+                resultBuilder.Append(" UNION ");
+            }
+
+            resultBuilder.Append(@"
+        SELECT
+          tsk.TaskID
+          , 61
+          , dtskrt.relevance
+          , tsk.DateModified");
+            resultBuilder.Append(selectTasksFields);
+
+            resultBuilder.Append(@"
+        FROM
+          dbo.TasksView tsk
+          JOIN @dtSearchTasksResultsTable dtskrt
+            ON tsk.TaskID = dtskrt.RecordID
+        WHERE
+          1 = 1
+      ");
+
+            resultBuilder.Append(TasksView.GetSearchResultsWhereClause(loginUser));
+
+            return resultBuilder.ToString();
+        }
+
         private string GetWaterCoolerQuery(bool includePreviousQuery, LoginUser loginUser, string selectWaterCoolerFields)
         {
             StringBuilder resultBuilder = new StringBuilder();
@@ -710,6 +808,7 @@ namespace TSWebServices
                                         ref string selectWikisFields,
                                         ref string selectNotesFields,
                                         ref string selectProductVersionsFields,
+                                        ref string selectTasksFields,
                                         ref string selectWaterCoolerFields)
         {
             SearchSorters searchSorters = new SearchSorters(loginUser);
@@ -720,6 +819,7 @@ namespace TSWebServices
                                                         ref selectWikisFields,
                                                         ref selectNotesFields,
                                                         ref selectProductVersionsFields,
+                                                        ref selectTasksFields,
                                                         ref selectWaterCoolerFields);
         }
 
@@ -753,6 +853,14 @@ namespace TSWebServices
         , pvv.VersionNumber
         , pvv.VersionStatus
         , pvv.DateModified AS ProductVersionDateModified
+        , tsk.TaskID
+        , tsk.Name AS TaskName
+        , tsk.IsComplete
+        , tsk.DateCompleted
+        , tsk.UserName
+        , tsk.DueDate
+        , tsk.TaskParentName
+        , IIF(tsk.DueDate < GETUTCDATE() , 1 , 0) AS IsPastDue
         , wcv.MessageID
         , wcv.Message
         , wcv.UserName
@@ -769,6 +877,7 @@ namespace TSWebServices
           ref bool hasNonWikiFilters,
           ref bool hasNonNotesFilters,
           ref bool hasNonProductVersionsFilters,
+          ref bool hasNonTasksFilters,
           ref bool hasNonWaterCoolerFilters)
         {
             Organizations organizations = new Organizations(loginUser);
@@ -787,6 +896,7 @@ namespace TSWebServices
             WikiArticlesViewItem wikiArticlesViewItem = null;
             NotesViewItem notesViewItem = null;
             ProductVersionsViewItem productVersionsViewItem = null;
+            TasksViewItem tasksViewItem = null;
             WaterCoolerViewItem waterCoolerViewItem = null;
 
             bool isFirstIteration = true;
@@ -796,9 +906,12 @@ namespace TSWebServices
                 ReportTableField field = ticketsViewFields.FindByReportTableFieldID(filter.FieldID);
                 if (field == null)
                 {
+                    //Filter is not in the tickets view therefore it is a custom field filter.
+                    //If it has a custom field filter then exclude all other objects as this apply to tickets only
                     hasNonWikiFilters = true;
                     hasNonNotesFilters = true;
                     hasNonProductVersionsFilters = true;
+                    hasNonTasksFilters = true;
                     hasNonWaterCoolerFilters = true;
                 }
                 else
@@ -850,6 +963,21 @@ namespace TSWebServices
                         }
                     }
 
+                    if (!hasNonTasksFilters && searchStandardFilter.Tasks)
+                    {
+                        if (isFirstIteration)
+                        {
+                            TasksView tasksView = new TasksView(loginUser);
+                            tasksViewItem = tasksView.AddNewTasksViewItem();
+                        }
+
+                        string taskEquivalentFieldName = DataUtils.GetTasksEquivalentFieldName(fieldName);
+                        if (!DataUtils.GetIsColumnInBaseCollection(tasksViewItem.Collection, taskEquivalentFieldName))
+                        {
+                            hasNonTasksFilters = true;
+                        }
+                    }
+
                     if (!hasNonWaterCoolerFilters && searchStandardFilter.WaterCooler)
                     {
                         if (isFirstIteration)
@@ -875,6 +1003,7 @@ namespace TSWebServices
           bool includeWikis,
           bool includeNotes,
           bool includeProductVersions,
+          bool includeTasks,
           bool includeWaterCooler)
         {
             SearchStandardFilters filters = new SearchStandardFilters(TSAuthentication.GetLoginUser());
@@ -886,6 +1015,7 @@ namespace TSWebServices
             filter.Wikis = includeWikis;
             filter.Notes = includeNotes;
             filter.ProductVersions = includeProductVersions;
+            filter.Tasks = includeTasks;
             filter.WaterCooler = includeWaterCooler;
 
             filters.Save();
@@ -901,6 +1031,7 @@ namespace TSWebServices
           bool includeWikis,
           bool includeNotes,
           bool includeProductVersions,
+          bool includeTasks,
           bool includeWaterCooler)
         {
             SearchStandardFilters filters = new SearchStandardFilters(TSAuthentication.GetLoginUser());
@@ -912,6 +1043,7 @@ namespace TSWebServices
             filter.Wikis = includeWikis;
             filter.Notes = includeNotes;
             filter.ProductVersions = includeProductVersions;
+            filter.Tasks = includeTasks;
             filter.WaterCooler = includeWaterCooler;
             filters.Save();
         }
@@ -1011,6 +1143,7 @@ namespace TSWebServices
                 result.Wikis = (bool)standardFilters.Table.Rows[0]["Wikis"];
                 result.Notes = (bool)standardFilters.Table.Rows[0]["Notes"];
                 result.ProductVersions = (bool)standardFilters.Table.Rows[0]["ProductVersions"];
+                result.Tasks = (bool)standardFilters.Table.Rows[0]["Tasks"];
                 result.WaterCooler = (bool)standardFilters.Table.Rows[0]["WaterCooler"];
 
             }
@@ -1696,6 +1829,8 @@ SELECT
         public bool? Notes { get; set; }
         [DataMember]
         public bool? ProductVersions { get; set; }
+        [DataMember]
+        public bool? Tasks { get; set; }
         [DataMember]
         public bool? WaterCooler { get; set; }
         [DataMember]

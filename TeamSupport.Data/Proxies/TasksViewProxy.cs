@@ -51,6 +51,8 @@ namespace TeamSupport.Data
         public int ModifierID { get; set; }
         [DataMember]
         public DateTime DateModified { get; set; }
+        [DataMember]
+        public bool NeedsIndexing { get; set; }
 
     }
 
@@ -59,6 +61,7 @@ namespace TeamSupport.Data
         public TasksViewItemProxy GetProxy()
         {
             TasksViewItemProxy result = new TasksViewItemProxy();
+            result.NeedsIndexing = this.NeedsIndexing;
             result.ModifierID = this.ModifierID;
             result.CreatorID = this.CreatorID;
             result.Creator = this.Creator;

@@ -1,595 +1,555 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReminder
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSearchStandardFilter' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSearchStandardFilter
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectReminder
+CREATE PROCEDURE dbo.uspGeneratedSelectSearchStandardFilter
 
 (
-  @ReminderID int
+  @StandardFilterID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ReminderID],
-    [OrganizationID],
-    [RefType],
-    [RefID],
-    [Description],
-    [DueDate],
+    [StandardFilterID],
     [UserID],
-    [IsDismissed],
-    [HasEmailSent],
-    [CreatorID],
-    [DateCreated]
-  FROM [dbo].[Reminders]
-  WHERE ([ReminderID] = @ReminderID)
+    [Tickets],
+    [KnowledgeBase],
+    [Wikis],
+    [Notes],
+    [ProductVersions],
+    [WaterCooler],
+    [Tasks]
+  FROM [dbo].[SearchStandardFilters]
+  WHERE ([StandardFilterID] = @StandardFilterID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReminder
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertSearchStandardFilter' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertSearchStandardFilter
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertReminder
+CREATE PROCEDURE dbo.uspGeneratedInsertSearchStandardFilter
 
 (
-  @OrganizationID int,
-  @RefType int,
-  @RefID int,
-  @Description nvarchar(4000),
-  @DueDate datetime,
   @UserID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @CreatorID int,
-  @DateCreated datetime,
+  @Tickets bit,
+  @KnowledgeBase bit,
+  @Wikis bit,
+  @Notes bit,
+  @ProductVersions bit,
+  @WaterCooler bit,
+  @Tasks bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Reminders]
+  INSERT INTO [dbo].[SearchStandardFilters]
   (
-    [OrganizationID],
-    [RefType],
-    [RefID],
-    [Description],
-    [DueDate],
     [UserID],
-    [IsDismissed],
-    [HasEmailSent],
-    [CreatorID],
-    [DateCreated])
+    [Tickets],
+    [KnowledgeBase],
+    [Wikis],
+    [Notes],
+    [ProductVersions],
+    [WaterCooler],
+    [Tasks])
   VALUES (
-    @OrganizationID,
-    @RefType,
-    @RefID,
-    @Description,
-    @DueDate,
     @UserID,
-    @IsDismissed,
-    @HasEmailSent,
-    @CreatorID,
-    @DateCreated)
+    @Tickets,
+    @KnowledgeBase,
+    @Wikis,
+    @Notes,
+    @ProductVersions,
+    @WaterCooler,
+    @Tasks)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReminder
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateSearchStandardFilter' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateSearchStandardFilter
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateReminder
+CREATE PROCEDURE dbo.uspGeneratedUpdateSearchStandardFilter
 
 (
-  @ReminderID int,
-  @OrganizationID int,
-  @RefType int,
-  @RefID int,
-  @Description nvarchar(4000),
-  @DueDate datetime,
+  @StandardFilterID int,
   @UserID int,
-  @IsDismissed bit,
-  @HasEmailSent bit
+  @Tickets bit,
+  @KnowledgeBase bit,
+  @Wikis bit,
+  @Notes bit,
+  @ProductVersions bit,
+  @WaterCooler bit,
+  @Tasks bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Reminders]
+  UPDATE [dbo].[SearchStandardFilters]
   SET
-    [OrganizationID] = @OrganizationID,
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
     [UserID] = @UserID,
-    [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent
-  WHERE ([ReminderID] = @ReminderID)
+    [Tickets] = @Tickets,
+    [KnowledgeBase] = @KnowledgeBase,
+    [Wikis] = @Wikis,
+    [Notes] = @Notes,
+    [ProductVersions] = @ProductVersions,
+    [WaterCooler] = @WaterCooler,
+    [Tasks] = @Tasks
+  WHERE ([StandardFilterID] = @StandardFilterID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReminder
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteSearchStandardFilter' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteSearchStandardFilter
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteReminder
+CREATE PROCEDURE dbo.uspGeneratedDeleteSearchStandardFilter
 
 (
-  @ReminderID int
+  @StandardFilterID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Reminders]
-  WHERE ([ReminderID] = @ReminderID)
+  DELETE FROM [dbo].[SearchStandardFilters]
+  WHERE ([StandardFilterID] = @StandardFilterID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReminder
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSearchStandardFilter' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSearchStandardFilter
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectReminder
+CREATE PROCEDURE dbo.uspGeneratedSelectSearchStandardFilter
 
 (
-  @ReminderID int
+  @StandardFilterID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ReminderID],
-    [OrganizationID],
-    [RefType],
-    [RefID],
-    [Description],
-    [DueDate],
+    [StandardFilterID],
     [UserID],
-    [IsDismissed],
-    [HasEmailSent],
-    [CreatorID],
-    [DateCreated]
-  FROM [dbo].[Reminders]
-  WHERE ([ReminderID] = @ReminderID)
+    [Tickets],
+    [KnowledgeBase],
+    [Wikis],
+    [Notes],
+    [ProductVersions],
+    [WaterCooler],
+    [Tasks]
+  FROM [dbo].[SearchStandardFilters]
+  WHERE ([StandardFilterID] = @StandardFilterID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReminder
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertSearchStandardFilter' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertSearchStandardFilter
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertReminder
+CREATE PROCEDURE dbo.uspGeneratedInsertSearchStandardFilter
 
 (
-  @OrganizationID int,
-  @RefType int,
-  @RefID int,
-  @Description nvarchar(4000),
-  @DueDate datetime,
   @UserID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @CreatorID int,
-  @DateCreated datetime,
+  @Tickets bit,
+  @KnowledgeBase bit,
+  @Wikis bit,
+  @Notes bit,
+  @ProductVersions bit,
+  @WaterCooler bit,
+  @Tasks bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Reminders]
+  INSERT INTO [dbo].[SearchStandardFilters]
   (
-    [OrganizationID],
-    [RefType],
-    [RefID],
-    [Description],
-    [DueDate],
     [UserID],
-    [IsDismissed],
-    [HasEmailSent],
-    [CreatorID],
-    [DateCreated])
+    [Tickets],
+    [KnowledgeBase],
+    [Wikis],
+    [Notes],
+    [ProductVersions],
+    [WaterCooler],
+    [Tasks])
   VALUES (
-    @OrganizationID,
-    @RefType,
-    @RefID,
-    @Description,
-    @DueDate,
     @UserID,
-    @IsDismissed,
-    @HasEmailSent,
-    @CreatorID,
-    @DateCreated)
+    @Tickets,
+    @KnowledgeBase,
+    @Wikis,
+    @Notes,
+    @ProductVersions,
+    @WaterCooler,
+    @Tasks)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReminder
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateSearchStandardFilter' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateSearchStandardFilter
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateReminder
+CREATE PROCEDURE dbo.uspGeneratedUpdateSearchStandardFilter
 
 (
-  @ReminderID int,
-  @OrganizationID int,
-  @RefType int,
-  @RefID int,
-  @Description nvarchar(4000),
-  @DueDate datetime,
+  @StandardFilterID int,
   @UserID int,
-  @IsDismissed bit,
-  @HasEmailSent bit
+  @Tickets bit,
+  @KnowledgeBase bit,
+  @Wikis bit,
+  @Notes bit,
+  @ProductVersions bit,
+  @WaterCooler bit,
+  @Tasks bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Reminders]
+  UPDATE [dbo].[SearchStandardFilters]
   SET
-    [OrganizationID] = @OrganizationID,
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
     [UserID] = @UserID,
-    [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent
-  WHERE ([ReminderID] = @ReminderID)
+    [Tickets] = @Tickets,
+    [KnowledgeBase] = @KnowledgeBase,
+    [Wikis] = @Wikis,
+    [Notes] = @Notes,
+    [ProductVersions] = @ProductVersions,
+    [WaterCooler] = @WaterCooler,
+    [Tasks] = @Tasks
+  WHERE ([StandardFilterID] = @StandardFilterID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReminder
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteSearchStandardFilter' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteSearchStandardFilter
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteReminder
+CREATE PROCEDURE dbo.uspGeneratedDeleteSearchStandardFilter
 
 (
-  @ReminderID int
+  @StandardFilterID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Reminders]
-  WHERE ([ReminderID] = @ReminderID)
+  DELETE FROM [dbo].[SearchStandardFilters]
+  WHERE ([StandardFilterID] = @StandardFilterID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReminder
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSearchStandardFilter' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSearchStandardFilter
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectReminder
+CREATE PROCEDURE dbo.uspGeneratedSelectSearchStandardFilter
 
 (
-  @ReminderID int
+  @StandardFilterID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ReminderID],
-    [OrganizationID],
-    [RefType],
-    [RefID],
-    [Description],
-    [DueDate],
+    [StandardFilterID],
     [UserID],
-    [IsDismissed],
-    [HasEmailSent],
-    [CreatorID],
-    [DateCreated]
-  FROM [dbo].[Reminders]
-  WHERE ([ReminderID] = @ReminderID)
+    [Tickets],
+    [KnowledgeBase],
+    [Wikis],
+    [Notes],
+    [ProductVersions],
+    [WaterCooler],
+    [Tasks]
+  FROM [dbo].[SearchStandardFilters]
+  WHERE ([StandardFilterID] = @StandardFilterID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReminder
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertSearchStandardFilter' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertSearchStandardFilter
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertReminder
+CREATE PROCEDURE dbo.uspGeneratedInsertSearchStandardFilter
 
 (
-  @OrganizationID int,
-  @RefType int,
-  @RefID int,
-  @Description nvarchar(4000),
-  @DueDate datetime,
   @UserID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @CreatorID int,
-  @DateCreated datetime,
+  @Tickets bit,
+  @KnowledgeBase bit,
+  @Wikis bit,
+  @Notes bit,
+  @ProductVersions bit,
+  @WaterCooler bit,
+  @Tasks bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Reminders]
+  INSERT INTO [dbo].[SearchStandardFilters]
   (
-    [OrganizationID],
-    [RefType],
-    [RefID],
-    [Description],
-    [DueDate],
     [UserID],
-    [IsDismissed],
-    [HasEmailSent],
-    [CreatorID],
-    [DateCreated])
+    [Tickets],
+    [KnowledgeBase],
+    [Wikis],
+    [Notes],
+    [ProductVersions],
+    [WaterCooler],
+    [Tasks])
   VALUES (
-    @OrganizationID,
-    @RefType,
-    @RefID,
-    @Description,
-    @DueDate,
     @UserID,
-    @IsDismissed,
-    @HasEmailSent,
-    @CreatorID,
-    @DateCreated)
+    @Tickets,
+    @KnowledgeBase,
+    @Wikis,
+    @Notes,
+    @ProductVersions,
+    @WaterCooler,
+    @Tasks)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReminder
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateSearchStandardFilter' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateSearchStandardFilter
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateReminder
+CREATE PROCEDURE dbo.uspGeneratedUpdateSearchStandardFilter
 
 (
-  @ReminderID int,
-  @OrganizationID int,
-  @RefType int,
-  @RefID int,
-  @Description nvarchar(4000),
-  @DueDate datetime,
+  @StandardFilterID int,
   @UserID int,
-  @IsDismissed bit,
-  @HasEmailSent bit
+  @Tickets bit,
+  @KnowledgeBase bit,
+  @Wikis bit,
+  @Notes bit,
+  @ProductVersions bit,
+  @WaterCooler bit,
+  @Tasks bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Reminders]
+  UPDATE [dbo].[SearchStandardFilters]
   SET
-    [OrganizationID] = @OrganizationID,
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
     [UserID] = @UserID,
-    [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent
-  WHERE ([ReminderID] = @ReminderID)
+    [Tickets] = @Tickets,
+    [KnowledgeBase] = @KnowledgeBase,
+    [Wikis] = @Wikis,
+    [Notes] = @Notes,
+    [ProductVersions] = @ProductVersions,
+    [WaterCooler] = @WaterCooler,
+    [Tasks] = @Tasks
+  WHERE ([StandardFilterID] = @StandardFilterID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReminder
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteSearchStandardFilter' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteSearchStandardFilter
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteReminder
+CREATE PROCEDURE dbo.uspGeneratedDeleteSearchStandardFilter
 
 (
-  @ReminderID int
+  @StandardFilterID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Reminders]
-  WHERE ([ReminderID] = @ReminderID)
+  DELETE FROM [dbo].[SearchStandardFilters]
+  WHERE ([StandardFilterID] = @StandardFilterID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReminder
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSearchStandardFilter' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSearchStandardFilter
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectReminder
+CREATE PROCEDURE dbo.uspGeneratedSelectSearchStandardFilter
 
 (
-  @ReminderID int
+  @StandardFilterID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ReminderID],
-    [OrganizationID],
-    [RefType],
-    [RefID],
-    [Description],
-    [DueDate],
+    [StandardFilterID],
     [UserID],
-    [IsDismissed],
-    [HasEmailSent],
-    [CreatorID],
-    [DateCreated]
-  FROM [dbo].[Reminders]
-  WHERE ([ReminderID] = @ReminderID)
+    [Tickets],
+    [KnowledgeBase],
+    [Wikis],
+    [Notes],
+    [ProductVersions],
+    [WaterCooler],
+    [Tasks]
+  FROM [dbo].[SearchStandardFilters]
+  WHERE ([StandardFilterID] = @StandardFilterID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReminder
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertSearchStandardFilter' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertSearchStandardFilter
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertReminder
+CREATE PROCEDURE dbo.uspGeneratedInsertSearchStandardFilter
 
 (
-  @OrganizationID int,
-  @RefType int,
-  @RefID int,
-  @Description nvarchar(4000),
-  @DueDate datetime,
   @UserID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @CreatorID int,
-  @DateCreated datetime,
+  @Tickets bit,
+  @KnowledgeBase bit,
+  @Wikis bit,
+  @Notes bit,
+  @ProductVersions bit,
+  @WaterCooler bit,
+  @Tasks bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Reminders]
+  INSERT INTO [dbo].[SearchStandardFilters]
   (
-    [OrganizationID],
-    [RefType],
-    [RefID],
-    [Description],
-    [DueDate],
     [UserID],
-    [IsDismissed],
-    [HasEmailSent],
-    [CreatorID],
-    [DateCreated])
+    [Tickets],
+    [KnowledgeBase],
+    [Wikis],
+    [Notes],
+    [ProductVersions],
+    [WaterCooler],
+    [Tasks])
   VALUES (
-    @OrganizationID,
-    @RefType,
-    @RefID,
-    @Description,
-    @DueDate,
     @UserID,
-    @IsDismissed,
-    @HasEmailSent,
-    @CreatorID,
-    @DateCreated)
+    @Tickets,
+    @KnowledgeBase,
+    @Wikis,
+    @Notes,
+    @ProductVersions,
+    @WaterCooler,
+    @Tasks)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReminder
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateSearchStandardFilter' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateSearchStandardFilter
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateReminder
+CREATE PROCEDURE dbo.uspGeneratedUpdateSearchStandardFilter
 
 (
-  @ReminderID int,
-  @OrganizationID int,
-  @RefType int,
-  @RefID int,
-  @Description nvarchar(4000),
-  @DueDate datetime,
+  @StandardFilterID int,
   @UserID int,
-  @IsDismissed bit,
-  @HasEmailSent bit
+  @Tickets bit,
+  @KnowledgeBase bit,
+  @Wikis bit,
+  @Notes bit,
+  @ProductVersions bit,
+  @WaterCooler bit,
+  @Tasks bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Reminders]
+  UPDATE [dbo].[SearchStandardFilters]
   SET
-    [OrganizationID] = @OrganizationID,
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
     [UserID] = @UserID,
-    [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent
-  WHERE ([ReminderID] = @ReminderID)
+    [Tickets] = @Tickets,
+    [KnowledgeBase] = @KnowledgeBase,
+    [Wikis] = @Wikis,
+    [Notes] = @Notes,
+    [ProductVersions] = @ProductVersions,
+    [WaterCooler] = @WaterCooler,
+    [Tasks] = @Tasks
+  WHERE ([StandardFilterID] = @StandardFilterID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReminder
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteSearchStandardFilter' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteSearchStandardFilter
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteReminder
+CREATE PROCEDURE dbo.uspGeneratedDeleteSearchStandardFilter
 
 (
-  @ReminderID int
+  @StandardFilterID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Reminders]
-  WHERE ([ReminderID] = @ReminderID)
+  DELETE FROM [dbo].[SearchStandardFilters]
+  WHERE ([StandardFilterID] = @StandardFilterID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReminder
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSearchStandardFilter' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSearchStandardFilter
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectReminder
+CREATE PROCEDURE dbo.uspGeneratedSelectSearchStandardFilter
 
 (
-  @ReminderID int
+  @StandardFilterID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ReminderID],
-    [OrganizationID],
-    [RefType],
-    [RefID],
-    [Description],
-    [DueDate],
+    [StandardFilterID],
     [UserID],
-    [IsDismissed],
-    [HasEmailSent],
-    [CreatorID],
-    [DateCreated]
-  FROM [dbo].[Reminders]
-  WHERE ([ReminderID] = @ReminderID)
+    [Tickets],
+    [KnowledgeBase],
+    [Wikis],
+    [Notes],
+    [ProductVersions],
+    [WaterCooler],
+    [Tasks]
+  FROM [dbo].[SearchStandardFilters]
+  WHERE ([StandardFilterID] = @StandardFilterID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReminder
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertSearchStandardFilter' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertSearchStandardFilter
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertReminder
+CREATE PROCEDURE dbo.uspGeneratedInsertSearchStandardFilter
 
 (
-  @OrganizationID int,
-  @RefType int,
-  @RefID int,
-  @Description nvarchar(4000),
-  @DueDate datetime,
   @UserID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @CreatorID int,
-  @DateCreated datetime,
+  @Tickets bit,
+  @KnowledgeBase bit,
+  @Wikis bit,
+  @Notes bit,
+  @ProductVersions bit,
+  @WaterCooler bit,
+  @Tasks bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Reminders]
+  INSERT INTO [dbo].[SearchStandardFilters]
   (
-    [OrganizationID],
-    [RefType],
-    [RefID],
-    [Description],
-    [DueDate],
     [UserID],
-    [IsDismissed],
-    [HasEmailSent],
-    [CreatorID],
-    [DateCreated])
+    [Tickets],
+    [KnowledgeBase],
+    [Wikis],
+    [Notes],
+    [ProductVersions],
+    [WaterCooler],
+    [Tasks])
   VALUES (
-    @OrganizationID,
-    @RefType,
-    @RefID,
-    @Description,
-    @DueDate,
     @UserID,
-    @IsDismissed,
-    @HasEmailSent,
-    @CreatorID,
-    @DateCreated)
+    @Tickets,
+    @KnowledgeBase,
+    @Wikis,
+    @Notes,
+    @ProductVersions,
+    @WaterCooler,
+    @Tasks)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReminder
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateSearchStandardFilter' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateSearchStandardFilter
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateReminder
+CREATE PROCEDURE dbo.uspGeneratedUpdateSearchStandardFilter
 
 (
-  @ReminderID int,
-  @OrganizationID int,
-  @RefType int,
-  @RefID int,
-  @Description nvarchar(4000),
-  @DueDate datetime,
+  @StandardFilterID int,
   @UserID int,
-  @IsDismissed bit,
-  @HasEmailSent bit
+  @Tickets bit,
+  @KnowledgeBase bit,
+  @Wikis bit,
+  @Notes bit,
+  @ProductVersions bit,
+  @WaterCooler bit,
+  @Tasks bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Reminders]
+  UPDATE [dbo].[SearchStandardFilters]
   SET
-    [OrganizationID] = @OrganizationID,
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
     [UserID] = @UserID,
-    [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent
-  WHERE ([ReminderID] = @ReminderID)
+    [Tickets] = @Tickets,
+    [KnowledgeBase] = @KnowledgeBase,
+    [Wikis] = @Wikis,
+    [Notes] = @Notes,
+    [ProductVersions] = @ProductVersions,
+    [WaterCooler] = @WaterCooler,
+    [Tasks] = @Tasks
+  WHERE ([StandardFilterID] = @StandardFilterID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReminder
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteSearchStandardFilter' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteSearchStandardFilter
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteReminder
+CREATE PROCEDURE dbo.uspGeneratedDeleteSearchStandardFilter
 
 (
-  @ReminderID int
+  @StandardFilterID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Reminders]
-  WHERE ([ReminderID] = @ReminderID)
+  DELETE FROM [dbo].[SearchStandardFilters]
+  WHERE ([StandardFilterID] = @StandardFilterID)
 GO
 
 

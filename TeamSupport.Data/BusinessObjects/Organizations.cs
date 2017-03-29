@@ -2110,9 +2110,10 @@ AND (
   OR EXISTS (SELECT * FROM ContactsView cv WHERE cv.OrganizationParentID = o.OrganizationID AND cv.NeedsIndexing=1)
   OR EXISTS (SELECT * FROM Assets a WHERE a.OrganizationID = o.OrganizationID AND a.NeedsIndexing=1)
   OR EXISTS (SELECT * FROM Products p WHERE p.OrganizationID = o.OrganizationID AND p.NeedsIndexing=1)
+  OR EXISTS (SELECT * FROM Tasks t WHERE t.OrganizationID = o.OrganizationID AND t.NeedsIndexing=1)
   OR EXISTS (
     SELECT * FROM DeletedIndexItems dii 
-    WHERE dii.RefType IN (9, 13, 14, 17, 32, 38, 39, 40, 34)
+    WHERE dii.RefType IN (9, 13, 14, 17, 32, 38, 39, 40, 34, 61)
     AND dii.OrganizationID = o.OrganizationID
   )
 )

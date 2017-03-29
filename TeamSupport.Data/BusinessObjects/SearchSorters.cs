@@ -30,6 +30,7 @@ namespace TeamSupport.Data
                                              ref string selectWikisFields,
                                              ref string selectNotesFields,
                                              ref string selectProductVersionsFields,
+                                             ref string selectTasksFields,
                                              ref string selectWaterCoolerFields)
         {
             StringBuilder resultBuilder = new StringBuilder();
@@ -42,6 +43,7 @@ namespace TeamSupport.Data
                 StringBuilder selectWikisFieldsBuilder = new StringBuilder();
                 StringBuilder selectNotesFieldsBuilder = new StringBuilder();
                 StringBuilder selectProductVersionsFieldsBuilder = new StringBuilder();
+                StringBuilder selectTasksFieldsBuilder = new StringBuilder();
                 StringBuilder selectWaterCoolerFieldsBuilder = new StringBuilder();
 
                 WikiArticlesView wikiArticleViewFields = new WikiArticlesView(base.LoginUser);
@@ -110,6 +112,19 @@ namespace TeamSupport.Data
                             selectProductVersionsFieldsBuilder.Append(", pvv." + productVersionsEquivalentFieldName + " AS " + fieldName);
                         }
 
+                        string tasksEquivalentFieldName = DataUtils.GetTasksEquivalentFieldName(fieldName);
+
+                        TasksView tasksView = new TasksView(base.LoginUser);
+                        TasksViewItem tasksViewItem = tasksView.AddNewTasksViewItem();
+                        if (!DataUtils.GetIsColumnInBaseCollection(tasksViewItem.Collection, tasksEquivalentFieldName))
+                        {
+                            selectTasksFieldsBuilder.Append(", NULL AS " + fieldName);
+                        }
+                        else
+                        {
+                            selectTasksFieldsBuilder.Append(", tsk." + tasksEquivalentFieldName + " AS " + fieldName);
+                        }
+
                         string waterCoolerEquivalentFieldName = DataUtils.GetWaterCoolerEquivalentFieldName(fieldName);
 
                         WaterCoolerView waterCoolerView = new WaterCoolerView(base.LoginUser);
@@ -131,6 +146,7 @@ namespace TeamSupport.Data
                 selectWikisFields = selectWikisFieldsBuilder.ToString();
                 selectNotesFields = selectNotesFieldsBuilder.ToString();
                 selectProductVersionsFields = selectProductVersionsFieldsBuilder.ToString();
+                selectTasksFields = selectTasksFieldsBuilder.ToString();
                 selectWaterCoolerFields = selectWaterCoolerFieldsBuilder.ToString();
             }
             else

@@ -29,6 +29,8 @@ namespace TeamSupport.Data
         public bool ProductVersions { get; set; }
         [DataMember]
         public bool WaterCooler { get; set; }
+        [DataMember]
+        public bool Tasks { get; set; }
 
     }
 
@@ -37,6 +39,7 @@ namespace TeamSupport.Data
         public SearchStandardFilterProxy GetProxy()
         {
             SearchStandardFilterProxy result = new SearchStandardFilterProxy();
+            result.Tasks = this.Tasks;
             result.WaterCooler = this.WaterCooler;
             result.ProductVersions = this.ProductVersions;
             result.Notes = this.Notes;

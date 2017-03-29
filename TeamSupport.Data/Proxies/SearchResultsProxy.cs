@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 
@@ -58,6 +59,16 @@ namespace TeamSupport.Data
         public int? AttachmentID { get; set; }
         [DataMember]
         public int MessageParent { get; set; }
+        [DataMember]
+        public bool IsComplete { get; set; }
+        [DataMember]
+        public DateTime? DateCompleted { get; set; }
+        [DataMember]
+        public string UserName { get; set; }
+        [DataMember]
+        public DateTime? DueDate { get; set; }
+        [DataMember]
+        public bool IsPastDue { get; set; }
 
     }
 
