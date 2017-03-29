@@ -27,6 +27,13 @@ namespace TSWebServices
         public ChatService()
         {
             options.Encrypted = true;
+            /* not yet. soon, once the keys are added to the db.
+            string pusherKey = SystemSettings.GetPusherKey();
+            string pusherAppId = SystemSettings.GetPusherAppId();
+            string pusherSecret = SystemSettings.GetPusherSecret();
+
+            pusher = new Pusher(pusherAppId, pusherKey, pusherSecret, options);
+            */
             pusher = new Pusher("223753", "0cc6bf2df4f20b16ba4d", "119f91ed19272f096383", options);
             loginUser = TSAuthentication.GetLoginUser();
         }
@@ -441,9 +448,9 @@ namespace TSWebServices
             string attachmentHTML = "";
 
             if (attachment.FileType.StartsWith("image/"))
-                attachmentHTML = string.Format("<img src='../../../dc/{0}/chatattachments/{1}/{2}' class='img-responsive' alt='{3}'>", TSAuthentication.OrganizationID, chatID, attachmentID, attachment.FileName);
+                attachmentHTML = string.Format("<img src='" + SystemSettings.GetAppUrl() + "/dc/{0}/chatattachments/{1}/{2}' class='img-responsive' alt='{3}'>", TSAuthentication.OrganizationID, chatID, attachmentID, attachment.FileName);
             else 
-                attachmentHTML = string.Format("<a target='_blank' href='../../../dc/{0}/chatattachments/{1}/{2}'>{3}</a>", TSAuthentication.OrganizationID, chatID, attachmentID, attachment.FileName);
+                attachmentHTML = string.Format("<a target='_blank' href='" + SystemSettings.GetAppUrl() + "/dc/{0}/chatattachments/{1}/{2}'>{3}</a>", TSAuthentication.OrganizationID, chatID, attachmentID, attachment.FileName);
 
             ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();
             chatMessage.Message = attachmentHTML;
