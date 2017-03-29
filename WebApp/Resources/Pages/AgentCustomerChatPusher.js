@@ -203,7 +203,7 @@ function subscribeToNewChatRequest(pusherKey, newRequestCallback) {
 
     request_channel.bind('new-chat-request', function (data) {
         try {
-            console.log('chat-request-request: ' + data.ChatRequestID.toString());
+            console.log('chat-request-request: chatId:' + data.chatRequest.ChatID.toString() + ' chatRequestId:' + data.chatRequest.ChatRequestID.toString());
             newRequestCallback(data);
         } catch (error) {
             console.log(error.message);
