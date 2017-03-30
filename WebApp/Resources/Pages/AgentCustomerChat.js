@@ -237,11 +237,11 @@ $(document).ready(function () {
                         NewChatMessageAlert();
                     }
                 } else if (messageData.CreatorType == 1) {
-                    CustomerMessageSound();
+                    CustomerMessageSound(false);
                 }
             }
         }
-        else if (messageData.info.chatId == _activeChatID && isAgentAcceptedInvitation) {
+        else if (isAgentAcceptedInvitation && messageData != null && messageData.info != null && messageData.info.chatId != null && messageData.info.chatId == _activeChatID) {
             var messageTemplate = $("#message-template").html();
             var dateTimeString = new Date().toLocaleString();
             dateTimeString = dateTimeString.replace(",", "");
@@ -258,6 +258,10 @@ $(document).ready(function () {
             if (scrollView) ScrollMessages(true);
         } else {
             $('#active-chat_' + messageData.ChatID).addClass('list-group-item-info');
+
+            if ($('#active-chat_' + messageData.ChatID).length > 0) {
+                CustomerMessageSound(true);
+            }
         }
     }
 
@@ -723,11 +727,11 @@ function NewChatMessageAlert() {
     }
 }
 
-function CustomerMessageSound() {
+function CustomerMessageSound(forceIt) {
     var menuID = parent.Ts.MainPage.MainMenu.getSelected().getId().toLowerCase();
     var isMain = parent.Ts.MainPage.MainTabs.find(0, parent.Ts.Ui.Tabs.Tab.Type.Main).getIsSelected();
 
-    if (menuID !== 'mnichat' || (menuID === 'mnichat' && !isMain)) {
+    if (forceIt || menuID !== 'mnichat' || (menuID === 'mnichat' && !isMain)) {
         $("#jquery_jplayer_1").jPlayer({
             ready: function () {
                 $(this).jPlayer("setMedia", {
