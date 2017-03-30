@@ -132,6 +132,20 @@ namespace TeamSupport.Data
 
         }
 
+        public static ChatMessageProxy AbandonedChatRequest(LoginUser loginUser, Chat chat, int id, ChatParticipantType type, int chatID)
+        {
+            ChatParticipant self = ChatParticipants.GetChatParticipant(loginUser, id, type, chatID);
+            if (self == null || self.DateLeft != null) return null;
+
+            self.DateLeft = DateTime.UtcNow;
+            self.Collection.Save();
+
+            ChatMessageProxy message = AddNotification(loginUser, chatID, id, type, string.Format("{0} {1} has abandoned the chat request.", self.FirstName, self.LastName));
+
+            return message;
+
+        }
+
         public static ChatMessageProxy AddNotification(LoginUser loginUser, int chatID, int id, ChatParticipantType type, string message)
         {
             ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();

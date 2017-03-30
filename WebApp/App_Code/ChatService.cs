@@ -27,7 +27,12 @@ namespace TSWebServices
         public ChatService()
         {
             options.Encrypted = true;
-            pusher = new Pusher("223753", "0cc6bf2df4f20b16ba4d", "119f91ed19272f096383", options);
+            string pusherKey = SystemSettings.GetPusherKey();
+            string pusherAppId = SystemSettings.GetPusherAppId();
+            string pusherSecret = SystemSettings.GetPusherSecret();
+
+            pusher = new Pusher(pusherAppId, pusherKey, pusherSecret, options);
+
             loginUser = TSAuthentication.GetLoginUser();
         }
 
@@ -71,9 +76,11 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string GetPusherKey()
         {
-            return SystemSettings.GetPusherKey();
+            string pusherKey = SystemSettings.GetPusherKey();
+            return JsonConvert.SerializeObject(pusherKey);
         }
 
         [WebMethod]
@@ -248,9 +255,9 @@ namespace TSWebServices
             string attachmentHTML = "";
 
             if (attachment.FileType.StartsWith("image/"))
-                attachmentHTML = string.Format("<img src='../../../dc/{0}/chatattachments/{1}/{2}' class='img-responsive' alt='{3}'>", attachment.OrganizationID, chatID, attachmentID, attachment.FileName);
+                attachmentHTML = string.Format("<img src='" + SystemSettings.GetAppUrl() + "/dc/{0}/chatattachments/{1}/{2}' class='img-responsive' alt='{3}'>", attachment.OrganizationID, chatID, attachmentID, attachment.FileName);
             else
-                attachmentHTML = string.Format("<a target='_blank' href='../../../dc/{0}/chatattachments/{1}/{2}'>{3}</a>", attachment.OrganizationID, chatID, attachmentID, attachment.FileName);
+                attachmentHTML = string.Format("<a target='_blank' href='" + SystemSettings.GetAppUrl() + "/dc/{0}/chatattachments/{1}/{2}'>{3}</a>", attachment.OrganizationID, chatID, attachmentID, attachment.FileName);
 
             ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();
             chatMessage.Message = attachmentHTML;
@@ -258,7 +265,6 @@ namespace TSWebServices
             chatMessage.PosterID = userID;
             chatMessage.PosterType = ChatParticipantType.External;
             chatMessage.Collection.Save();
-            //Users.UpdateUserActivityTime(loginUser, userID);
 
             ChatViewMessage newMessage = new ChatViewMessage(chatMessage.GetProxy(), GetLinkedUserInfo(userID, ChatParticipantType.External));
 
@@ -283,7 +289,6 @@ namespace TSWebServices
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string DisconnectUser(string channelName, int chatID, int userID)
         {
-            //Chat chat = GetChat(chatID);
             ParticipantInfoView participant = GetParticipant(userID, chatID);
 
             ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();
@@ -298,6 +303,28 @@ namespace TSWebServices
 
             var result = pusher.Trigger(channelName, "new-comment", newMessage);
             return JsonConvert.SerializeObject(true);
+        }
+
+        [WebMethod]
+        public bool CustomerAbandonedChatRequest(int chatID, int userID)
+        {
+            Chats chat = new Chats(LoginUser.Anonymous);
+            chat.LoadByChatID(chatID);
+
+            if (!chat.IsEmpty)
+            {
+                Guid organizationChatGuid = Organizations.GetOrganization(LoginUser.Anonymous, chat[0].OrganizationID).ChatID;
+                ChatRequests requests = new ChatRequests(LoginUser.Anonymous);
+                requests.LoadByChatID(chatID, ChatRequestType.External);
+
+                if (!requests.IsEmpty)
+                {
+                    var result = pusher.Trigger("chat-requests-" + organizationChatGuid.ToString(), "chat-request-abandoned", requests[0].ChatRequestID);
+                    ChatMessageProxy message = Chats.AbandonedChatRequest(LoginUser.Anonymous, chat[0], userID, ChatParticipantType.External, chatID);
+                }
+            }
+
+            return true;
         }
 
         #endregion
@@ -442,9 +469,9 @@ namespace TSWebServices
             string attachmentHTML = "";
 
             if (attachment.FileType.StartsWith("image/"))
-                attachmentHTML = string.Format("<img src='../../../dc/{0}/chatattachments/{1}/{2}' class='img-responsive' alt='{3}'>", TSAuthentication.OrganizationID, chatID, attachmentID, attachment.FileName);
+                attachmentHTML = string.Format("<img src='" + SystemSettings.GetAppUrl() + "/dc/{0}/chatattachments/{1}/{2}' class='img-responsive' alt='{3}'>", TSAuthentication.OrganizationID, chatID, attachmentID, attachment.FileName);
             else 
-                attachmentHTML = string.Format("<a target='_blank' href='../../../dc/{0}/chatattachments/{1}/{2}'>{3}</a>", TSAuthentication.OrganizationID, chatID, attachmentID, attachment.FileName);
+                attachmentHTML = string.Format("<a target='_blank' href='" + SystemSettings.GetAppUrl() + "/dc/{0}/chatattachments/{1}/{2}'>{3}</a>", TSAuthentication.OrganizationID, chatID, attachmentID, attachment.FileName);
 
             ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();
             chatMessage.Message = attachmentHTML;
@@ -543,7 +570,7 @@ namespace TSWebServices
             if (message != null)
             {
                 User user = loginUser.GetUser();
-                ChatViewMessage newMessage = new ChatViewMessage(message, new ParticipantInfoView(user.UserID, user.FirstName, user.LastName, user.Email, loginUser.GetOrganization().Name));
+                ChatViewMessage newMessage = new ChatViewMessage(message, new ParticipantInfoView(user.UserID, user.FirstName, user.LastName, user.Email, loginUser.GetOrganization().Name), hasLeft: true);
                 var result = pusher.Trigger(channelName, "new-comment", newMessage);
             }
 
@@ -558,7 +585,7 @@ namespace TSWebServices
 
             if (message != null)
             {
-                ChatViewMessage newMessage = new ChatViewMessage(message, GetLinkedUserInfo(userID, ChatParticipantType.External));
+                ChatViewMessage newMessage = new ChatViewMessage(message, GetLinkedUserInfo(userID, ChatParticipantType.External), hasLeft: true);
                 var result = pusher.Trigger(channelName, "new-comment", newMessage);
             }
 
@@ -950,6 +977,7 @@ namespace TSWebServices
             public string InitiatorMessage { get; set; }
             public string InitiatorDisplayName { get; set; }
             public string InitiatorEmail { get; set; }
+            public string InitiatorInitials { get; set; }
             public string Description { get; set; }
             public List<ChatViewMessage> Messages { get; set; }
 
@@ -970,6 +998,7 @@ namespace TSWebServices
                 :   string.Format("{0} {1}, {2} ({3})", initiator.FirstName, initiator.LastName, initiator.CompanyName, initiator.Email);
 
                 InitiatorDisplayName = string.Format("{0} {1}", initiator.FirstName, initiator.LastName);
+                InitiatorInitials = string.Format("{0}{1}", (!string.IsNullOrEmpty(initiator.FirstName)) ? initiator.FirstName.Substring(0, 1).ToUpper() : "", (!string.IsNullOrEmpty(initiator.LastName)) ? initiator.LastName.Substring(0, 1).ToUpper() : "");
                 InitiatorEmail = initiator.Email;
                 Description = request.Message;
                 CompanyName = initiator.CompanyName;
@@ -995,12 +1024,13 @@ namespace TSWebServices
             public DateTime DateCreated { get; set; }
             public string Message { get; set; }
             public bool IsNotification { get; set; }
+            public bool HasLeft { get; set; }
 
             public ChatViewMessage()
             {
 
             }
-            public ChatViewMessage(ChatMessageProxy message, ParticipantInfoView userInfo)
+            public ChatViewMessage(ChatMessageProxy message, ParticipantInfoView userInfo, bool hasLeft = false)
             {
                 MessageID = message.ChatMessageID;
                 DateCreated = message.DateCreated;
@@ -1011,6 +1041,7 @@ namespace TSWebServices
                 Message = message.Message;
                 IsNotification = message.IsNotification;
                 ChatID = message.ChatID;
+                HasLeft = hasLeft;
             }
         }
 

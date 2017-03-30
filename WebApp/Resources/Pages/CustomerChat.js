@@ -26,45 +26,53 @@ $(document).ready(function () {
     var isIE = /*@cc_on!@*/false || !!document.documentMode;
     var isEdge = !isIE && !!window.StyleMedia;
 
-    setupChat(chatID, participantID, function (channelObject) {
-        channel = channelObject;
+    IssueAjaxRequest("GetPusherKey", null,
+        function (result) {
+            var pusherKey = result;
+            setupChat(chatID, participantID, pusherKey, function (channelObject) {
+                channel = channelObject;
 
-        _timer = setTimeout(function () {
-            var data = { chatID: chatID }
+                _timer = setTimeout(function () {
+                    var data = { chatID: chatID }
 
-            if (!_agentHasJoined) {
-                IssueAjaxRequest("MissedChat", data,
-                    function (result) {
-                        window.location.replace('ChatThankYou.html');
-                    },
-                    function (error) {
-                        console.log(error)
-                    });
-            }
-        }, 180000);
+                    if (!_agentHasJoined) {
+                        IssueAjaxRequest("MissedChat", data,
+                            function (result) {
+                                window.location.replace('ChatThankYou.html');
+                            },
+                            function (error) {
+                                console.log(error)
+                            });
+                    }
+                }, 180000);
 
-        channel.bind('agent-joined', function (data) {
-            _agentHasJoined = true;
-            $('#operator-message').remove();
-            clearTimeout(_timer);
+                channel.bind('agent-joined', function (data) {
+                    _agentHasJoined = true;
+                    $('#operator-message').remove();
+                    clearTimeout(_timer);
 
-            var isCustomerTOKEnabled = true;
+                    var isCustomerTOKEnabled = true;
 
-            if (isSafari || isEdge) {
-                isCustomerTOKEnabled = false;
-            }
+                    if (isSafari || isEdge) {
+                        isCustomerTOKEnabled = false;
+                    }
 
-            DisplayTOKButtons(data.isAgentTOKEnabled && isCustomerTOKEnabled);
-            GetChatSettings(chatID);
+                    DisplayTOKButtons(data.isAgentTOKEnabled && isCustomerTOKEnabled);
+                    GetChatSettings(chatID);
 
-            if (data.isAgentTOKEnabled && !isCustomerTOKEnabled) {
-                _toktimer = setTimeout(function () {
-                    var triggered = pressenceChannel.trigger('client-tok-enabled', { isCustomerTOKEnabled: isCustomerTOKEnabled });
-                    clearTimeout(_toktimer);
-                }, 1000);
-            }
-        });
-    });
+                    if (data.isAgentTOKEnabled && !isCustomerTOKEnabled) {
+                        _toktimer = setTimeout(function () {
+                            var triggered = pressenceChannel.trigger('client-tok-enabled', { isCustomerTOKEnabled: isCustomerTOKEnabled });
+                            clearTimeout(_toktimer);
+                        }, 1000);
+                    }
+                });
+            });
+        },
+        function (error) {
+            console.log(error)
+        }
+    );
 
     //The order of the following 3 statements matter, do not change.
     SetupTOK();
@@ -106,6 +114,18 @@ $(document).ready(function () {
         loop: false,
         swfPath: ""
     });
+
+    window.onbeforeunload = function (event) {
+        if (!_agentHasJoined) {
+            var chatData = { chatID: chatID, userID: participantID };
+            IssueAjaxRequest("CustomerAbandonedChatRequest", chatData,
+                function (result) {
+                },
+                function (error) {
+                    console.log(error);
+                });
+        }
+    };
 });
 
 function GetChatSettings(chatID) {
@@ -128,9 +148,11 @@ function GetChatSettings(chatID) {
     });
 }
 
-function createMessage(message)
+function createMessage(message, agent)
 {
-    $('.chat-intro').append('<p>'+ message +'</p>');
+    if (!$("#agent" + agent).length) {
+        $('.chat-intro').append('<p id="agent' + agent + '">' + message + '</p>');
+    }
 }
 
 function createMessageElement(messageData, direction) {
@@ -158,9 +180,9 @@ function createMessageElement(messageData, direction) {
 }
 
 var pressenceChannel;
-function setupChat(chatID, participantID, callback) {
+function setupChat(chatID, participantID, pusherKey, callback) {
     var channelName = 'presence-' + chatID;
-    var pusher = new Pusher('0cc6bf2df4f20b16ba4d', {
+    var pusher = new Pusher(pusherKey, {
         authEndpoint: service + 'Auth',
         auth: {
             params: {
@@ -177,7 +199,7 @@ function setupChat(chatID, participantID, callback) {
 
     pressenceChannel.bind('pusher:member_added', function (member) {
         $('#operator-message').remove();
-        createMessage(member.info.name + ' joined the chat.')
+        createMessage(member.info.name + ' joined the chat.', member.id);
     });
 
     //pressenceChannel.bind('pusher:subscription_error', function (status) {
@@ -330,6 +352,8 @@ function loadInitialMessages(chatID, participantID) {
     function (result) {
         chatInfoObject = result;
         SetupChatUploads(chatID, participantID);
+        var messageData = { CreatorID: chatInfoObject.InitiatorUserID, CreatorInitials: chatInfoObject.InitiatorInitials, CreatorDisplayName: chatInfoObject.InitiatorDisplayName, Message: chatInfoObject.Description, DateCreated: chatInfoObject.DateCreated };
+        createMessageElement(messageData, 'right');
     },
     function (error) {
 
@@ -341,7 +365,7 @@ function IssueAjaxRequest(method, data, successCallback, errorCallback) {
     $.ajax({
         type: "POST",
         url: service + method,
-        data: JSON.stringify(data),
+        data: (data != null ? JSON.stringify(data) : null),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         cache: false,

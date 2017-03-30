@@ -159,9 +159,20 @@ IF EXISTS(SELECT * FROM SystemSettings WHERE (SettingKey=@SettingKey))
             return ReadString("MobileURL", "https://m.teamsupport.com/");
         }
 
+        //Pusher credentials below. If not entered to the SystemSettings table yet then we'll use the original pusher account used in the beginning, named: choice-rock-331-development
         public static string GetPusherKey()
         {
-            return ReadString("PusherKey", "1");
+            return ReadString("PusherKey", "0cc6bf2df4f20b16ba4d");
+        }
+
+        public static string GetPusherAppId()
+        {
+            return ReadString("PusherAppId", "223753");
+        }
+
+        public static string GetPusherSecret()
+        {
+            return ReadString("PusherSecret", "119f91ed19272f096383");
         }
     }
 }

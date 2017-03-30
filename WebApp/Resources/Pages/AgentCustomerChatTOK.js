@@ -403,8 +403,3 @@ function unmuteTOKStream() {
     $('#muteStream').show();
     $('#unmuteStream').hide();
 };
-
-function installChromePlugin() {
-    chrome.webstore.install("https://chrome.google.com/webstore/detail/laehkaldepkacogpkokmimggbepafabg",
-    function () { }, function (e) { console.log(e) });
-}

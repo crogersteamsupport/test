@@ -92,7 +92,7 @@
                                         <span>Go to Audio (Public Beta)</span>
                                     </button>
                                 </div>
-                                <div id="chat-tok-video" class="btn-group" role="group">
+                                <div id="chat-tok-video" class="btn-group" role="group" title="">
                                     <button type="button" class="btn btn-primary" title="Public Beta">
                                         <span class="fa fa-video-camera"></span>
                                         <span>Go to Video (Public Beta)</span>
@@ -118,7 +118,7 @@
                 </div>
             </div>
         </div>
-        <div id="x"></div>
+        <div id="x" style="font-size: 0;"></div>
         <div id="jquery_jplayer_1" class="jp-jplayer"></div>
     </div>
     <div id="chat-add-user-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="userModalTitle" aria-hidden="true">
@@ -132,7 +132,6 @@
                     <div class="form-group">
                         <label for="chat-invite-user">Who do you want to invite?</label>
                         <input class="col-md-10 form-control chat-user-list" id="chat-invite-user" placeholder="Enter partial name then select name from list">
-                        <!--<select id="ticket-user-who" class="form-control"></select>-->
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -260,7 +259,7 @@
 
     <!-- Templates -->
     <script id="message-template" type="text/x-custom-template">
-        <li class="media">
+        <li class="media" {{HasLeftChat}}>
             <div class="media-body">
                 <div class="media">
                     <img class="pull-{{MessageDirection}} media-object img-circle user-avatar" src="{{Avatar}}">
