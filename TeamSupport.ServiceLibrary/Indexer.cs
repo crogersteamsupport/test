@@ -188,6 +188,7 @@ namespace TeamSupport.ServiceLibrary
                 ProcessIndex(org, ReferenceType.Contacts, isRebuilder);
                 ProcessIndex(org, ReferenceType.Assets, isRebuilder);
                 ProcessIndex(org, ReferenceType.Products, isRebuilder);
+                ProcessIndex(org, ReferenceType.Tasks, isRebuilder);
                 LogVerbose("Finished Processing");
 
                 if (isRebuilder && !IsStopped)
@@ -286,6 +287,14 @@ namespace TeamSupport.ServiceLibrary
                     tableName = "Products";
                     primaryKeyName = "ProductID";
                     indexDataSource = new ProductIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, tableName, isRebuilder, Logs);
+                    break;
+                case ReferenceType.Tasks:
+                    indexPath = "\\Tasks";
+                    deletedIndexItemsFileName = "DeletedTasks.txt";
+                    storedFields = "Name JSON";
+                    tableName = "Tasks";
+                    primaryKeyName = "TaskID";
+                    indexDataSource = new TaskIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, tableName, isRebuilder, Logs);
                     break;
                 default:
                     throw new System.ArgumentException("ReferenceType " + referenceType.ToString() + " is not supported by indexer.");
@@ -531,7 +540,7 @@ namespace TeamSupport.ServiceLibrary
         }
     }
 
-    
+
 
 
 }
