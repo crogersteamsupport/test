@@ -231,11 +231,9 @@ $(document).ready(function () {
                 if (scrollView) ScrollMessages(true);
 
                 //If message is coming from the customer and we are in screenshare
-                if (messageData.CreatorType == 1 && (!_isChatWindowActive || _isChatWindowPotentiallyHidden)) {
-                    if (screenSharingPublisher !== undefined) {
-                        BlinkWindowTitle();
-                        NewChatMessageAlert();
-                    }
+                if (screenSharingPublisher !== undefined && messageData.CreatorType == 1 && (!_isChatWindowActive || _isChatWindowPotentiallyHidden)) {
+                    BlinkWindowTitle();
+                    NewChatMessageAlert();
                 } else if (messageData.CreatorType == 1) {
                     CustomerMessageSound(false);
                 }
