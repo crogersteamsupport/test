@@ -354,11 +354,11 @@ var loadTicket = function (ticketNumber, refresh) {
         LoadTicketHistory();
         SetupJiraFieldValues();
         LoadGroups();
-
+        LoadPlugins(info);
         if (typeof refresh === "undefined") {
             window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
         }
-        LoadPlugins(info);
+       
 
     });
 };
@@ -552,11 +552,11 @@ function SetupTicketProperties(order) {
         $('.page-loading').hide().next().show();
 
         isFormValid();
-
+        LoadPlugins(info);
         if (typeof refresh === "undefined") {
             window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
         }
-        LoadPlugins(info);
+        
 
   });
 };
