@@ -106,6 +106,9 @@ $(document).ready(function () {
 
     function SetupPendingRequest(chat, shouldTrigger) {
         var innerString = chat.InitiatorDisplayName;
+        if (typeof chat.CompanyName !== "undefined" && chat.CompanyName) {
+            innerString = innerString + ' - ' + chat.CompanyName;
+        }
         var anchor = $('<a id="' + chat.ChatRequestID + '" href="#" class="list-group-item chat-request">' + innerString + '</a>').click(function (e) {
             e.preventDefault();
 
