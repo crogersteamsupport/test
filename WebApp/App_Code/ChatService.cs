@@ -27,14 +27,12 @@ namespace TSWebServices
         public ChatService()
         {
             options.Encrypted = true;
-            /* not yet. soon, once the keys are added to the db.
             string pusherKey = SystemSettings.GetPusherKey();
             string pusherAppId = SystemSettings.GetPusherAppId();
             string pusherSecret = SystemSettings.GetPusherSecret();
 
             pusher = new Pusher(pusherAppId, pusherKey, pusherSecret, options);
-            */
-            pusher = new Pusher("223753", "0cc6bf2df4f20b16ba4d", "119f91ed19272f096383", options);
+
             loginUser = TSAuthentication.GetLoginUser();
         }
 
@@ -78,9 +76,11 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string GetPusherKey()
         {
-            return SystemSettings.GetPusherKey();
+            string pusherKey = SystemSettings.GetPusherKey();
+            return JsonConvert.SerializeObject(pusherKey);
         }
 
         [WebMethod]
@@ -289,7 +289,6 @@ namespace TSWebServices
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string DisconnectUser(string channelName, int chatID, int userID)
         {
-            //Chat chat = GetChat(chatID);
             ParticipantInfoView participant = GetParticipant(userID, chatID);
 
             ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();
@@ -304,6 +303,28 @@ namespace TSWebServices
 
             var result = pusher.Trigger(channelName, "new-comment", newMessage);
             return JsonConvert.SerializeObject(true);
+        }
+
+        [WebMethod]
+        public bool CustomerAbandonedChatRequest(int chatID, int userID)
+        {
+            Chats chat = new Chats(LoginUser.Anonymous);
+            chat.LoadByChatID(chatID);
+
+            if (!chat.IsEmpty)
+            {
+                Guid organizationChatGuid = Organizations.GetOrganization(LoginUser.Anonymous, chat[0].OrganizationID).ChatID;
+                ChatRequests requests = new ChatRequests(LoginUser.Anonymous);
+                requests.LoadByChatID(chatID, ChatRequestType.External);
+
+                if (!requests.IsEmpty)
+                {
+                    var result = pusher.Trigger("chat-requests-" + organizationChatGuid.ToString(), "chat-request-abandoned", requests[0].ChatRequestID);
+                    ChatMessageProxy message = Chats.AbandonedChatRequest(LoginUser.Anonymous, chat[0], userID, ChatParticipantType.External, chatID);
+                }
+            }
+
+            return true;
         }
 
         #endregion
