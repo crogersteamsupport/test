@@ -359,7 +359,7 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
       {
         string emailDomain = email.Substring(email.LastIndexOf('@') + 1);
         Organization org = Organization.GetCompanyByDomain(organizationID, emailDomain, loginUser);
-        client.CompanyName = (org == null) ? org.Name : "";
+        client.CompanyName = (org != null) ? org.Name : "";
       }
       client.Collection.Save();
 
