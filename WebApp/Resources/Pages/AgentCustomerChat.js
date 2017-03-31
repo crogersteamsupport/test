@@ -16,6 +16,16 @@ $(document).ready(function () {
     var isEdge = !isIE && !!window.StyleMedia;
     isTOKEnabledForBrowser = !isSafari && !isEdge;
 
+    $("#jquery_jplayer_1").jPlayer({
+        ready: function () {
+            $(this).jPlayer("setMedia", {
+                mp3: "../Audio/chime.mp3"
+            });
+        },
+        loop: false,
+        swfPath: "vcr/1_9_0/Js"
+    });
+
     window.parent.Ts.Services.Customers.GetDateFormat(false, function (format) {
         dateFormat = format.replace("yyyy", "yy");
         if (dateFormat.length < 8) {
@@ -730,15 +740,6 @@ function CustomerMessageSound(forceIt) {
     var isMain = parent.Ts.MainPage.MainTabs.find(0, parent.Ts.Ui.Tabs.Tab.Type.Main).getIsSelected();
 
     if (forceIt || menuID !== 'mnichat' || (menuID === 'mnichat' && !isMain)) {
-        $("#jquery_jplayer_1").jPlayer({
-            ready: function () {
-                $(this).jPlayer("setMedia", {
-                    mp3: "../Audio/chime.mp3"
-                });
-            },
-            loop: false,
-            swfPath: "vcr/1_9_0/Js"
-        });
         $("#jquery_jplayer_1").jPlayer("setMedia", {
             mp3: "../Audio/chime.mp3"
         }).jPlayer("play", 0);
