@@ -32,10 +32,13 @@
     border-top-right-radius: 0px;
 }
 
-
 .current-chat { 
     height: 100vh; 
     border: 1px solid #ddd;
+}
+
+.activeChatIndicator {
+    float: right;
 }
 
 .chat-toolbar-row {
