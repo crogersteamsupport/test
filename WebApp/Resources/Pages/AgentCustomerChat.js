@@ -288,7 +288,7 @@ $(document).ready(function () {
 
         //If we receive a new message (any of the accepted chat requests) but the user is not in the Customer Chat page then highlight this menu item
         if (IsNotInCustomerChatPage()) {
-            parent.Ts.MainPage.MainMenu.find('mnichat', 'chat').setIsHighlighted(true);
+            parent.Ts.MainPage.MainMenu.find('mniChat', 'chat').setIsHighlighted(true);
         }
     }
 
@@ -416,7 +416,8 @@ $(document).ready(function () {
         $('#add-user-save').click(function (e) {
             e.preventDefault();
             var userID = $('#chat-invite-user').data('item').id;
-            parent.Ts.Services.Chat.RequestInvite(_activeChatID, userID, function (data) {
+            var userIdInvited = userID;
+            parent.Ts.Services.Chat.RequestInvite(_activeChatID, userIdInvited, function (data) {
                 $('#chat-add-user-modal').modal('hide');
             });
         });

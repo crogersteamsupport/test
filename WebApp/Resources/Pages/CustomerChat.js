@@ -170,8 +170,12 @@ function createMessageElement(messageData, direction) {
     $('#typing').remove();
 
     //If the message comes from the Agent
+    if (direction == 'left') {
+        _agentHasJoined = true;
+    }
+
+    //If currenty in Screenshare session then attempt to catch the attention when a new message is received by the other side of the chat
     if (direction == 'left' && (!_isChatWindowActive || _isChatWindowPotentiallyHidden)) {
-        //If currenty in Screenshare session then attempt to catch the attention when a new message is received by the other side of the chat
         if (screenSharingPublisher !== undefined) {
             BlinkWindowTitle();
             NewChatMessageAlert();
