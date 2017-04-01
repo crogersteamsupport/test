@@ -145,24 +145,34 @@ $(document).ready(function () {
 
     function SetupActiveRequest(chat, shouldTrigger) {
         var initiator = chat.InitiatorDisplayName;
+        var activeChatIndicator = '<span class="fa fa-comments fa-1 activeChatIndicator"></span>';
 
         if (typeof chat.CompanyName !== "undefined" && chat.CompanyName) {
             initiator = initiator + ' - ' + chat.CompanyName;
         }
 
-        var anchor = $('<a id="active-chat_' + chat.ChatID + '" href="#" class="list-group-item">' + initiator + '</a>').click(function (e) {
+        if (!shouldTrigger) {
+            activeChatIndicator = '';
+        }
+
+        var anchor = $('<a id="active-chat_' + chat.ChatID + '" href="#" class="list-group-item">' + initiator + activeChatIndicator + '</a>').click(function (e) {
             e.preventDefault();
 
             $('.list-group-item-success').removeClass('list-group-item-success');
+            $('.fa-comments').remove();
             $(this).addClass('list-group-item-success')
-                    .removeClass('list-group-item-info');
+                    .removeClass('list-group-item-info')
+                    .append('<span class="fa fa-comments fa-1 activeChatIndicator"></span>');
 
             _activeChatID = chat.ChatID;
             SetActiveChat(_activeChatID);
         });
 
         $('#chats-accepted').append(anchor);
-        if (shouldTrigger) anchor.trigger("click");
+
+        if (shouldTrigger) {
+            anchor.trigger("click");
+        }
 
         setupChat(pusherKey, chat.ChatID, createMessageElement, function (channel) {
             //console.log(channel);
@@ -203,12 +213,15 @@ $(document).ready(function () {
 
     function MoveAcceptedRequest(innerString, chatID) {
         $('.list-group-item-success').removeClass('list-group-item-success');
-        var anchor = $('<a id="active-chat_' + chatID + '" href="#" class="list-group-item list-group-item-success">' + innerString + '</a>').click(function (e) {
+        $('.fa-comments').remove();
+        var anchor = $('<a id="active-chat_' + chatID + '" href="#" class="list-group-item list-group-item-success">' + innerString + '<span class="fa fa-comments fa-1 activeChatIndicator"></span></a>').click(function (e) {
             e.preventDefault();
 
             $('.list-group-item-success').removeClass('list-group-item-success');
+            $('.fa-comments').remove();
             $(this).addClass('list-group-item-success')
-                    .removeClass('list-group-item-info');
+                    .removeClass('list-group-item-info')
+                    .append('<span class="fa fa-comments fa-1 activeChatIndicator"></span>');
 
             _activeChatID = chatID;
             SetActiveChat(_activeChatID);
@@ -265,11 +278,17 @@ $(document).ready(function () {
             $('.media-list').append(compiledTemplate);
             if (scrollView) ScrollMessages(true);
         } else {
+            //No active chat, but one of the accepted chats
             $('#active-chat_' + messageData.ChatID).addClass('list-group-item-info');
 
             if ($('#active-chat_' + messageData.ChatID).length > 0) {
                 CustomerMessageSound(true);
             }
+        }
+
+        //If we receive a new message (any of the accepted chat requests) but the user is not in the Customer Chat page then highlight this menu item
+        if (IsNotInCustomerChatPage()) {
+            parent.Ts.MainPage.MainMenu.find('mniChat', 'chat').setIsHighlighted(true);
         }
     }
 
@@ -397,7 +416,8 @@ $(document).ready(function () {
         $('#add-user-save').click(function (e) {
             e.preventDefault();
             var userID = $('#chat-invite-user').data('item').id;
-            parent.Ts.Services.Chat.RequestInvite(_activeChatID, userID, function (data) {
+            var userIdInvited = userID;
+            parent.Ts.Services.Chat.RequestInvite(_activeChatID, userIdInvited, function (data) {
                 $('#chat-add-user-modal').modal('hide');
             });
         });
@@ -739,7 +759,7 @@ function CustomerMessageSound(forceIt) {
     var menuID = parent.Ts.MainPage.MainMenu.getSelected().getId().toLowerCase();
     var isMain = parent.Ts.MainPage.MainTabs.find(0, parent.Ts.Ui.Tabs.Tab.Type.Main).getIsSelected();
 
-    if (forceIt || menuID !== 'mnichat' || (menuID === 'mnichat' && !isMain)) {
+    if (forceIt || IsNotInCustomerChatPage()) {
         $("#jquery_jplayer_1").jPlayer("setMedia", {
             mp3: "../Audio/chime.mp3"
         }).jPlayer("play", 0);
@@ -754,6 +774,13 @@ function ShowNotificationMessage() {
     }
     var notification = new Notification("TeamSupport", options);
     notification.onshow = function () { setTimeout(function () { notification.close(); }, 5000) };
+}
+
+function IsNotInCustomerChatPage() {
+    var menuID = parent.Ts.MainPage.MainMenu.getSelected().getId().toLowerCase();
+    var isMain = parent.Ts.MainPage.MainTabs.find(0, parent.Ts.Ui.Tabs.Tab.Type.Main).getIsSelected();
+
+    return (menuID !== 'mnichat' || (menuID === 'mnichat' && !isMain));
 }
 
 function BlinkWindowTitle() {

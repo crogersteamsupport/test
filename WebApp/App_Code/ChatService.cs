@@ -533,15 +533,31 @@ namespace TSWebServices
         [WebMethod]
         public void RequestInvite(int chatID, int userID)
         {
-            ChatRequest request = ChatRequests.RequestInvite(loginUser, chatID, userID);
             Organization organization = loginUser.GetOrganization();
+            ChatRequest request = ChatRequests.RequestInvite(loginUser, chatID, userID);
+            ChatRequests customerChatRequest = new ChatRequests(loginUser);
+            customerChatRequest.LoadByChatID(chatID, ChatRequestType.External);
+
+            ParticipantInfoView initialRequestor = new ParticipantInfoView();
+            ParticipantInfoView userRequestor = new ParticipantInfoView();
+
+            if (customerChatRequest != null && customerChatRequest.Count > 0)
+            {
+                initialRequestor = GetParticipant(customerChatRequest[0].RequestorID, customerChatRequest[0].ChatID);
+                userRequestor = null;
+            }
+            else
+            {
+                userRequestor = GetParticipant(request.RequestorID, request.ChatID);
+                initialRequestor = null;
+            }
 
             pusher.Trigger("chat-requests-" + organization.ChatID, "new-chat-request",
                 new {
                     message = string.Format("{0} {1} is inviting you to a chat!", loginUser.GetUser().FirstName, loginUser.GetUser().LastName),
                     title = "Chat Invite",
                     theme = "ui-state-error",
-                    chatRequest = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID, request.ChatID), GetChatMessages(request.ChatID)),
+                    chatRequest = new ChatViewObject(request.GetProxy(), initialRequestor != null ? initialRequestor : userRequestor, GetChatMessages(request.ChatID)),
                     userIdInvited = userID});
         }
 
