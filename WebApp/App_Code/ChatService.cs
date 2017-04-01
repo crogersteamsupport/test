@@ -52,10 +52,10 @@ namespace TSWebServices
             ChatSettingsModel model = new ChatSettingsModel();
 
             model.ChatIntro = OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatIntroMessage", "Welcome to our live chat!");
-            model.TOKScreenEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatTOKScreenEnabled", "true"));
-            model.TOKVoiceEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatTOKVoiceEnabled", "true"));
-            model.TOKVideoEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatTOKVideoEnabled", "true"));
-            model.ChatAvatarsEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatAvatarsEnabled", "true"));
+            model.TOKScreenEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatTOKScreenEnabled", "false"));
+            model.TOKVoiceEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatTOKVoiceEnabled", "false"));
+            model.TOKVideoEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatTOKVideoEnabled", "false"));
+            model.ChatAvatarsEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, chat.OrganizationID, "ChatAvatarsEnabled", "false"));
 
             return JsonConvert.SerializeObject(model);
         }
@@ -67,10 +67,10 @@ namespace TSWebServices
             ChatSettingsModel model = new ChatSettingsModel();
 
             model.ChatIntro = OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatIntroMessage", "Welcome to our live chat!");
-            model.TOKScreenEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKScreenEnabled", "true"));
-            model.TOKVoiceEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKVoiceEnabled", "true"));
-            model.TOKVideoEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKVideoEnabled", "true"));
-            model.ChatAvatarsEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatAvatarsEnabled", "true"));
+            model.TOKScreenEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKScreenEnabled", "false"));
+            model.TOKVoiceEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKVoiceEnabled", "false"));
+            model.TOKVideoEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKVideoEnabled", "false"));
+            model.ChatAvatarsEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatAvatarsEnabled", "false"));
 
             return JsonConvert.SerializeObject(model);
         }
@@ -337,9 +337,9 @@ namespace TSWebServices
             ChatSettingsModel model = new ChatSettingsModel();
 
             model.ChatIntro = Settings.OrganizationDB.ReadString("ChatIntroMessage", "Welcome to our live chat!");
-            model.TOKScreenEnabled = Settings.OrganizationDB.ReadBool("ChatTOKScreenEnabled", true);
-            model.TOKVoiceEnabled = Settings.OrganizationDB.ReadBool("ChatTOKVoiceEnabled", true);
-            model.TOKVideoEnabled = Settings.OrganizationDB.ReadBool("ChatTOKVideoEnabled", true);
+            model.TOKScreenEnabled = Settings.OrganizationDB.ReadBool("ChatTOKScreenEnabled", false);
+            model.TOKVoiceEnabled = Settings.OrganizationDB.ReadBool("ChatTOKVoiceEnabled", false);
+            model.TOKVideoEnabled = Settings.OrganizationDB.ReadBool("ChatTOKVideoEnabled", false);
 
             return model;
         }
