@@ -128,6 +128,7 @@ namespace TeamSupport.Handlers
 				string imageFile = Path.GetFileName(path);
 				path = Path.GetDirectoryName(path);
 				string imagePath = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
+                if (!Directory.Exists(imagePath)) Directory.CreateDirectory(imagePath);
 				fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
 				if (!File.Exists(fileName))
 				{
@@ -394,6 +395,16 @@ namespace TeamSupport.Handlers
 				return;
 			}
 
+            if (userID < 0)
+            {
+                using (Image initialImage = MakeInitialSquare("?", GetInitialColor("?"), size))
+                {
+                    initialImage.Save(cacheFileName, ImageFormat.Jpeg);
+                }
+                WriteImage(context, cacheFileName);
+                return;
+            }
+
 			//New image, check if one has been uploaded
 			string originalFileName = AttachmentPath.GetImageFileName(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages), userID.ToString() + "avatar");
 			if (File.Exists(originalFileName))
@@ -424,6 +435,8 @@ namespace TeamSupport.Handlers
 			return;
 
 		}
+
+     
 
 		private void ProcessInitialAvatar(HttpContext context, string[] segments, int organizationID)
 		{
