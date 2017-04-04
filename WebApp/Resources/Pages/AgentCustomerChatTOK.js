@@ -74,6 +74,8 @@ function publishTOKVideo(callback) {
         $('.current-chat-area').height('calc(100vh - 225px)');
         $('#tokStreamControls').show();
         $('#tokStatusText').text('Requesting Live Session...');
+        $('#muteStream').show();
+        $('#unmuteStream').hide();
 
         top.Ts.Services.Chat.GetTOKSessionInfo(function (resultID) {
             sessionId = resultID[0];
@@ -119,6 +121,8 @@ function publishTOKAudio(callback) {
         }
         
         $('#tokStatusText').text('Requesting Live Session...');
+        $('#muteStream').show();
+        $('#unmuteStream').hide();
 
         top.Ts.Services.Chat.GetTOKSessionInfo(function (resultID) {
             sessionId = resultID[0];
@@ -403,8 +407,3 @@ function unmuteTOKStream() {
     $('#muteStream').show();
     $('#unmuteStream').hide();
 };
-
-function installChromePlugin() {
-    chrome.webstore.install("https://chrome.google.com/webstore/detail/laehkaldepkacogpkokmimggbepafabg",
-    function () { }, function (e) { console.log(e) });
-}

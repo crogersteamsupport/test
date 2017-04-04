@@ -147,7 +147,7 @@ Ts.Pages.Main.prototype = {
 
         $('.menu-help-chat').click(function (e) {
             e.preventDefault();
-            window.open('https://release-chat.teamsupport.com/Chat/ChatInit.aspx?uid=22bd89b8-5162-4509-8b0d-f209a0aa6ee9', 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500');
+            window.open('https://app.teamsupport.com/Chat/ChatInit.aspx?uid=22bd89b8-5162-4509-8b0d-f209a0aa6ee9', 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500');
         });
 
 
@@ -174,7 +174,8 @@ Ts.Pages.Main.prototype = {
                 Ts.System.ChatUserSettings = setting;
                 if (tmrChat) clearInterval(tmrChat);
                 if (Ts.System.ChatUserSettings.IsAvailable) {
-                    tmrChat = setInterval(getChatUpdates, chatInterval);
+                    //tmrChat = setInterval(getChatUpdates, chatInterval);
+                    setupChatRequestUpdates();
                     $('.menu-chatstatus .ts-icon').addClass('ts-icon-chat-small').removeClass('ts-icon-nochat-small');
                     $('.menu-chatstatus-text').text('Customer Chat: Online');
                 } else {
@@ -707,22 +708,24 @@ Ts.Pages.Main.prototype = {
                 
                 request_channel.bind('new-chat-request', function (data) {
 
-                    var menuID = self.MainMenu.getSelected().getId();
-                    var isMain = mainTabs.find(0, Ts.Ui.Tabs.Tab.Type.Main).getIsSelected();
-                    if (!isMain || menuID != 'mniChat') self.MainMenu.find('mniChat', 'chat').setIsHighlighted(true);
+                    if (data.userIdInvited === undefined || data.userIdInvited == top.Ts.System.User.UserID) {
+                        var menuID = self.MainMenu.getSelected().getId();
+                        var isMain = mainTabs.find(0, Ts.Ui.Tabs.Tab.Type.Main).getIsSelected();
+                        if (!isMain || menuID != 'mniChat') self.MainMenu.find('mniChat', 'chat').setIsHighlighted(true);
 
-                    window.focus();
-                    $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
-                    alert(data.message);
+                        window.focus();
+                        $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
+                        alert(data.message);
 
-                    window.focus();
+                        window.focus();
 
-                    $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
-                    $.jGrowl(data.message, {
-                        life: 5000,
-                        theme: data.theme,
-                        header: data.title
-                    });
+                        $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
+                        $.jGrowl(data.message, {
+                            life: 5000,
+                            theme: data.theme,
+                            header: data.title
+                        });
+                    }
                 });
 
             });

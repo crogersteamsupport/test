@@ -95,7 +95,7 @@ namespace TeamSupport.Data
         {
             Chat chat = Chats.GetChat(loginUser, chatID);
             ChatParticipant self = ChatParticipants.GetChatParticipant(loginUser, id, type, chatID);
-            if (self == null) return null;
+            if (self == null || self.DateLeft != null) return null;
 
             self.DateLeft = DateTime.UtcNow;
             self.Collection.Save();
@@ -127,6 +127,20 @@ namespace TeamSupport.Data
                     }
                 }
             }
+
+            return message;
+
+        }
+
+        public static ChatMessageProxy AbandonedChatRequest(LoginUser loginUser, Chat chat, int id, ChatParticipantType type, int chatID)
+        {
+            ChatParticipant self = ChatParticipants.GetChatParticipant(loginUser, id, type, chatID);
+            if (self == null || self.DateLeft != null) return null;
+
+            self.DateLeft = DateTime.UtcNow;
+            self.Collection.Save();
+
+            ChatMessageProxy message = AddNotification(loginUser, chatID, id, type, string.Format("{0} {1} has abandoned the chat request.", self.FirstName, self.LastName));
 
             return message;
 

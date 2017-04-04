@@ -154,6 +154,8 @@
     </Compile>
     <Compile Include="TSHighrise.cs" />
     <Compile Include="TSHubSpot.cs" />
+    <Compile Include="ChatUploadHandler.cs" />
+    <Compile Include="UploadUtils.cs" />
     <Compile Include="UserStatusHandler.cs" />
     <Compile Include="SignUpHandler.cs" />
     <Compile Include="ChatStatusHandler.cs" />
