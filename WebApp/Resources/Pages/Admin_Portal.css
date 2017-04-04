@@ -63,3 +63,12 @@ form.positive-file-upload input, form.neutral-file-upload input, form.negative-f
 }
 
 .seperator{color:grey; margin-left:10px !important; margin-right:10px !important; padding-top:4px !important;}
+
+.hubWell {
+    padding: 20px 30px 20px 30px;
+    width: 220px;
+}
+
+.hubProperty {
+    margin-top:10px;
+}

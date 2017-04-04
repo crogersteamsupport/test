@@ -521,26 +521,56 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string GetHubURL()
+        public List<CustomerHubLinkModel> GetHubURL()
         {
+            List<CustomerHubLinkModel> hubList = null;
+
             CustomerHubs hubs = new CustomerHubs(TSAuthentication.GetLoginUser());
             hubs.LoadByOrganizationID(TSAuthentication.OrganizationID);
 
             if (hubs.Any())
             {
-                return string.Format("{0}.{1}", hubs[0].PortalName, SystemSettings.GetHubURL());
+                hubList = new List<CustomerHubLinkModel>();
+                foreach (var hub in hubs)
+                {
+                    hubList.Add(new CustomerHubLinkModel(hubs[0].CustomerHubID, hubs[0].PortalName, string.Format("{0}.{1}", hubs[0].PortalName, SystemSettings.GetHubURL())));
+                }
             }
             else
             {
+                hubList = new List<CustomerHubLinkModel>();
                 bool success = MigratePortalSettings(TSAuthentication.OrganizationID, TSAuthentication.GetLoginUser());
                 if (success)
                 {
                     CustomerHubs hubs2 = new CustomerHubs(TSAuthentication.GetLoginUser());
                     hubs2.LoadByOrganizationID(TSAuthentication.OrganizationID);
-                    return string.Format("{0}.{1}", hubs2[0].PortalName, SystemSettings.GetHubURL());
+                    hubList.Add(new CustomerHubLinkModel(hubs[0].CustomerHubID, hubs2[0].PortalName, string.Format("{0}.{1}", hubs2[0].PortalName, SystemSettings.GetHubURL())));
                 }
             }
-            return null;
+            return hubList;
+        }
+
+        [WebMethod]
+        public List<CustomerHubLinkModel> CreateNewHub(object customerHubModel)
+        {
+            List<CustomerHubLinkModel> hubList = null;
+
+            CustomerHubs hubHelper = new CustomerHubs(TSAuthentication.GetLoginUser());
+
+            //need validation to check if existing hub names are taken!
+
+            CustomerHub newHub = hubHelper.AddNewCustomerHub();
+
+            //New value happening here!
+            newHub.PortalName = Regex.Replace("TestHub", "[^0-9a-zA-Z-]", "");
+            newHub.ProductFamilyID = null;
+
+            newHub.OrganizationID = TSAuthentication.OrganizationID;
+            newHub.IsActive = true;
+            newHub.DateModified = DateTime.UtcNow;
+            hubHelper.Save();
+
+            return hubList;
         }
 
         [WebMethod]
@@ -1171,5 +1201,20 @@ namespace TSWebServices
         public int? ParentID { get; set; }
         [DataMember]
         public List<int> CategoryIDs { get; set; }
+    }
+
+    [DataContract(Namespace = "http://teamsupport.com/")]
+    public class CustomerHubLinkModel
+    {
+        public CustomerHubLinkModel(int hubid, string name, string url)
+        {
+            HubID = hubid;
+            Name = name;
+            URL = url;
+        }
+        [DataMember]
+        public int HubID { get; set; }
+        public string Name { get; set; }
+        public string URL { get; set; }
     }
 }
