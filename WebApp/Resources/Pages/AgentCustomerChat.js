@@ -1,12 +1,30 @@
 ﻿var _activeChatID = null;
 var dateFormat;
 var _intervalUpdateActiveChats = null;
+var isTOKEnabledForBrowser;
+var _isChatWindowActive = true;
+var _isChatWindowPotentiallyHidden = false;
+
 $(document).ready(function () {
     //apiKey = "45228242";
     var chatInfoObject = {};
     var pusherKey = null;
     var contactID = null;
-    var uploadPath = '../../../Upload/ChatAttachments/';
+    var uploadPath = '../../../ChatUpload/ChatAttachments/' + top.Ts.System.User.OrganizationID + '/';
+    var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0 || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification);
+    var isIE = /*@cc_on!@*/false || !!document.documentMode;
+    var isEdge = !isIE && !!window.StyleMedia;
+    isTOKEnabledForBrowser = !isSafari && !isEdge;
+
+    $("#jquery_jplayer_1").jPlayer({
+        ready: function () {
+            $(this).jPlayer("setMedia", {
+                mp3: "../Audio/chime.mp3"
+            });
+        },
+        loop: false,
+        swfPath: "vcr/1_9_0/Js"
+    });
 
     window.parent.Ts.Services.Customers.GetDateFormat(false, function (format) {
         dateFormat = format.replace("yyyy", "yy");
@@ -29,25 +47,54 @@ $(document).ready(function () {
         pusherKey = key;
         SetupChatRequests();
         subscribeToNewChatRequest(pusherKey, function (request) {
-            SetupPendingRequest(request.chatRequest, true);
+            if (request.userIdInvited === undefined || request.userIdInvited == top.Ts.System.User.UserID) {
+                SetupPendingRequest(request.chatRequest, true);
+            }
         });
 
         $('.page-loading').hide().next().show();
     });
 
-    GetChatSettings();
+    GetChatSettings(true);
     SetupToolbar();
     SetupTOK();
 
-    function GetChatSettings() {
-        parent.Ts.Services.Chat.GetAgentChatProperties(function (data) {
-            if (!data.TOKScreenEnabled)
-                $('#chat-tok-screen').hide();
-            if (!data.TOKVideoEnabled)
-                $('#chat-tok-video').hide();
-            if (!data.TOKVoiceEnabled)
-                $('#chat-tok-audio').hide();
-        });
+    function GetChatSettings(isInit) {
+        if (isInit) {
+            _activeChatID = null;
+            EnableTOKButtons(false, false, false, isInit);
+            EnableDisableTicketMenu();
+            $('#chat-invite').addClass("disabled");
+            $('#chat-leave').addClass("disabled");
+            $('#chat-customer').addClass("disabled");
+            $('#chat-customer').show();
+            $('#chat-suggestions').addClass("disabled");
+            $('#chat-attachment').addClass("disabled");
+        } else {
+            $('#chat-suggestions').removeClass("disabled");
+            $('#chat-attachment').removeClass("disabled");
+            var enableAudio = true;
+            var enableVideo = true;
+            var enableScreen = true;
+
+            if (!isTOKEnabledForBrowser) {
+                enableAudio = false;
+                enableVideo = false;
+                enableScreen = false;
+                EnableTOKButtons(enableAudio, enableVideo, enableScreen, isInit);
+            } else {
+                parent.Ts.Services.Chat.GetAgentChatProperties(function (data) {
+                    if (!data.TOKScreenEnabled)
+                        enableScreen = false;
+                    if (!data.TOKVideoEnabled)
+                        enableVideo = false;
+                    if (!data.TOKVoiceEnabled)
+                        enableAudio = false;
+
+                    EnableTOKButtons(enableAudio, enableVideo, enableScreen, isInit);
+                });
+            }
+        }
     }
 
     function SetupChatRequests() {
@@ -69,6 +116,9 @@ $(document).ready(function () {
 
     function SetupPendingRequest(chat, shouldTrigger) {
         var innerString = chat.InitiatorDisplayName;
+        if (typeof chat.CompanyName !== "undefined" && chat.CompanyName) {
+            innerString = innerString + ' - ' + chat.CompanyName;
+        }
         var anchor = $('<a id="' + chat.ChatRequestID + '" href="#" class="list-group-item chat-request">' + innerString + '</a>').click(function (e) {
             e.preventDefault();
 
@@ -95,24 +145,34 @@ $(document).ready(function () {
 
     function SetupActiveRequest(chat, shouldTrigger) {
         var initiator = chat.InitiatorDisplayName;
+        var activeChatIndicator = '<span class="fa fa-comments fa-1 activeChatIndicator"></span>';
 
         if (typeof chat.CompanyName !== "undefined" && chat.CompanyName) {
             initiator = initiator + ' - ' + chat.CompanyName;
         }
 
-        var anchor = $('<a id="active-chat_' + chat.ChatID + '" href="#" class="list-group-item">' + initiator + '</a>').click(function (e) {
+        if (!shouldTrigger) {
+            activeChatIndicator = '';
+        }
+
+        var anchor = $('<a id="active-chat_' + chat.ChatID + '" href="#" class="list-group-item">' + initiator + activeChatIndicator + '</a>').click(function (e) {
             e.preventDefault();
 
             $('.list-group-item-success').removeClass('list-group-item-success');
+            $('.fa-comments').remove();
             $(this).addClass('list-group-item-success')
-                    .removeClass('list-group-item-info');
+                    .removeClass('list-group-item-info')
+                    .append('<span class="fa fa-comments fa-1 activeChatIndicator"></span>');
 
             _activeChatID = chat.ChatID;
             SetActiveChat(_activeChatID);
         });
 
         $('#chats-accepted').append(anchor);
-        if (shouldTrigger) anchor.trigger("click");
+
+        if (shouldTrigger) {
+            anchor.trigger("click");
+        }
 
         setupChat(pusherKey, chat.ChatID, createMessageElement, function (channel) {
             //console.log(channel);
@@ -121,7 +181,6 @@ $(document).ready(function () {
     }
 
     function doneTyping() {
-        //$('#typing').hide();
         if (channel !== null)
             var triggered = channel.trigger('client-agent-stop-typing', channel.members.me.info.name + ' is typing...');
         isTyping = false;
@@ -132,27 +191,37 @@ $(document).ready(function () {
     }
 
     function AcceptRequest(ChatRequestID, innerString, parentEl) {
-        parent.Ts.Services.Chat.AcceptRequest(ChatRequestID, function (chatId) {
-            setupChat(pusherKey, chatId, createMessageElement, function (channel) {
-                //console.log(channel);
-            });
+        parent.Ts.Services.Chat.AcceptRequest(ChatRequestID, isTOKEnabledForBrowser, function (chatId) {
+            // check chatId to verify the chat has not been accepted already
+            if (chatId > 0) {
+                setupChat(pusherKey, chatId, createMessageElement, function (channel) {
+                    //console.log(channel);
+                });
 
-            parentEl.remove();
-            MoveAcceptedRequest(innerString, chatId);
+                parentEl.remove();
+                MoveAcceptedRequest(innerString, chatId);
 
-            _activeChatID = chatId;
-            SetActiveChat(_activeChatID);
+                _activeChatID = chatId;
+                SetActiveChat(_activeChatID);
+            } else {
+                alert("The chat has been accepted already by another agent.");
+                parentEl.remove();
+            }
+            
         });
     }
 
     function MoveAcceptedRequest(innerString, chatID) {
         $('.list-group-item-success').removeClass('list-group-item-success');
-        var anchor = $('<a id="active-chat_' + chatID + '" href="#" class="list-group-item list-group-item-success">' + innerString + '</a>').click(function (e) {
+        $('.fa-comments').remove();
+        var anchor = $('<a id="active-chat_' + chatID + '" href="#" class="list-group-item list-group-item-success">' + innerString + '<span class="fa fa-comments fa-1 activeChatIndicator"></span></a>').click(function (e) {
             e.preventDefault();
 
             $('.list-group-item-success').removeClass('list-group-item-success');
+            $('.fa-comments').remove();
             $(this).addClass('list-group-item-success')
-                    .removeClass('list-group-item-info');
+                    .removeClass('list-group-item-info')
+                    .append('<span class="fa fa-comments fa-1 activeChatIndicator"></span>');
 
             _activeChatID = chatID;
             SetActiveChat(_activeChatID);
@@ -161,30 +230,70 @@ $(document).ready(function () {
         $('#chats-accepted').append(anchor);
     }
 
-    function createMessageElement(messageData, scrollView) {
-        //console.log(messageData)
-        if (messageData.ChatID == _activeChatID) {
+    function createMessageElement(messageData, scrollView, isAgentAcceptedInvitation) {
+        if (messageData.ChatID == _activeChatID && !isAgentAcceptedInvitation) {
+            var chatUserLeft = ((messageData.CreatorID !== null) ? messageData.CreatorID.toString() : 'customer');
+
+            if ((messageData.HasLeft && !$("#" + chatUserLeft + 'HasLeft').length > 0)
+                || (!messageData.HasLeft)) {
+                var messageTemplate = $("#message-template").html();
+                var compiledTemplate = messageTemplate
+                                        .replace('{{MessageDirection}}', 'left')
+                                        .replace('{{UserName}}', messageData.CreatorDisplayName)
+                                        .replace('{{Avatar}}', (messageData.CreatorID !== null)
+                                                                        ? '../../../dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.CreatorID + '/48/1470773158079'
+                                                                        : '../images/blank_avatar.png')
+                                        .replace('{{Message}}', messageData.Message)
+                                        .replace('{{Date}}', moment(messageData.DateCreated).format(dateFormat + ' hh:mm A'));
+
+                if (messageData.HasLeft) {
+                    compiledTemplate = compiledTemplate.replace('{{HasLeftChat}}', 'id=' + chatUserLeft + 'HasLeft');
+                }
+
+                $('.media-list').append(compiledTemplate);
+                if (scrollView) ScrollMessages(true);
+
+                //If message is coming from the customer and we are in screenshare
+                if (screenSharingPublisher !== undefined && messageData.CreatorType == 1 && (!_isChatWindowActive || _isChatWindowPotentiallyHidden)) {
+                    BlinkWindowTitle();
+                    NewChatMessageAlert();
+                } else if (messageData.CreatorType == 1) {
+                    CustomerMessageSound(false);
+                }
+            }
+        }
+        else if (isAgentAcceptedInvitation && messageData != null && messageData.info != null && messageData.info.chatId != null && messageData.info.chatId == _activeChatID) {
             var messageTemplate = $("#message-template").html();
+            var dateTimeString = new Date().toLocaleString();
+            dateTimeString = dateTimeString.replace(",", "");
             var compiledTemplate = messageTemplate
                                     .replace('{{MessageDirection}}', 'left')
-                                    .replace('{{UserName}}', messageData.CreatorDisplayName)
-                                    .replace('{{Avatar}}', (messageData.CreatorID !== null)
-                                                                    ? '../../../dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.CreatorID + '/48/1470773158079'
+                                    .replace('{{UserName}}', messageData.info.name)
+                                    .replace('{{Avatar}}', (messageData.id !== null)
+                                                                    ? '../../../dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.id + '/48/1470773158079'
                                                                     : '../images/blank_avatar.png')
-                                    .replace('{{Message}}', messageData.Message)
-                                    .replace('{{Date}}', moment(messageData.DateCreated).format(dateFormat + ' hh:mm A'));
+                                    .replace('{{Message}}', messageData.info.name + " has joined the chat.")
+                                    .replace('{{Date}}', dateTimeString);
 
             $('.media-list').append(compiledTemplate);
             if (scrollView) ScrollMessages(true);
-        }
-        else {
+        } else {
+            //No active chat, but one of the accepted chats
             $('#active-chat_' + messageData.ChatID).addClass('list-group-item-info');
+
+            if ($('#active-chat_' + messageData.ChatID).length > 0) {
+                CustomerMessageSound(true);
+            }
+        }
+
+        //If we receive a new message (any of the accepted chat requests) but the user is not in the Customer Chat page then highlight this menu item
+        if (IsNotInCustomerChatPage()) {
+            parent.Ts.MainPage.MainMenu.find('mniChat', 'chat').setIsHighlighted(true);
         }
     }
 
     function SetActiveChat(chatID) {
         parent.Ts.Services.Chat.GetChatDetails(chatID, function (chat) {
-            //console.log(chat);
             chatInfoObject = chat;
             if (chat.InitiatorUserID !== null) {
                 contactID = chat.InitiatorUserID;
@@ -201,7 +310,7 @@ $(document).ready(function () {
             $('.chat-intro').append('<p>Initiated By: ' + chat.InitiatorMessage + '</p>');
 
             for (i = 0; i < chat.Messages.length; i++) {
-                createMessageElement(chat.Messages[i], false);
+                createMessageElement(chat.Messages[i], false, false);
             }
             ScrollMessages(false);
 
@@ -215,6 +324,28 @@ $(document).ready(function () {
 
             _intervalUpdateActiveChats = setInterval('EnableDisableTicketMenu();', 5200);
         });
+
+        GetChatSettings(false);
+
+        if ($('#chat-invite').hasClass("disabled")) {
+            $('#chat-invite').removeClass("disabled");
+        }
+
+        if ($('#chat-leave').hasClass("disabled")) {
+            $('#chat-leave').removeClass("disabled");
+        }
+
+        if ($('#chat-customer').hasClass("disabled")) {
+            $('#chat-customer').removeClass("disabled");
+        }
+
+        if ($('#chat-suggestions').hasClass("disabled")) {
+            $('#chat-suggestions').removeClass("disabled");
+        }
+
+        if ($('#chat-attachment').hasClass("disabled")) {
+            $('#chat-attachment').removeClass("disabled");
+        }
     }
 
     function ScrollMessages(animated) {
@@ -226,13 +357,17 @@ $(document).ready(function () {
 
     $("#message-form").submit(function (e) {
         e.preventDefault();
-        $('#new-message').prop("disabled", true);
-        doneTyping();
-        parent.Ts.Services.Chat.AddAgentMessage('presence-' + _activeChatID, $('#message').val(), _activeChatID, function (data) {
-            $('#message').val('');
-            $('#new-message').prop("disabled", false);
-        });
+        var messageString = $('#message').val();
+        messageString = messageString.trim();
 
+        if (messageString !== '') {
+            $('#new-message').prop("disabled", true);
+            doneTyping();
+            parent.Ts.Services.Chat.AddAgentMessage('presence-' + _activeChatID, messageString, _activeChatID, function (data) {
+                $('#message').val('');
+                $('#new-message').prop("disabled", false);
+            });
+        }
     });
 
     function SetupToolbar() {
@@ -246,6 +381,10 @@ $(document).ready(function () {
                         $('.media-list').empty();
                         $('.chat-intro').empty();
                         _activeChatID = null;
+                        GetChatSettings(true);
+                        $('#chat-invite').addClass("disabled");
+                        $('#chat-leave').addClass("disabled");
+                        $('#chat-customer').addClass("disabled");
                     }
                     else console.log('Error closing chat.')
                 });
@@ -277,7 +416,8 @@ $(document).ready(function () {
         $('#add-user-save').click(function (e) {
             e.preventDefault();
             var userID = $('#chat-invite-user').data('item').id;
-            parent.Ts.Services.Chat.RequestInvite(_activeChatID, userID, function (data) {
+            var userIdInvited = userID;
+            parent.Ts.Services.Chat.RequestInvite(_activeChatID, userIdInvited, function (data) {
                 $('#chat-add-user-modal').modal('hide');
             });
         });
@@ -304,8 +444,6 @@ $(document).ready(function () {
         $('#chat-suggestions').click(function (e) {
             e.preventDefault();
             suggestedSolutions(function (ticketID, isArticle) {
-                //console.log(ticketID + ' ' + isArticle);
-
                 if (isArticle) {
                     top.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
                         if (result === null) {
@@ -415,8 +553,10 @@ $(document).ready(function () {
             });
         });
 
-
-
+        $('#chat-invite').addClass("disabled");
+        $('#chat-leave').addClass("disabled");
+        $('#chat-customer').addClass("disabled");
+        $('#chat-customer').show();
     }
 
     var execSuggestedSolutions = null;
@@ -559,6 +699,109 @@ function EnableDisableTicketMenu() {
     }
 }
 
+function EnableTOKButtons(enableAudio, enableVideo, enableScreen, isChatInit) {
+    var featureDisabledTooltip = 'This feature is disabled.  It can be enabled within the Admin section.'
+    var audio = $('#chat-tok-audio > .btn-primary');
+    var video = $('#chat-tok-video > .btn-primary');
+    var screen = $('#chat-tok-screen > .btn-primary');
+
+    if (enableAudio && audio.hasClass('disabled')) {
+        audio.removeClass('disabled');
+        $('#chat-tok-audio').attr('title', '');
+    } else if (!enableAudio && !audio.hasClass('disabled')) {
+        audio.addClass('disabled');
+        if (!isChatInit) {
+            $('#chat-tok-audio').attr('title', featureDisabledTooltip);
+        }
+    }
+
+    if (enableVideo && video.hasClass('disabled')) {
+        video.removeClass('disabled');
+        $('#chat-tok-video').attr('title', '');
+    } else if (!enableVideo && !video.hasClass('disabled')) {
+        video.addClass('disabled');
+        if (!isChatInit) {
+            $('#chat-tok-video').attr('title', featureDisabledTooltip);
+        }
+    }
+
+    if (enableScreen && screen.hasClass('disabled')) {
+        screen.removeClass('disabled');
+        $('#chat-tok-screen').attr('title', '');
+    } else if (!enableScreen && !screen.hasClass('disabled')) {
+        screen.addClass('disabled');
+        if (!isChatInit) {
+            $('#chat-tok-screen').attr('title', featureDisabledTooltip);
+        }
+    }
+}
+
+function NewChatMessageAlert() {
+    // Let's check if the browser supports notifications
+    if (!("Notification" in window)) {
+        $("#jquery_jplayer_1").jPlayer("setMedia", {
+            mp3: "../Audio/chime.mp3"
+        }).jPlayer("play", 0);
+    }
+        // Let's check whether notification permissions have already been granted
+    else if (Notification.permission === "granted") {
+        ShowNotificationMessage();
+    }
+        // Otherwise, we need to ask the user for permission
+    else if (Notification.permission !== 'denied') {
+        Notification.requestPermission(function (permission) {
+            ShowNotificationMessage();
+        });
+    }
+}
+
+function CustomerMessageSound(forceIt) {
+    var menuID = parent.Ts.MainPage.MainMenu.getSelected().getId().toLowerCase();
+    var isMain = parent.Ts.MainPage.MainTabs.find(0, parent.Ts.Ui.Tabs.Tab.Type.Main).getIsSelected();
+
+    if (forceIt || IsNotInCustomerChatPage()) {
+        $("#jquery_jplayer_1").jPlayer("setMedia", {
+            mp3: "../Audio/chime.mp3"
+        }).jPlayer("play", 0);
+    }
+}
+
+function ShowNotificationMessage() {
+    var options = {
+        body: "New Chat Message!",
+        icon: "https://app.teamsupport.com/images/icons/TeamSupportLogo16.png",
+        tag: "chat" + _activeChatID
+    }
+    var notification = new Notification("TeamSupport", options);
+    notification.onshow = function () { setTimeout(function () { notification.close(); }, 5000) };
+}
+
+function IsNotInCustomerChatPage() {
+    var menuID = parent.Ts.MainPage.MainMenu.getSelected().getId().toLowerCase();
+    var isMain = parent.Ts.MainPage.MainTabs.find(0, parent.Ts.Ui.Tabs.Tab.Type.Main).getIsSelected();
+
+    return (menuID !== 'mnichat' || (menuID === 'mnichat' && !isMain));
+}
+
+function BlinkWindowTitle() {
+    var oldTitle = document.title;
+    var msg = "New Message!";
+    var timeoutId;
+    var blink = function () { document.title = document.title == msg ? ' ' : msg; };
+    var clear = function () {
+        clearInterval(timeoutId);
+        document.title = oldTitle;
+        window.onmousemove = null;
+        timeoutId = null;
+    };
+    return function () {
+        if (!timeoutId) {
+            timeoutId = setInterval(blink, 1000);
+            window.onmousemove = clear;
+        }
+    };
+};
+
 $(document).bind('dragover', function (e) {
     var dropZone = $('.current-chat'),
         timeout = window.dropZoneTimeout;
@@ -586,3 +829,156 @@ $(document).bind('dragover', function (e) {
         dropZone.removeClass('in hover');
     }, 100);
 });
+
+//This function checks the window visibility (if it is minimized or not)
+(function () {
+    var hidden = "hidden";
+
+    // Standards:
+    if (hidden in document)
+        document.addEventListener("visibilitychange", onchange);
+    else if ((hidden = "mozHidden") in document)
+        document.addEventListener("mozvisibilitychange", onchange);
+    else if ((hidden = "webkitHidden") in document)
+        document.addEventListener("webkitvisibilitychange", onchange);
+    else if ((hidden = "msHidden") in document)
+        document.addEventListener("msvisibilitychange", onchange);
+        // IE 9 and lower:
+    else if ("onfocusin" in document)
+        document.onfocusin = document.onfocusout = onchange;
+        // All others:
+    else
+        window.onpageshow = window.onpagehide
+        = window.onfocus = window.onblur = onchange;
+
+    function onchange(evt) {
+        var v = "visible", h = "hidden",
+            evtMap = {
+                focus: v, focusin: v, pageshow: v, blur: h, focusout: h, pagehide: h
+            };
+
+        evt = evt || window.event;
+
+        try {
+            if (evt.type in evtMap) {
+                document.body.className = evtMap[evt.type];
+            } else {
+                document.body.className = this[hidden] ? "hidden" : "visible";
+            }
+
+            _isChatWindowActive = document.body.className == "visible";
+        } catch (err) {
+        }
+    }
+
+    // set the initial state (but only if browser supports the Page Visibility API)
+    if (document[hidden] !== undefined)
+        onchange({ type: document[hidden] ? "blur" : "focus" });
+})();
+
+//These will check if the window has focus or not (minimized or not)
+$(window).focus(function () {
+    _isChatWindowActive = true;
+}).blur(function () {
+    _isChatWindowActive = false;
+});
+
+function addEvent(obj, evType, fn, isCapturing) {
+    if (isCapturing == null) isCapturing = false;
+    if (obj.addEventListener) {
+        // Firefox
+        obj.addEventListener(evType, fn, isCapturing);
+        return true;
+    } else if (obj.attachEvent) {
+        // MSIE
+        var r = obj.attachEvent('on' + evType, fn);
+        return r;
+    } else {
+        return false;
+    }
+}
+
+var potentialPageVisibility = {
+    pageVisibilityChangeThreshold: 3 * 3600, // in seconds
+    init: function () {
+        function setAsNotHidden() {
+            var dispatchEventRequired = document.potentialHidden;
+            document.potentialHidden = false;
+            document.potentiallyHiddenSince = 0;
+            if (dispatchEventRequired) dispatchPageVisibilityChangeEvent();
+        }
+
+        function initPotentiallyHiddenDetection() {
+            if (!hasFocusLocal) {
+                // the window does not has the focus => check for  user activity in the window
+                lastActionDate = new Date();
+                if (timeoutHandler != null) {
+                    clearTimeout(timeoutHandler);
+                }
+                timeoutHandler = setTimeout(checkPageVisibility, potentialPageVisibility.pageVisibilityChangeThreshold * 1000 + 100); // +100 ms to avoid rounding issues under Firefox
+            }
+        }
+
+        function dispatchPageVisibilityChangeEvent() {
+            unifiedVisilityChangeEventDispatchAllowed = false;
+            var evt = document.createEvent("Event");
+            evt.initEvent("potentialvisilitychange", true, true);
+            document.dispatchEvent(evt);
+        }
+
+        function checkPageVisibility() {
+            var potentialHiddenDuration = (hasFocusLocal || lastActionDate == null ? 0 : Math.floor((new Date().getTime() - lastActionDate.getTime()) / 1000));
+            document.potentiallyHiddenSince = potentialHiddenDuration;
+            if (potentialHiddenDuration >= potentialPageVisibility.pageVisibilityChangeThreshold && !document.potentialHidden) {
+                // page visibility change threshold raiched => raise the even
+                document.potentialHidden = true;
+                dispatchPageVisibilityChangeEvent();
+            }
+
+            _isChatWindowPotentiallyHidden = document.potentialHidden;
+        }
+
+        var lastActionDate = null;
+        var hasFocusLocal = true;
+        var hasMouseOver = true;
+        document.potentialHidden = false;
+        document.potentiallyHiddenSince = 0;
+        var timeoutHandler = null;
+
+        addEvent(document, "pageshow", function (event) {
+            document.getElementById("x").innerHTML += "pageshow/doc:<br>";
+        });
+        addEvent(document, "pagehide", function (event) {
+            document.getElementById("x").innerHTML += "pagehide/doc:<br>";
+        });
+        addEvent(window, "pageshow", function (event) {
+            document.getElementById("x").innerHTML += "pageshow/win:<br>"; // raised when the page first shows
+        });
+        addEvent(window, "pagehide", function (event) {
+            document.getElementById("x").innerHTML += "pagehide/win:<br>"; // not raised
+        });
+        addEvent(document, "mousemove", function (event) {
+            lastActionDate = new Date();
+        });
+        addEvent(document, "mouseover", function (event) {
+            hasMouseOver = true;
+            setAsNotHidden();
+        });
+        addEvent(document, "mouseout", function (event) {
+            hasMouseOver = false;
+            initPotentiallyHiddenDetection();
+        });
+        addEvent(window, "blur", function (event) {
+            hasFocusLocal = false;
+            initPotentiallyHiddenDetection();
+        });
+        addEvent(window, "focus", function (event) {
+            hasFocusLocal = true;
+            setAsNotHidden();
+        });
+        setAsNotHidden();
+    }
+}
+
+potentialPageVisibility.pageVisibilityChangeThreshold = 1;
+potentialPageVisibility.init();

@@ -30,6 +30,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("RequireTermsAndConditions", "RequireTermsAndConditions", false, false, false);
       _fieldMap.AddMap("DateModified", "DateModified", false, false, false);
       _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
+      _fieldMap.AddMap("AnonymousChatAccess", "AnonymousChatAccess", false, false, false);
             
     }
   }

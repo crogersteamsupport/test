@@ -632,7 +632,7 @@ ORDER BY cf.Position";
             AND cf.ParentCustomFieldID IS NULL 
             AND (cf.ParentProductID IS NULL OR cf.ParentProductID = @ParentProductID)
         ORDER BY
-            cf.Position";
+            cf.CustomFieldCategoryID asc, cf.Position asc";
             command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue("@OrganizationID", organizationID);
             command.Parameters.AddWithValue("@RefID", refID);

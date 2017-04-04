@@ -157,7 +157,7 @@ html, body { height: 100%; margin: 0px; padding: 0px; overflow: hidden; }
 .bgcolor-brown { background-color: #795548; }                                  
 .bgcolor-bluegray { background-color: #607D8B; }                               
 
-img.user-avatar { border-radius: 50%; -webkit-border-radius: 50%; }
+img.user-avatar { border-radius: 50%; -webkit-border-radius: 50%;}
 
 /* Twitter TypeAhead styles */
 .twitter-typeahead { width: 100%; position: relative; }

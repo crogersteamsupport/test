@@ -354,11 +354,11 @@ var loadTicket = function (ticketNumber, refresh) {
         LoadTicketHistory();
         SetupJiraFieldValues();
         LoadGroups();
-
+        LoadPlugins(info);
         if (typeof refresh === "undefined") {
             window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
         }
-        LoadPlugins(info);
+       
 
     });
 };
@@ -552,11 +552,11 @@ function SetupTicketProperties(order) {
         $('.page-loading').hide().next().show();
 
         isFormValid();
-
+        LoadPlugins(info);
         if (typeof refresh === "undefined") {
             window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
         }
-        LoadPlugins(info);
+        
 
   });
 };
@@ -674,7 +674,7 @@ function CreateNewActionLI() {
             isFormValid(function (isValid) {
                 if (isValid) {
                     window.parent.Ts.Services.TicketPage.CheckContactEmails(_ticketID, function (result) {
-                        if (!result)
+                        if (!result && window.parent.Ts.System.Organization.AlertContactNoEmail)
                             alert("At least one of the contacts associated with this ticket does not have an email address defined or is inactive, and will not receive any emails about this ticket.");
                         SaveAction(_oldActionID, _isNewActionPrivate, function (result) {
                             if (result) {
@@ -4586,10 +4586,13 @@ function CreateTimeLineDelegates() {
 
                 if (result) {
                     badgeDiv.html('<div class="bgcolor-green"><span class="bgcolor-green">&nbsp;</span><a href="#" class="action-option-visible">Public</a></div>');
-                    window.parent.Ts.Services.TicketPage.CheckContactEmails(_ticketID, function (isInvalid) {
-                        if (!isInvalid)
-                            alert("At least one of the contacts associated with this ticket does not have an email address defined or is inactive, and will not receive any emails about this ticket.");
-                    });
+                    
+                    if (window.parent.Ts.System.Organization.AlertContactNoEmail){
+                        window.parent.Ts.Services.TicketPage.CheckContactEmails(_ticketID, function (isInvalid) {
+                            if (!isInvalid && window.parent.Ts.System.Organization.AlertContactNoEmail)
+                                alert("At least one of the contacts associated with this ticket does not have an email address defined or is inactive, and will not receive any emails about this ticket.");
+                        });
+                    }
                 }
                 else {
                     badgeDiv.html('<div class="bgcolor-orange"><span class="bgcolor-orange">&nbsp;</span><a href="#" class="action-option-visible">Private</a></div>');
