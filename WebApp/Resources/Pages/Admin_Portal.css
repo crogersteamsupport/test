@@ -69,6 +69,11 @@ form.positive-file-upload input, form.neutral-file-upload input, form.negative-f
     width: 220px;
 }
 
+.hubDisabledWell {
+    padding: 20px 30px 20px 30px;
+    width: 350px;
+}
+
 .hubProperty {
     margin-top:10px;
 }

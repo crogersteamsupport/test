@@ -846,8 +846,14 @@
                                                 </div>
                                                 <div class="pull-right hubProperty">
                                                     <button type="button" id="btnCancel" class="btn btn-danger">Cancel</button>
-                                                    <button type="button" id="btnCreate" class="btn btn-default">Create</button>
+                                                    <button type="button" id="btnFinalizeNewHub" class="btn btn-default">Create</button>
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div id="disabledNewHub" style="display:none; min-height:1000px;">
+                                            <div class="container-fluid well hubDisabledWell">
+                                                <div>The ability to create multiple hubs is an option for enterprise customers who have enabled product lines.</div>  
+                                                <div style="margin-top:8px;">For more information on how to setup multiple hubs see the TeamSupport documentation <a href="">here!</a></div>
                                             </div>
                                         </div>
                                         <iframe id="hub_admin" style="height:100%; width:100%; min-height:1000px; overflow:hidden;"></iframe>
@@ -1344,6 +1350,7 @@
             </a>
         </div>
         {{/hubList}}
+        {{#if enableNewHubs}}
         <div style="margin-top:8px;">
             <a href="#" id="btnNewHub">
                 <div style="float:left;">
@@ -1354,6 +1361,18 @@
                 </div>
             </a>
         </div>
+        {{/if}}
+        {{#unless enableNewHubs }}
+        <div style="margin-top:8px;">
+            <a href="#" id="btnDisabledNewHub" style="color:lightgray;" disabled>
+                <div style="float:left;">
+                    Add New Hub
+                </div>
+                <div style="text-align:right;">
+                    <i class="fa fa-plus" style="font-size:10px;" aria-hidden="true"></i>
+                </div>
+            </a>
+        </div>
+        {{/unless}}
     </div>
-
 </script>

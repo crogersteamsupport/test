@@ -533,7 +533,7 @@ namespace TSWebServices
                 hubList = new List<CustomerHubLinkModel>();
                 foreach (var hub in hubs)
                 {
-                    hubList.Add(new CustomerHubLinkModel(hubs[0].CustomerHubID, hubs[0].PortalName, string.Format("{0}.{1}", hubs[0].PortalName, SystemSettings.GetHubURL())));
+                    hubList.Add(new CustomerHubLinkModel(hub.CustomerHubID, hub.PortalName, string.Format("{0}.{1}", hub.PortalName, SystemSettings.GetHubURL())));
                 }
             }
             else
@@ -551,26 +551,129 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public List<CustomerHubLinkModel> CreateNewHub(object customerHubModel)
+        public List<CustomerHubLinkModel> CreateNewHub(string name, int? productFamilyID)
         {
+            CustomerHubLinkModel newHubModel = new CustomerHubLinkModel(0, name, "poop");
+
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<CustomerHubLinkModel> hubList = null;
 
-            CustomerHubs hubHelper = new CustomerHubs(TSAuthentication.GetLoginUser());
+            //get old hub info to replicate
+
+            CustomerHubs customerHubs = new CustomerHubs(loginUser);
+            customerHubs.LoadByOrganizationID(TSAuthentication.OrganizationID);
+
+            if (customerHubs.Any())
+            {
+                int hubToCopyID = customerHubs[0].CustomerHubID;
+
+                CustomerHubAuthentication authenticationSettings = new CustomerHubAuthentication(loginUser);
+                authenticationSettings.LoadByCustomerHubID(hubToCopyID);
+
+                CustomerHubDisplaySettings displaySettings = new CustomerHubDisplaySettings(loginUser);
+                displaySettings.LoadByCustomerHubID(hubToCopyID);
+
+                CustomerHubFeatureSettings featureSettings = new CustomerHubFeatureSettings(loginUser);
+                featureSettings.LoadByCustomerHubID(hubToCopyID);
+
+                BuildNewHub(newHubModel, customerHubs[0], authenticationSettings[0], displaySettings[0], featureSettings[0]);
+
+                //Profit.
+            }
+
+            return hubList;
+        }
+
+        public void BuildNewHub(CustomerHubLinkModel newHubModel, CustomerHub srcHub, CustomerHubAuthenticationItem srcAuthenticationItem, CustomerHubDisplaySetting srcDisplaySetting, CustomerHubFeatureSetting srcFeatureSetting)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            CustomerHubs hubHelper = new CustomerHubs(loginUser);
 
             //need validation to check if existing hub names are taken!
 
             CustomerHub newHub = hubHelper.AddNewCustomerHub();
 
-            //New value happening here!
-            newHub.PortalName = Regex.Replace("TestHub", "[^0-9a-zA-Z-]", "");
-            newHub.ProductFamilyID = null;
-
-            newHub.OrganizationID = TSAuthentication.OrganizationID;
+            newHub.OrganizationID = srcHub.OrganizationID;
+            newHub.PortalName = Regex.Replace(newHubModel.Name, "[^0-9a-zA-Z-]", "");
             newHub.IsActive = true;
+            newHub.DateCreated = DateTime.UtcNow;
             newHub.DateModified = DateTime.UtcNow;
+            newHub.ModifierID = TSAuthentication.GetLoginUser().UserID;
+
             hubHelper.Save();
 
-            return hubList;
+            CustomerHubAuthentication authenticationHelper = new CustomerHubAuthentication(loginUser);
+            CustomerHubAuthenticationItem authenticationItem = authenticationHelper.AddNewCustomerHubAuthenticationItem();
+
+            //authenticationItem = srcAuthenticationItem;
+
+            authenticationItem.EnableSelfRegister = srcAuthenticationItem.EnableSelfRegister;
+            authenticationItem.EnableRequestAccess = srcAuthenticationItem.EnableRequestAccess;
+            authenticationItem.EnableSSO = srcAuthenticationItem.EnableSSO;
+            authenticationItem.RequestTicketType = srcAuthenticationItem.RequestTicketType;
+            authenticationItem.RequestGroupType = srcAuthenticationItem.RequestGroupType;
+            authenticationItem.AnonymousHubAccess = srcAuthenticationItem.AnonymousHubAccess;
+            authenticationItem.AnonymousWikiAccess = srcAuthenticationItem.AnonymousKBAccess;
+            authenticationItem.AnonymousKBAccess = srcAuthenticationItem.AnonymousKBAccess;
+            authenticationItem.AnonymousProductAccess = srcAuthenticationItem.AnonymousProductAccess;
+            authenticationItem.AnonymousTicketAccess = srcAuthenticationItem.AnonymousTicketAccess;
+            authenticationItem.HonorServiceAgreementExpirationDate = srcAuthenticationItem.HonorServiceAgreementExpirationDate;
+            authenticationItem.HonorSupportExpiration = srcAuthenticationItem.HonorSupportExpiration;
+            authenticationItem.RequireTermsAndConditions = srcAuthenticationItem.RequireTermsAndConditions;
+            authenticationItem.AnonymousChatAccess = srcAuthenticationItem.AnonymousChatAccess;
+
+            authenticationItem.DateModified = DateTime.UtcNow;
+            authenticationItem.CustomerHubID = newHub.CustomerHubID;
+            authenticationItem.ModifierID = loginUser.UserID;
+
+            authenticationHelper.Save();
+
+            CustomerHubDisplaySettings displayHelper = new CustomerHubDisplaySettings(loginUser);
+            CustomerHubDisplaySetting displaySetting = displayHelper.AddNewCustomerHubDisplaySetting();
+
+            displaySetting.FontFamily = srcDisplaySetting.FontFamily;
+            displaySetting.FontColor = srcDisplaySetting.FontColor;
+            displaySetting.Color1 = srcDisplaySetting.Color1;
+            displaySetting.Color2 = srcDisplaySetting.Color2;
+            displaySetting.Color3 = srcDisplaySetting.Color3;
+            displaySetting.Color4 = srcDisplaySetting.Color4;
+            displaySetting.Color5 = srcDisplaySetting.Color5;
+
+            displaySetting.CustomerHubID = newHub.CustomerHubID;
+            displaySetting.DateModified = DateTime.UtcNow;
+            displaySetting.ModifierID = loginUser.UserID;
+
+            displayHelper.Save();
+
+            CustomerHubFeatureSettings featureHelper = new CustomerHubFeatureSettings(loginUser);
+            CustomerHubFeatureSetting featureSetting = featureHelper.AddNewCustomerHubFeatureSetting();
+            
+            featureSetting.EnableKnowledgeBase = srcFeatureSetting.EnableKnowledgeBase;
+            featureSetting.EnableProducts = srcFeatureSetting.EnableProducts;
+            featureSetting.EnableTicketCreation = srcFeatureSetting.EnableTicketCreation;
+            featureSetting.EnableMyTickets = srcFeatureSetting.EnableMyTickets;
+            featureSetting.EnableOrganizationTickets = srcFeatureSetting.EnableOrganizationTickets;
+            featureSetting.EnableWiki = srcFeatureSetting.EnableWiki;
+            featureSetting.EnableTicketGroupSelection = srcFeatureSetting.EnableTicketGroupSelection;
+            featureSetting.EnableTicketProductSelection = srcFeatureSetting.EnableTicketProductSelection;
+            featureSetting.EnableTicketProductVersionSelection = srcFeatureSetting.EnableTicketProductVersionSelection;
+            featureSetting.DefaultTicketTypeID = srcFeatureSetting.DefaultTicketTypeID;
+            featureSetting.DefaultGroupTypeID = srcFeatureSetting.DefaultGroupTypeID;
+            featureSetting.EnableCustomerProductAssociation = srcFeatureSetting.EnableCustomerProductAssociation;
+            featureSetting.EnableChat = srcFeatureSetting.EnableChat;
+            featureSetting.EnableCommunity = srcFeatureSetting.EnableCommunity;
+            featureSetting.EnableScreenRecording = srcFeatureSetting.EnableScreenRecording;
+            featureSetting.EnableVideoRecording = srcFeatureSetting.EnableVideoRecording;
+            featureSetting.EnableTicketSeverity = srcFeatureSetting.EnableTicketSeverity;
+            featureSetting.EnableTicketSeverityModification = srcFeatureSetting.EnableTicketSeverityModification;
+            featureSetting.RestrictProductVersions = srcFeatureSetting.RestrictProductVersions;
+            featureSetting.EnableTicketNameModification = srcFeatureSetting.EnableTicketNameModification;
+
+            featureSetting.CustomerHubID = newHub.CustomerHubID;
+            featureSetting.DateModified = DateTime.UtcNow;
+            featureSetting.ModifierID = loginUser.UserID;
+
+            featureHelper.Save();
         }
 
         [WebMethod]
