@@ -68,13 +68,13 @@
             <asp:CheckBox ID="cbChatAvatars" runat="server" Text="Enable Avatars"/>
         </div>
         <div>
-            <asp:CheckBox ID="cbChatTOKScreenEnabled" runat="server" Text="Enable Screen Sharing"/>
+            <asp:CheckBox ID="cbChatTOKScreenEnabled" runat="server" Text="Enable Screen Sharing (Public Beta)"/>
         </div>
         <div>
-            <asp:CheckBox ID="cbChatTOKVoiceEnabled" runat="server" Text="Enable Voice Calls"/>
+            <asp:CheckBox ID="cbChatTOKVoiceEnabled" runat="server" Text="Enable Voice Calls (Public Beta)"/>
         </div>
         <div>
-            <asp:CheckBox ID="cbChatTOKVideoEnabled" runat="server" Text="Enable Video Calls"/>
+            <asp:CheckBox ID="cbChatTOKVideoEnabled" runat="server" Text="Enable Video Calls (Public Beta)"/>
         </div>
     </div>
   </div>

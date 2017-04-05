@@ -2,6 +2,7 @@
 var channel;
 var customerName;
 var siteUrl;
+var _typingTimer;
 
 function setupChat(pusherKey, chatID, newCommentCallback, callback) {
     var windowUrl = window.location.href;
@@ -29,7 +30,7 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
     });
 
     channel.bind('new-comment', function (data) {
-        newCommentCallback(data, true);
+        newCommentCallback(data, true, false);
     });
 
     var typeTemplate;
@@ -113,6 +114,7 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
             var tokenURI = encodeURIComponent(sharedToken);
             tokpopup = window.open(siteUrl + '/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=250,height=100');
 
+
             setTimeout(function () {
                 if (!tokpopup || tokpopup.outerHeight === 0) {
                     //First Checking Condition Works For IE & Firefox
@@ -146,21 +148,33 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
         }, 25);
     });
 
-    var typingTimer;
+    //Used for the accepted invitations to the current chat.
+    channel.bind('pusher:member_added', function (member) {
+        if (member !== null && member.info !== null && member.info.isAgent !== null && member.info.isAgent) {
+            newCommentCallback(member, true, true);
+        }
+    });
+
     var doneTypingInterval = 5000;
     var $input = $('#message');
 
     //on keyup, start the countdown
-    $input.on('keyup', function () {
-        clearTimeout(typingTimer);
-        typingTimer = setTimeout(doneTyping, doneTypingInterval);
+    $input.on('keyup', function (e) {
+        clearTimeout(_typingTimer);
+
+        if (e.which != 13) {
+            _typingTimer = setTimeout(doneTyping, doneTypingInterval);
+        } else {
+            isTyping = false;
+        }
     });
 
     //on keydown, clear the countdown 
     $input.on('keydown', function (e) {
         if (!isTyping) {
             isTyping = true;
-            clearTimeout(typingTimer);
+            clearTimeout(_typingTimer);
+
             if (channel !== null && e.which != 13)
                 var triggered = channel.trigger('client-agent-typing', { userName: channel.members.me.info.name });
         }
@@ -188,10 +202,26 @@ function subscribeToNewChatRequest(pusherKey, newRequestCallback) {
     var request_channel = pusher.subscribe('chat-requests-' + chatGUID);
 
     request_channel.bind('new-chat-request', function (data) {
-        newRequestCallback(data);
+        try {
+            newRequestCallback(data);
+        } catch (error) {
+            console.log(error.message);
+        }
     });
 
     request_channel.bind('chat-request-accepted', function (data) {
-        $('#chats-requests > #' + data).remove();
+        try {
+            $('#chats-requests > #' + data).remove();
+        } catch (error) {
+            console.log(error.message);
+        }
+    });
+
+    request_channel.bind('chat-request-abandoned', function (data) {
+        try {
+            $('#chats-requests > #' + data).remove();
+        } catch (error) {
+            console.log(error.message);
+        }
     });
 }

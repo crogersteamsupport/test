@@ -208,9 +208,14 @@ namespace TeamSupport.Handlers
                 if (articleID > 0)
                 {
                     WikiSearchItem item = new WikiSearchItem();
-                    item.HitRating = results.CurrentItem.ScorePercent;
-                    item.Article = articles.FindByArticleID(articleID).GetProxy();
-                    items.Add(item);
+                    var article = articles.FindByArticleID(articleID);
+
+                    if (article != null)
+                    {
+                        item.HitRating = results.CurrentItem.ScorePercent;
+                        item.Article = article.GetProxy();
+                        items.Add(item);
+                    }
                 }
             }
             return items;

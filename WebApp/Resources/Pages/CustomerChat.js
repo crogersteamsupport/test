@@ -9,6 +9,7 @@ var _isChatWindowActive = true;
 var _isChatWindowPotentiallyHidden = false;
 var siteUrl;
 var _agentHasJoined = false;
+var _typingTimer;                //timer identifier
 
 $(document).ready(function () {
     var windowUrl = window.location.href;
@@ -25,58 +26,66 @@ $(document).ready(function () {
     var isIE = /*@cc_on!@*/false || !!document.documentMode;
     var isEdge = !isIE && !!window.StyleMedia;
 
-    setupChat(chatID, participantID, function (channelObject) {
-        channel = channelObject;
+    IssueAjaxRequest("GetPusherKey", null,
+        function (result) {
+            var pusherKey = result;
+            setupChat(chatID, participantID, pusherKey, function (channelObject) {
+                channel = channelObject;
 
-        _timer = setTimeout(function () {
-            var data = { chatID: chatID }
+                _timer = setTimeout(function () {
+                    var data = { chatID: chatID }
 
-            if (!_agentHasJoined) {
-                IssueAjaxRequest("MissedChat", data,
-                    function (result) {
-                        window.location.replace('ChatThankYou.html');
-                    },
-                    function (error) {
-                        console.log(error)
-                    });
-            }
-        }, 180000);
+                    if (!_agentHasJoined) {
+                        IssueAjaxRequest("MissedChat", data,
+                            function (result) {
+                                window.location.replace('ChatThankYou.html');
+                            },
+                            function (error) {
+                                console.log(error)
+                            });
+                    }
+                }, 180000);
 
-        channel.bind('agent-joined', function (data) {
-            _agentHasJoined = true;
-            $('#operator-message').remove();
-            clearTimeout(_timer);
+                channel.bind('agent-joined', function (data) {
+                    _agentHasJoined = true;
+                    $('#operator-message').remove();
+                    clearTimeout(_timer);
 
-            var isCustomerTOKEnabled = true;
+                    var isCustomerTOKEnabled = true;
 
-            if (isSafari || isEdge) {
-                isCustomerTOKEnabled = false;
-            }
+                    if (isSafari || isEdge) {
+                        isCustomerTOKEnabled = false;
+                    }
 
-            DisplayTOKButtons(data.isAgentTOKEnabled && isCustomerTOKEnabled);
-            GetChatSettings(chatID);
+                    DisplayTOKButtons(data.isAgentTOKEnabled && isCustomerTOKEnabled);
+                    GetChatSettings(chatID);
 
-            if (data.isAgentTOKEnabled && !isCustomerTOKEnabled) {
-                _toktimer = setTimeout(function () {
-                    var triggered = pressenceChannel.trigger('client-tok-enabled', { isCustomerTOKEnabled: isCustomerTOKEnabled });
-                    clearTimeout(_toktimer);
-                }, 1000);
-            }
-        });
-    });
+                    if (data.isAgentTOKEnabled && !isCustomerTOKEnabled) {
+                        _toktimer = setTimeout(function () {
+                            var triggered = pressenceChannel.trigger('client-tok-enabled', { isCustomerTOKEnabled: isCustomerTOKEnabled });
+                            clearTimeout(_toktimer);
+                        }, 1000);
+                    }
+                });
+            });
+        },
+        function (error) {
+            console.log(error)
+        }
+    );
 
     //The order of the following 3 statements matter, do not change.
     SetupTOK();
     DisplayTOKButtons(!isSafari && !isEdge);
     GetChatSettings(chatID);
 
-    loadInitialMessages(chatID);
-    SetupChatUploads(chatID, participantID);
+    loadInitialMessages(chatID, participantID);
 
     $("#message-form").submit(function (e) {
         e.preventDefault();
         if ($('#message').val() !== '') {
             $('#send-message').prop("disabled", true);
+            clearTimeout(_typingTimer);
             doneTyping();
             var messageData = { channelName: 'presence-' + chatID, message: $('#message').val(), chatID: chatID, userID: participantID };
 
@@ -105,6 +114,18 @@ $(document).ready(function () {
         loop: false,
         swfPath: ""
     });
+
+    window.onbeforeunload = function (event) {
+        if (!_agentHasJoined) {
+            var chatData = { chatID: chatID, userID: participantID };
+            IssueAjaxRequest("CustomerAbandonedChatRequest", chatData,
+                function (result) {
+                },
+                function (error) {
+                    console.log(error);
+                });
+        }
+    };
 });
 
 function GetChatSettings(chatID) {
@@ -112,7 +133,6 @@ function GetChatSettings(chatID) {
     
     IssueAjaxRequest("GetClientChatPropertiesByChatID", chatObject,
     function (result) {
-        //console.log(result)
         if (!result.TOKScreenEnabled)
             $('.dropdown-menu li:contains(Screen)').hide();
         if (!result.TOKVideoEnabled)
@@ -128,22 +148,34 @@ function GetChatSettings(chatID) {
     });
 }
 
-function createMessage(message)
+function createMessage(message, agent)
 {
-    $('.chat-intro').append('<p>'+ message +'</p>');
+    if (!$("#agent" + agent).length) {
+        $('.chat-intro').append('<p id="agent' + agent + '">' + message + '</p>');
+    }
 }
 
 function createMessageElement(messageData, direction) {
     var userAvatar = '../vcr/1_9_0/images/blank_avatar.png';
-    if (messageData.CreatorID !== null && showAvatars) userAvatar = '../dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.CreatorID + '/48/1469829040429';
+
+    if (messageData.CreatorID !== null && showAvatars) {
+        userAvatar = '../dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.CreatorID + '/48/1469829040429';
+    } else if (messageData.CreatorID !== null && !showAvatars) {
+        userAvatar = '../dc/' + chatInfoObject.OrganizationID + '/InitialAvatar/' + messageData.CreatorInitials + '/48/1469829040429';
+    }
 
     $('#chat-body').append('<div class="answer ' + direction + '"> <div class="avatar"> <img src="'+ userAvatar +'" alt="User name">  </div>' +
                         '<div class="name">' + messageData.CreatorDisplayName + '</div>  <div class="text">' + messageData.Message + '</div> <div class="time">' + moment(messageData.DateCreated).format('MM/DD/YYYY hh:mm A') + '</div></div>');
+
     $('#typing').remove();
 
     //If the message comes from the Agent
+    if (direction == 'left') {
+        _agentHasJoined = true;
+    }
+
+    //If currenty in Screenshare session then attempt to catch the attention when a new message is received by the other side of the chat
     if (direction == 'left' && (!_isChatWindowActive || _isChatWindowPotentiallyHidden)) {
-        //If currenty in Screenshare session then attempt to catch the attention when a new message is received by the other side of the chat
         if (screenSharingPublisher !== undefined) {
             BlinkWindowTitle();
             NewChatMessageAlert();
@@ -152,9 +184,9 @@ function createMessageElement(messageData, direction) {
 }
 
 var pressenceChannel;
-function setupChat(chatID, participantID, callback) {
+function setupChat(chatID, participantID, pusherKey, callback) {
     var channelName = 'presence-' + chatID;
-    var pusher = new Pusher('0cc6bf2df4f20b16ba4d', {
+    var pusher = new Pusher(pusherKey, {
         authEndpoint: service + 'Auth',
         auth: {
             params: {
@@ -165,19 +197,18 @@ function setupChat(chatID, participantID, callback) {
     });
     pressenceChannel = pusher.subscribe(channelName);
 
-    pressenceChannel.bind('pusher:subscription_succeeded', function () {
-        //console.log(channel.members);
-    });
+    //pressenceChannel.bind('pusher:subscription_succeeded', function () {
+    //    //console.log(channel.members);
+    //});
 
     pressenceChannel.bind('pusher:member_added', function (member) {
         $('#operator-message').remove();
-        createMessage(member.info.name + ' joined the chat.')
+        createMessage(member.info.name + ' joined the chat.', member.id);
     });
 
-
-    pressenceChannel.bind('pusher:subscription_error', function (status) {
-        console.log(status);
-    });
+    //pressenceChannel.bind('pusher:subscription_error', function (status) {
+    //    console.log(status);
+    //});
 
     pressenceChannel.bind('new-comment', function (data) {
         $('#typing').remove();
@@ -229,6 +260,7 @@ function setupChat(chatID, participantID, callback) {
         if (isIE || isEdge) {
             var tokenURI = encodeURIComponent(sharedToken);
             tokpopup = window.open(siteUrl + '/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=250,height=100');
+
             setTimeout(function () {
                 if (!tokpopup || tokpopup.outerHeight === 0) {
                     //First Checking Condition Works For IE & Firefox
@@ -269,6 +301,7 @@ function setupChat(chatID, participantID, callback) {
     pressenceChannel.bind('client-agent-typing', function (data) {
         $('#chat-body').append('<div id="typing" class="answer left"> <div class="avatar"><img src="../vcr/1_9_0/images/blank_avatar.png" alt="User name"></div>' +
                     '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' is typing...</div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
+        $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
     });
 
     //pressenceChannel.bind('client-tok-ended', function (data) {
@@ -276,22 +309,23 @@ function setupChat(chatID, participantID, callback) {
     //    channel.trigger('client-tok-ended', { userName: channel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
     //});
 
-
-    var typingTimer;                //timer identifier
     var doneTypingInterval = 5000;  //time in ms, 5 second for example
     var $input = $('#message');
 
     //on keyup, start the countdown
-    $input.on('keyup', function () {
-        clearTimeout(typingTimer);
-        typingTimer = setTimeout(doneTyping, doneTypingInterval);
+    $input.on('keyup', function (e) {
+        clearTimeout(_typingTimer);
+
+        if (e.which != 13) {
+            _typingTimer = setTimeout(doneTyping, doneTypingInterval);
+        }
     });
 
     //on keydown, clear the countdown 
     $input.on('keydown', function (e) {
         if (!isTyping) {
             isTyping = true;
-            clearTimeout(typingTimer);
+            clearTimeout(_typingTimer);
             var triggered = pressenceChannel.trigger('client-user-typing', { userName: pressenceChannel.members.me.info.name, chatID: _activeChatID });
         }
 
@@ -315,12 +349,15 @@ function doneTyping() {
     isTyping = false;
 }
 
-function loadInitialMessages(chatID) {
+function loadInitialMessages(chatID, participantID) {
     var chatObject = { chatID: chatID };
 
     IssueAjaxRequest("GetChatInfo", chatObject,
     function (result) {
         chatInfoObject = result;
+        SetupChatUploads(chatID, participantID);
+        var messageData = { CreatorID: chatInfoObject.InitiatorUserID, CreatorInitials: chatInfoObject.InitiatorInitials, CreatorDisplayName: chatInfoObject.InitiatorDisplayName, Message: chatInfoObject.Description, DateCreated: chatInfoObject.DateCreated };
+        createMessageElement(messageData, 'right');
     },
     function (error) {
 
@@ -332,7 +369,7 @@ function IssueAjaxRequest(method, data, successCallback, errorCallback) {
     $.ajax({
         type: "POST",
         url: service + method,
-        data: JSON.stringify(data),
+        data: (data != null ? JSON.stringify(data) : null),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         cache: false,
@@ -353,7 +390,7 @@ function IssueAjaxRequest(method, data, successCallback, errorCallback) {
 }
 
 function SetupChatUploads(chatID, participantID) {
-    var uploadPath = '../../../Upload/ChatAttachments/';
+    var uploadPath = '../../../ChatUpload/ChatAttachments/' + chatInfoObject.OrganizationID + '/';
     $('#hiddenAttachmentInput').fileupload({
         dropZone: $('.panel-default'),
         add: function (e, data) {
