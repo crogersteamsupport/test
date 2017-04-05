@@ -81,6 +81,9 @@ function GetChatSettings(chatID) {
         }
 
         $("input:text:visible:first").focus();
+		
+		var imageUrl = '/dc/' + result.OrganizationID + '/chat/logo';
+		$('.chat-logo').css('background-image', 'url(' + imageUrl + ')');
     },
     function (error) {
 
