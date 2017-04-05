@@ -15,7 +15,7 @@
 
     <script type="text/javascript" language="javascript">    
         $(document).ready(function () {
-            $('.queries tr').on('click', '.clearcache', function (e) {
+            $('.container').on('click', '.clearcache', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
                 var plan = $(this).closest('tr').data('plan');
@@ -26,7 +26,6 @@
                     });
                 }
             });
-
             $('.refresh').click(function (e) {
                 e.stopPropagation();
                 e.preventDefault();
