@@ -24,6 +24,7 @@ namespace TSWebServices
         Pusher pusher;
         LoginUser loginUser;
         Organization parentOrganization;
+
         public ChatService()
         {
             options.Encrypted = true;
@@ -71,6 +72,7 @@ namespace TSWebServices
             model.TOKVoiceEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKVoiceEnabled", "false"));
             model.TOKVideoEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKVideoEnabled", "false"));
             model.ChatAvatarsEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatAvatarsEnabled", "false"));
+            model.OrganizationID = org.OrganizationID;
 
             return JsonConvert.SerializeObject(model);
         }
@@ -1094,7 +1096,7 @@ namespace TSWebServices
             public bool TOKVoiceEnabled { get; set; }
             public bool TOKVideoEnabled { get; set; }
             public bool ChatAvatarsEnabled { get; set; }
-
+            public int OrganizationID { get; set; }
         }
 
             #endregion
