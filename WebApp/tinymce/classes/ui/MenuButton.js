@@ -66,10 +66,10 @@ define("tinymce/ui/MenuButton", [
 		 *
 		 * @method showMenu
 		 */
-		showMenu: function(toggle) {
+		showMenu: function() {
 			var self = this, menu;
 
-			if (self.menu && self.menu.visible() && toggle !== false) {
+			if (self.menu && self.menu.visible()) {
 				return self.hideMenu();
 			}
 
@@ -119,7 +119,6 @@ define("tinymce/ui/MenuButton", [
 			self.menu.show();
 			self.menu.layoutRect({w: self.layoutRect().w});
 			self.menu.moveRel(self.getEl(), self.isRtl() ? ['br-tr', 'tr-br'] : ['bl-tl', 'tl-bl']);
-			self.fire('showmenu');
 		},
 
 		/**
@@ -205,11 +204,10 @@ define("tinymce/ui/MenuButton", [
 
 			self.on('click', function(e) {
 				if (e.control === self && isChildOf(e.target, self.getEl())) {
-					self.focus();
-					self.showMenu(!e.aria);
+					self.showMenu();
 
 					if (e.aria) {
-						self.menu.items().filter(':visible')[0].focus();
+						self.menu.items()[0].focus();
 					}
 				}
 			});

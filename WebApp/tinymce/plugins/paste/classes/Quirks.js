@@ -2,7 +2,7 @@
  * Quirks.js
  *
  * Released under LGPL License.
- * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
  *
  * License: http://www.tinymce.com/license
  * Contributing: http://www.tinymce.com/contributing
@@ -28,12 +28,6 @@ define("tinymce/pasteplugin/Quirks", [
 		function addPreProcessFilter(filterFunc) {
 			editor.on('BeforePastePreProcess', function(e) {
 				e.content = filterFunc(e.content);
-			});
-		}
-
-		function addPostProcessFilter(filterFunc) {
-			editor.on('PastePostProcess', function(e) {
-				filterFunc(e.node);
 			});
 		}
 
@@ -153,12 +147,6 @@ define("tinymce/pasteplugin/Quirks", [
 			return content;
 		}
 
-		function removeUnderlineAndFontInAnchor(root) {
-			editor.$('a', root).find('font,u').each(function(i, node) {
-				editor.dom.remove(node, true);
-			});
-		}
-
 		// Sniff browsers and apply fixes since we can't feature detect
 		if (Env.webkit) {
 			addPreProcessFilter(removeWebKitStyles);
@@ -166,7 +154,6 @@ define("tinymce/pasteplugin/Quirks", [
 
 		if (Env.ie) {
 			addPreProcessFilter(removeExplorerBrElementsAfterBlocks);
-			addPostProcessFilter(removeUnderlineAndFontInAnchor);
 		}
 	};
 });

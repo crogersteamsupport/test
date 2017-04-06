@@ -413,13 +413,10 @@ define("tinymce/html/Node", [], function() {
 		 * node.isEmpty({img: true});
 		 * @method isEmpty
 		 * @param {Object} elements Name/value object with elements that are automatically treated as non empty elements.
-		 * @param {Object} whitespace Name/value object with elements that are automatically treated whitespace preservables.
 		 * @return {Boolean} true/false if the node is empty or not.
 		 */
-		isEmpty: function(elements, whitespace) {
+		isEmpty: function(elements) {
 			var self = this, node = self.firstChild, i, name;
-
-			whitespace = whitespace || {};
 
 			if (node) {
 				do {
@@ -450,12 +447,7 @@ define("tinymce/html/Node", [], function() {
 					}
 
 					// Keep non whitespace text nodes
-					if (node.type === 3 && !whiteSpaceRegExp.test(node.value)) {
-						return false;
-					}
-
-					// Keep whitespace preserve elements
-					if (node.type === 3 && node.parent && whitespace[node.parent.name] && whiteSpaceRegExp.test(node.value)) {
+					if ((node.type === 3 && !whiteSpaceRegExp.test(node.value))) {
 						return false;
 					}
 				} while ((node = walk(node, self)));

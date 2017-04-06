@@ -243,15 +243,6 @@ define("tinymce/util/Quirks", [
 			function findCaretNode(node, forward, startNode) {
 				var walker, current, nonEmptyElements;
 
-				// Protect against the possibility we are asked to find a caret node relative
-				// to a node that is no longer in the DOM tree. In this case attempting to
-				// select on any match leads to a scenario where selection is completely removed
-				// from the editor. This scenario is met in real world at a minimum on
-				// WebKit browsers when selecting all and Cmd-X cutting to delete content.
-				if (!dom.isChildOf(node, editor.getBody())) {
-					return;
-				}
-
 				nonEmptyElements = dom.schema.getNonEmptyElements();
 
 				walker = new TreeWalker(startNode || node, node);
@@ -351,11 +342,10 @@ define("tinymce/util/Quirks", [
 					}
 				}
 
-				caretNode = RangeUtils.getNode(container, offset);
+				caretNode = RangeUtils.getNode(rng.startContainer, rng.startOffset);
 				textBlock = dom.getParent(caretNode, dom.isBlock);
 				targetCaretNode = findCaretNode(editor.getBody(), isForward, caretNode);
 				targetTextBlock = dom.getParent(targetCaretNode, dom.isBlock);
-				var isAfter = container.nodeType === 1 && offset > container.childNodes.length - 1;
 
 				if (!caretNode || !targetCaretNode) {
 					return rng;
@@ -378,11 +368,7 @@ define("tinymce/util/Quirks", [
 						}
 
 						if (caretNode.nodeType == 1) {
-							if (isAfter) {
-								rng.setEndAfter(caretNode);
-							} else {
-								rng.setEndBefore(caretNode);
-							}
+							rng.setEnd(caretNode, 0);
 						} else {
 							rng.setEndBefore(caretNode);
 						}
@@ -605,12 +591,6 @@ define("tinymce/util/Quirks", [
 				});
 			}
 
-			function transactCustomDelete(isForward) {
-				editor.undoManager.transact(function () {
-					customDelete(isForward);
-				});
-			}
-
 			editor.on('keydown', function(e) {
 				var isForward = e.keyCode == DELETE, isMetaOrCtrl = e.ctrlKey || e.metaKey;
 
@@ -737,9 +717,9 @@ define("tinymce/util/Quirks", [
 							if (dragStartRng) {
 								selection.setRng(dragStartRng);
 								dragStartRng = null;
-								transactCustomDelete();
 							}
 
+							customDelete();
 							selection.setRng(pointRng);
 							insertClipboardContents(internalContent.html);
 						});
@@ -758,7 +738,7 @@ define("tinymce/util/Quirks", [
 					// Nested delete/forwardDelete not allowed on execCommand("cut")
 					// This is ugly but not sure how to work around it otherwise
 					Delay.setEditorTimeout(editor, function() {
-						transactCustomDelete(true);
+						customDelete(true);
 					});
 				}
 			});
@@ -960,9 +940,10 @@ define("tinymce/util/Quirks", [
 
 				// Workaround for bug, http://bugs.webkit.org/show_bug.cgi?id=12250
 				// WebKit can't even do simple things like selecting an image
+				// Needs to be the setBaseAndExtend or it will fail to select floated images
 				if (/^(IMG|HR)$/.test(target.nodeName) && dom.getContentEditableParent(target) !== "false") {
 					e.preventDefault();
-					selection.select(target);
+					selection.getSel().setBaseAndExtent(target, 0, target, 1);
 					editor.nodeChanged();
 				}
 
@@ -1654,7 +1635,18 @@ define("tinymce/util/Quirks", [
 		}
 
 		function refreshContentEditable() {
-			// No-op since Mozilla seems to have fixed the caret repaint issues
+			var body, parent;
+
+			// Check if the editor was hidden and the re-initialize contentEditable mode by removing and adding the body again
+			if (isHidden()) {
+				body = editor.getBody();
+				parent = body.parentNode;
+
+				parent.removeChild(body);
+				parent.appendChild(body);
+
+				body.focus();
+			}
 		}
 
 		function isHidden() {
@@ -1679,12 +1671,8 @@ define("tinymce/util/Quirks", [
 				var rng = editor.selection.getRng();
 				var startCaretPos = CaretPosition.fromRangeStart(rng);
 				var endCaretPos = CaretPosition.fromRangeEnd(rng);
-				var prev = caretWalker.prev(startCaretPos);
-				var next = caretWalker.next(endCaretPos);
 
-				return !editor.selection.isCollapsed() &&
-					(!prev || (prev.isAtStart() && startCaretPos.isEqual(prev))) &&
-					(!next || (next.isAtEnd() && startCaretPos.isEqual(next)));
+				return !editor.selection.isCollapsed() && !caretWalker.prev(startCaretPos) && !caretWalker.next(endCaretPos);
 			}
 
 			// Type over case delete and insert this won't cover typeover with a IME but at least it covers the common case

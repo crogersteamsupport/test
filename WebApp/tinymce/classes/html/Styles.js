@@ -34,7 +34,7 @@ define("tinymce/html/Styles", [], function() {
 			urlOrStrRegExp = /(?:url(?:(?:\(\s*\"([^\"]+)\"\s*\))|(?:\(\s*\'([^\']+)\'\s*\))|(?:\(\s*([^)\s]+)\s*\))))|(?:\'([^\']+)\')|(?:\"([^\"]+)\")/gi,
 			styleRegExp = /\s*([^:]+):\s*([^;]+);?/g,
 			trimRightRegExp = /\s+$/,
-			i, encodingLookup = {}, encodingItems, validStyles, invalidStyles, invisibleChar = '\uFEFF';
+			undef, i, encodingLookup = {}, encodingItems, validStyles, invalidStyles, invisibleChar = '\uFEFF';
 
 		settings = settings || {};
 
@@ -195,14 +195,6 @@ define("tinymce/html/Styles", [], function() {
 					return str;
 				}
 
-				function decodeSingleHexSequence(escSeq) {
-					return String.fromCharCode(parseInt(escSeq.slice(1), 16));
-				}
-
-				function decodeHexSequences(value) {
-					return value.replace(/\\[0-9a-f]+/gi, decodeSingleHexSequence);
-				}
-
 				function processUrl(match, url, url2, url3, str, str2) {
 					str = str || str2;
 
@@ -216,7 +208,7 @@ define("tinymce/html/Styles", [], function() {
 					url = decode(url || url2 || url3);
 
 					if (!settings.allow_script_urls) {
-						var scriptUrl = url.replace(/[\s\r\n]+/g, '');
+						var scriptUrl = url.replace(/[\s\r\n]+/, '');
 
 						if (/(java|vb)script:/i.test(scriptUrl)) {
 							return "";
@@ -246,22 +238,17 @@ define("tinymce/html/Styles", [], function() {
 
 					// Parse styles
 					while ((matches = styleRegExp.exec(css))) {
-						styleRegExp.lastIndex = matches.index + matches[0].length;
 						name = matches[1].replace(trimRightRegExp, '').toLowerCase();
 						value = matches[2].replace(trimRightRegExp, '');
 
-						if (name && value) {
-							// Decode escaped sequences like \65 -> e
-							name = decodeHexSequences(name);
-							value = decodeHexSequences(value);
+						// Decode escaped sequences like \65 -> e
+						/*jshint loopfunc:true*/
+						/*eslint no-loop-func:0 */
+						value = value.replace(/\\[0-9a-f]+/g, function(e) {
+							return String.fromCharCode(parseInt(e.substr(1), 16));
+						});
 
-							// Skip properties with double quotes and sequences like \" \' in their names
-							// See 'mXSS Attacks: Attacking well-secured Web-Applications by using innerHTML Mutations'
-							// https://cure53.de/fp170.pdf
-							if (name.indexOf(invisibleChar) !== -1 || name.indexOf('"') !== -1) {
-								continue;
-							}
-
+						if (name && value.length > 0) {
 							// Don't allow behavior name or expression/comments within the values
 							if (!settings.allow_script_urls && (name == "behavior" || /expression\s*\(|\/\*|\*\//.test(value))) {
 								continue;
@@ -281,6 +268,8 @@ define("tinymce/html/Styles", [], function() {
 							value = value.replace(urlOrStrRegExp, processUrl);
 							styles[name] = isEncoded ? decode(value, true) : value;
 						}
+
+						styleRegExp.lastIndex = matches.index + matches[0].length;
 					}
 					// Compress the styles to reduce it's size for example IE will expand styles
 					compress("border", "", true);
@@ -326,7 +315,7 @@ define("tinymce/html/Styles", [], function() {
 							name = styleList[i];
 							value = styles[name];
 
-							if (value) {
+							if (value !== undef && value.length > 0) {
 								css += (css.length > 0 ? ' ' : '') + name + ': ' + value + ';';
 							}
 						}
@@ -359,8 +348,10 @@ define("tinymce/html/Styles", [], function() {
 					for (name in styles) {
 						value = styles[name];
 
-						if (value && (!invalidStyles || isValid(name, elementName))) {
-							css += (css.length > 0 ? ' ' : '') + name + ': ' + value + ';';
+						if (value !== undef && value.length > 0) {
+							if (!invalidStyles || isValid(name, elementName)) {
+								css += (css.length > 0 ? ' ' : '') + name + ': ' + value + ';';
+							}
 						}
 					}
 				}

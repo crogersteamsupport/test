@@ -30,10 +30,5 @@ define("tinymce/Register", [
 		}
 	}
 
-	if (typeof module === 'object') {
-		/* global module */
-		module.exports = window.tinymce;
-	}
-
 	return {};
 });

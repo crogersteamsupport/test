@@ -27,7 +27,7 @@ define("tinymce/dom/Serializer", [
 	"tinymce/text/Zwsp"
 ], function(DOMUtils, DomParser, SaxParser, Entities, Serializer, Node, Schema, Env, Tools, Zwsp) {
 	var each = Tools.each, trim = Tools.trim;
-	var DOM = DOMUtils.DOM;
+	var DOM = DOMUtils.DOM, tempAttrs = ["data-mce-selected"];
 
 	/**
 	 * IE 11 has a fantastic bug where it will produce two trailing BR elements to iframe bodies when
@@ -65,7 +65,7 @@ define("tinymce/dom/Serializer", [
 	 * @param {tinymce.Editor} editor Optional editor to bind events to and get schema/dom from.
 	 */
 	return function(settings, editor) {
-		var dom, schema, htmlParser, tempAttrs = ["data-mce-selected"];
+		var dom, schema, htmlParser;
 
 		if (editor) {
 			dom = editor.dom;
@@ -83,8 +83,18 @@ define("tinymce/dom/Serializer", [
 			return html;
 		}
 
-		function trimContent(html) {
-			var content = html;
+		/**
+		 * Returns a trimmed version of the editor contents to be used for the undo level. This
+		 * will remove any data-mce-bogus="all" marked elements since these are used for UI it will also
+		 * remove the data-mce-selected attributes used for selection of objects and caret containers.
+		 * It will keep all data-mce-bogus="1" elements since these can be used to place the caret etc and will
+		 * be removed by the serialization logic when you save.
+		 *
+		 * @private
+		 * @return {String} HTML contents of the editor excluding some internal bogus elements.
+		 */
+		function getTrimmedContent() {
+			var content = editor.getBody().innerHTML;
 			var bogusAllRegExp = /<(\w+) [^>]*data-mce-bogus="all"[^>]*>/g;
 			var endTagIndex, index, matchLength, matches, shortEndedElements, schema = editor.schema;
 
@@ -106,21 +116,7 @@ define("tinymce/dom/Serializer", [
 				bogusAllRegExp.lastIndex = index - matchLength;
 			}
 
-			return content;
-		}
-
-		/**
-		 * Returns a trimmed version of the editor contents to be used for the undo level. This
-		 * will remove any data-mce-bogus="all" marked elements since these are used for UI it will also
-		 * remove the data-mce-selected attributes used for selection of objects and caret containers.
-		 * It will keep all data-mce-bogus="1" elements since these can be used to place the caret etc and will
-		 * be removed by the serialization logic when you save.
-		 *
-		 * @private
-		 * @return {String} HTML contents of the editor excluding some internal bogus elements.
-		 */
-		function getTrimmedContent() {
-			return trimContent(editor.getBody().innerHTML);
+			return trim(content);
 		}
 
 		function addTempAttr(name) {
@@ -294,6 +290,24 @@ define("tinymce/dom/Serializer", [
 				}
 			}
 		});
+
+		// Fix list elements, TODO: Replace this later
+		if (settings.fix_list_elements) {
+			htmlParser.addNodeFilter('ul,ol', function(nodes) {
+				var i = nodes.length, node, parentNode;
+
+				while (i--) {
+					node = nodes[i];
+					parentNode = node.parent;
+
+					if (parentNode.name === 'ul' || parentNode.name === 'ol') {
+						if (node.prev && node.prev.name === 'li') {
+							node.prev.append(node);
+						}
+					}
+				}
+			});
+		}
 
 		// Remove internal data attributes
 		htmlParser.addAttributeFilter(
@@ -486,8 +500,7 @@ define("tinymce/dom/Serializer", [
 
 			// Internal
 			trimHtml: trimHtml,
-			getTrimmedContent: getTrimmedContent,
-			trimContent: trimContent
+			getTrimmedContent: getTrimmedContent
 		};
 	};
 });

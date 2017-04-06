@@ -13,6 +13,21 @@ define('tinymce/inlite/ui/Toolbar', [
 	'global!tinymce.ui.Factory',
 	'tinymce/inlite/alien/Type'
 ], function (Tools, Factory, Type) {
+	var setActiveItem = function (item, name) {
+		return function(state, args) {
+			var nodeName, i = args.parents.length;
+
+			while (i--) {
+				nodeName = args.parents[i].nodeName;
+				if (nodeName == 'OL' || nodeName == 'UL') {
+					break;
+				}
+			}
+
+			item.active(state && nodeName == name);
+		};
+	};
+
 	var getSelectorStateResult = function (itemName, item) {
 		var result = function (selector, handler) {
 			return {
@@ -28,6 +43,14 @@ define('tinymce/inlite/ui/Toolbar', [
 		var disabledHandler = function (state) {
 			item.disabled(state);
 		};
+
+		if (itemName == 'bullist') {
+			return result('ul > li', setActiveItem(item, 'UL'));
+		}
+
+		if (itemName == 'numlist') {
+			return result('ol > li', setActiveItem(item, 'OL'));
+		}
 
 		if (item.settings.stateSelector) {
 			return result(item.settings.stateSelector, activeHandler);
