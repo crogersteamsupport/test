@@ -284,7 +284,7 @@ AdminAuto = function () {
     select.html('');
     $('<option>').attr('value', '-1').text('-- Select a Field --').appendTo(select).attr('selected', 'selected');
     for (var i = 0; i < _data.Fields.length; i++) {
-        var val = _data.Fields[i].TableID < 1 ? 'C-' + _data.Fields[i].FieldID : _data.Fields[i].FieldID;
+        var val = _data.Fields[i].IsCustom ? 'C-' + _data.Fields[i].FieldID : _data.Fields[i].FieldID;
       $('<option>').attr('value', val).text(_data.Fields[i].Alias).appendTo(select).data('field', _data.Fields[i]);
     }
     return select;
