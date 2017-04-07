@@ -307,6 +307,7 @@ AdminAuto = function () {
       select.html('');
       //$('<option>').attr('value', '-1').text('-- Select a Field --').appendTo(select).attr('selected', 'selected');
       for (var i = 0; i < _data.CustomFields.length; i++) {
+          //$('<option>').attr('value', 'C-' + _data.CustomFields[i].FieldID).text(_data.CustomFields[i].Alias).appendTo(select).data('field', _data.CustomFields[i]);
           $('<option>').attr('value', _data.CustomFields[i].FieldID).text(_data.CustomFields[i].Alias).appendTo(select).data('field', _data.CustomFields[i]);
       }
       return select;
@@ -422,13 +423,10 @@ AdminAuto = function () {
 
 
     if (logicItem) {
-        if (fields.find('option[value="' + logicItem.FieldID + '"]').length > 0) {
-            if (logicItem.TableID < 0) {
-                fields.combobox('setValue', 'C-' + logicItem.FieldID);
-            }
-            else {
-                fields.combobox('setValue', logicItem.FieldID);
-            }
+        var id = logicItem.TableID == -1 ? 'C-' + logicItem.FieldID : logicItem.FieldID;
+
+        if (fields.find('option[value="' + id + '"]').length > 0) {
+            fields.combobox('setValue', id);
         }
         else {
             fields.combobox('setValue', -999);

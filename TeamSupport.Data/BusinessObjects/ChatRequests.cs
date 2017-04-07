@@ -52,7 +52,6 @@ SELECT COUNT(*) FROM ChatUserSettings cus
 LEFT JOIN Users u ON u.UserID = cus.UserID
 WHERE cus.IsAvailable = 1
 AND u.IsChatUser = 1
-AND DATEADD(second, 60, u.LastPing) > GETUTCDATE()
 AND u.OrganizationID = @OrganizationID";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
