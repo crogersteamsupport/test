@@ -421,9 +421,10 @@ AdminAuto = function () {
     }
     });
 
-    var id = logicItem.TableID < 0 ? 'C-' + logicItem.FieldID : logicItem.FieldID;
 
     if (logicItem) {
+        var id = logicItem.TableID == -1 ? 'C-' + logicItem.FieldID : logicItem.FieldID;
+
         if (fields.find('option[value="' + id + '"]').length > 0) {
             fields.combobox('setValue', id);
         }
