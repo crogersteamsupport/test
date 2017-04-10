@@ -365,6 +365,7 @@ $(document).ready(function () {
         messageString = messageString.trim();
 
         if (messageString !== '') {
+            messageString = replaceURLs(messageString);
             $('#new-message').prop("disabled", true);
             doneTyping();
             parent.Ts.Services.Chat.AddAgentMessage('presence-' + _activeChatID, messageString, _activeChatID, function (data) {
@@ -373,6 +374,14 @@ $(document).ready(function () {
             });
         }
     });
+
+    function replaceURLs(text) {
+        var urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+
+        return text.replace(urlRegex, function (url) {
+            return '<a target="_blank" href="' + url + '">' + url + '</a>';
+        })
+    }
 
     function SetupToolbar() {
         //Leave Chat and remove from list of active chats
