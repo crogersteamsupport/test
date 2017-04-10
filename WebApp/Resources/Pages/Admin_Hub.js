@@ -8,7 +8,7 @@
     parent.parent.Ts.Services.Admin.GetHubURL(function (hubList) {
         var enableNewHubs = false;
 
-        if (parent.parent.Ts.System.Organization.UseProductFamilies == true && parent.parent.Ts.System.Organization.ProductType == parent.Ts.ProductType.Enterprise) {
+        if (parent.parent.Ts.System.Organization.UseProductFamilies == true && parent.parent.Ts.System.Organization.ProductType == parent.parent.Ts.ProductType.Enterprise) {
             enableNewHubs = true;
         }
 
