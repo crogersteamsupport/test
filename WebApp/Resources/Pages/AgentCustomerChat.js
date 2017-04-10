@@ -43,17 +43,21 @@ $(document).ready(function () {
         }
     });
 
-    top.Ts.Settings.System.read('PusherKey', '1', function (key) {
-        pusherKey = key;
-        SetupChatRequests();
-        subscribeToNewChatRequest(pusherKey, function (request) {
-            if (request.userIdInvited === undefined || request.userIdInvited == top.Ts.System.User.UserID) {
-                SetupPendingRequest(request.chatRequest, true);
-            }
-        });
+    if (top.Ts.System.ChatUserSettings.IsAvailable) {
+        top.Ts.Settings.System.read('PusherKey', '1', function (key) {
+            pusherKey = key;
+            SetupChatRequests();
+            subscribeToNewChatRequest(pusherKey, function (request) {
+                if (request.userIdInvited === undefined || request.userIdInvited == top.Ts.System.User.UserID) {
+                    SetupPendingRequest(request.chatRequest, true);
+                }
+            });
 
+            $('.page-loading').hide().next().show();
+        });
+    } else {
         $('.page-loading').hide().next().show();
-    });
+    }
 
     GetChatSettings(true);
     SetupToolbar();
