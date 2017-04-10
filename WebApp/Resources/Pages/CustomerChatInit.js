@@ -2,6 +2,10 @@
 
 $(document).ready(function () {
     var chatID = Ts.Utils.getQueryValue("uid", window);
+    var fname = Ts.Utils.getQueryValue("fname", window);
+    var lname = Ts.Utils.getQueryValue("lname", window);
+    var email = Ts.Utils.getQueryValue("email", window);
+    var msg = Ts.Utils.getQueryValue("msg", window);
     var chatGuid = { chatGuid: chatID };
 
     IssueAjaxRequest("CheckChatStatus", { chatGuid: chatID },
@@ -49,6 +53,22 @@ $(document).ready(function () {
             });
         }
     });
+
+    if (fname != null && fname != 'undefined') {
+        $("#userFirstName").val(fname);
+    }
+    
+    if (lname != null && lname != 'undefined') {
+        $("#userLastName").val(lname);
+    }
+
+    if (email != null && email != 'undefined') {
+        $("#userEmail").val(email);
+    }
+
+    if (msg != null && msg != 'undefined') {
+        $("#userIssue").val(msg);
+    }
 });
 
 function GetChatSettings(chatID) {
@@ -61,6 +81,9 @@ function GetChatSettings(chatID) {
         }
 
         $("input:text:visible:first").focus();
+		
+		var imageUrl = '/dc/' + result.OrganizationID + '/chat/logo';
+		$('.chat-logo').css('background-image', 'url(' + imageUrl + ')');
     },
     function (error) {
 
