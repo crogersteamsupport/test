@@ -119,6 +119,9 @@
       <Private>True</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="PusherServer">
+      <HintPath>..\..\..\Chat\packages\PusherServer.3.0.0\lib\net35\PusherServer.dll</HintPath>
+    </Reference>
     <Reference Include="Svg">
       <HintPath>..\packages\HighCharts\Svg.dll</HintPath>
     </Reference>
