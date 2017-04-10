@@ -827,22 +827,22 @@
                                 <div class="portal-save-panel"><button class="portal-save">Save</button>&nbsp<button class="portal-cancel">Cancel</button></div>
                             </div>
 
-                            <div id="tabs-hub" class="tabs-modifiable" style="height:100%">
-                                <div style="height: 100%; overflow:hidden;">
+                            <div id="tabs-hub" class="tabs-modifiable" style="height:1260px; overflow:hidden;">
+                                <div>
                                     <div id="HubList"></div>
                                     <div style="margin-left:170px;" id="hubWindow">
-                                        <div id="newHub" style="display:none; min-height:1000px;">
+                                        <div id="newHub" style="display:none; min-height:800px;">
                                             <div class="container-fluid well hubWell">
                                                 <div style="text-align:center; margin-bottom:20px;">
                                                     <h4>New Customer Hub</h4>
                                                 </div>
                                                 <div class="hubProperty">
                                                     <label>Hub Name</label>
-                                                    <input type="text" class="form-control" />
+                                                    <input type="text" id="HubName" class="form-control" />
                                                 </div>
                                                 <div class="hubProperty">
                                                     <label>Product Line</label>
-                                                    <div id="ProductLineList"></div>
+                                                    <select id="ProductLineList" class="form-control"></select>
                                                 </div>
                                                 <div class="pull-right hubProperty">
                                                     <button type="button" id="btnCancel" class="btn btn-danger">Cancel</button>
@@ -856,7 +856,7 @@
                                                 <div style="margin-top:8px;">For more information on how to setup multiple hubs see the TeamSupport documentation <a href="">here!</a></div>
                                             </div>
                                         </div>
-                                        <iframe id="hub_admin" style="height:100%; width:100%; min-height:1000px; overflow:hidden;"></iframe>
+                                        <iframe id="hub_admin" style="width:100%; height:1240px;" scrolling="no"></iframe>
                                     </div>
                                 </div>
                             </div>
@@ -1071,7 +1071,7 @@
                                                 Visible on portal
                                             </div>
                                             <div class="ts-setting-field-content">
-                                                <input type="checkbox" class="checkbox" id="kb_cat_visible" checked=checked /><label class="checkbox" for="kb_cat_visible">Enabled</label>
+                                                <input type="checkbox" class="checkbox" id="kb_cat_visible" checked=checked checked=checked checked=checked checked=checked /><label class="checkbox" for="kb_cat_visible">Enabled</label>
                                                 <p></p>
                                             </div>
                                         </div>
@@ -1362,7 +1362,7 @@
         {{/if}}
         {{#unless enableNewHubs }}
         <div style="margin-top:8px;">
-            <a href="#" id="btnDisabledNewHub" style="color:lightgray;" disabled=disabled disabled=disabled>
+            <a href="#" id="btnDisabledNewHub" style="color:lightgray;" disabled=disabled disabled=disabled disabled=disabled disabled=disabled disabled=disabled disabled=disabled disabled=disabled disabled=disabled>
                 <div style="float:left;">
                     Add New Hub
                 </div>
@@ -1375,9 +1375,7 @@
     </div>
 </script>
 <script id="ProductLineTemplate" type="text/x-handlebars-template">
-    <select class="form-control">
-        {{#ProductLines}}
-        <option value="{{ProductFamilyID}}">{{Name}}</option>
-        {{/ProductLines}}
-    </select>
+    {{#ProductLines}}
+    <option value="{{ProductFamilyID}}">{{Name}}</option>
+    {{/ProductLines}}
 </script>

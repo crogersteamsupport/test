@@ -533,7 +533,7 @@ namespace TSWebServices
                 hubList = new List<CustomerHubLinkModel>();
                 foreach (var hub in hubs)
                 {
-                    hubList.Add(new CustomerHubLinkModel(hub.CustomerHubID, hub.PortalName, string.Format("{0}.{1}", hub.PortalName, SystemSettings.GetHubURL())));
+                    hubList.Add(new CustomerHubLinkModel(hub.CustomerHubID, hub.PortalName, hub.ProductFamilyID, string.Format("{0}.{1}", hub.PortalName, SystemSettings.GetHubURL())));
                 }
             }
             else
@@ -544,7 +544,7 @@ namespace TSWebServices
                 {
                     CustomerHubs hubs2 = new CustomerHubs(TSAuthentication.GetLoginUser());
                     hubs2.LoadByOrganizationID(TSAuthentication.OrganizationID);
-                    hubList.Add(new CustomerHubLinkModel(hubs[0].CustomerHubID, hubs2[0].PortalName, string.Format("{0}.{1}", hubs2[0].PortalName, SystemSettings.GetHubURL())));
+                    hubList.Add(new CustomerHubLinkModel(hubs[0].CustomerHubID, hubs2[0].PortalName, hubs2[0].ProductFamilyID, string.Format("{0}.{1}", hubs2[0].PortalName, SystemSettings.GetHubURL())));
                 }
             }
             return hubList;
@@ -553,7 +553,7 @@ namespace TSWebServices
         [WebMethod]
         public List<CustomerHubLinkModel> CreateNewHub(string name, int? productFamilyID)
         {
-            CustomerHubLinkModel newHubModel = new CustomerHubLinkModel(0, name, "poop");
+            CustomerHubLinkModel newHubModel = new CustomerHubLinkModel(-1, name, productFamilyID, null);
 
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<CustomerHubLinkModel> hubList = null;
@@ -596,6 +596,7 @@ namespace TSWebServices
             newHub.OrganizationID = srcHub.OrganizationID;
             newHub.PortalName = Regex.Replace(newHubModel.Name, "[^0-9a-zA-Z-]", "");
             newHub.IsActive = true;
+            newHub.ProductFamilyID = newHubModel.ProductFamilyID;
             newHub.DateCreated = DateTime.UtcNow;
             newHub.DateModified = DateTime.UtcNow;
             newHub.ModifierID = TSAuthentication.GetLoginUser().UserID;
@@ -647,7 +648,7 @@ namespace TSWebServices
 
             CustomerHubFeatureSettings featureHelper = new CustomerHubFeatureSettings(loginUser);
             CustomerHubFeatureSetting featureSetting = featureHelper.AddNewCustomerHubFeatureSetting();
-            
+
             featureSetting.EnableKnowledgeBase = srcFeatureSetting.EnableKnowledgeBase;
             featureSetting.EnableProducts = srcFeatureSetting.EnableProducts;
             featureSetting.EnableTicketCreation = srcFeatureSetting.EnableTicketCreation;
@@ -1309,15 +1310,17 @@ namespace TSWebServices
     [DataContract(Namespace = "http://teamsupport.com/")]
     public class CustomerHubLinkModel
     {
-        public CustomerHubLinkModel(int hubid, string name, string url)
+        public CustomerHubLinkModel(int hubid, string name, int? productFamilyID, string url)
         {
             HubID = hubid;
             Name = name;
             URL = url;
+            ProductFamilyID = productFamilyID;
         }
         [DataMember]
         public int HubID { get; set; }
         public string Name { get; set; }
+        public int? ProductFamilyID { get; set; }
         public string URL { get; set; }
     }
 }

@@ -30,7 +30,6 @@
 
                 $("#ProductLineList").html(productLineTemplate(data));
 
-                console.log(data);
                 $('#hub_admin').fadeOut();
                 $('#newHub').fadeIn();
             });
@@ -62,7 +61,7 @@
     });
 
     $('#btnFinalizeNewHub').on('click', function (e) {
-        parent.parent.Ts.Services.Admin.CreateNewHub('Test', 10);
+        parent.parent.Ts.Services.Admin.CreateNewHub($('#HubName').val(), $('#ProductLineList').val());
     });
 
 });
