@@ -23,9 +23,18 @@
 
         $('#btnNewHub').on('click', function (e) {
             e.preventDefault();
+            parent.parent.Ts.Services.Products.GetProductFamilies(function (data) {
 
-            $('#hub_admin').fadeOut();
-            $('#newHub').fadeIn();
+                var productLineTemplate = Handlebars.compile($("#ProductLineTemplate").html());
+                data = { ProductLines: data };
+
+                $("#ProductLineList").html(productLineTemplate(data));
+
+                console.log(data);
+                $('#hub_admin').fadeOut();
+                $('#newHub').fadeIn();
+            });
+            
         });
 
         $('#btnDisabledNewHub').on('click', function (e) {
