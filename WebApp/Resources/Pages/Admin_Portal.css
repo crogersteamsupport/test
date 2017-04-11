@@ -78,6 +78,10 @@ form.positive-file-upload input, form.neutral-file-upload input, form.negative-f
     margin-top:10px;
 }
 
+#HubList {
+    font-size: 13px;
+}
+
 #hub-container:hover .remove {
     display: block !important;
 }

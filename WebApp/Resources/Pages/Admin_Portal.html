@@ -8,8 +8,9 @@
     <link href="../Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
     <link href="../Css/jquery.ui.timepicker.css" rel="stylesheet" type="text/css" />
     <link href="../Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-    <link href="../Css/ts.ui.css" rel="stylesheet" type="text/css" />
     <link href="../Css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Css/ts.ui.css" rel="stylesheet" type="text/css" />
+    
 
     <!--[if IE 7]><link href="vcr/1_7_9/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]-->
     <!--[if IE 8]><link href="vcr/1_7_9/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
@@ -833,16 +834,22 @@
                                     <div style="margin-left:170px;" id="hubWindow">
                                         <div id="newHub" style="display:none; min-height:800px;">
                                             <div class="container-fluid well hubWell">
-                                                <div style="text-align:center; margin-bottom:20px;">
-                                                    <h4>New Customer Hub</h4>
+                                                <div style="text-align:center; margin-bottom:10px;">
+                                                    <h2 style="font-weight:bold;">New Customer Hub</h2>
                                                 </div>
                                                 <div class="hubProperty">
-                                                    <label>Hub Name</label>
+                                                    <label>Hub Prefix/Name</label>
                                                     <input type="text" id="HubName" class="form-control" />
                                                 </div>
                                                 <div class="hubProperty">
                                                     <label>Product Line</label>
                                                     <select id="ProductLineList" class="form-control"></select>
+                                                </div>
+                                                <div class="hubProperty">
+                                                    <label>Copy All Other Settings From</label>
+                                                    <select id="ProductLineList" class="form-control">
+                                                        <option selected>SandBox</option>
+                                                    </select>
                                                 </div>
                                                 <div class="pull-right hubProperty">
                                                     <button type="button" id="btnCancel" class="btn btn-danger">Cancel</button>
@@ -1337,9 +1344,9 @@
 <script id="hub-list-template" type="text/x-handlebars-template">
     <div style="width:150px; padding:0 8px 0 2px; float:left;">
         {{#hubList}}
-        <div style="margin-top:8px;">
+        <div style="margin-top:14px;">
             <div id="hub-container">
-                <span class="remove" style="float:left; margin-right:6px; margin-left:-12px;">
+                <span class="remove" style="float:left; margin-right:6px; margin-left:-12px; display:none;">
                     <a href="#" class="btnDeleteHub" data-hubid="{{HubID}}">
                         <i class="fa fa-remove" style="font-size:10px;" aria-hidden="true"></i>
                     </a>
@@ -1356,7 +1363,7 @@
         </div>
         {{/hubList}}
         {{#if enableNewHubs}}
-        <div style="margin-top:8px;">
+        <div style="margin-top:14px;">
             <a href="#" id="btnNewHub">
                 <span style="float:left;">
                     Add New Hub
@@ -1368,7 +1375,7 @@
         </div>
         {{/if}}
         {{#unless enableNewHubs }}
-        <div style="margin-top:8px;">
+        <div style="margin-top:14px;">
             <a href="#" id="btnDisabledNewHub" style="color:lightgray;" disabled="disabled">
                 <div style="float:left;">
                     Add New Hub

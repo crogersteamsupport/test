@@ -584,8 +584,10 @@ namespace TSWebServices
             return hubList;
         }
 
-        public void BuildNewHub(CustomerHubLinkModel newHubModel, CustomerHub srcHub, CustomerHubAuthenticationItem srcAuthenticationItem, CustomerHubDisplaySetting srcDisplaySetting, CustomerHubFeatureSetting srcFeatureSetting)
+        public CustomerHubLinkModel BuildNewHub(CustomerHubLinkModel newHubModel, CustomerHub srcHub, CustomerHubAuthenticationItem srcAuthenticationItem, CustomerHubDisplaySetting srcDisplaySetting, CustomerHubFeatureSetting srcFeatureSetting)
         {
+            CustomerHubLinkModel result = null;
+
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             CustomerHubs hubHelper = new CustomerHubs(loginUser);
 
@@ -675,6 +677,10 @@ namespace TSWebServices
             featureSetting.ModifierID = loginUser.UserID;
 
             featureHelper.Save();
+
+            result = new CustomerHubLinkModel(newHub.CustomerHubID, newHub.PortalName, newHub.ProductFamilyID, null);
+
+            return result;
         }
 
         [WebMethod]
