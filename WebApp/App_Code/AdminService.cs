@@ -551,7 +551,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public List<CustomerHubLinkModel> CreateNewHub(string name, int? productFamilyID)
+        public CustomerHubLinkModel CreateNewHub(string name, int? productFamilyID)
         {
             CustomerHubLinkModel newHubModel = new CustomerHubLinkModel(-1, name, productFamilyID, null);
 
@@ -576,12 +576,12 @@ namespace TSWebServices
                 CustomerHubFeatureSettings featureSettings = new CustomerHubFeatureSettings(loginUser);
                 featureSettings.LoadByCustomerHubID(hubToCopyID);
 
-                BuildNewHub(newHubModel, customerHubs[0], authenticationSettings[0], displaySettings[0], featureSettings[0]);
+                newHubModel = BuildNewHub(newHubModel, customerHubs[0], authenticationSettings[0], displaySettings[0], featureSettings[0]);
 
                 //Profit.
             }
 
-            return hubList;
+            return newHubModel;
         }
 
         public CustomerHubLinkModel BuildNewHub(CustomerHubLinkModel newHubModel, CustomerHub srcHub, CustomerHubAuthenticationItem srcAuthenticationItem, CustomerHubDisplaySetting srcDisplaySetting, CustomerHubFeatureSetting srcFeatureSetting)
@@ -678,7 +678,7 @@ namespace TSWebServices
 
             featureHelper.Save();
 
-            result = new CustomerHubLinkModel(newHub.CustomerHubID, newHub.PortalName, newHub.ProductFamilyID, null);
+            result = new CustomerHubLinkModel(newHub.CustomerHubID, newHub.PortalName, newHub.ProductFamilyID, string.Format("{0}.{1}", newHub.PortalName, SystemSettings.GetHubURL()));
 
             return result;
         }
