@@ -678,6 +678,20 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public void DeleteHub(int hubID)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+            CustomerHubs.DeleteByCustomerHubID(loginUser, hubID);
+            CustomerHubAuthentication.DeleteByCustomerHubID(loginUser, hubID);
+            CustomerHubAuthentication.DeleteByCustomerHubID(loginUser, hubID);
+            CustomerHubCustomViews.DeleteByCustomerHubID(loginUser, hubID);
+            CustomerHubDisplaySettings.DeleteByCustomerHubID(loginUser, hubID);
+            CustomerHubFeatureSettings.DeleteByCustomerHubID(loginUser, hubID);
+
+        }
+
+        [WebMethod]
         public string GetHubURLwithCName()
         {
             CustomerHubs hubs = new CustomerHubs(TSAuthentication.GetLoginUser());

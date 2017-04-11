@@ -33,7 +33,7 @@
                 $('#hub_admin').fadeOut();
                 $('#newHub').fadeIn();
             });
-            
+
         });
 
         $('#btnDisabledNewHub').on('click', function (e) {
@@ -58,6 +58,22 @@
                 }
             }
         });
+
+        $('.btnDeleteHub').on('click', function (e) {
+            debugger;
+            e.preventDefault();
+            var HubID = $(this).data('hubid');
+
+            if (confirm('Are you sure you want to delete this hub? All customized hub page data will be lost.')) {
+                // Save it!
+            } else {
+                // Do nothing!
+            }
+
+            parent.parent.Ts.Services.Admin.DeleteHub(HubID);
+
+        });
+
     });
 
     $('#btnFinalizeNewHub').on('click', function (e) {

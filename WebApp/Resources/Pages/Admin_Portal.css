@@ -77,3 +77,19 @@ form.positive-file-upload input, form.neutral-file-upload input, form.negative-f
 .hubProperty {
     margin-top:10px;
 }
+
+#hub-container:hover .remove {
+    display: block !important;
+}
+
+#hub-container > a:hover {
+    text-decoration: none;
+}
+
+#hub-container > a:active {
+    text-decoration:none;
+}
+
+#hub-container > a:link {
+    text-decoration: none;
+}

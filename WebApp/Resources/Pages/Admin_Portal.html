@@ -1335,34 +1335,41 @@
 </body>
 </html>
 <script id="hub-list-template" type="text/x-handlebars-template">
-    <div style="width:150px; padding:0 8px 0 8px; float:left;">
+    <div style="width:150px; padding:0 8px 0 2px; float:left;">
         {{#hubList}}
         <div style="margin-top:8px;">
-            <a href="#" class="btnLoadHub" data-hubid="{{HubID}}">
-                <div style="float:left;">
-                    {{Name}}
-                </div>
-                <div style="text-align:right;">
-                    <i class="fa fa-chevron-right" style="font-size:10px;" aria-hidden="true"></i>
-                </div>
-            </a>
+            <div id="hub-container">
+                <span class="remove" style="float:left; margin-right:6px; margin-left:-12px;">
+                    <a href="#" class="btnDeleteHub" data-hubid="{{HubID}}">
+                        <i class="fa fa-remove" style="font-size:10px;" aria-hidden="true"></i>
+                    </a>
+                </span>
+                <a href="#" class="btnLoadHub" data-hubid="{{HubID}}">
+                    <span>
+                        {{Name}}
+                    </span>
+                    <span class="pull-right">
+                        <i class="fa fa-chevron-right" style="font-size:10px;" aria-hidden="true"></i>
+                    </span>
+                </a>
+            </div>
         </div>
         {{/hubList}}
         {{#if enableNewHubs}}
         <div style="margin-top:8px;">
             <a href="#" id="btnNewHub">
-                <div style="float:left;">
+                <span style="float:left;">
                     Add New Hub
-                </div>
-                <div style="text-align:right;">
+                </span>
+                <span class="pull-right">
                     <i class="fa fa-plus" style="font-size:10px;" aria-hidden="true"></i>
-                </div>
+                </span>
             </a>
         </div>
         {{/if}}
         {{#unless enableNewHubs }}
         <div style="margin-top:8px;">
-            <a href="#" id="btnDisabledNewHub" style="color:lightgray;" disabled=disabled disabled=disabled disabled=disabled disabled=disabled disabled=disabled disabled=disabled disabled=disabled disabled=disabled>
+            <a href="#" id="btnDisabledNewHub" style="color:lightgray;" disabled="disabled">
                 <div style="float:left;">
                     Add New Hub
                 </div>
