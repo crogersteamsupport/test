@@ -682,12 +682,18 @@ namespace TSWebServices
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
 
-            CustomerHubs.DeleteByCustomerHubID(loginUser, hubID);
-            CustomerHubAuthentication.DeleteByCustomerHubID(loginUser, hubID);
-            CustomerHubAuthentication.DeleteByCustomerHubID(loginUser, hubID);
-            CustomerHubCustomViews.DeleteByCustomerHubID(loginUser, hubID);
-            CustomerHubDisplaySettings.DeleteByCustomerHubID(loginUser, hubID);
-            CustomerHubFeatureSettings.DeleteByCustomerHubID(loginUser, hubID);
+            CustomerHubs hubHelper = new CustomerHubs(loginUser);
+            hubHelper.LoadByOrganizationID(loginUser.OrganizationID);
+
+            if (hubHelper.Count() > 1)
+            {
+                CustomerHubs.DeleteByCustomerHubID(loginUser, hubID);
+                CustomerHubAuthentication.DeleteByCustomerHubID(loginUser, hubID);
+                CustomerHubAuthentication.DeleteByCustomerHubID(loginUser, hubID);
+                CustomerHubCustomViews.DeleteByCustomerHubID(loginUser, hubID);
+                CustomerHubDisplaySettings.DeleteByCustomerHubID(loginUser, hubID);
+                CustomerHubFeatureSettings.DeleteByCustomerHubID(loginUser, hubID);
+            }
 
         }
 
