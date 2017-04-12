@@ -34,7 +34,7 @@ AdminPortal = function () {
         $('#tabs-advanced').hide();
     }
 
-    if (new Date(parent.parent.Ts.System.Organization.DateCreated) > new Date("4/11/2017")) {
+    if (new Date(parent.parent.Ts.System.Organization.DateCreated) > new Date("4/21/2017")) {
         $('#tab-general').remove();
         $('#tabs-general').hide();
         $('#tab-advanced').remove();
