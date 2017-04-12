@@ -551,15 +551,12 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public CustomerHubLinkModel CreateNewHub(string name, int? productFamilyID, int hubToCopyID)
+        public CustomerHubLinkModel CreateNewHub(string name, int hubToCopyID, int? productFamilyID)
         {
-            CustomerHubLinkModel newHubModel = new CustomerHubLinkModel(-1, name, productFamilyID, null);
-
+            CustomerHubLinkModel newHubModel = new CustomerHubLinkModel(-1, name, productFamilyID != -1 ? productFamilyID : null, null);
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            List<CustomerHubLinkModel> hubList = null;
-
+            
             //get old hub info to replicate
-
             CustomerHubs customerHubs = new CustomerHubs(loginUser);
             customerHubs.LoadByCustomerHubID(hubToCopyID);
 
@@ -1335,6 +1332,7 @@ namespace TSWebServices
     [DataContract(Namespace = "http://teamsupport.com/")]
     public class CustomerHubLinkModel
     {
+        public CustomerHubLinkModel() { }
         public CustomerHubLinkModel(int hubid, string name, int? productFamilyID, string url)
         {
             HubID = hubid;
