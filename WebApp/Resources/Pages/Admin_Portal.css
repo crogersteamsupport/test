@@ -120,3 +120,8 @@ form.positive-file-upload input, form.neutral-file-upload input, form.negative-f
 .remove:hover {
     color: #D9534F;
 }
+
+.divider {
+    color: lightgray;
+    margin-left:10px;
+}
