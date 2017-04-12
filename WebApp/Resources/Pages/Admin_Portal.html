@@ -10,7 +10,7 @@
     <link href="../Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
     <link href="../Css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="../Css/ts.ui.css" rel="stylesheet" type="text/css" />
-    
+
 
     <!--[if IE 7]><link href="vcr/1_7_9/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]-->
     <!--[if IE 8]><link href="vcr/1_7_9/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
@@ -848,7 +848,7 @@
                                                 <div class="hubProperty">
                                                     <label>Copy All Other Settings From</label>
                                                     <select id="ProductLineList" class="form-control">
-                                                        <option selected>SandBox</option>
+                                                        <option selected=selected>SandBox</option>
                                                     </select>
                                                 </div>
                                                 <div class="pull-right hubProperty">
@@ -1078,7 +1078,7 @@
                                                 Visible on portal
                                             </div>
                                             <div class="ts-setting-field-content">
-                                                <input type="checkbox" class="checkbox" id="kb_cat_visible" checked=checked checked=checked checked=checked checked=checked /><label class="checkbox" for="kb_cat_visible">Enabled</label>
+                                                <input type="checkbox" class="checkbox" id="kb_cat_visible" checked=checked checked=checked checked=checked checked=checked checked=checked checked=checked checked=checked checked=checked /><label class="checkbox" for="kb_cat_visible">Enabled</label>
                                                 <p></p>
                                             </div>
                                         </div>
@@ -1344,28 +1344,28 @@
 <script id="hub-list-template" type="text/x-handlebars-template">
     <div style="width:150px; padding:0 8px 0 2px; float:left;">
         {{#hubList}}
-        <div style="margin-top:14px;">
-            <div id="hub-container">
-                <span class="remove" style="float:left; margin-right:6px; margin-left:-12px; display:none;">
-                    <a href="#" class="btnDeleteHub" data-hubid="{{HubID}}">
-                        <i class="fa fa-remove" style="font-size:10px;" aria-hidden="true"></i>
-                    </a>
-                </span>
-                <a href="#" class="btnLoadHub" data-hubid="{{HubID}}">
-                    <span>
-                        {{Name}}
-                    </span>
-                    <span class="pull-right">
-                        <i class="fa fa-chevron-right" style="font-size:10px;" aria-hidden="true"></i>
-                    </span>
+        <div class="hub-container">
+            <span>
+                <a href="#" class="btnDeleteHub" data-hubid="{{HubID}}">
+                    <i class="fa fa-remove remove" aria-hidden="true"></i>
                 </a>
-            </div>
+            </span>
+            <a href="#" class="btnLoadHub" data-hubid="{{HubID}}" style="margin-left:15px;">
+                <span>
+                    {{Name}}
+                </span>
+                <span class="pull-right">
+                    <i class="fa fa-chevron-right loadcarat" aria-hidden="true"></i>
+                </span>
+            </a>
         </div>
         {{/hubList}}
         {{#if enableNewHubs}}
-        <div style="margin-top:14px;">
+        <div class="hub-container">
             <a href="#" id="btnNewHub">
-                <span style="float:left;">
+                <span class="remove">
+                </span>
+                <span style="float:left; margin-left:15px;">
                     Add New Hub
                 </span>
                 <span class="pull-right">
@@ -1375,13 +1375,13 @@
         </div>
         {{/if}}
         {{#unless enableNewHubs }}
-        <div style="margin-top:14px;">
+        <div class="hub-container">
             <a href="#" id="btnDisabledNewHub" style="color:lightgray;" disabled="disabled">
                 <div style="float:left;">
                     Add New Hub
                 </div>
-                <div style="text-align:right;">
-                    <i class="fa fa-plus" style="font-size:10px;" aria-hidden="true"></i>
+                <div style="text-align:right; margin-left:15px;">
+                    <i class="fa fa-plus loadcarat" aria-hidden="true"></i>
                 </div>
             </a>
         </div>

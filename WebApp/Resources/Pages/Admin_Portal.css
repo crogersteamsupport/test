@@ -83,18 +83,40 @@ form.positive-file-upload input, form.neutral-file-upload input, form.negative-f
     font-size: 13px;
 }
 
-#hub-container:hover .remove {
+.hub-container {
+    margin-top: 14px;
+}
+
+.hub-container:hover .remove {
     display: block !important;
 }
 
-#hub-container > a:hover {
+.hub-container > a:hover {
     text-decoration: none;
 }
 
-#hub-container > a:active {
+.hub-container > a:active {
     text-decoration:none;
 }
 
-#hub-container > a:link {
+.hub-container > a:link {
     text-decoration: none;
+}
+
+.ui-tabs .ui-tabs-panel {
+    padding-left: 6px;
+}
+
+.loadcarat {
+    font-size:10px;
+}
+
+.remove {
+    display: none;
+    position: absolute;
+    font-size: 13px;
+}
+
+.remove:hover {
+    color: #D9534F;
 }
