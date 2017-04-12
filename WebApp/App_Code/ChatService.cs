@@ -43,7 +43,40 @@ namespace TSWebServices
         public bool CheckChatStatus(string chatGuid)
         {
             Organization org = GetOrganization(chatGuid);
-            return ChatRequests.AreOperatorsAvailable(LoginUser.Anonymous, org.OrganizationID);
+            bool areOperatorsAvailable = ChatRequests.AreOperatorsAvailable(LoginUser.Anonymous, org.OrganizationID);
+
+            if (areOperatorsAvailable)
+            {
+                string channel = "chat-requests-" + org.ChatID;
+                ChannelOccupiedInfo channelOccupiedInfo = new ChannelOccupiedInfo() { occupied = false };
+
+                try
+                {
+                    IGetResult<object> channelInfo = pusher.Get<object>("/channels/" + channel.ToLower());
+
+                    if (!string.IsNullOrEmpty(channelInfo.Body))
+                    {
+                        channelOccupiedInfo = JsonConvert.DeserializeObject<ChannelOccupiedInfo>(channelInfo.Body);
+                    }
+                    else
+                    {
+                        channelInfo = pusher.Get<object>("/channels/" + channel.ToUpper());
+
+                        if (!string.IsNullOrEmpty(channelInfo.Body))
+                        {
+                            channelOccupiedInfo = JsonConvert.DeserializeObject<ChannelOccupiedInfo>(channelInfo.Body);
+                        }
+                    }
+
+                    areOperatorsAvailable = areOperatorsAvailable && channelOccupiedInfo.occupied;
+                }
+                catch (Exception ex)
+                {
+                    ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "ChatService.CheckChatStatus");
+                }
+            }
+            
+            return areOperatorsAvailable;
         }
 
         [WebMethod]
@@ -1098,7 +1131,6 @@ namespace TSWebServices
             public bool ChatAvatarsEnabled { get; set; }
             public int OrganizationID { get; set; }
         }
-
-            #endregion
-        }
+        #endregion
+    }
 }

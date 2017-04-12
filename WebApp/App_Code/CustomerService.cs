@@ -2493,8 +2493,12 @@ SELECT
             {
                 EmailPosts.SendWelcomeTSUser(TSAuthentication.GetLoginUser(), user.UserID, password);
             }
-            else if (info.EmailPortalPW && info.IsPortalUser)
+            if (info.EmailPortalPW && info.IsPortalUser)
                 EmailPosts.SendWelcomePortalUser(TSAuthentication.GetLoginUser(), user.UserID, password);
+
+            if (info.EmailHubPW && info.IsPortalUser)
+                EmailPosts.SendWelcomePortalUser(TSAuthentication.GetLoginUser(), user.UserID, password);
+
 
             string description = String.Format("{0} created contact {1}", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, user.FirstLastName);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Users, user.UserID, description);
@@ -4673,6 +4677,8 @@ SELECT
             public bool EmailPortalPW { get; set; }
             [DataMember]
             public List<CustomFieldSaveInfo> Fields { get; set; }
+            [DataMember]
+            public bool EmailHubPW { get; set; }
         }
 
         public class EmailSave

@@ -199,6 +199,12 @@ Ts.Pages.Main.prototype = {
                     $('.menu-chatstatus .ts-icon').addClass('ts-icon-nochat-small').removeClass('ts-icon-chat-small');
                     $('.menu-chatstatus-text').text('Customer Chat: Offline');
                 }
+
+                var element = $('.main-tab-content-item:visible');
+                var contentFrame = $(element).children('iframe')[0];
+                if (contentFrame && contentFrame.contentWindow.LoadPusherAndSubscribe) {
+                    contentFrame.contentWindow.LoadPusherAndSubscribe();
+                }
             });
             mainFrame.Ts.System.logAction('Main Page - Chat Status Changed');
         });
