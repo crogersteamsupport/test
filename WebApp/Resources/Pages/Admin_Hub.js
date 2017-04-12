@@ -40,7 +40,7 @@
                     $("#ProductLineList").html(productLineTemplate(data));
 
                     $('#hub_admin').fadeOut();
-                    $('#newHub').fadeIn();
+                    $('#newHub').delay(400).fadeIn();
                 });
 
             });
@@ -62,7 +62,7 @@
                             $('#hub_admin').attr('src', url);
                             $('#newHub').fadeOut();
                             $('#disabledNewHub').fadeOut();
-                            $('#hub_admin').fadeIn();
+                            $('#hub_admin').delay(400).fadeIn();
                         });
                     }
                 }
@@ -98,7 +98,7 @@
                     $('#hub_admin').attr('src', url);
                     $('#newHub').fadeOut();
                     $('#disabledNewHub').fadeOut();
-                    $('#hub_admin').fadeIn();
+                    $('#hub_admin').delay(400).fadeIn();
                     ClearNewHubSettings();
                 })
             });
