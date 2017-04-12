@@ -74,14 +74,12 @@
                 var HubID = $(this).data('hubid');
 
                 if (confirm('Are you sure you want to delete this hub? All customized hub page data will be lost.')) {
-                    // Save it!
+                    parent.parent.Ts.Services.Admin.DeleteHub(HubID, function () {
+                        pageLoad();
+                    });
                 } else {
                     // Do nothing!
                 }
-
-                parent.parent.Ts.Services.Admin.DeleteHub(HubID, function () {
-                    pageLoad();
-                });
 
             });
 
