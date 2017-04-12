@@ -17,6 +17,7 @@
     <link href="Admin_Portal.css" rel="stylesheet" type="text/css" />
     <script src="../Js/Ts/ts.pendo.js" type="text/javascript"></script>
     <script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
+    <script src="../Js/jquery.validate.min.js" type="text/javascript"></script>
     <script src="../Js/bootstrap.min.js" type="text/javascript"></script>
     <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
     <script src="../Js/jquery.ui.combobox.js" type="text/javascript"></script>
@@ -833,27 +834,29 @@
                                     <div id="HubList"></div>
                                     <div style="margin-left:170px;" id="hubWindow">
                                         <div id="newHub" style="display:none; min-height:800px;">
-                                            <div class="container-fluid well hubWell">
-                                                <div style="text-align:center; margin-bottom:10px;">
-                                                    <h2 style="font-weight:bold;">New Customer Hub</h2>
+                                            <form id="newHubForm">
+                                                <div class="container-fluid well hubWell">
+                                                    <div style="text-align:center; margin-bottom:10px;">
+                                                        <h2 style="font-weight:bold;">New Customer Hub</h2>
+                                                    </div>
+                                                    <div class="hubProperty">
+                                                        <label>Hub Prefix/Name</label>
+                                                        <input type="text" id="HubName" name="HubName" class="form-control"/>
+                                                    </div>
+                                                    <div class="hubProperty">
+                                                        <label>Product Line</label>
+                                                        <select id="ProductLineList" class="form-control"></select>
+                                                    </div>
+                                                    <div class="hubProperty">
+                                                        <label>Copy All Other Settings From</label>
+                                                        <select id="CopyHubList" class="form-control" ></select>
+                                                    </div>
+                                                    <div class="pull-right hubProperty">
+                                                        <button type="button" id="btnCancel" class="btn btn-danger">Cancel</button>
+                                                        <button type="submit" id="btnFinalizeNewHub" class="btn btn-default">Create</button>
+                                                    </div>
                                                 </div>
-                                                <div class="hubProperty">
-                                                    <label>Hub Prefix/Name</label>
-                                                    <input type="text" id="HubName" class="form-control" />
-                                                </div>
-                                                <div class="hubProperty">
-                                                    <label>Product Line</label>
-                                                    <select id="ProductLineList" class="form-control"></select>
-                                                </div>
-                                                <div class="hubProperty">
-                                                    <label>Copy All Other Settings From</label>
-                                                    <select id="CopyHubList" class="form-control"></select>
-                                                </div>
-                                                <div class="pull-right hubProperty">
-                                                    <button type="button" id="btnCancel" class="btn btn-danger">Cancel</button>
-                                                    <button type="button" id="btnFinalizeNewHub" class="btn btn-default">Create</button>
-                                                </div>
-                                            </div>
+                                            </form>
                                         </div>
                                         <div id="disabledNewHub" style="display:none; min-height:1000px;">
                                             <div class="container-fluid well hubDisabledWell alert alert-info">

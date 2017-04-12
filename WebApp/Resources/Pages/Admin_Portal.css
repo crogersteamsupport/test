@@ -117,11 +117,19 @@ form.positive-file-upload input, form.neutral-file-upload input, form.negative-f
     font-size: 13px;
 }
 
+.error {
+    color: #D9534F;
+}
+
 .remove:hover {
     color: #D9534F;
 }
 
+input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:focus {
+    border-color: #D9534F;
+}
+
 .divider {
     color: lightgray;
-    margin-left:10px;
+    margin-left: 10px;
 }

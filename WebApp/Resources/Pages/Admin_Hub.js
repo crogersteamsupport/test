@@ -33,6 +33,16 @@
             $('#btnNewHub').on('click', function (e) {
                 e.preventDefault();
 
+                $.validator.addMethod("url", function (value, element) {
+                    return this.optional(element) || /^[A-Za-z0-9-]+$/i.test(value);
+                }, "Your hub name must be one alphanumeric word with no special characters");
+
+                $("#newHubForm").validate({
+                    rules: {
+                        HubName: "required url"
+                    },
+                });
+
                 var copyHubTemplate = Handlebars.compile($("#CopyHubTemplate").html());
                 data = { Hubs: hubList };
 
@@ -89,26 +99,29 @@
 
             });
 
+            $('#btnFinalizeNewHub').on('click', function (e) {
+                if ($("#newHubForm").valid() == true) {
+                    parent.parent.Ts.Services.Admin.CreateNewHub($('#HubName').val(), $('#CopyHubList').val(), $('#ProductLineList').val(), function (data) {
+                        pageLoad(function () {
+                            GetHubURL(data, function (url) {
+                                $('#hub_admin').attr('src', url);
+                                $('#newHub').fadeOut();
+                                $('#disabledNewHub').fadeOut();
+                                $('#hub_admin').delay(400).fadeIn();
+                                ClearNewHubSettings();
+                            })
+                        });
+                    });
+                }
+            });
+
         });
 
         if (callback) {
             callback();
         }
     }
-    $('#btnFinalizeNewHub').on('click', function (e) {
 
-        parent.parent.Ts.Services.Admin.CreateNewHub($('#HubName').val(), $('#CopyHubList').val(), $('#ProductLineList').val(), function (data) {
-            pageLoad(function () {
-                GetHubURL(data, function (url) {
-                    $('#hub_admin').attr('src', url);
-                    $('#newHub').fadeOut();
-                    $('#disabledNewHub').fadeOut();
-                    $('#hub_admin').delay(400).fadeIn();
-                    ClearNewHubSettings();
-                })
-            });
-        });
-    });
 
 });
 
