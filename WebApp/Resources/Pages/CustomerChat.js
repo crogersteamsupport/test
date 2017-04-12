@@ -87,7 +87,8 @@ $(document).ready(function () {
             $('#send-message').prop("disabled", true);
             clearTimeout(_typingTimer);
             doneTyping();
-            var messageData = { channelName: 'presence-' + chatID, message: $('#message').val(), chatID: chatID, userID: participantID };
+            var messageString = replaceURLs($('#message').val());
+            var messageData = { channelName: 'presence-' + chatID, message: messageString, chatID: chatID, userID: participantID };
 
             IssueAjaxRequest("AddMessage", messageData,
             function (result) {
@@ -99,6 +100,14 @@ $(document).ready(function () {
             });
         }
     });
+
+    function replaceURLs(text) {
+        var urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+
+        return text.replace(urlRegex, function (url) {
+            return '<a target="_blank" href="' + url + '">' + url + '</a>';
+        })
+    }
 
     //TODO:  Not centering correclty
     //$('#chat-tok-audio').tooltip({

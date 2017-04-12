@@ -192,4 +192,12 @@ AND cp.DateLeft IS NULL
 
     }
 
+    public class ChannelOccupiedInfo
+    {
+        public bool occupied
+        {
+            get;
+            set;
+        }
+    }
 }

@@ -43,17 +43,32 @@ $(document).ready(function () {
         }
     });
 
-    top.Ts.Settings.System.read('PusherKey', '1', function (key) {
-        pusherKey = key;
-        SetupChatRequests();
-        subscribeToNewChatRequest(pusherKey, function (request) {
-            if (request.userIdInvited === undefined || request.userIdInvited == top.Ts.System.User.UserID) {
-                SetupPendingRequest(request.chatRequest, true);
+    window.LoadPusherAndSubscribe = function () {
+        top.Ts.Settings.System.read('PusherKey', '1', function (key) {
+            if (top.Ts.System.ChatUserSettings.IsAvailable) {
+                pusherKey = key;
+                SetupChatRequests();
+                subscribeToNewChatRequest(pusherKey, function (request) {
+                    if (request.userIdInvited === undefined || request.userIdInvited == top.Ts.System.User.UserID) {
+                        SetupPendingRequest(request.chatRequest, true);
+                    }
+                });
+            } else {
+                var chatGUID = top.Ts.System.Organization.ChatID;
+                var pusherUnsubscribe = new Pusher(pusherKey);
+                pusherUnsubscribe.unsubscribe('chat-requests-' + chatGUID);
+                window.location = window.location;
             }
-        });
 
+            $('.page-loading').hide().next().show();
+        });
+    }
+
+    if (top.Ts.System.ChatUserSettings.IsAvailable) {
+        LoadPusherAndSubscribe();
+    } else {
         $('.page-loading').hide().next().show();
-    });
+    }
 
     GetChatSettings(true);
     SetupToolbar();
@@ -361,6 +376,7 @@ $(document).ready(function () {
         messageString = messageString.trim();
 
         if (messageString !== '') {
+            messageString = replaceURLs(messageString);
             $('#new-message').prop("disabled", true);
             doneTyping();
             parent.Ts.Services.Chat.AddAgentMessage('presence-' + _activeChatID, messageString, _activeChatID, function (data) {
@@ -369,6 +385,14 @@ $(document).ready(function () {
             });
         }
     });
+
+    function replaceURLs(text) {
+        var urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+
+        return text.replace(urlRegex, function (url) {
+            return '<a target="_blank" href="' + url + '">' + url + '</a>';
+        })
+    }
 
     function SetupToolbar() {
         //Leave Chat and remove from list of active chats
