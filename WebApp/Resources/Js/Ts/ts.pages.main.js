@@ -147,7 +147,24 @@ Ts.Pages.Main.prototype = {
 
         $('.menu-help-chat').click(function (e) {
             e.preventDefault();
-            window.open('https://app.teamsupport.com/Chat/ChatInit.aspx?uid=22bd89b8-5162-4509-8b0d-f209a0aa6ee9', 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500');
+            var url = 'https://app.teamsupport.com/Chat/ChatInit.aspx?uid=22bd89b8-5162-4509-8b0d-f209a0aa6ee9';
+            var fname = mainFrame.Ts.System.User.FirstName;
+            var lname = mainFrame.Ts.System.User.LastName;
+            var email = mainFrame.Ts.System.User.Email;
+
+            if (fname != null && fname != '') {
+                url += '&fname=' + fname;
+            }
+
+            if (lname != null && lname != '') {
+                url += '&lname=' + lname;
+            }
+
+            if (email != null && email != '') {
+                url += '&email=' + email;
+            }
+
+            window.open(url, 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500');
         });
 
 
@@ -174,14 +191,19 @@ Ts.Pages.Main.prototype = {
                 Ts.System.ChatUserSettings = setting;
                 if (tmrChat) clearInterval(tmrChat);
                 if (Ts.System.ChatUserSettings.IsAvailable) {
-                    //tmrChat = setInterval(getChatUpdates, chatInterval);
-                    setupChatRequestUpdates();
+                    tmrChat = setInterval(getChatUpdates, chatInterval);
                     $('.menu-chatstatus .ts-icon').addClass('ts-icon-chat-small').removeClass('ts-icon-nochat-small');
                     $('.menu-chatstatus-text').text('Customer Chat: Online');
                 } else {
                     turnOffChatRequestUpdates();
                     $('.menu-chatstatus .ts-icon').addClass('ts-icon-nochat-small').removeClass('ts-icon-chat-small');
                     $('.menu-chatstatus-text').text('Customer Chat: Offline');
+                }
+
+                var element = $('.main-tab-content-item:visible');
+                var contentFrame = $(element).children('iframe')[0];
+                if (contentFrame && contentFrame.contentWindow.LoadPusherAndSubscribe) {
+                    contentFrame.contentWindow.LoadPusherAndSubscribe();
                 }
             });
             mainFrame.Ts.System.logAction('Main Page - Chat Status Changed');

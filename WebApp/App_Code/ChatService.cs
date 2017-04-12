@@ -24,6 +24,7 @@ namespace TSWebServices
         Pusher pusher;
         LoginUser loginUser;
         Organization parentOrganization;
+
         public ChatService()
         {
             options.Encrypted = true;
@@ -42,7 +43,40 @@ namespace TSWebServices
         public bool CheckChatStatus(string chatGuid)
         {
             Organization org = GetOrganization(chatGuid);
-            return ChatRequests.AreOperatorsAvailable(LoginUser.Anonymous, org.OrganizationID);
+            bool areOperatorsAvailable = ChatRequests.AreOperatorsAvailable(LoginUser.Anonymous, org.OrganizationID);
+
+            if (areOperatorsAvailable)
+            {
+                string channel = "chat-requests-" + org.ChatID;
+                ChannelOccupiedInfo channelOccupiedInfo = new ChannelOccupiedInfo() { occupied = false };
+
+                try
+                {
+                    IGetResult<object> channelInfo = pusher.Get<object>("/channels/" + channel.ToLower());
+
+                    if (!string.IsNullOrEmpty(channelInfo.Body))
+                    {
+                        channelOccupiedInfo = JsonConvert.DeserializeObject<ChannelOccupiedInfo>(channelInfo.Body);
+                    }
+                    else
+                    {
+                        channelInfo = pusher.Get<object>("/channels/" + channel.ToUpper());
+
+                        if (!string.IsNullOrEmpty(channelInfo.Body))
+                        {
+                            channelOccupiedInfo = JsonConvert.DeserializeObject<ChannelOccupiedInfo>(channelInfo.Body);
+                        }
+                    }
+
+                    areOperatorsAvailable = areOperatorsAvailable && channelOccupiedInfo.occupied;
+                }
+                catch (Exception ex)
+                {
+                    ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "ChatService.CheckChatStatus");
+                }
+            }
+            
+            return areOperatorsAvailable;
         }
 
         [WebMethod]
@@ -71,6 +105,7 @@ namespace TSWebServices
             model.TOKVoiceEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKVoiceEnabled", "false"));
             model.TOKVideoEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatTOKVideoEnabled", "false"));
             model.ChatAvatarsEnabled = bool.Parse(OrganizationSettings.ReadString(loginUser, org.OrganizationID, "ChatAvatarsEnabled", "false"));
+            model.OrganizationID = org.OrganizationID;
 
             return JsonConvert.SerializeObject(model);
         }
@@ -1094,9 +1129,8 @@ namespace TSWebServices
             public bool TOKVoiceEnabled { get; set; }
             public bool TOKVideoEnabled { get; set; }
             public bool ChatAvatarsEnabled { get; set; }
-
+            public int OrganizationID { get; set; }
         }
-
-            #endregion
-        }
+        #endregion
+    }
 }

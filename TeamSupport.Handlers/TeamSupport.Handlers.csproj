@@ -119,6 +119,10 @@
       <Private>True</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="PusherServer, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\PusherServer.3.0.0\lib\net35\PusherServer.dll</HintPath>
+    </Reference>
     <Reference Include="Svg">
       <HintPath>..\packages\HighCharts\Svg.dll</HintPath>
     </Reference>
