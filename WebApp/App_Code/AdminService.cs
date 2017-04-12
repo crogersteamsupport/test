@@ -551,7 +551,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public CustomerHubLinkModel CreateNewHub(string name, int? productFamilyID)
+        public CustomerHubLinkModel CreateNewHub(string name, int? productFamilyID, int hubToCopyID)
         {
             CustomerHubLinkModel newHubModel = new CustomerHubLinkModel(-1, name, productFamilyID, null);
 
@@ -561,11 +561,10 @@ namespace TSWebServices
             //get old hub info to replicate
 
             CustomerHubs customerHubs = new CustomerHubs(loginUser);
-            customerHubs.LoadByOrganizationID(TSAuthentication.OrganizationID);
+            customerHubs.LoadByCustomerHubID(hubToCopyID);
 
             if (customerHubs.Any())
             {
-                int hubToCopyID = customerHubs[0].CustomerHubID;
 
                 CustomerHubAuthentication authenticationSettings = new CustomerHubAuthentication(loginUser);
                 authenticationSettings.LoadByCustomerHubID(hubToCopyID);

@@ -847,9 +847,7 @@
                                                 </div>
                                                 <div class="hubProperty">
                                                     <label>Copy All Other Settings From</label>
-                                                    <select id="ProductLineList" class="form-control">
-                                                        <option selected=selected>SandBox</option>
-                                                    </select>
+                                                    <select id="CopyHubList" class="form-control"></select>
                                                 </div>
                                                 <div class="pull-right hubProperty">
                                                     <button type="button" id="btnCancel" class="btn btn-danger">Cancel</button>
@@ -1395,4 +1393,9 @@
     {{#ProductLines}}
     <option value="{{ProductFamilyID}}">{{Name}}</option>
     {{/ProductLines}}
+</script>
+<script id="CopyHubTemplate" type="text/x-handlebars-template">
+    {{#Hubs}}
+    <option value="{{HubID}}">{{Name}}</option>
+    {{/Hubs}}
 </script>

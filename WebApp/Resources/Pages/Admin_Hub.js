@@ -32,6 +32,12 @@
 
             $('#btnNewHub').on('click', function (e) {
                 e.preventDefault();
+
+                var copyHubTemplate = Handlebars.compile($("#CopyHubTemplate").html());
+                data = { Hubs: hubList };
+
+                $("#CopyHubList").html(copyHubTemplate(data));
+
                 parent.parent.Ts.Services.Products.GetProductFamilies(function (data) {
 
                     var productLineTemplate = Handlebars.compile($("#ProductLineTemplate").html());
@@ -90,7 +96,7 @@
         }
     }
     $('#btnFinalizeNewHub').on('click', function (e) {
-        parent.parent.Ts.Services.Admin.CreateNewHub($('#HubName').val(), $('#ProductLineList').val(), function (data) {
+        parent.parent.Ts.Services.Admin.CreateNewHub($('#HubName').val(), $('#ProductLineList').val(), $('#CopyHubList').val(), function (data) {
             pageLoad(function () {
                 GetHubURL(data, function (url) {
                     $('#hub_admin').attr('src', url);
