@@ -79,8 +79,6 @@ namespace TeamSupport.ServiceLibrary
 
         private void LogDoc(string table, int itemID, bool isRebuilding, int organizationID)
         {
-            return;
-            //turned of logging
             try
             {
                 SqlCommand command = new SqlCommand(@"

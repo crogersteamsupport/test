@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 namespace TeamSupport.Data
 {
   
-  public partial class TasksView
+  public partial class Tasks
   {
     protected override void BuildFieldMap()
     {
@@ -22,16 +22,11 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("IsComplete", "IsComplete", false, false, false);
       _fieldMap.AddMap("DateCompleted", "DateCompleted", false, false, false);
       _fieldMap.AddMap("ParentID", "ParentID", false, false, false);
-      _fieldMap.AddMap("IsDismissed", "IsDismissed", false, false, false);
-      _fieldMap.AddMap("HasEmailSent", "HasEmailSent", false, false, false);
-      _fieldMap.AddMap("ReminderDueDate", "ReminderDueDate", false, false, false);
-      _fieldMap.AddMap("TaskParentName", "TaskParentName", false, false, false);
-      _fieldMap.AddMap("UserName", "UserName", false, false, false);
-      _fieldMap.AddMap("Creator", "Creator", false, false, false);
       _fieldMap.AddMap("CreatorID", "CreatorID", false, false, false);
       _fieldMap.AddMap("DateCreated", "DateCreated", false, false, false);
       _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
       _fieldMap.AddMap("DateModified", "DateModified", false, false, false);
+      _fieldMap.AddMap("ReminderID", "ReminderID", false, false, false);
       _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
             
     }
