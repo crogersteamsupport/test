@@ -65,7 +65,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
                             ed.getBody().style.fontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize + 1);
                         }
                         else if (_mainFrame.Ts.System.Organization.FontSize != "0") {
-                            ed.execCommand("FontSize", false, _mainFrame.Ts.System.Organization.FontSize + 1);
+                            //ed.execCommand("FontSize", false, _mainFrame.Ts.System.Organization.FontSize + 1);
                             ed.getBody().style.fontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize + 1);
                         }
 
