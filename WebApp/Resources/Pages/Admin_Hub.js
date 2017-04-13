@@ -37,7 +37,7 @@
                     return this.optional(element) || /^[A-Za-z0-9-]+$/i.test(value);
                 }, "Your hub name must be one alphanumeric word with no special characters");
 
-                $("#newHubForm").validate({
+                var validator = $("#newHubForm").validate({
                     rules: {
                         HubName: "required url"
                     },
@@ -109,6 +109,7 @@
                                 $('#disabledNewHub').fadeOut();
                                 $('#hub_admin').delay(400).fadeIn();
                                 ClearNewHubSettings();
+
                             })
                         });
                     });
