@@ -832,7 +832,7 @@
                             <div id="tabs-hub" class="tabs-modifiable" style="height:1260px; overflow:hidden;">
                                 <div>
                                     <div id="HubList"></div>
-                                    <div style="margin-left:170px;" id="hubWindow">
+                                    <div style="margin-left:200px;" id="hubWindow">
                                         <div id="newHub" style="display:none; min-height:800px;">
                                             <form id="newHubForm">
                                                 <div class="container-fluid well hubWell">
@@ -1344,7 +1344,7 @@
 </body>
 </html>
 <script id="hub-list-template" type="text/x-handlebars-template">
-    <div style="width:150px; padding:0 8px 0 2px; float:left;">
+    <div style="width:180px; padding:0 8px 0 2px; float:left;">
         {{#hubList}}
         <div class="hub-container">
             <span>
@@ -1353,7 +1353,7 @@
                 </a>
             </span>
             <a href="#" class="btnLoadHub" data-hubid="{{HubID}}" style="margin-left:15px;">
-                <span>
+                <span class="hubName">
                     {{Name}}
                 </span>
                 <span class="pull-right">

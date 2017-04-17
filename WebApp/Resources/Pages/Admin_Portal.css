@@ -66,7 +66,7 @@ form.positive-file-upload input, form.neutral-file-upload input, form.negative-f
 
 .hubWell {
     padding: 20px 30px 20px 30px;
-    width: 220px;
+    width: 240px;
 }
 
 .hubDisabledWell {
@@ -81,6 +81,13 @@ form.positive-file-upload input, form.neutral-file-upload input, form.negative-f
 
 #HubList {
     font-size: 13px;
+}
+
+.hubName {
+    width:146px;
+    display:inline-block;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
 .hub-container {
