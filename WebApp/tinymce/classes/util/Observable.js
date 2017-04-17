@@ -33,8 +33,7 @@ define("tinymce/util/Observable", [
 
 	return {
 		/**
-		 * Fires the specified event by name. Consult the
-		 * <a href="/docs/advanced/events">event reference</a> for more details on each event.
+		 * Fires the specified event by name.
 		 *
 		 * @method fire
 		 * @param {String} name Name of the event to fire.
@@ -67,8 +66,7 @@ define("tinymce/util/Observable", [
 		},
 
 		/**
-		 * Binds an event listener to a specific event by name. Consult the
-		 * <a href="/docs/advanced/events">event reference</a> for more details on each event.
+		 * Binds an event listener to a specific event by name.
 		 *
 		 * @method on
 		 * @param {String} name Event name or space separated list of events to bind.
@@ -85,8 +83,7 @@ define("tinymce/util/Observable", [
 		},
 
 		/**
-		 * Unbinds an event listener to a specific event by name. Consult the
-		 * <a href="/docs/advanced/events">event reference</a> for more details on each event.
+		 * Unbinds an event listener to a specific event by name.
 		 *
 		 * @method off
 		 * @param {String?} name Name of the event to unbind.
@@ -107,8 +104,7 @@ define("tinymce/util/Observable", [
 		},
 
 		/**
-		 * Bind the event callback and once it fires the callback is removed. Consult the
-		 * <a href="/docs/advanced/events">event reference</a> for more details on each event.
+		 * Bind the event callback and once it fires the callback is removed.
 		 *
 		 * @method once
 		 * @param {String} name Name of the event to bind.

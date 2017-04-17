@@ -19,9 +19,8 @@ define("tinymce/dom/BookmarkManager", [
 	"tinymce/caret/CaretContainer",
 	"tinymce/caret/CaretBookmark",
 	"tinymce/caret/CaretPosition",
-	"tinymce/dom/NodeType",
-	"tinymce/dom/RangeUtils"
-], function(Env, Tools, CaretContainer, CaretBookmark, CaretPosition, NodeType, RangeUtils) {
+	"tinymce/dom/NodeType"
+], function(Env, Tools, CaretContainer, CaretBookmark, CaretPosition, NodeType) {
 	var isContentEditableFalse = NodeType.isContentEditableFalse;
 
 	/**
@@ -138,15 +137,8 @@ define("tinymce/dom/BookmarkManager", [
 			}
 
 			function findAdjacentContentEditableFalseElm(rng) {
-				function findSibling(node, offset) {
+				function findSibling(node) {
 					var sibling;
-
-					if (NodeType.isElement(node)) {
-						node = RangeUtils.getNode(node, offset);
-						if (isContentEditableFalse(node)) {
-							return node;
-						}
-					}
 
 					if (CaretContainer.isCaretContainer(node)) {
 						if (NodeType.isText(node) && CaretContainer.isCaretContainerBlock(node)) {
@@ -165,7 +157,7 @@ define("tinymce/dom/BookmarkManager", [
 					}
 				}
 
-				return findSibling(rng.startContainer, rng.startOffset) || findSibling(rng.endContainer, rng.endOffset);
+				return findSibling(rng.startContainer) || findSibling(rng.endContainer);
 			}
 
 			if (type == 2) {

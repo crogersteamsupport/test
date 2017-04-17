@@ -75,9 +75,6 @@ define("tinymce/imagetoolsplugin/ImagePanel", [
 				if ($img[0]) {
 					$img.replaceWith(img);
 				} else {
-					var bg = document.createElement('div');
-					bg.className = 'mce-imagepanel-bg';
-					self.getEl().appendChild(bg);
 					self.getEl().appendChild(img);
 				}
 
@@ -127,13 +124,12 @@ define("tinymce/imagetoolsplugin/ImagePanel", [
 		},
 
 		repaintImage: function() {
-			var x, y, w, h, pw, ph, $img, $bg, zoom, rect, elm;
+			var x, y, w, h, pw, ph, $img, zoom, rect, elm;
 
 			elm = this.getEl();
 			zoom = this.zoom();
 			rect = this.state.get('rect');
 			$img = this.$el.find('img');
-			$bg = this.$el.find('.mce-imagepanel-bg');
 			pw = elm.offsetWidth;
 			ph = elm.offsetHeight;
 			w = $img[0].naturalWidth * zoom;
@@ -142,13 +138,6 @@ define("tinymce/imagetoolsplugin/ImagePanel", [
 			y = Math.max(0, ph / 2 - h / 2);
 
 			$img.css({
-				left: x,
-				top: y,
-				width: w,
-				height: h
-			});
-
-			$bg.css({
 				left: x,
 				top: y,
 				width: w,

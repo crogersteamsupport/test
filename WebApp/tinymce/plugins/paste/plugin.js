@@ -80,7 +80,7 @@
 
 			target[fragments[fragments.length - 1]] = modules[id];
 		}
-
+		
 		// Expose private modules for unit tests
 		if (exports.AMDLC_TESTS) {
 			privateModules = exports.privateModules || {};
@@ -938,8 +938,7 @@ define("tinymce/pasteplugin/Clipboard", [
 			});
 
 			function isPlainTextFileUrl(content) {
-				var plainTextContent = content['text/plain'];
-				return plainTextContent ? plainTextContent.indexOf('file://') === 0 : false;
+				return content['text/plain'].indexOf('file://') === 0;
 			}
 
 			editor.on('drop', function(e) {
@@ -1552,7 +1551,7 @@ define("tinymce/pasteplugin/WordFilter", [
  * Quirks.js
  *
  * Released under LGPL License.
- * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
  *
  * License: http://www.tinymce.com/license
  * Contributing: http://www.tinymce.com/contributing
@@ -1578,12 +1577,6 @@ define("tinymce/pasteplugin/Quirks", [
 		function addPreProcessFilter(filterFunc) {
 			editor.on('BeforePastePreProcess', function(e) {
 				e.content = filterFunc(e.content);
-			});
-		}
-
-		function addPostProcessFilter(filterFunc) {
-			editor.on('PastePostProcess', function(e) {
-				filterFunc(e.node);
 			});
 		}
 
@@ -1703,12 +1696,6 @@ define("tinymce/pasteplugin/Quirks", [
 			return content;
 		}
 
-		function removeUnderlineAndFontInAnchor(root) {
-			editor.$('a', root).find('font,u').each(function(i, node) {
-				editor.dom.remove(node, true);
-			});
-		}
-
 		// Sniff browsers and apply fixes since we can't feature detect
 		if (Env.webkit) {
 			addPreProcessFilter(removeWebKitStyles);
@@ -1716,7 +1703,6 @@ define("tinymce/pasteplugin/Quirks", [
 
 		if (Env.ie) {
 			addPreProcessFilter(removeExplorerBrElementsAfterBlocks);
-			addPostProcessFilter(removeUnderlineAndFontInAnchor);
 		}
 	};
 });
@@ -1756,15 +1742,16 @@ define("tinymce/pasteplugin/Plugin", [
 
 		function togglePlainTextPaste() {
 			if (clipboard.pasteFormat == "text") {
+				this.active(false);
 				clipboard.pasteFormat = "html";
 				editor.fire('PastePlainTextToggle', {state: false});
 			} else {
 				clipboard.pasteFormat = "text";
-				editor.fire('PastePlainTextToggle', {state: true});
+				this.active(true);
 
 				if (!isUserInformedAboutPlainText()) {
 					var message = editor.translate('Paste is now in plain text mode. Contents will now ' +
-					'be pasted as plain text until you toggle this option off.');
+						'be pasted as plain text until you toggle this option off.');
 
 					editor.notificationManager.open({
 						text: message,
@@ -1772,20 +1759,11 @@ define("tinymce/pasteplugin/Plugin", [
 					});
 
 					userIsInformed = true;
+					editor.fire('PastePlainTextToggle', {state: true});
 				}
 			}
 
 			editor.focus();
-		}
-
-		function stateChange() {
-			var self = this;
-
-			self.active(clipboard.pasteFormat === 'text');
-
-			editor.on('PastePlainTextToggle', function (e) {
-				self.active(e.state);
-			});
 		}
 
 		// draw back if power version is requested and registered
@@ -1846,24 +1824,21 @@ define("tinymce/pasteplugin/Plugin", [
 			});
 		}
 
-		editor.addCommand('mceTogglePlainTextPaste', togglePlainTextPaste);
-
 		editor.addButton('pastetext', {
 			icon: 'pastetext',
 			tooltip: 'Paste as text',
 			onclick: togglePlainTextPaste,
-			onPostRender: stateChange
+			active: self.clipboard.pasteFormat == "text"
 		});
 
 		editor.addMenuItem('pastetext', {
 			text: 'Paste as text',
 			selectable: true,
 			active: clipboard.pasteFormat,
-			onclick: togglePlainTextPaste,
-			onPostRender: stateChange
+			onclick: togglePlainTextPaste
 		});
 	});
 });
 
 expose(["tinymce/pasteplugin/Utils"]);
-})(window);
+})(this);

@@ -116,8 +116,16 @@ define('tinymce/inlite/ui/Panel', [
 			return false;
 		};
 
-		var repositionPanelAt = function (panel, id, editor, targetRect) {
+		var showPanelAt = function (panel, id, editor, targetRect) {
 			var contentAreaRect, panelRect, result, userConstainHandler;
+
+			showPanel(panel);
+			panel.items().hide();
+
+			if (!showToolbar(panel, id)) {
+				hide(panel);
+				return;
+			}
 
 			userConstainHandler = EditorSettings.getHandlerOr(editor, 'inline_toolbar_position_handler', Layout.defaultHandler);
 			contentAreaRect = Measure.getContentAreaRect(editor);
@@ -134,22 +142,7 @@ define('tinymce/inlite/ui/Panel', [
 				currentRect = targetRect;
 				movePanelTo(panel, Layout.userConstrain(userConstainHandler, targetRect, contentAreaRect, panelRect));
 				togglePositionClass(panel, result.position);
-				return true;
 			} else {
-				return false;
-			}
-		};
-
-		var showPanelAt = function (panel, id, editor, targetRect) {
-			showPanel(panel);
-			panel.items().hide();
-
-			if (!showToolbar(panel, id)) {
-				hide(panel);
-				return;
-			}
-
-			if (repositionPanelAt(panel, id, editor, targetRect) === false) {
 				hide(panel);
 			}
 		};
@@ -197,12 +190,6 @@ define('tinymce/inlite/ui/Panel', [
 			showPanelAt(panel, id, editor, targetRect);
 		};
 
-		var reposition = function (editor, id, targetRect) {
-			if (panel) {
-				repositionPanelAt(panel, id, editor, targetRect);
-			}
-		};
-
 		var hide = function () {
 			if (panel) {
 				panel.hide();
@@ -231,7 +218,6 @@ define('tinymce/inlite/ui/Panel', [
 		return {
 			show: show,
 			showForm: showForm,
-			reposition: reposition,
 			inForm: inForm,
 			hide: hide,
 			focus: focus,

@@ -70,15 +70,13 @@ define("tinymce/Editor", [
 	"tinymce/Shortcuts",
 	"tinymce/EditorUpload",
 	"tinymce/SelectionOverrides",
-	"tinymce/util/Uuid",
-	"tinymce/ui/Sidebar",
-	"tinymce/ErrorReporter"
+	"tinymce/util/Uuid"
 ], function(
 	DOMUtils, DomQuery, AddOnManager, NodeChange, Node, DomSerializer, Serializer,
 	Selection, Formatter, UndoManager, EnterKey, ForceBlocks, EditorCommands,
 	URI, ScriptLoader, EventUtils, WindowManager, NotificationManager,
 	Schema, DomParser, Quirks, Env, Tools, Delay, EditorObservable, Mode, Shortcuts, EditorUpload,
-	SelectionOverrides, Uuid, Sidebar, ErrorReporter
+	SelectionOverrides, Uuid
 ) {
 	// Shorten these names
 	var DOM = DOMUtils.DOM, ThemeManager = AddOnManager.ThemeManager, PluginManager = AddOnManager.PluginManager;
@@ -246,6 +244,11 @@ define("tinymce/Editor", [
 		self.shortcuts = new Shortcuts(self);
 		self.loadedCSS = {};
 		self.editorCommands = new EditorCommands(self);
+
+		if (settings.target) {
+			self.targetElm = settings.target;
+		}
+
 		self.suffix = editorManager.suffix;
 		self.editorManager = editorManager;
 		self.inline = settings.inline;
@@ -477,12 +480,6 @@ define("tinymce/Editor", [
 					if (!self.removed) {
 						self.init();
 					}
-				}, self, function (urls) {
-					ErrorReporter.pluginLoadError(self, urls[0]);
-
-					if (!self.removed) {
-						self.init();
-					}
 				});
 			}
 
@@ -595,12 +592,14 @@ define("tinymce/Editor", [
 				} else {
 					o = settings.theme(self, elm);
 
+					// Convert element type to id:s
 					if (o.editorContainer.nodeType) {
-						o.editorContainer.id = o.editorContainer.id || self.id + "_parent";
+						o.editorContainer = o.editorContainer.id = o.editorContainer.id || self.id + "_parent";
 					}
 
+					// Convert element type to id:s
 					if (o.iframeContainer.nodeType) {
-						o.iframeContainer.id = o.iframeContainer.id || self.id + "_iframecontainer";
+						o.iframeContainer = o.iframeContainer.id = o.iframeContainer.id || self.id + "_iframecontainer";
 					}
 
 					// Use specified iframe height or the targets offsetHeight
@@ -911,7 +910,7 @@ define("tinymce/Editor", [
 				while (i--) {
 					node = nodes[i];
 
-					if (node.isEmpty(nonEmptyElements) && node.getAll('br').length === 0) {
+					if (node.isEmpty(nonEmptyElements)) {
 						node.append(new Node('br', 1)).shortEnded = true;
 					}
 				}
@@ -1004,7 +1003,7 @@ define("tinymce/Editor", [
 			// Remove empty contents
 			if (settings.padd_empty_editor) {
 				self.on('PostProcess', function(e) {
-					e.content = e.content.replace(/^(<p[^>]*>(&nbsp;|&#160;|\s|\u00a0|<br \/>|)<\/p>[\r\n]*|<br \/>[\r\n]*)$/, '');
+					e.content = e.content.replace(/^(<p[^>]*>(&nbsp;|&#160;|\s|\u00a0|)<\/p>[\r\n]*|<br \/>[\r\n]*)$/, '');
 				});
 			}
 
@@ -1311,31 +1310,6 @@ define("tinymce/Editor", [
 			self.buttons = self.buttons || {};
 			settings.tooltip = settings.tooltip || settings.title;
 			self.buttons[name] = settings;
-		},
-
-		/**
-		 * Adds a sidebar for the editor instance.
-		 *
-		 * @method addSidebar
-		 * @param {String} name Sidebar name to add.
-		 * @param {Object} settings Settings object with icon, onshow etc.
-		 * @example
-		 * // Adds a custom sidebar that when clicked logs the panel element
-		 * tinymce.init({
-		 *    ...
-		 *    setup: function(ed) {
-		 *       ed.addSidebar('example', {
-		 *          tooltip: 'My sidebar',
-		 *          icon: 'my-side-bar',
-		 *          onshow: function(api) {
-		 *             console.log(api.element());
-		 *          }
-		 *       });
-		 *    }
-		 * });
-		 */
-		addSidebar: function (name, settings) {
-			return Sidebar.add(this, name, settings);
 		},
 
 		/**
@@ -1843,7 +1817,7 @@ define("tinymce/Editor", [
 
 			// Get raw contents or by default the cleaned contents
 			if (args.format == 'raw') {
-				content = Tools.trim(self.serializer.getTrimmedContent());
+				content = self.serializer.getTrimmedContent();
 			} else if (args.format == 'text') {
 				content = body.innerText || body.textContent;
 			} else {

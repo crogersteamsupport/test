@@ -42,15 +42,10 @@ define("tinymce/dom/ScriptLoader", [
 	var DOM = DOMUtils.DOM;
 	var each = Tools.each, grep = Tools.grep;
 
-	var isFunction = function (f) {
-		return typeof f === 'function';
-	};
-
 	function ScriptLoader() {
 		var QUEUED = 0,
 			LOADING = 1,
 			LOADED = 2,
-			FAILED = 3,
 			states = {},
 			queue = [],
 			scriptLoadedCallbacks = {},
@@ -63,10 +58,9 @@ define("tinymce/dom/ScriptLoader", [
 		 *
 		 * @method load
 		 * @param {String} url Absolute URL to script to add.
-		 * @param {function} callback Optional success callback function when the script loaded successfully.
-		 * @param {function} callback Optional failure callback function when the script failed to load.
+		 * @param {function} callback Optional callback function to execute ones this script gets loaded.
 		 */
-		function loadScript(url, success, failure) {
+		function loadScript(url, callback) {
 			var dom = DOM, elm, id;
 
 			// Execute callback when script is loaded
@@ -77,25 +71,21 @@ define("tinymce/dom/ScriptLoader", [
 					elm.onreadystatechange = elm.onload = elm = null;
 				}
 
-				success();
+				callback();
 			}
 
 			function error() {
 				/*eslint no-console:0 */
 
+				// Report the error so it's easier for people to spot loading errors
+				if (typeof console !== "undefined" && console.log) {
+					console.log("Failed to load: " + url);
+				}
+
 				// We can't mark it as done if there is a load error since
 				// A) We don't want to produce 404 errors on the server and
 				// B) the onerror event won't fire on all browsers.
 				// done();
-
-				if (isFunction(failure)) {
-					failure();
-				} else {
-					// Report the error so it's easier for people to spot loading errors
-					if (typeof console !== "undefined" && console.log) {
-						console.log("Failed to load script: " + url);
-					}
-				}
 			}
 
 			id = dom.uniqueId();
@@ -151,11 +141,10 @@ define("tinymce/dom/ScriptLoader", [
 		 *
 		 * @method add
 		 * @param {String} url Absolute URL to script to add.
-		 * @param {function} success Optional success callback function to execute when the script loades successfully.
+		 * @param {function} callback Optional callback function to execute ones this script gets loaded.
 		 * @param {Object} scope Optional scope to execute callback in.
-		 * @param {function} failure Optional failure callback function to execute when the script failed to load.
 		 */
-		this.add = this.load = function(url, success, scope, failure) {
+		this.add = this.load = function(url, callback, scope) {
 			var state = states[url];
 
 			// Add url to load queue
@@ -164,15 +153,14 @@ define("tinymce/dom/ScriptLoader", [
 				states[url] = QUEUED;
 			}
 
-			if (success) {
+			if (callback) {
 				// Store away callback for later execution
 				if (!scriptLoadedCallbacks[url]) {
 					scriptLoadedCallbacks[url] = [];
 				}
 
 				scriptLoadedCallbacks[url].push({
-					success: success,
-					failure: failure,
+					func: callback,
 					scope: scope || this
 				});
 			}
@@ -187,12 +175,11 @@ define("tinymce/dom/ScriptLoader", [
 		 * Starts the loading of the queue.
 		 *
 		 * @method loadQueue
-		 * @param {function} success Optional callback to execute when all queued items are loaded.
-		 * @param {function} failure Optional callback to execute when queued items failed to load.
+		 * @param {function} callback Optional callback to execute when all queued items are loaded.
 		 * @param {Object} scope Optional scope to execute the callback in.
 		 */
-		this.loadQueue = function(success, scope, failure) {
-			this.loadScripts(queue, success, scope, failure);
+		this.loadQueue = function(callback, scope) {
+			this.loadScripts(queue, callback, scope);
 		};
 
 		/**
@@ -201,27 +188,23 @@ define("tinymce/dom/ScriptLoader", [
 		 *
 		 * @method loadScripts
 		 * @param {Array} scripts Array of queue items to load.
-		 * @param {function} callback Optional callback to execute when scripts is loaded successfully.
+		 * @param {function} callback Optional callback to execute ones all items are loaded.
 		 * @param {Object} scope Optional scope to execute callback in.
-		 * @param {function} callback Optional callback to execute if scripts failed to load.
 		 */
-		this.loadScripts = function(scripts, success, scope, failure) {
-			var loadScripts, failures = [];
+		this.loadScripts = function(scripts, callback, scope) {
+			var loadScripts;
 
-			function execCallbacks(name, url) {
+			function execScriptLoadedCallbacks(url) {
 				// Execute URL callback functions
 				each(scriptLoadedCallbacks[url], function(callback) {
-					if (isFunction(callback[name])) {
-						callback[name].call(callback.scope);
-					}
+					callback.func.call(callback.scope);
 				});
 
 				scriptLoadedCallbacks[url] = undef;
 			}
 
 			queueLoadedCallbacks.push({
-				success: success,
-				failure: failure,
+				func: callback,
 				scope: scope || this
 			});
 
@@ -234,18 +217,13 @@ define("tinymce/dom/ScriptLoader", [
 				// Load scripts that needs to be loaded
 				each(loadingScripts, function(url) {
 					// Script is already loaded then execute script callbacks directly
-					if (states[url] === LOADED) {
-						execCallbacks('success', url);
-						return;
-					}
-
-					if (states[url] === FAILED) {
-						execCallbacks('failure', url);
+					if (states[url] == LOADED) {
+						execScriptLoadedCallbacks(url);
 						return;
 					}
 
 					// Is script not loading then start loading it
-					if (states[url] !== LOADING) {
+					if (states[url] != LOADING) {
 						states[url] = LOADING;
 						loading++;
 
@@ -253,16 +231,7 @@ define("tinymce/dom/ScriptLoader", [
 							states[url] = LOADED;
 							loading--;
 
-							execCallbacks('success', url);
-
-							// Load more scripts if they where added by the recently loaded script
-							loadScripts();
-						}, function () {
-							states[url] = FAILED;
-							loading--;
-
-							failures.push(url);
-							execCallbacks('failure', url);
+							execScriptLoadedCallbacks(url);
 
 							// Load more scripts if they where added by the recently loaded script
 							loadScripts();
@@ -273,15 +242,7 @@ define("tinymce/dom/ScriptLoader", [
 				// No scripts are currently loading then execute all pending queue loaded callbacks
 				if (!loading) {
 					each(queueLoadedCallbacks, function(callback) {
-						if (failures.length === 0) {
-							if (isFunction(callback.success)) {
-								callback.success.call(callback.scope);
-							}
-						} else {
-							if (isFunction(callback.failure)) {
-								callback.failure.call(callback.scope, failures);
-							}
-						}
+						callback.func.call(callback.scope);
 					});
 
 					queueLoadedCallbacks.length = 0;

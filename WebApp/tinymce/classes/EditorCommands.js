@@ -19,9 +19,8 @@ define("tinymce/EditorCommands", [
 	"tinymce/util/Tools",
 	"tinymce/dom/RangeUtils",
 	"tinymce/dom/TreeWalker",
-	"tinymce/InsertContent",
-	"tinymce/dom/NodeType"
-], function(Env, Tools, RangeUtils, TreeWalker, InsertContent, NodeType) {
+	"tinymce/InsertContent"
+], function(Env, Tools, RangeUtils, TreeWalker, InsertContent) {
 	// Added for compression purposes
 	var each = Tools.each, extend = Tools.extend;
 	var map = Tools.map, inArray = Tools.inArray, explode = Tools.explode;
@@ -317,8 +316,8 @@ define("tinymce/EditorCommands", [
 			// Override unlink command
 			unlink: function() {
 				if (selection.isCollapsed()) {
-					var elm = editor.dom.getParent(editor.selection.getStart(), 'a');
-					if (elm) {
+					var elm = selection.getNode();
+					if (elm.tagName == 'A') {
 						editor.dom.remove(elm, true);
 					}
 
@@ -484,9 +483,9 @@ define("tinymce/EditorCommands", [
 							return;
 						}
 
-						if (element.nodeName !== "LI") {
+						if (element.nodeName != "LI") {
 							var indentStyleName = editor.getParam('indent_use_margin', false) ? 'margin' : 'padding';
-							indentStyleName = element.nodeName === 'TABLE' ? 'margin' : indentStyleName;
+
 							indentStyleName += dom.getStyle(element, 'direction', true) == 'rtl' ? 'Right' : 'Left';
 
 							if (command == 'outdent') {
@@ -546,12 +545,10 @@ define("tinymce/EditorCommands", [
 				var root = dom.getRoot(), rng;
 
 				if (selection.getRng().setStart) {
-					var editingHost = dom.getParent(selection.getStart(), NodeType.isContentEditableTrue);
-					if (editingHost) {
-						rng = dom.createRng();
-						rng.selectNodeContents(editingHost);
-						selection.setRng(rng);
-					}
+					rng = dom.createRng();
+					rng.setStart(root, 0);
+					rng.setEnd(root, root.childNodes.length);
+					selection.setRng(rng);
 				} else {
 					// IE will render it's own root level block elements and sometimes
 					// even put font elements in them when the user starts typing. So we need to
