@@ -1755,8 +1755,13 @@ $(document).ready(function () {
             $('#btnNotesSave').text("Save");
             $('#btnNotesCancel').show();
             $('#noteForm').show();
-            $('#fieldNoteDesc').tinymce().setContent(desc);
-            $('#fieldNoteDesc').tinymce().focus();
+            initEditor($('#fieldNoteDesc'), function (ed) {
+                $('#fieldNoteDesc').tinymce().setContent(desc);
+                    $('#fieldNoteDesc').tinymce().focus();
+                });
+                $('#fieldNoteDesc').focus();
+
+
             if (note.ProductFamilyID) {
                 $('#ddlNoteProductFamily').val(note.ProductFamilyID);
             }
