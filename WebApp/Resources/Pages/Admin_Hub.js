@@ -1,18 +1,10 @@
-﻿$(document).ready(function () {
-
-    pageLoad();
-
-    function GetHubURL(hubRecord, callback) {
-        var encrypted = CryptoJS.AES.encrypt(Date.now() + "," + parent.parent.Ts.System.User.Email + "", parent.parent.Ts.System.Organization.PortalGuid);
-        callback("https://" + hubRecord.URL + "/#/sso/" + encrypted);
-    };
-
-    function ClearNewHubSettings() {
-        $('#HubName').val("");
-    }
+﻿
+$(document).ready(function () {
+    var hubList = [];
 
     function pageLoad(callback) {
-        parent.parent.Ts.Services.Admin.GetHubURL(function (hubList) {
+        parent.parent.Ts.Services.Admin.GetHubURL(function (result) {
+            hubList = result;
             var enableNewHubs = false;
 
             if (parent.parent.Ts.System.Organization.UseProductFamilies == true && parent.parent.Ts.System.Organization.ProductType == parent.parent.Ts.ProductType.Enterprise) {
@@ -30,92 +22,6 @@
 
             $("#HubList").html(template(data));
 
-            $('#btnNewHub').on('click', function (e) {
-                e.preventDefault();
-
-                $.validator.addMethod("url", function (value, element) {
-                    return this.optional(element) || /^[A-Za-z0-9-]+$/i.test(value);
-                }, "Your hub name must be one alphanumeric word with no special characters");
-
-                var validator = $("#newHubForm").validate({
-                    rules: {
-                        HubName: "required url"
-                    },
-                });
-
-                var copyHubTemplate = Handlebars.compile($("#CopyHubTemplate").html());
-                data = { Hubs: hubList };
-
-                $("#CopyHubList").html(copyHubTemplate(data));
-
-                parent.parent.Ts.Services.Products.GetProductFamilies(function (data) {
-
-                    var productLineTemplate = Handlebars.compile($("#ProductLineTemplate").html());
-                    data = { ProductLines: data };
-
-                    $("#ProductLineList").html(productLineTemplate(data));
-
-                    $('#hub_admin').fadeOut();
-                    $('#newHub').delay(400).fadeIn();
-                });
-
-            });
-
-            $('#btnDisabledNewHub').on('click', function (e) {
-                e.preventDefault();
-
-                $('#hub_admin').fadeOut();
-                $('#disabledNewHub').fadeIn();
-            });
-
-            $('.btnLoadHub').on('click', function (e) {
-                e.preventDefault();
-                var HubID = $(this).data('hubid');
-
-                for (i = 0; i < hubList.length; i++) {
-                    if (hubList[i].HubID == HubID) {
-                        GetHubURL(hubList[i], function (url) {
-                            $('#hub_admin').attr('src', url);
-                            $('#newHub').fadeOut();
-                            $('#disabledNewHub').fadeOut();
-                            $('#hub_admin').delay(400).fadeIn();
-                        });
-                    }
-                }
-            });
-
-            $('.btnDeleteHub').on('click', function (e) {
-                debugger;
-                e.preventDefault();
-                var HubID = $(this).data('hubid');
-
-                if (confirm('Are you sure you want to delete this hub? All customized hub page data will be lost.')) {
-                    parent.parent.Ts.Services.Admin.DeleteHub(HubID, function () {
-                        pageLoad();
-                    });
-                } else {
-                    // Do nothing!
-                }
-
-            });
-
-            $('#btnFinalizeNewHub').on('click', function (e) {
-                if ($("#newHubForm").valid() == true) {
-                    parent.parent.Ts.Services.Admin.CreateNewHub($('#HubName').val(), $('#CopyHubList').val(), $('#ProductLineList').val(), function (data) {
-                        pageLoad(function () {
-                            GetHubURL(data, function (url) {
-                                $('#hub_admin').attr('src', url);
-                                $('#newHub').fadeOut();
-                                $('#disabledNewHub').fadeOut();
-                                $('#hub_admin').delay(400).fadeIn();
-                                ClearNewHubSettings();
-
-                            })
-                        });
-                    });
-                }
-            });
-
         });
 
         if (callback) {
@@ -123,6 +29,114 @@
         }
     }
 
+    function GetHubURL(hubRecord, callback) {
+        var encrypted = CryptoJS.AES.encrypt(Date.now() + "," + parent.parent.Ts.System.User.Email + "", parent.parent.Ts.System.Organization.PortalGuid);
+        callback("https://" + hubRecord.URL + "/#/sso/" + encrypted);
+    };
+
+    function ClearNewHubSettings() {
+        $('#HubName').val("");
+    }
+
+    pageLoad();
+
+    $('#HubList').on('click', '#btnNewHub', function (e) {
+        e.preventDefault();
+
+        $.validator.addMethod("url", function (value, element) {
+            return this.optional(element) || /^[A-Za-z0-9-]+$/i.test(value);
+        }, "Your hub name must be one alphanumeric word with no special characters");
+
+        var validator = $("#newHubForm").validate({
+            rules: {
+                HubName: "required url"
+            },
+        });
+
+        var copyHubTemplate = Handlebars.compile($("#CopyHubTemplate").html());
+        data = { Hubs: hubList };
+
+        $("#CopyHubList").html(copyHubTemplate(data));
+
+        parent.parent.Ts.Services.Products.GetProductFamilies(function (data) {
+
+            var productLineTemplate = Handlebars.compile($("#ProductLineTemplate").html());
+            data = { ProductLines: data };
+
+            $("#ProductLineList").html(productLineTemplate(data));
+
+            $('#hub_admin').fadeOut();
+            $('#newHub').delay(400).fadeIn();
+        });
+
+    });
+
+    $('#HubList').on('click', '#btnDisabledNewHub', function (e) {
+        e.preventDefault();
+
+        $('#hub_admin').fadeOut();
+        $('#disabledNewHub').fadeIn();
+    });
+
+    $('#HubList').on('click', '.btnLoadHub', function (e) {
+        e.preventDefault();
+        var HubID = $(this).data('hubid');
+
+        for (i = 0; i < hubList.length; i++) {
+            if (hubList[i].HubID == HubID) {
+                GetHubURL(hubList[i], function (url) {
+                    $('#hub_admin').attr('src', url);
+                    $('#newHub').fadeOut();
+                    $('#disabledNewHub').fadeOut();
+                    $('#hub_admin').delay(400).fadeIn();
+                });
+            }
+        }
+    });
+
+    $('#HubList').on('click', '.btnDeleteHub', function (e) {
+        e.preventDefault();
+        var HubID = $(this).data('hubid');
+
+        if (confirm('Are you sure you want to delete this hub? All customized hub page data will be lost.')) {
+            parent.parent.Ts.Services.Admin.DeleteHub(HubID, function () {
+                pageLoad();
+            });
+        } else {
+            // Do nothing!
+        }
+
+    });
+
+    $('#newHub').on('click', '#btnFinalizeNewHub', function (e) {
+        if ($("#newHubForm").valid() == true) {
+            parent.parent.Ts.Services.Admin.CreateNewHub($('#HubName').val(), $('#CopyHubList').val(), $('#ProductLineList').val(), function (data) {
+                pageLoad(function () {
+                    GetHubURL(data, function (url) {
+                        $('#hub_admin').attr('src', url);
+                        $('#newHub').fadeOut();
+                        $('#disabledNewHub').fadeOut();
+                        $('#hub_admin').delay(400).fadeIn();
+                        ClearNewHubSettings();
+                        validator.destroy();
+                    })
+                });
+            });
+        }
+    });
+
+    $('#newHub').on('click', '#btnCancelNewHub', function (e) {
+        pageLoad(function () {
+            GetHubURL(hubList[0], function (url) {
+                $('#hub_admin').attr('src', url);
+                $('#newHub').fadeOut();
+                $('#disabledNewHub').fadeOut();
+                $('#hub_admin').delay(400).fadeIn();
+                ClearNewHubSettings();
+                validator.destroy();
+            })
+        });
+    });
 
 });
 
