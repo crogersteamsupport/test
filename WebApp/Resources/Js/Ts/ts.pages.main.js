@@ -736,12 +736,22 @@ Ts.Pages.Main.prototype = {
                         if (!isMain || menuID != 'mniChat') self.MainMenu.find('mniChat', 'chat').setIsHighlighted(true);
 
                         window.focus();
-                        $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
-                        alert(data.message);
+
+                        $("#jquery_jplayer_1").jPlayer({
+                            ready: function () {
+                                $(this).jPlayer("setMedia", {
+                                    mp3: "vcr/1_9_0/Audio/chime.mp3"
+                                }).jPlayer("play", 0);
+                            },
+                            play: function () {
+                                alert(data.message);
+                            },
+                            loop: false,
+                            swfPath: "vcr/1_9_0/Js"
+                        });
 
                         window.focus();
 
-                        $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
                         $.jGrowl(data.message, {
                             life: 5000,
                             theme: data.theme,
