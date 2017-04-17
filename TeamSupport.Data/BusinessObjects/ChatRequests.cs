@@ -341,7 +341,12 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
             client.LastName = lastName;
             client.Email = email;
             Users users = new Users(loginUser);
-            users.LoadByEmail(organizationID, email);
+
+            if (!string.IsNullOrEmpty(email))
+            {
+                users.LoadByEmail(organizationID, email);
+            }
+
             if (!users.IsEmpty)
             {
                 client.LinkedUserID = users[0].UserID;
