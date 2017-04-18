@@ -191,7 +191,8 @@ Ts.Pages.Main.prototype = {
                 Ts.System.ChatUserSettings = setting;
                 if (tmrChat) clearInterval(tmrChat);
                 if (Ts.System.ChatUserSettings.IsAvailable) {
-                    tmrChat = setInterval(getChatUpdates, chatInterval);
+                    //tmrChat = setInterval(getChatUpdates, chatInterval);
+                    setupChatRequestUpdates();
                     $('.menu-chatstatus .ts-icon').addClass('ts-icon-chat-small').removeClass('ts-icon-nochat-small');
                     $('.menu-chatstatus-text').text('Customer Chat: Online');
                 } else {
