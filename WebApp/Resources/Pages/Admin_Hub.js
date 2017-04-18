@@ -47,7 +47,7 @@ $(document).ready(function () {
             return this.optional(element) || /^[A-Za-z0-9-]+$/i.test(value);
         }, "Your hub name must be one alphanumeric word with no special characters");
 
-        var validator = $("#newHubForm").validate({
+        validator = $("#newHubForm").validate({
             rules: {
                 HubName: "required url"
             },
@@ -99,28 +99,39 @@ $(document).ready(function () {
         var HubID = $(this).data('hubid');
 
         if (confirm('Are you sure you want to delete this hub? All customized hub page data will be lost.')) {
-            parent.parent.Ts.Services.Admin.DeleteHub(HubID, function () {
-                pageLoad();
-            });
+            if (confirm('Final Warning: Deleting your hub means you will lose all of your customizations and can result in data loss, please verify this is your intention.')) {
+                parent.parent.Ts.Services.Admin.DeleteHub(HubID, function () {
+                    pageLoad();
+                });
+            } else {
+                // Do nothing!
+            }
         } else {
-            // Do nothing!
+            
         }
 
     });
 
     $('#newHub').on('click', '#btnFinalizeNewHub', function (e) {
         if ($("#newHubForm").valid() == true) {
-            parent.parent.Ts.Services.Admin.CreateNewHub($('#HubName').val(), $('#CopyHubList').val(), $('#ProductLineList').val(), function (data) {
-                pageLoad(function () {
-                    GetHubURL(data, function (url) {
-                        $('#hub_admin').attr('src', url);
-                        $('#newHub').fadeOut();
-                        $('#disabledNewHub').fadeOut();
-                        $('#hub_admin').delay(400).fadeIn();
-                        ClearNewHubSettings();
-                        validator.destroy();
-                    })
-                });
+            parent.parent.Ts.Services.Admin.CreateNewHub($('#HubName').val(), $('#CopyHubList').val(), $('#ProductLineList').val(), function (creationResult) {
+                if (creationResult.IsSuccess) {
+                    pageLoad(function () {
+                        GetHubURL(creationResult.HubLinkModel, function (url) {
+                            $('#hub_admin').attr('src', url);
+                            $('#newHub').fadeOut();
+                            $('#disabledNewHub').fadeOut();
+                            $('#hub_admin').delay(400).fadeIn();
+                            ClearNewHubSettings();
+                            validator.destroy();
+                        })
+                    });
+                }
+                else {
+                    validator.showErrors({
+                        "HubName": creationResult.ErrorMessage
+                    });
+                }
             });
         }
     });
