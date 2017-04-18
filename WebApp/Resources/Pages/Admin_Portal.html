@@ -830,14 +830,13 @@
                             </div>
 
                             <div id="tabs-hub" class="tabs-modifiable" style="height:1260px; overflow:hidden;">
-                                <div>
                                     <div id="HubList"></div>
                                     <div style="margin-left:200px;" id="hubWindow">
                                         <div id="newHub" style="display:none; min-height:800px;">
                                             <form id="newHubForm">
                                                 <div class="container-fluid well hubWell">
                                                     <div style="text-align:center; margin-bottom:10px;">
-                                                        <h2 style="font-weight:bold;">New Customer Hub</h2>
+                                                        <h1 style="font-weight:bold;">New Customer Hub</h1>
                                                     </div>
                                                     <div class="hubProperty">
                                                         <label>Hub Prefix/Name</label>
@@ -852,8 +851,8 @@
                                                         <select id="CopyHubList" class="form-control"></select>
                                                     </div>
                                                     <div class="pull-right hubProperty">
-                                                        <button type="button" id="btnCancelNewHub" class="btn btn-danger">Cancel</button>
-                                                        <button type="button" id="btnFinalizeNewHub" class="btn btn-default">Create</button>
+                                                        <input type="button" id="btnCancelNewHub" class="btn btn-danger" value="Cancel">
+                                                        <input type="button" id="btnFinalizeNewHub" class="btn btn-primary" value="Create">
                                                     </div>
                                                 </div>
                                             </form>
@@ -867,7 +866,6 @@
                                         </div>
                                         <iframe id="hub_admin" style="width:100%; height:1240px;" scrolling="no"></iframe>
                                     </div>
-                                </div>
                             </div>
 
                             <div id="tabs-community" class="categories">
