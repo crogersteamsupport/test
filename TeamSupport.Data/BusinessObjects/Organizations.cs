@@ -302,14 +302,14 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
             else return organizations[0].OrganizationID;
         }
 
-        public static Organization GetCompanyByDomain(int parentOrganizationID, string emailDomain, LoginUser loginUser)
+        public static Organization GetCompanyByDomain(int parentOrganizationID, string emailDomain, LoginUser loginUser, bool forceUnknown = false)
         {
             Organization result = null;
 
             Organizations organizations = new Organizations(loginUser);
             organizations.LoadByParentID(parentOrganizationID, true);
 
-            if (organizations.Any())
+            if (organizations.Any() && !forceUnknown)
             {
                 List<KeyValuePair<int, string>> organizationSubDomainList = new List<KeyValuePair<int, string>>();
 
