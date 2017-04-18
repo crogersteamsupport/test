@@ -66,13 +66,18 @@ form.positive-file-upload input, form.neutral-file-upload input, form.negative-f
 
 .hubWell {
     padding: 20px 30px 20px 30px;
-    width: 240px;
+    width: 220px;
 }
 
 .hubDisabledWell {
     padding: 20px 30px 20px 30px;
     width: 380px;
-    font-size:15px;
+    font-size:13px;
+}
+
+#disabledNewHub {
+    min-height: 1000px; 
+    display: none;
 }
 
 .hubProperty {
