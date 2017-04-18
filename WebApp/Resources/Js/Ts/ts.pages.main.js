@@ -740,11 +740,8 @@ Ts.Pages.Main.prototype = {
                         $("#jquery_jplayer_1").jPlayer({
                             ready: function () {
                                 $(this).jPlayer("setMedia", {
-                                    mp3: "../../Audio/chime.mp3"
+                                    mp3: "vcr/1_9_0/Audio/chime.mp3"
                                 }).jPlayer("play", 0);
-                            },
-                            play: function () {
-                                alert(data.message);
                             },
                             loop: false,
                             swfPath: "vcr/1_9_0/Js"
@@ -757,6 +754,8 @@ Ts.Pages.Main.prototype = {
                             theme: data.theme,
                             header: data.title
                         });
+
+                        alert(data.message);
                     }
                 });
 
