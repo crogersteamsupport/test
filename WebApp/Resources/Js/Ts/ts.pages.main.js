@@ -738,15 +738,7 @@ Ts.Pages.Main.prototype = {
 
                         window.focus();
 
-                        $("#jquery_jplayer_1").jPlayer({
-                            ready: function () {
-                                $(this).jPlayer("setMedia", {
-                                    mp3: "vcr/1_9_0/Audio/chime.mp3"
-                                }).jPlayer("play", 0);
-                            },
-                            loop: false,
-                            swfPath: "vcr/1_9_0/Js"
-                        });
+                        $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/chime.mp3" }).jPlayer("play", 0);
 
                         window.focus();
 
@@ -756,7 +748,9 @@ Ts.Pages.Main.prototype = {
                             header: data.title
                         });
 
-                        alert(data.message);
+                        $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/chime.mp3" }).jPlayer("play", 0);
+
+                        setTimeout(function () { alert(data.message); }, 100);
                     }
                 });
 
