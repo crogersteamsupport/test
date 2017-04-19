@@ -27,11 +27,10 @@ define("tinymce/Formatter", [
 	"tinymce/dom/RangeUtils",
 	"tinymce/dom/BookmarkManager",
 	"tinymce/dom/ElementUtils",
-	"tinymce/util/Fun",
 	"tinymce/util/Tools",
 	"tinymce/fmt/Preview",
 	"tinymce/fmt/Hooks"
-], function(TreeWalker, RangeUtils, BookmarkManager, ElementUtils, Fun, Tools, Preview, Hooks) {
+], function(TreeWalker, RangeUtils, BookmarkManager, ElementUtils, Tools, Preview, Hooks) {
 	/**
 	 * Constructs a new formatter instance.
 	 *
@@ -102,23 +101,16 @@ define("tinymce/Formatter", [
 				],
 
 				alignleft: [
-					{
-						selector: 'figure.image',
-						collapsed: false,
-						classes: 'align-left',
-						ceFalseOverride: true,
-						preview: 'font-family font-size'
-					},
+					{selector: 'figure.image', collapsed: false, classes: 'align-left', ceFalseOverride: true},
 					{
 						selector: 'figure,p,h1,h2,h3,h4,h5,h6,td,th,tr,div,ul,ol,li',
 						styles: {
 							textAlign: 'left'
 						},
 						inherit: false,
-						preview: false,
 						defaultBlock: 'div'
 					},
-					{selector: 'img,table', collapsed: false, styles: {'float': 'left'}, preview: 'font-family font-size'}
+					{selector: 'img,table', collapsed: false, styles: {'float': 'left'}}
 				],
 
 				aligncenter: [
@@ -128,62 +120,24 @@ define("tinymce/Formatter", [
 							textAlign: 'center'
 						},
 						inherit: false,
-						preview: false,
 						defaultBlock: 'div'
 					},
-					{
-						selector: 'figure.image',
-						collapsed: false,
-						classes: 'align-center',
-						ceFalseOverride: true,
-						preview: 'font-family font-size'
-					},
-					{
-						selector: 'img',
-						collapsed: false,
-						styles: {
-							display: 'block',
-							marginLeft: 'auto',
-							marginRight: 'auto'
-						},
-						preview: false
-					},
-					{
-						selector: 'table',
-						collapsed: false,
-						styles: {
-							marginLeft: 'auto',
-							marginRight: 'auto'
-						},
-						preview: 'font-family font-size'
-					}
+					{selector: 'figure.image', collapsed: false, classes: 'align-center', ceFalseOverride: true},
+					{selector: 'img', collapsed: false, styles: {display: 'block', marginLeft: 'auto', marginRight: 'auto'}},
+					{selector: 'table', collapsed: false, styles: {marginLeft: 'auto', marginRight: 'auto'}}
 				],
 
 				alignright: [
-					{
-						selector: 'figure.image',
-						collapsed: false,
-						classes: 'align-right',
-						ceFalseOverride: true,
-						preview: 'font-family font-size'
-					},
+					{selector: 'figure.image', collapsed: false, classes: 'align-right', ceFalseOverride: true},
 					{
 						selector: 'figure,p,h1,h2,h3,h4,h5,h6,td,th,tr,div,ul,ol,li',
 						styles: {
 							textAlign: 'right'
 						},
 						inherit: false,
-						preview: 'font-family font-size',
 						defaultBlock: 'div'
 					},
-					{
-						selector: 'img,table',
-						collapsed: false,
-						styles: {
-							'float': 'right'
-						},
-						preview: 'font-family font-size'
-					}
+					{selector: 'img,table', collapsed: false, styles: {'float': 'right'}}
 				],
 
 				alignjustify: [
@@ -193,8 +147,7 @@ define("tinymce/Formatter", [
 							textAlign: 'justify'
 						},
 						inherit: false,
-						defaultBlock: 'div',
-						preview: 'font-family font-size'
+						defaultBlock: 'div'
 					}
 				],
 
@@ -444,30 +397,6 @@ define("tinymce/Formatter", [
 				}
 			}
 
-			function applyNodeStyle(formatList, node) {
-				var found = false;
-
-				if (!format.selector) {
-					return false;
-				}
-
-				// Look for matching formats
-				each(formatList, function(format) {
-					// Check collapsed state if it exists
-					if ('collapsed' in format && format.collapsed !== isCollapsed) {
-						return;
-					}
-
-					if (dom.is(node, format.selector) && !isCaretNode(node)) {
-						setElementFormat(node, format);
-						found = true;
-						return false;
-					}
-				});
-
-				return found;
-			}
-
 			// This converts: <p>[a</p><p>]b</p> -> <p>[a]</p><p>b</p>
 			function adjustSelectionToVisibleSelection() {
 				function findSelectionEnd(start, end) {
@@ -514,7 +443,7 @@ define("tinymce/Formatter", [
 					 * Process a list of nodes wrap them.
 					 */
 					function process(node) {
-						var nodeName, parentName, hasContentEditableState, lastContentEditable;
+						var nodeName, parentName, found, hasContentEditableState, lastContentEditable;
 
 						lastContentEditable = contentEditable;
 						nodeName = node.nodeName.toLowerCase();
@@ -558,7 +487,19 @@ define("tinymce/Formatter", [
 
 						// Handle selector patterns
 						if (format.selector) {
-							var found = applyNodeStyle(formatList, node);
+							// Look for matching formats
+							each(formatList, function(format) {
+								// Check collapsed state if it exists
+								if ('collapsed' in format && format.collapsed !== isCollapsed) {
+									return;
+								}
+
+								if (dom.is(node, format.selector) && !isCaretNode(node)) {
+									setElementFormat(node, format);
+									found = true;
+									return false;
+								}
+							});
 
 							// Continue processing if a selector match wasn't found and a inline element is defined
 							if (!format.inline || found) {
@@ -634,38 +575,15 @@ define("tinymce/Formatter", [
 						return count;
 					}
 
-					function getChildElementNode(root) {
-						var child = false;
-						each(root.childNodes, function(node) {
-							if (isElementNode(node)) {
-								child = node;
-								return false; // break loop
-							}
-						});
-						return child;
-					}
-
-					function matchNestedWrapper(node, filter) {
-						do {
-							if (getChildCount(node) !== 1) {
-								break;
-							}
-
-							node = getChildElementNode(node);
-							if (!node) {
-								break;
-							} else if (filter(node)) {
-								return node;
-							}
-						} while (node);
-
-						return null;
-					}
-
 					function mergeStyles(node) {
 						var child, clone;
 
-						child = getChildElementNode(node);
+						each(node.childNodes, function(node) {
+							if (node.nodeType == 1 && !isBookmarkNode(node) && !isCaretNode(node)) {
+								child = node;
+								return FALSE; // break loop
+							}
+						});
 
 						// If child was found and of the same type as the current node
 						if (child && !isBookmarkNode(child) && matchName(child, format)) {
@@ -689,15 +607,6 @@ define("tinymce/Formatter", [
 						return;
 					}
 
-					// fontSize defines the line height for the whole branch of nested style wrappers,
-					// therefore it should be set on the outermost wrapper
-					if (!isBlock(node) && !getStyle(node, 'fontSize')) {
-						var styleNode = matchNestedWrapper(node, hasStyle('fontSize'));
-						if (styleNode) {
-							apply('fontsize', {value: getStyle(styleNode, 'fontSize')}, node);
-						}
-					}
-
 					if (format.inline || format.wrapper) {
 						// Merges the current node with it's children of similar type to reduce the number of elements
 						if (!format.exact && childCount === 1) {
@@ -718,20 +627,19 @@ define("tinymce/Formatter", [
 							});
 						});
 
-						// Remove format if direct parent already has the same format
+						// Remove child if direct parent is of same type
 						if (matchNode(node.parentNode, name, vars)) {
-							if (removeFormat(format, vars, node)) {
-								node = 0;
-							}
+							dom.remove(node, 1);
+							node = 0;
+							return TRUE;
 						}
 
-						// Remove format if any ancestor already has the same format
+						// Look for parent with similar style format
 						if (format.merge_with_parents) {
 							dom.getParent(node.parentNode, function(parent) {
 								if (matchNode(parent, name, vars)) {
-									if (removeFormat(format, vars, node)) {
-										node = 0;
-									}
+									dom.remove(node, 1);
+									node = 0;
 									return TRUE;
 								}
 							});
@@ -761,12 +669,10 @@ define("tinymce/Formatter", [
 			if (format) {
 				if (node) {
 					if (node.nodeType) {
-						if (!applyNodeStyle(formatList, node)) {
-							rng = dom.createRng();
-							rng.setStartBefore(node);
-							rng.setEndAfter(node);
-							applyRngStyle(expandRng(rng, formatList), null, true);
-						}
+						rng = dom.createRng();
+						rng.setStartBefore(node);
+						rng.setEndAfter(node);
+						applyRngStyle(expandRng(rng, formatList), null, true);
 					} else {
 						applyRngStyle(node, null, true);
 					}
@@ -787,20 +693,10 @@ define("tinymce/Formatter", [
 						bookmark = selection.getBookmark();
 						applyRngStyle(expandRng(selection.getRng(TRUE), formatList), bookmark);
 
-						if (format.styles) {
-							// Colored nodes should be underlined so that the color of the underline matches the text color.
-							if (format.styles.color || format.styles.textDecoration) {
-								walk(curSelNode, processUnderlineAndColor, 'childNodes');
-								processUnderlineAndColor(curSelNode);
-							}
-
-							// nodes with font-size should have their own background color as well to fit the line-height (see TINY-882)
-							if (format.styles.backgroundColor) {
-								processChildElements(curSelNode,
-									hasStyle('fontSize'),
-									applyStyle('backgroundColor', replaceVars(format.styles.backgroundColor, vars))
-								);
-							}
+						// Colored nodes should be underlined so that the color of the underline matches the text color.
+						if (format.styles && (format.styles.color || format.styles.textDecoration)) {
+							walk(curSelNode, processUnderlineAndColor, 'childNodes');
+							processUnderlineAndColor(curSelNode);
 						}
 
 						selection.moveToBookmark(bookmark);
@@ -1451,35 +1347,6 @@ define("tinymce/Formatter", [
 			str2 = '' + (str2.nodeName || str2);
 
 			return str1.toLowerCase() == str2.toLowerCase();
-		}
-
-		function processChildElements(node, filter, process) {
-			each(node.childNodes, function(node) {
-				if (isElementNode(node)) {
-					if (filter(node)) {
-						process(node);
-					}
-					if (node.hasChildNodes()) {
-						processChildElements(node, filter, process);
-					}
-				}
-			});
-		}
-
-		function isElementNode(node) {
-			return node.nodeType == 1 && !isBookmarkNode(node) && !isWhiteSpaceNode(node) && !isCaretNode(node);
-		}
-
-		function hasStyle(name) {
-			return Fun.curry(function(name, node) {
-				return !!(node && getStyle(node, name));
-			}, name);
-		}
-
-		function applyStyle(name, value) {
-			return Fun.curry(function(name, value, node) {
-				dom.setStyle(node, name, value);
-			}, name, value);
 		}
 
 		/**
@@ -2328,10 +2195,8 @@ define("tinymce/Formatter", [
 					textNode = findFirstTextNode(caretContainer);
 				}
 
-				// Expand to word if caret is in the middle of a text node and the char before/after is a alpha numeric character
-				var wordcharRegex = /[^\s\u00a0\u00ad\u200b\ufeff]/;
-				if (text && offset > 0 && offset < text.length &&
-					wordcharRegex.test(text.charAt(offset)) && wordcharRegex.test(text.charAt(offset - 1))) {
+				// Expand to word is caret is in the middle of a text node and the char before/after is a alpha numeric character
+				if (text && offset > 0 && offset < text.length && /\w/.test(text.charAt(offset)) && /\w/.test(text.charAt(offset - 1))) {
 					// Get bookmark of caret position
 					bookmark = selection.getBookmark();
 

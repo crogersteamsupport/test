@@ -107,6 +107,7 @@ $(document).ready(function () {
 
     $('#inputPortalUser').on('click', function () {
         $('#contactEmailPortalUser').toggle();
+        $('#contactEmailHubUser').toggle();
     });
 
     LoadTimeZones();
@@ -259,6 +260,7 @@ $(document).ready(function () {
             contactInfo.SyncAddress = $("#inputContactSyncAddress").prop('checked');
             contactInfo.SyncPhone = $("#inputContactSyncPhone").prop('checked');
             contactInfo.EmailPortalPW = $("#inputContactPortalEmail").prop('checked');
+            contactInfo.EmailHubPW = $("#inputContactHubEmail").prop('checked');
 
             contactInfo.Fields = new Array();
             $('.customField:visible').each(function () {

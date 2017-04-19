@@ -60,26 +60,6 @@ define("tinymce/util/Delay", [
 		return clearInterval(id);
 	}
 
-	function debounce(callback, time) {
-		var timer, func;
-
-		func = function() {
-			var args = arguments;
-
-			clearTimeout(timer);
-
-			timer = wrappedSetTimeout(function() {
-				callback.apply(this, args);
-			}, time);
-		};
-
-		func.stop = function() {
-			clearTimeout(timer);
-		};
-
-		return func;
-	}
-
 	return {
 		/**
 		 * Requests an animation frame and fallbacks to a timeout on older browsers.
@@ -165,17 +145,32 @@ define("tinymce/util/Delay", [
 		},
 
 		/**
-		 * Creates debounced callback function that only gets executed once within the specified time.
+		 * Creates throttled callback function that only gets executed once within the specified time.
 		 *
-		 * @method debounce
+		 * @method throttle
 		 * @param {function} callback Callback to execute when timer finishes.
 		 * @param {Number} time Optional time to wait before the callback is executed, defaults to 0.
-		 * @return {Function} debounced function callback.
+		 * @return {Function} Throttled function callback.
 		 */
-		debounce: debounce,
+		throttle: function(callback, time) {
+			var timer, func;
 
-		// Throttle needs to be debounce due to backwards compatibility.
-		throttle: debounce,
+			func = function() {
+				var args = arguments;
+
+				clearTimeout(timer);
+
+				timer = wrappedSetTimeout(function() {
+					callback.apply(this, args);
+				}, time);
+			};
+
+			func.stop = function() {
+				clearTimeout(timer);
+			};
+
+			return func;
+		},
 
 		/**
 		 * Clears an interval timer so it won't execute.

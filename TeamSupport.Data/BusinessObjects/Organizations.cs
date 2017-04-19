@@ -302,14 +302,14 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
             else return organizations[0].OrganizationID;
         }
 
-        public static Organization GetCompanyByDomain(int parentOrganizationID, string emailDomain, LoginUser loginUser)
+        public static Organization GetCompanyByDomain(int parentOrganizationID, string emailDomain, LoginUser loginUser, bool forceUnknown = false)
         {
             Organization result = null;
 
             Organizations organizations = new Organizations(loginUser);
             organizations.LoadByParentID(parentOrganizationID, true);
 
-            if (organizations.Any())
+            if (organizations.Any() && !forceUnknown)
             {
                 List<KeyValuePair<int, string>> organizationSubDomainList = new List<KeyValuePair<int, string>>();
 
@@ -2110,9 +2110,10 @@ AND (
   OR EXISTS (SELECT * FROM ContactsView cv WHERE cv.OrganizationParentID = o.OrganizationID AND cv.NeedsIndexing=1)
   OR EXISTS (SELECT * FROM Assets a WHERE a.OrganizationID = o.OrganizationID AND a.NeedsIndexing=1)
   OR EXISTS (SELECT * FROM Products p WHERE p.OrganizationID = o.OrganizationID AND p.NeedsIndexing=1)
+  OR EXISTS (SELECT * FROM Tasks t WHERE t.OrganizationID = o.OrganizationID AND t.NeedsIndexing=1)
   OR EXISTS (
     SELECT * FROM DeletedIndexItems dii 
-    WHERE dii.RefType IN (9, 13, 14, 17, 32, 38, 39, 40, 34)
+    WHERE dii.RefType IN (9, 13, 14, 17, 32, 38, 39, 40, 34, 61)
     AND dii.OrganizationID = o.OrganizationID
   )
 )
@@ -3127,7 +3128,8 @@ ORDER BY
             }
         }
 
-        public void MigrateOrgType(LoginUser loginUser, int organizationID, ProductType productType) {
+        public void MigrateOrgType(LoginUser loginUser, int organizationID, ProductType productType)
+        {
             using (SqlCommand command = new SqlCommand())
             {
                 if (productType == ProductType.Enterprise)

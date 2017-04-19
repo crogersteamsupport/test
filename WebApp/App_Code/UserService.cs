@@ -1640,20 +1640,20 @@ namespace TSWebServices
                 CalEvent cal = new CalEvent();
                 cal.color = "green";
 
-                if (c.AllDay)
-                {
-                    if(c.StartDateUTC != null)
-                        cal.start = DateTime.SpecifyKind((DateTime)c.StartDateUTCUtc, DateTimeKind.Utc).ToString("o").Substring(0, 10);
-                    else
-                        cal.start = ((DateTime)c.StartDateUtc).ToString("o").Substring(0, 10);
-                }
-                else
-                {
+                //if (c.AllDay)
+                //{
+                //    if(c.StartDateUTC != null)
+                //        cal.start = DateTime.SpecifyKind((DateTime)c.StartDateUTCUtc, DateTimeKind.Utc).ToString("o").Substring(0, 10);
+                //    else
+                //        cal.start = ((DateTime)c.StartDateUtc).ToString("o").Substring(0, 10);
+                //}
+                //else
+                //{
                     if (c.StartDateUTC != null)
                         cal.start = DateTime.SpecifyKind((DateTime)c.StartDateUTCUtc, DateTimeKind.Utc).ToString("o");
                     else
                         cal.start = ((DateTime)c.StartDateUtc).ToString("o");
-                }
+                //}
 
 
                 if (c.EndDateUTC != null)

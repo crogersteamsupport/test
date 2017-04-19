@@ -417,5 +417,41 @@ namespace TeamSupport.Data
                 Fill(command);
             }
         }
+
+        public void LoadForIndexing(int organizationID, int max, bool isRebuilding)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                string text = @"
+                    SELECT 
+                      TOP {0} 
+                      TaskID
+                    FROM 
+                      Tasks t WITH(NOLOCK)
+                    WHERE 
+                      t.NeedsIndexing = 1
+                      AND t.OrganizationID = @OrganizationID
+                    ORDER BY 
+                      t.DateModified DESC";
+
+                if (isRebuilding)
+                {
+                    text = @"
+                      SELECT 
+                        TaskID
+                      FROM 
+                        Tasks t WITH(NOLOCK)
+                      WHERE 
+                        t.OrganizationID = @OrganizationID
+                      ORDER BY 
+                        t.DateModified DESC";
+                }
+
+                command.CommandText = string.Format(text, max.ToString());
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                Fill(command);
+            }
+        }
     }
 }

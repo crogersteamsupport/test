@@ -32,7 +32,7 @@ define("tinymce/codesampleplugin/Plugin", [
 
 		// Todo: use a proper css loader here
 		function loadCss() {
-			var linkElm, contentCss = editor.settings.codesample_content_css;
+			var linkElm;
 
 			if (editor.inline && addedInlineCss) {
 				return;
@@ -48,14 +48,12 @@ define("tinymce/codesampleplugin/Plugin", [
 				addedCss = true;
 			}
 
-			if (contentCss !== false) {
-				linkElm = editor.dom.create('link', {
-					rel: 'stylesheet',
-					href: contentCss ? contentCss : pluginUrl + '/css/prism.css'
-				});
+			linkElm = editor.dom.create('link', {
+				rel: 'stylesheet',
+				href: pluginUrl + '/css/prism.css'
+			});
 
-				editor.getDoc().getElementsByTagName('head')[0].appendChild(linkElm);
-			}
+			editor.getDoc().getElementsByTagName('head')[0].appendChild(linkElm);
 		}
 
 		editor.on('PreProcess', function(e) {
@@ -96,12 +94,7 @@ define("tinymce/codesampleplugin/Plugin", [
 		});
 
 		editor.addCommand('codesample', function() {
-			var node = editor.selection.getNode();
-			if (editor.selection.isCollapsed() || Utils.isCodeSample(node)) {
-				Dialog.open(editor);
-			} else {
-				editor.formatter.toggle('code');
-			}
+			Dialog.open(editor);
 		});
 
 		editor.addButton('codesample', {

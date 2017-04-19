@@ -22,7 +22,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
             resizePluginCode = 'autoresize';
         }
         var editorOptions = {
-            plugins: "paste link code textcolor image imagetools moxiemanager table codesample lists " + resizePluginCode,
+            plugins: "paste link code textcolor image imagetools moxiemanager table lists codesample " + resizePluginCode,
         	toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox insertUser recordVideo recordScreenTok | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
         	toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect styleselect | bold italic underline strikethrough blockquote codesample | code | table",
             statusbar: true,
@@ -61,11 +61,11 @@ var initEditor = function (element, shouldResize, init, postinit) {
                         }
 
                         if (_mainFrame.Ts.System.User.FontSize != "0") {
-                            ed.execCommand("FontSize", false, _mainFrame.Ts.System.User.FontSizeDescription);
+                            //ed.execCommand("FontSize", false, _mainFrame.Ts.System.User.FontSizeDescription);
                             ed.getBody().style.fontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize + 1);
                         }
                         else if (_mainFrame.Ts.System.Organization.FontSize != "0") {
-                            ed.execCommand("FontSize", false, _mainFrame.Ts.System.Organization.FontSize + 1);
+                            //ed.execCommand("FontSize", false, _mainFrame.Ts.System.Organization.FontSize + 1);
                             ed.getBody().style.fontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize + 1);
                         }
 

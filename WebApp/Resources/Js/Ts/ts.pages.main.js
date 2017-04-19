@@ -191,7 +191,8 @@ Ts.Pages.Main.prototype = {
                 Ts.System.ChatUserSettings = setting;
                 if (tmrChat) clearInterval(tmrChat);
                 if (Ts.System.ChatUserSettings.IsAvailable) {
-                    tmrChat = setInterval(getChatUpdates, chatInterval);
+                    //tmrChat = setInterval(getChatUpdates, chatInterval);
+                    setupChatRequestUpdates();
                     $('.menu-chatstatus .ts-icon').addClass('ts-icon-chat-small').removeClass('ts-icon-nochat-small');
                     $('.menu-chatstatus-text').text('Customer Chat: Online');
                 } else {
@@ -736,17 +737,20 @@ Ts.Pages.Main.prototype = {
                         if (!isMain || menuID != 'mniChat') self.MainMenu.find('mniChat', 'chat').setIsHighlighted(true);
 
                         window.focus();
-                        $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
-                        alert(data.message);
+
+                        $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/chime.mp3" }).jPlayer("play", 0);
 
                         window.focus();
 
-                        $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
                         $.jGrowl(data.message, {
                             life: 5000,
                             theme: data.theme,
                             header: data.title
                         });
+
+                        $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/chime.mp3" }).jPlayer("play", 0);
+
+                        setTimeout(function () { alert(data.message); }, 100);
                     }
                 });
 
