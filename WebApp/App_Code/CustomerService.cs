@@ -2497,7 +2497,7 @@ SELECT
                 EmailPosts.SendWelcomePortalUser(TSAuthentication.GetLoginUser(), user.UserID, password);
 
             if (info.EmailHubPW && info.IsPortalUser)
-                EmailPosts.SendWelcomePortalUser(TSAuthentication.GetLoginUser(), user.UserID, password);
+                EmailPosts.SendWelcomeCustomerHubUser(TSAuthentication.GetLoginUser(), user.UserID, password);
 
 
             string description = String.Format("{0} created contact {1}", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, user.FirstLastName);

@@ -358,6 +358,7 @@ namespace TeamSupport.ServiceLibrary
 
                 User modifier = Users.GetUser(LoginUser, modifierID);
                 string modifierName = modifier == null ? GetOrganizationName(ticket.OrganizationID) : modifier.FirstLastName;
+                string modifierTitle = modifier == null ? string.Empty : modifier.Title;
                 Logs.WriteEvent("Modifier: " + modifierName);
 
                 Organization ticketOrganization = Organizations.GetOrganization(LoginUser, ticket.OrganizationID);
@@ -389,10 +390,10 @@ namespace TeamSupport.ServiceLibrary
                 AddMessageTicketAssignment(ticket, oldUserID, oldGroupID, isNew, modifier, ticketOrganization);
 
                 Logs.WriteEvent("Processing Advanced Portal");
-                AddMessagePortalTicketModified(ticket, isNew, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, ticketOrganization, false);
+                AddMessagePortalTicketModified(ticket, isNew, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, modifierTitle, ticketOrganization, false);
 
                 Logs.WriteEvent("Processing Basic Portal");
-                AddMessagePortalTicketModified(ticket, isNew, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, ticketOrganization, true);
+                AddMessagePortalTicketModified(ticket, isNew, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, modifierTitle, ticketOrganization, true);
 
                 Logs.WriteEvent("Processing Internal Modified");
                 AddMessageInternalTicketModified(ticket, oldUserID, oldGroupID, isNew, oldTicketStatusID, oldTicketSeverityID, !actions.IsEmpty, modifierName, modifier == null ? -1 : modifier.UserID, ticketOrganization);
@@ -726,7 +727,16 @@ namespace TeamSupport.ServiceLibrary
             return result;
         }
 
-        private void AddMessagePortalTicketModified(Ticket ticket, bool isNew, int? oldTicketStatusID, bool includeActions, int[] users, string modifierName, int modifierID, Organization ticketOrganization, bool isBasic)
+        private void AddMessagePortalTicketModified(Ticket ticket,
+                                                    bool isNew,
+                                                    int? oldTicketStatusID,
+                                                    bool includeActions,
+                                                    int[] users,
+                                                    string modifierName,
+                                                    int modifierID,
+                                                    string modifierTitle,
+                                                    Organization ticketOrganization,
+                                                    bool isBasic)
         {
             try
             {
@@ -863,13 +873,13 @@ namespace TeamSupport.ServiceLibrary
                 {
                     Logs.WriteEvent("Status is closed email, getting template");
                     messageType = "Ticket closed email";
-                    message = EmailTemplates.GetTicketClosed(LoginUser, modifierName, ticket.GetTicketView(), includeActions);
+                    message = EmailTemplates.GetTicketClosed(LoginUser, modifierName, modifierTitle, ticket.GetTicketView(), includeActions);
                 }
                 else
                 {
                     Logs.WriteEvent("Getting portal email template");
-                    message = isBasic ? EmailTemplates.GetTicketUpdateBasicPortal(LoginUser, modifierName, ticket.GetTicketView(), includeActions) :
-                                        EmailTemplates.GetTicketUpdateAdvPortal(LoginUser, modifierName, ticket.GetTicketView(), includeActions);
+                    message = isBasic ? EmailTemplates.GetTicketUpdateBasicPortal(LoginUser, modifierName, modifierTitle, ticket.GetTicketView(), includeActions) :
+                                        EmailTemplates.GetTicketUpdateAdvPortal(LoginUser, modifierName, modifierTitle, ticket.GetTicketView(), includeActions);
                     messageType = isBasic ? "Basic portal email" : "Advanced portal email";
                 }
 

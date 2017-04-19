@@ -307,7 +307,14 @@ namespace TeamSupport.ServiceLibrary
                         series += "" + string.Format(seriesFormat, serie.Name, serie.Value, (serie.Data.Any() ? string.Join(",", serie.Data.ToArray()) : ""));
                     }
 
-                    series = "[" + series.Substring(0, series.Length - 1) + "]";
+                    if (!string.IsNullOrEmpty(series))
+                    {
+                        series = "[" + series.Substring(0, series.Length - 1) + "]";
+                    }
+                    else
+                    {
+                        Log("No data in series.", LogType.Both);
+                    }
                 }
                 else if (records.Count = 2)
                 {
@@ -392,7 +399,14 @@ namespace TeamSupport.ServiceLibrary
                         //series = "[{ name: '" + FixBlankSeriesName(FixRecordName(records[0], i)) + "', value: '" + list[i] + "', data: " + (list2.Any() ? string.Join(",", list2.Select(x => string.Format("'{0}'", x)).ToArray()) : "") + " }]";
                     }
 
-                    series = "[" + series.Substring(0, series.Length - 1) + "]";
+                    if (!string.IsNullOrEmpty(series))
+                    {
+                        series = "[" + series.Substring(0, series.Length - 1) + "]";
+                    }
+                    else
+                    {
+                        Log("No data in series.", LogType.Both);
+                    }
                 }
                 else if (records.Count == 2)
                 {

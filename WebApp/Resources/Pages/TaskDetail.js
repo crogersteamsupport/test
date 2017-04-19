@@ -687,11 +687,11 @@ $(document).ready(function () {
         $('<i>')
               .addClass('col-xs-1 fa fa-check')
               .click(function (e) {
-                  var value = top.Ts.Utils.getMsDate(input.val());
+                  var taskInfo = new Object();
+                  taskInfo.DueDate = input.val();
                   container.remove();
-                  window.parent.parent.Ts.Services.Task.SetDueDate(_taskID, value, function (result) {
-                      var date = result === null ? null : top.Ts.Utils.getMsDate(result);
-                      parent.html((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>'))
+                  window.parent.parent.Ts.Services.Task.SetDueDate(_taskID, window.parent.parent.JSON.stringify(taskInfo), function (result) {
+                      parent.html((result.DueDate === null ? 'Unassigned' : window.parent.parent.Ts.Utils.getMsDate(result.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>'))
                       $('#taskEdit').removeClass("disabled");
                       top.Ts.System.logAction('Task Detail - Due Date Change');
                   },
@@ -752,11 +752,11 @@ $(document).ready(function () {
         $('<i>')
               .addClass('col-xs-1 fa fa-check')
               .click(function (e) {
-                  var value = top.Ts.Utils.getMsDate(input.val());
+                  var taskInfo = new Object();
+                  taskInfo.Reminder = input.val();
                   container.remove();
-                  window.parent.parent.Ts.Services.Task.SetReminderDueDate(_taskID, value, function (result) {
-                      var date = result === null ? null : top.Ts.Utils.getMsDate(result);
-                      parent.html((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern()) + '<i id="clearReminderDate" class="col-xs-1 fa fa-times clearDate"></i>'))
+                  window.parent.parent.Ts.Services.Task.SetReminderDueDate(_taskID, window.parent.parent.JSON.stringify(taskInfo), function (result) {
+                      parent.html((result.DueDate === null ? 'Unassigned' : window.parent.parent.Ts.Utils.getMsDate(result.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearReminderDate" class="col-xs-1 fa fa-times clearDate"></i>'))
                       $('#taskEdit').removeClass("disabled");
                       top.Ts.System.logAction('Task Detail - Reminder Date Change');
                   },
