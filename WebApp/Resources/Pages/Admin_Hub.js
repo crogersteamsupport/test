@@ -154,6 +154,7 @@ $(document).ready(function () {
                 $('#hub_admin').delay(400).fadeIn();
                 ClearNewHubSettings();
                 validator.destroy();
+                $('#HubList > .hub-container > [data-hubid="' + hubList[0].HubID + '"]').parent('.hub-container').addClass('active');
             })
         });
     });
