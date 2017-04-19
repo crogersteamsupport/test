@@ -830,42 +830,42 @@
                             </div>
 
                             <div id="tabs-hub" class="tabs-modifiable" style="height:1260px; overflow:hidden;">
-                                    <div id="HubList"></div>
-                                    <div style="margin-left:200px;" id="hubWindow">
-                                        <div id="newHub" style="display:none; min-height:800px;">
-                                            <form id="newHubForm">
-                                                <div class="container-fluid well hubWell">
-                                                    <div style="text-align:center; margin-bottom:10px;">
-                                                        <h1 style="font-weight:bold;">New Customer Hub</h1>
-                                                    </div>
-                                                    <div class="hubProperty">
-                                                        <label>Hub Prefix/Name</label>
-                                                        <input type="text" id="HubName" name="HubName" class="form-control" />
-                                                    </div>
-                                                    <div class="hubProperty">
-                                                        <label>Product Line</label>
-                                                        <select id="ProductLineList" class="form-control"></select>
-                                                    </div>
-                                                    <div class="hubProperty">
-                                                        <label>Copy All Other Settings From</label>
-                                                        <select id="CopyHubList" class="form-control"></select>
-                                                    </div>
-                                                    <div class="pull-right hubProperty">
-                                                        <input type="button" id="btnCancelNewHub" class="btn btn-danger" value="Cancel">
-                                                        <input type="button" id="btnFinalizeNewHub" class="btn btn-primary" value="Create">
-                                                    </div>
+                                <div id="HubList"></div>
+                                <div style="margin-left:200px;" id="hubWindow">
+                                    <div id="newHub" style="display:none; min-height:800px;">
+                                        <form id="newHubForm">
+                                            <div class="container-fluid well hubWell">
+                                                <div style="text-align:center; margin-bottom:10px;">
+                                                    <h1 style="font-weight:bold;">New Customer Hub</h1>
                                                 </div>
-                                            </form>
-                                        </div>
-                                        <div id="disabledNewHub">
-                                            <div class="container-fluid well hubDisabledWell alert alert-info">
-                                                <div>The ability to create multiple hubs is an option for enterprise customers who have enabled product lines.</div>
-                                                <br />
-                                                <div>For more information on how to setup multiple hubs see the TeamSupport documentation <a href="">here!</a></div>
+                                                <div class="hubProperty">
+                                                    <label>Hub Prefix/Name</label>
+                                                    <input type="text" id="HubName" name="HubName" class="form-control" />
+                                                </div>
+                                                <div class="hubProperty">
+                                                    <label>Product Line</label>
+                                                    <select id="ProductLineList" class="form-control"></select>
+                                                </div>
+                                                <div class="hubProperty">
+                                                    <label>Copy All Other Settings From</label>
+                                                    <select id="CopyHubList" class="form-control"></select>
+                                                </div>
+                                                <div class="pull-right hubProperty">
+                                                    <input type="button" id="btnCancelNewHub" class="btn btn-danger" value="Cancel" />
+                                                    <input type="button" id="btnFinalizeNewHub" class="btn btn-primary" value="Create" />
+                                                </div>
                                             </div>
-                                        </div>
-                                        <iframe id="hub_admin" style="width:100%; height:1240px;" scrolling="no"></iframe>
+                                        </form>
                                     </div>
+                                    <div id="disabledNewHub">
+                                        <div class="container-fluid well hubDisabledWell alert alert-info">
+                                            <div>The ability to create multiple hubs is an option for enterprise customers who have enabled product lines.</div>
+                                            <br />
+                                            <div>For more information on how to setup multiple hubs see the TeamSupport documentation <a href="">here!</a></div>
+                                        </div>
+                                    </div>
+                                    <iframe id="hub_admin" style="width:100%; height:1240px;" scrolling="no"></iframe>
+                                </div>
                             </div>
 
                             <div id="tabs-community" class="categories">
@@ -1078,7 +1078,7 @@
                                                 Visible on portal
                                             </div>
                                             <div class="ts-setting-field-content">
-                                                <input type="checkbox" class="checkbox" id="kb_cat_visible" checked=checked /><label class="checkbox" for="kb_cat_visible">Enabled</label>
+                                                <input type="checkbox" class="checkbox" id="kb_cat_visible" checked=checked checked=checked /><label class="checkbox" for="kb_cat_visible">Enabled</label>
                                                 <p></p>
                                             </div>
                                         </div>
@@ -1342,54 +1342,50 @@
 </body>
 </html>
 <script id="hub-list-template" type="text/x-handlebars-template">
-    <div style="width:180px; padding:0 8px 0 2px; float:left;">
-        {{#hubList}}
-        <div class="hub-container">
-            <span>
-                <a href="#" class="btnDeleteHub" data-hubid="{{HubID}}">
-                    <i class="fa fa-remove remove" aria-hidden="true"></i>
-                </a>
+    {{#hubList}}
+    <div class="hub-container">
+        <span>
+            <a href="#" class="btnDeleteHub" data-hubid="{{HubID}}">
+                <i class="fa fa-remove remove" aria-hidden="true"></i>
+            </a>
+        </span>
+        <a href="#" class="btnLoadHub" data-hubid="{{HubID}}" style="margin-left:15px;">
+            <span class="hubName">
+                {{Name}}
             </span>
-            <a href="#" class="btnLoadHub" data-hubid="{{HubID}}" style="margin-left:15px;">
-                <span class="hubName">
-                    {{Name}}
-                </span>
-                <span class="pull-right">
-                    <i class="fa fa-chevron-right loadcarat" aria-hidden="true"></i>
-                </span>
-            </a>
-        </div>
-        {{/hubList}}
-        <hr class="divider" />
-        {{#if enableNewHubs}}
-        <div class="hub-container">
-            <a href="#" id="btnNewHub" class="newHub">
-                <span class="remove">
-                </span>
-                <span style="float:left; margin-left:15px;">
-                    Add New Hub
-                </span>
-                <span class="pull-right">
-                    <i class="fa fa-plus" style="font-size:10px;" aria-hidden="true"></i>
-                </span>
-            </a>
-        </div>
-        {{/if}}
-        {{#unless enableNewHubs }}
-        <div class="hub-container">
-            <a href="#" id="btnDisabledNewHub" class="newHub" style="color:lightgray;" disabled="disabled">
-                <span class="remove">
-                </span>
-                <div style="float:left; margin-left:15px;">
-                    Add New Hub
-                </div>
-                <div class="pull-right">
-                    <i class="fa fa-plus loadcarat" aria-hidden="true"></i>
-                </div>
-            </a>
-        </div>
-        {{/unless}}
+            <span class="pull-right">
+                <i class="fa fa-chevron-right loadcarat" aria-hidden="true"></i>
+            </span>
+        </a>
     </div>
+    {{/hubList}}
+    <hr class="divider" />
+    {{#if enableNewHubs}}
+    <div class="hub-container">
+        <a href="#" id="btnNewHub" class="newHub">
+            <span style="margin-left:15px;">
+                Add New Hub
+            </span>
+            <span class="pull-right">
+                <i class="fa fa-plus" style="font-size:10px;" aria-hidden="true"></i>
+            </span>
+        </a>
+    </div>
+    {{/if}}
+    {{#unless enableNewHubs }}
+    <div class="hub-container">
+        <a href="#" id="btnDisabledNewHub" class="newHub" style="color:lightgray;" disabled="disabled">
+            <span class="remove">
+            </span>
+            <div style="float:left; margin-left:15px;">
+                Add New Hub
+            </div>
+            <div class="pull-right">
+                <i class="fa fa-plus loadcarat" aria-hidden="true"></i>
+            </div>
+        </a>
+    </div>
+    {{/unless}}
 </script>
 <script id="ProductLineTemplate" type="text/x-handlebars-template">
     <option value="-1"></option>

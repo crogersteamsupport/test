@@ -86,6 +86,9 @@ form.positive-file-upload input, form.neutral-file-upload input, form.negative-f
 
 #HubList {
     font-size: 13px;
+    width: 180px;
+    padding: 0 8px 0 2px;
+    float: left;
 }
 
 .hubName {
@@ -96,15 +99,20 @@ form.positive-file-upload input, form.neutral-file-upload input, form.negative-f
 }
 
 .hub-container {
-    margin-top: 14px;
+    padding:12px 10px 12px 6px;
+}
+
+.hub-container:hover > a {
+    color: #3D6DA7;
+}
+
+.hub-container.active > a, .hub-container.active {
+    background-color: #3D6DA7;
+    color: white;
 }
 
 .hub-container:hover .remove {
     display: block !important;
-}
-
-.hub-container > a:hover {
-    text-decoration: none;
 }
 
 .hub-container > a:active {
@@ -133,7 +141,11 @@ form.positive-file-upload input, form.neutral-file-upload input, form.negative-f
     color: #D9534F;
 }
 
-.remove:hover {
+.hub-container.active .remove {
+    color: #FFFFFF;
+}
+
+.remove:hover, .hub-container.active .remove:hover {
     color: #D9534F;
 }
 
@@ -141,7 +153,10 @@ input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:fo
     border-color: #D9534F;
 }
 
-.divider {
+
+hr, .divider {
     color: lightgray;
-    margin-left: 10px;
+    margin-left: 12px;
+    margin-top:10px;
+    margin-bottom:10px;
 }

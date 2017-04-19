@@ -11,22 +11,24 @@ $(document).ready(function () {
                 enableNewHubs = true;
             }
 
-            if (!callback) {
-                GetHubURL(hubList[0], function (url) {
-                    $('#hub_admin').attr('src', url);
-                });
-            }
-
             var template = Handlebars.compile($("#hub-list-template").html());
             data = { hubList: hubList, enableNewHubs: enableNewHubs };
 
             $("#HubList").html(template(data));
 
+            if (!callback) {
+                GetHubURL(hubList[0], function (url) {
+                    $('#hub_admin').attr('src', url);
+                });
+                $('#HubList > .hub-container > [data-hubid="' + hubList[0].HubID + '"]').parent('.hub-container').addClass('active');
+            }
+
+            if (callback) {
+                callback();
+            }
         });
 
-        if (callback) {
-            callback();
-        }
+        
     }
 
     function GetHubURL(hubRecord, callback) {
@@ -40,37 +42,6 @@ $(document).ready(function () {
 
     pageLoad();
 
-    $('#HubList').on('click', '#btnNewHub', function (e) {
-        e.preventDefault();
-
-        $.validator.addMethod("url", function (value, element) {
-            return this.optional(element) || /^[A-Za-z0-9-]+$/i.test(value);
-        }, "Your hub name must be one alphanumeric word with no special characters");
-
-        validator = $("#newHubForm").validate({
-            rules: {
-                HubName: "required url"
-            },
-        });
-
-        var copyHubTemplate = Handlebars.compile($("#CopyHubTemplate").html());
-        data = { Hubs: hubList };
-
-        $("#CopyHubList").html(copyHubTemplate(data));
-
-        parent.parent.Ts.Services.Products.GetProductFamilies(function (data) {
-
-            var productLineTemplate = Handlebars.compile($("#ProductLineTemplate").html());
-            data = { ProductLines: data };
-
-            $("#ProductLineList").html(productLineTemplate(data));
-
-            $('#hub_admin').fadeOut();
-            $('#newHub').delay(400).fadeIn();
-        });
-
-    });
-
     $('#HubList').on('click', '#btnDisabledNewHub', function (e) {
         e.preventDefault();
 
@@ -81,6 +52,9 @@ $(document).ready(function () {
     $('#HubList').on('click', '.btnLoadHub', function (e) {
         e.preventDefault();
         var HubID = $(this).data('hubid');
+
+        $('#HubList .hub-container').removeClass('active');  
+        $(this).parent('.hub-container').addClass('active');
 
         for (i = 0; i < hubList.length; i++) {
             if (hubList[i].HubID == HubID) {
@@ -112,6 +86,40 @@ $(document).ready(function () {
 
     });
 
+    $('#HubList').on('click', '#btnNewHub', function (e) {
+        e.preventDefault();
+
+        $('#HubList .hub-container').removeClass('active');
+        $(this).parent('.hub-container').addClass('active');
+
+        $.validator.addMethod("url", function (value, element) {
+            return this.optional(element) || /^[A-Za-z0-9-]+$/i.test(value);
+        }, "Your hub name must be one alphanumeric word with no special characters");
+
+        validator = $("#newHubForm").validate({
+            rules: {
+                HubName: "required url"
+            },
+        });
+
+        var copyHubTemplate = Handlebars.compile($("#CopyHubTemplate").html());
+        data = { Hubs: hubList };
+
+        $("#CopyHubList").html(copyHubTemplate(data));
+
+        parent.parent.Ts.Services.Products.GetProductFamilies(function (data) {
+
+            var productLineTemplate = Handlebars.compile($("#ProductLineTemplate").html());
+            data = { ProductLines: data };
+
+            $("#ProductLineList").html(productLineTemplate(data));
+
+            $('#hub_admin').fadeOut();
+            $('#newHub').delay(400).fadeIn();
+        });
+
+    });
+
     $('#newHub').on('click', '#btnFinalizeNewHub', function (e) {
         if ($("#newHubForm").valid() == true) {
             parent.parent.Ts.Services.Admin.CreateNewHub($('#HubName').val(), $('#CopyHubList').val(), $('#ProductLineList').val(), function (creationResult) {
@@ -124,6 +132,7 @@ $(document).ready(function () {
                             $('#hub_admin').delay(400).fadeIn();
                             ClearNewHubSettings();
                             validator.destroy();
+                            $('#HubList > .hub-container > [data-hubid="' + creationResult.HubLinkModel.HubID + '"]').parent('.hub-container').addClass('active');
                         })
                     });
                 }
