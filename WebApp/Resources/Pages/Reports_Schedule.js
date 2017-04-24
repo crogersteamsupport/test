@@ -34,7 +34,7 @@
 		var emailBody = $('#email-body-editor').val();
 		var emailAddresses = $('.schedule-email-addresses').val();
 		var startOnTime = $('#StartOnTime').val();
-		var startOn = $('#StartDateTimePicker').data("StartOnDate") + ' ' + startOnTime;
+		var startOn = $('#StartDateTimePicker').data("StartOnDate") + ' ' + startOnTime.replace(/\./g, "");
 		var startOnValue = '';
 
 		if ($("#runNow").hasClass('fa-check-square-o')) {
@@ -235,7 +235,7 @@
 		$('.schedule-email-addresses').val(report.EmailRecipients);
 		var startOn = report.StartDate.localeFormat(parent.Ts.Utils.getDatePattern());
 		$('#StartOn').val(startOn);
-		$('#StartDateTimePicker').data("StartOnDate", startOn);
+		$('#StartDateTimePicker').data("StartOnDate", report.StartDate.toLocaleString().split(',')[0]);
 
 		var startOnTime = report.StartDate.localeFormat(parent.Ts.Utils.getTimePattern());
 		$('#StartOnTime').val(startOnTime);
