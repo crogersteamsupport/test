@@ -453,5 +453,26 @@ namespace TeamSupport.Data
                 Fill(command);
             }
         }
+
+        public void LoadByItemAll(ReferenceType refType, int refID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+                    SELECT
+                        t.*
+                    FROM
+                        Tasks t
+                        JOIN TaskAssociations ta
+                            ON t.TaskID = ta.TaskID
+                    WHERE
+                        ta.RefType = @RefType
+                        AND ta.RefID = @RefID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@RefType", refType);
+                command.Parameters.AddWithValue("@RefID", refID);
+                Fill(command);
+            }
+        }
     }
 }
