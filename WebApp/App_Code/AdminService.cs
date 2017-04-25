@@ -604,6 +604,7 @@ namespace TSWebServices
                 newHub.DateCreated = DateTime.UtcNow;
                 newHub.DateModified = DateTime.UtcNow;
                 newHub.ModifierID = TSAuthentication.GetLoginUser().UserID;
+                newHub.EnableMigration = false;
 
                 hubHelper.Save();
 
@@ -788,6 +789,7 @@ namespace TSWebServices
                     hub.OrganizationID = parentOrgID;
                     hub.IsActive = true;
                     hub.DateModified = DateTime.UtcNow;
+                    hub.EnableMigration = false;
                     hubs.Save();
                 }
                 else
