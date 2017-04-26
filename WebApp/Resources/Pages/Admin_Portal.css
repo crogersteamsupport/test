@@ -160,3 +160,9 @@ hr, .divider {
     margin-top:10px;
     margin-bottom:10px;
 }
+
+#hub_admin {
+    -moz-box-shadow: 4px 4px 8px #000;
+    -webkit-box-shadow: 4px 4px 8px #000;
+    box-shadow: 4px 4px 8px #000;
+}
