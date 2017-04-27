@@ -11,6 +11,7 @@ namespace TeamSupport.Data
 {
     public partial class TasksViewItem
     {
+        public string TaskUrl { get { return SystemSettings.GetAppUrl() + "?TaskID=" + TaskID.ToString(); } }
     }
 
     public partial class TasksView

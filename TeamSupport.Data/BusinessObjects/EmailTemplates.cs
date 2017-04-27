@@ -1043,6 +1043,7 @@ namespace TeamSupport.Data
             template.ReplaceCommonParameters().ReplaceFields("User", user);
             template.ReplaceParameter("TaskName", task.Name);
             template.ReplaceParameter("TaskDescription", task.Description);
+            template.ReplaceParameter("TaskUrl", task.TaskUrl);
             if (task.DueDate.HasValue)
             {
                 DateTime taskDueDate = task.DueDate ?? DateTime.Now;
@@ -1081,6 +1082,7 @@ namespace TeamSupport.Data
             template.ReplaceCommonParameters().ReplaceFields("Modifier", modifier).ReplaceFields("Owner", owner);
             template.ReplaceParameter("TaskName", task.Name);
             template.ReplaceParameter("TaskDescription", task.Description);
+            template.ReplaceParameter("TaskUrl", task.TaskUrl);
             if (task.DueDate.HasValue)
             {
                 DateTime taskDueDate = task.DueDate ?? DateTime.Now;
@@ -1119,6 +1121,7 @@ namespace TeamSupport.Data
             template.ReplaceCommonParameters().ReplaceFields("Modifier", modifier).ReplaceFields("Owner", owner);
             template.ReplaceParameter("TaskName", task.Name);
             template.ReplaceParameter("TaskDescription", task.Description);
+            template.ReplaceParameter("TaskUrl", task.TaskUrl);
             if (task.DueDate.HasValue)
             {
                 DateTime taskDueDate = task.DueDate ?? DateTime.Now;
@@ -1157,6 +1160,7 @@ namespace TeamSupport.Data
             template.ReplaceCommonParameters().ReplaceFields("Modifier", modifier).ReplaceFields("Owner", owner);
             template.ReplaceParameter("TaskName", task.Name);
             template.ReplaceParameter("TaskDescription", task.Description);
+            template.ReplaceParameter("TaskUrl", task.TaskUrl);
             if (task.DueDate.HasValue)
             {
                 DateTime taskDueDate = task.DueDate ?? DateTime.Now;
@@ -1195,6 +1199,7 @@ namespace TeamSupport.Data
             template.ReplaceCommonParameters().ReplaceFields("Modifier", modifier).ReplaceFields("OldOwner", oldUser).ReplaceFields("Owner", owner);
             template.ReplaceParameter("TaskName", task.Name);
             template.ReplaceParameter("TaskDescription", task.Description);
+            template.ReplaceParameter("TaskUrl", task.TaskUrl);
             if (task.DueDate.HasValue)
             {
                 DateTime taskDueDate = task.DueDate ?? DateTime.Now;
