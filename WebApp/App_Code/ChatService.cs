@@ -72,7 +72,7 @@ namespace TSWebServices
                 }
                 catch (Exception ex)
                 {
-                    ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "ChatService.CheckChatStatus");
+                    ExceptionLogs.LogException(LoginUser.Anonymous, ex, "ChatService.CheckChatStatus");
                 }
             }
             
@@ -184,21 +184,28 @@ namespace TSWebServices
         public void MissedChat(int chatID)
         {
             ChatRequestProxy request = GetChatRequest(chatID);
+            Organization organization = Organizations.GetOrganization(LoginUser.Anonymous, request.OrganizationID);
 
             //Clear the chat from the pending chats if this is already a missed chat
-            var result = pusher.Trigger("chat-requests-" + loginUser.GetOrganization().ChatID, "chat-request-accepted", request.ChatRequestID);
-
-            Organization _organization = Organizations.GetOrganization(loginUser, request.OrganizationID);
+            try
+            {
+                var result = pusher.Trigger("chat-requests-" + organization.ChatID, "chat-request-accepted", request.ChatRequestID);
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "ChatService.MissedChat");
+            }
+            
             ChatClient client = ChatClients.GetChatClient(LoginUser.Anonymous, request.RequestorID);
 
             Ticket ticket = (new Tickets(LoginUser.Anonymous)).AddNewTicket();
-            ticket.OrganizationID = _organization.OrganizationID;
-            ticket.GroupID = _organization.DefaultPortalGroupID;
+            ticket.OrganizationID = organization.OrganizationID;
+            ticket.GroupID = organization.DefaultPortalGroupID;
             ticket.IsKnowledgeBase = false;
             ticket.IsVisibleOnPortal = true;
             ticket.Name = "Missed Chat";
-            ticket.TicketSeverityID = TicketSeverities.GetTop(LoginUser.Anonymous, _organization.OrganizationID).TicketSeverityID;
-            ticket.TicketTypeID = TicketTypes.GetTop(LoginUser.Anonymous, _organization.OrganizationID).TicketTypeID;
+            ticket.TicketSeverityID = TicketSeverities.GetTop(LoginUser.Anonymous, organization.OrganizationID).TicketSeverityID;
+            ticket.TicketTypeID = TicketTypes.GetTop(LoginUser.Anonymous, organization.OrganizationID).TicketTypeID;
             ticket.TicketStatusID = TicketStatuses.GetTop(LoginUser.Anonymous, ticket.TicketTypeID).TicketStatusID;
             ticket.TicketSource = "ChatOffline";
             ticket.PortalEmail = client.Email;
@@ -227,7 +234,7 @@ namespace TSWebServices
             action.Collection.Save();
 
             Users users = new Users(LoginUser.Anonymous);
-            users.LoadByEmailOrderByActive(_organization.OrganizationID, client.Email);
+            users.LoadByEmailOrderByActive(organization.OrganizationID, client.Email);
             if (!users.IsEmpty) ticket.Collection.AddContact(users[0].UserID, ticket.TicketID);
         }
 
