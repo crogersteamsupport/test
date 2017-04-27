@@ -579,23 +579,24 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string SetReminderDueDate(int taskID, object value)
+        public ReminderProxy SetReminderDueDate(int taskID, string data)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Reminder reminder = Reminders.GetReminderByTaskID(loginUser, taskID);
             StringBuilder description = new StringBuilder();
             Task task = Tasks.GetTask(loginUser, taskID);
-            DateTime reminderDueDate = DateTime.SpecifyKind((DateTime)value, DateTimeKind.Unspecified);
-
+            TaskJsonInfo info = Newtonsoft.Json.JsonConvert.DeserializeObject<TaskJsonInfo>(data);
+            DateTime reminderDueDate = (DateTime)info.Reminder;
+            
             if (reminder != null)
             {
                 if (reminder.DueDate == null)
                 {
-                    description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", "Unassigned", (reminderDueDate).ToString(GetDateFormatNormal())));
+                    description.Append(String.Format("Changed Reminder from \"{0}\" to \"{1}\".", "Unassigned", (reminderDueDate).ToString()));
                 }
                 else
                 {
-                    description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", ((DateTime)reminder.DueDate).ToString(GetDateFormatNormal()), (reminderDueDate).ToString(GetDateFormatNormal())));
+                    description.Append(String.Format("Changed Reminder from \"{0}\" to \"{1}\".", ((DateTime)reminder.DueDate).ToString(), (reminderDueDate).ToString()));
                 }
                 reminder.DueDate = DataUtils.DateToUtc(loginUser, reminderDueDate);
                 reminder.IsDismissed = false;
@@ -618,7 +619,7 @@ namespace TSWebServices
                 SendModifiedNotification(loginUser.UserID, task.TaskID);
             }
 
-            return value.ToString() != "" ? reminder.DueDate.ToString() : null;
+            return reminder.GetProxy();
         }
 
         [WebMethod]
@@ -636,20 +637,21 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string SetDueDate(int taskID, object value)
+        public TaskProxy SetDueDate(int taskID, string data)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Task task = Tasks.GetTask(loginUser, taskID);
             StringBuilder description = new StringBuilder();
-            DateTime dueDate = DateTime.SpecifyKind((DateTime)value, DateTimeKind.Unspecified);
+            TaskJsonInfo info = Newtonsoft.Json.JsonConvert.DeserializeObject<TaskJsonInfo>(data);
+            DateTime dueDate = (DateTime)info.DueDate;
 
             if (task.DueDate == null)
             {
-                description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", "Unassigned", (dueDate).ToString(GetDateFormatNormal())));
+                description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", "Unassigned", (dueDate).ToString()));
             }
             else
             {
-                description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", ((DateTime)task.DueDate).ToString(GetDateFormatNormal()), (dueDate).ToString(GetDateFormatNormal())));
+                description.Append(String.Format("Changed Due Date from \"{0}\" to \"{1}\".", ((DateTime)task.DueDate).ToString(), (dueDate).ToString()));
             }
             task.DueDate = DataUtils.DateToUtc(loginUser, dueDate);
             task.Collection.Save();
@@ -660,7 +662,7 @@ namespace TSWebServices
                 SendModifiedNotification(loginUser.UserID, task.TaskID);
             }
 
-            return value.ToString() != "" ? task.DueDate.ToString() : null;
+            return task.GetProxy();
         }
 
         [WebMethod]

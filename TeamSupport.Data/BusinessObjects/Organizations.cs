@@ -302,14 +302,14 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
             else return organizations[0].OrganizationID;
         }
 
-        public static Organization GetCompanyByDomain(int parentOrganizationID, string emailDomain, LoginUser loginUser)
+        public static Organization GetCompanyByDomain(int parentOrganizationID, string emailDomain, LoginUser loginUser, bool forceUnknown = false)
         {
             Organization result = null;
 
             Organizations organizations = new Organizations(loginUser);
             organizations.LoadByParentID(parentOrganizationID, true);
 
-            if (organizations.Any())
+            if (organizations.Any() && !forceUnknown)
             {
                 List<KeyValuePair<int, string>> organizationSubDomainList = new List<KeyValuePair<int, string>>();
 
@@ -2093,35 +2093,7 @@ AND (@UseFilter=0 OR (OrganizationID IN (SELECT OrganizationID FROM UserRightsOr
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText =
-        @"
-SELECT * FROM Organizations o 
-WHERE o.IsIndexLocked = 0
-AND o.ParentID = 1
-AND (IsRebuildingIndex = 0 OR DATEDIFF(SECOND, DateLastIndexed, GETUTCDATE()) > 300)
-AND o.IsActive = 1
-AND (
-  EXISTS (SELECT * FROM Tickets t WHERE t.OrganizationID = o.OrganizationID AND t.NeedsIndexing=1)
-  OR EXISTS (SELECT * FROM WikiArticles w WHERE w.OrganizationID = o.OrganizationID And w.NeedsIndexing=1)
-  OR EXISTS (SELECT * FROM NotesView nv WHERE nv.ParentOrganizationID = o.OrganizationID AND nv.NeedsIndexing=1)
-  OR EXISTS (SELECT * FROM ProductVersionsView pvv WHERE pvv.OrganizationID = o.OrganizationID AND pvv.NeedsIndexing=1)
-  OR EXISTS (SELECT * FROM WatercoolerMsg wcm WHERE wcm.OrganizationID = o.OrganizationID AND wcm.NeedsIndexing=1)
-  OR EXISTS (SELECT * FROM Organizations o2 WHERE o2.ParentID = o.OrganizationID AND o2.NeedsIndexing=1)
-  OR EXISTS (SELECT * FROM ContactsView cv WHERE cv.OrganizationParentID = o.OrganizationID AND cv.NeedsIndexing=1)
-  OR EXISTS (SELECT * FROM Assets a WHERE a.OrganizationID = o.OrganizationID AND a.NeedsIndexing=1)
-  OR EXISTS (SELECT * FROM Products p WHERE p.OrganizationID = o.OrganizationID AND p.NeedsIndexing=1)
-  OR EXISTS (SELECT * FROM Tasks t WHERE t.OrganizationID = o.OrganizationID AND t.NeedsIndexing=1)
-  OR EXISTS (
-    SELECT * FROM DeletedIndexItems dii 
-    WHERE dii.RefType IN (9, 13, 14, 17, 32, 38, 39, 40, 34, 61)
-    AND dii.OrganizationID = o.OrganizationID
-  )
-)
-
-ORDER BY DateLastIndexed
-";
                 command.CommandText = "IndexerQuery";
-                //command.CommandType = CommandType.Text;
                 command.CommandType = CommandType.StoredProcedure;
                 Fill(command);
             }

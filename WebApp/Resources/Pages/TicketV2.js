@@ -3218,6 +3218,11 @@ function AddTasks(tasks) {
                 _TaskName = tasks[i].Description;
             }
         }
+
+        if (tasks[i].AssignedTo != null)
+        {
+            _TaskName += ' for ' + tasks[i].AssignedTo;
+        }
         var reminderElem = PrependTask(tasksDiv, tasks[i].TaskID, _TaskName, tasks[i]);
     };
 }

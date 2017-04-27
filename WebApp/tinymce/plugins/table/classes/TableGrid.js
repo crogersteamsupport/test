@@ -166,23 +166,6 @@ define("tinymce/tableplugin/TableGrid", [
 			return rows;
 		}
 
-		function countSelectedCols() {
-			var cols = 0;
-
-			each(grid, function(row) {
-				each(row, function(cell) {
-					if (isCellSelected(cell)) {
-						cols++;
-					}
-				});
-				if (cols) {
-					return false;
-				}
-			});
-
-			return cols;
-		}
-
 		function deleteTable() {
 			var rng = dom.createRng();
 
@@ -385,11 +368,7 @@ define("tinymce/tableplugin/TableGrid", [
 		function reduceRowSpans(grid, startX, startY, endX, endY) {
 			var count = 0;
 
-			if (endY - startY < 1) {
-				return 0;
-			}
-
-			for (var y = startY + 1; y <= endY; y++) {
+			for (var y = startY; y <= endY; y++) {
 				var allCells = findItemsOutsideOfRange(getRow(grid, y), startX, endX);
 				var fakeCells = getFakeCells(allCells);
 
@@ -408,11 +387,7 @@ define("tinymce/tableplugin/TableGrid", [
 		function reduceColSpans(grid, startX, startY, endX, endY) {
 			var count = 0;
 
-			if (endX - startX < 1) {
-				return 0;
-			}
-
-			for (var x = startX + 1; x <= endX; x++) {
+			for (var x = startX; x <= endX; x++) {
 				var allCells = findItemsOutsideOfRange(getColumn(grid, x), startY, endY);
 				var fakeCells = getFakeCells(allCells);
 
@@ -553,7 +528,7 @@ define("tinymce/tableplugin/TableGrid", [
 				});
 
 				if (before) {
-					return posY === undefined;
+					return !posY;
 				}
 			});
 
@@ -609,13 +584,6 @@ define("tinymce/tableplugin/TableGrid", [
 			}
 		}
 
-		function insertRows(before, num) {
-			num = num || getSelectedRows().length || 1;
-			for (var i = 0; i < num; i++) {
-				insertRow(before);
-			}
-		}
-
 		function insertCol(before) {
 			var posX, lastCell;
 
@@ -632,7 +600,7 @@ define("tinymce/tableplugin/TableGrid", [
 				});
 
 				if (before) {
-					return posX === undefined;
+					return !posX;
 				}
 			});
 
@@ -663,13 +631,6 @@ define("tinymce/tableplugin/TableGrid", [
 					lastCell = cell;
 				}
 			});
-		}
-
-		function insertCols(before, num) {
-			num = num || countSelectedCols() || 1;
-			for (var i = 0; i < num; i++) {
-				insertCol(before);
-			}
 		}
 
 		function getSelectedCells(grid) {
@@ -1050,9 +1011,7 @@ define("tinymce/tableplugin/TableGrid", [
 			split: split,
 			merge: merge,
 			insertRow: insertRow,
-			insertRows: insertRows,
 			insertCol: insertCol,
-			insertCols: insertCols,
 			splitCols: splitCols,
 			deleteCols: deleteCols,
 			deleteRows: deleteRows,

@@ -806,6 +806,21 @@ AND ot.TicketID = @TicketID
             //Delete the EmailPost of the SLA values updated
             DeleteEmailPostsByTicketId(cloneTicketId);
 
+            try
+            {
+                Tasks cloningTicketTasks = new Tasks(loginUser);
+                cloningTicketTasks.LoadByItemAll(ReferenceType.Tickets, this.TicketID);
+
+                string logDescription = string.Format("{0} cloned task for cloned ticket {1} into {2}.", loginUser.GetUserFullName(), this.TicketNumber, clone.TicketNumber);
+                CloneTicketTasks(loginUser, cloningTicketTasks, cloneTicketId, ref logDescription, null);
+            }
+            catch (Exception ex)
+            {
+                actionLog = string.Format("Failed to clone ticket {0} Tasks into {1}.", this.TicketNumber, clone.TicketNumber);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Tasks");
+            }
+
             ActionLogs cloneActionLogs = new ActionLogs(loginUser);
             cloneActionLogs.LoadByTicketID(cloneTicketId);
 
@@ -871,6 +886,103 @@ AND ot.TicketID = @TicketID
             clone.DateCreated = DateTime.UtcNow;
             clone.DateModified = DateTime.UtcNow;
             clone.NeedsIndexing = true;
+        }
+
+        private void CloneTicketTasks(LoginUser loginUser, Tasks cloningTicketTasks, int cloneTicketId, ref string logDescription, int? newParentID)
+        {
+            foreach (Task cloningTask in cloningTicketTasks)
+            {
+                //if subtask and parent in cloningtasks skip as it will be processed as subtask
+                if (cloningTask.ParentID != null)
+                {
+                    Task parentInCloningTicketTasks = cloningTicketTasks.FindByTaskID((int)cloningTask.ParentID);
+                    if (parentInCloningTicketTasks != null)
+                    {
+                        continue;
+                    }
+                }
+                Tasks newTasks = new Tasks(loginUser);
+                Task newTask = newTasks.AddNewTask();
+                if (newParentID == null)
+                {
+                    newTask.ParentID = cloningTask.ParentID;
+                }
+                else
+                {
+                    newTask.ParentID = newParentID;
+                }
+                newTask.OrganizationID = this.OrganizationID;
+                newTask.Name = cloningTask.Name;
+                newTask.Description = cloningTask.Description;
+                newTask.DueDate = cloningTask.DueDateUtc;
+                newTask.UserID = cloningTask.UserID;
+                newTask.IsComplete = cloningTask.IsComplete;
+                newTask.DateCompleted = cloningTask.DateCompletedUtc;
+                newTask.CreatorID = cloningTask.CreatorID;
+                newTask.DateCreated = cloningTask.DateCreatedUtc;
+                newTask.ModifierID = cloningTask.ModifierID;
+                newTask.DateModified = cloningTask.DateModifiedUtc;
+                newTask.NeedsIndexing = true;
+                newTasks.Save();
+
+                TaskLogs taskLogs = new TaskLogs(loginUser);
+                TaskLogs.AddTaskLog(loginUser, newTask.TaskID, logDescription);
+
+                if (cloningTask.ReminderID != null)
+                {
+                    Reminders cloningReminders = new Data.Reminders(loginUser);
+                    cloningReminders.LoadByReminderID((int)cloningTask.ReminderID);
+
+                    foreach (Reminder cloningReminder in cloningReminders)
+                    {
+                        Reminders newReminders = new Data.Reminders(loginUser);
+                        Reminder newReminder = newReminders.AddNewReminder();
+                        newReminder.RefID = newTask.TaskID;
+                        newReminder.OrganizationID = this.OrganizationID;
+                        newReminder.RefType = cloningReminder.RefType;
+                        newReminder.Description = cloningReminder.Description;
+                        newReminder.DueDate = cloningReminder.DueDateUtc;
+                        newReminder.UserID = cloningReminder.UserID;
+                        newReminder.IsDismissed = cloningReminder.IsDismissed;
+                        newReminder.HasEmailSent = cloningReminder.HasEmailSent;
+                        newReminder.CreatorID = cloningReminder.CreatorID;
+                        newReminder.DateCreated = cloningReminder.DateCreatedUtc;
+                        newReminders.Save();
+
+                        newTask.ReminderID = newReminder.ReminderID;
+                        newTasks.Save();
+                    }
+                }
+
+                TaskAssociations cloningTaskAssociations = new Data.TaskAssociations(loginUser);
+                cloningTaskAssociations.LoadByTaskIDOnly(cloningTask.TaskID);
+
+                TaskAssociations newTaskAssociations = new TaskAssociations(loginUser);
+
+                foreach (TaskAssociation cloningTaskAssociation in cloningTaskAssociations)
+                {
+                    TaskAssociation newTaskAssociation = newTaskAssociations.AddNewTaskAssociation();
+                    newTaskAssociation.TaskID = newTask.TaskID;
+                    newTaskAssociation.RefType = cloningTaskAssociation.RefType;
+                    newTaskAssociation.CreatorID = cloningTaskAssociation.CreatorID;
+                    newTaskAssociation.DateCreated = cloningTaskAssociation.DateCreatedUtc;
+                    if (cloningTaskAssociation.RefType == (int)ReferenceType.Tickets && cloningTaskAssociation.RefID == this.TicketID)
+                    {
+                        newTaskAssociation.RefID = cloneTicketId;
+                    }
+                    else
+                    {
+                        newTaskAssociation.RefID = cloningTaskAssociation.RefID;
+                    }
+                }
+
+                newTaskAssociations.BulkSave();
+
+                Tasks cloningSubTasks = new Tasks(loginUser);
+                cloningSubTasks.LoadByParentID(cloningTask.TaskID);
+
+                CloneTicketTasks(loginUser, cloningSubTasks, cloneTicketId, ref logDescription, newTask.TaskID);
+            }
         }
 
         private void DeleteEmailPostsByTicketId(int ticketId)

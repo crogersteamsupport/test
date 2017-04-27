@@ -24,17 +24,6 @@ define("tinymce/FocusManager", [
 ], function(DOMUtils, Delay, Env) {
 	var selectionChangeHandler, documentFocusInHandler, documentMouseUpHandler, DOM = DOMUtils.DOM;
 
-	var isUIElement = function (editor, elm) {
-		var customSelector = editor ? editor.settings.custom_ui_selector : '';
-		var parent = DOM.getParent(elm, function (elm) {
-			return (
-				FocusManager.isEditorUIElement(elm) ||
-				(customSelector ? editor.dom.is(elm, customSelector) : false)
-			);
-		});
-		return parent !== null;
-	};
-
 	/**
 	 * Constructs a new focus manager instance.
 	 *
@@ -84,6 +73,10 @@ define("tinymce/FocusManager", [
 			}
 
 			return rng;
+		}
+
+		function isUIElement(elm) {
+			return !!DOM.getParent(elm, FocusManager.isEditorUIElement);
 		}
 
 		function registerEvents(e) {
@@ -184,7 +177,7 @@ define("tinymce/FocusManager", [
 					var focusedEditor = editorManager.focusedEditor;
 
 					// Still the same editor the blur was outside any editor UI
-					if (!isUIElement(editor, getActiveElement()) && focusedEditor == editor) {
+					if (!isUIElement(getActiveElement()) && focusedEditor == editor) {
 						editor.fire('blur', {focusedEditor: null});
 						editorManager.focusedEditor = null;
 
@@ -212,7 +205,7 @@ define("tinymce/FocusManager", [
 						}
 
 						// Fire a blur event if the element isn't a UI element
-						if (target != document.body && !isUIElement(activeEditor, target) && editorManager.focusedEditor == activeEditor) {
+						if (target != document.body && !isUIElement(target) && editorManager.focusedEditor == activeEditor) {
 							activeEditor.fire('blur', {focusedEditor: null});
 							editorManager.focusedEditor = null;
 						}
@@ -270,8 +263,6 @@ define("tinymce/FocusManager", [
 		// Needs to be converted to string since svg can have focus: #6776
 		return elm.className.toString().indexOf('mce-') !== -1;
 	};
-
-	FocusManager._isUIElement = isUIElement;
 
 	return FocusManager;
 });

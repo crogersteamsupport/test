@@ -93,7 +93,7 @@ namespace TeamSupport.Data
 		command.CommandText = "ActionLogDetailsByGroupID";
 		command.CommandType = CommandType.StoredProcedure;
         command.Parameters.AddWithValue("@GroupID", groupID);
-        Fill(command);
+        Fill(command, "", false);
       }
     }
 
@@ -223,7 +223,7 @@ namespace TeamSupport.Data
 		command.CommandText = "ActionLogDetailsByOrganizationId";
 		command.CommandType = CommandType.StoredProcedure;
 		command.Parameters.AddWithValue("@OrganizationID", organizationID);
-        Fill(command);
+        Fill(command, "", false);
       }
     }
 
@@ -545,7 +545,7 @@ namespace TeamSupport.Data
 		command.CommandText = "ActionLogDetailsByUserId";
 		command.CommandType = CommandType.StoredProcedure;
         command.Parameters.AddWithValue("@UserID", userID);
-        Fill(command);
+        Fill(command, "", false);
       }
     }
 

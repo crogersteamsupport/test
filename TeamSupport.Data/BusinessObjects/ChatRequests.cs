@@ -341,7 +341,12 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
             client.LastName = lastName;
             client.Email = email;
             Users users = new Users(loginUser);
-            users.LoadByEmail(organizationID, email);
+
+            if (!string.IsNullOrEmpty(email))
+            {
+                users.LoadByEmail(organizationID, email);
+            }
+
             if (!users.IsEmpty)
             {
                 client.LinkedUserID = users[0].UserID;
@@ -357,7 +362,7 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
             else
             {
                 string emailDomain = email.Substring(email.LastIndexOf('@') + 1);
-                Organization org = Organization.GetCompanyByDomain(organizationID, emailDomain, loginUser);
+                Organization org = Organization.GetCompanyByDomain(organizationID, emailDomain, loginUser, forceUnknown: true);
                 client.CompanyName = (org != null) ? org.Name : "";
             }
             client.Collection.Save();

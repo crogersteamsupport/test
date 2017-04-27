@@ -5747,15 +5747,24 @@ namespace TeamSupport.ServiceLibrary
                     note.DateCreated = (DateTime)dateCreated;
                 }
                 int creatorID = -5;
-                if (Int32.TryParse(ReadString("CreatorID", creatorID.ToString()), out creatorID))
+                //if (Int32.TryParse(ReadString("CreatorID", creatorID.ToString()), out creatorID))
+                //{
+                //    User creator = users.FindByUserID(creatorID);
+                //    if (creator != null)
+                //    {
+                //        creatorID = creator.UserID;
+                //    }
+                //}
+                string emailOfAuthor = ReadString("EmailOfAuthor", string.Empty);
+                if (!string.IsNullOrEmpty(emailOfAuthor))
                 {
-                    User creator = users.FindByUserID(creatorID);
+                    User creator = users.FindByEmail(emailOfAuthor);
                     if (creator != null)
                     {
                         creatorID = creator.UserID;
                     }
                 }
-                note.CreatorID = -5;
+                note.CreatorID = creatorID;
                 note.Description = ConvertHtmlLineBreaks(ReadString("Description", string.Empty));
                 note.RefID = companyID;
                 note.RefType = ReferenceType.Organizations;
@@ -5780,8 +5789,8 @@ namespace TeamSupport.ServiceLibrary
 
         private void ImportContactNotes(Import import)
         {
-            //Users users = new Users(_loginUser);
-            //users.LoadByOrganizationID(_organizationID, false);
+            Users users = new Users(_loginUser);
+            users.LoadByOrganizationID(_organizationID, false);
 
             SortedList<string, int> contactList = null;
             contactList = GetContactList();
@@ -5839,7 +5848,7 @@ namespace TeamSupport.ServiceLibrary
                 {
                     note.DateCreated = (DateTime)dateCreated;
                 }
-                //int creatorID = -5;
+                int creatorID = -5;
                 //if (Int32.TryParse(ReadString("CreatorID", creatorID.ToString()), out creatorID))
                 //{
                 // User creator = users.FindByUserID(creatorID);
@@ -5848,7 +5857,16 @@ namespace TeamSupport.ServiceLibrary
                 //	 creatorID = creator.UserID;
                 // }
                 //}
-                note.CreatorID = -5;
+                string emailOfAuthor = ReadString("EmailOfAuthor", string.Empty);
+                if (!string.IsNullOrEmpty(emailOfAuthor))
+                {
+                    User creator = users.FindByEmail(emailOfAuthor);
+                    if (creator != null)
+                    {
+                        creatorID = creator.UserID;
+                    }
+                }
+                note.CreatorID = creatorID;
                 note.Description = ConvertHtmlLineBreaks(ReadString("Description", string.Empty));
                 note.RefID = contactID;
                 note.RefType = ReferenceType.Users;

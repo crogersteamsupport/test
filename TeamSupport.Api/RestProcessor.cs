@@ -49,7 +49,7 @@ namespace TeamSupport.Api
                 if (data != "attachment")
                 {
                     _command.Context.Response.ContentType = "text/xml";
-                    if (_command.Format == RestFormat.JSON)
+                    if (_command.Format == RestFormat.JSON && !string.IsNullOrEmpty(data))
                     {
                         _command.Context.Response.ContentType = "application/json";
 

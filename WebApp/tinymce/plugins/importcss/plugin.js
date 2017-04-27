@@ -103,7 +103,7 @@ tinymce.PluginManager.add('importcss', function(editor) {
 			each(doc.styleSheets, function(styleSheet) {
 				append(styleSheet);
 			});
-		} finally {
+		} catch (e) {
 			// Ignore
 		}
 

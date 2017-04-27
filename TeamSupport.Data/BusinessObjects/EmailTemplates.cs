@@ -813,7 +813,7 @@ namespace TeamSupport.Data
             return template.GetMessage();
         }
 
-        public static MailMessage GetTicketUpdateBasicPortal(LoginUser loginUser, string modifierName, TicketsViewItem ticket, bool includeActions)
+        public static MailMessage GetTicketUpdateBasicPortal(LoginUser loginUser, string modifierName, string modifierTitle, TicketsViewItem ticket, bool includeActions)
         {
             int productFamilyID = -1;
             Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);
@@ -825,7 +825,7 @@ namespace TeamSupport.Data
             EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 6, productFamilyID);
             template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl).ReplaceParameter("HubTicketUrl", ticket.HubUrl);
 
-            template.ReplaceParameter("ModifierName", modifierName);
+            template.ReplaceParameter("ModifierName", modifierName).ReplaceParameter("ModifierTitle", modifierTitle);
             template.ReplaceActions(ticket, true);
             template.ReplaceContacts(ticket);
             template.ReplaceModifierAvatar(ticket);
@@ -833,7 +833,7 @@ namespace TeamSupport.Data
             return template.GetMessage();
         }
 
-        public static MailMessage GetTicketUpdateAdvPortal(LoginUser loginUser, string modifierName, TicketsViewItem ticket, bool includeActions)
+        public static MailMessage GetTicketUpdateAdvPortal(LoginUser loginUser, string modifierName, string modifierTitle, TicketsViewItem ticket, bool includeActions)
         {
             int productFamilyID = -1;
             Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);
@@ -845,7 +845,7 @@ namespace TeamSupport.Data
             EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 7, productFamilyID);
             template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl).ReplaceParameter("HubTicketUrl", ticket.HubUrl);
 
-            template.ReplaceParameter("ModifierName", modifierName);
+            template.ReplaceParameter("ModifierName", modifierName).ReplaceParameter("ModifierTitle", modifierTitle);
             template.ReplaceActions(ticket, true);
             template.ReplaceContacts(ticket);
             template.ReplaceModifierAvatar(ticket);
@@ -853,7 +853,7 @@ namespace TeamSupport.Data
             return template.GetMessage();
         }
 
-        public static MailMessage GetTicketClosed(LoginUser loginUser, string modifierName, TicketsViewItem ticket, bool includeActions)
+        public static MailMessage GetTicketClosed(LoginUser loginUser, string modifierName, string modifierTitle, TicketsViewItem ticket, bool includeActions)
         {
             int productFamilyID = -1;
             Organization organization = Organizations.GetOrganization(loginUser, ticket.OrganizationID);
@@ -865,7 +865,7 @@ namespace TeamSupport.Data
             EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 20, productFamilyID);
             template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
 
-            template.ReplaceParameter("ModifierName", modifierName);
+            template.ReplaceParameter("ModifierName", modifierName).ReplaceParameter("ModifierTitle", modifierTitle);
             template.ReplaceActions(ticket, true);
             template.ReplaceContacts(ticket);
             template.ReplaceModifierAvatar(ticket);
@@ -1043,6 +1043,7 @@ namespace TeamSupport.Data
             template.ReplaceCommonParameters().ReplaceFields("User", user);
             template.ReplaceParameter("TaskName", task.Name);
             template.ReplaceParameter("TaskDescription", task.Description);
+            template.ReplaceParameter("TaskUrl", task.TaskUrl);
             if (task.DueDate.HasValue)
             {
                 DateTime taskDueDate = task.DueDate ?? DateTime.Now;
@@ -1081,6 +1082,7 @@ namespace TeamSupport.Data
             template.ReplaceCommonParameters().ReplaceFields("Modifier", modifier).ReplaceFields("Owner", owner);
             template.ReplaceParameter("TaskName", task.Name);
             template.ReplaceParameter("TaskDescription", task.Description);
+            template.ReplaceParameter("TaskUrl", task.TaskUrl);
             if (task.DueDate.HasValue)
             {
                 DateTime taskDueDate = task.DueDate ?? DateTime.Now;
@@ -1119,6 +1121,7 @@ namespace TeamSupport.Data
             template.ReplaceCommonParameters().ReplaceFields("Modifier", modifier).ReplaceFields("Owner", owner);
             template.ReplaceParameter("TaskName", task.Name);
             template.ReplaceParameter("TaskDescription", task.Description);
+            template.ReplaceParameter("TaskUrl", task.TaskUrl);
             if (task.DueDate.HasValue)
             {
                 DateTime taskDueDate = task.DueDate ?? DateTime.Now;
@@ -1157,6 +1160,7 @@ namespace TeamSupport.Data
             template.ReplaceCommonParameters().ReplaceFields("Modifier", modifier).ReplaceFields("Owner", owner);
             template.ReplaceParameter("TaskName", task.Name);
             template.ReplaceParameter("TaskDescription", task.Description);
+            template.ReplaceParameter("TaskUrl", task.TaskUrl);
             if (task.DueDate.HasValue)
             {
                 DateTime taskDueDate = task.DueDate ?? DateTime.Now;
@@ -1195,6 +1199,7 @@ namespace TeamSupport.Data
             template.ReplaceCommonParameters().ReplaceFields("Modifier", modifier).ReplaceFields("OldOwner", oldUser).ReplaceFields("Owner", owner);
             template.ReplaceParameter("TaskName", task.Name);
             template.ReplaceParameter("TaskDescription", task.Description);
+            template.ReplaceParameter("TaskUrl", task.TaskUrl);
             if (task.DueDate.HasValue)
             {
                 DateTime taskDueDate = task.DueDate ?? DateTime.Now;
