@@ -307,14 +307,25 @@ namespace TSWebServices
             u.OrganizationID = value;
             u.Collection.Save();
 
+            List<int> existingEmailPostsId = new List<int>();
+            EmailPosts existingEmailPosts = new EmailPosts(loginUser);
+
             foreach (Ticket tix in t)
             {
-                tix.Collection.AddContact(userID, tix.TicketID);
+                existingEmailPosts.LoadByTicketId(tix.TicketID);
 
+                if (existingEmailPosts != null && existingEmailPosts.Any())
+                {
+                    existingEmailPostsId.AddRange(existingEmailPosts.Select(p => p.EmailPostID).Distinct());
+                    existingEmailPosts = new EmailPosts(loginUser);
+                }
+                
+                tix.Collection.AddContact(userID, tix.TicketID);
             }
 
+            //Delete the EmailPosts just created, but keep the existing ones
             EmailPosts ep = new EmailPosts(loginUser);
-            ep.LoadByRecentUserID(userID);
+            ep.LoadByRecentUserID(userID, existingEmailPostsId);
             ep.DeleteAll();
             ep.Save();
 

@@ -11,6 +11,7 @@
 var customerDetailPage = null;
 var organizationID = null;
 var ratingFilter = '';
+var _companyName = '';
 var _isUnknown = false;
 var _execGetAsset = null;
 var _execGetCustomer = null;
@@ -1107,6 +1108,7 @@ $(document).ready(function () {
     $('#productCustomer').val(organizationID);
 
     _mainFrame.Ts.Services.Organizations.GetOrganization(organizationID, function (org) {
+        _companyName = org.Name;
         if (_isParentView) {
             $('#companyName').text(org.Name + ' (Parent View)');
         }
@@ -1674,6 +1676,12 @@ $(document).ready(function () {
         });
     });
 
+    $('.task-action-add').click(function (e) {
+        e.preventDefault();
+        parent.Ts.System.logAction('Tasks Page - New Task');
+        parent.Ts.MainPage.newTaskFromSource(9, organizationID, _companyName, '');
+    });
+
     $("#btnPhoneSave").click(function (e) {
         var phoneInfo = new Object();
         _mainFrame.Ts.System.logAction('Customer Detail - Save Phone Number');
@@ -1755,8 +1763,13 @@ $(document).ready(function () {
             $('#btnNotesSave').text("Save");
             $('#btnNotesCancel').show();
             $('#noteForm').show();
-            $('#fieldNoteDesc').tinymce().setContent(desc);
-            $('#fieldNoteDesc').tinymce().focus();
+            initEditor($('#fieldNoteDesc'), function (ed) {
+                $('#fieldNoteDesc').tinymce().setContent(desc);
+                    $('#fieldNoteDesc').tinymce().focus();
+                });
+                $('#fieldNoteDesc').focus();
+
+
             if (note.ProductFamilyID) {
                 $('#ddlNoteProductFamily').val(note.ProductFamilyID);
             }
