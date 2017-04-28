@@ -148,7 +148,7 @@ $(document).ready(function () {
         $('#userName').text($(this).text());
         LoadRatings('', 1);
         activeID = userID;
-
+        LoadTasks();
     });
 
     $('.user-container').on('click', '.ts-icon-online-small', function (e) {
