@@ -561,7 +561,12 @@ namespace TSWebServices
                 chat.ActionID = chatAction.ActionID;
                 chat.Collection.Save();
 
-                (new Tickets(loginUser)).AddContact(chat.GetInitiatorLinkedUserID(), ticketID);
+                int requestorUserId = chat.GetInitiatorLinkedUserID();
+
+                if (requestorUserId > 0)
+                {
+                    (new Tickets(loginUser)).AddContact(chat.GetInitiatorLinkedUserID(), ticketID);
+                }
             }
             return ticketID;
         }
