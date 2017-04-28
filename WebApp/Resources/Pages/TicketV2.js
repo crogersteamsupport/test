@@ -2196,11 +2196,13 @@ function SetupCustomerSection() {
             if (result.indexOf("u") == 0 || result.indexOf("o") == 0) {
                 window.parent.Ts.Services.Tickets.AddTicketCustomer(_ticketID, result.charAt(0), result.substring(1), function (result) {
                     AddCustomers(result);
-                    $('.ticket-new-customer-email').val('');
-                    $('.ticket-new-customer-first').val('');
-                    $('.ticket-new-customer-last').val('');
-                    $('.ticket-new-customer-company').val('');
-                    $('.ticket-new-customer-phone').val('');
+                    $('#customer-email-input').val('');
+                    $('#customer-fname-input').val('');
+                    $('#customer-lname-input').val('');
+                    $('#customer-phone-input').val('');
+                    var $select = $('#customer-company-input').selectize();
+                    var control = $select[0].selectize;
+                    control.clear();
                     $('#NewCustomerModal').modal('hide');
                 });
             }
