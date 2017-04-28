@@ -347,6 +347,12 @@ $(document).ready(function () {
             }
         });
     });
+
+    $('.task-action-add').click(function (e) {
+        e.preventDefault();
+        parent.Ts.System.logAction('Contact Page - New Task');
+        parent.Ts.MainPage.newTaskFromSource(22, userID, $('#userName').text(), '');
+    });
 });
 
 function Search() {
