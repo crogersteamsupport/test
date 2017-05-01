@@ -453,5 +453,108 @@ namespace TeamSupport.Data
                 Fill(command);
             }
         }
+
+        public void LoadByItemAll(ReferenceType refType, int refID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+                    SELECT
+                        t.*
+                    FROM
+                        Tasks t
+                        JOIN TaskAssociations ta
+                            ON t.TaskID = ta.TaskID
+                    WHERE
+                        ta.RefType = @RefType
+                        AND ta.RefID = @RefID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@RefType", refType);
+                command.Parameters.AddWithValue("@RefID", refID);
+                Fill(command);
+            }
+        }
+
+        public void LoadbyUserMonth(DateTime date, int userID, int orgID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+                    SELECT
+                        *
+                    FROM
+                        Tasks
+                    WHERE
+                        Month(DueDate) = @month
+                        AND Year(DueDate) = @year
+                        AND OrganizationID = @OrgID
+                        AND IsComplete = 0
+                        AND
+                        (
+                            CreatorID = @UserID
+                            OR UserID = @UserID
+                        )";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@month", date.Month);
+                command.Parameters.AddWithValue("@year", date.Year);
+                command.Parameters.AddWithValue("@UserID", userID);
+                command.Parameters.AddWithValue("@OrgID", orgID);
+                Fill(command);
+            }
+        }
+
+        public void LoadbyGroupMonth(DateTime date, int groupID, int orgID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+                    SELECT
+                        t.*
+                    FROM
+                        Tasks t
+                        JOIN TaskAssociations ta
+                            ON t.TaskID = ta.TaskID
+                    WHERE
+                        Month(t.DueDate) = @month
+                        AND Year(t.DueDate) = @year
+                        AND t.IsComplete = 0
+                        AND ta.RefType = 6
+                        AND ta.RefID = @groupID
+                        AND t.OrganizationID = @OrgID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@month", date.Month);
+                command.Parameters.AddWithValue("@year", date.Year);
+                command.Parameters.AddWithValue("@groupID", groupID);
+                command.Parameters.AddWithValue("@OrgID", orgID);
+                Fill(command);
+            }
+        }
+
+        public void LoadbyCompanyMonth(DateTime date, int companyID, int orgID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+                    SELECT
+                        t.*
+                    FROM
+                        Tasks t
+                        JOIN TaskAssociations ta
+                            ON t.TaskID = ta.TaskID
+                    WHERE
+                        Month(t.DueDate) = @month
+                        AND Year(t.DueDate) = @year
+                        AND t.OrganizationID = @OrgID
+                        AND t.IsComplete = 0
+                        AND ta.RefType = 9
+                        AND ta.RefID = @companyID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@month", date.Month);
+                command.Parameters.AddWithValue("@year", date.Year);
+                command.Parameters.AddWithValue("@companyID", companyID);
+                command.Parameters.AddWithValue("@OrgID", orgID);
+                Fill(command);
+            }
+        }
     }
 }

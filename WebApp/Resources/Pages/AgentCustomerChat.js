@@ -560,9 +560,11 @@ $(document).ready(function () {
         $('#ticket-add-save').click(function (e) {
             e.preventDefault();
             var ticketID = $('#chat-add-ticket').data('item').data;
+            var ticketNumber = $('#chat-add-ticket').data('item').id;
             parent.Ts.Services.Chat.AddTicket(_activeChatID, ticketID, function () {
                 parent.Ts.MainPage.openTicketByID(ticketID, false);
                 $('#chat-add-ticket-modal').modal('hide');
+                alert("Chat added to ticket " + ticketNumber);
             });
         });
 

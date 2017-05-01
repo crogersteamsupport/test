@@ -451,7 +451,7 @@ $(document).ready(function () {
           .insertAfter(header);
 
         var container1 = $('<div>')
-            .addClass('col-xs-9')
+            .addClass('col-xs-8')
           .appendTo(container);
 
         $('<input type="text">')
