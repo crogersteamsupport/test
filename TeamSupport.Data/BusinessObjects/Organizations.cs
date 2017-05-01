@@ -3242,5 +3242,27 @@ ORDER BY
             }
         }
 
+
+        public void LoadByTaskID(int taskID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+                    SELECT
+                        o.*
+                    FROM
+                        Organizations o 
+                        JOIN TaskAssociations ta
+                            ON ta.RefType = 9
+                            AND ta.RefID = o.OrganizationID 
+                    WHERE
+                        ta.TaskID = @TaskID 
+                    ORDER BY
+                        o.Name";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@TaskID", taskID);
+                Fill(command, "Organizations,OrganizationTickets");
+            }
+        }
     }
 }

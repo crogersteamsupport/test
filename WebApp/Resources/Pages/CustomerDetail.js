@@ -1678,7 +1678,7 @@ $(document).ready(function () {
 
     $('.task-action-add').click(function (e) {
         e.preventDefault();
-        parent.Ts.System.logAction('Tasks Page - New Task');
+        parent.Ts.System.logAction('Customer Page - New Task');
         parent.Ts.MainPage.newTaskFromSource(9, organizationID, _companyName, '');
     });
 
@@ -1765,10 +1765,9 @@ $(document).ready(function () {
             $('#noteForm').show();
             initEditor($('#fieldNoteDesc'), function (ed) {
                 $('#fieldNoteDesc').tinymce().setContent(desc);
-                    $('#fieldNoteDesc').tinymce().focus();
-                });
-                $('#fieldNoteDesc').focus();
-
+                $('#fieldNoteDesc').tinymce().focus();
+            });
+            $('#fieldNoteDesc').focus();
 
             if (note.ProductFamilyID) {
                 $('#ddlNoteProductFamily').val(note.ProductFamilyID);
