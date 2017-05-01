@@ -213,14 +213,21 @@ AdminPortal = function () {
         $('#portal_req_tickettype').combobox({ selected: function (e, ui) { $('.portal-save-panel').show(); } });
 
         //portal_req_tickettype
-        var products = parent.parent.Ts.Cache.getProducts();
-        $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#com_cat_product');
-        for (var i = 0; i < products.length; i++) {
-            $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]).appendTo('#com_cat_product');
-        }
-        $('#com_cat_product').combobox({ selected: function (e, ui) { $('.com-cat-save-panel').show(); } });
-
-
+        parent.parent.Ts.Cache.getProducts(function (products) {
+            $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#com_cat_product');
+            for (var i = 0; i < products.length; i++) {
+                $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]).appendTo('#com_cat_product');
+            }
+            $('#com_cat_product').combobox({ selected: function (e, ui) { $('.com-cat-save-panel').show(); } });
+        });
+        
+        parent.parent.Ts.Cache.getProductFamilies(function (productFamilies) {
+            debugger
+            for (var i = 0; i < productFamilies.length; i++) {
+                $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#kb_cat_productfamily');
+            }
+            $('#com_cat_productfamily').combobox({ selected: function (e, ui) { $('.kb-cat-save-panel').show(); } });
+        });
     }
     $('#portal_theme').combobox({ selected: function (e, ui) { $('.portal-save-panel').show(); } });
 
