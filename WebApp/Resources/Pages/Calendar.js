@@ -185,6 +185,12 @@
                 case "cal":
                     evttitle = event.title;
                     break;
+                case "reminder-task":
+                    evttitle = "Task Reminder";
+                    break;
+                case "task":
+                    evttitle = "Task Due Date : ";
+                    break;
                 default:
                     break;
 
@@ -284,6 +290,10 @@
                 
 
                 $('#fullCalModal').modal('show');
+                break;
+            case "reminder-task":
+            case "task":
+                mainFrame.Ts.MainPage.openNewTask(event.id); return false;
                 break;
             default:
                 break;

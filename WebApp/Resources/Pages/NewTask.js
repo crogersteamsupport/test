@@ -758,6 +758,22 @@ $(document).ready(function () {
                 .appendTo(bg);
                 break;
             case 22:
+                var bg = $('<div>')
+                        .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+                        .appendTo($('#taskForm').find('.user-queue')).data('User', _refID);
+
+                $('<span>')
+                .text(_ticketName)
+                .addClass('filename')
+                .appendTo(bg);
+
+                $('<span>')
+                .addClass('ui-icon ui-icon-close')
+                .click(function (e) {
+                    e.preventDefault();
+                    $('#taskForm').find('#commentatt').closest('div').fadeOut(500, function () { $('#commentatt').remove(); });
+                })
+                .appendTo(bg);
                 break;
             case 32:
             default:

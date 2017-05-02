@@ -49,11 +49,26 @@ namespace TeamSupport.Data
             }
         }
 
-        public void LoadCategories(int organizationID, bool onlyPortal = false)
+        public void LoadCategories(int organizationID, bool onlyPortal = false, int? productFamilyID = null)
         {
             using (SqlCommand command = new SqlCommand())
             {
-                if (onlyPortal) command.CommandText = "SELECT * FROM KnowledgeBaseCategories WHERE OrganizationID = @OrganizationID AND VisibleOnPortal = 1 AND ParentID < 0 ORDER BY Position";
+                StringBuilder str = new StringBuilder();
+
+                if (onlyPortal)
+                {
+                    str.Append("SELECT * FROM KnowledgeBaseCategories WHERE OrganizationID = @OrganizationID AND VisibleOnPortal = 1");
+                    
+                    if (productFamilyID != null)
+                    {
+                        str.Append("AND (ProductFamilyID IS NULL OR ProductFamilyID = @ProductFamilyID)");
+                        command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+                    }
+
+                    str.Append("AND ParentID < 0 ORDER BY Position");
+                    command.CommandText = str.ToString();
+                }
+
                 else command.CommandText = "SELECT * FROM KnowledgeBaseCategories WHERE OrganizationID = @OrganizationID AND ParentID < 0 ORDER BY Position";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
