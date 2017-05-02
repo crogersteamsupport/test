@@ -617,7 +617,7 @@ Namespace TeamSupport
                         Try
                             Dim creatorName As String = "TeamSupport"
 
-                            If ticketLinkToJira.CreatorID IsNot Nothing Then
+                            If ticketLinkToJira.CreatorID IsNot Nothing AndAlso ticketLinkToJira.CreatorID > 0 Then
                                 Dim creator As Users = New Users(User)
                                 creator.LoadByUserID(ticketLinkToJira.CreatorID)
                                 creatorName = String.Format("{0}.{1} {2} linked", creator(0).FirstName.Substring(0, 1),
