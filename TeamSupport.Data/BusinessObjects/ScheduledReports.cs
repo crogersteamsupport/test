@@ -195,6 +195,26 @@ namespace TeamSupport.Data
 				default:
 					break;
 			}
+
+            //Check for DLS and update if needed
+            if (NextRun.HasValue)
+            {
+                User creator = Users.GetUser(LoginUser.Anonymous, CreatorId);
+                TimeZoneInfo tz = TimeZoneInfo.Local;
+
+                if (!string.IsNullOrWhiteSpace(creator.TimeZoneID))
+                {
+                    tz = TimeZoneInfo.FindSystemTimeZoneById(creator.TimeZoneID);
+                }
+
+                DateTime StartDateLocal = TimeZoneInfo.ConvertTimeFromUtc(StartDateUtc, tz);
+
+                if (TimeSpan.Compare(StartDateLocal.TimeOfDay, NextRun.Value.TimeOfDay) != 0)
+                {
+                    DateTime fixedDateForDLS = TimeZoneInfo.ConvertTimeToUtc(new DateTime(NextRun.Value.Year, NextRun.Value.Month, NextRun.Value.Day, StartDateLocal.Hour, StartDateLocal.Minute, 0), tz);
+                    NextRun = fixedDateForDLS;
+                }
+            }
 		}
 
         public void SetRecipientsAndAttachment(MailMessage message, Organization organization, ref System.Collections.Generic.List<string> invalidEmailAddress)

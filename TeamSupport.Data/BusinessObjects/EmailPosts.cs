@@ -40,6 +40,30 @@ namespace TeamSupport.Data
 			}
 		}
 
+        public virtual void LoadByRecentUserID(int userID, List<int> exclude)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+                string sql = "Select *  FROM [dbo].[EmailPosts] WHERE ([Param8] Like @userID AND DateCreated > DATEADD(MINUTE, -1, GETUTCDATE())) ";
+
+                if (exclude != null && exclude.Any())
+                {
+                    sql += " AND EmailPostID NOT IN (" + string.Join(",", exclude.ToArray()) + ")";
+                }
+
+                command.CommandText = sql;
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@userID", "%" + userID + "%");
+				try
+				{
+					Fill(command);
+				}
+				catch (Exception e)
+				{
+				}
+			}
+		}
+
 		public virtual void LoadByTicketId(int ticketId)
 		{
 			using (SqlCommand command = new SqlCommand())

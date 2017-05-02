@@ -536,7 +536,9 @@ namespace TeamSupport.Data
                 , DateModified
                 , ReminderID
             FROM 
-                t";
+                t
+            ORDER BY
+                RowNum";
             //WHERE
             //    RowNum BETWEEN @From AND @To;
 

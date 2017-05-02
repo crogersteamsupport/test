@@ -1624,9 +1624,16 @@ namespace TSWebServices
                         else
                             continue;
                     case ReferenceType.Tasks:
-                        cal.title = r.Description;
-                        cal.description = string.Empty;
-                        break;
+                        Task ta = Tasks.GetTask(TSAuthentication.GetLoginUser(), r.RefID);
+                        if (ta != null)
+                        {
+                            cal.id = ta.TaskID;
+                            cal.type = "reminder-task";
+                            cal.description = ta.Name;
+                            break;
+                        }
+                        else
+                            continue;
                 }
 
 
@@ -1723,6 +1730,69 @@ namespace TSWebServices
 
                 events.Add(cal);                
             }
+
+            Tasks tasks = new Tasks(TSAuthentication.GetLoginUser());
+            ////get all due dates for the current month
+            if (pageType == "0" || pageType == "-1")
+            {
+                tasks.LoadbyUserMonth(DateTime.Parse(startdate), TSAuthentication.GetLoginUser().UserID, TSAuthentication.GetLoginUser().OrganizationID);
+            }
+            else if (pageType == "4")
+                tasks.LoadbyGroupMonth(DateTime.Parse(startdate), int.Parse(pageID), TSAuthentication.GetLoginUser().OrganizationID);
+            else if (pageType == "2")
+                tasks.LoadbyCompanyMonth(DateTime.Parse(startdate), int.Parse(pageID), TSAuthentication.GetLoginUser().OrganizationID);
+
+            foreach (Task task in tasks)
+            {
+                CalEvent cal = new CalEvent();
+                cal.color = "purple";
+                DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc((DateTime)task.DueDateUtc, TSAuthentication.GetLoginUser().TimeZoneInfo);
+                cal.start = ((DateTime)task.DueDate).ToString("o");
+                cal.title = task.Name;
+                cal.description = task.Name;
+                cal.type = "task";
+                cal.id = task.TaskID;
+                cal.end = null;
+                cal.displayend = null;
+                cal.allday = false;
+
+                cal.creatorID = -1;
+
+                //Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+                //organizations.LoadByTaskID(task.TaskID);
+                //User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
+
+                //if (organizations.Count > 0)
+                //{
+                //    List<CalendarRefItemProxy> calendarreferences = new List<CalendarRefItemProxy>();
+                //    foreach (Organization organization in organizations)
+                //    {
+                //        CalendarRefItemProxy prox = new CalendarRefItemProxy();
+                //        prox.displayName = organization.Name;
+                //        prox.RefType = 2;
+                //        prox.RefID = organization.OrganizationID;
+
+                //        if (user.TicketRights == TicketRightType.Customers)
+                //        {
+                //            if (CheckUserRights(TSAuthentication.UserID, prox.RefID))
+                //            {
+                //                prox.displayName = GetDisplayname(prox);
+                //                if (prox.displayName != "")
+                //                    calendarreferences.Add(prox);
+                //            }
+                //        }
+                //        else
+                //            calendarreferences.Add(prox);
+                //    }
+                //    cal.references = calendarreferences.OrderBy(a => a.displayName).ToArray();
+                //}
+                //else
+                //    cal.references = null;
+
+
+                events.Add(cal);
+            }
+
             return events.ToArray();
         }
 

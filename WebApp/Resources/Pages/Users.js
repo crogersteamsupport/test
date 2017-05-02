@@ -148,7 +148,7 @@ $(document).ready(function () {
         $('#userName').text($(this).text());
         LoadRatings('', 1);
         activeID = userID;
-
+        LoadTasks();
     });
 
     $('.user-container').on('click', '.ts-icon-online-small', function (e) {
@@ -346,6 +346,12 @@ $(document).ready(function () {
                 alert('There are subtasks pending completion, please finish them before completing the parent task.')
             }
         });
+    });
+
+    $('.task-action-add').click(function (e) {
+        e.preventDefault();
+        parent.Ts.System.logAction('Contact Page - New Task');
+        parent.Ts.MainPage.newTaskFromSource(22, userID, $('#userName').text(), '');
     });
 });
 

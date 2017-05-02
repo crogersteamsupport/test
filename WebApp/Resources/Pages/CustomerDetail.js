@@ -11,6 +11,7 @@
 var customerDetailPage = null;
 var organizationID = null;
 var ratingFilter = '';
+var _companyName = '';
 var _isUnknown = false;
 var _execGetAsset = null;
 var _execGetCustomer = null;
@@ -1107,6 +1108,7 @@ $(document).ready(function () {
     $('#productCustomer').val(organizationID);
 
     _mainFrame.Ts.Services.Organizations.GetOrganization(organizationID, function (org) {
+        _companyName = org.Name;
         if (_isParentView) {
             $('#companyName').text(org.Name + ' (Parent View)');
         }
@@ -1672,6 +1674,12 @@ $(document).ready(function () {
                 alert('There are subtasks pending completion, please finish them before completing the parent task.')
             }
         });
+    });
+
+    $('.task-action-add').click(function (e) {
+        e.preventDefault();
+        parent.Ts.System.logAction('Customer Page - New Task');
+        parent.Ts.MainPage.newTaskFromSource(9, organizationID, _companyName, '');
     });
 
     $("#btnPhoneSave").click(function (e) {

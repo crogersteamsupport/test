@@ -606,6 +606,11 @@ Ts.Pages.Main.prototype = {
                     self.openTicketView(reportID);
                 }
 
+                var taskID = Ts.Utils.getQueryValue('taskID');
+                if (taskID) {
+                    self.openNewTask(taskID);
+                }
+
             });
         }
 
