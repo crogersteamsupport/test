@@ -107,9 +107,11 @@ namespace TeamSupport.Data
     {
         using (SqlCommand command = new SqlCommand())
         {
-            command.CommandText = @"SELECT COUNT(*) FROM TicketGridView tgv WHERE (tgv.GroupID = @groupID) AND (tgv.IsClosed = 0)";
-            command.CommandType = CommandType.Text;
-            command.Parameters.AddWithValue("@groupID", groupID);
+            //command.CommandText = @"SELECT COUNT(*) FROM TicketGridView tgv WHERE (tgv.GroupID = @groupID) AND (tgv.IsClosed = 0)";
+            //command.CommandType = CommandType.Text;
+            command.CommandText = @"GetGroupOpenTicketCount";
+            command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@groupID", groupID);
             return (int)ExecuteScalar(command);
         }
 
