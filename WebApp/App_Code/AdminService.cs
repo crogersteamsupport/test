@@ -609,13 +609,13 @@ namespace TSWebServices
                 hubHelper.Save();
 
             }
-            catch (SqlException ex)
+            catch (Exception ex)
             {
                 string creationMessage = "Error creating your customer hub please try again or contact your administrator";
 
                 if (ex.Message.Contains("UNIQUE"))
                 {
-                    creationMessage = "This hub name is already taken, please change the name and try again.";
+                    creationMessage = "This hub name is already taken, please enter a different name and try again.";
                 }
 
                 newHub = null;
