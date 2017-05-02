@@ -21,7 +21,7 @@
     .popover-content dl { font-size:1em; line-height: 1.5em; padding: 0 0 1em 0;margin-bottom: 0px;} 
     .popover-content dt { float:left; width: 25%; font-weight:bold; clear:both;} 
     .popover-content dd { float:left; width: 70%;}
-    a.ui-state-default { font-weight:bold; float:left;  }
+    /*a.ui-state-default { font-weight:bold; float:left;  }*/
     .ui-widget-content a.ts-link { border: none; background:none; cursor: pointer; color: #0057c2;}
     .popover { width: 420px; max-width: 420px; min-width: 400px; }
     .ui-widget-content.ts-separator {
