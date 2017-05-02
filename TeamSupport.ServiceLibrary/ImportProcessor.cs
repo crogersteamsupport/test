@@ -6198,7 +6198,14 @@ GROUP BY o.Name";
                 {
                     while (reader.Read())
                     {
-                        list.Add((reader[0].ToString()).Trim().ToUpper(), reader[1] as int? ?? -1);
+                        try
+                        {
+                            list.Add((reader[0].ToString()).Trim().ToUpper(), reader[1] as int? ?? -1);
+                        }
+                        catch (Exception e)
+                        {
+                            
+                        }
                     }
                 }
                 finally
