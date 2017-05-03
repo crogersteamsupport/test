@@ -948,6 +948,20 @@
                                                 <p></p>
                                             </div>
                                         </div>
+                                        <div class="com-cat-only">
+                                            <div class="ts-setting-field two-column ui-widget-content">
+                                                <div class="ts-setting-field-description">
+                                                    Product Line
+                                                </div>
+                                                <div class="ts-setting-field-content">
+                                                    <select id="com_cat_productfamily"></select>
+                                                    <div class="ts-clearfix">
+                                                        &nbsp
+                                                    </div>
+                                                    <p>The product line this category will be associated with (dicates which customer hub this will be viewable on).</p>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="com-sub-only">
                                             <div class="ts-setting-field two-column ui-widget-content">
                                                 <div class="ts-setting-field-description">
@@ -1073,16 +1087,18 @@
                                                 <p></p>
                                             </div>
                                         </div>
-                                        <div class="ts-setting-field two-column ui-widget-content">
-                                            <div class="ts-setting-field-description">
-                                                Product Line
-                                            </div>
-                                            <div class="ts-setting-field-content">
-                                                <select id="kb_cat_productfamily"></select>
-                                                <div class="ts-clearfix">
-                                                    &nbsp
+                                        <div class="kb-parent-only">
+                                            <div class="ts-setting-field two-column ui-widget-content">
+                                                <div class="ts-setting-field-description">
+                                                    Product Line
                                                 </div>
-                                                <p>Ticket type for when a customer requests access to the portal.</p>
+                                                <div class="ts-setting-field-content">
+                                                    <select id="kb_cat_productfamily"></select>
+                                                    <div class="ts-clearfix">
+                                                        &nbsp
+                                                    </div>
+                                                    <p>The product line this category will be associated with (dicates which customer hub this will be viewable on).</p>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="ts-setting-field two-column ui-widget-content">
@@ -1090,7 +1106,7 @@
                                                 Visible on portal
                                             </div>
                                             <div class="ts-setting-field-content">
-                                                <input type="checkbox" class="checkbox" id="kb_cat_visible" checked=checked /><label class="checkbox" for="kb_cat_visible">Enabled</label>
+                                                <input type="checkbox" class="checkbox" id="kb_cat_visible" checked=checked checked=checked /><label class="checkbox" for="kb_cat_visible">Enabled</label>
                                                 <p></p>
                                             </div>
                                         </div>
