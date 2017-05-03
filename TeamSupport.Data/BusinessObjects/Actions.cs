@@ -7,240 +7,240 @@ using System.Data.SqlClient;
 
 namespace TeamSupport.Data
 {
-  public partial class Action 
-  {
-
-    public Attachments GetAttachments()
+    public partial class Action
     {
-      Attachments attachments = new Attachments(BaseCollection.LoginUser);
-      attachments.LoadByActionID(ActionID);
-      return attachments;
-    }
 
-    public ActionsViewItem GetActionView()
-    {
-      return ActionsView.GetActionsViewItem(BaseCollection.LoginUser, ActionID);
-    }
-
-    public string ActionTypeName 
-    {
-      get
-      {
-        if (Row.Table.Columns.Contains("ActionTypeName") && Row["ActionTypeName"] != DBNull.Value)
+        public Attachments GetAttachments()
         {
-          return (string)Row["ActionTypeName"];
-        }
-        else return "";
-      }
-    
-    }
-
-    public string DisplayName
-    {
-      get
-      {
-        string title = "";
-        
-        switch (SystemActionTypeID)
-        {
-          case SystemActionType.Description: title = "Description"; break;
-          case SystemActionType.Resolution: title = "Resolution"; break;
-          case SystemActionType.Email: title = "Email: " + Name; break;
-          case SystemActionType.UpdateRequest: title = "Update Request"; break;
-          case SystemActionType.Chat: title = "Chat"; break;
-          case SystemActionType.Reminder: title = "Reminder"; break;
-          default:
-            title = ActionTypeName == "" ? "[No Action Type]" : ActionTypeName;
-            if (!string.IsNullOrEmpty(Name)) title += ": " + Name;
-            break;
-        }
-        return title;
-      }
-    
-    }
-
-		/// <summary>
-		/// This will clone all Action object writable properties using reflection. This way we make sure that if there are more fields added (or deleted) in this table this will still work.
-		/// This was the easier way to do this due to the amount of properties to process and the high possibility of this table scheme being updated often.
-		/// I wanted to do this with serialization (JsonConvert.Deserialize/Serialize object), but didn't work due to how our Data objects are generated (Collections in them), and the primary key.
-		/// </summary>
-		/// <param name="clone">The empty initialized Action object to clone to.</param>
-		public void ClonePropertiesTo(Action clone)
-		{
-			foreach (System.Reflection.PropertyInfo sourcePropertyInfo in this.GetType().GetProperties())
-			{
-				if (sourcePropertyInfo.CanWrite
-					&& sourcePropertyInfo.Name.ToLower() != "basecollection"
-					&& sourcePropertyInfo.PropertyType != typeof(DateTime)
-					&& sourcePropertyInfo.PropertyType != typeof(DateTime?))
-				{
-					System.Reflection.PropertyInfo destPropertyInfo = clone.GetType().GetProperty(sourcePropertyInfo.Name);
-					destPropertyInfo.SetValue(
-						clone,
-						sourcePropertyInfo.GetValue(this, null),
-						null);
-				}
-			}
-
-			//DateTime properties are special it needs to be the UTC value. The DateTime (and DateTime?) properties always have a UTC version
-			foreach (System.Reflection.PropertyInfo sourcePropertyInfo in this.GetType().GetProperties())
-			{
-				if (sourcePropertyInfo.CanRead
-					&& sourcePropertyInfo.Name.Substring(sourcePropertyInfo.Name.Length - 3).ToLower() == "utc"
-					&& (sourcePropertyInfo.PropertyType == typeof(DateTime)
-						|| sourcePropertyInfo.PropertyType == typeof(DateTime?)))
-				{
-					System.Reflection.PropertyInfo destPropertyInfo = clone.GetType().GetProperty(sourcePropertyInfo.Name.Substring(0, sourcePropertyInfo.Name.Length - 3));
-					destPropertyInfo.SetValue(
-						clone,
-						sourcePropertyInfo.GetValue(this, null),
-						null);
-				}
-			}
-		}
-
-	}
-
-  public partial class Actions
-  {
-    private bool _updateChildTickets = true;
-
-    private string _actionLogInstantMessage = null;
-
-    public string ActionLogInstantMessage
-    {
-      get
-      {
-        return _actionLogInstantMessage;
-      }
-      set
-      {
-        _actionLogInstantMessage = value;
-      }
-    }
-
-    partial void BeforeRowDelete(int actionID)
-    {
-      Action action = (Action)Actions.GetAction(LoginUser, actionID);
-      string description = "Deleted action '" + action.Name + "' from " + Tickets.GetTicketLink(LoginUser, action.TicketID);
-      ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Tickets, action.TicketID, description);
-    }
-
-    partial void BeforeRowEdit(Action action)
-    {
-      action.Description = HtmlUtility.FixScreenRFrame((action.Row["Description"] == DBNull.Value) ? string.Empty : action.Description);
-      string actionNumber = GetActionNumber(action.TicketID, action.ActionID);
-      string description = "Modified action #" + actionNumber + " on " + Tickets.GetTicketLink(LoginUser, action.TicketID);
-      ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, action.TicketID, description);
-    }
-
-    private string GetActionNumber(int ticketID, int actionID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT COUNT(*) FROM Actions WHERE TicketID = @TicketID AND ActionID <= @ActionID";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@TicketID", ticketID);
-        command.Parameters.AddWithValue("@ActionID", actionID);
-
-        return ExecuteScalar(command, "Tickets").ToString();
-      }
-    }
-
-    partial void BeforeRowInsert(Action action)
-    {
-        action.Description = HtmlUtility.FixScreenRFrame((action.Row["Description"] == DBNull.Value) ? string.Empty : action.Description);
-    }
-
-    partial void AfterRowInsert(Action action)
-    {
-      string description = "Added action ";
-      if (_actionLogInstantMessage != null)
-      {
-        description = _actionLogInstantMessage;
-      }
-      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, description + action.Name + " to " + Tickets.GetTicketLink(LoginUser, action.TicketID));
-      if (_updateChildTickets) AddChildActions(action);
-    }
-
-
-    public void AddChildActions(Action action)
-    {
-      Tickets tickets = new Tickets(LoginUser);
-      tickets.LoadChildren(action.TicketID);
-      Actions actions = new Actions(LoginUser);
-      actions._updateChildTickets = false;
-      foreach (Ticket ticket in tickets)
-      {
-        Action newAction = actions.AddNewAction();
-        newAction.ActionTypeID = action.ActionTypeID;
-        newAction.SystemActionTypeID = action.SystemActionTypeID;
-        newAction.Name = action.Name;
-        newAction.ActionSource = action.ActionSource;
-        newAction.Description = action.Description;// +"<p>This action was added by the parent ticket.</p>";
-        newAction.TimeSpent = action.TimeSpent;
-        newAction.Row["DateStarted"] = action.Row["DateStarted"];
-        newAction.IsVisibleOnPortal = action.IsVisibleOnPortal;
-        newAction.IsKnowledgeBase = action.IsKnowledgeBase;
-        newAction.ImportID = action.ImportID;
-        newAction.TicketID = ticket.TicketID;
-      }
-      actions.Save();
-
-    }
-
-    /// <summary>
-    /// Loads actions for a ticket and orders them by the latest date created first
-    /// </summary>
-    /// <param name="ticketID"></param>
-    public void LoadByTicketID(int ticketID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT a.*, u.FirstName + ' ' + u.LastName AS UserName, at.Name AS ActionTypeName FROM Actions a LEFT JOIN Users u ON a.CreatorID = u.UserID LEFT JOIN ActionTypes at ON a.ActionTypeID = at.ActionTypeID WHERE a.TicketID = @TicketID ORDER BY a.DateCreated DESC";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@TicketID", ticketID);
-        Fill(command);
-      }
-    }
-
-    public void LoadLatestByTicket(int ticketID, bool onlyPublic)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        if (onlyPublic)
-          command.CommandText = "SELECT TOP 1 a.* FROM Actions a WHERE a.TicketID = @TicketID AND IsVisibleOnPortal = 1 ORDER BY a.DateCreated DESC";
-        else
-          command.CommandText = "SELECT TOP 1 a.* FROM Actions a WHERE a.TicketID = @TicketID ORDER BY a.DateCreated DESC";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@TicketID", ticketID);
-        Fill(command);
-      }
-    }
-
-    public static DateTime? GetLastActionDateCreated(LoginUser loginUser, int ticketId)
-    {
-        DateTime? result = null;
-
-        using (SqlCommand command = new SqlCommand())
-        {
-            command.CommandText = "SELECT MAX(DateCreated) AS DateCreated FROM Actions GROUP BY TicketID HAVING TicketID = @TicketId";
-            command.CommandType = CommandType.Text;
-            command.Parameters.AddWithValue("@TicketId", ticketId);
-            Actions actions = new Actions(loginUser);
-            result = (DateTime?)actions.ExecuteScalar(command);
+            Attachments attachments = new Attachments(BaseCollection.LoginUser);
+            attachments.LoadByActionID(ActionID);
+            return attachments;
         }
 
-        return result;
+        public ActionsViewItem GetActionView()
+        {
+            return ActionsView.GetActionsViewItem(BaseCollection.LoginUser, ActionID);
+        }
+
+        public string ActionTypeName
+        {
+            get
+            {
+                if (Row.Table.Columns.Contains("ActionTypeName") && Row["ActionTypeName"] != DBNull.Value)
+                {
+                    return (string)Row["ActionTypeName"];
+                }
+                else return "";
+            }
+
+        }
+
+        public string DisplayName
+        {
+            get
+            {
+                string title = "";
+
+                switch (SystemActionTypeID)
+                {
+                    case SystemActionType.Description: title = "Description"; break;
+                    case SystemActionType.Resolution: title = "Resolution"; break;
+                    case SystemActionType.Email: title = "Email: " + Name; break;
+                    case SystemActionType.UpdateRequest: title = "Update Request"; break;
+                    case SystemActionType.Chat: title = "Chat"; break;
+                    case SystemActionType.Reminder: title = "Reminder"; break;
+                    default:
+                        title = ActionTypeName == "" ? "[No Action Type]" : ActionTypeName;
+                        if (!string.IsNullOrEmpty(Name)) title += ": " + Name;
+                        break;
+                }
+                return title;
+            }
+
+        }
+
+        /// <summary>
+        /// This will clone all Action object writable properties using reflection. This way we make sure that if there are more fields added (or deleted) in this table this will still work.
+        /// This was the easier way to do this due to the amount of properties to process and the high possibility of this table scheme being updated often.
+        /// I wanted to do this with serialization (JsonConvert.Deserialize/Serialize object), but didn't work due to how our Data objects are generated (Collections in them), and the primary key.
+        /// </summary>
+        /// <param name="clone">The empty initialized Action object to clone to.</param>
+        public void ClonePropertiesTo(Action clone)
+        {
+            foreach (System.Reflection.PropertyInfo sourcePropertyInfo in this.GetType().GetProperties())
+            {
+                if (sourcePropertyInfo.CanWrite
+                    && sourcePropertyInfo.Name.ToLower() != "basecollection"
+                    && sourcePropertyInfo.PropertyType != typeof(DateTime)
+                    && sourcePropertyInfo.PropertyType != typeof(DateTime?))
+                {
+                    System.Reflection.PropertyInfo destPropertyInfo = clone.GetType().GetProperty(sourcePropertyInfo.Name);
+                    destPropertyInfo.SetValue(
+                        clone,
+                        sourcePropertyInfo.GetValue(this, null),
+                        null);
+                }
+            }
+
+            //DateTime properties are special it needs to be the UTC value. The DateTime (and DateTime?) properties always have a UTC version
+            foreach (System.Reflection.PropertyInfo sourcePropertyInfo in this.GetType().GetProperties())
+            {
+                if (sourcePropertyInfo.CanRead
+                    && sourcePropertyInfo.Name.Substring(sourcePropertyInfo.Name.Length - 3).ToLower() == "utc"
+                    && (sourcePropertyInfo.PropertyType == typeof(DateTime)
+                        || sourcePropertyInfo.PropertyType == typeof(DateTime?)))
+                {
+                    System.Reflection.PropertyInfo destPropertyInfo = clone.GetType().GetProperty(sourcePropertyInfo.Name.Substring(0, sourcePropertyInfo.Name.Length - 3));
+                    destPropertyInfo.SetValue(
+                        clone,
+                        sourcePropertyInfo.GetValue(this, null),
+                        null);
+                }
+            }
+        }
+
     }
 
-    public static int TotalActionsForSla(LoginUser loginUser, int ticketId)
+    public partial class Actions
     {
-        int result = 0;
+        private bool _updateChildTickets = true;
 
-        using (SqlCommand command = new SqlCommand())
+        private string _actionLogInstantMessage = null;
+
+        public string ActionLogInstantMessage
         {
-            command.CommandText = @"SELECT COUNT(1) AS ActionCount
+            get
+            {
+                return _actionLogInstantMessage;
+            }
+            set
+            {
+                _actionLogInstantMessage = value;
+            }
+        }
+
+        partial void BeforeRowDelete(int actionID)
+        {
+            Action action = (Action)Actions.GetAction(LoginUser, actionID);
+            string description = "Deleted action '" + action.Name + "' from " + Tickets.GetTicketLink(LoginUser, action.TicketID);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Tickets, action.TicketID, description);
+        }
+
+        partial void BeforeRowEdit(Action action)
+        {
+            action.Description = HtmlUtility.FixScreenRFrame((action.Row["Description"] == DBNull.Value) ? string.Empty : action.Description);
+            string actionNumber = GetActionNumber(action.TicketID, action.ActionID);
+            string description = "Modified action #" + actionNumber + " on " + Tickets.GetTicketLink(LoginUser, action.TicketID);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, action.TicketID, description);
+        }
+
+        private string GetActionNumber(int ticketID, int actionID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT COUNT(*) FROM Actions WHERE TicketID = @TicketID AND ActionID <= @ActionID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@TicketID", ticketID);
+                command.Parameters.AddWithValue("@ActionID", actionID);
+
+                return ExecuteScalar(command, "Tickets").ToString();
+            }
+        }
+
+        partial void BeforeRowInsert(Action action)
+        {
+            action.Description = HtmlUtility.FixScreenRFrame((action.Row["Description"] == DBNull.Value) ? string.Empty : action.Description);
+        }
+
+        partial void AfterRowInsert(Action action)
+        {
+            string description = "Added action ";
+            if (_actionLogInstantMessage != null)
+            {
+                description = _actionLogInstantMessage;
+            }
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, description + action.Name + " to " + Tickets.GetTicketLink(LoginUser, action.TicketID));
+            if (_updateChildTickets) AddChildActions(action);
+        }
+
+
+        public void AddChildActions(Action action)
+        {
+            Tickets tickets = new Tickets(LoginUser);
+            tickets.LoadChildren(action.TicketID);
+            Actions actions = new Actions(LoginUser);
+            actions._updateChildTickets = false;
+            foreach (Ticket ticket in tickets)
+            {
+                Action newAction = actions.AddNewAction();
+                newAction.ActionTypeID = action.ActionTypeID;
+                newAction.SystemActionTypeID = action.SystemActionTypeID;
+                newAction.Name = action.Name;
+                newAction.ActionSource = action.ActionSource;
+                newAction.Description = action.Description;// +"<p>This action was added by the parent ticket.</p>";
+                newAction.TimeSpent = action.TimeSpent;
+                newAction.Row["DateStarted"] = action.Row["DateStarted"];
+                newAction.IsVisibleOnPortal = action.IsVisibleOnPortal;
+                newAction.IsKnowledgeBase = action.IsKnowledgeBase;
+                newAction.ImportID = action.ImportID;
+                newAction.TicketID = ticket.TicketID;
+            }
+            actions.Save();
+
+        }
+
+        /// <summary>
+        /// Loads actions for a ticket and orders them by the latest date created first
+        /// </summary>
+        /// <param name="ticketID"></param>
+        public void LoadByTicketID(int ticketID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT a.*, u.FirstName + ' ' + u.LastName AS UserName, at.Name AS ActionTypeName FROM Actions a LEFT JOIN Users u ON a.CreatorID = u.UserID LEFT JOIN ActionTypes at ON a.ActionTypeID = at.ActionTypeID WHERE a.TicketID = @TicketID ORDER BY a.DateCreated DESC";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@TicketID", ticketID);
+                Fill(command);
+            }
+        }
+
+        public void LoadLatestByTicket(int ticketID, bool onlyPublic)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                if (onlyPublic)
+                    command.CommandText = "SELECT TOP 1 a.* FROM Actions a WHERE a.TicketID = @TicketID AND IsVisibleOnPortal = 1 ORDER BY a.DateCreated DESC";
+                else
+                    command.CommandText = "SELECT TOP 1 a.* FROM Actions a WHERE a.TicketID = @TicketID ORDER BY a.DateCreated DESC";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@TicketID", ticketID);
+                Fill(command);
+            }
+        }
+
+        public static DateTime? GetLastActionDateCreated(LoginUser loginUser, int ticketId)
+        {
+            DateTime? result = null;
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT MAX(DateCreated) AS DateCreated FROM Actions GROUP BY TicketID HAVING TicketID = @TicketId";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@TicketId", ticketId);
+                Actions actions = new Actions(loginUser);
+                result = (DateTime?)actions.ExecuteScalar(command);
+            }
+
+            return result;
+        }
+
+        public static int TotalActionsForSla(LoginUser loginUser, int ticketId)
+        {
+            int result = 0;
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT COUNT(1) AS ActionCount
 FROM Actions ax
 LEFT JOIN Tickets tx ON ax.TicketID = tx.TicketID
 LEFT JOIN Organizations ox ON ox.OrganizationID = tx.OrganizationID
@@ -251,111 +251,111 @@ WHERE ax.SystemActionTypeID <> 1
     )
 GROUP BY ax.TicketID
 HAVING ax.TicketID = @TicketId";
-            command.CommandType = CommandType.Text;
-            command.Parameters.AddWithValue("@TicketId", ticketId);
-            Actions actions = new Actions(loginUser);
-            var resultVar = actions.ExecuteScalar(command);
-            
-            if (resultVar != null)
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@TicketId", ticketId);
+                Actions actions = new Actions(loginUser);
+                var resultVar = actions.ExecuteScalar(command);
+
+                if (resultVar != null)
+                {
+                    result = int.Parse(resultVar.ToString());
+                }
+            }
+
+            return result;
+        }
+
+        public void LoadByActionIDs(int[] actionIDs)
+        {
+            if (actionIDs.Length < 1) return;
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < actionIDs.Length; i++)
             {
-                result = int.Parse(resultVar.ToString());
+                if (i != 0) builder.Append(",");
+                builder.Append(actionIDs[i]);
+            }
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT * FROM Actions WHERE ActionID IN (" + builder.ToString() + ") ORDER BY DateCreated DESC";
+                command.CommandType = CommandType.Text;
+                Fill(command);
             }
         }
 
-        return result;
-    }
-
-    public void LoadByActionIDs(int[] actionIDs)
-    {
-      if (actionIDs.Length < 1) return;
-      StringBuilder builder = new StringBuilder();
-      for (int i = 0; i < actionIDs.Length; i++)
-      {
-        if (i != 0) builder.Append(",");
-        builder.Append(actionIDs[i]);
-      }
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT * FROM Actions WHERE ActionID IN ("+builder.ToString()+") ORDER BY DateCreated DESC";
-        command.CommandType = CommandType.Text;
-        Fill(command);
-      }
-    }
-
-    public static Action GetTicketDescription(LoginUser loginUser, int ticketID)
-    {
-      Actions actions = new Actions(loginUser);
-
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT a.*, u.FirstName + ' ' + u.LastName AS UserName, at.Name AS ActionTypeName FROM Actions a LEFT JOIN Users u ON a.CreatorID = u.UserID LEFT JOIN ActionTypes at ON a.ActionTypeID = at.ActionTypeID WHERE a.TicketID = @TicketID AND a.SystemActionTypeID = 1 ORDER BY a.DateCreated";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@TicketID", ticketID);
-        actions.Fill(command);
-      }
-
-      if (actions.IsEmpty)
-        return null;
-      else
-        return actions[0];
-    }
-
-    public static Action GetTicketFirstAction(LoginUser loginUser, int ticketID)
-    {
-      Actions actions = new Actions(loginUser);
-
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT a.*, u.FirstName + ' ' + u.LastName AS UserName, at.Name AS ActionTypeName FROM Actions a LEFT JOIN Users u ON a.CreatorID = u.UserID LEFT JOIN ActionTypes at ON a.ActionTypeID = at.ActionTypeID WHERE a.TicketID = @TicketID ORDER BY a.DateCreated";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@TicketID", ticketID);
-        actions.Fill(command);
-      }
-
-      if (actions.IsEmpty)
-        return null;
-      else
-        return actions[0];
-    }
-    public void LoadAll()
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT a.* FROM Actions a left join tickets t on a.ticketid = t.ticketid where organizationid = 1360";
-        command.CommandType = CommandType.Text;
-        Fill(command);
-      }
-    }
-
-    public Action FindByImportID(string importID)
-    {
-      foreach (Action action in this)
-      {
-        if (action.ImportID == importID)
+        public static Action GetTicketDescription(LoginUser loginUser, int ticketID)
         {
-          return action;
-        }
-      }
-      return null;
-    }   
-   
-    public void LoadByOrganizationID(int organizationID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT a.* FROM Actions a LEFT JOIN Tickets t on a.TicketID = t.TicketID WHERE OrganizationID = @OrganizationID";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
-        Fill(command);
-      }
-    }
+            Actions actions = new Actions(loginUser);
 
-    public void LoadModifiedByCRMLinkItem(CRMLinkTableItem item)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText =
-        @"
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT a.*, u.FirstName + ' ' + u.LastName AS UserName, at.Name AS ActionTypeName FROM Actions a LEFT JOIN Users u ON a.CreatorID = u.UserID LEFT JOIN ActionTypes at ON a.ActionTypeID = at.ActionTypeID WHERE a.TicketID = @TicketID AND a.SystemActionTypeID = 1 ORDER BY a.DateCreated";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@TicketID", ticketID);
+                actions.Fill(command);
+            }
+
+            if (actions.IsEmpty)
+                return null;
+            else
+                return actions[0];
+        }
+
+        public static Action GetTicketFirstAction(LoginUser loginUser, int ticketID)
+        {
+            Actions actions = new Actions(loginUser);
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT a.*, u.FirstName + ' ' + u.LastName AS UserName, at.Name AS ActionTypeName FROM Actions a LEFT JOIN Users u ON a.CreatorID = u.UserID LEFT JOIN ActionTypes at ON a.ActionTypeID = at.ActionTypeID WHERE a.TicketID = @TicketID ORDER BY a.DateCreated";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@TicketID", ticketID);
+                actions.Fill(command);
+            }
+
+            if (actions.IsEmpty)
+                return null;
+            else
+                return actions[0];
+        }
+        public void LoadAll()
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT a.* FROM Actions a left join tickets t on a.ticketid = t.ticketid where organizationid = 1360";
+                command.CommandType = CommandType.Text;
+                Fill(command);
+            }
+        }
+
+        public Action FindByImportID(string importID)
+        {
+            foreach (Action action in this)
+            {
+                if (action.ImportID == importID)
+                {
+                    return action;
+                }
+            }
+            return null;
+        }
+
+        public void LoadByOrganizationID(int organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT a.* FROM Actions a LEFT JOIN Tickets t on a.TicketID = t.TicketID WHERE OrganizationID = @OrganizationID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                Fill(command);
+            }
+        }
+
+        public void LoadModifiedByCRMLinkItem(CRMLinkTableItem item)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText =
+                @"
           SELECT 
             a.* 
           FROM 
@@ -381,77 +381,77 @@ HAVING ax.TicketID = @TicketId";
           ORDER BY 
             a.DateCreated DESC
         ";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@OrgID", item.OrganizationID);
-        command.Parameters.AddWithValue("@DateModified", item.LastLink == null ? new DateTime(1753, 1, 1) : item.LastLinkUtc.Value.AddHours(-1));
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrgID", item.OrganizationID);
+                command.Parameters.AddWithValue("@DateModified", item.LastLink == null ? new DateTime(1753, 1, 1) : item.LastLinkUtc.Value.AddHours(-1));
 
-        using (SqlConnection connection = new SqlConnection(this.LoginUser.ConnectionString))
-        {
-          connection.Open();
-          SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+                using (SqlConnection connection = new SqlConnection(this.LoginUser.ConnectionString))
+                {
+                    connection.Open();
+                    SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
 
-          command.Connection = connection;
-          command.Transaction = transaction;
-          command.CommandTimeout = 300;
-          SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
-          this.Table.Load(reader);
+                    command.Connection = connection;
+                    command.Transaction = transaction;
+                    command.CommandTimeout = 300;
+                    SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+                    this.Table.Load(reader);
+                }
+            }
         }
-      }
-    }
 
-    public void ReplaceActionType(int oldID, int newID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "UPDATE Actions SET ActionTypeID = @newID WHERE (ActionTypeID = @oldID)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.Clear();
-        command.Parameters.AddWithValue("@oldID", oldID);
-        command.Parameters.AddWithValue("@newID", newID);
-        ExecuteNonQuery(command, "Actions");
-      }
-    }
-
-    public void UpdateSalesForceSync(string salesForceID, DateTime dateModifiedBySalesForceSync, int actionID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "UPDATE Actions SET SalesForceID = @salesForceID, DateModifiedBySalesForceSync = @dateModifiedBySalesForceSync WHERE ActionID = @actionID";
-        command.CommandType = CommandType.Text;
-        command.Parameters.Clear();
-        SqlParameter salesForceIDParameter = new SqlParameter("@salesForceID", DBNull.Value);
-        if (salesForceID != null)
+        public void ReplaceActionType(int oldID, int newID)
         {
-          salesForceIDParameter.Value = salesForceID;
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "UPDATE Actions SET ActionTypeID = @newID WHERE (ActionTypeID = @oldID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@oldID", oldID);
+                command.Parameters.AddWithValue("@newID", newID);
+                ExecuteNonQuery(command, "Actions");
+            }
         }
-        command.Parameters.Add(salesForceIDParameter);
-        command.Parameters.AddWithValue("@dateModifiedBySalesForceSync", dateModifiedBySalesForceSync);
-        command.Parameters.AddWithValue("@actionID", actionID);
-        ExecuteNonQuery(command, "Actions");
-      }
-    }
 
-    public static Action GetActionByID(LoginUser loginUser, int actionID)
-    {
-      Actions actions = new Actions(loginUser);
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT a.*, u.FirstName + ' ' + u.LastName AS UserName, at.Name AS ActionTypeName FROM Actions a LEFT JOIN Users u ON a.CreatorID = u.UserID LEFT JOIN ActionTypes at ON a.ActionTypeID = at.ActionTypeID WHERE a.ActionID = @ActionID ORDER BY a.DateCreated DESC";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@ActionID", actionID);
-        actions.Fill(command);
-      }
-      if (actions.IsEmpty)
-        return null;
-      else
-        return actions[0];
-    }
+        public void UpdateSalesForceSync(string salesForceID, DateTime dateModifiedBySalesForceSync, int actionID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "UPDATE Actions SET SalesForceID = @salesForceID, DateModifiedBySalesForceSync = @dateModifiedBySalesForceSync WHERE ActionID = @actionID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.Clear();
+                SqlParameter salesForceIDParameter = new SqlParameter("@salesForceID", DBNull.Value);
+                if (salesForceID != null)
+                {
+                    salesForceIDParameter.Value = salesForceID;
+                }
+                command.Parameters.Add(salesForceIDParameter);
+                command.Parameters.AddWithValue("@dateModifiedBySalesForceSync", dateModifiedBySalesForceSync);
+                command.Parameters.AddWithValue("@actionID", actionID);
+                ExecuteNonQuery(command, "Actions");
+            }
+        }
 
-    public void LoadBySalesForceID(string salesForceID, int organizationID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-		string sql = @"SELECT a.*
+        public static Action GetActionByID(LoginUser loginUser, int actionID)
+        {
+            Actions actions = new Actions(loginUser);
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT a.*, u.FirstName + ' ' + u.LastName AS UserName, at.Name AS ActionTypeName FROM Actions a LEFT JOIN Users u ON a.CreatorID = u.UserID LEFT JOIN ActionTypes at ON a.ActionTypeID = at.ActionTypeID WHERE a.ActionID = @ActionID ORDER BY a.DateCreated DESC";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ActionID", actionID);
+                actions.Fill(command);
+            }
+            if (actions.IsEmpty)
+                return null;
+            else
+                return actions[0];
+        }
+
+        public void LoadBySalesForceID(string salesForceID, int organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                string sql = @"SELECT a.*
 FROM Actions a 
 JOIN
 	(SELECT TicketID FROM Tickets WHERE ticketId IN (SELECT TicketID
@@ -461,30 +461,30 @@ JOIN
 										AND OrganizationID = @OrganizationID
 	) t ON a.TicketID = t.TicketID 
 WHERE a.SalesForceID = @SalesForceID";
-		command.CommandText = sql;
+                command.CommandText = sql;
 
-        //command.CommandText = "SELECT * FROM Actions a JOIN Tickets t ON a.TicketID = t.TicketID WHERE a.SalesForceID = @SalesForceID AND t.OrganizationID = @OrganizationID";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@SalesForceID", salesForceID);
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
-        Fill(command);
-      }
-    }
+                //command.CommandText = "SELECT * FROM Actions a JOIN Tickets t ON a.TicketID = t.TicketID WHERE a.SalesForceID = @SalesForceID AND t.OrganizationID = @OrganizationID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@SalesForceID", salesForceID);
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                Fill(command);
+            }
+        }
 
-    //Changes to this method needs to be applied to ActionLinkToJira.LoadToPushToJira also.
-    public void LoadToPushToJira(CRMLinkTableItem item, int ticketID)
-    {
-      string actionTypeFilter = "1 = 1";
+        //Changes to this method needs to be applied to ActionLinkToJira.LoadToPushToJira also.
+        public void LoadToPushToJira(CRMLinkTableItem item, int ticketID)
+        {
+            string actionTypeFilter = "1 = 1";
 
-      if (item.ActionTypeIDToPush != null)
-      {
-        actionTypeFilter = "a.ActionTypeID = @actionTypeID";
-      }
+            if (item.ActionTypeIDToPush != null)
+            {
+                actionTypeFilter = "a.ActionTypeID = @actionTypeID";
+            }
 
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText =
-        @"
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText =
+                @"
           SELECT 
             a.* 
           FROM 
@@ -503,22 +503,22 @@ WHERE a.SalesForceID = @SalesForceID";
           ORDER BY 
             a.DateCreated ASC
         ";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@ticketID", ticketID);
-        command.Parameters.AddWithValue("@DateModified", item.LastLink == null ? new DateTime(1753, 1, 1) : item.LastLinkUtc.Value.AddHours(-1));
-        command.Parameters.AddWithValue("@actionTypeID", item.ActionTypeIDToPush == null ? -1 : item.ActionTypeIDToPush);
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ticketID", ticketID);
+                command.Parameters.AddWithValue("@DateModified", item.LastLink == null ? new DateTime(1753, 1, 1) : item.LastLinkUtc.Value.AddHours(-1));
+                command.Parameters.AddWithValue("@actionTypeID", item.ActionTypeIDToPush == null ? -1 : item.ActionTypeIDToPush);
 
-        Fill(command, "Actions");
-      }
-    }
+                Fill(command, "Actions");
+            }
+        }
 
-    public static int GetActionPosition(LoginUser loginUser, int actionID)
-    {
-      using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
-      {
-        connection.Open();
-        SqlCommand command = connection.CreateCommand();
-        command.CommandText = @"
+        public static int GetActionPosition(LoginUser loginUser, int actionID)
+        {
+            using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+            {
+                connection.Open();
+                SqlCommand command = connection.CreateCommand();
+                command.CommandText = @"
           SELECT 
 	          COUNT(*) 
           FROM
@@ -526,51 +526,51 @@ WHERE a.SalesForceID = @SalesForceID";
           WHERE 
 	          ActionID <= @ActionID 
 	          AND TicketID = (SELECT TicketID FROM Actions WHERE ActionID = @ActionID)";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@ActionID", actionID);
-        int result = (int)command.ExecuteScalar();
-        connection.Close();
-        return result;
-      }
-    }
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ActionID", actionID);
+                int result = (int)command.ExecuteScalar();
+                connection.Close();
+                return result;
+            }
+        }
 
-    public static int GetTicketActionCount(LoginUser loginUser, int ticketID)
-    {
-      int cnt = 0;
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT COUNT(*) FROM ACTIONS WHERE TICKETID = @TicketID";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@TicketID", ticketID);
-        object o = SqlExecutor.ExecuteScalar(loginUser, command);
-        if (o == DBNull.Value) return -1;
-        cnt = (int)o;
-      }
-      return cnt;
-    }
+        public static int GetTicketActionCount(LoginUser loginUser, int ticketID)
+        {
+            int cnt = 0;
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT COUNT(*) FROM ACTIONS WHERE TICKETID = @TicketID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@TicketID", ticketID);
+                object o = SqlExecutor.ExecuteScalar(loginUser, command);
+                if (o == DBNull.Value) return -1;
+                cnt = (int)o;
+            }
+            return cnt;
+        }
 
-    public void LoadByImportID(string importID, int organizationID)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = "SELECT * FROM Actions a JOIN Tickets t ON a.TicketID = t.TicketID WHERE a.ImportID = @ImportID AND t.OrganizationID = @OrganizationID";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@ImportID", importID);
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
-        Fill(command);
-      }
-    }
+        public void LoadByImportID(string importID, int organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT * FROM Actions a JOIN Tickets t ON a.TicketID = t.TicketID WHERE a.ImportID = @ImportID AND t.OrganizationID = @OrganizationID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ImportID", importID);
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                Fill(command);
+            }
+        }
 
-    //public void LoadOldestTicketDescription(int ticketID)
-    //{
-    //  using (SqlCommand command = new SqlCommand())
-    //  {
-    //    command.CommandText = "SELECT TOP 1 * FROM Actions a WHERE a.TicketID = @TicketID AND a.SystemActionTypeID = 1 ORDER BY a.DateCreated";
-    //    command.CommandType = CommandType.Text;
-    //    command.Parameters.AddWithValue("@TicketID", ticketID);
-    //    Fill(command);
-    //  }
-    //}
- 
-  }
+        //public void LoadOldestTicketDescription(int ticketID)
+        //{
+        //  using (SqlCommand command = new SqlCommand())
+        //  {
+        //    command.CommandText = "SELECT TOP 1 * FROM Actions a WHERE a.TicketID = @TicketID AND a.SystemActionTypeID = 1 ORDER BY a.DateCreated";
+        //    command.CommandType = CommandType.Text;
+        //    command.Parameters.AddWithValue("@TicketID", ticketID);
+        //    Fill(command);
+        //  }
+        //}
+
+    }
 }
