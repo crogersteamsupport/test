@@ -1783,7 +1783,7 @@ AND a.OrganizationID = @OrganizationID
             Tickets tickets = new Tickets(_loginUser);
             tickets.LoadByOrganizationID(_organizationID);
             Actions actions = new Actions(_loginUser);
-            actions.LoadByOrganizationID(_organizationID);
+            actions.LoadByOrganizationID(_organizationID, GetOrganizationActionsFilterByImportIDsList());
             Organizations customers = new Organizations(_loginUser);
             customers.LoadByParentID(_organizationID, false);
             Attachments attachments = new Attachments(_loginUser);
@@ -1828,6 +1828,11 @@ AND a.OrganizationID = @OrganizationID
             if (_IsBulk == true) attachments.BulkSave(); else attachments.Save();
             _log.AppendMessage(attachments.Count.ToString() + " Attachments Imported.");
 
+        }
+
+        private string GetOrganizationActionsFilterByImportIDsList()
+        {
+            return System.Configuration.ConfigurationManager.AppSettings["OrganizationActionsFilterByImportIDsList"];
         }
 
         private void ImportAttachment(DataRow row, string sourceFile, Attachments attachments, Actions actions, Tickets tickets, Organizations customers)

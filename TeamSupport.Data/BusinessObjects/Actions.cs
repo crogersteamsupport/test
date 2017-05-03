@@ -350,6 +350,17 @@ HAVING ax.TicketID = @TicketId";
             }
         }
 
+        public void LoadByOrganizationID(int organizationID, string whereClauseSuffix)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT a.* FROM Actions a LEFT JOIN Tickets t on a.TicketID = t.TicketID WHERE OrganizationID = @OrganizationID " + whereClauseSuffix;
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                Fill(command);
+            }
+        }
+
         public void LoadModifiedByCRMLinkItem(CRMLinkTableItem item)
         {
             using (SqlCommand command = new SqlCommand())
