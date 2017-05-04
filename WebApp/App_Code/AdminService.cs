@@ -58,7 +58,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public ForumCategoryProxy UpdateForumCategory(int categoryID, string name, string description, int? ticketTypeID, int? groupID, int? productID)
+        public ForumCategoryProxy UpdateForumCategory(int categoryID, string name, string description, int? ticketTypeID, int? groupID, int? productID, int? productFamilyID)
         {
             if (!TSAuthentication.IsSystemAdmin) return null;
             ForumCategory cat = ForumCategories.GetForumCategory(TSAuthentication.GetLoginUser(), categoryID);
@@ -68,6 +68,7 @@ namespace TSWebServices
             cat.TicketType = ticketTypeID;
             cat.GroupID = groupID;
             cat.ProductID = productID;
+            cat.ProductFamilyID = productFamilyID;
             cat.Collection.Save();
             return cat.GetProxy();
         }
@@ -81,7 +82,7 @@ namespace TSWebServices
             ForumCategory cat = (new ForumCategories(TSAuthentication.GetLoginUser())).AddNewForumCategory();
             cat.OrganizationID = TSAuthentication.OrganizationID;
             cat.CategoryName = parentID == null ? "Untitled Category" : "Untitled Subcategory";
-            cat.ParentID = parentID ?? -1;
+            cat.ParentID = parentID ?? -1;    
             cat.Position = GetForumCategoryMaxPosition(parentID) + 1;
             cat.Collection.Save();
             return cat.GetProxy();
@@ -185,7 +186,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public KnowledgeBaseCategoryProxy UpdateKnowledgeBaseCategory(int categoryID, string name, string description, bool visibleOnPortal)
+        public KnowledgeBaseCategoryProxy UpdateKnowledgeBaseCategory(int categoryID, string name, string description, bool visibleOnPortal, int? productFamilyID)
         {
             if (!TSAuthentication.IsSystemAdmin) return null;
             KnowledgeBaseCategory cat = KnowledgeBaseCategories.GetKnowledgeBaseCategory(TSAuthentication.GetLoginUser(), categoryID);
@@ -193,6 +194,7 @@ namespace TSWebServices
             cat.CategoryName = name;
             cat.CategoryDesc = description;
             cat.VisibleOnPortal = visibleOnPortal;
+            cat.ProductFamilyID = productFamilyID;
             cat.Collection.Save();
             return cat.GetProxy();
         }

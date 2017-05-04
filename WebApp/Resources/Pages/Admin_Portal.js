@@ -214,10 +214,10 @@ AdminPortal = function () {
             $('#com_cat_product').combobox({ selected: function (e, ui) { $('.com-cat-save-panel').show(); } });
         });
 
-        debugger;
         if (parent.parent.Ts.System.Organization.UseProductFamilies == true) {
+            $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#kb_cat_productfamily');
+            $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#com_cat_productfamily');
             parent.parent.Ts.Cache.getProductFamilies(function (productFamilies) {
-                debugger
                 for (var i = 0; i < productFamilies.length; i++) {
                     $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#kb_cat_productfamily');
                     $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#com_cat_productfamily');
@@ -471,7 +471,7 @@ AdminPortal = function () {
         $('#com_cat_tickettype').combobox('setValue', cat.TicketType == null ? -1 : cat.TicketType);
         $('#com_cat_group').combobox('setValue', cat.GroupID == null ? -1 : cat.GroupID);
         $('#com_cat_product').combobox('setValue', cat.ProductID == null ? -1 : cat.ProductID);
-        $('#com_cat_productfamily').combobox('setValue', cat.ProductFamilyID == null ? -1 : cat.ProductFamilyID)
+        $('#com_cat_productfamily').combobox('setValue', cat.ProductFamilyID == null ? -1 : cat.ProductFamilyID);
 
         if (cat.ParentID < 0) {
             $('.com-delete-cat').text('Delete this category and all its subcategories');
@@ -536,6 +536,7 @@ AdminPortal = function () {
             ($('#com_cat_tickettype').val() < 0 ? null : $('#com_cat_tickettype').val()),
             ($('#com_cat_group').val() < 0 ? null : $('#com_cat_group').val()),
             ($('#com_cat_product').val() < 0 ? null : $('#com_cat_product').val()),
+            ($('#com_cat_productfamily').val() < 0 ? null : $('#com_cat_productfamily').val()),
             function (result) {
                 if (result == null) return;
                 $('.com-cat-save-panel').hide();
@@ -688,7 +689,7 @@ AdminPortal = function () {
         $('#kb_cat_name').val(cat.CategoryName);
         $('#kb_cat_description').val(cat.CategoryDesc);
         $('#kb_cat_visible').prop('checked', cat.VisibleOnPortal);
-        $('#com_cat_productfamily').combobox('setValue', cat.ProductFamilyID == null ? -1 : cat.ProductFamilyID)
+        $('#kb_cat_productfamily').combobox('setValue', cat.ProductFamilyID == null ? -1 : cat.ProductFamilyID)
 
         if (cat.ParentID < 0) {
             $('.kb-delete-cat').text('Delete this category and all its subcategories');
@@ -751,6 +752,7 @@ AdminPortal = function () {
             $('#kb_cat_name').val(),
             $('#kb_cat_description').val(),
             $('#kb_cat_visible').prop('checked'),
+            $('#kb_cat_productfamily').val(),
             function (result) {
                 if (result == null) return;
                 $('.kb-cat-save-panel').hide();
