@@ -55,9 +55,7 @@ $(document).ready(function () {
                 });
             } else {
                 var chatGUID = top.Ts.System.Organization.ChatID;
-                var pusherUnsubscribe = new Pusher(pusherKey);
-                pusherUnsubscribe.unsubscribe('chat-requests-' + chatGUID);
-                window.location = window.location;
+                pusherRequestChannel_AgentPage.disconnect();
             }
 
             $('.page-loading').hide().next().show();
