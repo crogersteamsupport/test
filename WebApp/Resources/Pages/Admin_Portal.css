@@ -166,3 +166,11 @@ hr, .divider {
     -webkit-box-shadow: 4px 4px 8px #000;
     box-shadow: 4px 4px 8px #000;
 }
+
+.kb-cat-productfamily-only {
+    display:none;
+}
+
+.com-cat-productfamily-only {
+    display:none;
+}

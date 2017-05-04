@@ -475,12 +475,16 @@ AdminPortal = function () {
 
         if (cat.ParentID < 0) {
             $('.com-delete-cat').text('Delete this category and all its subcategories');
-            $('.com-cat-only').show();
+            if (parent.parent.Ts.System.Organization.UseProductFamilies == true) {
+                $('.com-cat-productfamily-only').show();
+            }
             $('.com-sub-only').hide();
         }
         else {
             $('.com-delete-cat').text('Delete this subcategory');
-            $('.com-cat-only').hide();
+            if (parent.parent.Ts.System.Organization.UseProductFamilies == true) {
+                $('.com-cat-productfamily-only').hide();
+            }
             $('.com-sub-only').show();
         }
     });
@@ -694,12 +698,14 @@ AdminPortal = function () {
         if (cat.ParentID < 0) {
             $('.kb-delete-cat').text('Delete this category and all its subcategories');
             $('.kb-sub-only').hide();
-            $('.kb-parent-only').show();
+            if (parent.parent.Ts.System.Organization.UseProductFamilies == true) {
+                $('.kb-cat-productfamily-only').show();
+            }
         }
         else {
             $('.kb-delete-cat').text('Delete this subcategory');
             $('.kb-sub-only').show();
-            $('.kb-parent-only').hide();
+            $('.kb-cat-productfamily-only').hide();
         }
     });
 
