@@ -1765,10 +1765,9 @@ $(document).ready(function () {
             $('#noteForm').show();
             initEditor($('#fieldNoteDesc'), function (ed) {
                 $('#fieldNoteDesc').tinymce().setContent(desc);
-                    $('#fieldNoteDesc').tinymce().focus();
-                });
-                $('#fieldNoteDesc').focus();
-
+                $('#fieldNoteDesc').tinymce().focus();
+            });
+            $('#fieldNoteDesc').focus();
 
             if (note.ProductFamilyID) {
                 $('#ddlNoteProductFamily').val(note.ProductFamilyID);
