@@ -282,17 +282,17 @@ $(document).ready(function () {
     //Setup WC Area
     SetupWCArea();
 
-  var script = document.createElement('script');
-  script.type = 'text/javascript';
-  script.async = true;
-  script.src = ('https:' === document.location.protocol ? 'https://' : 'http://') + 'www.dropbox.com/static/api/1/dropbox.js';
-  var firstScript = document.getElementsByTagName('script')[0];
-  script.setAttribute('data-app-key', 'ebdoql1dhyy7l72');
-  script.setAttribute('id', 'dropboxjs');
-  if (window.parent.Ts.System.User.OrganizationID != 1150007)
-    firstScript.parentNode.insertBefore(script, firstScript);
-  slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
-  $('.wcTooltip').tipTip({ defaultPosition: "top", edgeOffset: 7, keepAlive: true });
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.src = ('https:' === document.location.protocol ? 'https://' : 'http://') + 'www.dropbox.com/static/api/1/dropbox.js';
+    var firstScript = document.getElementsByTagName('script')[0];
+    script.setAttribute('data-app-key', 'ebdoql1dhyy7l72');
+    script.setAttribute('id', 'dropboxjs');
+    if (window.parent.Ts.System.User.OrganizationID != 1150007)
+      firstScript.parentNode.insertBefore(script, firstScript);
+    slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
+    $('.wcTooltip').tipTip({ defaultPosition: "top", edgeOffset: 7, keepAlive: true });
 });
 
 var loadTicket = function (ticketNumber, refresh) {
@@ -554,7 +554,10 @@ function SetupTicketProperties(order) {
         isFormValid();
         LoadPlugins(info);
         if (typeof refresh === "undefined") {
-            window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
+
+            if (typeof window.parent.ticketSocket != "undefined") {
+                window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
+            }
         }
         
 
@@ -4295,18 +4298,22 @@ function CreateHandleBarHelpers() {
 
     Handlebars.registerHelper('TimeLineLabel', function () {
         if (this.item.IsVisibleOnPortal) {
-            return '<div class="bgcolor-green"><span class="bgcolor-green">&nbsp;</span><a href="#" class="action-option-visible">Public</a></div>';
-        }
-        else if (!this.item.IsWC) {
-            return '<div class="bgcolor-orange"><span class="bgcolor-orange">&nbsp;</span><a href="#" class="action-option-visible">Private</a></div>';
-        }
-        else if (this.item.IsWC) {
+            return '<div class="bgcolor-green"><span class="bgcolor-green">&nbsp;</span><a href="#" data-id="' + this.item.RefID + '" class="action-option-visible">Public</a></div>';
+        } else if (!this.item.IsWC) {
+            return '<div class="bgcolor-orange"><span class="bgcolor-orange">&nbsp;</span><a href="#" data-id="' + this.item.RefID + '" class="action-option-visible">Private</a></div>';
+        } else if (this.item.IsWC) {
             return '<div class="bgcolor-blue"><span class="bgcolor-blue">&nbsp;</span><label>WC</label></div>';
+        } else {
+            return;
         }
-
-        return '';
     });
 
+    Handlebars.registerHelper('Applause', function () {
+        var display = (!this.item.IsVisibleOnPortal && !this.item.IsWC) ? 'inline' : 'none';
+        var thacode = '<span id="applause-' + this.item.RefID + '" class="pull-right" style="position:absolute;top:25px;right:100px;display:' + display + '">8 <a href="#" class="applause" data-actionid="' + this.item.RefID + '" data-ticketid="' + this.item.TicketID + '" style="opacity:0.1;"><img src="/vcr/1_9_0/Images/icons/applause.png" style="margin-left:5px;height:24px;"></a></span>';
+        return thacode;
+    });
+    
     Handlebars.registerHelper('ActionData', function () {
         return JSON.stringify(this.item);
     });
@@ -4567,12 +4574,31 @@ function CreateTimeLineDelegates() {
         }
     });
 
+    $('#action-timeline').on('click', 'a.applause', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var actionid = $(this).data('actionid');
+        var ticketid = $(this).data('ticketid');
+
+        console.log('Provided: ' + ticketid + ' / ' + actionid);
+
+        window.parent.Ts.Services.TicketPage.UpdateReactions(ticketid, actionid, function(result) {
+
+            alert(result);
+
+        });
+
+
+    });
+
     $('#action-timeline').on('click', 'a.action-option-visible', function (e) {
         e.preventDefault();
         e.stopPropagation();
 
-        var self = $(this);
-        var action = self.closest('li').data().action;
+        var self     = $(this);
+        var action   = self.closest('li').data().action;
+        var applause = '#applause-' + action.RefID;
 
         if (window.parent.Ts.System.User.ChangeTicketVisibility || window.parent.Ts.System.User.IsSystemAdmin) {
             window.parent.Ts.System.logAction('Ticket - Action Visible Icon Clicked');
@@ -4586,7 +4612,7 @@ function CreateTimeLineDelegates() {
 
                 if (result) {
                     badgeDiv.html('<div class="bgcolor-green"><span class="bgcolor-green">&nbsp;</span><a href="#" class="action-option-visible">Public</a></div>');
-                    
+                    $(applause).hide();
                     if (window.parent.Ts.System.Organization.AlertContactNoEmail){
                         window.parent.Ts.Services.TicketPage.CheckContactEmails(_ticketID, function (isInvalid) {
                             if (!isInvalid && window.parent.Ts.System.Organization.AlertContactNoEmail)
@@ -4596,6 +4622,7 @@ function CreateTimeLineDelegates() {
                 }
                 else {
                     badgeDiv.html('<div class="bgcolor-orange"><span class="bgcolor-orange">&nbsp;</span><a href="#" class="action-option-visible">Private</a></div>');
+                    $(applause).show();
                 }
 
                 window.parent.Ts.Services.Tickets.GetAction(action.RefID, function (action) {

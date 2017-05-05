@@ -7,7 +7,7 @@ using System.Data.SqlClient;
 
 namespace TeamSupport.Data
 {
-  public partial class Action 
+  public partial class Action
   {
 
     public Attachments GetAttachments()
@@ -22,7 +22,7 @@ namespace TeamSupport.Data
       return ActionsView.GetActionsViewItem(BaseCollection.LoginUser, ActionID);
     }
 
-    public string ActionTypeName 
+    public string ActionTypeName
     {
       get
       {
@@ -32,7 +32,7 @@ namespace TeamSupport.Data
         }
         else return "";
       }
-    
+
     }
 
     public string DisplayName
@@ -40,7 +40,7 @@ namespace TeamSupport.Data
       get
       {
         string title = "";
-        
+
         switch (SystemActionTypeID)
         {
           case SystemActionType.Description: title = "Description"; break;
@@ -56,7 +56,7 @@ namespace TeamSupport.Data
         }
         return title;
       }
-    
+
     }
 
 		/// <summary>
@@ -99,9 +99,10 @@ namespace TeamSupport.Data
 			}
 		}
 
-	}
 
-  public partial class Actions
+    }
+
+    public partial class Actions
   {
     private bool _updateChildTickets = true;
 
@@ -255,7 +256,7 @@ HAVING ax.TicketID = @TicketId";
             command.Parameters.AddWithValue("@TicketId", ticketId);
             Actions actions = new Actions(loginUser);
             var resultVar = actions.ExecuteScalar(command);
-            
+
             if (resultVar != null)
             {
                 result = int.Parse(resultVar.ToString());
@@ -337,8 +338,8 @@ HAVING ax.TicketID = @TicketId";
         }
       }
       return null;
-    }   
-   
+    }
+
     public void LoadByOrganizationID(int organizationID)
     {
       using (SqlCommand command = new SqlCommand())
@@ -356,29 +357,29 @@ HAVING ax.TicketID = @TicketId";
       {
         command.CommandText =
         @"
-          SELECT 
-            a.* 
-          FROM 
-            Actions a 
-            JOIN Tickets t 
+          SELECT
+            a.*
+          FROM
+            Actions a
+            JOIN Tickets t
               ON a.TicketID = t.TicketID
             LEFT JOIN TicketStatuses ts
               ON t.TicketStatusID = ts.TicketStatusID
-          WHERE 
-            a.SystemActionTypeID <> 1 
+          WHERE
+            a.SystemActionTypeID <> 1
             AND a.DateModified > @DateModified
-            AND 
+            AND
             (
               a.DateModifiedBySalesForceSync IS NULL
               OR a.DateModified > DATEADD(s, 2, a.DateModifiedBySalesForceSync)
             )
-            AND t.OrganizationID = @OrgID 
-            AND 
+            AND t.OrganizationID = @OrgID
+            AND
             (
               @DateModified > '1753-01-01'
               OR ts.IsClosed = 0
             )
-          ORDER BY 
+          ORDER BY
             a.DateCreated DESC
         ";
         command.CommandType = CommandType.Text;
@@ -452,14 +453,14 @@ HAVING ax.TicketID = @TicketId";
       using (SqlCommand command = new SqlCommand())
       {
 		string sql = @"SELECT a.*
-FROM Actions a 
+FROM Actions a
 JOIN
 	(SELECT TicketID FROM Tickets WHERE ticketId IN (SELECT TicketID
 													FROM Actions
 													WHERE SalesForceID = @SalesForceID
 													)
 										AND OrganizationID = @OrganizationID
-	) t ON a.TicketID = t.TicketID 
+	) t ON a.TicketID = t.TicketID
 WHERE a.SalesForceID = @SalesForceID";
 		command.CommandText = sql;
 
@@ -485,22 +486,22 @@ WHERE a.SalesForceID = @SalesForceID";
       {
         command.CommandText =
         @"
-          SELECT 
-            a.* 
-          FROM 
+          SELECT
+            a.*
+          FROM
             Actions a
             LEFT JOIN ActionLinkToJira j
               ON a.ActionID = j.ActionID
-          WHERE 
-            a.SystemActionTypeID <> 1 
+          WHERE
+            a.SystemActionTypeID <> 1
             AND a.TicketID = @ticketID
             AND " + actionTypeFilter + @"
-            AND 
+            AND
             (
               j.DateModifiedByJiraSync IS NULL
               OR a.DateModified > DATEADD(s, 2, j.DateModifiedByJiraSync)
             )
-          ORDER BY 
+          ORDER BY
             a.DateCreated ASC
         ";
         command.CommandType = CommandType.Text;
@@ -519,12 +520,12 @@ WHERE a.SalesForceID = @SalesForceID";
         connection.Open();
         SqlCommand command = connection.CreateCommand();
         command.CommandText = @"
-          SELECT 
-	          COUNT(*) 
+          SELECT
+	          COUNT(*)
           FROM
-	          Actions 
-          WHERE 
-	          ActionID <= @ActionID 
+	          Actions
+          WHERE
+	          ActionID <= @ActionID
 	          AND TicketID = (SELECT TicketID FROM Actions WHERE ActionID = @ActionID)";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@ActionID", actionID);
@@ -561,16 +562,59 @@ WHERE a.SalesForceID = @SalesForceID";
       }
     }
 
-    //public void LoadOldestTicketDescription(int ticketID)
-    //{
-    //  using (SqlCommand command = new SqlCommand())
-    //  {
-    //    command.CommandText = "SELECT TOP 1 * FROM Actions a WHERE a.TicketID = @TicketID AND a.SystemActionTypeID = 1 ORDER BY a.DateCreated";
-    //    command.CommandType = CommandType.Text;
-    //    command.Parameters.AddWithValue("@TicketID", ticketID);
-    //    Fill(command);
-    //  }
-    //}
- 
-  }
+
+        public static string Reactions(LoginUser loginUser, int ticketID, int actionID)
+        {
+            string statement = "INSERT Reactions (UserID,ReceiverID,ReferenceID,ReactionValue) VALUES ('1','1','1','1')";
+            SqlConnection connection = new SqlConnection(loginUser.ConnectionString);
+            SqlCommand command = new SqlCommand(statement, connection);
+            command.ExecuteNonQuery();
+            return "Test Actions.cs: " + ticketID;
+        }
+
+
+        public void GetReactions(int ticketID, int actionID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT COUNT(*) AS tally FROM Reactions WHERE ReactionValue = 1 AND ReferenceID = @ReferenceID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ReferenceID", actionID);
+                Fill(command);
+            }
+        }
+
+        public void ListReactions(int ticketID, int actionID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT Reactions.*, Users.FirstName, Users.LastName FROM Reactions ";
+                command.CommandText += "INNER JOIN Users ON Users.UserID = Reactions.UserID ";
+                command.CommandText += "WHERE Reactions.ReferenceID = @ReferenceID AND Reactions.ReactionValue = 1";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ReferenceID", actionID);
+                Fill(command);
+            }
+        }
+
+        public static string UpdateReactions(int UserID, int ReceiverID, int ReferenceID, int ReactionValue)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "BEGIN TRAN ";
+                command.CommandText += "IF EXISTS (SELECT * FROM Reactions WHERE ReferenceID = @ AND UserID = @ AND ReceiverID = @) ";
+                command.CommandText += "BEGIN UPDATE Reactions SET ReactionValue = @ReactionValue, DateTimeChanged = @DateTimeChanged WHERE UserID = @UserID AND ReceiverID = @ReceiverID AND ReferenceID = @ReferenceID END ";
+                command.CommandText += "ELSE INSERT Reactions (UserID,ReceiverID,ReferenceID,ReactionValue,DateTimeCreated) VALUES (@UserID,@ReceiverID,@ReferenceID,@ReactionValue,@DateTimeCreated) END ";
+                command.CommandText += "COMMIT TRAN";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@UserID", UserID);
+                command.Parameters.AddWithValue("@ReceiverID", ReceiverID);
+                command.Parameters.AddWithValue("@ReferenceID", ReferenceID);
+                command.Parameters.AddWithValue("@ReactionValue", ReactionValue);
+
+                int result = command.ExecuteNonQuery();
+                return (result == 1) ? "positive" : "negative";
+            }
+        }
+    }
 }

@@ -930,6 +930,45 @@ namespace TSWebServices
             return action.IsVisibleOnPortal;
         }
 
+        [WebMethod]
+        public string GetReactions(int ticketID, int actionID)
+        {
+            // PULL REACTION COUNT FOR THIS ACTION.
+
+            // DETERMINE IF USER HAS PROVIDED A REACTION.
+
+            return "test";
+        }
+
+        [WebMethod]
+        public string ListReactions(int ticketID, int actionID)
+        {
+            // PULL LIST OF PEOPLE WHO PROVIDED A REACTION FOR THIS ACTION.
+
+            // GENERATE MODAL.
+
+            // SEND OUTPUT TO CLIENT.
+
+            return "test";
+        }
+
+        [WebMethod]
+        public string UpdateReactions(int ticketID, int actionID)
+        {
+            TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            User user           = TSAuthentication.GetUser(loginUser);
+            User author         = Users.GetUser(loginUser, action.CreatorID);
+
+            return Actions.Reactions(loginUser, ticketID, actionID);
+            // return Actions.Reactions(ticketID, actionID);
+
+            // return "testing: " + ticketID;
+            // UPDATE REACTION FOR SINGLE ACTION.
+            // UPDATE EMAIL IF REACTION ADDED OR REMOVED.
+        }
+
+
         public AutocompleteItem[] GetUserOrOrganizationFiltered(string searchTerm, bool filterByUserRights)
         {
             Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
@@ -1213,9 +1252,9 @@ namespace TSWebServices
             SELECT
                 Description
             FROM
-                Actions 
+                Actions
             WHERE
-                TicketID = @TicketID 
+                TicketID = @TicketID
                 and SystemActionTypeID IN (1,3,5)";
             command.Parameters.AddWithValue("@TicketID", ticketid.ToString());
 
