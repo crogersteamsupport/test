@@ -24,6 +24,7 @@ var _isParentView = false;
 var _isLoadingContacts = false;
 var _viewingContacts = false;
 var _orgParentId;
+var _completeCommentTaskID = 0;
 
 function getMainFrame() {
     var result = window.parent;
@@ -1673,6 +1674,10 @@ $(document).ready(function () {
                 checkbox.prop("checked", false);
                 alert('There are subtasks pending completion, please finish them before completing the parent task.')
             }
+            else if (checked) {
+                _completeCommentTaskID = id;
+                $('#modalTaskComment').modal('show');
+            }
         });
     });
 
@@ -3038,6 +3043,25 @@ $(document).ready(function () {
     $('.tab-content').bind('scroll', function () {
         if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
             LoadRatings(ratingFilter, $('#tblRatings tbody > tr').length + 1);
+        }
+    });
+
+    $('#btnTaskCompleteComment').on('click', function (e) {
+        e.preventDefault();
+        if ($('#taskCompleteComment').val() == '') {
+            alert('Please type your comments before clicking on the Yes button.');
+        }
+        else {
+            window.parent.parent.Ts.System.logAction('Task - Add Task Complete Comment');
+            window.parent.parent.Ts.Services.Task.AddTaskCompleteComment(_completeCommentTaskID, $('#taskCompleteComment').val(), function (success) {
+                if (success) {
+                    $('#taskCompleteComment').val('');
+                    $('#modalTaskComment').modal('hide');
+                }
+                else {
+                    alert('There was an error saving your comment. Please try again.')
+                }
+            });
         }
     });
 });
