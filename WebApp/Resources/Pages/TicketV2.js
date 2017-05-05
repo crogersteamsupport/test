@@ -6,6 +6,7 @@ var _ticketSender = null;
 var _ticketCurrStatus = null;
 var _ticketCurrUser = null;
 var _plugins = null;
+var _completeCommentTaskID = 0;
 
 var _ticketGroupID = null;
 var _ticketGroupUsers = null;
@@ -293,6 +294,25 @@ $(document).ready(function () {
     firstScript.parentNode.insertBefore(script, firstScript);
   slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
   $('.wcTooltip').tipTip({ defaultPosition: "top", edgeOffset: 7, keepAlive: true });
+
+  $('#btnTaskCompleteComment').on('click', function (e) {
+      e.preventDefault();
+      if ($('#taskCompleteComment').val() == '') {
+          alert('Please type your comments before clicking on the Yes button.');
+      }
+      else {
+          window.parent.parent.Ts.System.logAction('Task - Add Task Complete Comment');
+          window.parent.parent.Ts.Services.Task.AddTaskCompleteComment(_completeCommentTaskID, $('#taskCompleteComment').val(), function (success) {
+              if (success) {
+                  $('#taskCompleteComment').val('');
+                  $('#modalTaskComment').modal('hide');
+              }
+              else {
+                  alert('There was an error saving your comment. Please try again.')
+              }
+          });
+      }
+  });
 });
 
 var loadTicket = function (ticketNumber, refresh) {
@@ -3148,6 +3168,10 @@ function SetupTasksSection() {
                 checkbox.prop("checked", false);
                 alert('There are subtasks pending completion, please finish them before completing the parent task.')
             }
+            else if (data.Value) {
+                _completeCommentTaskID = id;
+                $('#modalTaskComment').modal('show');
+            }
         });
     });
 
@@ -3190,7 +3214,16 @@ function SetupTasksSection() {
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Tasks Page - Change Task Status');
 
-        parent.Ts.Services.Task.SetTaskIsCompleted(id, checked);
+        parent.Ts.Services.Task.SetTaskIsCompleted(id, checked, function (data) {
+            if (!data.IncompleteSubtasks) {
+                _completeCommentTaskID = id;
+                $('#modalTaskComment').modal('show');
+            }
+            else {
+                checkbox.prop("checked", false);
+                alert('There are subtasks pending completion, please finish them before completing the parent task.')
+            }
+        });
     });
 
 }

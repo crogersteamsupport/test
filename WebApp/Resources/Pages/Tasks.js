@@ -4,6 +4,7 @@ var _allCreatedLoaded = false;
 var _taskCount = 0;
 var _start = 0;
 var _currentTab = 0;
+var _completeCommentTaskID = 0;
 
 function showLoadingIndicator() {
     $('.results-loading').show();
@@ -297,7 +298,11 @@ $(document).ready(function () {
 
         parent.Ts.Services.Task.SetTaskIsCompleted(id, checked, function (data) {
             if (!data.IncompleteSubtasks) {
-                checkbox.parent().parent().fadeOut(600, function () { checkbox.remove() });
+                checkbox.parent().parent().fadeOut(600, function () {
+                    _completeCommentTaskID = id;
+                    $('#modalTaskComment').modal('show');
+                    checkbox.remove()
+                });
             }
             else {
                 checkbox.prop("checked", false);
@@ -386,6 +391,25 @@ $(document).ready(function () {
         }
 
         return new Handlebars.SafeString(result);
+    });
+
+    $('#btnTaskCompleteComment').on('click', function (e) {
+        e.preventDefault();
+        if ($('#taskCompleteComment').val() == '') {
+            alert('Please type your comments before clicking on the Yes button.');
+        }
+        else {
+            window.parent.parent.Ts.System.logAction('Task - Add Task Complete Comment');
+            window.parent.parent.Ts.Services.Task.AddTaskCompleteComment(_completeCommentTaskID, $('#taskCompleteComment').val(), function (success) {
+                if (success) {
+                    $('#taskCompleteComment').val('');
+                    $('#modalTaskComment').modal('hide');
+                }
+                else {
+                    alert('There was an error saving your comment. Please try again.')
+                }
+            });
+        }
     });
 });
 

@@ -681,10 +681,10 @@ namespace TSWebServices
                 string description = String.Format("{0} added task association to {1}.", TSAuthentication.GetUser(loginUser).FirstLastName, Enum.GetName(typeof(ReferenceType), refType));
                 TaskLogs.AddTaskLog(loginUser, taskID, description);
 
-                Reminder task = Reminders.GetReminder(loginUser, taskID);
+                Task task = Tasks.GetTask(loginUser, taskID);
                 if (task.UserID != null && loginUser.UserID != task.UserID)
                 {
-                    SendModifiedNotification(loginUser.UserID, task.ReminderID);
+                    SendModifiedNotification(loginUser.UserID, task.TaskID);
                 }
 
                 if (refType == ReferenceType.Contacts)
@@ -735,6 +735,15 @@ namespace TSWebServices
             {
                 DataUtils.LogException(UserSession.LoginUser, ex);
             }
+        }
+
+        [WebMethod]
+        public bool AddTaskCompleteComment(int taskID, string comment)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            string description = String.Format(@"{0} added task complete note: ""{1}""", TSAuthentication.GetUser(loginUser).FirstLastName, comment);
+            TaskLogs.AddTaskLog(loginUser, taskID, description);
+            return true;
         }
     }
 
