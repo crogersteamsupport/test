@@ -805,6 +805,9 @@ namespace TSWebServices
                     scheduledReport.Monthday = (byte)dayOfMonth;
                     scheduledReport.IsActive = isActive;
 
+                    //This needs to be set before SetNextRun because that one needs it to get the timezone to use.
+                    scheduledReport.CreatorId = loginUser.UserID;
+
                     if (isActive)
                     {
                         scheduledReport.SetNextRun();
@@ -814,7 +817,6 @@ namespace TSWebServices
                         scheduledReport.NextRun = null;
                     }
 
-                    scheduledReport.CreatorId = loginUser.UserID;
                     scheduledReport.Collection.Save();
 
                     scheduledReportId = scheduledReport.Id;
