@@ -462,21 +462,9 @@ $(document).ready(function () {
           .addClass('col-xs-10 form-control')
           .val(_Name)
           .appendTo(container1)
-          .focus();
-
-        $('<i>')
-          .addClass('col-xs-1 fa fa-times')
-          .click(function (e) {
-              $(this).closest('div').remove();
-              header.show();
-              $('#Name').removeClass("disabled");
-          })
-          .insertAfter(container1);
-        $('<i>')
-          .addClass('col-xs-1 fa fa-check')
-          .click(function (e) {
+          .focusout(function (e) {
               window.parent.parent.Ts.System.logAction('Task Detail - Save Name');
-              window.parent.parent.Ts.Services.Task.SetName(_taskID, $(this).prev().find('input').val(), function (result) {
+              window.parent.parent.Ts.Services.Task.SetName(_taskID, $(this).val(), function (result) {
                   _Name = result;
                   header.text(result);
                   $('#Name').text(result);
@@ -491,7 +479,28 @@ $(document).ready(function () {
               $(this).closest('div').remove();
               header.show();
           })
-          .insertAfter(container1);
+          .keydown(function (e) {
+              var code = (e.keyCode ? e.keyCode : e.which);
+              if (code == 13) {
+                  window.parent.parent.Ts.System.logAction('Task Detail - Save Name');
+                  window.parent.parent.Ts.Services.Task.SetName(_taskID, $(this).val(), function (result) {
+                      _Name = result;
+                      header.text(result);
+                      $('#Name').text(result);
+                      $('#taskEdit').removeClass("disabled");
+                  },
+                  function (error) {
+                      header.show();
+                      alert('There was an error saving the task name.');
+                      $('#taskEdit').removeClass("disabled");
+                  });
+                  $('#taskEdit').removeClass("disabled");
+                  $(this).closest('div').remove();
+                  header.show();
+              }
+          })
+          .focus();
+
         $('#taskEdit').addClass("disabled");
     });
 
