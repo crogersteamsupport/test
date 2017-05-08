@@ -1039,7 +1039,7 @@ namespace TeamSupport.Data
 
         public static MailMessage GetReminderTaskEmail(LoginUser loginUser, Reminder reminder, UsersViewItem user, TasksViewItem task)
         {
-            EmailTemplate template = GetTemplate(loginUser, reminder.OrganizationID, 35, -1);
+            EmailTemplate template = GetTemplate(loginUser, task.OrganizationID, 35, -1);
             template.ReplaceCommonParameters().ReplaceFields("User", user);
             template.ReplaceParameter("TaskName", task.Name);
             template.ReplaceParameter("TaskDescription", task.Description);
