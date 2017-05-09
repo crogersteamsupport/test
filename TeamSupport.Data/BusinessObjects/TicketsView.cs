@@ -1131,8 +1131,8 @@ ORDER BY TicketNumber DESC";
                     sort = string.Format("[StatusPosition] {0}, [Status] {0}, [TicketTypeName] {0}", (filter.SortAsc ? "ASC" : "DESC"));
                     break;
                 default:
-                    sortFields = string.Format("[{0}]", sort);
-                    sort = string.Format("[{0}] {1}", sort, (filter.SortAsc ? "ASC" : "DESC"));
+                    sortFields = string.Format("tv.[{0}]", sort);
+                    sort = string.Format("tv.[{0}] {1}", sort, (filter.SortAsc ? "ASC" : "DESC"));
                     break;
             }
 
@@ -1259,12 +1259,14 @@ ORDER BY TicketNumber DESC";
 
         private static void GetFilterWhereClause(LoginUser loginUser, TicketLoadFilter filter, SqlCommand command, StringBuilder builder)
         {
-            builder.Append(" FROM UserTicketsView tv WHERE (tv.OrganizationID = @OrganizationID)");
+            builder.Append(" FROM UserTicketsView tv ");
 
             if (filter.UserID != null && filter.GroupID != null && (filter.GroupID == -1 || filter.GroupID == -2) )
             {
                 builder.Append(" INNER JOIN GroupUsers gu ON tv.GroupID = gu.GroupID");
             }
+
+            builder.Append(" WHERE (tv.OrganizationID = @OrganizationID)");
  
 
             AddTicketParameter("TicketTypeID", filter.TicketTypeID, false, builder, command);
