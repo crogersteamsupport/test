@@ -4310,7 +4310,7 @@ function CreateHandleBarHelpers() {
 
     Handlebars.registerHelper('Applause', function () {
         var display = (!this.item.IsVisibleOnPortal && !this.item.IsWC) ? 'inline' : 'none';
-        var thacode = '<span id="applause-' + this.item.RefID + '" class="pull-right" style="position:absolute;top:25px;right:100px;display:' + display + '">8 <a href="#" class="applause" data-actionid="' + this.item.RefID + '" data-ticketid="' + this.item.TicketID + '" style="opacity:0.1;"><img src="/vcr/1_9_0/Images/icons/applause.png" style="margin-left:5px;height:24px;"></a></span>';
+        var thacode = '<span id="applause-' + this.item.RefID + '" class="pull-right" style="position:absolute;top:25px;right:100px;display:' + display + '"><a href="#" class="listreactions" data-actionid="' + this.item.RefID + '" data-ticketid="' + this.item.TicketID + '">8</a> <a href="#" class="updatereaction" data-actionid="' + this.item.RefID + '" data-ticketid="' + this.item.TicketID + '" data-oldvalue="0" style="opacity:0.2;"><img src="/vcr/1_9_0/Images/icons/applause.png" style="margin-left:5px;height:24px;"></a></span>';
         return thacode;
     });
     
@@ -4574,23 +4574,62 @@ function CreateTimeLineDelegates() {
         }
     });
 
-    $('#action-timeline').on('click', 'a.applause', function (e) {
+    $('#action-timeline').on('click', 'a.updatereaction', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var applause = $(this);
+        var actionid = $(this).data('actionid');
+        var ticketid = $(this).data('ticketid');
+        var oldvalue = $(this).data('oldvalue');
+        var newvalue = (oldvalue > 0) ? 0 : 1;
+        // console.log('Provided: ' + ticketid + ' / ' + actionid + ' / ' + oldvalue + ' / ' + newvalue);
+        window.parent.Ts.Services.TicketPage.UpdateReaction(ticketid, actionid, newvalue, function (result) {
+            if (result === 'positive') {
+                applause.data('oldvalue', newvalue);
+                if (newvalue === 1) {
+                    applause.css('opacity', '1');
+                } else {
+                    applause.css('opacity', '0.2');
+                }
+            }
+        });
+    });
+
+    $('#action-timeline').on('mouseenter', 'a.listreactions', function (e) {
         e.preventDefault();
         e.stopPropagation();
 
+        var location = $(this);
         var actionid = $(this).data('actionid');
         var ticketid = $(this).data('ticketid');
+        console.log('ListReactions: ' + ticketid + ' / ' + actionid);
+        window.parent.Ts.Services.TicketPage.ListReactions(ticketid, actionid, function (result) {
+            var people = jQuery.parseJSON(result);
+            var output = '<div class="reactions-head">Applause</div>';
+            $.each(people.reactions, function (key, person) {
+                var avatar = '/dc/1078/UserAvatar/' + person.UserID + '/32/' + Math.ceil(Math.random() * 10000);
+                output += '<div class="reactions-person">';
+                output += '<div class="reactions-avatar"><img src="' + avatar + '"></div>';
+                output += '<div class="reactions-name"><a href="#" data-userid="' + person.UserID + '" class="UserLink">' + person.Firstname + '</a></div>';
+                output += '</div>';
+            });
 
-        console.log('Provided: ' + ticketid + ' / ' + actionid);
-
-        window.parent.Ts.Services.TicketPage.UpdateReactions(ticketid, actionid, function(result) {
-
-            alert(result);
-
+            location.popover({
+                html: true,
+                trigger: 'hover',
+                delay: { "show": 1, "hide": 1 },
+                placement: 'left',
+                content: output
+                // container: 'div.reactions-popover'
+            }).popover('show');
         });
-
-
+    }).on("click", ".UserLink", function (e) {
+        var userid = $(this).data('userid');
+        top.Ts.MainPage.openUser(userid);
     });
+
+
+
 
     $('#action-timeline').on('click', 'a.action-option-visible', function (e) {
         e.preventDefault();

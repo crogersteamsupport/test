@@ -931,7 +931,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string GetReactions(int ticketID, int actionID)
+        public string CountReactions(int ticketID, int actionID)
         {
             // PULL REACTION COUNT FOR THIS ACTION.
 
@@ -943,29 +943,23 @@ namespace TSWebServices
         [WebMethod]
         public string ListReactions(int ticketID, int actionID)
         {
-            // PULL LIST OF PEOPLE WHO PROVIDED A REACTION FOR THIS ACTION.
+            TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            User user = TSAuthentication.GetUser(loginUser);
+            User author = Users.GetUser(loginUser, action.CreatorID);
 
-            // GENERATE MODAL.
-
-            // SEND OUTPUT TO CLIENT.
-
-            return "test";
+            return Actions.ListReactions(loginUser, ticketID, actionID);
         }
 
         [WebMethod]
-        public string UpdateReactions(int ticketID, int actionID)
+        public string UpdateReaction(int ticketID, int actionID, int value)
         {
             TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             User user           = TSAuthentication.GetUser(loginUser);
             User author         = Users.GetUser(loginUser, action.CreatorID);
 
-            return Actions.Reactions(loginUser, ticketID, actionID);
-            // return Actions.Reactions(ticketID, actionID);
-
-            // return "testing: " + ticketID;
-            // UPDATE REACTION FOR SINGLE ACTION.
-            // UPDATE EMAIL IF REACTION ADDED OR REMOVED.
+            return Actions.UpdateReaction(loginUser, action.CreatorID, ticketID, actionID, value);
         }
 
 

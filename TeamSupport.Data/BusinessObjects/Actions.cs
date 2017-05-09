@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
+using System.Dynamic;
+using System.Web.Script.Serialization;
+using Newtonsoft.Json;
 
 namespace TeamSupport.Data
 {
@@ -563,57 +566,90 @@ WHERE a.SalesForceID = @SalesForceID";
     }
 
 
-        public static string Reactions(LoginUser loginUser, int ticketID, int actionID)
+        public static string UpdateReaction(LoginUser loginUser, int receiverID, int ticketID, int actionID, int value)
         {
-            string statement = "INSERT Reactions (UserID,ReceiverID,ReferenceID,ReactionValue) VALUES ('1','1','1','1')";
-            SqlConnection connection = new SqlConnection(loginUser.ConnectionString);
-            SqlCommand command = new SqlCommand(statement, connection);
-            command.ExecuteNonQuery();
-            return "Test Actions.cs: " + ticketID;
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+                {
+                    using (SqlCommand command = new SqlCommand())
+                    {
+                        Int32 result;
+                        command.Connection   = connection;
+                        command.CommandText  = "BEGIN TRAN ";
+                        command.CommandText += "IF EXISTS (SELECT * FROM dbo.Reactions WHERE ReferenceID = @ReferenceID AND UserID = @UserID) ";
+                        command.CommandText += "BEGIN UPDATE dbo.Reactions SET ReactionValue = @ReactionValue, DateTimeChanged = @DateTime WHERE UserID = @UserID AND ReceiverID = @ReceiverID AND ReferenceID = @ReferenceID END ";
+                        command.CommandText += "ELSE BEGIN INSERT dbo.Reactions (UserID,ReceiverID,ReferenceID,ReactionValue,DateTimeCreated) VALUES (@UserID,@ReceiverID,@ReferenceID,@ReactionValue,@DateTime) END ";
+                        command.CommandText += "COMMIT TRAN";
+                        command.CommandType = CommandType.Text;
+                        command.Parameters.AddWithValue("@UserID", loginUser.UserID);
+                        command.Parameters.AddWithValue("@ReceiverID", receiverID);
+                        command.Parameters.AddWithValue("@ReferenceID", actionID);
+                        command.Parameters.AddWithValue("@ReactionValue", value);
+                        command.Parameters.AddWithValue("@DateTime", DateTime.UtcNow);
+                        connection.Open();
+                        result = command.ExecuteNonQuery();
+                        return (result > 0) ? "positive" : "negative";
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                return "negative";
+            }
+            catch (Exception e)
+            {
+                return "negative";
+            }
         }
 
 
-        public void GetReactions(int ticketID, int actionID)
+        public void CountReactions(int ticketID, int actionID)
         {
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = "SELECT COUNT(*) AS tally FROM Reactions WHERE ReactionValue = 1 AND ReferenceID = @ReferenceID";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@ReferenceID", actionID);
-                Fill(command);
             }
         }
 
-        public void ListReactions(int ticketID, int actionID)
+        public static string ListReactions(LoginUser loginUser, int ticketID, int actionID)
         {
-            using (SqlCommand command = new SqlCommand())
+            try
             {
-                command.CommandText = "SELECT Reactions.*, Users.FirstName, Users.LastName FROM Reactions ";
-                command.CommandText += "INNER JOIN Users ON Users.UserID = Reactions.UserID ";
-                command.CommandText += "WHERE Reactions.ReferenceID = @ReferenceID AND Reactions.ReactionValue = 1";
-                command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@ReferenceID", actionID);
-                Fill(command);
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+                {
+                    using (SqlCommand command = new SqlCommand())
+                    {
+                        command.Connection   = connection;
+                        command.CommandType  = CommandType.Text;
+                        command.CommandText  = "SELECT Reactions.*, Users.Firstname, Users.LastName FROM dbo.Reactions ";
+                        command.CommandText += "INNER JOIN dbo.Users ON Reactions.UserID = Users.UserID ";
+                        command.CommandText += "WHERE Reactions.ReactionValue > 0 AND Reactions.ReferenceID = @ReferenceID ";
+                        command.CommandText += "FOR JSON PATH, ROOT('reactions')";
+                        command.Parameters.AddWithValue("@ReferenceID", actionID);
+                        connection.Open();
+                        SqlDataReader reader = command.ExecuteReader();
+
+                        if (reader.HasRows && reader.Read())
+                        {
+                            return reader.GetValue(0).ToString();
+                        }
+                        else
+                        {
+                            return "nothing";
+                        }
+                    }
+                }
             }
-        }
-
-        public static string UpdateReactions(int UserID, int ReceiverID, int ReferenceID, int ReactionValue)
-        {
-            using (SqlCommand command = new SqlCommand())
+            catch (SqlException e)
             {
-                command.CommandText = "BEGIN TRAN ";
-                command.CommandText += "IF EXISTS (SELECT * FROM Reactions WHERE ReferenceID = @ AND UserID = @ AND ReceiverID = @) ";
-                command.CommandText += "BEGIN UPDATE Reactions SET ReactionValue = @ReactionValue, DateTimeChanged = @DateTimeChanged WHERE UserID = @UserID AND ReceiverID = @ReceiverID AND ReferenceID = @ReferenceID END ";
-                command.CommandText += "ELSE INSERT Reactions (UserID,ReceiverID,ReferenceID,ReactionValue,DateTimeCreated) VALUES (@UserID,@ReceiverID,@ReferenceID,@ReactionValue,@DateTimeCreated) END ";
-                command.CommandText += "COMMIT TRAN";
-                command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@UserID", UserID);
-                command.Parameters.AddWithValue("@ReceiverID", ReceiverID);
-                command.Parameters.AddWithValue("@ReferenceID", ReferenceID);
-                command.Parameters.AddWithValue("@ReactionValue", ReactionValue);
-
-                int result = command.ExecuteNonQuery();
-                return (result == 1) ? "positive" : "negative";
+                return "negative";
+            }
+            catch (Exception e)
+            {
+                return "negative";
             }
         }
     }
