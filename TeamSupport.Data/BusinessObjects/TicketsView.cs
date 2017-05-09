@@ -1213,21 +1213,14 @@ ORDER BY TicketNumber DESC";
 
         WITH
         BaseQuery AS(
-          SELECT tv.TicketID, {1} {0}
-        ),
-
-        RowQuery AS (
-          SELECT BaseQuery.*, ROW_NUMBER() OVER (ORDER BY {2}) AS 'RowNum' FROM BaseQuery
-        ),
-
-        PageQuery AS (
-          SELECT  *, (SELECT MAX(RowNum) FROM RowQuery) AS 'TotalRecords' FROM RowQuery WHERE RowNum BETWEEN  @FromIndex AND @ToIndex
+          SELECT tv.TicketID, ROW_NUMBER() OVER (ORDER BY {2}) AS [RowNum], COUNT(*) OVER () [TotalRecords], {1} {0}
         )
 
-        SELECT * INTO #Tickets FROM PageQuery;
+        SELECT * INTO #GridViewTickets FROM BaseQuery
+        WHERE RowNum >= @FromIndex AND RowNum <= @ToIndex
 
         SELECT Result.RowNum, Result.TotalRecords, {3}
-        FROM #Tickets AS Result
+        FROM #GridViewTickets AS Result
         INNER JOIN UserTicketsView tv ON tv.TicketID = Result.TicketID
         WHERE tv.ViewerID = @ViewerID
         ORDER BY Result.RowNum ASC
