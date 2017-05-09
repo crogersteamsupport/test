@@ -30,6 +30,8 @@ namespace TeamSupport.Data
         [DataMember]
         public DateTime? DateCompleted { get; set; }
         [DataMember]
+        public string CompletionComment { get; set; }
+        [DataMember]
         public int? ParentID { get; set; }
         [DataMember]
         public bool? IsDismissed { get; set; }
@@ -70,6 +72,7 @@ namespace TeamSupport.Data
             result.HasEmailSent = this.HasEmailSent;
             result.IsDismissed = this.IsDismissed;
             result.ParentID = this.ParentID;
+            result.CompletionComment = this.CompletionComment;
             result.IsComplete = this.IsComplete;
             result.UserID = this.UserID;
             result.Description = this.Description;

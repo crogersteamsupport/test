@@ -400,8 +400,8 @@ $(document).ready(function () {
         }
         else {
             window.parent.parent.Ts.System.logAction('Task - Add Task Complete Comment');
-            window.parent.parent.Ts.Services.Task.AddTaskCompleteComment(_completeCommentTaskID, $('#taskCompleteComment').val(), function (success) {
-                if (success) {
+            window.parent.parent.Ts.Services.Task.AddTaskCompleteComment(_completeCommentTaskID, $('#taskCompleteComment').val(), function (result) {
+                if (result.Value) {
                     $('#taskCompleteComment').val('');
                     $('#modalTaskComment').modal('hide');
                 }

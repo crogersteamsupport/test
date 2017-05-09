@@ -523,6 +523,7 @@ namespace TSWebServices
                     return result;
                 }
                 task.DateCompleted = DateTime.UtcNow;
+                result.DateCompleted = task.DateCompleted;
             }
             else
             {
@@ -531,6 +532,8 @@ namespace TSWebServices
                 task.DateCompleted = null;
             }
 
+            //We are clearing completion comments as they could or not be set in next call.
+            task.CompletionComment = null;
             task.Collection.Save();
             string description = String.Format("{0} set task is complete to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
             TaskLogs.AddTaskLog(loginUser, taskID, description);
@@ -738,12 +741,21 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public bool AddTaskCompleteComment(int taskID, string comment)
+        public TaskCompletionStatus AddTaskCompleteComment(int taskID, string comment)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            string description = String.Format(@"{0} added task complete note: ""{1}""", TSAuthentication.GetUser(loginUser).FirstLastName, comment);
+            Task task = Tasks.GetTask(loginUser, taskID);
+            task.CompletionComment = comment;
+            task.Collection.Save();
+
+            //string description = String.Format(@"{0} added task complete note: ""{1}""", TSAuthentication.GetUser(loginUser).FirstLastName, comment);
+            string description = String.Format(@"{0} added task complete note.", TSAuthentication.GetUser(loginUser).FirstLastName);
             TaskLogs.AddTaskLog(loginUser, taskID, description);
-            return true;
+
+            TaskCompletionStatus result = new TaskCompletionStatus(false, true);
+            result.DateCompleted = task.DateCompleted;
+            result.CompletionComment = task.CompletionComment;
+            return result;
         }
     }
 
@@ -820,5 +832,11 @@ namespace TSWebServices
 
         [DataMember]
         public bool Value { get; set; }
+
+        [DataMember]
+        public DateTime? DateCompleted { get; set; }
+
+        [DataMember]
+        public string CompletionComment { get; set; }
     }
 }
