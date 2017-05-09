@@ -3220,7 +3220,7 @@ ORDER BY
                         UPDATE
 				            OrganizationSettings
                         SET
-                            SettingValue = SettingValue + ',{""CatID"":""Reminders"",""CatName"":""Reminders"",""Disabled"":""false""}'
+                            SettingValue = REPLACE(SettingValue, ']', ',{""CatID"":""Reminders"",""CatName"":""Reminders"",""Disabled"":""false""}]')
                         WHERE
 				            OrganizationID = @organizationID
                             AND SettingKey = 'NewTicketFieldsOrder'
