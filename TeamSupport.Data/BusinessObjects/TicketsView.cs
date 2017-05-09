@@ -1260,6 +1260,13 @@ ORDER BY TicketNumber DESC";
         private static void GetFilterWhereClause(LoginUser loginUser, TicketLoadFilter filter, SqlCommand command, StringBuilder builder)
         {
             builder.Append(" FROM UserTicketsView tv WHERE (tv.OrganizationID = @OrganizationID)");
+
+            if (filter.UserID != null && filter.GroupID != null && (filter.GroupID == -1 || filter.GroupID == -2) )
+            {
+                builder.Append(" INNER JOIN GroupUsers gu ON tv.GroupID = gu.GroupID");
+            }
+ 
+
             AddTicketParameter("TicketTypeID", filter.TicketTypeID, false, builder, command);
             if (filter.TicketStatusID != null) AddTicketParameter("TicketStatusID", filter.TicketStatusID, false, builder, command);
             else AddTicketParameter("IsClosed", filter.IsClosed, false, builder, command);
@@ -1287,13 +1294,13 @@ ORDER BY TicketNumber DESC";
             if (filter.UserID != null && filter.GroupID != null && filter.GroupID == -1)
             {
                 //User's all groups all tickets
-                builder.Append(" AND (tv.GroupID IN (SELECT gu.GroupID FROM GroupUsers gu WHERE gu.UserID = @UserID))");
+                builder.Append(" AND (gu.UserID = @UserID)");
                 command.Parameters.AddWithValue("UserID", filter.UserID);
             }
             else if (filter.UserID != null && filter.GroupID != null && filter.GroupID == -2)
             {
                 //Users's all groups, unassigned tickets
-                builder.Append(" AND ((tv.UserID IS NULL OR tv.UserID < 0) AND tv.GroupID IN (SELECT gu.GroupID FROM GroupUsers gu WHERE gu.UserID = @UserID))");
+                builder.Append(" AND ((tv.UserID IS NULL OR tv.UserID < 0) AND gu.UserID = @UserID)");
                 command.Parameters.AddWithValue("UserID", filter.UserID);
             }
             else if (filter.GroupID != null && filter.UserID != null && filter.UserID == -2)
