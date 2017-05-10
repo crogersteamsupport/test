@@ -298,9 +298,11 @@ $(document).ready(function () {
 
         parent.Ts.Services.Task.SetTaskIsCompleted(id, checked, function (data) {
             if (!data.IncompleteSubtasks) {
+                if (data.Value) {
+                    $('#modalTaskComment').modal('show');
+                }
                 checkbox.parent().parent().fadeOut(600, function () {
                     _completeCommentTaskID = id;
-                    $('#modalTaskComment').modal('show');
                     checkbox.remove()
                 });
             }
