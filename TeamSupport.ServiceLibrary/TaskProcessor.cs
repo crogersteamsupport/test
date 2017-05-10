@@ -185,6 +185,7 @@ namespace TeamSupport.ServiceLibrary
                 MailMessage message = EmailTemplates.GetTaskModified(LoginUser, UsersView.GetUsersViewItem(LoginUser, modifierID), UsersView.GetUsersViewItem(LoginUser, (int)task.UserID), task);
                 message.To.Add(GetMailAddress(owner.Email, owner.FirstLastName));
                 //message.Subject = message.Subject + " [pvt]";
+                EmailTemplates.ReplaceMailAddressParameters(message);
 
                 String description = String.Format("Task modified notification sent to {0} for Task {1}", message.To.ToString(), task.Name);
                 ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tasks, task.TaskID, description);
@@ -246,6 +247,7 @@ namespace TeamSupport.ServiceLibrary
                 MailMessage message = EmailTemplates.GetTaskAssigned(LoginUser, UsersView.GetUsersViewItem(LoginUser, modifierID), UsersView.GetUsersViewItem(LoginUser, (int)task.UserID), task);
                 message.To.Add(GetMailAddress(owner.Email, owner.FirstLastName));
                 //message.Subject = message.Subject + " [pvt]";
+                EmailTemplates.ReplaceMailAddressParameters(message);
 
                 String description = String.Format("Task assigned notification sent to {0} for Task {1}", message.To.ToString(), task.Name);
                 ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tasks, task.TaskID, description);
@@ -311,6 +313,7 @@ namespace TeamSupport.ServiceLibrary
                 }
                 //message.Subject = message.Subject + " [pvt]";
                 //EmailTemplates.ReplaceEmailRecipientParameters(LoginUser, message, ticket, owner.UserID, owner.OnlyEmailAfterHours);
+                EmailTemplates.ReplaceMailAddressParameters(message);
 
                 String description = String.Format("Task complete notification sent to {0} for Task {1}", message.To.ToString(), task.Name);
                 ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tasks, task.TaskID, description);
@@ -377,6 +380,7 @@ namespace TeamSupport.ServiceLibrary
                 //}
                 //message.Subject = message.Subject + " [pvt]";
                 //EmailTemplates.ReplaceEmailRecipientParameters(LoginUser, message, ticket, owner.UserID, owner.OnlyEmailAfterHours);
+                EmailTemplates.ReplaceMailAddressParameters(message);
 
                 String description = String.Format("Task old user notification sent to {0} for Task {1}", message.To.ToString(), task.Name);
                 ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tasks, task.TaskID, description);
