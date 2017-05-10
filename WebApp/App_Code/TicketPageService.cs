@@ -933,11 +933,21 @@ namespace TSWebServices
         [WebMethod]
         public string CountReactions(int ticketID, int actionID)
         {
-            // PULL REACTION COUNT FOR THIS ACTION.
+            TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            User user = TSAuthentication.GetUser(loginUser);
+            User author = Users.GetUser(loginUser, action.CreatorID);
+            return Actions.CountReactions(loginUser, ticketID, actionID);
+        }
 
-            // DETERMINE IF USER HAS PROVIDED A REACTION.
-
-            return "test";
+        [WebMethod]
+        public string CheckReaction(int ticketID, int actionID)
+        {
+            TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            User user = TSAuthentication.GetUser(loginUser);
+            User author = Users.GetUser(loginUser, action.CreatorID);
+            return Actions.CheckReaction(loginUser, ticketID, actionID);
         }
 
         [WebMethod]
@@ -947,7 +957,6 @@ namespace TSWebServices
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             User user = TSAuthentication.GetUser(loginUser);
             User author = Users.GetUser(loginUser, action.CreatorID);
-
             return Actions.ListReactions(loginUser, ticketID, actionID);
         }
 
@@ -958,10 +967,8 @@ namespace TSWebServices
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             User user           = TSAuthentication.GetUser(loginUser);
             User author         = Users.GetUser(loginUser, action.CreatorID);
-
             return Actions.UpdateReaction(loginUser, action.CreatorID, ticketID, actionID, value);
         }
-
 
         public AutocompleteItem[] GetUserOrOrganizationFiltered(string searchTerm, bool filterByUserRights)
         {

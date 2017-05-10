@@ -4309,9 +4309,19 @@ function CreateHandleBarHelpers() {
     });
 
     Handlebars.registerHelper('Applause', function () {
+        var ticketID = this.item.TicketID;
+        var actionID = this.item.RefID;
         var display = (!this.item.IsVisibleOnPortal && !this.item.IsWC) ? 'inline' : 'none';
-        var thacode = '<span id="applause-' + this.item.RefID + '" class="pull-right" style="position:absolute;top:25px;right:100px;display:' + display + '"><a href="#" class="listreactions" data-actionid="' + this.item.RefID + '" data-ticketid="' + this.item.TicketID + '">8</a> <a href="#" class="updatereaction" data-actionid="' + this.item.RefID + '" data-ticketid="' + this.item.TicketID + '" data-oldvalue="0" style="opacity:0.2;"><img src="/vcr/1_9_0/Images/icons/applause.png" style="margin-left:5px;height:24px;"></a></span>';
-        return thacode;
+        var output = window.parent.Ts.Services.TicketPage.CountReactions(ticketID, actionID, function (result) {
+            var data = jQuery.parseJSON(result);
+            var tally = data[0].reactions[0].tally;
+            var reckoning = data[1].validation[0].reckoning;
+            var opacity = (reckoning > 0) ? '1' : '0.2';
+            var oldvalue = (reckoning > 0) ? '1' : '0';
+            var thacode = '<a href="#" id="tally-' + actionID + '" class="listreactions" data-actionid="' + actionID + '" data-ticketid="' + ticketID + '">' + tally + '</a><a href="#" class="updatereaction" data-actionid="' + actionID + '" data-ticketid="' + ticketID + '" data-oldvalue="' + oldvalue + '" style="opacity:' + opacity + ';"><img src="/vcr/1_9_0/Images/icons/applause.png" style="margin-left:5px;height:24px;"></a>';
+            $('#applause-' + actionID).html(thacode);
+        });
+        return '<span id="applause-' + actionID + '" class="pull-right" style="position:absolute;top:25px;right:100px;display:' + display + '">test</span>';
     });
     
     Handlebars.registerHelper('ActionData', function () {
@@ -4582,10 +4592,21 @@ function CreateTimeLineDelegates() {
         var ticketid = $(this).data('ticketid');
         var oldvalue = $(this).data('oldvalue');
         var newvalue = (oldvalue > 0) ? 0 : 1;
-        // console.log('Provided: ' + ticketid + ' / ' + actionid + ' / ' + oldvalue + ' / ' + newvalue);
+        var oldtally = $('#tally-' + actionid).text();
+
         window.parent.Ts.Services.TicketPage.UpdateReaction(ticketid, actionid, newvalue, function (result) {
             if (result === 'positive') {
                 applause.data('oldvalue', newvalue);
+
+                if (newvalue > 0) {
+                    var newtally = +oldtally + 1;
+                } else {
+                    var newtally = (oldtally > 0) ? +oldtally - 1 : 0;
+                }
+
+                $('#tally-' + actionid).text(newtally);
+                
+
                 if (newvalue === 1) {
                     applause.css('opacity', '1');
                 } else {
@@ -4598,7 +4619,6 @@ function CreateTimeLineDelegates() {
     $('#action-timeline').on('mouseenter', 'a.listreactions', function (e) {
         e.preventDefault();
         e.stopPropagation();
-
         var location = $(this);
         var actionid = $(this).data('actionid');
         var ticketid = $(this).data('ticketid');

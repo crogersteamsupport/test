@@ -604,13 +604,57 @@ WHERE a.SalesForceID = @SalesForceID";
         }
 
 
-        public void CountReactions(int ticketID, int actionID)
+        public static string CountReactions(LoginUser loginUser, int ticketID, int actionID)
         {
-            using (SqlCommand command = new SqlCommand())
+            try
             {
-                command.CommandText = "SELECT COUNT(*) AS tally FROM Reactions WHERE ReactionValue = 1 AND ReferenceID = @ReferenceID";
-                command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@ReferenceID", actionID);
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+                {
+                    string json1 = null, json2 = null;
+
+                    connection.Open();
+
+                    using (SqlCommand command1 = new SqlCommand())
+                    {
+                        command1.Connection   = connection;
+                        command1.CommandType  = CommandType.Text;
+                        command1.CommandText  = "SELECT COUNT(*) AS tally FROM dbo.Reactions WHERE ReactionValue > 0 AND ReferenceID = @ReferenceID ";
+                        command1.CommandText += "FOR JSON PATH, ROOT('reactions')";
+                        command1.Parameters.AddWithValue("@ReferenceID", actionID);
+                        SqlDataReader reader1 = command1.ExecuteReader();
+
+                        if (reader1.HasRows && reader1.Read())
+                        {
+                            json1 = reader1.GetValue(0).ToString();
+                        }
+                    }
+
+                    using (SqlCommand command2 = new SqlCommand())
+                    {
+                        command2.Connection = connection;
+                        command2.CommandType = CommandType.Text;
+                        command2.CommandText = "SELECT COUNT(*) AS reckoning FROM dbo.Reactions WHERE UserID = @UserID AND ReferenceID = @ReferenceID AND ReactionValue > 0 ";
+                        command2.CommandText += "FOR JSON PATH, ROOT('validation')";
+                        command2.Parameters.AddWithValue("@UserID", loginUser.UserID);
+                        command2.Parameters.AddWithValue("@ReferenceID", actionID);
+                        SqlDataReader reader2 = command2.ExecuteReader();
+
+                        if (reader2.HasRows && reader2.Read())
+                        {
+                            json2 = reader2.GetValue(0).ToString();
+                        }
+                    }
+
+                    return string.Format("[{0},{1}]", json1, json2);
+                }
+            }
+            catch (SqlException e)
+            {
+                return "negative: " + e.ToString();
+            }
+            catch (Exception e)
+            {
+                return "negative: " + e.ToString();
             }
         }
 
@@ -652,5 +696,45 @@ WHERE a.SalesForceID = @SalesForceID";
                 return "negative";
             }
         }
+
+        public static string CheckReaction(LoginUser loginUser, int ticketID, int actionID)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+                {
+                    using (SqlCommand command = new SqlCommand())
+                    {
+                        command.Connection = connection;
+                        command.CommandType = CommandType.Text;
+                        command.CommandText = "SELECT COUNT(*) AS reckoning FROM dbo.Reactions WHERE UserID = @UserID AND ReferenceID = @ReferenceID AND ReactionValue > 0 ";
+                        command.CommandText += "FOR JSON PATH, ROOT('validation')";
+                        command.Parameters.AddWithValue("@UserID", loginUser.UserID);
+                        command.Parameters.AddWithValue("@ReferenceID", actionID);
+                        connection.Open();
+                        SqlDataReader reader = command.ExecuteReader();
+
+                        if (reader.HasRows && reader.Read())
+                        {
+                            return reader.GetValue(0).ToString();
+                        }
+                        else
+                        {
+                            return "nothing";
+                        }
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                return "negative";
+            }
+            catch (Exception e)
+            {
+                return "negative";
+            }
+        }
+
+
     }
 }
