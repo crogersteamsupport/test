@@ -575,6 +575,47 @@ WHERE a.SalesForceID = @SalesForceID";
             }
         }
 
+
+        public static string PullUserList(LoginUser loginUser, int ticketID)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+                {
+                    using (SqlCommand command = new SqlCommand())
+                    {
+                        command.Connection = connection;
+                        command.CommandType = CommandType.Text;
+                        command.CommandText = "SELECT Actions.CreatorID, Users.OrganizationID FROM dbo.Actions ";
+                        command.CommandText += "INNER JOIN dbo.Users ON Actions.CreatorID = Users.UserID ";
+                        command.CommandText += "WHERE Actions.TicketID = @TicketID ";
+                        command.CommandText += "FOR JSON PATH, ROOT('userlist')";
+                        command.Parameters.AddWithValue("@TicketID", ticketID);
+                        connection.Open();
+                        SqlDataReader reader = command.ExecuteReader();
+                        if (reader.HasRows && reader.Read())
+                        {
+                            return reader.GetValue(0).ToString();
+                        }
+                        else
+                        {
+                            return "nothing";
+                        }
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                return "negative";
+            }
+            catch (Exception e)
+            {
+                return "negative";
+            }
+        }
+
+
+
         public static string UpdateReaction(LoginUser loginUser, int receiverID, int ticketID, int actionID, int value)
         {
             try

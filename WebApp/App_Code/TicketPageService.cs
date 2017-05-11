@@ -951,6 +951,13 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public string PullUserList(int ticketID)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            return Actions.PullUserList(loginUser, ticketID);
+        }
+
+        [WebMethod]
         public string ListReactions(int ticketID, int actionID)
         {
             TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
