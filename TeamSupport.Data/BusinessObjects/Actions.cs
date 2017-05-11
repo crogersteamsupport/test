@@ -565,7 +565,6 @@ WHERE a.SalesForceID = @SalesForceID";
       }
     }
 
-
         public static string UpdateReaction(LoginUser loginUser, int receiverID, int ticketID, int actionID, int value)
         {
             try
@@ -603,7 +602,6 @@ WHERE a.SalesForceID = @SalesForceID";
             }
         }
 
-
         public static string CountReactions(LoginUser loginUser, int ticketID, int actionID)
         {
             try
@@ -611,9 +609,7 @@ WHERE a.SalesForceID = @SalesForceID";
                 using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
                 {
                     string json1 = null, json2 = null;
-
                     connection.Open();
-
                     using (SqlCommand command1 = new SqlCommand())
                     {
                         command1.Connection   = connection;
@@ -622,13 +618,11 @@ WHERE a.SalesForceID = @SalesForceID";
                         command1.CommandText += "FOR JSON PATH, ROOT('reactions')";
                         command1.Parameters.AddWithValue("@ReferenceID", actionID);
                         SqlDataReader reader1 = command1.ExecuteReader();
-
                         if (reader1.HasRows && reader1.Read())
                         {
                             json1 = reader1.GetValue(0).ToString();
                         }
                     }
-
                     using (SqlCommand command2 = new SqlCommand())
                     {
                         command2.Connection = connection;
@@ -638,7 +632,6 @@ WHERE a.SalesForceID = @SalesForceID";
                         command2.Parameters.AddWithValue("@UserID", loginUser.UserID);
                         command2.Parameters.AddWithValue("@ReferenceID", actionID);
                         SqlDataReader reader2 = command2.ExecuteReader();
-
                         if (reader2.HasRows && reader2.Read())
                         {
                             json2 = reader2.GetValue(0).ToString();
@@ -650,11 +643,11 @@ WHERE a.SalesForceID = @SalesForceID";
             }
             catch (SqlException e)
             {
-                return "negative: " + e.ToString();
+                return "negative";
             }
             catch (Exception e)
             {
-                return "negative: " + e.ToString();
+                return "negative";
             }
         }
 
@@ -675,7 +668,6 @@ WHERE a.SalesForceID = @SalesForceID";
                         command.Parameters.AddWithValue("@ReferenceID", actionID);
                         connection.Open();
                         SqlDataReader reader = command.ExecuteReader();
-
                         if (reader.HasRows && reader.Read())
                         {
                             return reader.GetValue(0).ToString();
@@ -713,7 +705,6 @@ WHERE a.SalesForceID = @SalesForceID";
                         command.Parameters.AddWithValue("@ReferenceID", actionID);
                         connection.Open();
                         SqlDataReader reader = command.ExecuteReader();
-
                         if (reader.HasRows && reader.Read())
                         {
                             return reader.GetValue(0).ToString();
@@ -734,7 +725,5 @@ WHERE a.SalesForceID = @SalesForceID";
                 return "negative";
             }
         }
-
-
     }
 }
