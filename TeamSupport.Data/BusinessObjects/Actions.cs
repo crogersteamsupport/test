@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
+using System.Dynamic;
+using System.Web.Script.Serialization;
+using Newtonsoft.Json;
 
 namespace TeamSupport.Data
 {
@@ -375,21 +378,21 @@ HAVING ax.TicketID = @TicketId";
               ON a.TicketID = t.TicketID
             LEFT JOIN TicketStatuses ts
               ON t.TicketStatusID = ts.TicketStatusID
-          WHERE 
-            a.SystemActionTypeID <> 1 
+          WHERE
+            a.SystemActionTypeID <> 1
             AND a.DateModified > @DateModified
-            AND 
+            AND
             (
               a.DateModifiedBySalesForceSync IS NULL
               OR a.DateModified > DATEADD(s, 2, a.DateModifiedBySalesForceSync)
             )
-            AND t.OrganizationID = @OrgID 
-            AND 
+            AND t.OrganizationID = @OrgID
+            AND
             (
               @DateModified > '1753-01-01'
               OR ts.IsClosed = 0
             )
-          ORDER BY 
+          ORDER BY
             a.DateCreated DESC
         ";
                 command.CommandType = CommandType.Text;
@@ -470,7 +473,7 @@ JOIN
 													WHERE SalesForceID = @SalesForceID
 													)
 										AND OrganizationID = @OrganizationID
-	) t ON a.TicketID = t.TicketID 
+	) t ON a.TicketID = t.TicketID
 WHERE a.SalesForceID = @SalesForceID";
                 command.CommandText = sql;
 
@@ -502,16 +505,16 @@ WHERE a.SalesForceID = @SalesForceID";
             Actions a
             LEFT JOIN ActionLinkToJira j
               ON a.ActionID = j.ActionID
-          WHERE 
-            a.SystemActionTypeID <> 1 
+          WHERE
+            a.SystemActionTypeID <> 1
             AND a.TicketID = @ticketID
             AND " + actionTypeFilter + @"
-            AND 
+            AND
             (
               j.DateModifiedByJiraSync IS NULL
               OR a.DateModified > DATEADD(s, 2, j.DateModifiedByJiraSync)
             )
-          ORDER BY 
+          ORDER BY
             a.DateCreated ASC
         ";
                 command.CommandType = CommandType.Text;
@@ -533,9 +536,9 @@ WHERE a.SalesForceID = @SalesForceID";
           SELECT 
 	          COUNT(*) 
           FROM
-	          Actions 
-          WHERE 
-	          ActionID <= @ActionID 
+	          Actions
+          WHERE
+	          ActionID <= @ActionID
 	          AND TicketID = (SELECT TicketID FROM Actions WHERE ActionID = @ActionID)";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@ActionID", actionID);
@@ -572,16 +575,176 @@ WHERE a.SalesForceID = @SalesForceID";
             }
         }
 
-        //public void LoadOldestTicketDescription(int ticketID)
-        //{
-        //  using (SqlCommand command = new SqlCommand())
-        //  {
-        //    command.CommandText = "SELECT TOP 1 * FROM Actions a WHERE a.TicketID = @TicketID AND a.SystemActionTypeID = 1 ORDER BY a.DateCreated";
-        //    command.CommandType = CommandType.Text;
-        //    command.Parameters.AddWithValue("@TicketID", ticketID);
-        //    Fill(command);
-        //  }
-        //}
+
+        public static string UpdateReaction(LoginUser loginUser, int receiverID, int ticketID, int actionID, int value)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+                {
+                    using (SqlCommand command = new SqlCommand())
+                    {
+                        Int32 result;
+                        command.Connection = connection;
+                        command.CommandText = "BEGIN TRAN ";
+                        command.CommandText += "IF EXISTS (SELECT * FROM dbo.Reactions WHERE ReferenceID = @ReferenceID AND UserID = @UserID) ";
+                        command.CommandText += "BEGIN UPDATE dbo.Reactions SET ReactionValue = @ReactionValue, DateTimeChanged = @DateTime WHERE UserID = @UserID AND ReceiverID = @ReceiverID AND ReferenceID = @ReferenceID END ";
+                        command.CommandText += "ELSE BEGIN INSERT dbo.Reactions (UserID,ReceiverID,ReferenceID,ReactionValue,DateTimeCreated) VALUES (@UserID,@ReceiverID,@ReferenceID,@ReactionValue,@DateTime) END ";
+                        command.CommandText += "COMMIT TRAN";
+                        command.CommandType = CommandType.Text;
+                        command.Parameters.AddWithValue("@UserID", loginUser.UserID);
+                        command.Parameters.AddWithValue("@ReceiverID", receiverID);
+                        command.Parameters.AddWithValue("@ReferenceID", actionID);
+                        command.Parameters.AddWithValue("@ReactionValue", value);
+                        command.Parameters.AddWithValue("@DateTime", DateTime.UtcNow);
+                        connection.Open();
+                        result = command.ExecuteNonQuery();
+                        return (result > 0) ? "positive" : "negative";
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                return "negative";
+            }
+            catch (Exception e)
+            {
+                return "negative";
+            }
+        }
+
+
+        public static string CountReactions(LoginUser loginUser, int ticketID, int actionID)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+                {
+                    string json1 = null, json2 = null;
+
+                    connection.Open();
+
+                    using (SqlCommand command1 = new SqlCommand())
+                    {
+                        command1.Connection = connection;
+                        command1.CommandType = CommandType.Text;
+                        command1.CommandText = "SELECT COUNT(*) AS tally FROM dbo.Reactions WHERE ReactionValue > 0 AND ReferenceID = @ReferenceID ";
+                        command1.CommandText += "FOR JSON PATH, ROOT('reactions')";
+                        command1.Parameters.AddWithValue("@ReferenceID", actionID);
+                        SqlDataReader reader1 = command1.ExecuteReader();
+
+                        if (reader1.HasRows && reader1.Read())
+                        {
+                            json1 = reader1.GetValue(0).ToString();
+                        }
+                    }
+
+                    using (SqlCommand command2 = new SqlCommand())
+                    {
+                        command2.Connection = connection;
+                        command2.CommandType = CommandType.Text;
+                        command2.CommandText = "SELECT COUNT(*) AS reckoning FROM dbo.Reactions WHERE UserID = @UserID AND ReferenceID = @ReferenceID AND ReactionValue > 0 ";
+                        command2.CommandText += "FOR JSON PATH, ROOT('validation')";
+                        command2.Parameters.AddWithValue("@UserID", loginUser.UserID);
+                        command2.Parameters.AddWithValue("@ReferenceID", actionID);
+                        SqlDataReader reader2 = command2.ExecuteReader();
+
+                        if (reader2.HasRows && reader2.Read())
+                        {
+                            json2 = reader2.GetValue(0).ToString();
+                        }
+                    }
+
+                    return string.Format("[{0},{1}]", json1, json2);
+                }
+            }
+            catch (SqlException e)
+            {
+                return "negative: " + e.ToString();
+            }
+            catch (Exception e)
+            {
+                return "negative: " + e.ToString();
+            }
+        }
+
+        public static string ListReactions(LoginUser loginUser, int ticketID, int actionID)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+                {
+                    using (SqlCommand command = new SqlCommand())
+                    {
+                        command.Connection = connection;
+                        command.CommandType = CommandType.Text;
+                        command.CommandText = "SELECT Reactions.*, Users.Firstname, Users.LastName FROM dbo.Reactions ";
+                        command.CommandText += "INNER JOIN dbo.Users ON Reactions.UserID = Users.UserID ";
+                        command.CommandText += "WHERE Reactions.ReactionValue > 0 AND Reactions.ReferenceID = @ReferenceID ";
+                        command.CommandText += "FOR JSON PATH, ROOT('reactions')";
+                        command.Parameters.AddWithValue("@ReferenceID", actionID);
+                        connection.Open();
+                        SqlDataReader reader = command.ExecuteReader();
+
+                        if (reader.HasRows && reader.Read())
+                        {
+                            return reader.GetValue(0).ToString();
+                        }
+                        else
+                        {
+                            return "nothing";
+                        }
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                return "negative";
+            }
+            catch (Exception e)
+            {
+                return "negative";
+            }
+        }
+
+        public static string CheckReaction(LoginUser loginUser, int ticketID, int actionID)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+                {
+                    using (SqlCommand command = new SqlCommand())
+                    {
+                        command.Connection = connection;
+                        command.CommandType = CommandType.Text;
+                        command.CommandText = "SELECT COUNT(*) AS reckoning FROM dbo.Reactions WHERE UserID = @UserID AND ReferenceID = @ReferenceID AND ReactionValue > 0 ";
+                        command.CommandText += "FOR JSON PATH, ROOT('validation')";
+                        command.Parameters.AddWithValue("@UserID", loginUser.UserID);
+                        command.Parameters.AddWithValue("@ReferenceID", actionID);
+                        connection.Open();
+                        SqlDataReader reader = command.ExecuteReader();
+
+                        if (reader.HasRows && reader.Read())
+                        {
+                            return reader.GetValue(0).ToString();
+                        }
+                        else
+                        {
+                            return "nothing";
+                        }
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                return "negative";
+            }
+            catch (Exception e)
+            {
+                return "negative";
+            }
+        }
+
 
     }
 }

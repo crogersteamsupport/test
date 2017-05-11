@@ -930,6 +930,46 @@ namespace TSWebServices
             return action.IsVisibleOnPortal;
         }
 
+        [WebMethod]
+        public string CountReactions(int ticketID, int actionID)
+        {
+            TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            User user = TSAuthentication.GetUser(loginUser);
+            User author = Users.GetUser(loginUser, action.CreatorID);
+            return Actions.CountReactions(loginUser, ticketID, actionID);
+        }
+
+        [WebMethod]
+        public string CheckReaction(int ticketID, int actionID)
+        {
+            TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            User user = TSAuthentication.GetUser(loginUser);
+            User author = Users.GetUser(loginUser, action.CreatorID);
+            return Actions.CheckReaction(loginUser, ticketID, actionID);
+        }
+
+        [WebMethod]
+        public string ListReactions(int ticketID, int actionID)
+        {
+            TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            User user = TSAuthentication.GetUser(loginUser);
+            User author = Users.GetUser(loginUser, action.CreatorID);
+            return Actions.ListReactions(loginUser, ticketID, actionID);
+        }
+
+        [WebMethod]
+        public string UpdateReaction(int ticketID, int actionID, int value)
+        {
+            TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            User user           = TSAuthentication.GetUser(loginUser);
+            User author         = Users.GetUser(loginUser, action.CreatorID);
+            return Actions.UpdateReaction(loginUser, action.CreatorID, ticketID, actionID, value);
+        }
+
         public AutocompleteItem[] GetUserOrOrganizationFiltered(string searchTerm, bool filterByUserRights)
         {
             Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
@@ -1213,9 +1253,9 @@ namespace TSWebServices
             SELECT
                 Description
             FROM
-                Actions 
+                Actions
             WHERE
-                TicketID = @TicketID 
+                TicketID = @TicketID
                 and SystemActionTypeID IN (1,3,5)";
             command.Parameters.AddWithValue("@TicketID", ticketid.ToString());
 
