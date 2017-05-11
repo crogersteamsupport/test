@@ -930,6 +930,75 @@ namespace TSWebServices
             return action.IsVisibleOnPortal;
         }
 
+        [WebMethod]
+        public string CountReactions(int ticketID, int actionID)
+        {
+            TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            User user = TSAuthentication.GetUser(loginUser);
+            User author = Users.GetUser(loginUser, action.CreatorID);
+            return Actions.CountReactions(loginUser, ticketID, actionID);
+        }
+
+        [WebMethod]
+        public string CheckReaction(int ticketID, int actionID)
+        {
+            TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            User user = TSAuthentication.GetUser(loginUser);
+            User author = Users.GetUser(loginUser, action.CreatorID);
+            return Actions.CheckReaction(loginUser, ticketID, actionID);
+        }
+
+        [WebMethod]
+        public string ListReactions(int ticketID, int actionID)
+        {
+            TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            User user = TSAuthentication.GetUser(loginUser);
+            User author = Users.GetUser(loginUser, action.CreatorID);
+            return Actions.ListReactions(loginUser, ticketID, actionID);
+        }
+
+        [WebMethod]
+        public string UpdateReaction(int ticketID, int actionID, int value)
+        {
+            string updateReaction = string.Empty;
+            TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            User user = TSAuthentication.GetUser(loginUser);
+            User author = Users.GetUser(loginUser, action.CreatorID);
+            updateReaction = Actions.UpdateReaction(loginUser, action.CreatorID, ticketID, actionID, value);
+            if (updateReaction == "positive" && value > 0)
+            {
+                EmailReaction(loginUser, author);
+            }
+            return updateReaction;
+        }
+
+        private void EmailReaction(LoginUser loginUser, User author)
+        {
+            try
+            {
+                string subject = string.Empty;
+                //UsersViewItem view = GetUserView();
+                Organization o = Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
+                System.Net.Mail.MailMessage message = new System.Net.Mail.MailMessage();
+                message.From = new System.Net.Mail.MailAddress("support@teamsupport.com");
+                message.To.Add(new System.Net.Mail.MailAddress(author.Email));
+                subject = loginUser.GetUserFullName() + " gave you an Applause!";
+                message.Subject = subject;
+                //int count = Organizations.GetUserCount(Collection.LoginUser, OrganizationID);
+                message.IsBodyHtml = true;
+                string body = @"
+                        <P>Contratulations! </P> ";
+                message.Body = body;
+                Emails.AddEmail(loginUser, loginUser.OrganizationID, null, subject, message);
+            }
+            catch { };//unimplemented because I don't see central log
+        }
+
+
         public AutocompleteItem[] GetUserOrOrganizationFiltered(string searchTerm, bool filterByUserRights)
         {
             Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
@@ -1213,9 +1282,9 @@ namespace TSWebServices
             SELECT
                 Description
             FROM
-                Actions 
+                Actions
             WHERE
-                TicketID = @TicketID 
+                TicketID = @TicketID
                 and SystemActionTypeID IN (1,3,5)";
             command.Parameters.AddWithValue("@TicketID", ticketid.ToString());
 
