@@ -54,6 +54,19 @@ SELECT COUNT(*) FROM EmailPosts
 WHERE CreatorID <> -5 AND DATEDIFF(SECOND, GETUTCDATE(), DATEADD(SECOND, HoldTime, DateCreated)) < 0 
 ");
 
+        isFailed = CheckCount(isFailed, rowBuilder, 500, "Index Processing", "There are too many records waiting to be indexed, check Indexer service on POD-IDX01 service.", @"
+SELECT COUNT(*) FROM Organizations o 
+WHERE o.IsIndexLocked = 0
+AND o.ParentID = 1
+AND (IsRebuildingIndex = 0 OR DATEDIFF(SECOND, DateLastIndexed, GETUTCDATE()) > 300)
+AND o.IsActive = 1
+AND (
+  EXISTS (SELECT * FROM Tickets t WHERE t.OrganizationID = o.OrganizationID AND t.NeedsIndexing=1)
+ 
+)
+");
+
+
         //result.Append(string.Format("<h2 style=\"color:{1};\">{0} is{2} running.</h2>", name, !isFailed ? "green" : "red", !isFailed ? "" : " NOT"));
 
         litQueryRows.Text = rowBuilder.ToString();
