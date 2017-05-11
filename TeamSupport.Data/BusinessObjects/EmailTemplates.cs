@@ -908,16 +908,16 @@ namespace TeamSupport.Data
             return template.GetMessage();
         }
 
-        public static MailMessage GetWelcomeCustomerHub(LoginUser loginUser, UsersViewItem hubUser, CustomerHub hub, string password)
+        public static MailMessage GetWelcomeCustomerHub(LoginUser loginUser, UsersViewItem hubUser, CustomerHub hub, string password, int? productFamilyID)
         {
-            EmailTemplate template = GetTemplate(loginUser, GetParentOrganizationID(hubUser), 33, -1);
+            EmailTemplate template = GetTemplate(loginUser, GetParentOrganizationID(hubUser), 33, productFamilyID == null ? -1 : (int)productFamilyID);
             template.ReplaceCommonParameters().ReplaceFields("CustomerHub", hub).ReplaceFields("HubUser", hubUser).ReplaceParameter("Password", password);
             return template.GetMessage();
         }
 
-        public static MailMessage GetResetPasswordHub(LoginUser loginUser, UsersViewItem hubUser, CustomerHub hub, string password)
+        public static MailMessage GetResetPasswordHub(LoginUser loginUser, UsersViewItem hubUser, CustomerHub hub, string password, int? productFamilyID)
         {
-            EmailTemplate template = GetTemplate(loginUser, GetParentOrganizationID(hubUser), 32, -1);
+            EmailTemplate template = GetTemplate(loginUser, GetParentOrganizationID(hubUser), 32, productFamilyID == null ? -1 : (int)productFamilyID);
             template.ReplaceCommonParameters().ReplaceFields("CustomerHub", hub).ReplaceFields("HubUser", hubUser).ReplaceParameter("Password", password);
             return template.GetMessage();
         }
