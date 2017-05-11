@@ -4351,7 +4351,7 @@ function CreateHandleBarHelpers() {
     Handlebars.registerHelper('Applause', function () {
         var ticketID = this.item.TicketID;
         var actionID = this.item.RefID;
-        var display = (!this.item.IsVisibleOnPortal && !this.item.IsWC) ? 'inline' : 'none';
+        var display = (this.item.OrganizationID === window.parent.Ts.System.User.OrganizationID) ? 'inline' : 'none';
         var output = window.parent.Ts.Services.TicketPage.CountReactions(ticketID, actionID, function (result) {
             console.log(result);
             var data = jQuery.parseJSON(result);
@@ -4707,7 +4707,7 @@ function CreateTimeLineDelegates() {
 
                 if (result) {
                     badgeDiv.html('<div class="bgcolor-green"><span class="bgcolor-green">&nbsp;</span><a href="#" class="action-option-visible">Public</a></div>');
-                    $(applause).hide();
+
                     if (window.parent.Ts.System.Organization.AlertContactNoEmail){
                         window.parent.Ts.Services.TicketPage.CheckContactEmails(_ticketID, function (isInvalid) {
                             if (!isInvalid && window.parent.Ts.System.Organization.AlertContactNoEmail)
@@ -4717,7 +4717,7 @@ function CreateTimeLineDelegates() {
                 }
                 else {
                     badgeDiv.html('<div class="bgcolor-orange"><span class="bgcolor-orange">&nbsp;</span><a href="#" class="action-option-visible">Private</a></div>');
-                    $(applause).show();
+
                 }
 
                 window.parent.Ts.Services.Tickets.GetAction(action.RefID, function (action) {
