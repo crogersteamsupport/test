@@ -21,6 +21,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("UserID", "UserID", false, false, false);
       _fieldMap.AddMap("IsComplete", "IsComplete", false, false, false);
       _fieldMap.AddMap("DateCompleted", "DateCompleted", false, false, false);
+      _fieldMap.AddMap("CompletionComment", "CompletionComment", false, false, false);
       _fieldMap.AddMap("ParentID", "ParentID", false, false, false);
       _fieldMap.AddMap("IsDismissed", "IsDismissed", false, false, false);
       _fieldMap.AddMap("HasEmailSent", "HasEmailSent", false, false, false);

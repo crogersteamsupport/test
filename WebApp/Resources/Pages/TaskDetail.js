@@ -3,6 +3,7 @@ var _taskID = null;
 var _Name = null;
 var _historyLoaded = 0;
 var _subtasksLoaded = 0;
+var _completeCommentTaskID = 0;
 
 $(document).ready(function () {
     var script = document.createElement('script');
@@ -82,6 +83,11 @@ $(document).ready(function () {
                 $('#taskComplete').removeClass("emptyButton");
                 $('#taskComplete').attr("data-original-title", "Uncomplete this task");
                 $('#taskComplete').tooltip('fixTitle');
+
+                $('#reminderDateGroup').hide();
+                $('.completedData').show();
+                $('#fieldCompletionDate').html(task.DateCompleted == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.DateCompleted).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
+                $('#fieldCompletionComment').text(!task.CompletionComment ? "None" : task.CompletionComment);
             }
             else {
                 $('#fieldComplete').text("No");
@@ -90,15 +96,12 @@ $(document).ready(function () {
                 $('#taskComplete').removeClass("completedButton");
                 $('#taskComplete').attr("data-original-title", "Complete this task");
                 $('#taskComplete').tooltip('fixTitle');
+
+                $('#reminderDateGroup').show();
+                $('.completedData').hide();
             }
             $('#fieldDueDate').html(task.DueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>');
             $('#fieldReminder').html(task.ReminderDueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.ReminderDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearReminderDate" class="col-xs-1 fa fa-times clearDate"></i>');
-            if (task.IsComplete) {
-                $('#reminderDateGroup').hide();
-            }
-            else {
-                $('#reminderDateGroup').show();
-            }
 
             $('#fieldCreator').text(task.Creator);
             $('#fieldDateCreated').text(window.parent.parent.Ts.Utils.getMsDate(task.DateCreated).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
@@ -302,7 +305,8 @@ $(document).ready(function () {
                 var checkBoxCel = $('<td>').appendTo(row);
                 var checkBoxInput = $('<input>')
                     .prop('type', 'checkbox')
-                    .prop('checked', subtasks[i].TaskIsComplete)
+                    .prop('checked', subtasks[i].IsComplete)
+                    .prop('id', 'st' + subtasks[i].TaskID)
                     .addClass('subtaskCheckBox')
                     .data('taskID', subtasks[i].TaskID)
                     .appendTo(checkBoxCel)
@@ -347,7 +351,7 @@ $(document).ready(function () {
 
         window.parent.parent.Ts.Services.Task.LoadHistory(_taskID, start, function (history) {
             for (var i = 0; i < history.length; i++) {
-                $('<tr>').html('<td>' + history[i].DateCreated.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td>')
+                $('<tr>').html('<td>' + history[i].DateCreated.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '</td><td>' + history[i].Description + '</td>')
                 .appendTo('#tblHistory > tbody:last');
                 //$('#tblHistory tr:last').after('<tr><td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td></tr>');
             }
@@ -399,6 +403,10 @@ $(document).ready(function () {
                             $('#taskComplete').attr("data-original-title", "Uncomplete this task");
                             $('#taskComplete').tooltip('fixTitle');
                             $('#reminderDateGroup').hide();
+                            _completeCommentTaskID = _taskID;
+                            $('#modalTaskComment').modal('show');
+                            $('#fieldCompletionDate').html(result.DateCompleted == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(result.DateCompleted).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
+                            $('#fieldCompletionComment').text(!result.CompletionComment ? "None" : result.CompletionComment);
                     },
                     function (error) {
                         header.show();
@@ -422,6 +430,7 @@ $(document).ready(function () {
                 $('#taskComplete').attr("data-original-title", "Complete this task");
                 $('#taskComplete').tooltip('fixTitle');
                 $('#reminderDateGroup').show();
+                $('.completedData').hide();
             },
             function (error) {
                 header.show();
@@ -458,21 +467,9 @@ $(document).ready(function () {
           .addClass('col-xs-10 form-control')
           .val(_Name)
           .appendTo(container1)
-          .focus();
-
-        $('<i>')
-          .addClass('col-xs-1 fa fa-times')
-          .click(function (e) {
-              $(this).closest('div').remove();
-              header.show();
-              $('#Name').removeClass("disabled");
-          })
-          .insertAfter(container1);
-        $('<i>')
-          .addClass('col-xs-1 fa fa-check')
-          .click(function (e) {
+          .focusout(function (e) {
               window.parent.parent.Ts.System.logAction('Task Detail - Save Name');
-              window.parent.parent.Ts.Services.Task.SetName(_taskID, $(this).prev().find('input').val(), function (result) {
+              window.parent.parent.Ts.Services.Task.SetName(_taskID, $(this).val(), function (result) {
                   _Name = result;
                   header.text(result);
                   $('#Name').text(result);
@@ -487,7 +484,28 @@ $(document).ready(function () {
               $(this).closest('div').remove();
               header.show();
           })
-          .insertAfter(container1);
+          .keydown(function (e) {
+              var code = (e.keyCode ? e.keyCode : e.which);
+              if (code == 13) {
+                  window.parent.parent.Ts.System.logAction('Task Detail - Save Name');
+                  window.parent.parent.Ts.Services.Task.SetName(_taskID, $(this).val(), function (result) {
+                      _Name = result;
+                      header.text(result);
+                      $('#Name').text(result);
+                      $('#taskEdit').removeClass("disabled");
+                  },
+                  function (error) {
+                      header.show();
+                      alert('There was an error saving the task name.');
+                      $('#taskEdit').removeClass("disabled");
+                  });
+                  $('#taskEdit').removeClass("disabled");
+                  $(this).closest('div').remove();
+                  header.show();
+              }
+          })
+          .focus();
+
         $('#taskEdit').addClass("disabled");
     });
 
@@ -897,12 +915,17 @@ $(document).ready(function () {
 
         if ($(this).is(':checked')) {
             parent.Ts.System.logAction('Task Detail Page - Complete Subtask');
+            _completeCommentTaskID = id;
+            $('#modalTaskComment').modal('show');
         }
         else {
             parent.Ts.System.logAction('Task Detail Page - Uncomplete Subtask');
         }
 
         window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(id, $(this).is(':checked'), function (result) {
+            if (result.Value) {
+                $('#st' + id).prop('checked', true);
+            }
         },
         function (error) {
             header.show();
@@ -1388,6 +1411,32 @@ $(document).ready(function () {
     });
 
     //$('.taskProperties p, #Name').toggleClass("editable");
+
+    $('#btnTaskCompleteComment').on('click', function (e) {
+        e.preventDefault();
+        if ($('#taskCompleteComment').val() == ''){
+            alert('Please type your comments before clicking on the Yes button.');
+        }
+        else {
+            window.parent.parent.Ts.System.logAction('Task - Add Task Complete Comment');
+            window.parent.parent.Ts.Services.Task.AddTaskCompleteComment(_completeCommentTaskID, $('#taskCompleteComment').val(), function (result) {
+                if (result.Value) {
+                    $('#taskCompleteComment').val('');
+                    $('#modalTaskComment').modal('hide');
+                    $('#fieldCompletionDate').html(result.DateCompleted == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(result.DateCompleted).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
+                    $('#fieldCompletionComment').text(!result.CompletionComment ? "None" : result.CompletionComment);
+                    $('.completedData').show();
+                }
+                else {
+                    alert('There was an error saving your comment. Please try again.')
+                }
+            });
+        }
+    });
+
+    $('#btnNoComment').on('click', function (e) {
+        $('.completedData').show();
+    })
 });
 
 

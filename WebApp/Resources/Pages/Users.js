@@ -1,7 +1,8 @@
-﻿
-
-var userID;
+﻿var userID;
 var ratingFilter = '';
+var _completeCommentTaskID = 0;
+
+
 $(document).ready(function () {
     $('body').layout({
         applyDemoStyles: true
@@ -345,6 +346,10 @@ $(document).ready(function () {
                 checkbox.prop("checked", false);
                 alert('There are subtasks pending completion, please finish them before completing the parent task.')
             }
+            else if (checked) {
+                _completeCommentTaskID = id;
+                $('#modalTaskComment').modal('show');
+            }
         });
     });
 
@@ -352,6 +357,25 @@ $(document).ready(function () {
         e.preventDefault();
         parent.Ts.System.logAction('Contact Page - New Task');
         parent.Ts.MainPage.newTaskFromSource(22, userID, $('#userName').text(), '');
+    });
+
+    $('#btnTaskCompleteComment').on('click', function (e) {
+        e.preventDefault();
+        if ($('#taskCompleteComment').val() == '') {
+            alert('Please type your comments before clicking on the Yes button.');
+        }
+        else {
+            window.parent.parent.Ts.System.logAction('Task - Add Task Complete Comment');
+            window.parent.parent.Ts.Services.Task.AddTaskCompleteComment(_completeCommentTaskID, $('#taskCompleteComment').val(), function (result) {
+                if (result.Value) {
+                    $('#taskCompleteComment').val('');
+                    $('#modalTaskComment').modal('hide');
+                }
+                else {
+                    alert('There was an error saving your comment. Please try again.')
+                }
+            });
+        }
     });
 });
 

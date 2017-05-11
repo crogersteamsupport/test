@@ -345,14 +345,20 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
             if (!string.IsNullOrEmpty(email))
             {
                 users.LoadByEmail(organizationID, email);
-            }
 
-            if (!users.IsEmpty)
-            {
-                client.LinkedUserID = users[0].UserID;
                 try
                 {
-                    client.CompanyName = Organizations.GetOrganization(loginUser, users[0].OrganizationID).Name;
+                    if (!users.IsEmpty)
+                    {
+                        client.LinkedUserID = users[0].UserID;
+                        client.CompanyName = Organizations.GetOrganization(loginUser, users[0].OrganizationID).Name;
+                    }
+                    else
+                    {
+                        string emailDomain = email.Substring(email.LastIndexOf('@') + 1).Trim();
+                        Organization org = Organization.GetCompanyByDomain(organizationID, emailDomain, loginUser);
+                        client.CompanyName = (org != null) ? org.Name : "";
+                    }
                 }
                 catch (Exception)
                 {
@@ -361,10 +367,10 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
             }
             else
             {
-                string emailDomain = email.Substring(email.LastIndexOf('@') + 1);
-                Organization org = Organization.GetCompanyByDomain(organizationID, emailDomain, loginUser, forceUnknown: true);
+                Organization org = Organization.GetCompanyByDomain(organizationID, string.Empty, loginUser, forceUnknown: true);
                 client.CompanyName = (org != null) ? org.Name : "";
             }
+            
             client.Collection.Save();
 
 

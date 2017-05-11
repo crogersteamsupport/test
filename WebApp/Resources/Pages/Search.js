@@ -4,6 +4,7 @@ var _advancedSearchOptions = null;
 var _standardFilterID = null;
 var _addingFilter = false;
 var _addingSorter = false;
+//var _completeCommentTaskID = 0;
 
 $(document).ready(function () {
 
@@ -49,12 +50,33 @@ $(document).ready(function () {
             }
             else if (checked) {
                 $('#task' + id).html('<strike>' + name + '</strike>');
+                //_completeCommentTaskID = id;
+                //$('#modalTaskComment').modal('show');
             }
             else {
                 $('#task' + id).html(name);
             }
         });
     });
+
+    //$('#btnTaskCompleteComment').on('click', function (e) {
+    //    e.preventDefault();
+    //    if ($('#taskCompleteComment').val() == '') {
+    //        alert('Please type your comments before clicking on the Yes button.');
+    //    }
+    //    else {
+    //        window.parent.parent.Ts.System.logAction('Task - Add Task Complete Comment');
+    //        window.parent.parent.Ts.Services.Task.AddTaskCompleteComment(_completeCommentTaskID, $('#taskCompleteComment').val(), function (result) {
+    //            if (result.Value) {
+    //                $('#taskCompleteComment').val('');
+    //                $('#modalTaskComment').modal('hide');
+    //            }
+    //            else {
+    //                alert('There was an error saving your comment. Please try again.')
+    //            }
+    //        });
+    //    }
+    //});
 
 });
 

@@ -363,6 +363,7 @@
                         <small class="text-muted">{{TimeSpent}}</small>
                         <br />
                     </span>
+                    {{{Applause}}}
                     <!--<span class="pull-right p50r">
                       <br />
                       <small class="text-muted">{{TimeSpent}}</small>
@@ -1071,6 +1072,42 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="ReactionsModal" class="modal fade modal-reactions" role="dialog" aria-labelledby="ReactionsModal" aria-hidden="true">
+        <div class="reactions-head">
+            Applause Received
+            <span class="fa fa-window-close pull-right"></span>
+        </div>
+        <div class="reactions-list">
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalTaskComment">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Would you like to add a comment to complete this task?</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="comments" class="col-md-2 control-label">Comments:</label>
+                            <div class="col-md-10">
+                                <textarea class="col-md-12 form-control" id="taskCompleteComment" placeholder="Comment about completing this task."></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btnTaskCompleteComment">Yes</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
         </div>
     </div>
 </body>

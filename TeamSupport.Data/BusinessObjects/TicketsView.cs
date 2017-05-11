@@ -1131,8 +1131,8 @@ ORDER BY TicketNumber DESC";
                     sort = string.Format("[StatusPosition] {0}, [Status] {0}, [TicketTypeName] {0}", (filter.SortAsc ? "ASC" : "DESC"));
                     break;
                 default:
-                    sortFields = string.Format("[{0}]", sort);
-                    sort = string.Format("[{0}] {1}", sort, (filter.SortAsc ? "ASC" : "DESC"));
+                    sortFields = string.Format("tv.[{0}]", sort);
+                    sort = string.Format("tv.[{0}] {1}", sort, (filter.SortAsc ? "ASC" : "DESC"));
                     break;
             }
 
@@ -1213,21 +1213,14 @@ ORDER BY TicketNumber DESC";
 
         WITH
         BaseQuery AS(
-          SELECT tv.TicketID, {1} {0}
-        ),
-
-        RowQuery AS (
-          SELECT BaseQuery.*, ROW_NUMBER() OVER (ORDER BY {2}) AS 'RowNum' FROM BaseQuery
-        ),
-
-        PageQuery AS (
-          SELECT  *, (SELECT MAX(RowNum) FROM RowQuery) AS 'TotalRecords' FROM RowQuery WHERE RowNum BETWEEN  @FromIndex AND @ToIndex
+          SELECT tv.TicketID, ROW_NUMBER() OVER (ORDER BY {2}) AS [RowNum], COUNT(*) OVER () [TotalRecords], {1} {0}
         )
 
-        SELECT * INTO #Tickets FROM PageQuery;
+        SELECT * INTO #GridViewTickets FROM BaseQuery
+        WHERE RowNum >= @FromIndex AND RowNum <= @ToIndex
 
         SELECT Result.RowNum, Result.TotalRecords, {3}
-        FROM #Tickets AS Result
+        FROM #GridViewTickets AS Result
         INNER JOIN UserTicketsView tv ON tv.TicketID = Result.TicketID
         WHERE tv.ViewerID = @ViewerID
         ORDER BY Result.RowNum ASC
@@ -1266,7 +1259,16 @@ ORDER BY TicketNumber DESC";
 
         private static void GetFilterWhereClause(LoginUser loginUser, TicketLoadFilter filter, SqlCommand command, StringBuilder builder)
         {
-            builder.Append(" FROM UserTicketsView tv WHERE (tv.OrganizationID = @OrganizationID)");
+            builder.Append(" FROM UserTicketsView tv ");
+
+            if (filter.UserID != null && filter.GroupID != null && (filter.GroupID == -1 || filter.GroupID == -2) )
+            {
+                builder.Append(" INNER JOIN GroupUsers gu ON tv.GroupID = gu.GroupID");
+            }
+
+            builder.Append(" WHERE (tv.OrganizationID = @OrganizationID)");
+ 
+
             AddTicketParameter("TicketTypeID", filter.TicketTypeID, false, builder, command);
             if (filter.TicketStatusID != null) AddTicketParameter("TicketStatusID", filter.TicketStatusID, false, builder, command);
             else AddTicketParameter("IsClosed", filter.IsClosed, false, builder, command);
@@ -1294,13 +1296,13 @@ ORDER BY TicketNumber DESC";
             if (filter.UserID != null && filter.GroupID != null && filter.GroupID == -1)
             {
                 //User's all groups all tickets
-                builder.Append(" AND (tv.GroupID IN (SELECT gu.GroupID FROM GroupUsers gu WHERE gu.UserID = @UserID))");
+                builder.Append(" AND (gu.UserID = @UserID)");
                 command.Parameters.AddWithValue("UserID", filter.UserID);
             }
             else if (filter.UserID != null && filter.GroupID != null && filter.GroupID == -2)
             {
                 //Users's all groups, unassigned tickets
-                builder.Append(" AND ((tv.UserID IS NULL OR tv.UserID < 0) AND tv.GroupID IN (SELECT gu.GroupID FROM GroupUsers gu WHERE gu.UserID = @UserID))");
+                builder.Append(" AND ((tv.UserID IS NULL OR tv.UserID < 0) AND gu.UserID = @UserID)");
                 command.Parameters.AddWithValue("UserID", filter.UserID);
             }
             else if (filter.GroupID != null && filter.UserID != null && filter.UserID == -2)

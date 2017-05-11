@@ -1124,21 +1124,33 @@ namespace TeamSupport.Data
           }
           break;
         default:
-          if (condition.Value1 != null)
-          {
-            command.Parameters.Add(paramName, SqlDbType.VarChar).Value = condition.Value1;
-          }
+          //if (condition.Value1 != null) command.Parameters.Add(paramName, SqlDbType.NVarChar).Value = condition.Value1;
+          
           switch (condition.Comparator.ToUpper())
           {
-            case "IS": builder.Append(string.Format("{0} = @{1}", fieldName, paramName)); break;
-            case "IS NOT": builder.Append(string.Format("{0} <> @{1}", fieldName, paramName)); break;
-            case "CONTAINS": builder.Append(string.Format("{0} LIKE '%' + @{1} + '%'", fieldName, paramName)); break;
-            case "DOES NOT CONTAIN": builder.Append(string.Format("{0} NOT LIKE '%' + @{1} + '%'", fieldName, paramName)); break;
-            case "STARTS WITH": builder.Append(string.Format("{0} LIKE @{1} + '%'", fieldName, paramName)); break;
-            case "ENDS WITH": builder.Append(string.Format("{0} LIKE '%' + @{1}", fieldName, paramName)); break;
-            case "IS EMPTY": builder.Append(string.Format("{0} IS NULL", fieldName)); break;
-            case "IS NOT EMPTY": builder.Append(string.Format("{0} IS NOT NULL", fieldName)); break;
-            default:
+                        case "IS": builder.Append(string.Format("{0} = @{1}", fieldName, paramName));
+                            command.Parameters.Add(paramName, SqlDbType.NVarChar).Value = condition.Value1;
+                            break;
+                        case "IS NOT": builder.Append(string.Format("{0} <> @{1}", fieldName, paramName));
+                            command.Parameters.Add(paramName, SqlDbType.NVarChar).Value = condition.Value1;
+                            break;
+                        case "CONTAINS": builder.Append(string.Format("{0} LIKE @{1}", fieldName, paramName));
+                            command.Parameters.Add(paramName, SqlDbType.NVarChar).Value = $"%{condition.Value1}%";
+                            break;
+                        case "DOES NOT CONTAIN": builder.Append(string.Format("{0} NOT LIKE @{1}", fieldName, paramName));
+                            command.Parameters.Add(paramName, SqlDbType.NVarChar).Value = $"%{condition.Value1}%";
+                            break;
+                        case "STARTS WITH": builder.Append(string.Format("{0} LIKE @{1}", fieldName, paramName));
+                            command.Parameters.Add(paramName, SqlDbType.NVarChar).Value = $"{condition.Value1}%";
+                            break;
+                        case "ENDS WITH": builder.Append(string.Format("{0} LIKE @{1}", fieldName, paramName));
+                            command.Parameters.Add(paramName, SqlDbType.NVarChar).Value = $"%{condition.Value1}";
+                            break;
+                        case "IS EMPTY": builder.Append(string.Format("{0} IS NULL", fieldName));
+                            break;
+                        case "IS NOT EMPTY": builder.Append(string.Format("{0} IS NOT NULL", fieldName));
+                            break;
+                        default:
               break;
           }
           break;

@@ -1191,7 +1191,7 @@ namespace TSWebServices
         public void DeleteTicket(int ticketID)
         {
             Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
-            if (ticket.OrganizationID == TSAuthentication.OrganizationID && (ticket.CreatorID == TSAuthentication.UserID || TSAuthentication.IsSystemAdmin))
+            if (ticket.OrganizationID == TSAuthentication.OrganizationID && TSAuthentication.IsSystemAdmin)
             {
                 try
                 {
@@ -2420,7 +2420,53 @@ namespace TSWebServices
         {
             Chat chat = Chats.GetChat(TSAuthentication.GetLoginUser(), chatID);
             if (chat == null || chat.OrganizationID != TSAuthentication.OrganizationID) return null;
-            return GetTicketCustomer("u", chat.GetInitiatorLinkedUserID());
+
+            int initiatorUserId = chat.GetInitiatorLinkedUserID();
+
+            if (initiatorUserId <= 0)
+            {
+                ChatClients clients = new ChatClients(TSAuthentication.GetLoginUser());
+                clients.LoadByChatClientID(chat.InitiatorID);
+                
+                if (clients != null && clients.Any() && !string.IsNullOrEmpty(clients[0].Email))
+                {
+                    string emailDomain = clients[0].Email.Substring(clients[0].Email.LastIndexOf('@') + 1).Trim();
+                    Organization company = Organization.GetCompanyByDomain(chat.OrganizationID, emailDomain, TSAuthentication.GetLoginUser());
+
+                    if (company != null && company.Name.ToLower().Trim() == clients[0].CompanyName.ToLower().Trim())
+                    {
+                        try
+                        {
+                            Users users = new Users(TSAuthentication.GetLoginUser());
+                            User user = users.AddNewUser();
+                            user.OrganizationID = company.OrganizationID;
+                            user.Email = clients[0].Email.Trim();
+                            user.FirstName = clients[0].FirstName;
+                            user.LastName = clients[0].LastName;
+
+                            user.ActivatedOn = DateTime.UtcNow;
+                            user.LastLogin = DateTime.UtcNow;
+                            user.LastActivity = DateTime.UtcNow.AddHours(-1);
+                            user.IsPasswordExpired = true;
+                            user.ReceiveTicketNotifications = true;
+                            user.IsActive = true;
+                            user.NeedsIndexing = true;
+                            user.Collection.Save();
+
+                            initiatorUserId = user.UserID;
+
+                            clients[0].LinkedUserID = user.UserID;
+                            clients.Save();
+                        }
+                        catch (Exception ex)
+                        {
+                            ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "TicketService.GetChatCustomer");
+                        }
+                    }
+                }
+            }
+
+            return GetTicketCustomer("u", initiatorUserId);
         }
 
         [WebMethod]

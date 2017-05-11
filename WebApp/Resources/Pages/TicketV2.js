@@ -6,6 +6,7 @@ var _ticketSender = null;
 var _ticketCurrStatus = null;
 var _ticketCurrUser = null;
 var _plugins = null;
+var _completeCommentTaskID = 0;
 
 var _ticketGroupID = null;
 var _ticketGroupUsers = null;
@@ -293,6 +294,25 @@ $(document).ready(function () {
     firstScript.parentNode.insertBefore(script, firstScript);
   slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
   $('.wcTooltip').tipTip({ defaultPosition: "top", edgeOffset: 7, keepAlive: true });
+
+  $('#btnTaskCompleteComment').on('click', function (e) {
+      e.preventDefault();
+      if ($('#taskCompleteComment').val() == '') {
+          alert('Please type your comments before clicking on the Yes button.');
+      }
+      else {
+          window.parent.parent.Ts.System.logAction('Task - Add Task Complete Comment');
+          window.parent.parent.Ts.Services.Task.AddTaskCompleteComment(_completeCommentTaskID, $('#taskCompleteComment').val(), function (result) {
+              if (result.Value) {
+                  $('#taskCompleteComment').val('');
+                  $('#modalTaskComment').modal('hide');
+              }
+              else {
+                  alert('There was an error saving your comment. Please try again.')
+              }
+          });
+      }
+  });
 });
 
 var loadTicket = function (ticketNumber, refresh) {
@@ -554,7 +574,10 @@ function SetupTicketProperties(order) {
         isFormValid();
         LoadPlugins(info);
         if (typeof refresh === "undefined") {
-            window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
+
+            if (typeof window.parent.ticketSocket != "undefined") {
+                window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
+            }
         }
         
 
@@ -2196,11 +2219,13 @@ function SetupCustomerSection() {
             if (result.indexOf("u") == 0 || result.indexOf("o") == 0) {
                 window.parent.Ts.Services.Tickets.AddTicketCustomer(_ticketID, result.charAt(0), result.substring(1), function (result) {
                     AddCustomers(result);
-                    $('.ticket-new-customer-email').val('');
-                    $('.ticket-new-customer-first').val('');
-                    $('.ticket-new-customer-last').val('');
-                    $('.ticket-new-customer-company').val('');
-                    $('.ticket-new-customer-phone').val('');
+                    $('#customer-email-input').val('');
+                    $('#customer-fname-input').val('');
+                    $('#customer-lname-input').val('');
+                    $('#customer-phone-input').val('');
+                    var $select = $('#customer-company-input').selectize();
+                    var control = $select[0].selectize;
+                    control.clear();
                     $('#NewCustomerModal').modal('hide');
                 });
             }
@@ -3146,6 +3171,10 @@ function SetupTasksSection() {
                 checkbox.prop("checked", false);
                 alert('There are subtasks pending completion, please finish them before completing the parent task.')
             }
+            else if (data.Value) {
+                _completeCommentTaskID = id;
+                $('#modalTaskComment').modal('show');
+            }
         });
     });
 
@@ -3188,7 +3217,16 @@ function SetupTasksSection() {
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Tasks Page - Change Task Status');
 
-        parent.Ts.Services.Task.SetTaskIsCompleted(id, checked);
+        parent.Ts.Services.Task.SetTaskIsCompleted(id, checked, function (data) {
+            if (!data.IncompleteSubtasks) {
+                _completeCommentTaskID = id;
+                $('#modalTaskComment').modal('show');
+            }
+            else {
+                checkbox.prop("checked", false);
+                alert('There are subtasks pending completion, please finish them before completing the parent task.')
+            }
+        });
     });
 
 }
@@ -4300,18 +4338,32 @@ function CreateHandleBarHelpers() {
 
     Handlebars.registerHelper('TimeLineLabel', function () {
         if (this.item.IsVisibleOnPortal) {
-            return '<div class="bgcolor-green"><span class="bgcolor-green">&nbsp;</span><a href="#" class="action-option-visible">Public</a></div>';
-        }
-        else if (!this.item.IsWC) {
-            return '<div class="bgcolor-orange"><span class="bgcolor-orange">&nbsp;</span><a href="#" class="action-option-visible">Private</a></div>';
-        }
-        else if (this.item.IsWC) {
+            return '<div class="bgcolor-green"><span class="bgcolor-green">&nbsp;</span><a href="#" data-id="' + this.item.RefID + '" class="action-option-visible">Public</a></div>';
+        } else if (!this.item.IsWC) {
+            return '<div class="bgcolor-orange"><span class="bgcolor-orange">&nbsp;</span><a href="#" data-id="' + this.item.RefID + '" class="action-option-visible">Private</a></div>';
+        } else if (this.item.IsWC) {
             return '<div class="bgcolor-blue"><span class="bgcolor-blue">&nbsp;</span><label>WC</label></div>';
+        } else {
+            return;
         }
-
-        return '';
     });
 
+    Handlebars.registerHelper('Applause', function () {
+        var ticketID = this.item.TicketID;
+        var actionID = this.item.RefID;
+        var display = (!this.item.IsVisibleOnPortal && !this.item.IsWC) ? 'inline' : 'none';
+        var output = window.parent.Ts.Services.TicketPage.CountReactions(ticketID, actionID, function (result) {
+            var data = jQuery.parseJSON(result);
+            var tally = data[0].reactions[0].tally;
+            var reckoning = data[1].validation[0].reckoning;
+            var opacity = (reckoning > 0) ? '1' : '0.2';
+            var oldvalue = (reckoning > 0) ? '1' : '0';
+            var thacode = '<a href="#" id="tally-' + actionID + '" class="listreactions" data-actionid="' + actionID + '" data-ticketid="' + ticketID + '">' + tally + '</a><a href="#" class="updatereaction" data-actionid="' + actionID + '" data-ticketid="' + ticketID + '" data-oldvalue="' + oldvalue + '" style="opacity:' + opacity + ';"><img src="/vcr/1_9_0/Images/icons/applause.png" style="margin-left:5px;height:24px;"></a>';
+            $('#applause-' + actionID).html(thacode);
+        });
+        return '<span id="applause-' + actionID + '" class="pull-right" style="position:absolute;top:25px;right:100px;display:' + display + '">test</span>';
+    });
+    
     Handlebars.registerHelper('ActionData', function () {
         return JSON.stringify(this.item);
     });
@@ -4572,12 +4624,80 @@ function CreateTimeLineDelegates() {
         }
     });
 
+    $('#action-timeline').on('click', 'a.updatereaction', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var applause = $(this);
+        var actionid = $(this).data('actionid');
+        var ticketid = $(this).data('ticketid');
+        var oldvalue = $(this).data('oldvalue');
+        var newvalue = (oldvalue > 0) ? 0 : 1;
+        var oldtally = $('#tally-' + actionid).text();
+
+        window.parent.Ts.Services.TicketPage.UpdateReaction(ticketid, actionid, newvalue, function (result) {
+            if (result === 'positive') {
+                applause.data('oldvalue', newvalue);
+
+                if (newvalue > 0) {
+                    var newtally = +oldtally + 1;
+                } else {
+                    var newtally = (oldtally > 0) ? +oldtally - 1 : 0;
+                }
+
+                $('#tally-' + actionid).text(newtally);
+                
+
+                if (newvalue === 1) {
+                    applause.css('opacity', '1');
+                } else {
+                    applause.css('opacity', '0.2');
+                }
+            }
+        });
+    });
+
+    $('#action-timeline').on('mouseenter', 'a.listreactions', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var location = $(this);
+        var actionid = $(this).data('actionid');
+        var ticketid = $(this).data('ticketid');
+        console.log('ListReactions: ' + ticketid + ' / ' + actionid);
+        window.parent.Ts.Services.TicketPage.ListReactions(ticketid, actionid, function (result) {
+            var people = jQuery.parseJSON(result);
+            var output = '<div class="reactions-head">Applause</div>';
+            $.each(people.reactions, function (key, person) {
+                var avatar = '/dc/1078/UserAvatar/' + person.UserID + '/32/' + Math.ceil(Math.random() * 10000);
+                output += '<div class="reactions-person">';
+                output += '<div class="reactions-avatar"><img src="' + avatar + '"></div>';
+                output += '<div class="reactions-name"><a href="#" data-userid="' + person.UserID + '" class="UserLink">' + person.Firstname + '</a></div>';
+                output += '</div>';
+            });
+
+            location.popover({
+                html: true,
+                trigger: 'hover',
+                delay: { "show": 1, "hide": 1 },
+                placement: 'left',
+                content: output
+                // container: 'div.reactions-popover'
+            }).popover('show');
+        });
+    }).on("click", ".UserLink", function (e) {
+        var userid = $(this).data('userid');
+        top.Ts.MainPage.openUser(userid);
+    });
+
+
+
+
     $('#action-timeline').on('click', 'a.action-option-visible', function (e) {
         e.preventDefault();
         e.stopPropagation();
 
-        var self = $(this);
-        var action = self.closest('li').data().action;
+        var self     = $(this);
+        var action   = self.closest('li').data().action;
+        var applause = '#applause-' + action.RefID;
 
         if (window.parent.Ts.System.User.ChangeTicketVisibility || window.parent.Ts.System.User.IsSystemAdmin) {
             window.parent.Ts.System.logAction('Ticket - Action Visible Icon Clicked');
@@ -4591,7 +4711,7 @@ function CreateTimeLineDelegates() {
 
                 if (result) {
                     badgeDiv.html('<div class="bgcolor-green"><span class="bgcolor-green">&nbsp;</span><a href="#" class="action-option-visible">Public</a></div>');
-                    
+                    $(applause).hide();
                     if (window.parent.Ts.System.Organization.AlertContactNoEmail){
                         window.parent.Ts.Services.TicketPage.CheckContactEmails(_ticketID, function (isInvalid) {
                             if (!isInvalid && window.parent.Ts.System.Organization.AlertContactNoEmail)
@@ -4601,6 +4721,7 @@ function CreateTimeLineDelegates() {
                 }
                 else {
                     badgeDiv.html('<div class="bgcolor-orange"><span class="bgcolor-orange">&nbsp;</span><a href="#" class="action-option-visible">Private</a></div>');
+                    $(applause).show();
                 }
 
                 window.parent.Ts.Services.Tickets.GetAction(action.RefID, function (action) {

@@ -21,7 +21,7 @@
     .popover-content dl { font-size:1em; line-height: 1.5em; padding: 0 0 1em 0;margin-bottom: 0px;} 
     .popover-content dt { float:left; width: 25%; font-weight:bold; clear:both;} 
     .popover-content dd { float:left; width: 70%;}
-    a.ui-state-default { font-weight:bold; float:left;  }
+    /*a.ui-state-default { font-weight:bold; float:left;  }*/
     .ui-widget-content a.ts-link { border: none; background:none; cursor: pointer; color: #0057c2;}
     .popover { width: 420px; max-width: 420px; min-width: 400px; }
     .ui-widget-content.ts-separator {
@@ -963,3 +963,49 @@
 }
 
 label { font-size: 11px; }
+
+
+
+div.reactions-popover {
+    padding:10px;
+    background-color:skyblue;
+    max-width:300px;
+}
+
+div.reactions-head {
+    padding: 10px;
+    font-family: verdana;
+}
+
+div.reactions-list {
+    background-color: white;
+    font-family: verdana;
+}
+
+div.reactions-person {
+    padding: 10px;
+    background-color: white;
+    font-family: verdana;
+    display: flex;
+    display: -webkit-flex;
+}
+
+div.reactions-avatar {
+    flex: 1;
+    -webkit-flex: 1;
+    max-width: 40px;
+}
+
+div.reactions-name {
+    flex: 3;
+    -webkit-flex: 3;
+    font-size: 12px;
+}
+
+div.reactions-time {
+    flex: 2;
+    -webkit-flex: 2;
+    font-size: 10px;
+    text-align: right;
+    opacity: 0.5;
+}

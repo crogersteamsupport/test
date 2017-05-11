@@ -523,6 +523,7 @@ namespace TSWebServices
                     return result;
                 }
                 task.DateCompleted = DateTime.UtcNow;
+                result.DateCompleted = task.DateCompleted;
             }
             else
             {
@@ -531,6 +532,8 @@ namespace TSWebServices
                 task.DateCompleted = null;
             }
 
+            //We are clearing completion comments as they could or not be set in next call.
+            task.CompletionComment = null;
             task.Collection.Save();
             string description = String.Format("{0} set task is complete to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
             TaskLogs.AddTaskLog(loginUser, taskID, description);
@@ -681,10 +684,10 @@ namespace TSWebServices
                 string description = String.Format("{0} added task association to {1}.", TSAuthentication.GetUser(loginUser).FirstLastName, Enum.GetName(typeof(ReferenceType), refType));
                 TaskLogs.AddTaskLog(loginUser, taskID, description);
 
-                Reminder task = Reminders.GetReminder(loginUser, taskID);
+                Task task = Tasks.GetTask(loginUser, taskID);
                 if (task.UserID != null && loginUser.UserID != task.UserID)
                 {
-                    SendModifiedNotification(loginUser.UserID, task.ReminderID);
+                    SendModifiedNotification(loginUser.UserID, task.TaskID);
                 }
 
                 if (refType == ReferenceType.Contacts)
@@ -735,6 +738,24 @@ namespace TSWebServices
             {
                 DataUtils.LogException(UserSession.LoginUser, ex);
             }
+        }
+
+        [WebMethod]
+        public TaskCompletionStatus AddTaskCompleteComment(int taskID, string comment)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Task task = Tasks.GetTask(loginUser, taskID);
+            task.CompletionComment = comment;
+            task.Collection.Save();
+
+            //string description = String.Format(@"{0} added task complete note: ""{1}""", TSAuthentication.GetUser(loginUser).FirstLastName, comment);
+            string description = String.Format(@"{0} added task complete note.", TSAuthentication.GetUser(loginUser).FirstLastName);
+            TaskLogs.AddTaskLog(loginUser, taskID, description);
+
+            TaskCompletionStatus result = new TaskCompletionStatus(false, true);
+            result.DateCompleted = task.DateCompleted;
+            result.CompletionComment = task.CompletionComment;
+            return result;
         }
     }
 
@@ -811,5 +832,11 @@ namespace TSWebServices
 
         [DataMember]
         public bool Value { get; set; }
+
+        [DataMember]
+        public DateTime? DateCompleted { get; set; }
+
+        [DataMember]
+        public string CompletionComment { get; set; }
     }
 }
