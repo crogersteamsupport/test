@@ -4351,7 +4351,7 @@ function CreateHandleBarHelpers() {
     Handlebars.registerHelper('Applause', function () {
         var ticketID = this.item.TicketID;
         var actionID = this.item.RefID;
-        var display = (this.item.OrganizationID === window.parent.Ts.System.User.OrganizationID) ? 'inline' : 'none';
+        var display = (this.item.OrganizationID === window.parent.Ts.System.User.OrganizationID && !IsWC) ? 'inline' : 'none';
         var output = window.parent.Ts.Services.TicketPage.CountReactions(ticketID, actionID, function (result) {
             console.log(result);
             var data = jQuery.parseJSON(result);
