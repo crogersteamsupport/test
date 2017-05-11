@@ -1018,7 +1018,7 @@ namespace TeamSupport.Data
                 if (isPortalUser)
                     if (isCustomerHub == true)
                     {
-                        EmailPosts.SendResetCustomerHubPassword(loginUser, user.UserID, password);
+                        EmailPosts.SendResetCustomerHubPassword(loginUser, user.UserID, password, productFamilyID);
                     }
                     else
                     {

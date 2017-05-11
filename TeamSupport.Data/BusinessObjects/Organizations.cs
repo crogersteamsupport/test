@@ -2529,7 +2529,7 @@ ORDER BY
                         string password = DataUtils.GenerateRandomPassword(random);
                         user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "MD5");
                         user.IsPasswordExpired = true;
-                        if (isHub) EmailPosts.SendWelcomeCustomerHubUser(loginUser, user.UserID, password);
+                        if (isHub) EmailPosts.SendWelcomeCustomerHubUser(loginUser, user.UserID, password, null);
                         else EmailPosts.SendWelcomePortalUser(loginUser, user.UserID, password);
                     }
                     user.Collection.Save();
