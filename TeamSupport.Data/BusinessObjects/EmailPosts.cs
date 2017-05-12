@@ -252,11 +252,11 @@ WHERE EmailPostID IN (
 		{
 			PostEmail(loginUser, EmailPostType.ResetPortalPassword, -1, userID.ToString(), password, null, null, null, null, null, null);
 		}
-		public static void SendResetCustomerHubPassword(LoginUser loginUser, int userID, string password, int? productFamilyID)
+		public static void SendResetCustomerHubPassword(LoginUser loginUser, int userID, string password, int? productFamilyID = -1)
 		{
 			PostEmail(loginUser, EmailPostType.ResetCustomerHubPassword, -1, userID.ToString(), password, productFamilyID.ToString(), null, null, null, null, null);
 		}
-        public static void SendWelcomeCustomerHubUser(LoginUser loginUser, int userID, string password, int? productFamilyID)
+        public static void SendWelcomeCustomerHubUser(LoginUser loginUser, int userID, string password, int? productFamilyID = -1)
         {
             PostEmail(loginUser, EmailPostType.WelcomeCustomerHubUser, -1, userID.ToString(), password, productFamilyID.ToString(), null, null, null, null, null);
         }
