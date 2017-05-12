@@ -269,7 +269,7 @@ $(document).ready(function () {
     _ticketNumber = window.parent.Ts.Utils.getQueryValue("TicketNumber", window);
 
     apiKey = "45228242";
-
+    
     //Setup Ticket Elements
     SetupTicketPage();
 
@@ -4351,17 +4351,20 @@ function CreateHandleBarHelpers() {
     Handlebars.registerHelper('Applause', function () {
         var ticketID = this.item.TicketID;
         var actionID = this.item.RefID;
-        var display = (!this.item.IsVisibleOnPortal && !this.item.IsWC) ? 'inline' : 'none';
-        var output = window.parent.Ts.Services.TicketPage.CountReactions(ticketID, actionID, function (result) {
-            var data = jQuery.parseJSON(result);
-            var tally = data[0].reactions[0].tally;
-            var reckoning = data[1].validation[0].reckoning;
-            var opacity = (reckoning > 0) ? '1' : '0.2';
-            var oldvalue = (reckoning > 0) ? '1' : '0';
-            var thacode = '<a href="#" id="tally-' + actionID + '" class="listreactions" data-actionid="' + actionID + '" data-ticketid="' + ticketID + '">' + tally + '</a><a href="#" class="updatereaction" data-actionid="' + actionID + '" data-ticketid="' + ticketID + '" data-oldvalue="' + oldvalue + '" style="opacity:' + opacity + ';"><img src="/vcr/1_9_0/Images/icons/applause.png" style="margin-left:5px;height:24px;"></a>';
-            $('#applause-' + actionID).html(thacode);
+        var display = (this.item.OrganizationID === window.parent.Ts.System.User.OrganizationID && !this.item.IsWC) ? 'inline' : 'none';
+        var output = window.parent.Ts.Services.TicketPage.PullReactions(ticketID, actionID, function (result) {
+            console.log('PullReactions: ' + result);
+            if (result != 'negative' && result != 'nothing' && result != 'hidden') {
+                var data = jQuery.parseJSON(result);
+                var tally = data[0].reactions[0].tally;
+                var reckoning = data[1].validation[0].reckoning;
+                var opacity = (reckoning > 0) ? '1' : '0.2';
+                var oldvalue = (reckoning > 0) ? '1' : '0';
+                var thacode = '<span id="tally-' + actionID + '" class="listreactions" data-actionid="' + actionID + '" data-ticketid="' + ticketID + '">' + tally + '</span><a href="#" class="updatereaction" data-actionid="' + actionID + '" data-ticketid="' + ticketID + '" data-oldvalue="' + oldvalue + '" style="opacity:' + opacity + ';"><img src="/vcr/1_9_0/Images/icons/applause.png" style="margin-left:5px;height:24px;"></a>';
+                $('#applause-' + actionID).html(thacode);
+            }
         });
-        return '<span id="applause-' + actionID + '" class="pull-right" style="position:absolute;top:25px;right:100px;display:' + display + '">test</span>';
+        return '<span id="applause-' + actionID + '" class="pull-right" style="position:absolute;top:25px;right:100px;display:' + display + '"></span>';
     });
     
     Handlebars.registerHelper('ActionData', function () {
@@ -4624,6 +4627,7 @@ function CreateTimeLineDelegates() {
         }
     });
 
+
     $('#action-timeline').on('click', 'a.updatereaction', function (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -4633,20 +4637,15 @@ function CreateTimeLineDelegates() {
         var oldvalue = $(this).data('oldvalue');
         var newvalue = (oldvalue > 0) ? 0 : 1;
         var oldtally = $('#tally-' + actionid).text();
-
         window.parent.Ts.Services.TicketPage.UpdateReaction(ticketid, actionid, newvalue, function (result) {
             if (result === 'positive') {
                 applause.data('oldvalue', newvalue);
-
                 if (newvalue > 0) {
                     var newtally = +oldtally + 1;
                 } else {
                     var newtally = (oldtally > 0) ? +oldtally - 1 : 0;
                 }
-
-                $('#tally-' + actionid).text(newtally);
-                
-
+                $('#tally-' + actionid).text(newtally).popover("destroy");
                 if (newvalue === 1) {
                     applause.css('opacity', '1');
                 } else {
@@ -4656,14 +4655,15 @@ function CreateTimeLineDelegates() {
         });
     });
 
-    $('#action-timeline').on('mouseenter', 'a.listreactions', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
+    $('#action-timeline').on('mouseenter', 'span.listreactions', function (e) {
         var location = $(this);
         var actionid = $(this).data('actionid');
         var ticketid = $(this).data('ticketid');
-        console.log('ListReactions: ' + ticketid + ' / ' + actionid);
         window.parent.Ts.Services.TicketPage.ListReactions(ticketid, actionid, function (result) {
+            if (result == 'negative' || result == 'nothing') {
+                location.popover("destroy");
+                return;
+            }
             var people = jQuery.parseJSON(result);
             var output = '<div class="reactions-head">Applause</div>';
             $.each(people.reactions, function (key, person) {
@@ -4673,14 +4673,12 @@ function CreateTimeLineDelegates() {
                 output += '<div class="reactions-name"><a href="#" data-userid="' + person.UserID + '" class="UserLink">' + person.Firstname + '</a></div>';
                 output += '</div>';
             });
-
             location.popover({
                 html: true,
                 trigger: 'hover',
                 delay: { "show": 1, "hide": 1 },
                 placement: 'left',
                 content: output
-                // container: 'div.reactions-popover'
             }).popover('show');
         });
     }).on("click", ".UserLink", function (e) {
@@ -4711,7 +4709,7 @@ function CreateTimeLineDelegates() {
 
                 if (result) {
                     badgeDiv.html('<div class="bgcolor-green"><span class="bgcolor-green">&nbsp;</span><a href="#" class="action-option-visible">Public</a></div>');
-                    $(applause).hide();
+
                     if (window.parent.Ts.System.Organization.AlertContactNoEmail){
                         window.parent.Ts.Services.TicketPage.CheckContactEmails(_ticketID, function (isInvalid) {
                             if (!isInvalid && window.parent.Ts.System.Organization.AlertContactNoEmail)
@@ -4721,7 +4719,7 @@ function CreateTimeLineDelegates() {
                 }
                 else {
                     badgeDiv.html('<div class="bgcolor-orange"><span class="bgcolor-orange">&nbsp;</span><a href="#" class="action-option-visible">Private</a></div>');
-                    $(applause).show();
+
                 }
 
                 window.parent.Ts.Services.Tickets.GetAction(action.RefID, function (action) {
