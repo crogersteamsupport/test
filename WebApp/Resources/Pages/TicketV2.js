@@ -269,7 +269,7 @@ $(document).ready(function () {
     _ticketNumber = window.parent.Ts.Utils.getQueryValue("TicketNumber", window);
 
     apiKey = "45228242";
-
+    
     //Setup Ticket Elements
     SetupTicketPage();
 
@@ -4351,16 +4351,18 @@ function CreateHandleBarHelpers() {
     Handlebars.registerHelper('Applause', function () {
         var ticketID = this.item.TicketID;
         var actionID = this.item.RefID;
-        console.log('STUFF:' + this.item.OrganizationID + ' / ' + window.parent.Ts.System.User.OrganizationID);
         var display = (this.item.OrganizationID === window.parent.Ts.System.User.OrganizationID && !this.item.IsWC) ? 'inline' : 'none';
-        var output = window.parent.Ts.Services.TicketPage.CountReactions(ticketID, actionID, function (result) {
-            var data = jQuery.parseJSON(result);
-            var tally = data[0].reactions[0].tally;
-            var reckoning = data[1].validation[0].reckoning;
-            var opacity = (reckoning > 0) ? '1' : '0.2';
-            var oldvalue = (reckoning > 0) ? '1' : '0';
-            var thacode = '<span id="tally-' + actionID + '" class="listreactions" data-actionid="' + actionID + '" data-ticketid="' + ticketID + '">' + tally + '</span><a href="#" class="updatereaction" data-actionid="' + actionID + '" data-ticketid="' + ticketID + '" data-oldvalue="' + oldvalue + '" style="opacity:' + opacity + ';"><img src="/vcr/1_9_0/Images/icons/applause.png" style="margin-left:5px;height:24px;"></a>';
-            $('#applause-' + actionID).html(thacode);
+        var output = window.parent.Ts.Services.TicketPage.PullReactions(ticketID, actionID, function (result) {
+            console.log('PullReactions: ' + result);
+            if (result != 'negative' && result != 'nothing' && result != 'hidden') {
+                var data = jQuery.parseJSON(result);
+                var tally = data[0].reactions[0].tally;
+                var reckoning = data[1].validation[0].reckoning;
+                var opacity = (reckoning > 0) ? '1' : '0.2';
+                var oldvalue = (reckoning > 0) ? '1' : '0';
+                var thacode = '<span id="tally-' + actionID + '" class="listreactions" data-actionid="' + actionID + '" data-ticketid="' + ticketID + '">' + tally + '</span><a href="#" class="updatereaction" data-actionid="' + actionID + '" data-ticketid="' + ticketID + '" data-oldvalue="' + oldvalue + '" style="opacity:' + opacity + ';"><img src="/vcr/1_9_0/Images/icons/applause.png" style="margin-left:5px;height:24px;"></a>';
+                $('#applause-' + actionID).html(thacode);
+            }
         });
         return '<span id="applause-' + actionID + '" class="pull-right" style="position:absolute;top:25px;right:100px;display:' + display + '"></span>';
     });
