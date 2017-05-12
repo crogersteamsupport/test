@@ -272,6 +272,32 @@ namespace TSWebServices
             return reminder;
         }
 
+        private Reminder CreateReminder(LoginUser loginUser, int taskID, string taskName, DateTime reminderDate, bool isDismissed, int userID)
+        {
+            Reminders reminderHelper = new Reminders(loginUser);
+            Reminder reminder = reminderHelper.AddNewReminder();
+
+            reminder.DateCreated = DateTime.UtcNow;
+            reminder.Description = taskName;
+            DateTime reminderDueDate = DateTime.Now;
+            if (reminderDate != null)
+            {
+                reminderDueDate = (DateTime)reminderDate;
+            }
+            reminder.DueDate = reminderDueDate;
+            reminder.IsDismissed = isDismissed;
+            reminder.RefType = ReferenceType.Tasks;
+            reminder.RefID = taskID;
+            reminder.HasEmailSent = false;
+            reminder.UserID = userID;
+            reminder.CreatorID = loginUser.UserID;
+            reminder.OrganizationID = loginUser.OrganizationID;
+
+            reminderHelper.Save();
+
+            return reminder;
+        }
+
         [WebMethod]
         public TaskProxy NewTask(string data)
         {
@@ -295,7 +321,16 @@ namespace TSWebServices
 
             if (info.Reminder != null)
             {
-                Reminder reminder = CreateReminder(loginUser, newTask.TaskID, info.Name, DataUtils.DateToUtc(loginUser, (DateTime)info.Reminder), false);
+                Reminder reminder = null;
+                if (newTask.UserID == null)
+                {
+                    reminder = CreateReminder(loginUser, newTask.TaskID, info.Name, DataUtils.DateToUtc(loginUser, (DateTime)info.Reminder), false);
+                }
+                else
+                {
+                    reminder = CreateReminder(loginUser, newTask.TaskID, info.Name, DataUtils.DateToUtc(loginUser, (DateTime)info.Reminder), false, (int)newTask.UserID);
+                }
+
                 if (reminder != null)
                 {
                     Tasks taskHelper = new Tasks(loginUser);
@@ -611,7 +646,14 @@ namespace TSWebServices
             {
                 if (reminder == null)
                 {
-                    reminder = CreateReminder(loginUser, taskID, task.Name, DataUtils.DateToUtc(loginUser, reminderDueDate), false);
+                    if (task.UserID == null)
+                    {
+                        reminder = CreateReminder(loginUser, taskID, task.Name, DataUtils.DateToUtc(loginUser, reminderDueDate), false);
+                    }
+                    else
+                    {
+                        reminder = CreateReminder(loginUser, taskID, task.Name, DataUtils.DateToUtc(loginUser, reminderDueDate), false, (int)task.UserID);
+                    }
                     task.ReminderID = reminder.ReminderID;
                     task.Collection.Save();
                 }
