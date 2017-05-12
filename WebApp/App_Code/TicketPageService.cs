@@ -936,7 +936,7 @@ namespace TSWebServices
             TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             User author = Users.GetUser(loginUser, action.CreatorID);
-            if (loginUser.OrganizationID != author.OrganizationID)
+            if (loginUser.OrganizationID == author.OrganizationID)
             {
                 string json1 = Actions.CountReactions(loginUser, ticketID, actionID);
                 string json2 = Actions.CheckReaction(loginUser, ticketID, actionID);
