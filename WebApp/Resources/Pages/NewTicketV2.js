@@ -917,7 +917,7 @@ function SetupDescriptionEditor() {
 
         $('#stoptokScreen').hide();
         $('#stoptokScreen').click(function (e) {
-            $('#statusTextScreen').text("Processing...");
+            $('#statusTextScreen').text("Saving video...");
             clearTimeout(tokTimer);
             $("#tokScreenCountdown").html("0:00");
             parent.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
@@ -935,7 +935,7 @@ function SetupDescriptionEditor() {
                 else {
                     $('#action-new-editor').summernote('insertNode', videoURL);
                 }
-                $('#statusTextScreen').text("Recording Stopped");
+                $('#statusTextScreen').text("Your video is currently processing. It may not play in the editor below but should be live within a minute.");
                 session.unpublish(screenSharingPublisher);
                 session.unpublish(publisher);
 
@@ -1032,7 +1032,7 @@ function SetupDescriptionEditor() {
 };
 
 function StopRecording() {
-    $('#statusTextScreen').text("Saving video...");
+    $('#statusTextScreen').text("Processing...");
     clearTimeout(tokTimer);
     $("#tokScreenCountdown").html("0:00");
     parent.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
@@ -1053,7 +1053,7 @@ function StopRecording() {
             $('#action-new-editor').summernote('insertNode', videoURL);
         }
 
-        $('#statusTextScreen').text("Your video is currently processing. It may not play in the editor below but should be live within a minute.");
+        $('#statusTextScreen').text("");
         session.unpublish(screenSharingPublisher);
         session.unpublish(publisher);
 
