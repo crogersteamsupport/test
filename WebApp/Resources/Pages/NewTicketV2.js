@@ -928,7 +928,7 @@ function SetupDescriptionEditor() {
                 $('#unmuteTokScreen').hide();
                 $('#muteTokScreen').hide();
                 tokurl = result;
-                videoURL = '<video controls poster="' + parent.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
+                videoURL = '<video width="100%" controls poster="' + parent.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
                 if (parent.Ts.System.User.OrganizationID !== 13679) {
                     tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
                 }
@@ -1032,7 +1032,7 @@ function SetupDescriptionEditor() {
 };
 
 function StopRecording() {
-    $('#statusTextScreen').text("Processing...");
+    $('#statusTextScreen').text("Saving video...");
     clearTimeout(tokTimer);
     $("#tokScreenCountdown").html("0:00");
     parent.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
@@ -1053,7 +1053,7 @@ function StopRecording() {
             $('#action-new-editor').summernote('insertNode', videoURL);
         }
 
-        $('#statusTextScreen').text("");
+        $('#statusTextScreen').text("Your video is currently processing. It may not play in the editor below but should be live within a minute.");
         session.unpublish(screenSharingPublisher);
         session.unpublish(publisher);
 
