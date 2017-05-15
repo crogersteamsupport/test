@@ -1300,7 +1300,7 @@ namespace TeamSupport.ServiceLibrary
             message.To.Add(GetMailAddress(user.Email, user.FirstLastName));
             AddMessage(organization.OrganizationID, "Portal Password Changed [" + user.FirstLastName + "]", message);
         }
-        public void ProcessResetHubPassword(int userID, string password, int? productFamilyID)
+        public void ProcessResetHubPassword(int userID, string password, int productFamilyID)
         {
             User user = (User)Users.GetUser(LoginUser, userID);
             Organization organization = (Organization)Organizations.GetOrganization(LoginUser, (int)Organizations.GetOrganization(LoginUser, user.OrganizationID).ParentID);
@@ -1312,7 +1312,7 @@ namespace TeamSupport.ServiceLibrary
             AddMessage(organization.OrganizationID, "Reset Portal Password [" + user.FirstLastName + "]", message);
         }
 
-        public void ProcessWelcomeCustomerHubUser(int userID, string password, int? productFamilyID)
+        public void ProcessWelcomeCustomerHubUser(int userID, string password, int productFamilyID)
         {
             User user = (User)Users.GetUser(LoginUser, userID);
             Organization organization = (Organization)Organizations.GetOrganization(LoginUser, (int)Organizations.GetOrganization(LoginUser, user.OrganizationID).ParentID);

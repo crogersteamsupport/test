@@ -2508,7 +2508,7 @@ SELECT
                 EmailPosts.SendWelcomePortalUser(TSAuthentication.GetLoginUser(), user.UserID, password);
 
             if (info.EmailHubPW && info.IsPortalUser)
-                EmailPosts.SendWelcomeCustomerHubUser(TSAuthentication.GetLoginUser(), user.UserID, password, null);
+                EmailPosts.SendWelcomeCustomerHubUser(TSAuthentication.GetLoginUser(), user.UserID, password);
 
 
             string description = String.Format("{0} created contact {1}", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, user.FirstLastName);
@@ -3194,7 +3194,7 @@ SELECT
                         EmailPosts.SendWelcomeTSUser(TSAuthentication.GetLoginUser(), users[0].UserID, password);
                     else
                     {
-                        EmailPosts.SendWelcomeCustomerHubUser(TSAuthentication.GetLoginUser(), users[0].UserID, password, null);
+                        EmailPosts.SendWelcomeCustomerHubUser(TSAuthentication.GetLoginUser(), users[0].UserID, password);
                     }
                     return ("A new password has been sent to " + users[0].FirstName + " " + users[0].LastName);
 
@@ -3203,7 +3203,7 @@ SELECT
                 {
                     users[0].IsPasswordExpired = true;
                     users[0].Collection.Save();
-                    if (DataUtils.ResetPassword(TSAuthentication.GetLoginUser(), users[0], !(TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).ParentID == null), true, null))
+                    if (DataUtils.ResetPassword(TSAuthentication.GetLoginUser(), users[0], !(TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).ParentID == null), true))
                     {
                         return ("A customer hub password reset email has been sent to " + users[0].FirstName + " " + users[0].LastName);
                     }
