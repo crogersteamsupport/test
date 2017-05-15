@@ -58,6 +58,12 @@ namespace TeamSupport.Data
       set { Row["ReminderID"] = CheckValue("ReminderID", value); }
     }
     
+    public string CompletionComment
+    {
+      get { return Row["CompletionComment"] != DBNull.Value ? (string)Row["CompletionComment"] : null; }
+      set { Row["CompletionComment"] = CheckValue("CompletionComment", value); }
+    }
+    
 
     
     public bool NeedsIndexing
@@ -233,7 +239,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Tasks] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [DueDate] = @DueDate,    [UserID] = @UserID,    [IsComplete] = @IsComplete,    [DateCompleted] = @DateCompleted,    [ParentID] = @ParentID,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [ReminderID] = @ReminderID,    [NeedsIndexing] = @NeedsIndexing  WHERE ([TaskID] = @TaskID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Tasks] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [DueDate] = @DueDate,    [UserID] = @UserID,    [IsComplete] = @IsComplete,    [DateCompleted] = @DateCompleted,    [ParentID] = @ParentID,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [ReminderID] = @ReminderID,    [NeedsIndexing] = @NeedsIndexing,    [CompletionComment] = @CompletionComment  WHERE ([TaskID] = @TaskID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("TaskID", SqlDbType.Int, 4);
@@ -327,13 +333,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("CompletionComment", SqlDbType.NVarChar, 4000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Tasks] (    [OrganizationID],    [Name],    [Description],    [DueDate],    [UserID],    [IsComplete],    [DateCompleted],    [ParentID],    [CreatorID],    [DateCreated],    [ModifierID],    [DateModified],    [ReminderID],    [NeedsIndexing]) VALUES ( @OrganizationID, @Name, @Description, @DueDate, @UserID, @IsComplete, @DateCompleted, @ParentID, @CreatorID, @DateCreated, @ModifierID, @DateModified, @ReminderID, @NeedsIndexing); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Tasks] (    [OrganizationID],    [Name],    [Description],    [DueDate],    [UserID],    [IsComplete],    [DateCompleted],    [ParentID],    [CreatorID],    [DateCreated],    [ModifierID],    [DateModified],    [ReminderID],    [NeedsIndexing],    [CompletionComment]) VALUES ( @OrganizationID, @Name, @Description, @DueDate, @UserID, @IsComplete, @DateCompleted, @ParentID, @CreatorID, @DateCreated, @ModifierID, @DateModified, @ReminderID, @NeedsIndexing, @CompletionComment); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("CompletionComment", SqlDbType.NVarChar, 4000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -545,7 +565,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [TaskID], [OrganizationID], [Name], [Description], [DueDate], [UserID], [IsComplete], [DateCompleted], [ParentID], [CreatorID], [DateCreated], [ModifierID], [DateModified], [ReminderID], [NeedsIndexing] FROM [dbo].[Tasks] WHERE ([TaskID] = @TaskID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [TaskID], [OrganizationID], [Name], [Description], [DueDate], [UserID], [IsComplete], [DateCompleted], [ParentID], [CreatorID], [DateCreated], [ModifierID], [DateModified], [ReminderID], [NeedsIndexing], [CompletionComment] FROM [dbo].[Tasks] WHERE ([TaskID] = @TaskID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("TaskID", taskID);
         Fill(command);

@@ -130,6 +130,7 @@ namespace TeamSupport.ServiceLibrary
             MailAddress address = new MailAddress(user.Email, user.FirstName + " " + user.LastName);
             Logs.WriteEvent("Mail Address: " + address.ToString());
             message.To.Add(address);
+            EmailTemplates.ReplaceMailAddressParameters(message);
             Emails.AddEmail(LoginUser, reminder.OrganizationID, null, message.Subject, message);
             Logs.WriteEvent("Message queued");
         }

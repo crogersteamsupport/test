@@ -201,6 +201,18 @@
                                                         <p class="form-control-static editable" id="fieldComplete"></p>
                                                     </div>
                                                 </div>
+                                                <div class="form-group completedData">
+                                                    <label for="fieldCompletionDate" class="col-md-4 control-label">Completion Date</label>
+                                                    <div class="col-md-8">
+                                                        <p class="form-control-static" id="fieldCompletionDate"></p>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group completedData">
+                                                    <label for="fieldCompletionComment" class="col-md-4 control-label">Completion Comment</label>
+                                                    <div class="col-md-8">
+                                                        <p class="form-control-static" id="fieldCompletionComment"></p>
+                                                    </div>
+                                                </div>
                                                 <div class="form-group">
                                                     <label for="fieldDueDate" class="col-md-4 control-label">Due Date</label>
                                                     <div class="col-md-8">
@@ -243,21 +255,21 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Would you like to add a history comment to complete this task?</h4>
+                    <h4 class="modal-title">Would you like to add a comment to complete this task?</h4>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal">
                         <div class="form-group">
                             <label for="comments" class="col-md-2 control-label">Comments:</label>
                             <div class="col-md-10">
-                                <textarea class="col-md-12 form-control" id="taskCompleteComment" placeholder="Task history comments about completing this task."></textarea>
+                                <textarea class="col-md-12 form-control" id="taskCompleteComment" placeholder="Comment about completing this task."></textarea>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" id="btnTaskCompleteComment">Yes</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-default" id="btnNoComment" data-dismiss="modal">No</button>
                 </div>
             </div>
             <!-- /.modal-content -->

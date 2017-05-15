@@ -298,9 +298,11 @@ $(document).ready(function () {
 
         parent.Ts.Services.Task.SetTaskIsCompleted(id, checked, function (data) {
             if (!data.IncompleteSubtasks) {
+                if (data.Value) {
+                    $('#modalTaskComment').modal('show');
+                }
                 checkbox.parent().parent().fadeOut(600, function () {
                     _completeCommentTaskID = id;
-                    $('#modalTaskComment').modal('show');
                     checkbox.remove()
                 });
             }
@@ -400,8 +402,8 @@ $(document).ready(function () {
         }
         else {
             window.parent.parent.Ts.System.logAction('Task - Add Task Complete Comment');
-            window.parent.parent.Ts.Services.Task.AddTaskCompleteComment(_completeCommentTaskID, $('#taskCompleteComment').val(), function (success) {
-                if (success) {
+            window.parent.parent.Ts.Services.Task.AddTaskCompleteComment(_completeCommentTaskID, $('#taskCompleteComment').val(), function (result) {
+                if (result.Value) {
                     $('#taskCompleteComment').val('');
                     $('#modalTaskComment').modal('hide');
                 }
