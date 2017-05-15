@@ -931,23 +931,52 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string CountReactions(int ticketID, int actionID)
+        public string PullReactions(int ticketID, int actionID)
         {
             TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            User user = TSAuthentication.GetUser(loginUser);
             User author = Users.GetUser(loginUser, action.CreatorID);
-            return Actions.CountReactions(loginUser, ticketID, actionID);
+            if (loginUser.OrganizationID == author.OrganizationID)
+            {
+                string json1 = Actions.CountReactions(loginUser, ticketID, actionID);
+                string json2 = Actions.CheckReaction(loginUser, ticketID, actionID);
+
+                if (json1 == "negative" || json2 == "negative")
+                {
+                    return "negative";
+                }
+                else if (json1 == "nothing" && json2 == "nothing")
+                {
+                    return "nothing";
+                }
+                else if (json1 != "nothing" && json2 != "nothing")
+                {
+                    return string.Format("[{0},{1}]", json1, json2);
+                }
+                else if (json1 != "nothing")
+                {
+                    return json1;
+                }
+                else if (json2 != "nothing")
+                {
+                    return json2;
+                }
+                else
+                {
+                    return "negative";
+                }
+            }
+            else
+            {
+                return "hidden";
+            }
         }
 
         [WebMethod]
-        public string CheckReaction(int ticketID, int actionID)
+        public string PullUserList(int ticketID)
         {
-            TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            User user = TSAuthentication.GetUser(loginUser);
-            User author = Users.GetUser(loginUser, action.CreatorID);
-            return Actions.CheckReaction(loginUser, ticketID, actionID);
+            return Actions.PullUserList(loginUser, ticketID);
         }
 
         [WebMethod]
@@ -963,12 +992,41 @@ namespace TSWebServices
         [WebMethod]
         public string UpdateReaction(int ticketID, int actionID, int value)
         {
+            string updateReaction = string.Empty;
             TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            User user           = TSAuthentication.GetUser(loginUser);
-            User author         = Users.GetUser(loginUser, action.CreatorID);
-            return Actions.UpdateReaction(loginUser, action.CreatorID, ticketID, actionID, value);
+            User user = TSAuthentication.GetUser(loginUser);
+            User author = Users.GetUser(loginUser, action.CreatorID);
+            updateReaction = Actions.UpdateReaction(loginUser, action.CreatorID, ticketID, actionID, value);
+            if (updateReaction == "positive" && value > 0 && author.UserID != loginUser.UserID)
+            {
+                EmailReaction(loginUser, author, ticketID);
+            }
+            return updateReaction;
         }
+
+        private void EmailReaction(LoginUser loginUser, User author, int ticketID)
+        {
+            try
+            {
+                string nameSender = loginUser.GetUserFullName();
+                string subject = loginUser.GetUserFullName() + " gave you an Applause!";
+                string body = "<P>Congratulations, you've received applause from " + nameSender + "!</P>https://app.teamsupport.com/?TicketID=" + ticketID;
+                //UsersViewItem view = GetUserView();
+                Organization o = Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
+                System.Net.Mail.MailMessage message = new System.Net.Mail.MailMessage();
+                message.From = new System.Net.Mail.MailAddress("support@teamsupport.com");
+                message.To.Add(new System.Net.Mail.MailAddress(author.Email));
+                message.Subject = subject;
+                //int count = Organizations.GetUserCount(Collection.LoginUser, OrganizationID);
+                message.IsBodyHtml = true;
+                message.Body = body;
+                Emails.AddEmail(loginUser, loginUser.OrganizationID, null, subject, message);
+            }
+            catch { };//unimplemented because I don't see central log
+        }
+
+
 
         public AutocompleteItem[] GetUserOrOrganizationFiltered(string searchTerm, bool filterByUserRights)
         {
