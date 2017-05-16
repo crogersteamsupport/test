@@ -252,7 +252,6 @@
           return self._forumCategories;
       },
       getProducts: function (callback) {
-          debugger;
           var self = this;
           Ts.Services.System.GetCheckSum(Ts.ReferenceTypes.ProductVersions, function (checksum) {
               if (!self._products || !self._products.CheckSum || checksum != self._products.CheckSum) {

@@ -38,6 +38,24 @@ namespace TeamSupport.Data
 			}
 		}
 
+        public void LoadByContactID(int userID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"Select CH.*
+                                        from dbo.users as U
+                                        inner join dbo.Organizations as O on U.OrganizationID = O.OrganizationID
+                                        inner join dbo.OrganizationProducts as OP on U.OrganizationID = OP.OrganizationID
+                                        inner join dbo.Products as P on P.ProductID = OP.ProductID
+                                        inner join dbo.CustomerHubs as CH on O.ParentID = CH.OrganizationID
+	                                        and (P.ProductFamilyID = CH.ProductFamilyID OR CH.ProductFamilyID is Null)
+                                        Where UserID = @UserID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@UserID", userID);
+                Fill(command);
+            }
+        }
+
         public static void DeleteByCustomerHubID(LoginUser loginUser, int customerHubID)
         {
             CustomerHubs customerHubs = new CustomerHubs(loginUser);
@@ -50,6 +68,7 @@ namespace TeamSupport.Data
                 customerHubs.ExecuteNonQuery(command, "CustomerHubs");
             }
         }
+
     }
   
 }

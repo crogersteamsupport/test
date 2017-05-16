@@ -1004,7 +1004,7 @@ namespace TeamSupport.Data
             return builder.ToString();
         }
 
-        public static bool ResetPassword(LoginUser loginUser, User user, bool isPortalUser, bool isCustomerHub = false, int productFamilyID = -1)
+        public static bool ResetPassword(LoginUser loginUser, User user, bool isPortalUser, bool isCustomerHub = false, int? productFamilyID = null)
         {
             string password = GenerateRandomPassword();
             if (isCustomerHub)
