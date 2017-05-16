@@ -765,7 +765,7 @@ Ts.Pages.Main.prototype = {
         function turnOffChatRequestUpdates() {
             top.Ts.Settings.System.read('PusherKey', '1', function (key) {
                 var chatGUID = top.Ts.System.Organization.ChatID;
-                pusher.unsubscribe('chat-requests-' + chatGUID);
+				pusher.disconnect();
             });
         }
 

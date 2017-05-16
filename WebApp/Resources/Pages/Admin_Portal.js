@@ -368,14 +368,14 @@ AdminPortal = function () {
         // show some indicator
 
 
-        var _agentratingOption = new parent.parent.TeamSupport.Data.AgentRatingsOptionProxy();;
-        _agentratingOption.PositiveRatingText = $('#agentrating-positive').val();
-        _agentratingOption.NeutralRatingText = $('#agentrating-neutral').val();
-        _agentratingOption.NegativeRatingText = $('#agentrating-negative').val();
-        _agentratingOption.RedirectURL = $('#agentrating-redirecturl').val();
-        _agentratingOption.ExternalPageLink = $('#agentrating-externalurl').val();
+        //var _agentratingOption = new parent.parent.TeamSupport.Data.AgentRatingsOptionProxy();;
+        //_agentratingOption.PositiveRatingText = $('#agentrating-positive').val();
+        //_agentratingOption.NeutralRatingText = $('#agentrating-neutral').val();
+        //_agentratingOption.NegativeRatingText = $('#agentrating-negative').val();
+        //_agentratingOption.RedirectURL = $('#agentrating-redirecturl').val();
+        //_agentratingOption.ExternalPageLink = $('#agentrating-externalurl').val();
 
-        parent.parent.Ts.Services.Organizations.SetPortalOption(portalOption, $('#portal_external_link').val(), $('#portal_allow_wiki').prop('checked'), $('#portal_def_group').val() == -1 ? null : $('#portal_def_group').val(), _agentratingOption, function (result) {
+        parent.parent.Ts.Services.Organizations.SetPortalOption(portalOption, $('#portal_external_link').val(), $('#portal_allow_wiki').prop('checked'), $('#portal_def_group').val() == -1 ? null : $('#portal_def_group').val(), function (result) {
             if (result != null) {
                 alert(result);
             }

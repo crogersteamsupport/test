@@ -211,7 +211,7 @@ namespace TeamSupport.Data
                         if (Row[field.ApiFieldName] != DBNull.Value)
                         {
                             DataColumn column = Row.Table.Columns[field.ApiFieldName];
-                            if (column.DataType == typeof(System.DateTime))
+                            if (column.DataType == typeof(System.DateTime) || field.FieldType == CustomFieldType.Date)
                             {
                                 s = DateToLocal((DateTime)Row[field.ApiFieldName]).ToString("g", _baseCollection.LoginUser.CultureInfo);
                             }
@@ -938,7 +938,7 @@ namespace TeamSupport.Data
 (
   CASE 
     WHEN ISNUMERIC((SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))) = 1  
-    THEN (SELECT CAST(NULLIF(RTRIM(CustomValue), '') AS float) FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))
+    THEN (SELECT TRY_CAST(NULLIF(RTRIM(CustomValue), '') AS float) FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))
     ELSE NULL
   END
 ) AS [{2}]
