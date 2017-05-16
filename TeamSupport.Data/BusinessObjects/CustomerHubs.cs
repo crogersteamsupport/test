@@ -42,7 +42,7 @@ namespace TeamSupport.Data
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = @"Select CH.*
+                command.CommandText = @"Select Distinct CH.*
                                         from dbo.users as U
                                         inner join dbo.Organizations as O on U.OrganizationID = O.OrganizationID
                                         inner join dbo.OrganizationProducts as OP on U.OrganizationID = OP.OrganizationID
