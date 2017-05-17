@@ -1009,9 +1009,10 @@ namespace TSWebServices
         {
             try
             {
+                String hostName = Dns.GetHostName();
                 string nameSender = loginUser.GetUserFullName();
                 string subject = loginUser.GetUserFullName() + " gave you an Applause!";
-                string body = "<P>Congratulations, you've received applause from " + nameSender + "!</P>https://app.teamsupport.com/?TicketID=" + ticketID;
+                string body = "<P>Congratulations, you've received applause from " + nameSender + "!</P>https://" + hostName + "/?TicketID=" + ticketID;
                 //UsersViewItem view = GetUserView();
                 Organization o = Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
                 System.Net.Mail.MailMessage message = new System.Net.Mail.MailMessage();
