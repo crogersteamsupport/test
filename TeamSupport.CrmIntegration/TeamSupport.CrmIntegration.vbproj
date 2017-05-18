@@ -127,6 +127,7 @@
     <Compile Include="Integrations\MailChimp.vb" />
     <Compile Include="Integrations\Oracle.vb" />
     <Compile Include="Integrations\SalesForce.vb" />
+    <Compile Include="Integrations\TFS.vb" />
     <Compile Include="Integrations\Zoho.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">

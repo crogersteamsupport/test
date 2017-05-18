@@ -1,1660 +1,980 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTask
+CREATE PROCEDURE dbo.uspGeneratedSelectTicketLinkToTFSItem
 
 (
-  @TaskID int
+  @id int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
+    [id],
+    [TicketID],
+    [DateModifiedByTFSSync],
+    [SyncWithTFS],
+    [TFSID],
+    [TFSTitle],
+    [TFSURL],
+    [TFSState],
     [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [ReminderID],
-    [NeedsIndexing],
-    [CompletionComment]
-  FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
+    [CrmLinkID]
+  FROM [dbo].[TicketLinkToTFS]
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTask
+CREATE PROCEDURE dbo.uspGeneratedInsertTicketLinkToTFSItem
 
 (
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
+  @TicketID int,
+  @DateModifiedByTFSSync datetime,
+  @SyncWithTFS bit,
+  @TFSID int,
+  @TFSTitle varchar(8000),
+  @TFSURL varchar(8000),
+  @TFSState varchar(8000),
   @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000),
+  @CrmLinkID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tasks]
+  INSERT INTO [dbo].[TicketLinkToTFS]
   (
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
+    [TicketID],
+    [DateModifiedByTFSSync],
+    [SyncWithTFS],
+    [TFSID],
+    [TFSTitle],
+    [TFSURL],
+    [TFSState],
     [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [ReminderID],
-    [NeedsIndexing],
-    [CompletionComment])
+    [CrmLinkID])
   VALUES (
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @ParentID,
+    @TicketID,
+    @DateModifiedByTFSSync,
+    @SyncWithTFS,
+    @TFSID,
+    @TFSTitle,
+    @TFSURL,
+    @TFSState,
     @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @ReminderID,
-    @NeedsIndexing,
-    @CompletionComment)
+    @CrmLinkID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTask
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicketLinkToTFSItem
 
 (
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000)
+  @id int,
+  @TicketID int,
+  @DateModifiedByTFSSync datetime,
+  @SyncWithTFS bit,
+  @TFSID int,
+  @TFSTitle varchar(8000),
+  @TFSURL varchar(8000),
+  @TFSState varchar(8000),
+  @CrmLinkID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Tasks]
+  UPDATE [dbo].[TicketLinkToTFS]
   SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [ParentID] = @ParentID,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [ReminderID] = @ReminderID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [CompletionComment] = @CompletionComment
-  WHERE ([TaskID] = @TaskID)
+    [TicketID] = @TicketID,
+    [DateModifiedByTFSSync] = @DateModifiedByTFSSync,
+    [SyncWithTFS] = @SyncWithTFS,
+    [TFSID] = @TFSID,
+    [TFSTitle] = @TFSTitle,
+    [TFSURL] = @TFSURL,
+    [TFSState] = @TFSState,
+    [CrmLinkID] = @CrmLinkID
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTask
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicketLinkToTFSItem
 
 (
-  @TaskID int
+  @id int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
+  DELETE FROM [dbo].[TicketLinkToTFS]
+  WHERE ([id] = @id)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectActionLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectActionLinkToTFSItem
 
 (
-
+  @id int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing]
-  FROM [dbo].[TasksView]
-  WH)
+    [id],
+    [ActionID],
+    [DateModifiedByTFSSync],
+    [TFSID]
+  FROM [dbo].[ActionLinkToTFS]
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertActionLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertActionLinkToTFSItem
 
 (
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit,
+  @ActionID int,
+  @DateModifiedByTFSSync datetime,
+  @TFSID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TasksView]
+  INSERT INTO [dbo].[ActionLinkToTFS]
   (
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing])
+    [ActionID],
+    [DateModifiedByTFSSync],
+    [TFSID])
   VALUES (
-    @TaskID,
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @CompletionComment,
-    @ParentID,
-    @IsDismissed,
-    @HasEmailSent,
-    @ReminderDueDate,
-    @TaskParentName,
-    @UserName,
-    @Creator,
-    @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @NeedsIndexing)
+    @ActionID,
+    @DateModifiedByTFSSync,
+    @TFSID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateActionLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateActionLinkToTFSItem
 
 (
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit
+  @id int,
+  @ActionID int,
+  @DateModifiedByTFSSync datetime,
+  @TFSID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TasksView]
+  UPDATE [dbo].[ActionLinkToTFS]
   SET
-    [TaskID] = @TaskID,
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [CompletionComment] = @CompletionComment,
-    [ParentID] = @ParentID,
-    [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent,
-    [ReminderDueDate] = @ReminderDueDate,
-    [TaskParentName] = @TaskParentName,
-    [UserName] = @UserName,
-    [Creator] = @Creator,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [NeedsIndexing] = @NeedsIndexing
-  WH)
+    [ActionID] = @ActionID,
+    [DateModifiedByTFSSync] = @DateModifiedByTFSSync,
+    [TFSID] = @TFSID
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteActionLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteActionLinkToTFSItem
 
 (
-
+  @id int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TasksView]
-  WH)
+  DELETE FROM [dbo].[ActionLinkToTFS]
+  WHERE ([id] = @id)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTask
+CREATE PROCEDURE dbo.uspGeneratedSelectTicketLinkToTFSItem
 
 (
-  @TaskID int
+  @id int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
+    [id],
+    [TicketID],
+    [DateModifiedByTFSSync],
+    [SyncWithTFS],
+    [TFSID],
+    [TFSTitle],
+    [TFSURL],
+    [TFSState],
     [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [ReminderID],
-    [NeedsIndexing],
-    [CompletionComment]
-  FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
+    [CrmLinkID]
+  FROM [dbo].[TicketLinkToTFS]
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTask
+CREATE PROCEDURE dbo.uspGeneratedInsertTicketLinkToTFSItem
 
 (
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
+  @TicketID int,
+  @DateModifiedByTFSSync datetime,
+  @SyncWithTFS bit,
+  @TFSID int,
+  @TFSTitle varchar(8000),
+  @TFSURL varchar(8000),
+  @TFSState varchar(8000),
   @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000),
+  @CrmLinkID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tasks]
+  INSERT INTO [dbo].[TicketLinkToTFS]
   (
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
+    [TicketID],
+    [DateModifiedByTFSSync],
+    [SyncWithTFS],
+    [TFSID],
+    [TFSTitle],
+    [TFSURL],
+    [TFSState],
     [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [ReminderID],
-    [NeedsIndexing],
-    [CompletionComment])
+    [CrmLinkID])
   VALUES (
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @ParentID,
+    @TicketID,
+    @DateModifiedByTFSSync,
+    @SyncWithTFS,
+    @TFSID,
+    @TFSTitle,
+    @TFSURL,
+    @TFSState,
     @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @ReminderID,
-    @NeedsIndexing,
-    @CompletionComment)
+    @CrmLinkID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTask
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicketLinkToTFSItem
 
 (
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000)
+  @id int,
+  @TicketID int,
+  @DateModifiedByTFSSync datetime,
+  @SyncWithTFS bit,
+  @TFSID int,
+  @TFSTitle varchar(8000),
+  @TFSURL varchar(8000),
+  @TFSState varchar(8000),
+  @CrmLinkID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Tasks]
+  UPDATE [dbo].[TicketLinkToTFS]
   SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [ParentID] = @ParentID,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [ReminderID] = @ReminderID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [CompletionComment] = @CompletionComment
-  WHERE ([TaskID] = @TaskID)
+    [TicketID] = @TicketID,
+    [DateModifiedByTFSSync] = @DateModifiedByTFSSync,
+    [SyncWithTFS] = @SyncWithTFS,
+    [TFSID] = @TFSID,
+    [TFSTitle] = @TFSTitle,
+    [TFSURL] = @TFSURL,
+    [TFSState] = @TFSState,
+    [CrmLinkID] = @CrmLinkID
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTask
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicketLinkToTFSItem
 
 (
-  @TaskID int
+  @id int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
+  DELETE FROM [dbo].[TicketLinkToTFS]
+  WHERE ([id] = @id)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectActionLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectActionLinkToTFSItem
 
 (
-
+  @id int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing]
-  FROM [dbo].[TasksView]
-  WH)
+    [id],
+    [ActionID],
+    [DateModifiedByTFSSync],
+    [TFSID]
+  FROM [dbo].[ActionLinkToTFS]
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertActionLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertActionLinkToTFSItem
 
 (
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit,
+  @ActionID int,
+  @DateModifiedByTFSSync datetime,
+  @TFSID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TasksView]
+  INSERT INTO [dbo].[ActionLinkToTFS]
   (
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing])
+    [ActionID],
+    [DateModifiedByTFSSync],
+    [TFSID])
   VALUES (
-    @TaskID,
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @CompletionComment,
-    @ParentID,
-    @IsDismissed,
-    @HasEmailSent,
-    @ReminderDueDate,
-    @TaskParentName,
-    @UserName,
-    @Creator,
-    @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @NeedsIndexing)
+    @ActionID,
+    @DateModifiedByTFSSync,
+    @TFSID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateActionLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateActionLinkToTFSItem
 
 (
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit
+  @id int,
+  @ActionID int,
+  @DateModifiedByTFSSync datetime,
+  @TFSID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TasksView]
+  UPDATE [dbo].[ActionLinkToTFS]
   SET
-    [TaskID] = @TaskID,
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [CompletionComment] = @CompletionComment,
-    [ParentID] = @ParentID,
-    [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent,
-    [ReminderDueDate] = @ReminderDueDate,
-    [TaskParentName] = @TaskParentName,
-    [UserName] = @UserName,
-    [Creator] = @Creator,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [NeedsIndexing] = @NeedsIndexing
-  WH)
+    [ActionID] = @ActionID,
+    [DateModifiedByTFSSync] = @DateModifiedByTFSSync,
+    [TFSID] = @TFSID
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteActionLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteActionLinkToTFSItem
 
 (
-
+  @id int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TasksView]
-  WH)
+  DELETE FROM [dbo].[ActionLinkToTFS]
+  WHERE ([id] = @id)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTask
+CREATE PROCEDURE dbo.uspGeneratedSelectTicketLinkToTFSItem
 
 (
-  @TaskID int
+  @id int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
+    [id],
+    [TicketID],
+    [DateModifiedByTFSSync],
+    [SyncWithTFS],
+    [TFSID],
+    [TFSTitle],
+    [TFSURL],
+    [TFSState],
     [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [ReminderID],
-    [NeedsIndexing],
-    [CompletionComment]
-  FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
+    [CrmLinkID]
+  FROM [dbo].[TicketLinkToTFS]
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTask
+CREATE PROCEDURE dbo.uspGeneratedInsertTicketLinkToTFSItem
 
 (
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
+  @TicketID int,
+  @DateModifiedByTFSSync datetime,
+  @SyncWithTFS bit,
+  @TFSID int,
+  @TFSTitle varchar(8000),
+  @TFSURL varchar(8000),
+  @TFSState varchar(8000),
   @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000),
+  @CrmLinkID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tasks]
+  INSERT INTO [dbo].[TicketLinkToTFS]
   (
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
+    [TicketID],
+    [DateModifiedByTFSSync],
+    [SyncWithTFS],
+    [TFSID],
+    [TFSTitle],
+    [TFSURL],
+    [TFSState],
     [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [ReminderID],
-    [NeedsIndexing],
-    [CompletionComment])
+    [CrmLinkID])
   VALUES (
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @ParentID,
+    @TicketID,
+    @DateModifiedByTFSSync,
+    @SyncWithTFS,
+    @TFSID,
+    @TFSTitle,
+    @TFSURL,
+    @TFSState,
     @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @ReminderID,
-    @NeedsIndexing,
-    @CompletionComment)
+    @CrmLinkID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTask
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicketLinkToTFSItem
 
 (
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000)
+  @id int,
+  @TicketID int,
+  @DateModifiedByTFSSync datetime,
+  @SyncWithTFS bit,
+  @TFSID int,
+  @TFSTitle varchar(8000),
+  @TFSURL varchar(8000),
+  @TFSState varchar(8000),
+  @CrmLinkID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Tasks]
+  UPDATE [dbo].[TicketLinkToTFS]
   SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [ParentID] = @ParentID,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [ReminderID] = @ReminderID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [CompletionComment] = @CompletionComment
-  WHERE ([TaskID] = @TaskID)
+    [TicketID] = @TicketID,
+    [DateModifiedByTFSSync] = @DateModifiedByTFSSync,
+    [SyncWithTFS] = @SyncWithTFS,
+    [TFSID] = @TFSID,
+    [TFSTitle] = @TFSTitle,
+    [TFSURL] = @TFSURL,
+    [TFSState] = @TFSState,
+    [CrmLinkID] = @CrmLinkID
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTask
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicketLinkToTFSItem
 
 (
-  @TaskID int
+  @id int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
+  DELETE FROM [dbo].[TicketLinkToTFS]
+  WHERE ([id] = @id)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectActionLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectActionLinkToTFSItem
 
 (
-
+  @id int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing]
-  FROM [dbo].[TasksView]
-  WH)
+    [id],
+    [ActionID],
+    [DateModifiedByTFSSync],
+    [TFSID]
+  FROM [dbo].[ActionLinkToTFS]
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertActionLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertActionLinkToTFSItem
 
 (
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit,
+  @ActionID int,
+  @DateModifiedByTFSSync datetime,
+  @TFSID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TasksView]
+  INSERT INTO [dbo].[ActionLinkToTFS]
   (
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing])
+    [ActionID],
+    [DateModifiedByTFSSync],
+    [TFSID])
   VALUES (
-    @TaskID,
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @CompletionComment,
-    @ParentID,
-    @IsDismissed,
-    @HasEmailSent,
-    @ReminderDueDate,
-    @TaskParentName,
-    @UserName,
-    @Creator,
-    @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @NeedsIndexing)
+    @ActionID,
+    @DateModifiedByTFSSync,
+    @TFSID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateActionLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateActionLinkToTFSItem
 
 (
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit
+  @id int,
+  @ActionID int,
+  @DateModifiedByTFSSync datetime,
+  @TFSID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TasksView]
+  UPDATE [dbo].[ActionLinkToTFS]
   SET
-    [TaskID] = @TaskID,
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [CompletionComment] = @CompletionComment,
-    [ParentID] = @ParentID,
-    [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent,
-    [ReminderDueDate] = @ReminderDueDate,
-    [TaskParentName] = @TaskParentName,
-    [UserName] = @UserName,
-    [Creator] = @Creator,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [NeedsIndexing] = @NeedsIndexing
-  WH)
+    [ActionID] = @ActionID,
+    [DateModifiedByTFSSync] = @DateModifiedByTFSSync,
+    [TFSID] = @TFSID
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteActionLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteActionLinkToTFSItem
 
 (
-
+  @id int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TasksView]
-  WH)
+  DELETE FROM [dbo].[ActionLinkToTFS]
+  WHERE ([id] = @id)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTask
+CREATE PROCEDURE dbo.uspGeneratedSelectTicketLinkToTFSItem
 
 (
-  @TaskID int
+  @id int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
+    [id],
+    [TicketID],
+    [DateModifiedByTFSSync],
+    [SyncWithTFS],
+    [TFSID],
+    [TFSTitle],
+    [TFSURL],
+    [TFSState],
     [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [ReminderID],
-    [NeedsIndexing],
-    [CompletionComment]
-  FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
+    [CrmLinkID]
+  FROM [dbo].[TicketLinkToTFS]
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTask
+CREATE PROCEDURE dbo.uspGeneratedInsertTicketLinkToTFSItem
 
 (
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
+  @TicketID int,
+  @DateModifiedByTFSSync datetime,
+  @SyncWithTFS bit,
+  @TFSID int,
+  @TFSTitle varchar(8000),
+  @TFSURL varchar(8000),
+  @TFSState varchar(8000),
   @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000),
+  @CrmLinkID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tasks]
+  INSERT INTO [dbo].[TicketLinkToTFS]
   (
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
+    [TicketID],
+    [DateModifiedByTFSSync],
+    [SyncWithTFS],
+    [TFSID],
+    [TFSTitle],
+    [TFSURL],
+    [TFSState],
     [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [ReminderID],
-    [NeedsIndexing],
-    [CompletionComment])
+    [CrmLinkID])
   VALUES (
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @ParentID,
+    @TicketID,
+    @DateModifiedByTFSSync,
+    @SyncWithTFS,
+    @TFSID,
+    @TFSTitle,
+    @TFSURL,
+    @TFSState,
     @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @ReminderID,
-    @NeedsIndexing,
-    @CompletionComment)
+    @CrmLinkID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTask
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicketLinkToTFSItem
 
 (
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000)
+  @id int,
+  @TicketID int,
+  @DateModifiedByTFSSync datetime,
+  @SyncWithTFS bit,
+  @TFSID int,
+  @TFSTitle varchar(8000),
+  @TFSURL varchar(8000),
+  @TFSState varchar(8000),
+  @CrmLinkID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Tasks]
+  UPDATE [dbo].[TicketLinkToTFS]
   SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [ParentID] = @ParentID,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [ReminderID] = @ReminderID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [CompletionComment] = @CompletionComment
-  WHERE ([TaskID] = @TaskID)
+    [TicketID] = @TicketID,
+    [DateModifiedByTFSSync] = @DateModifiedByTFSSync,
+    [SyncWithTFS] = @SyncWithTFS,
+    [TFSID] = @TFSID,
+    [TFSTitle] = @TFSTitle,
+    [TFSURL] = @TFSURL,
+    [TFSState] = @TFSState,
+    [CrmLinkID] = @CrmLinkID
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTask
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicketLinkToTFSItem
 
 (
-  @TaskID int
+  @id int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
+  DELETE FROM [dbo].[TicketLinkToTFS]
+  WHERE ([id] = @id)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectActionLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectActionLinkToTFSItem
 
 (
-
+  @id int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing]
-  FROM [dbo].[TasksView]
-  WH)
+    [id],
+    [ActionID],
+    [DateModifiedByTFSSync],
+    [TFSID]
+  FROM [dbo].[ActionLinkToTFS]
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertActionLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertActionLinkToTFSItem
 
 (
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit,
+  @ActionID int,
+  @DateModifiedByTFSSync datetime,
+  @TFSID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TasksView]
+  INSERT INTO [dbo].[ActionLinkToTFS]
   (
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing])
+    [ActionID],
+    [DateModifiedByTFSSync],
+    [TFSID])
   VALUES (
-    @TaskID,
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @CompletionComment,
-    @ParentID,
-    @IsDismissed,
-    @HasEmailSent,
-    @ReminderDueDate,
-    @TaskParentName,
-    @UserName,
-    @Creator,
-    @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @NeedsIndexing)
+    @ActionID,
+    @DateModifiedByTFSSync,
+    @TFSID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateActionLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateActionLinkToTFSItem
 
 (
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit
+  @id int,
+  @ActionID int,
+  @DateModifiedByTFSSync datetime,
+  @TFSID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TasksView]
+  UPDATE [dbo].[ActionLinkToTFS]
   SET
-    [TaskID] = @TaskID,
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [CompletionComment] = @CompletionComment,
-    [ParentID] = @ParentID,
-    [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent,
-    [ReminderDueDate] = @ReminderDueDate,
-    [TaskParentName] = @TaskParentName,
-    [UserName] = @UserName,
-    [Creator] = @Creator,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [NeedsIndexing] = @NeedsIndexing
-  WH)
+    [ActionID] = @ActionID,
+    [DateModifiedByTFSSync] = @DateModifiedByTFSSync,
+    [TFSID] = @TFSID
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteActionLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteActionLinkToTFSItem
 
 (
-
+  @id int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TasksView]
-  WH)
+  DELETE FROM [dbo].[ActionLinkToTFS]
+  WHERE ([id] = @id)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTask
+CREATE PROCEDURE dbo.uspGeneratedSelectTicketLinkToTFSItem
 
 (
-  @TaskID int
+  @id int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
+    [id],
+    [TicketID],
+    [DateModifiedByTFSSync],
+    [SyncWithTFS],
+    [TFSID],
+    [TFSTitle],
+    [TFSURL],
+    [TFSState],
     [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [ReminderID],
-    [NeedsIndexing],
-    [CompletionComment]
-  FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
+    [CrmLinkID]
+  FROM [dbo].[TicketLinkToTFS]
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTask
+CREATE PROCEDURE dbo.uspGeneratedInsertTicketLinkToTFSItem
 
 (
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
+  @TicketID int,
+  @DateModifiedByTFSSync datetime,
+  @SyncWithTFS bit,
+  @TFSID int,
+  @TFSTitle varchar(8000),
+  @TFSURL varchar(8000),
+  @TFSState varchar(8000),
   @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000),
+  @CrmLinkID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tasks]
+  INSERT INTO [dbo].[TicketLinkToTFS]
   (
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
+    [TicketID],
+    [DateModifiedByTFSSync],
+    [SyncWithTFS],
+    [TFSID],
+    [TFSTitle],
+    [TFSURL],
+    [TFSState],
     [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [ReminderID],
-    [NeedsIndexing],
-    [CompletionComment])
+    [CrmLinkID])
   VALUES (
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @ParentID,
+    @TicketID,
+    @DateModifiedByTFSSync,
+    @SyncWithTFS,
+    @TFSID,
+    @TFSTitle,
+    @TFSURL,
+    @TFSState,
     @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @ReminderID,
-    @NeedsIndexing,
-    @CompletionComment)
+    @CrmLinkID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTask
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicketLinkToTFSItem
 
 (
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000)
+  @id int,
+  @TicketID int,
+  @DateModifiedByTFSSync datetime,
+  @SyncWithTFS bit,
+  @TFSID int,
+  @TFSTitle varchar(8000),
+  @TFSURL varchar(8000),
+  @TFSState varchar(8000),
+  @CrmLinkID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Tasks]
+  UPDATE [dbo].[TicketLinkToTFS]
   SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [ParentID] = @ParentID,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [ReminderID] = @ReminderID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [CompletionComment] = @CompletionComment
-  WHERE ([TaskID] = @TaskID)
+    [TicketID] = @TicketID,
+    [DateModifiedByTFSSync] = @DateModifiedByTFSSync,
+    [SyncWithTFS] = @SyncWithTFS,
+    [TFSID] = @TFSID,
+    [TFSTitle] = @TFSTitle,
+    [TFSURL] = @TFSURL,
+    [TFSState] = @TFSState,
+    [CrmLinkID] = @CrmLinkID
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTask
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicketLinkToTFSItem
 
 (
-  @TaskID int
+  @id int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
+  DELETE FROM [dbo].[TicketLinkToTFS]
+  WHERE ([id] = @id)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectActionLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectActionLinkToTFSItem
 
 (
-
+  @id int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing]
-  FROM [dbo].[TasksView]
-  WH)
+    [id],
+    [ActionID],
+    [DateModifiedByTFSSync],
+    [TFSID]
+  FROM [dbo].[ActionLinkToTFS]
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertActionLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertActionLinkToTFSItem
 
 (
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit,
+  @ActionID int,
+  @DateModifiedByTFSSync datetime,
+  @TFSID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TasksView]
+  INSERT INTO [dbo].[ActionLinkToTFS]
   (
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing])
+    [ActionID],
+    [DateModifiedByTFSSync],
+    [TFSID])
   VALUES (
-    @TaskID,
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @CompletionComment,
-    @ParentID,
-    @IsDismissed,
-    @HasEmailSent,
-    @ReminderDueDate,
-    @TaskParentName,
-    @UserName,
-    @Creator,
-    @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @NeedsIndexing)
+    @ActionID,
+    @DateModifiedByTFSSync,
+    @TFSID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateActionLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateActionLinkToTFSItem
 
 (
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit
+  @id int,
+  @ActionID int,
+  @DateModifiedByTFSSync datetime,
+  @TFSID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TasksView]
+  UPDATE [dbo].[ActionLinkToTFS]
   SET
-    [TaskID] = @TaskID,
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [CompletionComment] = @CompletionComment,
-    [ParentID] = @ParentID,
-    [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent,
-    [ReminderDueDate] = @ReminderDueDate,
-    [TaskParentName] = @TaskParentName,
-    [UserName] = @UserName,
-    [Creator] = @Creator,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [NeedsIndexing] = @NeedsIndexing
-  WH)
+    [ActionID] = @ActionID,
+    [DateModifiedByTFSSync] = @DateModifiedByTFSSync,
+    [TFSID] = @TFSID
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteActionLinkToTFSItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteActionLinkToTFSItem
 
 (
-
+  @id int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TasksView]
-  WH)
+  DELETE FROM [dbo].[ActionLinkToTFS]
+  WHERE ([id] = @id)
 GO
 
 

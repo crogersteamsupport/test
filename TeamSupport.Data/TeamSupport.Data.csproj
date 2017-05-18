@@ -204,6 +204,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessObjects\ActionLinkToJira.cs" />
+    <Compile Include="BusinessObjects\ActionLinkToTFS.cs" />
     <Compile Include="BusinessObjects\ActionLogs.cs" />
     <Compile Include="BusinessObjects\ActionLogsView.cs" />
     <Compile Include="BusinessObjects\Actions.cs" />
@@ -321,6 +322,7 @@
     <Compile Include="BusinessObjects\TicketAutomationTriggers.cs" />
     <Compile Include="BusinessObjects\TicketAutomationTriggersView.cs" />
     <Compile Include="BusinessObjects\TicketLinkToJira.cs" />
+    <Compile Include="BusinessObjects\TicketLinkToTFS.cs" />
     <Compile Include="BusinessObjects\TicketRelationships.cs" />
     <Compile Include="BusinessObjects\TicketsView.cs" />
     <Compile Include="BusinessObjects\TicketTemplates.cs" />
@@ -355,6 +357,7 @@
     <Compile Include="Classes\TSEventLog.cs" />
     <Compile Include="DataTransferObjects\Tasks.cs" />
     <Compile Include="FieldMaps\ActionLinkToJiraFieldMap.cs" />
+    <Compile Include="FieldMaps\ActionLinkToTFSFieldMap.cs" />
     <Compile Include="FieldMaps\AgentRatingsFieldMap.cs" />
     <Compile Include="FieldMaps\AgentRatingsOptionsFieldMap.cs" />
     <Compile Include="FieldMaps\AgentRatingUsersFieldMap.cs" />
@@ -449,6 +452,7 @@
     <Compile Include="FieldMaps\TicketAutomationTriggersFieldMap.cs" />
     <Compile Include="FieldMaps\TicketAutomationTriggersViewFieldMap.cs" />
     <Compile Include="FieldMaps\TicketLinkToJiraFieldMap.cs" />
+    <Compile Include="FieldMaps\TicketLinkToTFSFieldMap.cs" />
     <Compile Include="FieldMaps\TicketRelationshipsFieldMap.cs" />
     <Compile Include="FieldMaps\TicketTemplatesFieldMap.cs" />
     <Compile Include="FieldMaps\TicketTimeLineViewFieldMap.cs" />
@@ -467,6 +471,7 @@
     <Compile Include="FieldMaps\WaterCoolerViewFieldMap.cs" />
     <Compile Include="FieldMaps\WikiArticlesViewFieldMap.cs" />
     <Compile Include="Generated\GeneratedActionLinkToJira.cs" />
+    <Compile Include="Generated\GeneratedActionLinkToTFS.cs" />
     <Compile Include="Generated\GeneratedAgentRatings.cs" />
     <Compile Include="Generated\GeneratedAgentRatingsOptions.cs" />
     <Compile Include="Generated\GeneratedAgentRatingUsers.cs" />
@@ -755,6 +760,7 @@
     <Compile Include="Generated\GeneratedTicketAutomationTriggersView.cs" />
     <Compile Include="Generated\GeneratedTicketGridView.cs" />
     <Compile Include="Generated\GeneratedTicketLinkToJira.cs" />
+    <Compile Include="Generated\GeneratedTicketLinkToTFS.cs" />
     <Compile Include="Generated\GeneratedTicketNextStatuses.cs" />
     <Compile Include="Generated\GeneratedTicketQueue.cs" />
     <Compile Include="Generated\GeneratedTicketRatings.cs" />
@@ -788,6 +794,7 @@
     <Compile Include="Generated\GeneratedWikiArticles.cs" />
     <Compile Include="Generated\GeneratedWikiArticlesView.cs" />
     <Compile Include="Generated\GeneratedWikiHistoryCollection.cs" />
+    <Compile Include="Proxies\ActionLinkToTFSProxy.cs" />
     <Compile Include="Proxies\BackdoorLoginsProxy.cs" />
     <Compile Include="Proxies\CalendarEventsProxy.cs" />
     <Compile Include="Proxies\CalendarRefProxy.cs" />
@@ -827,6 +834,7 @@
     <Compile Include="Proxies\TaskLogsProxy.cs" />
     <Compile Include="Proxies\TasksProxy.cs" />
     <Compile Include="Proxies\TasksViewProxy.cs" />
+    <Compile Include="Proxies\TicketLinkToTFSProxy.cs" />
     <Compile Include="Proxies\TicketTimeLineViewProxy.cs" />
     <Compile Include="Proxies\TicketTypesViewProxy.cs" />
     <Compile Include="Proxies\TokStorageProxy.cs" />
