@@ -56,6 +56,16 @@ namespace TSWebServices
             return organizations[0].OrganizationID;
         }
 
+        [WebMethod]
+        public int GetIDByExactNameNoFilter(string name)
+        {
+            //name = name.Replace('+', ' ').Replace('_', ' ');
+            Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+            organizations.LoadByOrganizationNameActive(name, TSAuthentication.OrganizationID);
+            if (organizations.IsEmpty) return -1;
+            return organizations[0].OrganizationID;
+        }
+
         //[0] = orgid
         //[1] = userid
         [WebMethod]

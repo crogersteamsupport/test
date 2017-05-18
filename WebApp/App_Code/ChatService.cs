@@ -530,7 +530,7 @@ namespace TSWebServices
             return JsonConvert.SerializeObject(true);
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public int GetTicketID(int chatID)
         {
             Chat chat = Chats.GetChat(loginUser, chatID);

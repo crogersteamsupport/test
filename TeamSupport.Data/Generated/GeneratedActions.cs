@@ -76,7 +76,10 @@ namespace TeamSupport.Data
       set { Row["ImportFileID"] = CheckValue("ImportFileID", value); }
     }
     
-
+    public bool TicketClean
+    {
+        get;set;
+    }
     
     public bool IsClean
     {
