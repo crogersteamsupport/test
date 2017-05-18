@@ -1618,6 +1618,12 @@ function () { }, function (e) { console.log(e) });
             self.openNewCustomer(id);
         });
     },
+    openCustomerByExactName: function (name) {
+        var self = this;
+        Ts.Services.Organizations.GetIDByExactNameNoFilter(name, function (id) {
+            self.openNewCustomer(id);
+        });
+    },
     openCustomer: function (customerID) {
         this.openNewCustomer(customerID);
     },
