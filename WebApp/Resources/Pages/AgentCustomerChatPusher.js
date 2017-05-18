@@ -3,6 +3,7 @@ var channel;
 var customerName;
 var siteUrl;
 var _typingTimer;
+var pusherRequestChannel_AgentPage = null;
 
 function setupChat(pusherKey, chatID, newCommentCallback, callback) {
     var windowUrl = window.location.href;
@@ -198,8 +199,8 @@ function doneTyping() {
 
 function subscribeToNewChatRequest(pusherKey, newRequestCallback) {
     var chatGUID = top.Ts.System.Organization.ChatID;
-    var pusher = new Pusher(pusherKey);
-    var request_channel = pusher.subscribe('chat-requests-' + chatGUID);
+    pusherRequestChannel_AgentPage = new Pusher(pusherKey);
+    var request_channel = pusherRequestChannel_AgentPage.subscribe('chat-requests-' + chatGUID);
 
     request_channel.bind('new-chat-request', function (data) {
         try {

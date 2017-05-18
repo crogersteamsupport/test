@@ -159,6 +159,45 @@ AdminPortal = function () {
         $('.portal-save-panel').hide();
     });
 
+
+    var _agentratingOption = new parent.parent.TeamSupport.Data.AgentRatingsOptionProxy();;
+    _agentratingOption.PositiveRatingText = $('#agentrating-positive').val();
+    _agentratingOption.NeutralRatingText = $('#agentrating-neutral').val();
+    _agentratingOption.NegativeRatingText = $('#agentrating-negative').val();
+    _agentratingOption.RedirectURL = $('#agentrating-redirecturl').val();
+    _agentratingOption.ExternalPageLink = $('#agentrating-externalurl').val();
+
+    parent.parent.Ts.Services.Organizations.SaveAgentRatings(_agentratingOption, function (result) {
+        parent.parent.Ts.System.logAction('Admin Company - Agent Rating Settings Saved');
+        $('.portal-save-panel').hide();
+    });
+
+  }
+
+  loadAgentRating();
+  function loadAgentRating() {
+
+      parent.parent.Ts.Services.Organizations.GetAgentRatingOptions(parent.parent.Ts.System.Organization.OrganizationID, function (o) {
+          if (o != null) {
+              if (o.PositiveImage)
+                  $('#agentrating-positive-img').attr('src', o.PositiveImage);
+              if (o.NeutralImage)
+                  $('#agentrating-neutral-img').attr('src', o.NeutralImage);
+              if (o.NegativeImage)
+                  $('#agentrating-negative-img').attr('src', o.NegativeImage);
+
+              if (o.PositiveRatingText != null)
+                  $('#agentrating-positive').text(o.PositiveRatingText);
+              if (o.NeutralRatingText != null)
+                  $('#agentrating-neutral').text(o.NeutralRatingText);
+              if (o.NegativeRatingText != null)
+                  $('#agentrating-negative').text(o.NegativeRatingText);
+              if (o.RedirectURL != null)
+                  $('#agentrating-redirecturl').val(o.RedirectURL);
+              if (o.ExternalPageLink != null)
+                  $('#agentrating-externalurl').val(o.ExternalPageLink);
+          }
+      });
   }
 
   loadCDISettings();

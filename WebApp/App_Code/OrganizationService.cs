@@ -56,6 +56,16 @@ namespace TSWebServices
             return organizations[0].OrganizationID;
         }
 
+        [WebMethod]
+        public int GetIDByExactNameNoFilter(string name)
+        {
+            //name = name.Replace('+', ' ').Replace('_', ' ');
+            Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+            organizations.LoadByOrganizationNameActive(name, TSAuthentication.OrganizationID);
+            if (organizations.IsEmpty) return -1;
+            return organizations[0].OrganizationID;
+        }
+
         //[0] = orgid
         //[1] = userid
         [WebMethod]
@@ -162,6 +172,33 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public void SaveAgentRatings(AgentRatingsOptionProxy agentproxy)
+        {
+            AgentRatingsOption agentRatingOption = AgentRatingsOptions.GetAgentRatingsOption(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID);
+            if (agentRatingOption == null)
+            {
+                AgentRatingsOptions aro = new AgentRatingsOptions(TSAuthentication.GetLoginUser());
+                aro.AddNewAgentRatingsOption();
+                aro[0].OrganizationID = TSAuthentication.OrganizationID;
+                aro[0].PositiveRatingText = agentproxy.PositiveRatingText;
+                aro[0].NeutralRatingText = agentproxy.NeutralRatingText;
+                aro[0].NegativeRatingText = agentproxy.NegativeRatingText;
+                aro[0].RedirectURL = agentproxy.RedirectURL;
+                aro[0].ExternalPageLink = agentproxy.ExternalPageLink;
+                aro[0].Collection.Save();
+            }
+            else
+            {
+                agentRatingOption.PositiveRatingText = agentproxy.PositiveRatingText;
+                agentRatingOption.NeutralRatingText = agentproxy.NeutralRatingText;
+                agentRatingOption.NegativeRatingText = agentproxy.NegativeRatingText;
+                agentRatingOption.RedirectURL = agentproxy.RedirectURL;
+                agentRatingOption.ExternalPageLink = agentproxy.ExternalPageLink;
+                agentRatingOption.Collection.Save();
+            }
+        }
+
+        [WebMethod]
         public void SaveCDISettings(CDI_SettingProxy cdi)
         {
             CDI_Setting cdiSettings = CDI_Settings.GetCDI_Setting(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID);
@@ -193,7 +230,7 @@ namespace TSWebServices
 
 
         [WebMethod]
-        public string SetPortalOption(PortalOptionProxy proxy, string externalLink, bool isPublicArticles, int? groupID, AgentRatingsOptionProxy agentproxy)
+        public string SetPortalOption(PortalOptionProxy proxy, string externalLink, bool isPublicArticles, int? groupID)
         {
             Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), proxy.OrganizationID);
             if (organization.OrganizationID != TSAuthentication.OrganizationID || !TSAuthentication.IsSystemAdmin) return null;
@@ -291,28 +328,6 @@ namespace TSWebServices
             if (externalLink.IndexOf("http") < 0 && externalLink != "") externalLink = "http://" + externalLink;
             Settings.OrganizationDB.WriteString("ExternalPortalLink", externalLink);
 
-            AgentRatingsOption agentRatingOption = AgentRatingsOptions.GetAgentRatingsOption(TSAuthentication.GetLoginUser(), proxy.OrganizationID);
-            if (agentRatingOption == null)
-            {
-                AgentRatingsOptions aro = new AgentRatingsOptions(TSAuthentication.GetLoginUser());
-                aro.AddNewAgentRatingsOption();
-                aro[0].OrganizationID = TSAuthentication.OrganizationID;
-                aro[0].PositiveRatingText = agentproxy.PositiveRatingText;
-                aro[0].NeutralRatingText = agentproxy.NeutralRatingText;
-                aro[0].NegativeRatingText = agentproxy.NegativeRatingText;
-                aro[0].RedirectURL = agentproxy.RedirectURL;
-                aro[0].ExternalPageLink = agentproxy.ExternalPageLink;
-                aro[0].Collection.Save();
-            }
-            else
-            {
-                agentRatingOption.PositiveRatingText = agentproxy.PositiveRatingText;
-                agentRatingOption.NeutralRatingText = agentproxy.NeutralRatingText;
-                agentRatingOption.NegativeRatingText = agentproxy.NegativeRatingText;
-                agentRatingOption.RedirectURL = agentproxy.RedirectURL;
-                agentRatingOption.ExternalPageLink = agentproxy.ExternalPageLink;
-                agentRatingOption.Collection.Save();
-            }
             return null;
         }
 

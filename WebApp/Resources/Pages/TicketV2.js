@@ -1387,7 +1387,8 @@ function SaveAction(_oldActionID, isPrivate, callback) {
     if (actionType !== null) {
         if (timeSpent < 1 && actionType.IsTimed == true && window.parent.Ts.System.Organization.TimedActionsRequired == true) {
             $('#action-save-alert').text('Please enter the time you worked on this action.').show();
-            $('#action-new-save').prop('disabled', false);
+            //$('#action-new-save').prop('disabled', false);
+            EnableCreateBtns();
             return false;
         }
         action.ActionTypeID = actionType.ActionTypeID;
