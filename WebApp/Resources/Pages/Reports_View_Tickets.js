@@ -330,7 +330,7 @@
     }
 
     var companyFormatter = function (row, cell, value, columnDef, dataContext) {
-        return '<a href="#" onclick="parent.Ts.MainPage.openCustomerByName(\'' + dataContext[columnDef.id] + '\', true); return false;">' + dataContext[columnDef.id] + '</a>';
+        return '<a href="#" onclick="parent.Ts.MainPage.openCustomerByExactName(\'' + dataContext[columnDef.id] + '\', true); return false;">' + dataContext[columnDef.id] + '</a>';
     }
 
 

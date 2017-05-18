@@ -134,6 +134,7 @@ namespace TeamSupport.Data
             action.Description = HtmlUtility.FixScreenRFrame((action.Row["Description"] == DBNull.Value) ? string.Empty : action.Description);
             string actionNumber = GetActionNumber(action.TicketID, action.ActionID);
             string description = "Modified action #" + actionNumber + " on " + Tickets.GetTicketLink(LoginUser, action.TicketID);
+            if(!action.TicketClean)
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, action.TicketID, description);
         }
 

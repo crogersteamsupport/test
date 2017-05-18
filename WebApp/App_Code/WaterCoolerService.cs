@@ -523,7 +523,7 @@ namespace TSWebServices
             ou.Name = online.FirstLastName;
             ou.AppChatID = online.AppChatID;
             ou.UserID = online.UserID;
-            ou.Avatar = GetUserPhoto(online.UserID);
+            ou.Avatar = string.Format("/dc/{0}/UserAvatar/{1}/120", orgID.ToString(), online.UserID.ToString());
 
             onlineusers.Add(ou);
         }
@@ -531,26 +531,7 @@ namespace TSWebServices
         return onlineusers.ToArray();
     }
 
-    public string GetUserPhoto(int userID)
-    {
-        string path;
-        //return Attachments.GetAttachmentPath(TSAuthentication.GetLoginUser(), ReferenceType.UserPhoto, userID);
-
-        if (userID == -99)
-            userID = TSAuthentication.GetLoginUser().UserID;
-
-        User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
-        Attachments att = new Attachments(TSAuthentication.GetLoginUser());
-        att.LoadByReference(ReferenceType.UserPhoto, userID);
-
-        if (att.Count > 0)
-        {
-            path = String.Format("/dc/{0}/avatar/{1}", user.OrganizationID, att[0].AttachmentID);
-        }
-        else
-            path = "../images/blank_avatar.png";
-        return path;
-    }
+    
 
   }
 

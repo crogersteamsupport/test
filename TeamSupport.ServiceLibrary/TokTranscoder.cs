@@ -234,7 +234,7 @@ namespace TeamSupport.ServiceLibrary
                 proc1.Close();
                 proc1.Kill();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Logs.WriteEvent("----- Error killing or closing  ffmpeg : " + ex.Message);
             }
