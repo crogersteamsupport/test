@@ -137,7 +137,8 @@ namespace TeamSupport.Data
         NewDevice = 12,
         TooManyAttempts = 13,
         ResetCustomerHubPassword = 14,//PARAMS: UserID, Password
-        WelcomeCustomerHubUser = 15 //PARAMS: UserID, Password
+        WelcomeCustomerHubUser = 15, //PARAMS: UserID, Password
+        Reaction = 16
 
     }
 

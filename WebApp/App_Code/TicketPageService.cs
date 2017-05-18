@@ -1009,10 +1009,23 @@ namespace TSWebServices
         {
             try
             {
+
+                EmailPosts posts   = new EmailPosts(TSAuthentication.GetLoginUser());
+                EmailPost post     = posts.AddNewEmailPost();
+                post.EmailPostType = EmailPostType.Reaction;
+                post.HoldTime = 0;
+
+                post.Param1 = TSAuthentication.UserID.ToString();
+                post.Param3 = author.UserID;
+                post.Param3 = ticketID.ToString();
+                post.Param4 = Dns.GetHostName();
+                posts.Save();
+
                 String hostName = Dns.GetHostName();
                 string nameSender = loginUser.GetUserFullName();
                 string subject = loginUser.GetUserFullName() + " gave you an Applause!";
                 string body = "<P>Congratulations, you've received applause from " + nameSender + "!</P>https://" + hostName + "/?TicketID=" + ticketID;
+
                 //UsersViewItem view = GetUserView();
                 Organization o = Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
                 System.Net.Mail.MailMessage message = new System.Net.Mail.MailMessage();

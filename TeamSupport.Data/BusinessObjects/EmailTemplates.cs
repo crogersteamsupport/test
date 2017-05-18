@@ -977,6 +977,18 @@ namespace TeamSupport.Data
             return template.GetMessage();
         }
 
+        public static MailMessage GetReaction(LoginUser loginUser, int ticketID, string hostName)
+        {
+            EmailTemplate template = EmailTemplates.GetEmailTemplate(loginUser,40);
+
+            string senderName = loginUser.GetUserFullName();
+
+            template.ReplaceParameter("Sender.Name", senderName).ReplaceParameter("ticketid", ticketID.ToString()).ReplaceParameter("hostname", hostName);
+
+            return template.GetMessage();
+        }
+
+
         public static MailMessage GetTicketSendEmail(LoginUser loginUser, UsersViewItem sender, TicketsViewItem ticket, string recipient, string introduction)
         {
             int productFamilyID = -1;
