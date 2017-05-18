@@ -70,9 +70,9 @@ form.positive-file-upload input, form.neutral-file-upload input, form.negative-f
 }
 
 .hubDisabledWell {
-    padding: 20px 30px 20px 30px;
+    padding: 20px;
     width: 380px;
-    font-size:13px;
+    font-size:12px;
 }
 
 #disabledNewHub {

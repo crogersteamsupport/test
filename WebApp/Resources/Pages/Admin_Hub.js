@@ -73,7 +73,7 @@ $(document).ready(function () {
         var HubID = $(this).data('hubid');
 
         if (confirm('Are you sure you want to delete this hub? All customized hub page data will be lost.')) {
-            if (confirm('Final Warning: Deleting your hub means you will lose all of your customizations and can result in data loss, please verify this is your intention.')) {
+            if (confirm('Final Warning: Deleting your hub means you will lose all of your customizations and can result in data loss, please verify this is your intention.  After deletion hub customizations CANNOT be recovered.')) {
                 parent.parent.Ts.Services.Admin.DeleteHub(HubID, function () {
                     pageLoad();
                 });
