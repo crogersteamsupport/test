@@ -30,6 +30,8 @@ namespace TeamSupport.Data
         [DataMember]
         public DateTime? DateCompleted { get; set; }
         [DataMember]
+        public string CompletionComment { get; set; }
+        [DataMember]
         public int? ParentID { get; set; }
         [DataMember]
         public int CreatorID { get; set; }
@@ -55,6 +57,7 @@ namespace TeamSupport.Data
         public TaskProxy GetProxy()
         {
             TaskProxy result = new TaskProxy();
+            result.CompletionComment = this.CompletionComment;
             result.NeedsIndexing = this.NeedsIndexing;
             result.IsDismissed = this.IsDismissed;
             result.ReminderDueDate = this.ReminderDueDate;

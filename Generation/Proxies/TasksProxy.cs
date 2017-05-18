@@ -28,6 +28,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int? ReminderID { get; set; }
     [DataMember] public bool NeedsIndexing { get; set; }
+    [DataMember] public string CompletionComment { get; set; }
           
   }
   
@@ -36,6 +37,7 @@ namespace TeamSupport.Data
     public TaskProxy GetProxy()
     {
       TaskProxy result = new TaskProxy();
+      result.CompletionComment = this.CompletionComment;
       result.NeedsIndexing = this.NeedsIndexing;
       result.ReminderID = this.ReminderID;
       result.ModifierID = this.ModifierID;

@@ -83,6 +83,11 @@ $(document).ready(function () {
                 $('#taskComplete').removeClass("emptyButton");
                 $('#taskComplete').attr("data-original-title", "Uncomplete this task");
                 $('#taskComplete').tooltip('fixTitle');
+
+                $('#reminderDateGroup').hide();
+                $('.completedData').show();
+                $('#fieldCompletionDate').html(task.DateCompleted == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.DateCompleted).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
+                $('#fieldCompletionComment').text(!task.CompletionComment ? "None" : task.CompletionComment);
             }
             else {
                 $('#fieldComplete').text("No");
@@ -91,15 +96,12 @@ $(document).ready(function () {
                 $('#taskComplete').removeClass("completedButton");
                 $('#taskComplete').attr("data-original-title", "Complete this task");
                 $('#taskComplete').tooltip('fixTitle');
+
+                $('#reminderDateGroup').show();
+                $('.completedData').hide();
             }
             $('#fieldDueDate').html(task.DueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>');
             $('#fieldReminder').html(task.ReminderDueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.ReminderDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearReminderDate" class="col-xs-1 fa fa-times clearDate"></i>');
-            if (task.IsComplete) {
-                $('#reminderDateGroup').hide();
-            }
-            else {
-                $('#reminderDateGroup').show();
-            }
 
             $('#fieldCreator').text(task.Creator);
             $('#fieldDateCreated').text(window.parent.parent.Ts.Utils.getMsDate(task.DateCreated).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
@@ -403,6 +405,8 @@ $(document).ready(function () {
                             $('#reminderDateGroup').hide();
                             _completeCommentTaskID = _taskID;
                             $('#modalTaskComment').modal('show');
+                            $('#fieldCompletionDate').html(result.DateCompleted == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(result.DateCompleted).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
+                            $('#fieldCompletionComment').text(!result.CompletionComment ? "None" : result.CompletionComment);
                     },
                     function (error) {
                         header.show();
@@ -426,6 +430,7 @@ $(document).ready(function () {
                 $('#taskComplete').attr("data-original-title", "Complete this task");
                 $('#taskComplete').tooltip('fixTitle');
                 $('#reminderDateGroup').show();
+                $('.completedData').hide();
             },
             function (error) {
                 header.show();
@@ -1414,10 +1419,13 @@ $(document).ready(function () {
         }
         else {
             window.parent.parent.Ts.System.logAction('Task - Add Task Complete Comment');
-            window.parent.parent.Ts.Services.Task.AddTaskCompleteComment(_completeCommentTaskID, $('#taskCompleteComment').val(), function (success) {
-                if (success) {
+            window.parent.parent.Ts.Services.Task.AddTaskCompleteComment(_completeCommentTaskID, $('#taskCompleteComment').val(), function (result) {
+                if (result.Value) {
                     $('#taskCompleteComment').val('');
                     $('#modalTaskComment').modal('hide');
+                    $('#fieldCompletionDate').html(result.DateCompleted == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(result.DateCompleted).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
+                    $('#fieldCompletionComment').text(!result.CompletionComment ? "None" : result.CompletionComment);
+                    $('.completedData').show();
                 }
                 else {
                     alert('There was an error saving your comment. Please try again.')
@@ -1425,6 +1433,10 @@ $(document).ready(function () {
             });
         }
     });
+
+    $('#btnNoComment').on('click', function (e) {
+        $('.completedData').show();
+    })
 });
 
 

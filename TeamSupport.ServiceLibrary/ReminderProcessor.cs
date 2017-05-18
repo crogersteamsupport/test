@@ -93,7 +93,7 @@ namespace TeamSupport.ServiceLibrary
                     if (task == null) return;
                     message = EmailTemplates.GetReminderTaskEmail(LoginUser, reminder, user, task);
                     description = String.Format("Reminder sent to {0} for Task {1}", message.To.ToString(), task.Name);
-                    Logs.WriteEvent(description);
+                    Logs.WriteEvent("ver. 05162017: " + description);
                     ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tasks, task.TaskID, description);
                     ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, (int)reminder.UserID, description);
 
@@ -113,7 +113,14 @@ namespace TeamSupport.ServiceLibrary
                             taskAction.IsVisibleOnPortal = false;
                             taskAction.IsKnowledgeBase = false;
                             taskAction.TicketID = taskAssociation.RefID;
-                            taskAction.Collection.Save();
+                            try
+                            {
+                                taskAction.Collection.Save();
+                            }
+                            catch (Exception ex)
+                            {
+                                Logs.WriteEvent("Ex Reminder Action.Save: " + ex.StackTrace);
+                            }
                         }
                     }
                     break;
@@ -130,6 +137,7 @@ namespace TeamSupport.ServiceLibrary
             MailAddress address = new MailAddress(user.Email, user.FirstName + " " + user.LastName);
             Logs.WriteEvent("Mail Address: " + address.ToString());
             message.To.Add(address);
+            EmailTemplates.ReplaceMailAddressParameters(message);
             Emails.AddEmail(LoginUser, reminder.OrganizationID, null, message.Subject, message);
             Logs.WriteEvent("Message queued");
         }
