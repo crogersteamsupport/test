@@ -1027,15 +1027,15 @@ namespace TSWebServices
                 string body = "<P>Congratulations, you've received applause from " + nameSender + "!</P>https://" + hostName + "/?TicketID=" + ticketID;
 
                 //UsersViewItem view = GetUserView();
-                Organization o = Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
-                System.Net.Mail.MailMessage message = new System.Net.Mail.MailMessage();
-                message.From = new System.Net.Mail.MailAddress("support@teamsupport.com");
-                message.To.Add(new System.Net.Mail.MailAddress(author.Email));
-                message.Subject = subject;
+                //Organization o = Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
+                //System.Net.Mail.MailMessage message = new System.Net.Mail.MailMessage();
+               // message.From = new System.Net.Mail.MailAddress("support@teamsupport.com");
+                //message.To.Add(new System.Net.Mail.MailAddress(author.Email));
+                //message.Subject = subject;
                 //int count = Organizations.GetUserCount(Collection.LoginUser, OrganizationID);
-                message.IsBodyHtml = true;
-                message.Body = body;
-                Emails.AddEmail(loginUser, loginUser.OrganizationID, null, subject, message);
+                //message.IsBodyHtml = true;
+                //message.Body = body;
+                //Emails.AddEmail(loginUser, loginUser.OrganizationID, null, subject, message);
             }
             catch { };//unimplemented because I don't see central log
         }
