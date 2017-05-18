@@ -995,49 +995,32 @@ namespace TSWebServices
             string updateReaction = string.Empty;
             TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            User user = TSAuthentication.GetUser(loginUser);
-            User author = Users.GetUser(loginUser, action.CreatorID);
-            updateReaction = Actions.UpdateReaction(loginUser, action.CreatorID, ticketID, actionID, value);
-            if (updateReaction == "positive" && value > 0 && author.UserID != loginUser.UserID)
+
+            int receiverID = Convert.ToInt32(action.CreatorID);
+
+            updateReaction = Actions.UpdateReaction(loginUser, receiverID, ticketID, actionID, value);
+
+            if (updateReaction == "positive" && value > 0 && action.CreatorID != loginUser.UserID)
             {
-                EmailReaction(loginUser, author, ticketID);
+                EmailReaction(loginUser, receiverID, ticketID);
             }
             return updateReaction;
         }
 
-        private void EmailReaction(LoginUser loginUser, User author, int ticketID)
+        private void EmailReaction(LoginUser loginUser, int receiverID, int ticketID)
         {
             try
             {
-
                 EmailPosts posts   = new EmailPosts(TSAuthentication.GetLoginUser());
                 EmailPost post     = posts.AddNewEmailPost();
                 post.EmailPostType = EmailPostType.Reaction;
-                post.HoldTime = 0;
-
-                post.Param1 = TSAuthentication.UserID.ToString();
-                post.Param3 = author.UserID;
-                post.Param3 = ticketID.ToString();
-                post.Param4 = Dns.GetHostName();
+                post.HoldTime = 5;
+                post.Param1 = receiverID.ToString();
+                post.Param2 = ticketID.ToString();
+                post.Param3 = Dns.GetHostName().ToString();
                 posts.Save();
-
-                String hostName = Dns.GetHostName();
-                string nameSender = loginUser.GetUserFullName();
-                string subject = loginUser.GetUserFullName() + " gave you an Applause!";
-                string body = "<P>Congratulations, you've received applause from " + nameSender + "!</P>https://" + hostName + "/?TicketID=" + ticketID;
-
-                //UsersViewItem view = GetUserView();
-                //Organization o = Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
-                //System.Net.Mail.MailMessage message = new System.Net.Mail.MailMessage();
-               // message.From = new System.Net.Mail.MailAddress("support@teamsupport.com");
-                //message.To.Add(new System.Net.Mail.MailAddress(author.Email));
-                //message.Subject = subject;
-                //int count = Organizations.GetUserCount(Collection.LoginUser, OrganizationID);
-                //message.IsBodyHtml = true;
-                //message.Body = body;
-                //Emails.AddEmail(loginUser, loginUser.OrganizationID, null, subject, message);
             }
-            catch { };//unimplemented because I don't see central log
+            catch { }
         }
 
 

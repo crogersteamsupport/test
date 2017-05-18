@@ -215,7 +215,7 @@ namespace TeamSupport.ServiceLibrary
                     break;
 
                 case EmailPostType.Reaction:
-                    ProcessReaction(GetIntParam(emailPost.Param1), GetIntParam(emailPost.Param2), GetIntParam(emailPost.Param3), emailPost.Param4);
+                    ProcessReaction(emailPost, GetIntParam(emailPost.Param1), GetIntParam(emailPost.Param2), emailPost.Param3);
                     break;
                 case EmailPostType.TicketUpdateRequest:
                     ProcessTicketUpdateRequest(GetIntParam(emailPost.Param1), GetIntParam(emailPost.Param2));
@@ -1047,19 +1047,19 @@ namespace TeamSupport.ServiceLibrary
             }
         }
 
-        private void ProcessReaction(int userID, int authorID, int ticketID, string hostName)
+        private void ProcessReaction(EmailPost emailPost, int receiverID, int ticketID, string hostName)
         {
             try
             {
-                User sender   = Users.GetUser(LoginUser, userID);
-                User receiver = Users.GetUser(LoginUser, authorID);
+                User sender   = Users.GetUser(LoginUser, emailPost.CreatorID); 
+                User receiver = Users.GetUser(LoginUser, receiverID);
 
                 MailMessage message = EmailTemplates.GetReaction(LoginUser, ticketID, hostName);
 
                 message.To.Add(GetMailAddress(receiver.Email, receiver.FirstLastName));
                 // message.Subject = message.Subject;
-                string replyAddress = "support@teamsupport.com";
-                // AddMessage(ticketOrganization.OrganizationID, "Action Reaction (Applause) [" + ticketID + "]", message, replyAddress);
+                string replyAddress = sender.Email;
+                AddMessage(receiver.OrganizationID, "Action Reaction (Applause) [" + ticketID + "]", message, replyAddress);
             }
 
             catch { }
