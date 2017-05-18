@@ -52,6 +52,12 @@ namespace TeamSupport.Data
       set { Row["VisibleOnPortal"] = CheckValue("VisibleOnPortal", value); }
     }
     
+    public int? ProductFamilyID
+    {
+      get { return Row["ProductFamilyID"] != DBNull.Value ? (int?)Row["ProductFamilyID"] : null; }
+      set { Row["ProductFamilyID"] = CheckValue("ProductFamilyID", value); }
+    }
+    
 
     
     public int OrganizationID
@@ -141,45 +147,22 @@ namespace TeamSupport.Data
       }
 
       return list.ToArray();
-    }
-
-    public KnowledgeBaseCategoryProxy[] GetPortalKnowledgeBaseCategoryProxies()
-    {
-        List<KnowledgeBaseCategoryProxy> list = new List<KnowledgeBaseCategoryProxy>();
-
-        foreach (KnowledgeBaseCategory item in this)
-        {
-            if(item.VisibleOnPortal == true)
-                list.Add(item.GetProxy());
-        }
-
-        return list.ToArray();
     }	
 	
     public virtual void DeleteFromDB(int categoryID)
     {
-      BeforeDBDelete(categoryID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[KnowledgeBaseCategories] WHERE ([CategoryID] = @CategoryID);";
         deleteCommand.Parameters.Add("CategoryID", SqlDbType.Int);
         deleteCommand.Parameters["CategoryID"].Value = categoryID;
 
+        BeforeDBDelete(categoryID);
         BeforeRowDelete(categoryID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(categoryID);
-      }
-      AfterDBDelete(categoryID);
-      
-    }
+        AfterDBDelete(categoryID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("KnowledgeBaseCategoriesSave");
@@ -188,7 +171,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[KnowledgeBaseCategories] SET     [ParentID] = @ParentID,    [CategoryName] = @CategoryName,    [CategoryDesc] = @CategoryDesc,    [OrganizationID] = @OrganizationID,    [Position] = @Position,    [VisibleOnPortal] = @VisibleOnPortal  WHERE ([CategoryID] = @CategoryID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[KnowledgeBaseCategories] SET     [ParentID] = @ParentID,    [CategoryName] = @CategoryName,    [CategoryDesc] = @CategoryDesc,    [OrganizationID] = @OrganizationID,    [Position] = @Position,    [VisibleOnPortal] = @VisibleOnPortal,    [ProductFamilyID] = @ProductFamilyID  WHERE ([CategoryID] = @CategoryID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CategoryID", SqlDbType.Int, 4);
@@ -240,13 +223,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[KnowledgeBaseCategories] (    [ParentID],    [CategoryName],    [CategoryDesc],    [OrganizationID],    [Position],    [VisibleOnPortal]) VALUES ( @ParentID, @CategoryName, @CategoryDesc, @OrganizationID, @Position, @VisibleOnPortal); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[KnowledgeBaseCategories] (    [ParentID],    [CategoryName],    [CategoryDesc],    [OrganizationID],    [Position],    [VisibleOnPortal],    [ProductFamilyID]) VALUES ( @ParentID, @CategoryName, @CategoryDesc, @OrganizationID, @Position, @VisibleOnPortal, @ProductFamilyID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("VisibleOnPortal", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -402,7 +399,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [CategoryID], [ParentID], [CategoryName], [CategoryDesc], [OrganizationID], [Position], [VisibleOnPortal] FROM [dbo].[KnowledgeBaseCategories] WHERE ([CategoryID] = @CategoryID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CategoryID], [ParentID], [CategoryName], [CategoryDesc], [OrganizationID], [Position], [VisibleOnPortal], [ProductFamilyID] FROM [dbo].[KnowledgeBaseCategories] WHERE ([CategoryID] = @CategoryID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CategoryID", categoryID);
         Fill(command);
