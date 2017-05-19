@@ -4349,11 +4349,11 @@ function CreateHandleBarHelpers() {
     });
 
     Handlebars.registerHelper('Applause', function () {
+        if (this.item.IsWC) { return; }
         var ticketID = this.item.TicketID;
         var actionID = this.item.RefID;
         var display = (this.item.OrganizationID === window.parent.Ts.System.User.OrganizationID && !this.item.IsWC) ? 'inline' : 'none';
         var output = window.parent.Ts.Services.TicketPage.PullReactions(ticketID, actionID, function (result) {
-            console.log('PullReactions: ' + result);
             if (result != 'negative' && result != 'nothing' && result != 'hidden') {
                 var data = jQuery.parseJSON(result);
                 var tally = data[0].reactions[0].tally;
