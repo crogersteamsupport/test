@@ -301,9 +301,11 @@
       },
       getProduct: function (productID) {
           var products = this.getProducts();
-          for (var i = 0; i < products.length; i++) {
-              if (products[i].ProductID == productID) {
-                  return products[i];
+          if (typeof products !== "undefined") {
+              for (var i = 0; i < products.length; i++) {
+                  if (products[i].ProductID == productID) {
+                      return products[i];
+                  }
               }
           }
           return null;
