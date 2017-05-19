@@ -58,7 +58,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public ForumCategoryProxy UpdateForumCategory(int categoryID, string name, string description, int? ticketTypeID, int? groupID, int? productID)
+        public ForumCategoryProxy UpdateForumCategory(int categoryID, string name, string description, int? ticketTypeID, int? groupID, int? productID, int? productFamilyID)
         {
             if (!TSAuthentication.IsSystemAdmin) return null;
             ForumCategory cat = ForumCategories.GetForumCategory(TSAuthentication.GetLoginUser(), categoryID);
@@ -68,6 +68,7 @@ namespace TSWebServices
             cat.TicketType = ticketTypeID;
             cat.GroupID = groupID;
             cat.ProductID = productID;
+            cat.ProductFamilyID = productFamilyID;
             cat.Collection.Save();
             return cat.GetProxy();
         }
@@ -81,7 +82,7 @@ namespace TSWebServices
             ForumCategory cat = (new ForumCategories(TSAuthentication.GetLoginUser())).AddNewForumCategory();
             cat.OrganizationID = TSAuthentication.OrganizationID;
             cat.CategoryName = parentID == null ? "Untitled Category" : "Untitled Subcategory";
-            cat.ParentID = parentID ?? -1;
+            cat.ParentID = parentID ?? -1;    
             cat.Position = GetForumCategoryMaxPosition(parentID) + 1;
             cat.Collection.Save();
             return cat.GetProxy();
@@ -185,7 +186,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public KnowledgeBaseCategoryProxy UpdateKnowledgeBaseCategory(int categoryID, string name, string description, bool visibleOnPortal)
+        public KnowledgeBaseCategoryProxy UpdateKnowledgeBaseCategory(int categoryID, string name, string description, bool visibleOnPortal, int? productFamilyID)
         {
             if (!TSAuthentication.IsSystemAdmin) return null;
             KnowledgeBaseCategory cat = KnowledgeBaseCategories.GetKnowledgeBaseCategory(TSAuthentication.GetLoginUser(), categoryID);
@@ -193,6 +194,7 @@ namespace TSWebServices
             cat.CategoryName = name;
             cat.CategoryDesc = description;
             cat.VisibleOnPortal = visibleOnPortal;
+            cat.ProductFamilyID = productFamilyID;
             cat.Collection.Save();
             return cat.GetProxy();
         }
@@ -521,26 +523,208 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string GetHubURL()
+        public List<CustomerHubLinkModel> GetHubURL()
         {
+            List<CustomerHubLinkModel> hubList = null;
+
             CustomerHubs hubs = new CustomerHubs(TSAuthentication.GetLoginUser());
             hubs.LoadByOrganizationID(TSAuthentication.OrganizationID);
 
             if (hubs.Any())
             {
-                return string.Format("{0}.{1}", hubs[0].PortalName, SystemSettings.GetHubURL());
+                hubList = new List<CustomerHubLinkModel>();
+                foreach (var hub in hubs)
+                {
+                    hubList.Add(new CustomerHubLinkModel(hub.CustomerHubID, hub.PortalName, hub.ProductFamilyID, string.Format("{0}.{1}", hub.PortalName, SystemSettings.GetHubURL())));
+                }
             }
             else
             {
+                hubList = new List<CustomerHubLinkModel>();
                 bool success = MigratePortalSettings(TSAuthentication.OrganizationID, TSAuthentication.GetLoginUser());
                 if (success)
                 {
                     CustomerHubs hubs2 = new CustomerHubs(TSAuthentication.GetLoginUser());
                     hubs2.LoadByOrganizationID(TSAuthentication.OrganizationID);
-                    return string.Format("{0}.{1}", hubs2[0].PortalName, SystemSettings.GetHubURL());
+                    hubList.Add(new CustomerHubLinkModel(hubs[0].CustomerHubID, hubs2[0].PortalName, hubs2[0].ProductFamilyID, string.Format("{0}.{1}", hubs2[0].PortalName, SystemSettings.GetHubURL())));
                 }
             }
-            return null;
+            return hubList;
+        }
+
+        [WebMethod]
+        public CustomerHubCreationModel CreateNewHub(string name, int hubToCopyID, int? productFamilyID)
+        {
+            CustomerHubCreationModel result = null;
+
+            CustomerHubLinkModel newHubModel = new CustomerHubLinkModel(-1, name, productFamilyID != -1 ? productFamilyID : null, null);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+            //get old hub info to replicate
+            CustomerHubs customerHubs = new CustomerHubs(loginUser);
+            customerHubs.LoadByCustomerHubID(hubToCopyID);
+
+            if (customerHubs.Any())
+            {
+
+                CustomerHubAuthentication authenticationSettings = new CustomerHubAuthentication(loginUser);
+                authenticationSettings.LoadByCustomerHubID(hubToCopyID);
+
+                CustomerHubDisplaySettings displaySettings = new CustomerHubDisplaySettings(loginUser);
+                displaySettings.LoadByCustomerHubID(hubToCopyID);
+
+                CustomerHubFeatureSettings featureSettings = new CustomerHubFeatureSettings(loginUser);
+                featureSettings.LoadByCustomerHubID(hubToCopyID);
+
+                result = BuildNewHub(newHubModel, customerHubs[0], authenticationSettings[0], displaySettings[0], featureSettings[0]);
+
+                //Profit.
+            }
+
+            return result;
+        }
+
+        public CustomerHubCreationModel BuildNewHub(CustomerHubLinkModel newHubModel, CustomerHub srcHub, CustomerHubAuthenticationItem srcAuthenticationItem, CustomerHubDisplaySetting srcDisplaySetting, CustomerHubFeatureSetting srcFeatureSetting)
+        {
+            CustomerHubCreationModel result = null;
+
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            CustomerHubs hubHelper = new CustomerHubs(loginUser);
+
+            CustomerHub newHub = null;
+
+            //need validation to check if existing hub names are taken!
+            try
+            {
+
+                newHub = hubHelper.AddNewCustomerHub();
+
+                newHub.OrganizationID = srcHub.OrganizationID;
+                newHub.PortalName = Regex.Replace(newHubModel.Name, "[^0-9a-zA-Z-]", "");
+                newHub.IsActive = true;
+                newHub.ProductFamilyID = newHubModel.ProductFamilyID;
+                newHub.DateCreated = DateTime.UtcNow;
+                newHub.DateModified = DateTime.UtcNow;
+                newHub.ModifierID = TSAuthentication.GetLoginUser().UserID;
+                newHub.EnableMigration = false;
+
+                hubHelper.Save();
+
+            }
+            catch (Exception ex)
+            {
+                string creationMessage = "Error creating your customer hub please try again or contact your administrator";
+
+                if (ex.Message.Contains("UNIQUE"))
+                {
+                    creationMessage = "This hub name is already taken, please enter a different name and try again.";
+                }
+
+                newHub = null;
+                result = new CustomerHubCreationModel(null, false, creationMessage);
+            }
+
+            if (newHub != null)
+            {
+
+                CustomerHubAuthentication authenticationHelper = new CustomerHubAuthentication(loginUser);
+                CustomerHubAuthenticationItem authenticationItem = authenticationHelper.AddNewCustomerHubAuthenticationItem();
+
+                //authenticationItem = srcAuthenticationItem;
+
+                authenticationItem.EnableSelfRegister = srcAuthenticationItem.EnableSelfRegister;
+                authenticationItem.EnableRequestAccess = srcAuthenticationItem.EnableRequestAccess;
+                authenticationItem.EnableSSO = srcAuthenticationItem.EnableSSO;
+                authenticationItem.RequestTicketType = srcAuthenticationItem.RequestTicketType;
+                authenticationItem.RequestGroupType = srcAuthenticationItem.RequestGroupType;
+                authenticationItem.AnonymousHubAccess = srcAuthenticationItem.AnonymousHubAccess;
+                authenticationItem.AnonymousWikiAccess = srcAuthenticationItem.AnonymousKBAccess;
+                authenticationItem.AnonymousKBAccess = srcAuthenticationItem.AnonymousKBAccess;
+                authenticationItem.AnonymousProductAccess = srcAuthenticationItem.AnonymousProductAccess;
+                authenticationItem.AnonymousTicketAccess = srcAuthenticationItem.AnonymousTicketAccess;
+                authenticationItem.HonorServiceAgreementExpirationDate = srcAuthenticationItem.HonorServiceAgreementExpirationDate;
+                authenticationItem.HonorSupportExpiration = srcAuthenticationItem.HonorSupportExpiration;
+                authenticationItem.RequireTermsAndConditions = srcAuthenticationItem.RequireTermsAndConditions;
+                authenticationItem.AnonymousChatAccess = srcAuthenticationItem.AnonymousChatAccess;
+
+                authenticationItem.DateModified = DateTime.UtcNow;
+                authenticationItem.CustomerHubID = newHub.CustomerHubID;
+                authenticationItem.ModifierID = loginUser.UserID;
+
+                authenticationHelper.Save();
+
+                CustomerHubDisplaySettings displayHelper = new CustomerHubDisplaySettings(loginUser);
+                CustomerHubDisplaySetting displaySetting = displayHelper.AddNewCustomerHubDisplaySetting();
+
+                displaySetting.FontFamily = srcDisplaySetting.FontFamily;
+                displaySetting.FontColor = srcDisplaySetting.FontColor;
+                displaySetting.Color1 = srcDisplaySetting.Color1;
+                displaySetting.Color2 = srcDisplaySetting.Color2;
+                displaySetting.Color3 = srcDisplaySetting.Color3;
+                displaySetting.Color4 = srcDisplaySetting.Color4;
+                displaySetting.Color5 = srcDisplaySetting.Color5;
+
+                displaySetting.CustomerHubID = newHub.CustomerHubID;
+                displaySetting.DateModified = DateTime.UtcNow;
+                displaySetting.ModifierID = loginUser.UserID;
+
+                displayHelper.Save();
+
+                CustomerHubFeatureSettings featureHelper = new CustomerHubFeatureSettings(loginUser);
+                CustomerHubFeatureSetting featureSetting = featureHelper.AddNewCustomerHubFeatureSetting();
+
+                featureSetting.EnableKnowledgeBase = srcFeatureSetting.EnableKnowledgeBase;
+                featureSetting.EnableProducts = srcFeatureSetting.EnableProducts;
+                featureSetting.EnableTicketCreation = srcFeatureSetting.EnableTicketCreation;
+                featureSetting.EnableMyTickets = srcFeatureSetting.EnableMyTickets;
+                featureSetting.EnableOrganizationTickets = srcFeatureSetting.EnableOrganizationTickets;
+                featureSetting.EnableWiki = srcFeatureSetting.EnableWiki;
+                featureSetting.EnableTicketGroupSelection = srcFeatureSetting.EnableTicketGroupSelection;
+                featureSetting.EnableTicketProductSelection = srcFeatureSetting.EnableTicketProductSelection;
+                featureSetting.EnableTicketProductVersionSelection = srcFeatureSetting.EnableTicketProductVersionSelection;
+                featureSetting.DefaultTicketTypeID = srcFeatureSetting.DefaultTicketTypeID;
+                featureSetting.DefaultGroupTypeID = srcFeatureSetting.DefaultGroupTypeID;
+                featureSetting.EnableCustomerProductAssociation = srcFeatureSetting.EnableCustomerProductAssociation;
+                featureSetting.EnableChat = srcFeatureSetting.EnableChat;
+                featureSetting.EnableCommunity = srcFeatureSetting.EnableCommunity;
+                featureSetting.EnableScreenRecording = srcFeatureSetting.EnableScreenRecording;
+                featureSetting.EnableVideoRecording = srcFeatureSetting.EnableVideoRecording;
+                featureSetting.EnableTicketSeverity = srcFeatureSetting.EnableTicketSeverity;
+                featureSetting.EnableTicketSeverityModification = srcFeatureSetting.EnableTicketSeverityModification;
+                featureSetting.RestrictProductVersions = srcFeatureSetting.RestrictProductVersions;
+                featureSetting.EnableTicketNameModification = srcFeatureSetting.EnableTicketNameModification;
+
+                featureSetting.CustomerHubID = newHub.CustomerHubID;
+                featureSetting.DateModified = DateTime.UtcNow;
+                featureSetting.ModifierID = loginUser.UserID;
+
+                featureHelper.Save();
+
+                CustomerHubLinkModel customerHubLinkModel = new CustomerHubLinkModel(newHub.CustomerHubID, newHub.PortalName, newHub.ProductFamilyID, string.Format("{0}.{1}", newHub.PortalName, SystemSettings.GetHubURL()));
+                result = new CustomerHubCreationModel(customerHubLinkModel, true);
+            }
+
+            return result;
+        }
+
+        [WebMethod]
+        public void DeleteHub(int hubID)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+            CustomerHubs hubHelper = new CustomerHubs(loginUser);
+            hubHelper.LoadByOrganizationID(loginUser.OrganizationID);
+
+            if (hubHelper.Count() > 1)
+            {
+                CustomerHubs.DeleteByCustomerHubID(loginUser, hubID);
+                CustomerHubAuthentication.DeleteByCustomerHubID(loginUser, hubID);
+                CustomerHubAuthentication.DeleteByCustomerHubID(loginUser, hubID);
+                CustomerHubCustomViews.DeleteByCustomerHubID(loginUser, hubID);
+                CustomerHubDisplaySettings.DeleteByCustomerHubID(loginUser, hubID);
+                CustomerHubFeatureSettings.DeleteByCustomerHubID(loginUser, hubID);
+            }
+
         }
 
         [WebMethod]
@@ -607,6 +791,7 @@ namespace TSWebServices
                     hub.OrganizationID = parentOrgID;
                     hub.IsActive = true;
                     hub.DateModified = DateTime.UtcNow;
+                    hub.EnableMigration = false;
                     hubs.Save();
                 }
                 else
@@ -1171,5 +1356,37 @@ namespace TSWebServices
         public int? ParentID { get; set; }
         [DataMember]
         public List<int> CategoryIDs { get; set; }
+    }
+    [DataContract(Namespace = "http://teamsupport.com/")]
+    public class CustomerHubCreationModel
+    {
+        public CustomerHubCreationModel(CustomerHubLinkModel hubLinkModel, bool isSuccess, string errorMessage = null)
+        {
+            HubLinkModel = hubLinkModel;
+            IsSuccess = isSuccess;
+            ErrorMessage = errorMessage;
+        }
+        public CustomerHubLinkModel HubLinkModel { get; set; }
+        public bool IsSuccess { get; set; }
+        public string ErrorMessage { get; set; }
+
+    }
+
+    [DataContract(Namespace = "http://teamsupport.com/")]
+    public class CustomerHubLinkModel
+    {
+        public CustomerHubLinkModel() { }
+        public CustomerHubLinkModel(int hubid, string name, int? productFamilyID, string url)
+        {
+            HubID = hubid;
+            Name = name;
+            URL = url;
+            ProductFamilyID = productFamilyID;
+        }
+        [DataMember]
+        public int HubID { get; set; }
+        public string Name { get; set; }
+        public int? ProductFamilyID { get; set; }
+        public string URL { get; set; }
     }
 }
