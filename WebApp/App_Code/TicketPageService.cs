@@ -1017,7 +1017,7 @@ namespace TSWebServices
                 post.HoldTime = 5;
                 post.Param1 = receiverID.ToString();
                 post.Param2 = ticketID.ToString();
-                post.Param3 = Dns.GetHostName().ToString();
+                post.Param3 = SystemSettings.GetAppUrl();
                 posts.Save();
             }
             catch { }

@@ -2604,8 +2604,10 @@ function LoadProductList(products) {
     if ($('#ticket-Product').length) {
         if (products == null) products = window.parent.Ts.Cache.getProducts();
 
-        for (var i = 0; i < products.length; i++) {
-            AppendSelect('#ticket-Product', products[i], 'product', products[i].ProductID, products[i].Name, (products[i].ProductID === _ticketInfo.Ticket.ProductID));
+        if (typeof products !== "undefined") {
+            for (var i = 0; i < products.length; i++) {
+                AppendSelect('#ticket-Product', products[i], 'product', products[i].ProductID, products[i].Name, (products[i].ProductID === _ticketInfo.Ticket.ProductID));
+            }
         }
 
         var $productselect = $('#ticket-Product').selectize({
