@@ -57,6 +57,7 @@ $(document).ready(function () {
     LoadProperties();
     LoadCustomProperties();
     LoadReminderUsers();
+    LoadHubs();
     UpdateRecentView();
     GetUser();
 
@@ -379,59 +380,59 @@ $(document).ready(function () {
 
                 _mainFrame.Ts.System.logAction('Contact Detail - Edit Contact Name');
                 var container = $('<form>')
-                  .addClass('form-inline')
-                  .insertAfter(header);
+                    .addClass('form-inline')
+                    .insertAfter(header);
 
                 var container1 = $('<div>')
                     .addClass('form-group')
-                  .appendTo(container);
+                    .appendTo(container);
 
                 $('<input type="text">')
-                  .addClass('form-control')
-                  .val(user.FirstName)
-                  .attr('placeholder', 'First Name')
-                  .appendTo(container1)
-                  .focus();
+                    .addClass('form-control')
+                    .val(user.FirstName)
+                    .attr('placeholder', 'First Name')
+                    .appendTo(container1)
+                    .focus();
                 $('<input type="text">')
-                  .addClass('form-control')
-                  .val(user.MiddleName)
-                  .attr('placeholder', 'Middle Name')
-                  .appendTo(container1)
-                  .focus();
+                    .addClass('form-control')
+                    .val(user.MiddleName)
+                    .attr('placeholder', 'Middle Name')
+                    .appendTo(container1)
+                    .focus();
                 $('<input type="text">')
-                  .addClass('form-control')
-                  .val(user.LastName)
-                  .attr('placeholder', 'Last Name')
-                  .appendTo(container1)
-                  .focus();
+                    .addClass('form-control')
+                    .val(user.LastName)
+                    .attr('placeholder', 'Last Name')
+                    .appendTo(container1)
+                    .focus();
                 $('<i>')
-                  .addClass('fa fa-check')
-                  .click(function (e) {
-                      if ($(this).prev().prev().prev().val() == "") {
-                          alert("The first name can not be blank");
-                          return;
-                      }
+                    .addClass('fa fa-check')
+                    .click(function (e) {
+                        if ($(this).prev().prev().prev().val() == "") {
+                            alert("The first name can not be blank");
+                            return;
+                        }
 
-                      _mainFrame.Ts.Services.Customers.SetContactName(userID, $(this).prev().prev().prev().val(), $(this).prev().prev().val(), $(this).prev().val(), function (result) {
-                          GetUser();
-                          $('#contactEdit').removeClass("disabled");
-                      },
-                      function (error) {
-                          header.show();
-                          alert('There was an error saving the customer name.');
-                      });
-                      $(this).closest('div').remove();
-                      header.show();
-                  })
-                  .appendTo(container1);
+                        _mainFrame.Ts.Services.Customers.SetContactName(userID, $(this).prev().prev().prev().val(), $(this).prev().prev().val(), $(this).prev().val(), function (result) {
+                            GetUser();
+                            $('#contactEdit').removeClass("disabled");
+                        },
+                            function (error) {
+                                header.show();
+                                alert('There was an error saving the customer name.');
+                            });
+                        $(this).closest('div').remove();
+                        header.show();
+                    })
+                    .appendTo(container1);
                 $('<i>')
-                  .addClass('fa fa-times')
-                  .click(function (e) {
-                      $(this).closest('div').remove();
-                      header.show();
-                      $('#contactEdit').removeClass("disabled");
-                  })
-                  .appendTo(container1);
+                    .addClass('fa fa-times')
+                    .click(function (e) {
+                        $(this).closest('div').remove();
+                        header.show();
+                        $('#contactEdit').removeClass("disabled");
+                    })
+                    .appendTo(container1);
                 $('input, textarea').placeholder();
                 $('#contactEdit').addClass("disabled");
             });
@@ -453,48 +454,48 @@ $(document).ready(function () {
             _mainFrame.Ts.System.logAction('Contact Detail - Edit Contact Email');
             var header = $(this).hide();
             var container = $('<div>')
-              .insertAfter(header);
+                .insertAfter(header);
 
             var container1 = $('<div>')
                 .addClass('col-md-9')
-              .appendTo(container);
+                .appendTo(container);
 
             var test = $('<input type="text">')
-              .addClass('col-md-10 form-control')
-              .val($(this).text() == "Empty" ? "" : $(this).text())
-              .appendTo(container1)
-              .focus();
+                .addClass('col-md-10 form-control')
+                .val($(this).text() == "Empty" ? "" : $(this).text())
+                .appendTo(container1)
+                .focus();
 
             $('<i>')
-              .addClass('col-md-1 fa fa-times')
-              .click(function (e) {
-                  $(this).closest('div').remove();
-                  header.show();
-                  $('#contactEdit').removeClass("disabled");
-              })
-              .insertAfter(container1);
+                .addClass('col-md-1 fa fa-times')
+                .click(function (e) {
+                    $(this).closest('div').remove();
+                    header.show();
+                    $('#contactEdit').removeClass("disabled");
+                })
+                .insertAfter(container1);
             $('<i>')
-              .addClass('col-md-1 fa fa-check')
-              .click(function (e) {
-                  _mainFrame.Ts.Services.Customers.SetContactEmail(userID, $(this).prev().find('input').val(), function (result) {
-                      header.text(result);
-                      $('#contactEdit').removeClass("disabled");
-                      if (result != 'Empty') {
-                          $('#contactEmailButton').show();
-                      }
-                      else {
-                          $('#contactEmailButton').hide();
-                      }
-                  },
-                  function (error) {
-                      header.show();
-                      alert('There was an error saving the customer email.');
-                      $('#contactEdit').removeClass("disabled");
-                  });
-                  $(this).closest('div').remove();
-                  header.show();
-              })
-              .insertAfter(container1);
+                .addClass('col-md-1 fa fa-check')
+                .click(function (e) {
+                    _mainFrame.Ts.Services.Customers.SetContactEmail(userID, $(this).prev().find('input').val(), function (result) {
+                        header.text(result);
+                        $('#contactEdit').removeClass("disabled");
+                        if (result != 'Empty') {
+                            $('#contactEmailButton').show();
+                        }
+                        else {
+                            $('#contactEmailButton').hide();
+                        }
+                    },
+                        function (error) {
+                            header.show();
+                            alert('There was an error saving the customer email.');
+                            $('#contactEdit').removeClass("disabled");
+                        });
+                    $(this).closest('div').remove();
+                    header.show();
+                })
+                .insertAfter(container1);
             $('#contactEdit').addClass("disabled");
         }
     });
@@ -511,42 +512,42 @@ $(document).ready(function () {
             _mainFrame.Ts.System.logAction('Contact Detail - Edit Contact LinkedIn');
             var header = $(this).hide();
             var container = $('<div>')
-              .insertAfter(header);
+                .insertAfter(header);
 
             var container1 = $('<div>')
                 .addClass('col-md-9')
-              .appendTo(container);
+                .appendTo(container);
 
             var test = $('<input type="text">')
-              .addClass('col-md-10 form-control')
-              .val($(this).text() == "Empty" ? "" : $(this).text())
-              .appendTo(container1)
-              .focus();
+                .addClass('col-md-10 form-control')
+                .val($(this).text() == "Empty" ? "" : $(this).text())
+                .appendTo(container1)
+                .focus();
 
             $('<i>')
-              .addClass('col-md-1 fa fa-times')
-              .click(function (e) {
-                  $(this).closest('div').remove();
-                  header.show();
-                  $('#contactEdit').removeClass("disabled");
-              })
-              .insertAfter(container1);
+                .addClass('col-md-1 fa fa-times')
+                .click(function (e) {
+                    $(this).closest('div').remove();
+                    header.show();
+                    $('#contactEdit').removeClass("disabled");
+                })
+                .insertAfter(container1);
             $('<i>')
-              .addClass('col-md-1 fa fa-check')
-              .click(function (e) {
-                  _mainFrame.Ts.Services.Customers.SetContactLinkedIn(userID, $(this).prev().find('input').val(), function (result) {
-                      header.text(result);
-                      $('#contactEdit').removeClass("disabled");
-                  },
+                .addClass('col-md-1 fa fa-check')
+                .click(function (e) {
+                    _mainFrame.Ts.Services.Customers.SetContactLinkedIn(userID, $(this).prev().find('input').val(), function (result) {
+                        header.text(result);
+                        $('#contactEdit').removeClass("disabled");
+                    },
                         function (error) {
                             header.show();
                             alert('There was an error saving the customer linkedin.');
                             $('#contactEdit').removeClass("disabled");
                         });
-                  $(this).closest('div').remove();
-                  header.show();
-              })
-              .insertAfter(container1);
+                    $(this).closest('div').remove();
+                    header.show();
+                })
+                .insertAfter(container1);
             $('#contactEdit').addClass("disabled");
         }
     });
@@ -558,42 +559,42 @@ $(document).ready(function () {
         _mainFrame.Ts.System.logAction('Contact Detail - Edit Contact Title');
         var header = $(this).hide();
         var container = $('<div>')
-          .insertAfter(header);
+            .insertAfter(header);
 
         var container1 = $('<div>')
             .addClass('col-md-9')
-          .appendTo(container);
+            .appendTo(container);
 
         var text = $('<input type="text">')
-          .addClass('col-md-10 form-control')
-          .val($(this).text() == "Empty" ? "" : $(this).text())
-          .appendTo(container1)
-          .focus();
+            .addClass('col-md-10 form-control')
+            .val($(this).text() == "Empty" ? "" : $(this).text())
+            .appendTo(container1)
+            .focus();
 
         $('<i>')
-          .addClass('col-md-1 fa fa-times')
-          .click(function (e) {
-              $(this).closest('div').remove();
-              header.show();
-          })
-          .insertAfter(container1);
+            .addClass('col-md-1 fa fa-times')
+            .click(function (e) {
+                $(this).closest('div').remove();
+                header.show();
+            })
+            .insertAfter(container1);
         $('<i>')
-          .addClass('col-md-1 fa fa-check')
-          .click(function (e) {
-              _mainFrame.Ts.Services.Customers.SetContactTitle(userID, $(this).prev().find('input').val(), function (result) {
-                  header.text(result);
-                  $('#contactEdit').removeClass("disabled");
-              },
-              function (error) {
-                  header.show();
-                  alert('There was an error saving the customer title.');
-                  $('#contactEdit').removeClass("disabled");
-              });
-              $(this).closest('div').remove();
-              header.show();
-              $('#contactEdit').removeClass("disabled");
-          })
-          .insertAfter(container1);
+            .addClass('col-md-1 fa fa-check')
+            .click(function (e) {
+                _mainFrame.Ts.Services.Customers.SetContactTitle(userID, $(this).prev().find('input').val(), function (result) {
+                    header.text(result);
+                    $('#contactEdit').removeClass("disabled");
+                },
+                    function (error) {
+                        header.show();
+                        alert('There was an error saving the customer title.');
+                        $('#contactEdit').removeClass("disabled");
+                    });
+                $(this).closest('div').remove();
+                header.show();
+                $('#contactEdit').removeClass("disabled");
+            })
+            .insertAfter(container1);
         $('#contactEdit').addClass("disabled");
 
 
@@ -605,10 +606,10 @@ $(document).ready(function () {
             $('#fieldActive').text((result === true ? 'Yes' : 'No'));
             _mainFrame.Ts.System.logAction('Contact Detail - Edit Contact Active State');
         },
-        function (error) {
-            header.show();
-            alert('There was an error saving the customer active.');
-        });
+            function (error) {
+                header.show();
+                alert('There was an error saving the customer active.');
+            });
     });
 
     $('.userProperties').on('click', '#fieldPortalUser', function (e) {
@@ -629,10 +630,10 @@ $(document).ready(function () {
                     _mainFrame.Ts.Services.Customers.SetCompanyPortalAccessUser(userID);
 
         },
-        function (error) {
-            header.show();
-            alert('There was an error saving the customer portal user status.');
-        });
+            function (error) {
+                header.show();
+                alert('There was an error saving the customer portal user status.');
+            });
     });
 
     $('.userProperties').on('click', '#fieldPortalViewOnly', function (e) {
@@ -642,10 +643,10 @@ $(document).ready(function () {
             $('#fieldPortalViewOnly').text((result == 0 ? 'No' : 'Yes'));
             _mainFrame.Ts.System.logAction('Contact Detail - Edit Contact Portal View Only');
         },
-        function (error) {
-            header.show();
-            alert('There was an error saving the customer portal view only status.');
-        });
+            function (error) {
+                header.show();
+                alert('There was an error saving the customer portal view only status.');
+            });
     });
 
     $('.userProperties').on('click', '#fieldDisableOrganizationTicketsViewonPortal', function (e) {
@@ -655,10 +656,10 @@ $(document).ready(function () {
             $('#fieldDisableOrganizationTicketsViewonPortal').text((result === true ? 'Yes' : 'No'));
             _mainFrame.Ts.System.logAction('Contact Detail - Edit Contact Portal Limit Org Tickets');
         },
-        function (error) {
-            header.show();
-            alert('There was an error saving the customer Portal Limit Org Tickets status.');
-        });
+            function (error) {
+                header.show();
+                alert('There was an error saving the customer Portal Limit Org Tickets status.');
+            });
     });
 
     $('.userProperties').on('click', '#fieldDisableOrganizationChildrenTicketsViewonPortal', function (e) {
@@ -668,10 +669,10 @@ $(document).ready(function () {
             $('#fieldDisableOrganizationChildrenTicketsViewonPortal').text((result === true ? 'Yes' : 'No'));
             _mainFrame.Ts.System.logAction('Contact Detail - Edit Contact Portal Limit Org Children Tickets');
         },
-        function (error) {
-            header.show();
-            alert('There was an error saving the customer Portal Limit Org Children Tickets status.');
-        });
+            function (error) {
+                header.show();
+                alert('There was an error saving the customer Portal Limit Org Children Tickets status.');
+            });
     });
 
     $('.userProperties').on('click', '#fieldCompany', function (e) {
@@ -689,61 +690,61 @@ $(document).ready(function () {
             _mainFrame.Ts.System.logAction('Contact Detail - Edit Contact Company');
             var header = $(this).hide();
             var container = $('<div>')
-              .insertAfter(header);
+                .insertAfter(header);
 
             var container1 = $('<div>')
                 .addClass('col-md-9')
-              .appendTo(container);
+                .appendTo(container);
 
             var text = $('<input type="text">')
-              .addClass('col-md-10 form-control')
-              .val($(this).text())
-              .appendTo(container1)
-              .autocomplete({
-                  minLength: 2,
-                  source: getCompany,
-                  select: function (event, ui) {
-                      $(this)
-                      .data('item', ui.item.id)
-                      .removeClass('ui-autocomplete-loading')
-                  }
-              })
-              .focus();
+                .addClass('col-md-10 form-control')
+                .val($(this).text())
+                .appendTo(container1)
+                .autocomplete({
+                    minLength: 2,
+                    source: getCompany,
+                    select: function (event, ui) {
+                        $(this)
+                            .data('item', ui.item.id)
+                            .removeClass('ui-autocomplete-loading')
+                    }
+                })
+                .focus();
 
             $('<i>')
-              .addClass('col-md-1 fa fa-times')
-              .click(function (e) {
-                  $(this).closest('div').remove();
-                  header.show();
-                  $('#contactEdit').removeClass("disabled");
-              })
-              .insertAfter(container1);
+                .addClass('col-md-1 fa fa-times')
+                .click(function (e) {
+                    $(this).closest('div').remove();
+                    header.show();
+                    $('#contactEdit').removeClass("disabled");
+                })
+                .insertAfter(container1);
             $('<i>')
-              .addClass('col-md-1 fa fa-check')
-              .click(function (e) {
-                  var neworgID = $(this).prev().find('input').data('item');
-                  if (neworgID != undefined) {
-                      _mainFrame.Ts.Services.Customers.SetContactCompany2(userID, neworgID, function (result) {
-                          if (result == 'email already exists') {
-                              header.show();
-                              alert('A contact with the same email already exists in the new company.');
-                              $('#contactEdit').removeClass("disabled");
-                              return;
-                          }
-                          header.text(result);
-                          header.attr('orgid', neworgID);
-                          $('#contactEdit').removeClass("disabled");
-                      },
-                          function (error) {
-                              header.show();
-                              alert('There was an error saving the customer company.');
-                              $('#contactEdit').removeClass("disabled");
-                          });
-                  }
-                  $(this).closest('div').remove();
-                  header.show();
-              })
-              .insertAfter(container1);
+                .addClass('col-md-1 fa fa-check')
+                .click(function (e) {
+                    var neworgID = $(this).prev().find('input').data('item');
+                    if (neworgID != undefined) {
+                        _mainFrame.Ts.Services.Customers.SetContactCompany2(userID, neworgID, function (result) {
+                            if (result == 'email already exists') {
+                                header.show();
+                                alert('A contact with the same email already exists in the new company.');
+                                $('#contactEdit').removeClass("disabled");
+                                return;
+                            }
+                            header.text(result);
+                            header.attr('orgid', neworgID);
+                            $('#contactEdit').removeClass("disabled");
+                        },
+                            function (error) {
+                                header.show();
+                                alert('There was an error saving the customer company.');
+                                $('#contactEdit').removeClass("disabled");
+                            });
+                    }
+                    $(this).closest('div').remove();
+                    header.show();
+                })
+                .insertAfter(container1);
             $('#contactEdit').addClass("disabled");
         }
     });
@@ -754,10 +755,10 @@ $(document).ready(function () {
             $('#fieldPreventemailfromcreatingandupdatingtickets').text((result === true ? 'Yes' : 'No'));
             _mainFrame.Ts.System.logAction('Contact Detail - Edit Prevent Email From Creating And Updating Tickets');
         },
-        function (error) {
-            header.show();
-            alert('There was an error saving the customer block email status.');
-        });
+            function (error) {
+                header.show();
+                alert('There was an error saving the customer block email status.');
+            });
     });
     $('.userProperties').on('click', '#fieldPreventemailfromcreatingbutallowupdatingtickets', function (e) {
         if (!$(this).hasClass('editable'))
@@ -766,10 +767,10 @@ $(document).ready(function () {
             $('#fieldPreventemailfromcreatingbutallowupdatingtickets').text((result === true ? 'Yes' : 'No'));
             _mainFrame.Ts.System.logAction('Contact Detail - Edit Prevent Email From Creating Only');
         },
-        function (error) {
-            header.show();
-            alert('There was an error saving the customer block email creating only.');
-        });
+            function (error) {
+                header.show();
+                alert('There was an error saving the customer block email creating only.');
+            });
     });
     $('.userProperties').on('click', '#fieldSystemAdministrator', function (e) {
         if (!$(this).hasClass('editable'))
@@ -778,10 +779,10 @@ $(document).ready(function () {
             $('#fieldSystemAdministrator').text((result === true ? 'Yes' : 'No'));
             _mainFrame.Ts.System.logAction('Contact Detail - Edit Is Contact System Administrator');
         },
-        function (error) {
-            header.show();
-            alert('There was an error saving the customer system admin status.');
-        });
+            function (error) {
+                header.show();
+                alert('There was an error saving the customer system admin status.');
+            });
     });
     $('.userProperties').on('click', '#fieldFinancialAdministrator', function (e) {
         if (!$(this).hasClass('editable'))
@@ -790,10 +791,10 @@ $(document).ready(function () {
             $('#fieldFinancialAdministrator').text((result === true ? 'Yes' : 'No'));
             _mainFrame.Ts.System.logAction('Contact Detail - Edit Contact Financial Administrator');
         },
-        function (error) {
-            header.show();
-            alert('There was an error saving the customer financial admin status.');
-        });
+            function (error) {
+                header.show();
+                alert('There was an error saving the customer financial admin status.');
+            });
     });
 
 
@@ -1039,7 +1040,8 @@ $(document).ready(function () {
         e.stopPropagation();
         if (confirm('Are you sure you would like to remove this note?')) {
             _mainFrame.Ts.System.logAction('Contact Detail - Delete Note');
-            parent.privateServices.DeleteNote($(this).parent().parent().attr('id'), function () {;
+            parent.privateServices.DeleteNote($(this).parent().parent().attr('id'), function () {
+                ;
                 LoadNotes();
                 $('.noteDesc').toggle(false);
             });
@@ -1127,41 +1129,41 @@ $(document).ready(function () {
         add: function (e, data) {
             for (var i = 0; i < data.files.length; i++) {
                 var item = $('<li>')
-                  .appendTo($('.upload-queue'));
+                    .appendTo($('.upload-queue'));
 
                 data.context = item;
                 item.data('data', data);
 
                 var bg = $('<div>')
-                  .addClass('ts-color-bg-accent')
-                  .appendTo(item);
+                    .addClass('ts-color-bg-accent')
+                    .appendTo(item);
 
                 $('<div>')
-                  .text(data.files[i].name + '  (' + _mainFrame.Ts.Utils.getSizeString(data.files[i].size) + ')')
-                  .addClass('filename')
-                  .appendTo(bg);
+                    .text(data.files[i].name + '  (' + _mainFrame.Ts.Utils.getSizeString(data.files[i].size) + ')')
+                    .addClass('filename')
+                    .appendTo(bg);
 
                 $('<span>')
-                  .addClass('fa fa-times')
-                  .click(function (e) {
-                      e.preventDefault();
-                      $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
-                  })
-                  .appendTo(bg);
+                    .addClass('fa fa-times')
+                    .click(function (e) {
+                        e.preventDefault();
+                        $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
+                    })
+                    .appendTo(bg);
 
                 $('<span>')
-                  .addClass('fa fa-times')
-                  .hide()
-                  .click(function (e) {
-                      e.preventDefault();
-                      var data = $(this).closest('li').data('data');
-                      data.jqXHR.abort();
-                  })
-                  .appendTo(bg);
+                    .addClass('fa fa-times')
+                    .hide()
+                    .click(function (e) {
+                        e.preventDefault();
+                        var data = $(this).closest('li').data('data');
+                        data.jqXHR.abort();
+                    })
+                    .appendTo(bg);
 
                 var progress = $('<div>')
-                  .addClass('progress progress-striped active')
-                  .hide();
+                    .addClass('progress progress-striped active')
+                    .hide();
 
                 $('<div>')
                     .addClass('progress-bar')
@@ -1224,9 +1226,11 @@ $(document).ready(function () {
         });
     });
 
-    $('#btnResetChubPW').click(function (e) {
+    $('#hubPasswordResetList').on('click', 'a.btnResetChubPW', function (e) {
+        e.preventDefault();
+        var productFamilyID = $(this).data('familyid');
         window.parent.parent.Ts.System.logAction('Contact Detail - Reset Hub Password');
-        window.parent.parent.Ts.Services.Customers.ChubPasswordReset(userID, function (msg) {
+        window.parent.parent.Ts.Services.Customers.ChubPasswordReset(userID, productFamilyID, function (msg) {
             alert(msg);
         });
     })
@@ -1254,10 +1258,10 @@ $(document).ready(function () {
                     }
 
                     $('<tr>').addClass("viewNote")
-                    .attr("id", note[i].NoteID)
-                    .html(html)
-                    .data("description", note[i].Description)
-                    .appendTo('#tblNotes > tbody:last');
+                        .attr("id", note[i].NoteID)
+                        .html(html)
+                        .data("description", note[i].Description)
+                        .appendTo('#tblNotes > tbody:last');
                     //$('#tblNotes > tbody:last').append('<tr id=' + note[i].NoteID + ' class="viewNote"><td><i class="glyphicon glyphicon-edit editNote"></i></td><td><i class="glyphicon glyphicon-trash deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td></tr>').data('description',note[i].Description);
                     if (noteID != null && noteID == note[i].NoteID) {
                         $('.noteDesc').html("<strong>Description</strong> <p>" + note[i].Description + "</p>");
@@ -1279,10 +1283,10 @@ $(document).ready(function () {
 
 
                     $('<tr>').addClass("viewNote")
-                    .attr("id", note[i].NoteID)
-                    .html(html)
-                    .data("description", note[i].Description)
-                    .appendTo('#tblNotes > tbody:last');
+                        .attr("id", note[i].NoteID)
+                        .html(html)
+                        .data("description", note[i].Description)
+                        .appendTo('#tblNotes > tbody:last');
                     //$('#tblNotes > tbody:last').append('<tr id=' + note[i].NoteID + ' class="viewNote"><td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td></tr>').data('description',note[i].Description);
                     if (noteID != null && noteID == note[i].NoteID) {
                         $('.noteDesc').html("<strong>Description</strong> <p>" + note[i].Description + "</p>");
@@ -1313,9 +1317,9 @@ $(document).ready(function () {
                     }
 
                     var tr = $('<tr>')
-                    .attr('id', files[i].AttachmentID)
-                    .html(html)
-                    .appendTo('#tblFiles > tbody:last');
+                        .attr('id', files[i].AttachmentID)
+                        .html(html)
+                        .appendTo('#tblFiles > tbody:last');
 
 
                     //$('#tblFiles > tbody:last').appendTo('<tr id=' +  + '></tr>');
@@ -1333,9 +1337,9 @@ $(document).ready(function () {
                         html = '<td></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>';
 
                     var tr = $('<tr>')
-                    .attr('id', files[i].AttachmentID)
-                    .html(html)
-                    .appendTo('#tblFiles > tbody:last');
+                        .attr('id', files[i].AttachmentID)
+                        .html(html)
+                        .appendTo('#tblFiles > tbody:last');
 
 
                     //$('#tblFiles > tbody:last').appendTo('<tr id=' +  + '></tr>');
@@ -1480,6 +1484,18 @@ $(document).ready(function () {
         }
     }
 
+    function LoadHubs() {
+        _mainFrame.Ts.Services.Customers.LoadCustomerHubsByContactID(userID, function (hubs) {
+            console.log(hubs);
+            source = $("#hub-password-dropdown-template").html();
+
+            var template = Handlebars.compile(source);
+            data = { hubList: hubs };
+
+            $("#hubPasswordResetList").html(template(data));
+        })
+    }
+
     $('.customProperties, #customProductsControls').on('keydown', '.number', function (event) {
         // Allow only backspace and delete
         if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 190 || event.keyCode == 109 || event.keyCode == 173 || (event.keyCode >= 96 && event.keyCode <= 105)) {
@@ -1508,7 +1524,7 @@ $(document).ready(function () {
                 }
 
                 var tr = $('<tr>')
-                //.html('<td><a href="' + _mainFrame.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="_mainFrame.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">Ticket ' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td>' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td>')
+                    //.html('<td><a href="' + _mainFrame.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="_mainFrame.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">Ticket ' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td>' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td>')
                     .html('<td><a href="' + _mainFrame.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="_mainFrame.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td><a href="#" onclick="_mainFrame.Ts.MainPage.openNewContact(' + ratings[i].reporter.UserID + '); return false;">' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</a></td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td>')
                     .appendTo('#tblRatings > tbody:last');
 
@@ -1573,27 +1589,27 @@ $(document).ready(function () {
 
         for (var i = 0; i < max; i++) {
             var div = $('<div>')
-          .data('o', tickets[i])
-          .addClass('ticket');
+                .data('o', tickets[i])
+                .addClass('ticket');
 
             $('<span>')
-          .addClass('ts-icon ts-icon-info')
-          .attr('rel', '../Tips/Ticket.aspx?TicketID=' + tickets[i].TicketID)
-          .appendTo(div);
+                .addClass('ts-icon ts-icon-info')
+                .attr('rel', '../Tips/Ticket.aspx?TicketID=' + tickets[i].TicketID)
+                .appendTo(div);
 
             var caption = $('<span>')
-          .addClass('ticket-name')
-          .appendTo(div);
+                .addClass('ticket-name')
+                .appendTo(div);
 
             $('<a>')
-          .addClass('ts-link ui-state-defaultx')
-          .attr('href', '#')
-          .text(tickets[i].TicketNumber + ': ' + ellipseString(tickets[i].Name, 50))
-          .appendTo(caption)
-          .click(function (e) {
+                .addClass('ts-link ui-state-defaultx')
+                .attr('href', '#')
+                .text(tickets[i].TicketNumber + ': ' + ellipseString(tickets[i].Name, 50))
+                .appendTo(caption)
+                .click(function (e) {
 
-              _mainFrame.Ts.MainPage.openTicket($(this).closest('.ticket').data('o').TicketNumber, true);
-          });
+                    _mainFrame.Ts.MainPage.openTicket($(this).closest('.ticket').data('o').TicketNumber, true);
+                });
 
 
             div.appendTo(tickets[i].IsClosed == false ? '#openTickets' : '#closedTickets');
@@ -1601,9 +1617,9 @@ $(document).ready(function () {
 
         if ($('#openTickets .ticket').length < 1) {
             $('<div>')
-            .addClass('no-tickets')
-            .text('There are no recent tickets to display')
-            .appendTo('#openTickets');
+                .addClass('no-tickets')
+                .text('There are no recent tickets to display')
+                .appendTo('#openTickets');
         }
     });
 
@@ -1614,16 +1630,16 @@ $(document).ready(function () {
         _mainFrame.Ts.Services.Customers.LoadContactHistory(userID, start, function (history) {
             for (var i = 0; i < history.length; i++) {
                 $('<tr>').html('<td>' + history[i].DateCreated.localeFormat(_mainFrame.Ts.Utils.getDateTimePattern()) + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td>')
-                .appendTo('#tblHistory > tbody:last');
+                    .appendTo('#tblHistory > tbody:last');
                 //$('#tblHistory tr:last').after('<tr><td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td></tr>');
             }
             if (history.length == 50)
                 $('<button>').text("Load More").addClass('btn-link')
-                .click(function (e) {
-                    LoadHistory($('#tblHistory tbody > tr').length + 1);
-                    $(this).remove();
-                })
-               .appendTo('#tblHistory > tbody:last');
+                    .click(function (e) {
+                        LoadHistory($('#tblHistory tbody > tr').length + 1);
+                        $(this).remove();
+                    })
+                    .appendTo('#tblHistory > tbody:last');
         });
     }
 
@@ -1872,15 +1888,15 @@ $(document).ready(function () {
                 case "checkbox":
                     field.Value = $(this).prop('checked');
                     break;
-                    //case "date":
-                    //    field.Value = $(this).val() == "" ? null : _mainFrame.Ts.Utils.getMsDate($(this).val());
-                    //    break;
-                    //case "time":
-                    //    field.Value = $(this).val() == "" ? null : _mainFrame.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
-                    //    break;
-                    //case "datetime":
-                    //    field.Value = $(this).val() == "" ? null : _mainFrame.Ts.Utils.getMsDate($(this).val());
-                    //    break;
+                //case "date":
+                //    field.Value = $(this).val() == "" ? null : _mainFrame.Ts.Utils.getMsDate($(this).val());
+                //    break;
+                //case "time":
+                //    field.Value = $(this).val() == "" ? null : _mainFrame.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
+                //    break;
+                //case "datetime":
+                //    field.Value = $(this).val() == "" ? null : _mainFrame.Ts.Utils.getMsDate($(this).val());
+                //    break;
                 default:
                     field.Value = $(this).val();
             }
@@ -1927,11 +1943,11 @@ $(document).ready(function () {
                 for (var i = 0; i < custField.length; i++) {
                     if (custField[i].FieldType == 2)
                         $('#' + custField[i].CustomFieldID).attr('checked', custField[i].Value);
-                        //else if (custField[i].FieldType == 5)
-                        //{
-                        //    var date = field.value == null ? null : _mainFrame.Ts.Utils.getMsDate(field.Value);
-                        //    $('#' + custField[i].CustomFieldID).val(date.localeFormat(_mainFrame.Ts.Utils.getDatePattern()));
-                        //}
+                    //else if (custField[i].FieldType == 5)
+                    //{
+                    //    var date = field.value == null ? null : _mainFrame.Ts.Utils.getMsDate(field.Value);
+                    //    $('#' + custField[i].CustomFieldID).val(date.localeFormat(_mainFrame.Ts.Utils.getDatePattern()));
+                    //}
 
                     else
                         $('#' + custField[i].CustomFieldID).val(custField[i].Value);
@@ -2144,9 +2160,9 @@ $(document).ready(function () {
                     html = '<td></td><td></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td>' + product[i].DateCreated + '</td>' + customfields;
                 }
                 var tr = $('<tr>')
-                .attr('id', product[i].UserProductID)
-                .html(html)
-                .appendTo('#tblProducts > tbody:last');
+                    .attr('id', product[i].UserProductID)
+                    .html(html)
+                    .appendTo('#tblProducts > tbody:last');
 
 
                 //$('#tblProducts > tbody:last').append('<tr><td><a href="#" id='+ product.ProductID +'><i class="glyphicon glyphicon-edit productEdit"></i></td><td><i class="glyphicon glyphicon-trash productDelete"></i></td><td><i class="fa fa-folder-open productView"></i></td><td>' + product[i].ProductName + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td></td></tr>');
@@ -2274,6 +2290,10 @@ $(document).ready(function () {
         }
     });
 
+    Handlebars.registerHelper("pluralize", function (hubs) {
+        if (hubs.length > 1)  return true
+        else return "(s)";
+    });
 });
 
 var initEditor = function (element, init) {
@@ -2421,9 +2441,9 @@ var appendCustomValues = function (fields) {
 
         var div = $('<div>').addClass('form-group').data('field', field);
         $('<label>')
-          .addClass('col-md-4 control-label')
-          .text(field.Name)
-          .appendTo(div);
+            .addClass('col-md-4 control-label')
+            .text(field.Name)
+            .appendTo(div);
 
         switch (field.FieldType) {
             case _mainFrame.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
@@ -2448,68 +2468,68 @@ var appendCustomValues = function (fields) {
 
 var appendCustomEditCombo = function (field, element) {
     var div = $('<div>')
-    .addClass('col-md-8')
-    .appendTo(element);
+        .addClass('col-md-8')
+        .appendTo(element);
 
     var result = $('<p>')
-      .text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : field.Value))
-      .addClass('form-control-static editable')
-      .appendTo(div)
-      .click(function (e) {
-          e.preventDefault();
-          if (!$(this).hasClass('editable'))
-              return false;
-          var parent = $(this).hide();
-          _mainFrame.Ts.System.logAction('Contact Detail - Edit Custom Combobox');
-          var container = $('<div>')
-            .insertAfter(parent);
+        .text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : field.Value))
+        .addClass('form-control-static editable')
+        .appendTo(div)
+        .click(function (e) {
+            e.preventDefault();
+            if (!$(this).hasClass('editable'))
+                return false;
+            var parent = $(this).hide();
+            _mainFrame.Ts.System.logAction('Contact Detail - Edit Custom Combobox');
+            var container = $('<div>')
+                .insertAfter(parent);
 
-          var container1 = $('<div>')
-          .addClass('col-md-9')
-          .appendTo(container);
+            var container1 = $('<div>')
+                .addClass('col-md-9')
+                .appendTo(container);
 
-          var fieldValue = parent.closest('.form-group').data('field').Value;
-          var select = $('<select>').addClass('form-control').attr('id', field.Name.replace(/\W/g, '')).appendTo(container1);
+            var fieldValue = parent.closest('.form-group').data('field').Value;
+            var select = $('<select>').addClass('form-control').attr('id', field.Name.replace(/\W/g, '')).appendTo(container1);
 
-          var items = field.ListValues.split('|');
-          for (var i = 0; i < items.length; i++) {
-              var option = $('<option>').text(items[i]).appendTo(select);
-              if (fieldValue === items[i]) { option.attr('selected', 'selected'); }
-          }
+            var items = field.ListValues.split('|');
+            for (var i = 0; i < items.length; i++) {
+                var option = $('<option>').text(items[i]).appendTo(select);
+                if (fieldValue === items[i]) { option.attr('selected', 'selected'); }
+            }
 
-          $('<i>')
-            .addClass('col-xs-1 fa fa-times')
-            .click(function (e) {
-                $(this).closest('div').remove();
-                parent.show();
-                $('#customerEdit').removeClass("disabled");
-            })
-            .insertAfter(container1);
+            $('<i>')
+                .addClass('col-xs-1 fa fa-times')
+                .click(function (e) {
+                    $(this).closest('div').remove();
+                    parent.show();
+                    $('#customerEdit').removeClass("disabled");
+                })
+                .insertAfter(container1);
 
-          $('#' + field.Name.replace(/\W/g, '')).on('change', function () {
-              var value = $(this).val();
-              container.remove();
+            $('#' + field.Name.replace(/\W/g, '')).on('change', function () {
+                var value = $(this).val();
+                container.remove();
 
-              if (field.IsRequired && field.IsFirstIndexSelect == true && $(this).find('option:selected').index() < 1) {
-                  result.parent().addClass('has-error');
-              }
-              else {
-                  result.parent().removeClass('has-error');
-              }
-              _mainFrame.Ts.System.logAction('Contact Detail - Save Custom Edit Change');
-              _mainFrame.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
-                  parent.closest('.form-group').data('field', result);
-                  parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
-                  parent.show();
-                  $('#contactEdit').removeClass("disabled");
-              }, function () {
-                  alert("There was a problem saving your contact property.");
-                  $('#contactEdit').removeClass("disabled");
-              });
-          });
+                if (field.IsRequired && field.IsFirstIndexSelect == true && $(this).find('option:selected').index() < 1) {
+                    result.parent().addClass('has-error');
+                }
+                else {
+                    result.parent().removeClass('has-error');
+                }
+                _mainFrame.Ts.System.logAction('Contact Detail - Save Custom Edit Change');
+                _mainFrame.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
+                    parent.closest('.form-group').data('field', result);
+                    parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
+                    parent.show();
+                    $('#contactEdit').removeClass("disabled");
+                }, function () {
+                    alert("There was a problem saving your contact property.");
+                    $('#contactEdit').removeClass("disabled");
+                });
+            });
 
-          $('#contactEdit').addClass("disabled");
-      });
+            $('#contactEdit').addClass("disabled");
+        });
     var items = field.ListValues.split('|');
     if (field.IsRequired && ((field.IsFirstIndexSelect == true && (items[0] == field.Value || field.Value == null || $.trim(field.Value) === '')) || (field.Value == null || $.trim(field.Value) === ''))) {
         result.parent().addClass('has-error');
@@ -2518,139 +2538,34 @@ var appendCustomEditCombo = function (field, element) {
 
 var appendCustomEditNumber = function (field, element) {
     var div = $('<div>')
-    .addClass('col-md-8')
-    .appendTo(element);
+        .addClass('col-md-8')
+        .appendTo(element);
 
     var result = $('<p>')
-      .text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : field.Value))
-      .addClass('form-control-static editable')
-      .appendTo(div)
-      .click(function (e) {
-          e.preventDefault();
-          if (!$(this).hasClass('editable'))
-              return false;
-          var parent = $(this).hide();
-          _mainFrame.Ts.System.logAction('Contact Detail - Edit Custom Number');
-          var container = $('<div>')
-            .insertAfter(parent);
-
-          var container1 = $('<div>')
-          .addClass('col-md-9')
-          .appendTo(container);
-
-          var fieldValue = parent.closest('.form-group').data('field').Value;
-          var input = $('<input type="text">')
-            .addClass('col-md-10 form-control number')
-            .val(fieldValue)
-            .appendTo(container1)
-            .focus();
-
-          $('<i>')
-            .addClass('col-md-1 fa fa-times')
-            .click(function (e) {
-                $(this).closest('div').remove();
-                parent.show();
-                $('#contactEdit').removeClass("disabled");
-            })
-            .insertAfter(container1);
-          $('<i>')
-            .addClass('col-md-1 fa fa-check')
-            .click(function (e) {
-                var value = input.val();
-                container.remove();
-                if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                    result.parent().addClass('has-error');
-                }
-                else {
-                    result.parent().removeClass('has-error');
-                }
-                _mainFrame.Ts.System.logAction('Contact Detail - Save Custom Number Edit');
-                _mainFrame.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
-                    parent.closest('.form-group').data('field', result);
-                    parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
-                    $('#contactEdit').removeClass("disabled");
-                }, function () {
-                    alert("There was a problem saving your contact property.");
-                    $('#contactEdit').removeClass("disabled");
-                });
-                parent.show();
-                $('#contactEdit').removeClass("disabled");
-            })
-            .insertAfter(container1);
-          $('#contactEdit').addClass("disabled");
-      });
-    if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
-        result.parent().addClass('has-error');
-    }
-}
-
-var appendCustomEditBool = function (field, element) {
-
-    var div = $('<div>')
-    .addClass('col-md-8')
-    .appendTo(element);
-
-    var result = $('<p>')
-      .text((field.Value === null || $.trim(field.Value) === '' ? 'False' : field.Value))
-      .addClass('form-control-static editable')
-      .appendTo(div)
-      .click(function (e) {
-          e.preventDefault();
-          if (!$(this).hasClass('editable'))
-              return false;
-          //$('.form-group').prev().show().next().remove();
-          _mainFrame.Ts.System.logAction('Contact Detail - Edit Custom Boolean Value');
-          var parent = $(this);
-          var value = $(this).text() === 'No' || $(this).text() === 'False' ? true : false;
-          _mainFrame.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
-              parent.closest('.form-group').data('field', result);
-              parent.text((result.Value === null || $.trim(result.Value) === '' ? 'False' : result.Value));
-          }, function () {
-              alert("There was a problem saving your contact property.");
-          });
-      });
-}
-
-var appendCustomEdit = function (field, element) {
-
-    var div = $('<div>')
-    .addClass('col-md-8')
-    .appendTo(element);
-
-    var result = $('<p>')
-      .html((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : getUrls(field.Value)))
-      .addClass('form-control-static editable')
-      .appendTo(div)
-      .click(function (e) {
-          if ($(this).has('a') && !$(this).hasClass('editable')) {
-              return;
-          }
-          else {
-              e.preventDefault();
-              if (!$(this).hasClass('editable'))
-                  return false;
-              var parent = $(this).hide();
-              _mainFrame.Ts.System.logAction('Contact Detail - Edit Custom Textbox');
-              var container = $('<div>')
+        .text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : field.Value))
+        .addClass('form-control-static editable')
+        .appendTo(div)
+        .click(function (e) {
+            e.preventDefault();
+            if (!$(this).hasClass('editable'))
+                return false;
+            var parent = $(this).hide();
+            _mainFrame.Ts.System.logAction('Contact Detail - Edit Custom Number');
+            var container = $('<div>')
                 .insertAfter(parent);
 
-              var container1 = $('<div>')
-              .addClass('col-md-9')
-              .appendTo(container);
+            var container1 = $('<div>')
+                .addClass('col-md-9')
+                .appendTo(container);
 
-              var fieldValue = parent.closest('.form-group').data('field').Value;
-              var input = $('<input type="text">')
-                .addClass('col-md-10 form-control')
+            var fieldValue = parent.closest('.form-group').data('field').Value;
+            var input = $('<input type="text">')
+                .addClass('col-md-10 form-control number')
                 .val(fieldValue)
                 .appendTo(container1)
                 .focus();
 
-              if (field.Mask) {
-                  input.mask(field.Mask);
-                  input.attr("placeholder", field.Mask);
-              }
-
-              $('<i>')
+            $('<i>')
                 .addClass('col-md-1 fa fa-times')
                 .click(function (e) {
                     $(this).closest('div').remove();
@@ -2658,7 +2573,7 @@ var appendCustomEdit = function (field, element) {
                     $('#contactEdit').removeClass("disabled");
                 })
                 .insertAfter(container1);
-              $('<i>')
+            $('<i>')
                 .addClass('col-md-1 fa fa-check')
                 .click(function (e) {
                     var value = input.val();
@@ -2669,21 +2584,126 @@ var appendCustomEdit = function (field, element) {
                     else {
                         result.parent().removeClass('has-error');
                     }
-                    _mainFrame.Ts.System.logAction('Contact Detail - Save Custom Textbox Edit');
+                    _mainFrame.Ts.System.logAction('Contact Detail - Save Custom Number Edit');
                     _mainFrame.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
                         parent.closest('.form-group').data('field', result);
-                        parent.html((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : getUrls(result.Value)));
+                        parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
                         $('#contactEdit').removeClass("disabled");
                     }, function () {
                         alert("There was a problem saving your contact property.");
                         $('#contactEdit').removeClass("disabled");
                     });
                     parent.show();
+                    $('#contactEdit').removeClass("disabled");
                 })
                 .insertAfter(container1);
-              $('#contactEdit').addClass("disabled");
-          }
-      });
+            $('#contactEdit').addClass("disabled");
+        });
+    if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
+        result.parent().addClass('has-error');
+    }
+}
+
+var appendCustomEditBool = function (field, element) {
+
+    var div = $('<div>')
+        .addClass('col-md-8')
+        .appendTo(element);
+
+    var result = $('<p>')
+        .text((field.Value === null || $.trim(field.Value) === '' ? 'False' : field.Value))
+        .addClass('form-control-static editable')
+        .appendTo(div)
+        .click(function (e) {
+            e.preventDefault();
+            if (!$(this).hasClass('editable'))
+                return false;
+            //$('.form-group').prev().show().next().remove();
+            _mainFrame.Ts.System.logAction('Contact Detail - Edit Custom Boolean Value');
+            var parent = $(this);
+            var value = $(this).text() === 'No' || $(this).text() === 'False' ? true : false;
+            _mainFrame.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
+                parent.closest('.form-group').data('field', result);
+                parent.text((result.Value === null || $.trim(result.Value) === '' ? 'False' : result.Value));
+            }, function () {
+                alert("There was a problem saving your contact property.");
+            });
+        });
+}
+
+var appendCustomEdit = function (field, element) {
+
+    var div = $('<div>')
+        .addClass('col-md-8')
+        .appendTo(element);
+
+    var result = $('<p>')
+        .html((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : getUrls(field.Value)))
+        .addClass('form-control-static editable')
+        .appendTo(div)
+        .click(function (e) {
+            if ($(this).has('a') && !$(this).hasClass('editable')) {
+                return;
+            }
+            else {
+                e.preventDefault();
+                if (!$(this).hasClass('editable'))
+                    return false;
+                var parent = $(this).hide();
+                _mainFrame.Ts.System.logAction('Contact Detail - Edit Custom Textbox');
+                var container = $('<div>')
+                    .insertAfter(parent);
+
+                var container1 = $('<div>')
+                    .addClass('col-md-9')
+                    .appendTo(container);
+
+                var fieldValue = parent.closest('.form-group').data('field').Value;
+                var input = $('<input type="text">')
+                    .addClass('col-md-10 form-control')
+                    .val(fieldValue)
+                    .appendTo(container1)
+                    .focus();
+
+                if (field.Mask) {
+                    input.mask(field.Mask);
+                    input.attr("placeholder", field.Mask);
+                }
+
+                $('<i>')
+                    .addClass('col-md-1 fa fa-times')
+                    .click(function (e) {
+                        $(this).closest('div').remove();
+                        parent.show();
+                        $('#contactEdit').removeClass("disabled");
+                    })
+                    .insertAfter(container1);
+                $('<i>')
+                    .addClass('col-md-1 fa fa-check')
+                    .click(function (e) {
+                        var value = input.val();
+                        container.remove();
+                        if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                            result.parent().addClass('has-error');
+                        }
+                        else {
+                            result.parent().removeClass('has-error');
+                        }
+                        _mainFrame.Ts.System.logAction('Contact Detail - Save Custom Textbox Edit');
+                        _mainFrame.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
+                            parent.closest('.form-group').data('field', result);
+                            parent.html((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : getUrls(result.Value)));
+                            $('#contactEdit').removeClass("disabled");
+                        }, function () {
+                            alert("There was a problem saving your contact property.");
+                            $('#contactEdit').removeClass("disabled");
+                        });
+                        parent.show();
+                    })
+                    .insertAfter(container1);
+                $('#contactEdit').addClass("disabled");
+            }
+        });
 
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
         result.parent().addClass('has-error');
@@ -2694,68 +2714,68 @@ var appendCustomEditDate = function (field, element) {
     var date = field.Value == null ? null : _mainFrame.Ts.Utils.getMsDate(field.Value);
 
     var div = $('<div>')
-    .addClass('col-xs-8')
-    .appendTo(element);
+        .addClass('col-xs-8')
+        .appendTo(element);
 
     var result = $('<p>')
-      .text((date === null ? 'Unassigned' : date.localeFormat(_mainFrame.Ts.Utils.getDatePattern())))
-      .addClass('form-control-static editable')
-      .appendTo(div)
-      .click(function (e) {
-          e.preventDefault();
-          if (!$(this).hasClass('editable'))
-              return false;
-          var parent = $(this).hide();
-          _mainFrame.Ts.System.logAction('Contact Detail - Edit Custom Date');
-          var container = $('<div>')
-            .insertAfter(parent);
+        .text((date === null ? 'Unassigned' : date.localeFormat(_mainFrame.Ts.Utils.getDatePattern())))
+        .addClass('form-control-static editable')
+        .appendTo(div)
+        .click(function (e) {
+            e.preventDefault();
+            if (!$(this).hasClass('editable'))
+                return false;
+            var parent = $(this).hide();
+            _mainFrame.Ts.System.logAction('Contact Detail - Edit Custom Date');
+            var container = $('<div>')
+                .insertAfter(parent);
 
-          var container1 = $('<div>')
-          .addClass('col-xs-9')
-          .appendTo(container);
+            var container1 = $('<div>')
+                .addClass('col-xs-9')
+                .appendTo(container);
 
-          var fieldValue = parent.closest('.form-group').data('field').Value;
-          var input = $('<input type="text">')
-            .addClass('col-xs-10 form-control')
-            .val(fieldValue === null ? '' : fieldValue.localeFormat(_mainFrame.Ts.Utils.getDatePattern()))
-            .datetimepicker({ pickTime: false })
-            .appendTo(container1)
-            .focus();
+            var fieldValue = parent.closest('.form-group').data('field').Value;
+            var input = $('<input type="text">')
+                .addClass('col-xs-10 form-control')
+                .val(fieldValue === null ? '' : fieldValue.localeFormat(_mainFrame.Ts.Utils.getDatePattern()))
+                .datetimepicker({ pickTime: false })
+                .appendTo(container1)
+                .focus();
 
-          $('<i>')
-            .addClass('col-xs-1 fa fa-times')
-            .click(function (e) {
-                $(this).closest('div').remove();
-                parent.show();
-                $('#contactEdit').removeClass("disabled");
-            })
-            .insertAfter(container1);
-          $('<i>')
-            .addClass('col-xs-1 fa fa-check')
-            .click(function (e) {
-                var value = _mainFrame.Ts.Utils.getMsDate(input.val());
-                container.remove();
-                if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                    result.parent().addClass('has-error');
-                }
-                else {
-                    result.parent().removeClass('has-error');
-                }
-                _mainFrame.Ts.System.logAction('Contact Detail - Save Custom Date Change');
-                _mainFrame.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
-                    parent.closest('.form-group').data('field', result);
-                    var date = result.Value === null ? null : _mainFrame.Ts.Utils.getMsDate(result.Value);
-                    parent.text((date === null ? 'Unassigned' : date.localeFormat(_mainFrame.Ts.Utils.getDatePattern())))
+            $('<i>')
+                .addClass('col-xs-1 fa fa-times')
+                .click(function (e) {
+                    $(this).closest('div').remove();
+                    parent.show();
                     $('#contactEdit').removeClass("disabled");
-                }, function () {
-                    alert("There was a problem saving your contact property.");
-                    $('#contactEdit').removeClass("disabled");
-                });
-                parent.show();
-            })
-            .insertAfter(container1);
-          $('#contactEdit').addClass("disabled");
-      });
+                })
+                .insertAfter(container1);
+            $('<i>')
+                .addClass('col-xs-1 fa fa-check')
+                .click(function (e) {
+                    var value = _mainFrame.Ts.Utils.getMsDate(input.val());
+                    container.remove();
+                    if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                        result.parent().addClass('has-error');
+                    }
+                    else {
+                        result.parent().removeClass('has-error');
+                    }
+                    _mainFrame.Ts.System.logAction('Contact Detail - Save Custom Date Change');
+                    _mainFrame.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
+                        parent.closest('.form-group').data('field', result);
+                        var date = result.Value === null ? null : _mainFrame.Ts.Utils.getMsDate(result.Value);
+                        parent.text((date === null ? 'Unassigned' : date.localeFormat(_mainFrame.Ts.Utils.getDatePattern())))
+                        $('#contactEdit').removeClass("disabled");
+                    }, function () {
+                        alert("There was a problem saving your contact property.");
+                        $('#contactEdit').removeClass("disabled");
+                    });
+                    parent.show();
+                })
+                .insertAfter(container1);
+            $('#contactEdit').addClass("disabled");
+        });
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
         result.parent().addClass('has-error');
     }
@@ -2766,70 +2786,70 @@ var appendCustomEditDateTime = function (field, element) {
     var date = field.Value == null ? null : _mainFrame.Ts.Utils.getMsDate(field.Value);
 
     var div = $('<div>')
-    .addClass('col-xs-8')
-    .appendTo(element);
+        .addClass('col-xs-8')
+        .appendTo(element);
 
     var result = $('<p>')
-      .text((date === null ? 'Unassigned' : date.localeFormat(_mainFrame.Ts.Utils.getDateTimePattern())))
-      .addClass('form-control-static editable')
-      .appendTo(div)
-      .click(function (e) {
-          e.preventDefault();
-          if (!$(this).hasClass('editable'))
-              return false;
-          var parent = $(this).hide();
-          _mainFrame.Ts.System.logAction('Contact Detail - Edit Custom DateTime');
-          var container = $('<div>')
-            .insertAfter(parent);
+        .text((date === null ? 'Unassigned' : date.localeFormat(_mainFrame.Ts.Utils.getDateTimePattern())))
+        .addClass('form-control-static editable')
+        .appendTo(div)
+        .click(function (e) {
+            e.preventDefault();
+            if (!$(this).hasClass('editable'))
+                return false;
+            var parent = $(this).hide();
+            _mainFrame.Ts.System.logAction('Contact Detail - Edit Custom DateTime');
+            var container = $('<div>')
+                .insertAfter(parent);
 
-          var container1 = $('<div>')
-          .addClass('col-xs-9')
-          .appendTo(container);
+            var container1 = $('<div>')
+                .addClass('col-xs-9')
+                .appendTo(container);
 
-          var fieldValue = parent.closest('.form-group').data('field').Value;
-          var input = $('<input type="text">')
-            .addClass('col-xs-10 form-control')
-            .val(fieldValue === null ? '' : fieldValue.localeFormat(_mainFrame.Ts.Utils.getDateTimePattern()))
-            .datetimepicker({
-            })
+            var fieldValue = parent.closest('.form-group').data('field').Value;
+            var input = $('<input type="text">')
+                .addClass('col-xs-10 form-control')
+                .val(fieldValue === null ? '' : fieldValue.localeFormat(_mainFrame.Ts.Utils.getDateTimePattern()))
+                .datetimepicker({
+                })
 
-            .appendTo(container1)
-            .focus();
+                .appendTo(container1)
+                .focus();
 
-          $('<i>')
-            .addClass('col-xs-1 fa fa-times')
-            .click(function (e) {
-                $(this).closest('div').remove();
-                parent.show();
-                $('#contactEdit').removeClass("disabled");
-            })
-            .insertAfter(container1);
-          $('<i>')
-            .addClass('col-xs-1 fa fa-check')
-            .click(function (e) {
-                var value = _mainFrame.Ts.Utils.getMsDate(input.val());
-                container.remove();
-                if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                    result.parent().addClass('has-error');
-                }
-                else {
-                    result.parent().removeClass('has-error');
-                }
-                _mainFrame.Ts.System.logAction('Contact Detail - Save Custom DateTime');
-                _mainFrame.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
-                    parent.closest('.form-group').data('field', result);
-                    var date = result.Value === null ? null : _mainFrame.Ts.Utils.getMsDate(result.Value);
-                    parent.text((date === null ? 'Unassigned' : date.localeFormat(_mainFrame.Ts.Utils.getDateTimePattern())))
+            $('<i>')
+                .addClass('col-xs-1 fa fa-times')
+                .click(function (e) {
+                    $(this).closest('div').remove();
+                    parent.show();
                     $('#contactEdit').removeClass("disabled");
-                }, function () {
-                    alert("There was a problem saving your contact property.");
-                    $('#contactEdit').removeClass("disabled");
-                });
-                parent.show();
-            })
-            .insertAfter(container1);
-          $('#contactEdit').addClass("disabled");
-      });
+                })
+                .insertAfter(container1);
+            $('<i>')
+                .addClass('col-xs-1 fa fa-check')
+                .click(function (e) {
+                    var value = _mainFrame.Ts.Utils.getMsDate(input.val());
+                    container.remove();
+                    if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                        result.parent().addClass('has-error');
+                    }
+                    else {
+                        result.parent().removeClass('has-error');
+                    }
+                    _mainFrame.Ts.System.logAction('Contact Detail - Save Custom DateTime');
+                    _mainFrame.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
+                        parent.closest('.form-group').data('field', result);
+                        var date = result.Value === null ? null : _mainFrame.Ts.Utils.getMsDate(result.Value);
+                        parent.text((date === null ? 'Unassigned' : date.localeFormat(_mainFrame.Ts.Utils.getDateTimePattern())))
+                        $('#contactEdit').removeClass("disabled");
+                    }, function () {
+                        alert("There was a problem saving your contact property.");
+                        $('#contactEdit').removeClass("disabled");
+                    });
+                    parent.show();
+                })
+                .insertAfter(container1);
+            $('#contactEdit').addClass("disabled");
+        });
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
         result.parent().addClass('has-error');
     }
@@ -2840,69 +2860,69 @@ var appendCustomEditTime = function (field, element) {
     var date = field.Value == null ? null : field.Value;
 
     var div = $('<div>')
-    .addClass('col-xs-8')
-    .appendTo(element);
+        .addClass('col-xs-8')
+        .appendTo(element);
 
     var result = $('<p>')
-      .text((date === null ? 'Unassigned' : date.localeFormat(_mainFrame.Ts.Utils.getTimePattern())))
-      .addClass('form-control-static editable')
-      .appendTo(div)
-      .click(function (e) {
-          e.preventDefault();
-          if (!$(this).hasClass('editable'))
-              return false;
-          var parent = $(this).hide();
-          _mainFrame.Ts.System.logAction('Contact Detail - Edit Custom Time');
-          var container = $('<div>')
-            .insertAfter(parent);
+        .text((date === null ? 'Unassigned' : date.localeFormat(_mainFrame.Ts.Utils.getTimePattern())))
+        .addClass('form-control-static editable')
+        .appendTo(div)
+        .click(function (e) {
+            e.preventDefault();
+            if (!$(this).hasClass('editable'))
+                return false;
+            var parent = $(this).hide();
+            _mainFrame.Ts.System.logAction('Contact Detail - Edit Custom Time');
+            var container = $('<div>')
+                .insertAfter(parent);
 
-          var container1 = $('<div>')
-          .addClass('col-xs-9')
-          .appendTo(container);
+            var container1 = $('<div>')
+                .addClass('col-xs-9')
+                .appendTo(container);
 
-          var fieldValue = parent.closest('.form-group').data('field').Value;
-          var input = $('<input type="text">')
-            .addClass('col-xs-10 form-control')
-            .val(fieldValue === null ? '' : fieldValue.localeFormat(_mainFrame.Ts.Utils.getTimePattern()))
-            .datetimepicker({ pickDate: false })
+            var fieldValue = parent.closest('.form-group').data('field').Value;
+            var input = $('<input type="text">')
+                .addClass('col-xs-10 form-control')
+                .val(fieldValue === null ? '' : fieldValue.localeFormat(_mainFrame.Ts.Utils.getTimePattern()))
+                .datetimepicker({ pickDate: false })
 
-            .appendTo(container1)
-            .focus();
+                .appendTo(container1)
+                .focus();
 
-          $('<i>')
-            .addClass('col-xs-1 fa fa-times')
-            .click(function (e) {
-                $(this).closest('div').remove();
-                parent.show();
-                $('#contactEdit').removeClass("disabled");
-            })
-            .insertAfter(container1);
-          $('<i>')
-            .addClass('col-xs-1 fa fa-check')
-            .click(function (e) {
-                var value = _mainFrame.Ts.Utils.getMsDate("1/1/1900 " + input.val());
-                container.remove();
-                if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                    result.parent().addClass('has-error');
-                }
-                else {
-                    result.parent().removeClass('has-error');
-                }
-                _mainFrame.Ts.System.logAction('Contact Detail - Save Custom Time');
-                _mainFrame.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
-                    parent.closest('.form-group').data('field', result);
-                    var date = result.Value === null ? null : _mainFrame.Ts.Utils.getMsDate(result.Value);
-                    parent.text((date === null ? 'Unassigned' : date.localeFormat(_mainFrame.Ts.Utils.getTimePattern())))
+            $('<i>')
+                .addClass('col-xs-1 fa fa-times')
+                .click(function (e) {
+                    $(this).closest('div').remove();
+                    parent.show();
                     $('#contactEdit').removeClass("disabled");
-                }, function () {
-                    alert("There was a problem saving your contact property.");
-                    $('#contactEdit').removeClass("disabled");
-                });
-                parent.show();
-            })
-            .insertAfter(container1);
-          $('#contactEdit').addClass("disabled");
-      });
+                })
+                .insertAfter(container1);
+            $('<i>')
+                .addClass('col-xs-1 fa fa-check')
+                .click(function (e) {
+                    var value = _mainFrame.Ts.Utils.getMsDate("1/1/1900 " + input.val());
+                    container.remove();
+                    if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                        result.parent().addClass('has-error');
+                    }
+                    else {
+                        result.parent().removeClass('has-error');
+                    }
+                    _mainFrame.Ts.System.logAction('Contact Detail - Save Custom Time');
+                    _mainFrame.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
+                        parent.closest('.form-group').data('field', result);
+                        var date = result.Value === null ? null : _mainFrame.Ts.Utils.getMsDate(result.Value);
+                        parent.text((date === null ? 'Unassigned' : date.localeFormat(_mainFrame.Ts.Utils.getTimePattern())))
+                        $('#contactEdit').removeClass("disabled");
+                    }, function () {
+                        alert("There was a problem saving your contact property.");
+                        $('#contactEdit').removeClass("disabled");
+                    });
+                    parent.show();
+                })
+                .insertAfter(container1);
+            $('#contactEdit').addClass("disabled");
+        });
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
         result.parent().addClass('has-error');
     }

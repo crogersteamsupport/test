@@ -60,6 +60,12 @@ namespace TeamSupport.Data
     
 
     
+    public bool EnableMigration
+    {
+      get { return (bool)Row["EnableMigration"]; }
+      set { Row["EnableMigration"] = CheckValue("EnableMigration", value); }
+    }
+    
     public bool IsActive
     {
       get { return (bool)Row["IsActive"]; }
@@ -187,7 +193,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomerHubs] SET     [OrganizationID] = @OrganizationID,    [PortalName] = @PortalName,    [CNameURL] = @CNameURL,    [IsActive] = @IsActive,    [ProductFamilyID] = @ProductFamilyID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([CustomerHubID] = @CustomerHubID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomerHubs] SET     [OrganizationID] = @OrganizationID,    [PortalName] = @PortalName,    [CNameURL] = @CNameURL,    [IsActive] = @IsActive,    [ProductFamilyID] = @ProductFamilyID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [EnableMigration] = @EnableMigration  WHERE ([CustomerHubID] = @CustomerHubID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CustomerHubID", SqlDbType.Int, 4);
@@ -246,13 +252,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("EnableMigration", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomerHubs] (    [OrganizationID],    [PortalName],    [CNameURL],    [IsActive],    [ProductFamilyID],    [DateCreated],    [DateModified],    [ModifierID]) VALUES ( @OrganizationID, @PortalName, @CNameURL, @IsActive, @ProductFamilyID, @DateCreated, @DateModified, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomerHubs] (    [OrganizationID],    [PortalName],    [CNameURL],    [IsActive],    [ProductFamilyID],    [DateCreated],    [DateModified],    [ModifierID],    [EnableMigration]) VALUES ( @OrganizationID, @PortalName, @CNameURL, @IsActive, @ProductFamilyID, @DateCreated, @DateModified, @ModifierID, @EnableMigration); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("EnableMigration", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -422,7 +442,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomerHubID], [OrganizationID], [PortalName], [CNameURL], [IsActive], [ProductFamilyID], [DateCreated], [DateModified], [ModifierID] FROM [dbo].[CustomerHubs] WHERE ([CustomerHubID] = @CustomerHubID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomerHubID], [OrganizationID], [PortalName], [CNameURL], [IsActive], [ProductFamilyID], [DateCreated], [DateModified], [ModifierID], [EnableMigration] FROM [dbo].[CustomerHubs] WHERE ([CustomerHubID] = @CustomerHubID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CustomerHubID", customerHubID);
         Fill(command);

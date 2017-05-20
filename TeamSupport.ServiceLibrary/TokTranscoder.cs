@@ -18,6 +18,11 @@ using System.Diagnostics;
 using Amazon.S3;
 using Amazon.S3.Model;
 using System.Collections.Specialized;
+using Amazon.SQS;
+using Amazon.SQS.Model;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using System.Web;
 
 namespace TeamSupport.ServiceLibrary
 {
@@ -50,24 +55,53 @@ namespace TeamSupport.ServiceLibrary
         {
             UpdateHealth();
 
-            Amazon.Util.ProfileManager.RegisterProfile("TeamsupportAWS", SystemSettings.ReadString("AWS-Key", ""), SystemSettings.ReadString("AWS-Password", ""));
+            //Amazon.Util.ProfileManager.RegisterProfile("TeamsupportAWS", SystemSettings.ReadString("AWS-Key", ""), SystemSettings.ReadString("AWS-Password", ""));
+            Amazon.Util.ProfileManager.RegisterProfile("TeamsupportAWS", "AKIAJHKO22YGQ6N7MAEA", "aEZUTAv6yp2aQdNN4yxv+PJbE/H++bvt33E9IJvd");
 
-            TokStorage ts = new TokStorage(LoginUser);
-            ts.GetNonTranscoded();
+            AmazonSQSConfig amazonSQSConfig = new AmazonSQSConfig();
+            amazonSQSConfig.ServiceURL = "https://sqs.us-east-1.amazonaws.com/";
+            var sqs = new AmazonSQSClient(amazonSQSConfig);
 
-            foreach (var t in ts)
+            try
             {
-                Logs.WriteEvent(t.AmazonPath);
-                InitSettings(t.AmazonPath);
-                using (_client = new AmazonS3Client())
+                var receiveMessageRequest = new ReceiveMessageRequest { QueueUrl = "https://sqs.us-east-1.amazonaws.com/168534988511/tsTranscoding-dev" };
+                var receiveMessageResponse = sqs.ReceiveMessage(receiveMessageRequest);
+                if (receiveMessageResponse.Messages != null)
                 {
-                    DownLoadZip();
-                    ExtractZip($@"{_downloadLocation}/{_s3Path}");
-                    MergeVideoFiles();
-                    UploadHighResVideo();
-                    CleanUpFiles();
+
+                    foreach (var message in receiveMessageResponse.Messages)
+                    {
+                        if (!string.IsNullOrEmpty(message.Body))
+                        {
+                            JObject o = JObject.Parse(message.Body);
+                            string key = HttpUtility.UrlDecode((string)o["Records"][0]["s3"]["object"]["key"]);
+                            string bucket = (string)o["Records"][0]["s3"]["bucket"]["name"];
+                            string path = String.Format("https://s3.amazonaws.com/{0}/{1}", bucket, key);
+
+                            Logs.WriteEvent(path);
+                            InitSettings(path);
+                            using (_client = new AmazonS3Client())
+                            {
+                                DownLoadZip();
+                                ExtractZip($@"{_downloadLocation}/{_s3Path}");
+                                MergeVideoFiles();
+                                UploadHighResVideo();
+                                CleanUpFiles();
+                            }
+                            var messageRecieptHandle = receiveMessageResponse.Messages[0].ReceiptHandle;
+                            //Deleting a message
+                            Console.WriteLine("Deleting the message.\n");
+                            var deleteRequest = new DeleteMessageRequest { QueueUrl = "https://sqs.us-east-1.amazonaws.com/168534988511/tsTranscoding-dev", ReceiptHandle = messageRecieptHandle };
+                            sqs.DeleteMessage(deleteRequest);
+
+                            UpdateHealth();
+                        }
+                    }
                 }
-                UpdateHealth();
+            }
+            catch(Exception ex)
+            {
+
             }
         }
 
@@ -139,7 +173,7 @@ namespace TeamSupport.ServiceLibrary
 
             using (ZipFile zip1 = ZipFile.Read(path))
             {
-                foreach (ZipEntry e in zip1.OrderBy(e=>e.UncompressedSize))
+                foreach (ZipEntry e in zip1.OrderBy(e => e.UncompressedSize))
                 {
                     if (Path.GetExtension(e.FileName) == ".webm")
                     {
@@ -200,15 +234,16 @@ namespace TeamSupport.ServiceLibrary
                 proc1.Close();
                 proc1.Kill();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logs.WriteEvent("----- Error killing or closing  ffmpeg : " + ex.Message);
             }
             Logs.WriteEvent("----- Running  ffprobe complete ...");
 
 
             Process proc = new Process();
             proc.EnableRaisingEvents = false;
-            proc.StartInfo.FileName = Path.Combine(_ffmpegPath,"ffmpeg.exe");
+            proc.StartInfo.FileName = Path.Combine(_ffmpegPath, "ffmpeg.exe");
             proc.StartInfo.Arguments = $@"-i {_webmFiles[0]} -i {_webmFiles[1]} -map 0:0 -map 1:1 -codec:a aac -ab 128k -codec:v libx264 -vf scale={width}:{height} -aspect 16:9 -r 30 {_outputFileLocation}";
             proc.StartInfo.RedirectStandardError = true;
             proc.StartInfo.RedirectStandardOutput = true;
@@ -224,7 +259,7 @@ namespace TeamSupport.ServiceLibrary
                 return;
             }
             StreamReader reader = proc.StandardError;
-            
+
             while ((line = reader.ReadLine()) != null)
             {
                 Logs.WriteEvent(line);
@@ -238,7 +273,7 @@ namespace TeamSupport.ServiceLibrary
             }
             catch (Exception ex)
             {
-                Logs.WriteEvent("----- Error killing or closing  ffmpeg : " +  ex.Message);
+                Logs.WriteEvent("----- Error killing or closing  ffmpeg : " + ex.Message);
             }
             Logs.WriteEvent("----- Running ffmpeg complete ...");
         }

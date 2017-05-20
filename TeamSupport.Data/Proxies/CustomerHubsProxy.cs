@@ -22,6 +22,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateCreated { get; set; }
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int? ModifierID { get; set; }
+    [DataMember] public bool EnableMigration { get; set; }
           
   }
   
@@ -30,6 +31,7 @@ namespace TeamSupport.Data
     public CustomerHubProxy GetProxy()
     {
       CustomerHubProxy result = new CustomerHubProxy();
+      result.EnableMigration = this.EnableMigration;
       result.ModifierID = this.ModifierID;
       result.ProductFamilyID = this.ProductFamilyID;
       result.IsActive = this.IsActive;

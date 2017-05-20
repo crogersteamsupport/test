@@ -284,7 +284,7 @@ $(document).ready(function () {
 var initEditor = function (element, init) {
   parent.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
     var editorOptions = {
-      plugins: "autoresize paste link code textcolor",
+      plugins: "autoresize paste link code textcolor lists",
       toolbar1: "link unlink | undo redo removeformat | cut copy paste pastetext | code | outdent indent | bullist numlist",
       toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect | bold italic underline strikethrough blockquote",
       statusbar: false,

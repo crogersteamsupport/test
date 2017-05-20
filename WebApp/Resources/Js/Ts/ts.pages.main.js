@@ -765,7 +765,7 @@ Ts.Pages.Main.prototype = {
         function turnOffChatRequestUpdates() {
             top.Ts.Settings.System.read('PusherKey', '1', function (key) {
                 var chatGUID = top.Ts.System.Organization.ChatID;
-                pusher.unsubscribe('chat-requests-' + chatGUID);
+				pusher.disconnect();
             });
         }
 
@@ -1615,6 +1615,12 @@ function () { }, function (e) { console.log(e) });
     openCustomerByName: function (name) {
         var self = this;
         Ts.Services.Organizations.GetIDByName(name, function (id) {
+            self.openNewCustomer(id);
+        });
+    },
+    openCustomerByExactName: function (name) {
+        var self = this;
+        Ts.Services.Organizations.GetIDByExactNameNoFilter(name, function (id) {
             self.openNewCustomer(id);
         });
     },

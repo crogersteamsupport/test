@@ -7,6 +7,8 @@
     <link href="../Css/jquery.ui.combobox.css" rel="stylesheet" type="text/css" />
     <link href="../Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
     <link href="../Css/jquery.ui.timepicker.css" rel="stylesheet" type="text/css" />
+    <link href="../Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="../Css/ts.ui.css" rel="stylesheet" type="text/css" />
 
 
@@ -15,12 +17,15 @@
     <link href="Admin_Portal.css" rel="stylesheet" type="text/css" />
     <script src="../Js/Ts/ts.pendo.js" type="text/javascript"></script>
     <script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
+    <script src="../Js/jquery.validate.min-1160.js" type="text/javascript"></script>
+    <script src="../Js/bootstrap.min.js" type="text/javascript"></script>
     <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
     <script src="../Js/jquery.ui.combobox.js" type="text/javascript"></script>
     <script src="../Js/jquery.layout.min.js" type="text/javascript"></script>
     <script src="../Js/jquery.ui.timepicker.js" type="text/javascript"></script>
     <script src="../Js/jquery.iframe-transport.js" type="text/javascript"></script>
     <script src="../Js/jquery.fileupload.js" type="text/javascript"></script>
+    <script src="../Js/handlebars.js" type="text/javascript"></script>
     <script src="Admin_Hub.js" type="text/javascript"></script>
     <script src="../Js/aes.js"></script>
     <!--	<script src="../Js/jquery.minicolors.js"></script>-->
@@ -183,7 +188,7 @@
                                 <li><a href="#tabs-knowledgebase">Knowledge Base</a></li>
                                 <li id="tab-community"><a href="#tabs-community">Community</a></li>
                                 <li><a href="#tabs-portalcolumns">Custom Grid Columns</a></li>
-                                <li id="tab-rating"><a href="#tabs-agentrating">Agent Ratings</a></li>
+                                <!--<li id="tab-rating"><a href="#tabs-agentrating">Agent Ratings</a></li>-->
                                 <li role="separator" class="seperator">|</li>
                                 <li id="tab-general"><a href="#tabs-general">Classic Portal Settings</a></li>
                                 <li id="tab-advanced"><a href="#tabs-advanced">Classic Advanced Portal</a></li>
@@ -333,7 +338,7 @@
                                     </div>
                                     <div class="ts-setting-field-content">
                                         <input type="checkbox" class="checkbox" id="portal_name_editing" /><label class="checkbox"
-                                                                                                                      for="portal_name_editing">Enabled</label>
+                                                                                                                  for="portal_name_editing">Enabled</label>
                                         <div class="ts-clearfix">
                                             &nbsp
                                         </div>
@@ -824,9 +829,40 @@
                                 <div class="portal-save-panel"><button class="portal-save">Save</button>&nbsp<button class="portal-cancel">Cancel</button></div>
                             </div>
 
-                            <div id="tabs-hub" class="tabs-modifiable" style="height:100%">
-                                <div class="ui-widget-content ui-widget ts-color-bg-accent" style="height: 100%; overflow:hidden;">
-                                    <iframe id="hub_admin" style="height:100%; width:100%; min-height:1000px; overflow:hidden;"></iframe>
+                            <div id="tabs-hub" class="tabs-modifiable" style="height:1260px; overflow:hidden;">
+                                <div id="HubList"></div>
+                                <div style="margin-left:200px;" id="hubWindow">
+                                    <div id="newHub" style="display:none; min-height:800px;">
+                                        <form id="newHubForm">
+                                            <div class="container-fluid well hubWell">
+                                                <div style="text-align:center; margin-bottom:10px;">
+                                                    <h1 style="font-weight:bold;">New Customer Hub</h1>
+                                                </div>
+                                                <div class="hubProperty">
+                                                    <label>Hub Prefix/Name</label>
+                                                    <input type="text" id="HubName" name="HubName" class="form-control" />
+                                                </div>
+                                                <div class="hubProperty">
+                                                    <label>Product Line</label>
+                                                    <select id="ProductLineList" class="form-control"></select>
+                                                </div>
+                                                <div class="hubProperty">
+                                                    <label>Copy All Other Settings From</label>
+                                                    <select id="CopyHubList" class="form-control"></select>
+                                                </div>
+                                                <div class="pull-right hubProperty">
+                                                    <input type="button" id="btnCancelNewHub" class="btn btn-danger" value="Cancel" />
+                                                    <input type="button" id="btnFinalizeNewHub" class="btn btn-primary" value="Create" />
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div id="disabledNewHub">
+                                        <div class="well hubDisabledWell alert alert-info">
+                                            <div>The ability to create multiple hubs is an option for enterprise customers who have enabled <a style="color:darkblue;" target="_blank" href="https://help.teamsupport.com/1/en/topic/add-a-product">product lines</a>. For more information on upgrading to Enterprise, please submit a request <a style="color:darkblue;" target="_blank" href="https://support.teamsupport.com/createticket">here.</a></div>
+                                        </div>
+                                    </div>
+                                    <iframe id="hub_admin" style="width:100%; height:1240px;" scrolling="no"></iframe>
                                 </div>
                             </div>
 
@@ -837,8 +873,7 @@
                                         Community
                                     </div>
                                     <div class="ts-setting-field-content">
-                                        <input type="checkbox" class="checkbox" id="portal_com_enabled" /><label class="checkbox"
-                                                                                                                 for="portal_com_enabled">Enabled</label>
+                                        <input type="checkbox" class="checkbox" id="portal_com_enabled" /><label class="checkbox" for="portal_com_enabled">Enabled</label>
                                         <p></p>
                                     </div>
                                 </div>
@@ -911,7 +946,21 @@
                                                 <p></p>
                                             </div>
                                         </div>
-                                        <div class="com-sub-only">
+                                        <div class="com-cat-productfamily-only">
+                                            <div class="ts-setting-field two-column ui-widget-content">
+                                                <div class="ts-setting-field-description">
+                                                    Product Line
+                                                </div>
+                                                <div class="ts-setting-field-content">
+                                                    <select id="com_cat_productfamily"></select>
+                                                    <div class="ts-clearfix">
+                                                        &nbsp
+                                                    </div>
+                                                    <p>The product line this category will be associated with (dicates which customer hub this will be viewable on).</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="com-sub-only" style="display:none;">
                                             <div class="ts-setting-field two-column ui-widget-content">
                                                 <div class="ts-setting-field-description">
                                                     Ticket Type
@@ -1036,13 +1085,26 @@
                                                 <p></p>
                                             </div>
                                         </div>
+                                        <div class="kb-cat-productfamily-only">
+                                            <div class="ts-setting-field two-column ui-widget-content">
+                                                <div class="ts-setting-field-description">
+                                                    Product Line
+                                                </div>
+                                                <div class="ts-setting-field-content">
+                                                    <select id="kb_cat_productfamily"></select>
+                                                    <div class="ts-clearfix">
+                                                        &nbsp
+                                                    </div>
+                                                    <p>The product line this category will be associated with (dicates which customer hub this will be viewable on).</p>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="ts-setting-field two-column ui-widget-content">
                                             <div class="ts-setting-field-description">
                                                 Visible on portal
                                             </div>
                                             <div class="ts-setting-field-content">
-                                                <input type="checkbox" class="checkbox" id="kb_cat_visible" checked=checked checked=checked /><label class="checkbox"
-                                                                                                                                                     for="kb_cat_visible">Enabled</label>
+                                                <input type="checkbox" class="checkbox" id="kb_cat_visible" checked=checked checked=checked /><label class="checkbox" for="kb_cat_visible">Enabled</label>
                                                 <p></p>
                                             </div>
                                         </div>
@@ -1068,111 +1130,7 @@
                                 <div class="ts-clearfix">
                                 </div>
                             </div>
-                            <div id="tabs-agentrating" class="tabs-modifiable">
-                                <div class="portal-save-panel"><button class="portal-save">Save</button>&nbsp<button class="portal-cancel">Cancel</button></div>
-                                <div class="ts-setting-field two-column ui-widget-content">
-                                    <div class="ts-setting-field-description">
-                                        Rating
-                                    </div>
-                                    <div class="ts-setting-field-content">
-                                        <!--                    <input type="checkbox" class="checkbox" id="agentrating-enabled" /><label class="checkbox"
-                                                  for="agentrating-enabled">Enabled</label>-->
-                                        <p>The Rating system allows your team to get feedback from your customers about their satisfaction with how a ticket was handled. You will be able to see the results for each of your internal staff of users as well as on a customer basis.</p>
-                                        <p>*Feel free to upload your own image as a replacement. Please note the ideal image size is 50x50</p>
-                                    </div>
-                                </div>
-                                <div class="ts-setting-field two-column ui-widget-content">
-                                    <div class="ts-setting-field-description">
-                                        Positive Rating Text
-                                    </div>
-                                    <div class="ts-setting-field-content">
-                                        <textarea id="agentrating-positive" class="ui-corner-all ui-widget-content">We’re happy you had a great experience with our team!  Would you like to share any details?</textarea>
-                                    </div>
-                                </div>
-                                <div class="ts-setting-field two-column ui-widget-content">
-                                    <div class="ts-setting-field-description">
-                                        Positive Rating Image
-                                    </div>
-                                    <div class="ts-setting-field-content">
-                                        <form class="form-horizontal positive-file-upload" action="Upload/Actions/555" method="POST"
-                                              enctype="multipart/form-data" title="You can drag and drop your attachments here.">
-                                            <label for="inputName" class="col-md-1 control-label">Select new image</label>
-                                            <input class="hiddenfile-positive" type="file" name="file[]" />
-                                            <ul class="positive-upload-queue"></ul>
-                                        </form>
-                                        <img id="agentrating-positive-img" src="../Images/face-positive.png" alt="positive" />
-                                        <a href="#" id="resetPositiveImage">Restore to Default</a>
-                                    </div>
-                                </div>
-                                <div class="ts-setting-field two-column ui-widget-content">
-                                    <div class="ts-setting-field-description">
-                                        Neutral Rating Text
-                                    </div>
-                                    <div class="ts-setting-field-content">
-                                        <textarea id="agentrating-neutral" class="ui-corner-all ui-widget-content">We want to make sure each interaction you have with our team is great.  If we did OK and you’re happy, then we’re happy.  If you feel we could have done better, please tell us!</textarea>
-                                    </div>
-                                </div>
-                                <div class="ts-setting-field two-column ui-widget-content">
-                                    <div class="ts-setting-field-description">
-                                        Neutral Rating Image
-                                    </div>
-                                    <div class="ts-setting-field-content">
-                                        <form class="form-horizontal neutral-file-upload" action="Upload/Actions/555" method="POST"
-                                              enctype="multipart/form-data" title="You can drag and drop your attachments here.">
-                                            <label for="inputName" class="col-md-1 control-label">Select new image</label>
-                                            <input class="hiddenfile-neutral" type="file" name="file[]" />
-                                            <ul class="neutral-upload-queue"></ul>
-                                        </form>
-                                        <img id="agentrating-neutral-img" src="../Images/face-neutral.png" alt="neutral" />
-                                        <a href="#" id="resetNeutralImage">Restore to Default</a>
-                                    </div>
-                                </div>
-                                <div class="ts-setting-field two-column ui-widget-content">
-                                    <div class="ts-setting-field-description">
-                                        Negative Rating Text
-                                    </div>
-                                    <div class="ts-setting-field-content">
-                                        <textarea id="agentrating-negative" class="ui-corner-all ui-widget-content">We’re very sorry you had a bad experience with our team.  Please help us improve our service by telling us what went wrong.</textarea>
-                                    </div>
-                                </div>
-                                <div class="ts-setting-field two-column ui-widget-content">
-                                    <div class="ts-setting-field-description">
-                                        Negative Rating Image
-                                    </div>
-                                    <div class="ts-setting-field-content">
-                                        <form class="form-horizontal negative-file-upload" action="Upload/Actions/555" method="POST"
-                                              enctype="multipart/form-data" title="You can drag and drop your attachments here.">
-                                            <label for="inputName" class="col-md-1 control-label">Select new image</label>
-                                            <input class="hiddenfile-negative" type="file" name="file[]" />
-                                            <ul class="negative-upload-queue"></ul>
-                                        </form>
-                                        <img id="agentrating-negative-img" src="../Images/face-negative.png" alt="negative" />
-                                        <a href="#" id="resetNegativeImage">Restore to Default</a>
-                                    </div>
-                                </div>
-                                <div class="ts-setting-field two-column ui-widget-content">
-                                    <div class="ts-setting-field-description">
-                                        Redirect URL
-                                    </div>
-                                    <div class="ts-setting-field-content">
-                                        <input type="text" id="agentrating-redirecturl" class="ui-widget-content ui-corner-all text" />
-                                        <p>This is where your users will go after they submit a successful rating.</p>
-                                    </div>
-                                </div>
-                                <div class="ts-setting-field two-column ui-widget-content">
-                                    <div class="ts-setting-field-description">
-                                        External URL
-                                    </div>
-                                    <div class="ts-setting-field-content">
-                                        <input type="text" id="agentrating-externalurl" class="ui-widget-content ui-corner-all text" />
-                                        <p>
-                                            If you are embedding your rating form into an iFrame on your site, you can identify
-                                            the External portal link location. This may be something like:http://www.your-company-website.com/rating.aspx
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="portal-save-panel"><button class="portal-save">Save</button>&nbsp<button class="portal-cancel">Cancel</button></div>
-                            </div>
+                            
 
                             <div id="tabs-portalcolumns" class="tabs-modifiable">
                                 <div class="label-block">
@@ -1305,3 +1263,60 @@
     </div>
 </body>
 </html>
+<script id="hub-list-template" type="text/x-handlebars-template">
+    {{#hubList}}
+    <div class="hub-container">
+        <span>
+            <a href="#" class="btnDeleteHub" data-hubid="{{HubID}}">
+                <i class="fa fa-remove remove" aria-hidden="true"></i>
+            </a>
+        </span>
+        <a href="#" class="btnLoadHub" data-hubid="{{HubID}}" style="margin-left:15px;">
+            <span class="hubName">
+                {{Name}}
+            </span>
+            <span class="pull-right">
+                <i class="fa fa-chevron-right loadcarat" aria-hidden="true"></i>
+            </span>
+        </a>
+    </div>
+    {{/hubList}}
+    <hr class="divider" />
+    {{#if enableNewHubs}}
+    <div class="hub-container">
+        <a href="#" id="btnNewHub" class="newHub">
+            <span style="margin-left:15px;">
+                Add New Hub
+            </span>
+            <span class="pull-right">
+                <i class="fa fa-plus" style="font-size:10px;" aria-hidden="true"></i>
+            </span>
+        </a>
+    </div>
+    {{/if}}
+    {{#unless enableNewHubs }}
+    <div class="hub-container">
+        <a href="#" id="btnDisabledNewHub" class="newHub" style="color:lightgray;" disabled="disabled">
+            <span class="remove">
+            </span>
+            <div style="float:left; margin-left:15px;">
+                Add New Hub
+            </div>
+            <div class="pull-right">
+                <i class="fa fa-plus loadcarat" aria-hidden="true"></i>
+            </div>
+        </a>
+    </div>
+    {{/unless}}
+</script>
+<script id="ProductLineTemplate" type="text/x-handlebars-template">
+    <option value="-1"></option>
+    {{#ProductLines}}
+    <option value="{{ProductFamilyID}}">{{Name}}</option>
+    {{/ProductLines}}
+</script>
+<script id="CopyHubTemplate" type="text/x-handlebars-template">
+    {{#Hubs}}
+    <option value="{{HubID}}">{{Name}}</option>
+    {{/Hubs}}
+</script>

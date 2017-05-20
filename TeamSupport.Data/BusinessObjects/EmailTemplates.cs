@@ -908,16 +908,16 @@ namespace TeamSupport.Data
             return template.GetMessage();
         }
 
-        public static MailMessage GetWelcomeCustomerHub(LoginUser loginUser, UsersViewItem hubUser, CustomerHub hub, string password)
+        public static MailMessage GetWelcomeCustomerHub(LoginUser loginUser, UsersViewItem hubUser, CustomerHub hub, string password, int productFamilyID)
         {
-            EmailTemplate template = GetTemplate(loginUser, GetParentOrganizationID(hubUser), 33, -1);
+            EmailTemplate template = GetTemplate(loginUser, GetParentOrganizationID(hubUser), 33, productFamilyID);
             template.ReplaceCommonParameters().ReplaceFields("CustomerHub", hub).ReplaceFields("HubUser", hubUser).ReplaceParameter("Password", password);
             return template.GetMessage();
         }
 
-        public static MailMessage GetResetPasswordHub(LoginUser loginUser, UsersViewItem hubUser, CustomerHub hub, string password)
+        public static MailMessage GetResetPasswordHub(LoginUser loginUser, UsersViewItem hubUser, CustomerHub hub, string password, int productFamilyID)
         {
-            EmailTemplate template = GetTemplate(loginUser, GetParentOrganizationID(hubUser), 32, -1);
+            EmailTemplate template = GetTemplate(loginUser, GetParentOrganizationID(hubUser), 32, productFamilyID);
             template.ReplaceCommonParameters().ReplaceFields("CustomerHub", hub).ReplaceFields("HubUser", hubUser).ReplaceParameter("Password", password);
             return template.GetMessage();
         }
@@ -976,6 +976,15 @@ namespace TeamSupport.Data
 
             return template.GetMessage();
         }
+
+        public static MailMessage GetReaction(LoginUser loginUser, int ticketID, string hostName)
+        {
+            EmailTemplate template = EmailTemplates.GetEmailTemplate(loginUser,40);
+            string senderName = loginUser.GetUserFullName();
+            template.ReplaceParameter("Sender.Name", senderName).ReplaceParameter("ticketid", ticketID.ToString()).ReplaceParameter("hostname", hostName);
+            return template.GetMessage();
+        }
+
 
         public static MailMessage GetTicketSendEmail(LoginUser loginUser, UsersViewItem sender, TicketsViewItem ticket, string recipient, string introduction)
         {
