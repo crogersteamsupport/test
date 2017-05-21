@@ -996,7 +996,7 @@ function SetupActionEditor(elem, action) {
   element.find('#ssDiv').hide(); 
   element.find('#rcdtokScreen').click(function (e) {
       if (window.parent.Ts.System.User.OrganizationID == 0) {
-              window.parent.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
+          window.parent.Ts.Services.Tickets.StartArchivingScreen(sessionId, function (resultID) {
               element.find('#rcdtokScreen').hide();
               element.find('#stoptokScreen').show();
               element.find('#deletetokScreen').hide();
