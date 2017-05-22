@@ -1170,6 +1170,7 @@ namespace TeamSupport.Data
             template.ReplaceParameter("TaskName", task.Name);
             template.ReplaceParameter("TaskDescription", task.Description);
             template.ReplaceParameter("TaskUrl", task.TaskUrl);
+            template.ReplaceParameter("TaskCompletionComment", task.CompletionComment);
             if (task.DueDate.HasValue)
             {
                 DateTime taskDueDate = task.DueDate ?? DateTime.Now;
