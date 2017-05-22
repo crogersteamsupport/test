@@ -206,13 +206,12 @@ AdminPortal = function () {
         $('#portal_req_tickettype').combobox({ selected: function (e, ui) { $('.portal-save-panel').show(); } });
 
         //portal_req_tickettype
-        parent.parent.Ts.Cache.getProducts(function (products) {
-            $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#com_cat_product');
-            for (var i = 0; i < products.length; i++) {
-                $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]).appendTo('#com_cat_product');
-            }
-            $('#com_cat_product').combobox({ selected: function (e, ui) { $('.com-cat-save-panel').show(); } });
-        });
+        var products = parent.parent.Ts.Cache.getProducts();
+        $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#com_cat_product');
+        for (var i = 0; i < products.length; i++) {
+            $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]).appendTo('#com_cat_product');
+        }
+        $('#com_cat_product').combobox({ selected: function (e, ui) { $('.com-cat-save-panel').show(); } });	  
 
         if (parent.parent.Ts.System.Organization.UseProductFamilies == true) {
             $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#kb_cat_productfamily');

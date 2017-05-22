@@ -251,30 +251,17 @@
           });
           return self._forumCategories;
       },
-      getProducts: function (callback) {
+      getProducts: function () {
           var self = this;
           Ts.Services.System.GetCheckSum(Ts.ReferenceTypes.ProductVersions, function (checksum) {
               if (!self._products || !self._products.CheckSum || checksum != self._products.CheckSum) {
                   Ts.Services.Products.GetProducts(function (result) {
                       self._products = result;
                       self._products.CheckSum = checksum;
-
-                      if (callback) {
-                          return callback(self._products);
-                      }
-                      else
-                          return self._products;
                   });
               }
-
-              if (callback) {
-                  return callback(self._products);
-              }
-              else
-                  return self._products;
           });
-
-          
+          return self._products;
       },
       getProductFamilies: function (callback) {
           var self = this;
