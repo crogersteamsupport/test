@@ -22,6 +22,7 @@ namespace TeamSupport.Data
     [DataMember] public int? TicketType { get; set; }
     [DataMember] public int? GroupID { get; set; }
     [DataMember] public int? ProductID { get; set; }
+    [DataMember] public int? ProductFamilyID { get; set; }
           
   }
   
@@ -30,6 +31,7 @@ namespace TeamSupport.Data
     public ForumCategoryProxy GetProxy()
     {
       ForumCategoryProxy result = new ForumCategoryProxy();
+      result.ProductFamilyID = this.ProductFamilyID;
       result.ProductID = this.ProductID;
       result.GroupID = this.GroupID;
       result.TicketType = this.TicketType;

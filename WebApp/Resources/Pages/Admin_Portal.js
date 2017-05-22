@@ -21,11 +21,11 @@ function onShow() {
 
 AdminPortal = function () {
     $('#btnRefresh')
-    .click(function (e) {
-        e.preventDefault();
-        window.location = window.location;
-    })
-    .toggle(window.location.hostname.indexOf('127.0.0.1') > -1);
+        .click(function (e) {
+            e.preventDefault();
+            window.location = window.location;
+        })
+        .toggle(window.location.hostname.indexOf('127.0.0.1') > -1);
 
     if (parent.parent.Ts.System.Organization.ProductType == parent.parent.Ts.ProductType.Express) {
         $('#tab-community').remove();
@@ -51,7 +51,7 @@ AdminPortal = function () {
             min: 0,
             max: 10,
             slide: function (event, ui) {
-                $(this).next().text("Overall Weight: " + (ui.value*10) + "%");
+                $(this).next().text("Overall Weight: " + (ui.value * 10) + "%");
             },
             stop: function (event, ui) {
                 var total = 0;
@@ -61,24 +61,21 @@ AdminPortal = function () {
                     total = total + $(this).slider("value");
                 });
 
-                if (total == 10)
-                {
+                if (total == 10) {
                     result = "100%";
                     $('#cdi-total').removeClass('red');
                     $('#recalculate-cdi').removeAttr("disabled");
                     $('.portal-save-panel').show();
                 }
-                  
-                if (total > 10)
-                {
+
+                if (total > 10) {
                     result = "is greater than 100%, please reconfigure your weights";
                     $('#cdi-total').addClass('red');
                     $('#recalculate-cdi').attr("disabled", "disabled");
                     $('.portal-save-panel').hide();
                 }
-                  
-                if (total < 10)
-                {
+
+                if (total < 10) {
                     result = "is less than 100%, please reconfigure your weights";
                     $('#cdi-total').addClass('red');
                     $('#recalculate-cdi').attr("disabled", "disabled");
@@ -86,7 +83,7 @@ AdminPortal = function () {
                 }
 
                 $('#cdi-total').text("Total Weight: " + result);
-              
+
             }
         });
 
@@ -98,14 +95,12 @@ AdminPortal = function () {
             slide: function (event, ui) {
                 $(this).next().text("Upper Limit: " + (ui.value));
             },
-            stop: function (event,ui)
-            {
-                if (ui.value > $("#cdi-yellow").slider('value'))
-                {
+            stop: function (event, ui) {
+                if (ui.value > $("#cdi-yellow").slider('value')) {
                     $(this).next().addClass("red");
                     $('.portal-save-panel').hide();
                 }
-                else{
+                else {
                     $("#cdi-yellow").next().removeClass("red");
                     $('.portal-save-panel').show();
                 }
@@ -120,10 +115,8 @@ AdminPortal = function () {
             slide: function (event, ui) {
                 $(this).next().text("Upper Limit: " + (ui.value));
             },
-            stop: function (event,ui)
-            {
-                if (ui.value < $("#cdi-green").slider("value"))
-                {
+            stop: function (event, ui) {
+                if (ui.value < $("#cdi-green").slider("value")) {
                     $(this).next().addClass("red");
                     $('.portal-save-panel').hide();
                 }
@@ -169,7 +162,7 @@ AdminPortal = function () {
     });
 
     $('.portal-save-panel').hide();
-    $('.portal-save').click(function (e) { saveValues(_portalOption);  });
+    $('.portal-save').click(function (e) { saveValues(_portalOption); });
     $('.portal-cancel').click(function (e) {
         e.preventDefault();
         $('.portal-save-panel').hide();
@@ -218,9 +211,20 @@ AdminPortal = function () {
         for (var i = 0; i < products.length; i++) {
             $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]).appendTo('#com_cat_product');
         }
-        $('#com_cat_product').combobox({ selected: function (e, ui) { $('.com-cat-save-panel').show(); } });
+        $('#com_cat_product').combobox({ selected: function (e, ui) { $('.com-cat-save-panel').show(); } });	  
 
-
+        if (parent.parent.Ts.System.Organization.UseProductFamilies == true) {
+            $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#kb_cat_productfamily');
+            $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#com_cat_productfamily');
+            parent.parent.Ts.Cache.getProductFamilies(function (productFamilies) {
+                for (var i = 0; i < productFamilies.length; i++) {
+                    $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#kb_cat_productfamily');
+                    $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#com_cat_productfamily');
+                }
+                $('#kb_cat_productfamily').combobox({ selected: function (e, ui) { $('.kb-cat-save-panel').show(); } });
+                $('#com_cat_productfamily').combobox({ selected: function (e, ui) { $('.com-cat-save-panel').show(); } });
+            });
+        }
     }
     $('#portal_theme').combobox({ selected: function (e, ui) { $('.portal-save-panel').show(); } });
 
@@ -416,19 +420,19 @@ AdminPortal = function () {
 
     function createCategory(cat) {
         var container = $('<div>')
-          .addClass('com-cats');
+            .addClass('com-cats');
 
         var el = $('<div>')
-          .addClass('com-cat com-cat-main ui-corner-all com-cat-' + cat.CategoryID)
-          .text(cat.CategoryName)
-          .data('cat', cat)
-          .appendTo(container);
+            .addClass('com-cat com-cat-main ui-corner-all com-cat-' + cat.CategoryID)
+            .text(cat.CategoryName)
+            .data('cat', cat)
+            .appendTo(container);
 
         $('<a>')
-          .addClass('ui-state-default ts-link com-new-sub')
-          .attr('href', '#')
-          .text('Add a new subcategory')
-          .appendTo($('<div>').appendTo(container));
+            .addClass('ui-state-default ts-link com-new-sub')
+            .attr('href', '#')
+            .text('Add a new subcategory')
+            .appendTo($('<div>').appendTo(container));
 
         $('.com-cat-list').append(container);
 
@@ -442,10 +446,10 @@ AdminPortal = function () {
         container = container.parent().find('.com-new-sub');
 
         var el = $('<div>')
-          .addClass('com-cat com-cat-sub ui-corner-all com-cat-' + cat.CategoryID)
-          .text(cat.CategoryName)
-          .data('cat', cat)
-          .insertBefore(container);
+            .addClass('com-cat com-cat-sub ui-corner-all com-cat-' + cat.CategoryID)
+            .text(cat.CategoryName)
+            .data('cat', cat)
+            .insertBefore(container);
 
         setSortable();
         return el;
@@ -466,13 +470,20 @@ AdminPortal = function () {
         $('#com_cat_tickettype').combobox('setValue', cat.TicketType == null ? -1 : cat.TicketType);
         $('#com_cat_group').combobox('setValue', cat.GroupID == null ? -1 : cat.GroupID);
         $('#com_cat_product').combobox('setValue', cat.ProductID == null ? -1 : cat.ProductID);
+        $('#com_cat_productfamily').combobox('setValue', cat.ProductFamilyID == null ? -1 : cat.ProductFamilyID);
 
         if (cat.ParentID < 0) {
             $('.com-delete-cat').text('Delete this category and all its subcategories');
+            if (parent.parent.Ts.System.Organization.UseProductFamilies == true) {
+                $('.com-cat-productfamily-only').show();
+            }
             $('.com-sub-only').hide();
         }
         else {
             $('.com-delete-cat').text('Delete this subcategory');
+            if (parent.parent.Ts.System.Organization.UseProductFamilies == true) {
+                $('.com-cat-productfamily-only').hide();
+            }
             $('.com-sub-only').show();
         }
     });
@@ -522,17 +533,18 @@ AdminPortal = function () {
         var cat = el.data('cat');
         parent.parent.Ts.System.logAction('Admin Portal - Category Saved');
         parent.parent.Ts.Services.Admin.UpdateForumCategory(
-          cat.CategoryID,
-          $('#com_cat_name').val(),
-          $('#com_cat_description').val(),
-          ($('#com_cat_tickettype').val() < 0 ? null : $('#com_cat_tickettype').val()),
-          ($('#com_cat_group').val() < 0 ? null : $('#com_cat_group').val()),
-          ($('#com_cat_product').val() < 0 ? null : $('#com_cat_product').val()),
-          function (result) {
-              if (result == null) return;
-              $('.com-cat-save-panel').hide();
-              updateCat(result);
-          });
+            cat.CategoryID,
+            $('#com_cat_name').val(),
+            $('#com_cat_description').val(),
+            ($('#com_cat_tickettype').val() < 0 ? null : $('#com_cat_tickettype').val()),
+            ($('#com_cat_group').val() < 0 ? null : $('#com_cat_group').val()),
+            ($('#com_cat_product').val() < 0 ? null : $('#com_cat_product').val()),
+            ($('#com_cat_productfamily').val() < 0 ? null : $('#com_cat_productfamily').val()),
+            function (result) {
+                if (result == null) return;
+                $('.com-cat-save-panel').hide();
+                updateCat(result);
+            });
     });
 
     function updateCat(cat) {
@@ -570,14 +582,16 @@ AdminPortal = function () {
     });
 
     function setSortable() {
-        $('.com-cats').sortable({ items: '.com-cat-sub', connectWith: '.com-cats', placeholder: 'ui-state-highlight com-cat-sub ui-corner-all', update: function (e, ui) {
-            savePositions();
-        }
+        $('.com-cats').sortable({
+            items: '.com-cat-sub', connectWith: '.com-cats', placeholder: 'ui-state-highlight com-cat-sub ui-corner-all', update: function (e, ui) {
+                savePositions();
+            }
         });
 
-        $('.com-cat-list').sortable({ items: '.com-cats', placeholder: 'ui-state-highlight ui-widget-content ui-corner-all ts-section .com-cats', update: function (e, ui) {
-            savePositions();
-        }
+        $('.com-cat-list').sortable({
+            items: '.com-cats', placeholder: 'ui-state-highlight ui-widget-content ui-corner-all ts-section .com-cats', update: function (e, ui) {
+                savePositions();
+            }
         });
     }
 
@@ -630,19 +644,19 @@ AdminPortal = function () {
 
     function createKnowledgeBaseCategory(cat) {
         var container = $('<div>')
-          .addClass('kb-cats');
+            .addClass('kb-cats');
 
         var el = $('<div>')
-          .addClass('kb-cat kb-cat-main ui-corner-all kb-cat-' + cat.CategoryID)
-          .text(cat.CategoryName)
-          .data('cat', cat)
-          .appendTo(container);
+            .addClass('kb-cat kb-cat-main ui-corner-all kb-cat-' + cat.CategoryID)
+            .text(cat.CategoryName)
+            .data('cat', cat)
+            .appendTo(container);
 
         $('<a>')
-          .addClass('ui-state-default ts-link kb-new-sub')
-          .attr('href', '#')
-          .text('Add a new subcategory')
-          .appendTo($('<div>').appendTo(container));
+            .addClass('ui-state-default ts-link kb-new-sub')
+            .attr('href', '#')
+            .text('Add a new subcategory')
+            .appendTo($('<div>').appendTo(container));
 
         $('.kb-cat-list').append(container);
 
@@ -656,10 +670,10 @@ AdminPortal = function () {
         container = container.parent().find('.kb-new-sub');
 
         var el = $('<div>')
-          .addClass('kb-cat kb-cat-sub ui-corner-all kb-cat-' + cat.CategoryID)
-          .text(cat.CategoryName)
-          .data('cat', cat)
-          .insertBefore(container);
+            .addClass('kb-cat kb-cat-sub ui-corner-all kb-cat-' + cat.CategoryID)
+            .text(cat.CategoryName)
+            .data('cat', cat)
+            .insertBefore(container);
 
         setKnowledgeBaseSortable();
         return el;
@@ -678,14 +692,19 @@ AdminPortal = function () {
         $('#kb_cat_name').val(cat.CategoryName);
         $('#kb_cat_description').val(cat.CategoryDesc);
         $('#kb_cat_visible').prop('checked', cat.VisibleOnPortal);
+        $('#kb_cat_productfamily').combobox('setValue', cat.ProductFamilyID == null ? -1 : cat.ProductFamilyID)
 
         if (cat.ParentID < 0) {
             $('.kb-delete-cat').text('Delete this category and all its subcategories');
             $('.kb-sub-only').hide();
+            if (parent.parent.Ts.System.Organization.UseProductFamilies == true) {
+                $('.kb-cat-productfamily-only').show();
+            }
         }
         else {
             $('.kb-delete-cat').text('Delete this subcategory');
             $('.kb-sub-only').show();
+            $('.kb-cat-productfamily-only').hide();
         }
     });
 
@@ -734,15 +753,16 @@ AdminPortal = function () {
         var cat = el.data('cat');
         parent.parent.Ts.System.logAction('Admin Portal - KnowledgeBase Category Saved');
         parent.parent.Ts.Services.Admin.UpdateKnowledgeBaseCategory(
-          cat.CategoryID,
-          $('#kb_cat_name').val(),
-          $('#kb_cat_description').val(),
-          $('#kb_cat_visible').prop('checked'),
-          function (result) {
-              if (result == null) return;
-              $('.kb-cat-save-panel').hide();
-              updateKnowledgeBaseCat(result);
-          });
+            cat.CategoryID,
+            $('#kb_cat_name').val(),
+            $('#kb_cat_description').val(),
+            $('#kb_cat_visible').prop('checked'),
+            $('#kb_cat_productfamily').val(),
+            function (result) {
+                if (result == null) return;
+                $('.kb-cat-save-panel').hide();
+                updateKnowledgeBaseCat(result);
+            });
     });
 
     function updateKnowledgeBaseCat(cat) {
@@ -780,14 +800,16 @@ AdminPortal = function () {
     });
 
     function setKnowledgeBaseSortable() {
-        $('.kb-cats').sortable({ items: '.kb-cat-sub', connectWith: '.kb-cats', placeholder: 'ui-state-highlight kb-cat-sub ui-corner-all', update: function (e, ui) {
-            saveKnowledgeBasePositions();
-        }
+        $('.kb-cats').sortable({
+            items: '.kb-cat-sub', connectWith: '.kb-cats', placeholder: 'ui-state-highlight kb-cat-sub ui-corner-all', update: function (e, ui) {
+                saveKnowledgeBasePositions();
+            }
         });
 
-        $('.kb-cat-list').sortable({ items: '.kb-cats', placeholder: 'ui-state-highlight ui-widget-content ui-corner-all ts-section .kb-cats', update: function (e, ui) {
-            saveKnowledgeBasePositions();
-        }
+        $('.kb-cat-list').sortable({
+            items: '.kb-cats', placeholder: 'ui-state-highlight ui-widget-content ui-corner-all ts-section .kb-cats', update: function (e, ui) {
+                saveKnowledgeBasePositions();
+            }
         });
     }
 
@@ -816,29 +838,26 @@ AdminPortal = function () {
     }
 
     loadGridDropDown();
-    function loadGridDropDown()
-    {
+    function loadGridDropDown() {
         parent.parent.Ts.Services.Search.GetAdvancedSearchOptions(function (advancedSearchOptions) {
             for (var i = 0; i < advancedSearchOptions.Fields.length; i++) {
-                $('<option>').attr('value', (advancedSearchOptions.Fields[i].IsCustom ? "c":"s") + advancedSearchOptions.Fields[i].FieldID).text(advancedSearchOptions.Fields[i].Alias).appendTo('.admin-portal-columns').data('field', advancedSearchOptions.Fields[i]);
+                $('<option>').attr('value', (advancedSearchOptions.Fields[i].IsCustom ? "c" : "s") + advancedSearchOptions.Fields[i].FieldID).text(advancedSearchOptions.Fields[i].Alias).appendTo('.admin-portal-columns').data('field', advancedSearchOptions.Fields[i]);
             }
         });
         $('.admin-portal-columns').combobox();
-      
+
 
     }
 
     loadGridData();
-    function loadGridData()
-    {
-        parent.parent.Ts.Services.Organizations.LoadCustomPortalColumns(parent.parent.Ts.System.Organization.OrganizationID, function(columns){
+    function loadGridData() {
+        parent.parent.Ts.Services.Organizations.LoadCustomPortalColumns(parent.parent.Ts.System.Organization.OrganizationID, function (columns) {
             for (var col in columns)
                 appendCustomPortalColumn(columns[col]);
         });
     }
 
-    function appendCustomPortalColumn(col)
-    {
+    function appendCustomPortalColumn(col) {
         var container = $('.sort-container');
         var sort = $('<div>').addClass("sort-item").data("fieldID", col.CustomFieldID ? "c" + col.CustomFieldID : "s" + col.StockFieldID).appendTo(container);
         var title = $('<span>').text(col.FieldText).appendTo(sort);
@@ -852,20 +871,18 @@ AdminPortal = function () {
     }
 
     $('.add-portal-column').click(function () {
-        var isDupe=false;
+        var isDupe = false;
         $('.sort-item').each(function () {
             if ($(this).data('fieldID') == $('.admin-portal-columns option:selected').val())
                 isDupe = true;
         });
 
-        if (!isDupe)
-        {
+        if (!isDupe) {
             var container = $('.sort-container');
             var sort = $('<div>').addClass("sort-item").data("fieldID", $('.admin-portal-columns').val()).appendTo(container);
             var title = $('<span>').text($('.admin-portal-columns option:selected').text()).appendTo(sort);
-            var trash = $('<span>').addClass('ts-icon ts-icon-delete').hide().click(function(){
-                if (confirm("Do you want to delete this column?"))
-                {
+            var trash = $('<span>').addClass('ts-icon ts-icon-delete').hide().click(function () {
+                if (confirm("Do you want to delete this column?")) {
                     parent.parent.Ts.Services.Organizations.RemoveCustomPortalColumn(sort.data("fieldID"));
                     savePortalColPositions();
                     sort.remove();
@@ -915,7 +932,7 @@ AdminPortal = function () {
             if (o != null) {
                 if (o.PositiveImage)
                     $('#agentrating-positive-img').attr('src', o.PositiveImage);
-                if(o.NeutralImage)
+                if (o.NeutralImage)
                     $('#agentrating-neutral-img').attr('src', o.NeutralImage);
                 if (o.NegativeImage)
                     $('#agentrating-negative-img').attr('src', o.NegativeImage);
@@ -935,12 +952,10 @@ AdminPortal = function () {
     }
 
     loadCDISettings();
-    function loadCDISettings()
-    {
+    function loadCDISettings() {
         parent.parent.Ts.Services.Organizations.LoadCDISettings(parent.parent.Ts.System.Organization.OrganizationID, function (cdi) {
 
-            if (cdi != null)
-            {
+            if (cdi != null) {
                 var ttwvalue = cdi.TotalTicketsWeight == null ? '2' : cdi.TotalTicketsWeight * 10;
                 $('#ttw-slider').slider('value', ttwvalue);
                 $('#ttw-slider').next().text("Overall Weight: " + (ttwvalue * 10) + "%");
@@ -979,52 +994,52 @@ AdminPortal = function () {
         dropZone: $('.file-upload'),
         previewMaxWidth: 100,
         previewMaxHeight: 100,
-        previewCrop: true, 
+        previewCrop: true,
         add: function (e, data) {
             for (var i = 0; i < data.files.length; i++) {
 
                 if (!(/\.(gif|jpg|jpeg|tiff|png)$/i).test(data.files[i].name)) {
                     alert('Please select a valid image file. (jpg, jpeg, gif, tiff, png)');
-                    isFilevalid = false;  
+                    isFilevalid = false;
                     return;
                 }
 
                 var item = $('<li>')
-                  .appendTo($('.positive-upload-queue'));
+                    .appendTo($('.positive-upload-queue'));
 
                 data.context = item;
                 item.data('data', data);
 
                 var bg = $('<div>')
-                  .addClass('ts-color-bg-accent')
-                  .appendTo(item);
+                    .addClass('ts-color-bg-accent')
+                    .appendTo(item);
 
                 $('<div>')
-                  .text(data.files[i].name + '  (' + parent.parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
-                  .addClass('filename')
-                  .appendTo(bg);
+                    .text(data.files[i].name + '  (' + parent.parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
+                    .addClass('filename')
+                    .appendTo(bg);
 
                 $('<span>')
-                  .addClass('icon-remove')
-                  .click(function (e) {
-                      e.preventDefault();
-                      $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
-                  })
-                  .appendTo(bg);
+                    .addClass('icon-remove')
+                    .click(function (e) {
+                        e.preventDefault();
+                        $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
+                    })
+                    .appendTo(bg);
 
                 $('<span>')
-                  .addClass('icon-remove')
-                  .hide()
-                  .click(function (e) {
-                      e.preventDefault();
-                      var data = $(this).closest('li').data('data');
-                      data.jqXHR.abort();
-                  })
-                  .appendTo(bg);
+                    .addClass('icon-remove')
+                    .hide()
+                    .click(function (e) {
+                        e.preventDefault();
+                        var data = $(this).closest('li').data('data');
+                        data.jqXHR.abort();
+                    })
+                    .appendTo(bg);
 
                 var progress = $('<div>')
-                  .addClass('progress progress-striped active')
-                  .hide();
+                    .addClass('progress progress-striped active')
+                    .hide();
 
                 $('<div>')
                     .addClass('progress-bar')
@@ -1075,41 +1090,41 @@ AdminPortal = function () {
                 }
 
                 var item = $('<li>')
-                  .appendTo($('.neutral-upload-queue'));
+                    .appendTo($('.neutral-upload-queue'));
 
                 data.context = item;
                 item.data('data', data);
 
                 var bg = $('<div>')
-                  .addClass('ts-color-bg-accent')
-                  .appendTo(item);
+                    .addClass('ts-color-bg-accent')
+                    .appendTo(item);
 
                 $('<div>')
-                  .text(data.files[i].name + '  (' + parent.parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
-                  .addClass('filename')
-                  .appendTo(bg);
+                    .text(data.files[i].name + '  (' + parent.parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
+                    .addClass('filename')
+                    .appendTo(bg);
 
                 $('<span>')
-                  .addClass('icon-remove')
-                  .click(function (e) {
-                      e.preventDefault();
-                      $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
-                  })
-                  .appendTo(bg);
+                    .addClass('icon-remove')
+                    .click(function (e) {
+                        e.preventDefault();
+                        $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
+                    })
+                    .appendTo(bg);
 
                 $('<span>')
-                  .addClass('icon-remove')
-                  .hide()
-                  .click(function (e) {
-                      e.preventDefault();
-                      var data = $(this).closest('li').data('data');
-                      data.jqXHR.abort();
-                  })
-                  .appendTo(bg);
+                    .addClass('icon-remove')
+                    .hide()
+                    .click(function (e) {
+                        e.preventDefault();
+                        var data = $(this).closest('li').data('data');
+                        data.jqXHR.abort();
+                    })
+                    .appendTo(bg);
 
                 var progress = $('<div>')
-                  .addClass('progress progress-striped active')
-                  .hide();
+                    .addClass('progress progress-striped active')
+                    .hide();
 
                 $('<div>')
                     .addClass('progress-bar')
@@ -1160,41 +1175,41 @@ AdminPortal = function () {
                 }
 
                 var item = $('<li>')
-                  .appendTo($('.negative-upload-queue'));
+                    .appendTo($('.negative-upload-queue'));
 
                 data.context = item;
                 item.data('data', data);
 
                 var bg = $('<div>')
-                  .addClass('ts-color-bg-accent')
-                  .appendTo(item);
+                    .addClass('ts-color-bg-accent')
+                    .appendTo(item);
 
                 $('<div>')
-                  .text(data.files[i].name + '  (' + parent.parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
-                  .addClass('filename')
-                  .appendTo(bg);
+                    .text(data.files[i].name + '  (' + parent.parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
+                    .addClass('filename')
+                    .appendTo(bg);
 
                 $('<span>')
-                  .addClass('icon-remove')
-                  .click(function (e) {
-                      e.preventDefault();
-                      $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
-                  })
-                  .appendTo(bg);
+                    .addClass('icon-remove')
+                    .click(function (e) {
+                        e.preventDefault();
+                        $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
+                    })
+                    .appendTo(bg);
 
                 $('<span>')
-                  .addClass('icon-remove')
-                  .hide()
-                  .click(function (e) {
-                      e.preventDefault();
-                      var data = $(this).closest('li').data('data');
-                      data.jqXHR.abort();
-                  })
-                  .appendTo(bg);
+                    .addClass('icon-remove')
+                    .hide()
+                    .click(function (e) {
+                        e.preventDefault();
+                        var data = $(this).closest('li').data('data');
+                        data.jqXHR.abort();
+                    })
+                    .appendTo(bg);
 
                 var progress = $('<div>')
-                  .addClass('progress progress-striped active')
-                  .hide();
+                    .addClass('progress progress-striped active')
+                    .hide();
 
                 $('<div>')
                     .addClass('progress-bar')
@@ -1256,7 +1271,7 @@ AdminPortal = function () {
 
     });
     $(".hiddenfile-neutral").change(function () {
-        if (isFilevalid){
+        if (isFilevalid) {
             var attcontainer = $('.neutral-upload-queue li');
             if (attcontainer.length > 0) {
                 attcontainer.each(function (i, o) {
@@ -1271,7 +1286,7 @@ AdminPortal = function () {
     });
     $(".hiddenfile-negative").change(function () {
         if (isFilevalid) {
-          
+
             var attcontainer = $('.negative-upload-queue li');
             if (attcontainer.length > 0) {
                 attcontainer.each(function (i, o) {
@@ -1287,7 +1302,7 @@ AdminPortal = function () {
 
     $('#resetPositiveImage').click(function () {
         parent.parent.Ts.Services.Organizations.ResetRatingImage(1, function () {
-            $('#agentrating-positive-img').attr("src","../Images/face-positive.png");
+            $('#agentrating-positive-img').attr("src", "../Images/face-positive.png");
         });
     });
     $('#resetNegativeImage').click(function () {
@@ -1310,10 +1325,9 @@ AdminPortal = function () {
     })();
 
     function buildWidgetCode() {
-        var defaultString = "<script src='"+ parent.parent.Ts.System.AppDomain + "/widget.js'></script>\n";
+        var defaultString = "<script src='" + parent.parent.Ts.System.AppDomain + "/widget.js'></script>\n";
         var options = "";
-        if ($('#widget-width').val() != '')
-        {
+        if ($('#widget-width').val() != '') {
             options = options + ",width:" + $('#widget-width').val();
         }
         if ($('#widget-height').val() != '') {
@@ -1335,7 +1349,7 @@ AdminPortal = function () {
             options = options + ",offset:" + $('#widget-offset').val();
         }
 
-        var appendString = "<script>TeamSupport.Widget({orgID: " + parent.parent.Ts.System.Organization.OrganizationID + options +"'}); </script>";
+        var appendString = "<script>TeamSupport.Widget({orgID: " + parent.parent.Ts.System.Organization.OrganizationID + options + "'}); </script>";
         $('#widget-generated-code').val(defaultString + appendString);
 
     }

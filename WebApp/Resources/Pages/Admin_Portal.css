@@ -63,3 +63,114 @@ form.positive-file-upload input, form.neutral-file-upload input, form.negative-f
 }
 
 .seperator{color:grey; margin-left:10px !important; margin-right:10px !important; padding-top:4px !important;}
+
+.hubWell {
+    padding: 20px 30px 20px 30px;
+    width: 220px;
+}
+
+.hubDisabledWell {
+    padding: 20px;
+    width: 380px;
+    font-size:12px;
+}
+
+#disabledNewHub {
+    min-height: 1000px; 
+    display: none;
+}
+
+.hubProperty {
+    margin-top:10px;
+}
+
+#HubList {
+    font-size: 13px;
+    width: 180px;
+    padding: 0 8px 0 2px;
+    float: left;
+}
+
+.hubName {
+    width:146px;
+    display:inline-block;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.hub-container {
+    padding:12px 10px 12px 6px;
+}
+
+.hub-container:hover > a {
+    color: #3D6DA7;
+}
+
+.hub-container.active > a, .hub-container.active {
+    background-color: #3D6DA7;
+    color: white;
+}
+
+.hub-container:hover .remove {
+    display: block !important;
+}
+
+.hub-container > a:active {
+    text-decoration:none;
+}
+
+.hub-container > a:link {
+    text-decoration: none;
+}
+
+.ui-tabs .ui-tabs-panel {
+    padding-left: 6px;
+}
+
+.loadcarat {
+    font-size:10px;
+}
+
+.remove {
+    display: none;
+    position: absolute;
+    font-size: 13px;
+}
+
+.error {
+    color: #D9534F;
+}
+
+.hub-container.active .remove {
+    color: #FFFFFF;
+}
+
+.remove:hover, .hub-container.active .remove:hover {
+    color: #D9534F;
+}
+
+input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:focus {
+    border-color: #D9534F;
+}
+
+
+hr, .divider {
+    color: lightgray;
+    margin-left: 12px;
+    margin-top:10px;
+    margin-bottom:10px;
+}
+
+#hub_admin {
+    -moz-box-shadow: 4px 4px 8px #000;
+    -webkit-box-shadow: 4px 4px 8px #000;
+    box-shadow: 4px 4px 8px #000;
+}
+
+.kb-cat-productfamily-only {
+    display:none;
+}
+
+.com-cat-productfamily-only {
+    display:none;
+}
