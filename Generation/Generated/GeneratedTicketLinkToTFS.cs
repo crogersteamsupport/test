@@ -34,18 +34,6 @@ namespace TeamSupport.Data
     
 
     
-    public int? TicketID
-    {
-      get { return Row["TicketID"] != DBNull.Value ? (int?)Row["TicketID"] : null; }
-      set { Row["TicketID"] = CheckValue("TicketID", value); }
-    }
-    
-    public bool? SyncWithTFS
-    {
-      get { return Row["SyncWithTFS"] != DBNull.Value ? (bool?)Row["SyncWithTFS"] : null; }
-      set { Row["SyncWithTFS"] = CheckValue("SyncWithTFS", value); }
-    }
-    
     public int? TFSID
     {
       get { return Row["TFSID"] != DBNull.Value ? (int?)Row["TFSID"] : null; }
@@ -83,6 +71,18 @@ namespace TeamSupport.Data
     }
     
 
+    
+    public bool SyncWithTFS
+    {
+      get { return (bool)Row["SyncWithTFS"]; }
+      set { Row["SyncWithTFS"] = CheckValue("SyncWithTFS", value); }
+    }
+    
+    public int TicketID
+    {
+      get { return (int)Row["TicketID"]; }
+      set { Row["TicketID"] = CheckValue("TicketID", value); }
+    }
     
 
     /* DateTime */
@@ -226,21 +226,21 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("TFSTitle", SqlDbType.VarChar, 8000);
+		tempParameter = updateCommand.Parameters.Add("TFSTitle", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("TFSURL", SqlDbType.VarChar, 8000);
+		tempParameter = updateCommand.Parameters.Add("TFSURL", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("TFSState", SqlDbType.VarChar, 8000);
+		tempParameter = updateCommand.Parameters.Add("TFSState", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -276,21 +276,21 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("TFSState", SqlDbType.VarChar, 8000);
+		tempParameter = insertCommand.Parameters.Add("TFSState", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("TFSURL", SqlDbType.VarChar, 8000);
+		tempParameter = insertCommand.Parameters.Add("TFSURL", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("TFSTitle", SqlDbType.VarChar, 8000);
+		tempParameter = insertCommand.Parameters.Add("TFSTitle", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

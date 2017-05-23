@@ -48,6 +48,12 @@ namespace TeamSupport.Data
     
 
     
+    public bool SentToTFS
+    {
+      get { return (bool)Row["SentToTFS"]; }
+      set { Row["SentToTFS"] = CheckValue("SentToTFS", value); }
+    }
+    
     public Guid AttachmentGUID
     {
       get { return (Guid)Row["AttachmentGUID"]; }
@@ -239,7 +245,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Attachments] SET     [OrganizationID] = @OrganizationID,    [FileName] = @FileName,    [FileType] = @FileType,    [FileSize] = @FileSize,    [Path] = @Path,    [Description] = @Description,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [RefType] = @RefType,    [RefID] = @RefID,    [SentToJira] = @SentToJira,    [AttachmentGUID] = @AttachmentGUID,    [ProductFamilyID] = @ProductFamilyID  WHERE ([AttachmentID] = @AttachmentID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Attachments] SET     [OrganizationID] = @OrganizationID,    [FileName] = @FileName,    [FileType] = @FileType,    [FileSize] = @FileSize,    [Path] = @Path,    [Description] = @Description,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [RefType] = @RefType,    [RefID] = @RefID,    [SentToJira] = @SentToJira,    [AttachmentGUID] = @AttachmentGUID,    [ProductFamilyID] = @ProductFamilyID,    [SentToTFS] = @SentToTFS  WHERE ([AttachmentID] = @AttachmentID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("AttachmentID", SqlDbType.Int, 4);
@@ -340,13 +346,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("SentToTFS", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Attachments] (    [OrganizationID],    [FileName],    [FileType],    [FileSize],    [Path],    [Description],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [RefType],    [RefID],    [SentToJira],    [AttachmentGUID],    [ProductFamilyID]) VALUES ( @OrganizationID, @FileName, @FileType, @FileSize, @Path, @Description, @DateCreated, @DateModified, @CreatorID, @ModifierID, @RefType, @RefID, @SentToJira, @AttachmentGUID, @ProductFamilyID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Attachments] (    [OrganizationID],    [FileName],    [FileType],    [FileSize],    [Path],    [Description],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [RefType],    [RefID],    [SentToJira],    [AttachmentGUID],    [ProductFamilyID],    [SentToTFS]) VALUES ( @OrganizationID, @FileName, @FileType, @FileSize, @Path, @Description, @DateCreated, @DateModified, @CreatorID, @ModifierID, @RefType, @RefID, @SentToJira, @AttachmentGUID, @ProductFamilyID, @SentToTFS); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("SentToTFS", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -565,7 +585,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [AttachmentID], [OrganizationID], [FileName], [FileType], [FileSize], [Path], [Description], [DateCreated], [DateModified], [CreatorID], [ModifierID], [RefType], [RefID], [SentToJira], [AttachmentGUID], [ProductFamilyID] FROM [dbo].[Attachments] WHERE ([AttachmentID] = @AttachmentID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [AttachmentID], [OrganizationID], [FileName], [FileType], [FileSize], [Path], [Description], [DateCreated], [DateModified], [CreatorID], [ModifierID], [RefType], [RefID], [SentToJira], [AttachmentGUID], [ProductFamilyID], [SentToTFS] FROM [dbo].[Attachments] WHERE ([AttachmentID] = @AttachmentID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("AttachmentID", attachmentID);
         Fill(command);

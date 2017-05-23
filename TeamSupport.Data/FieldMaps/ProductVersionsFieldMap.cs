@@ -28,6 +28,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
       _fieldMap.AddMap("JiraProjectKey", "JiraProjectKey", false, false, false);
       _fieldMap.AddMap("ImportFileID", "ImportFileID", false, false, false);
+      _fieldMap.AddMap("TFSProjectName", "TFSProjectName", false, false, false);
             
     }
   }

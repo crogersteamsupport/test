@@ -1,980 +1,775 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketLinkToTFSItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTicketLinkToTFSItem
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
 
 (
-  @id int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [id],
-    [TicketID],
-    [DateModifiedByTFSSync],
-    [SyncWithTFS],
-    [TFSID],
-    [TFSTitle],
-    [TFSURL],
-    [TFSState],
+    [AttachmentID],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
     [CreatorID],
-    [CrmLinkID]
-  FROM [dbo].[TicketLinkToTFS]
-  WHERE ([id] = @id)
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketLinkToTFSItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTicketLinkToTFSItem
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
 
 (
-  @TicketID int,
-  @DateModifiedByTFSSync datetime,
-  @SyncWithTFS bit,
-  @TFSID int,
-  @TFSTitle varchar(8000),
-  @TFSURL varchar(8000),
-  @TFSState varchar(8000),
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateCreated datetime,
+  @DateModified datetime,
   @CreatorID int,
-  @CrmLinkID int,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TicketLinkToTFS]
+  INSERT INTO [dbo].[Attachments]
   (
-    [TicketID],
-    [DateModifiedByTFSSync],
-    [SyncWithTFS],
-    [TFSID],
-    [TFSTitle],
-    [TFSURL],
-    [TFSState],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
     [CreatorID],
-    [CrmLinkID])
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS])
   VALUES (
-    @TicketID,
-    @DateModifiedByTFSSync,
-    @SyncWithTFS,
-    @TFSID,
-    @TFSTitle,
-    @TFSURL,
-    @TFSState,
+    @OrganizationID,
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
+    @Description,
+    @DateCreated,
+    @DateModified,
     @CreatorID,
-    @CrmLinkID)
+    @ModifierID,
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID,
+    @ProductFamilyID,
+    @SentToTFS)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketLinkToTFSItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicketLinkToTFSItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
 
 (
-  @id int,
-  @TicketID int,
-  @DateModifiedByTFSSync datetime,
-  @SyncWithTFS bit,
-  @TFSID int,
-  @TFSTitle varchar(8000),
-  @TFSURL varchar(8000),
-  @TFSState varchar(8000),
-  @CrmLinkID int
+  @AttachmentID int,
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateModified datetime,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TicketLinkToTFS]
+  UPDATE [dbo].[Attachments]
   SET
-    [TicketID] = @TicketID,
-    [DateModifiedByTFSSync] = @DateModifiedByTFSSync,
-    [SyncWithTFS] = @SyncWithTFS,
-    [TFSID] = @TFSID,
-    [TFSTitle] = @TFSTitle,
-    [TFSURL] = @TFSURL,
-    [TFSState] = @TFSState,
-    [CrmLinkID] = @CrmLinkID
-  WHERE ([id] = @id)
+    [OrganizationID] = @OrganizationID,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID,
+    [ProductFamilyID] = @ProductFamilyID,
+    [SentToTFS] = @SentToTFS
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketLinkToTFSItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicketLinkToTFSItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
 
 (
-  @id int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TicketLinkToTFS]
-  WHERE ([id] = @id)
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectActionLinkToTFSItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectActionLinkToTFSItem
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
 
 (
-  @id int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [id],
-    [ActionID],
-    [DateModifiedByTFSSync],
-    [TFSID]
-  FROM [dbo].[ActionLinkToTFS]
-  WHERE ([id] = @id)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertActionLinkToTFSItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertActionLinkToTFSItem
-
-(
-  @ActionID int,
-  @DateModifiedByTFSSync datetime,
-  @TFSID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ActionLinkToTFS]
-  (
-    [ActionID],
-    [DateModifiedByTFSSync],
-    [TFSID])
-  VALUES (
-    @ActionID,
-    @DateModifiedByTFSSync,
-    @TFSID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateActionLinkToTFSItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateActionLinkToTFSItem
-
-(
-  @id int,
-  @ActionID int,
-  @DateModifiedByTFSSync datetime,
-  @TFSID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ActionLinkToTFS]
-  SET
-    [ActionID] = @ActionID,
-    [DateModifiedByTFSSync] = @DateModifiedByTFSSync,
-    [TFSID] = @TFSID
-  WHERE ([id] = @id)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteActionLinkToTFSItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteActionLinkToTFSItem
-
-(
-  @id int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ActionLinkToTFS]
-  WHERE ([id] = @id)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketLinkToTFSItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTicketLinkToTFSItem
-
-(
-  @id int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [id],
-    [TicketID],
-    [DateModifiedByTFSSync],
-    [SyncWithTFS],
-    [TFSID],
-    [TFSTitle],
-    [TFSURL],
-    [TFSState],
+    [AttachmentID],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
     [CreatorID],
-    [CrmLinkID]
-  FROM [dbo].[TicketLinkToTFS]
-  WHERE ([id] = @id)
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketLinkToTFSItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTicketLinkToTFSItem
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
 
 (
-  @TicketID int,
-  @DateModifiedByTFSSync datetime,
-  @SyncWithTFS bit,
-  @TFSID int,
-  @TFSTitle varchar(8000),
-  @TFSURL varchar(8000),
-  @TFSState varchar(8000),
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateCreated datetime,
+  @DateModified datetime,
   @CreatorID int,
-  @CrmLinkID int,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TicketLinkToTFS]
+  INSERT INTO [dbo].[Attachments]
   (
-    [TicketID],
-    [DateModifiedByTFSSync],
-    [SyncWithTFS],
-    [TFSID],
-    [TFSTitle],
-    [TFSURL],
-    [TFSState],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
     [CreatorID],
-    [CrmLinkID])
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS])
   VALUES (
-    @TicketID,
-    @DateModifiedByTFSSync,
-    @SyncWithTFS,
-    @TFSID,
-    @TFSTitle,
-    @TFSURL,
-    @TFSState,
+    @OrganizationID,
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
+    @Description,
+    @DateCreated,
+    @DateModified,
     @CreatorID,
-    @CrmLinkID)
+    @ModifierID,
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID,
+    @ProductFamilyID,
+    @SentToTFS)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketLinkToTFSItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicketLinkToTFSItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
 
 (
-  @id int,
-  @TicketID int,
-  @DateModifiedByTFSSync datetime,
-  @SyncWithTFS bit,
-  @TFSID int,
-  @TFSTitle varchar(8000),
-  @TFSURL varchar(8000),
-  @TFSState varchar(8000),
-  @CrmLinkID int
+  @AttachmentID int,
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateModified datetime,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TicketLinkToTFS]
+  UPDATE [dbo].[Attachments]
   SET
-    [TicketID] = @TicketID,
-    [DateModifiedByTFSSync] = @DateModifiedByTFSSync,
-    [SyncWithTFS] = @SyncWithTFS,
-    [TFSID] = @TFSID,
-    [TFSTitle] = @TFSTitle,
-    [TFSURL] = @TFSURL,
-    [TFSState] = @TFSState,
-    [CrmLinkID] = @CrmLinkID
-  WHERE ([id] = @id)
+    [OrganizationID] = @OrganizationID,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID,
+    [ProductFamilyID] = @ProductFamilyID,
+    [SentToTFS] = @SentToTFS
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketLinkToTFSItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicketLinkToTFSItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
 
 (
-  @id int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TicketLinkToTFS]
-  WHERE ([id] = @id)
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectActionLinkToTFSItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectActionLinkToTFSItem
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
 
 (
-  @id int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [id],
-    [ActionID],
-    [DateModifiedByTFSSync],
-    [TFSID]
-  FROM [dbo].[ActionLinkToTFS]
-  WHERE ([id] = @id)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertActionLinkToTFSItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertActionLinkToTFSItem
-
-(
-  @ActionID int,
-  @DateModifiedByTFSSync datetime,
-  @TFSID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ActionLinkToTFS]
-  (
-    [ActionID],
-    [DateModifiedByTFSSync],
-    [TFSID])
-  VALUES (
-    @ActionID,
-    @DateModifiedByTFSSync,
-    @TFSID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateActionLinkToTFSItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateActionLinkToTFSItem
-
-(
-  @id int,
-  @ActionID int,
-  @DateModifiedByTFSSync datetime,
-  @TFSID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ActionLinkToTFS]
-  SET
-    [ActionID] = @ActionID,
-    [DateModifiedByTFSSync] = @DateModifiedByTFSSync,
-    [TFSID] = @TFSID
-  WHERE ([id] = @id)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteActionLinkToTFSItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteActionLinkToTFSItem
-
-(
-  @id int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ActionLinkToTFS]
-  WHERE ([id] = @id)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketLinkToTFSItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTicketLinkToTFSItem
-
-(
-  @id int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [id],
-    [TicketID],
-    [DateModifiedByTFSSync],
-    [SyncWithTFS],
-    [TFSID],
-    [TFSTitle],
-    [TFSURL],
-    [TFSState],
+    [AttachmentID],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
     [CreatorID],
-    [CrmLinkID]
-  FROM [dbo].[TicketLinkToTFS]
-  WHERE ([id] = @id)
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketLinkToTFSItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTicketLinkToTFSItem
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
 
 (
-  @TicketID int,
-  @DateModifiedByTFSSync datetime,
-  @SyncWithTFS bit,
-  @TFSID int,
-  @TFSTitle varchar(8000),
-  @TFSURL varchar(8000),
-  @TFSState varchar(8000),
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateCreated datetime,
+  @DateModified datetime,
   @CreatorID int,
-  @CrmLinkID int,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TicketLinkToTFS]
+  INSERT INTO [dbo].[Attachments]
   (
-    [TicketID],
-    [DateModifiedByTFSSync],
-    [SyncWithTFS],
-    [TFSID],
-    [TFSTitle],
-    [TFSURL],
-    [TFSState],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
     [CreatorID],
-    [CrmLinkID])
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS])
   VALUES (
-    @TicketID,
-    @DateModifiedByTFSSync,
-    @SyncWithTFS,
-    @TFSID,
-    @TFSTitle,
-    @TFSURL,
-    @TFSState,
+    @OrganizationID,
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
+    @Description,
+    @DateCreated,
+    @DateModified,
     @CreatorID,
-    @CrmLinkID)
+    @ModifierID,
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID,
+    @ProductFamilyID,
+    @SentToTFS)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketLinkToTFSItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicketLinkToTFSItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
 
 (
-  @id int,
-  @TicketID int,
-  @DateModifiedByTFSSync datetime,
-  @SyncWithTFS bit,
-  @TFSID int,
-  @TFSTitle varchar(8000),
-  @TFSURL varchar(8000),
-  @TFSState varchar(8000),
-  @CrmLinkID int
+  @AttachmentID int,
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateModified datetime,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TicketLinkToTFS]
+  UPDATE [dbo].[Attachments]
   SET
-    [TicketID] = @TicketID,
-    [DateModifiedByTFSSync] = @DateModifiedByTFSSync,
-    [SyncWithTFS] = @SyncWithTFS,
-    [TFSID] = @TFSID,
-    [TFSTitle] = @TFSTitle,
-    [TFSURL] = @TFSURL,
-    [TFSState] = @TFSState,
-    [CrmLinkID] = @CrmLinkID
-  WHERE ([id] = @id)
+    [OrganizationID] = @OrganizationID,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID,
+    [ProductFamilyID] = @ProductFamilyID,
+    [SentToTFS] = @SentToTFS
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketLinkToTFSItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicketLinkToTFSItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
 
 (
-  @id int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TicketLinkToTFS]
-  WHERE ([id] = @id)
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectActionLinkToTFSItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectActionLinkToTFSItem
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
 
 (
-  @id int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [id],
-    [ActionID],
-    [DateModifiedByTFSSync],
-    [TFSID]
-  FROM [dbo].[ActionLinkToTFS]
-  WHERE ([id] = @id)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertActionLinkToTFSItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertActionLinkToTFSItem
-
-(
-  @ActionID int,
-  @DateModifiedByTFSSync datetime,
-  @TFSID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ActionLinkToTFS]
-  (
-    [ActionID],
-    [DateModifiedByTFSSync],
-    [TFSID])
-  VALUES (
-    @ActionID,
-    @DateModifiedByTFSSync,
-    @TFSID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateActionLinkToTFSItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateActionLinkToTFSItem
-
-(
-  @id int,
-  @ActionID int,
-  @DateModifiedByTFSSync datetime,
-  @TFSID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ActionLinkToTFS]
-  SET
-    [ActionID] = @ActionID,
-    [DateModifiedByTFSSync] = @DateModifiedByTFSSync,
-    [TFSID] = @TFSID
-  WHERE ([id] = @id)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteActionLinkToTFSItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteActionLinkToTFSItem
-
-(
-  @id int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ActionLinkToTFS]
-  WHERE ([id] = @id)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketLinkToTFSItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTicketLinkToTFSItem
-
-(
-  @id int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [id],
-    [TicketID],
-    [DateModifiedByTFSSync],
-    [SyncWithTFS],
-    [TFSID],
-    [TFSTitle],
-    [TFSURL],
-    [TFSState],
+    [AttachmentID],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
     [CreatorID],
-    [CrmLinkID]
-  FROM [dbo].[TicketLinkToTFS]
-  WHERE ([id] = @id)
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketLinkToTFSItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTicketLinkToTFSItem
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
 
 (
-  @TicketID int,
-  @DateModifiedByTFSSync datetime,
-  @SyncWithTFS bit,
-  @TFSID int,
-  @TFSTitle varchar(8000),
-  @TFSURL varchar(8000),
-  @TFSState varchar(8000),
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateCreated datetime,
+  @DateModified datetime,
   @CreatorID int,
-  @CrmLinkID int,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TicketLinkToTFS]
+  INSERT INTO [dbo].[Attachments]
   (
-    [TicketID],
-    [DateModifiedByTFSSync],
-    [SyncWithTFS],
-    [TFSID],
-    [TFSTitle],
-    [TFSURL],
-    [TFSState],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
     [CreatorID],
-    [CrmLinkID])
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS])
   VALUES (
-    @TicketID,
-    @DateModifiedByTFSSync,
-    @SyncWithTFS,
-    @TFSID,
-    @TFSTitle,
-    @TFSURL,
-    @TFSState,
+    @OrganizationID,
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
+    @Description,
+    @DateCreated,
+    @DateModified,
     @CreatorID,
-    @CrmLinkID)
+    @ModifierID,
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID,
+    @ProductFamilyID,
+    @SentToTFS)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketLinkToTFSItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicketLinkToTFSItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
 
 (
-  @id int,
-  @TicketID int,
-  @DateModifiedByTFSSync datetime,
-  @SyncWithTFS bit,
-  @TFSID int,
-  @TFSTitle varchar(8000),
-  @TFSURL varchar(8000),
-  @TFSState varchar(8000),
-  @CrmLinkID int
+  @AttachmentID int,
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateModified datetime,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TicketLinkToTFS]
+  UPDATE [dbo].[Attachments]
   SET
-    [TicketID] = @TicketID,
-    [DateModifiedByTFSSync] = @DateModifiedByTFSSync,
-    [SyncWithTFS] = @SyncWithTFS,
-    [TFSID] = @TFSID,
-    [TFSTitle] = @TFSTitle,
-    [TFSURL] = @TFSURL,
-    [TFSState] = @TFSState,
-    [CrmLinkID] = @CrmLinkID
-  WHERE ([id] = @id)
+    [OrganizationID] = @OrganizationID,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID,
+    [ProductFamilyID] = @ProductFamilyID,
+    [SentToTFS] = @SentToTFS
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketLinkToTFSItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicketLinkToTFSItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
 
 (
-  @id int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TicketLinkToTFS]
-  WHERE ([id] = @id)
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectActionLinkToTFSItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectActionLinkToTFSItem
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
 
 (
-  @id int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [id],
-    [ActionID],
-    [DateModifiedByTFSSync],
-    [TFSID]
-  FROM [dbo].[ActionLinkToTFS]
-  WHERE ([id] = @id)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertActionLinkToTFSItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertActionLinkToTFSItem
-
-(
-  @ActionID int,
-  @DateModifiedByTFSSync datetime,
-  @TFSID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ActionLinkToTFS]
-  (
-    [ActionID],
-    [DateModifiedByTFSSync],
-    [TFSID])
-  VALUES (
-    @ActionID,
-    @DateModifiedByTFSSync,
-    @TFSID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateActionLinkToTFSItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateActionLinkToTFSItem
-
-(
-  @id int,
-  @ActionID int,
-  @DateModifiedByTFSSync datetime,
-  @TFSID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ActionLinkToTFS]
-  SET
-    [ActionID] = @ActionID,
-    [DateModifiedByTFSSync] = @DateModifiedByTFSSync,
-    [TFSID] = @TFSID
-  WHERE ([id] = @id)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteActionLinkToTFSItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteActionLinkToTFSItem
-
-(
-  @id int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ActionLinkToTFS]
-  WHERE ([id] = @id)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketLinkToTFSItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTicketLinkToTFSItem
-
-(
-  @id int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [id],
-    [TicketID],
-    [DateModifiedByTFSSync],
-    [SyncWithTFS],
-    [TFSID],
-    [TFSTitle],
-    [TFSURL],
-    [TFSState],
+    [AttachmentID],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
     [CreatorID],
-    [CrmLinkID]
-  FROM [dbo].[TicketLinkToTFS]
-  WHERE ([id] = @id)
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketLinkToTFSItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTicketLinkToTFSItem
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
 
 (
-  @TicketID int,
-  @DateModifiedByTFSSync datetime,
-  @SyncWithTFS bit,
-  @TFSID int,
-  @TFSTitle varchar(8000),
-  @TFSURL varchar(8000),
-  @TFSState varchar(8000),
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateCreated datetime,
+  @DateModified datetime,
   @CreatorID int,
-  @CrmLinkID int,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TicketLinkToTFS]
+  INSERT INTO [dbo].[Attachments]
   (
-    [TicketID],
-    [DateModifiedByTFSSync],
-    [SyncWithTFS],
-    [TFSID],
-    [TFSTitle],
-    [TFSURL],
-    [TFSState],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
     [CreatorID],
-    [CrmLinkID])
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS])
   VALUES (
-    @TicketID,
-    @DateModifiedByTFSSync,
-    @SyncWithTFS,
-    @TFSID,
-    @TFSTitle,
-    @TFSURL,
-    @TFSState,
+    @OrganizationID,
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
+    @Description,
+    @DateCreated,
+    @DateModified,
     @CreatorID,
-    @CrmLinkID)
+    @ModifierID,
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID,
+    @ProductFamilyID,
+    @SentToTFS)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketLinkToTFSItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicketLinkToTFSItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
 
 (
-  @id int,
-  @TicketID int,
-  @DateModifiedByTFSSync datetime,
-  @SyncWithTFS bit,
-  @TFSID int,
-  @TFSTitle varchar(8000),
-  @TFSURL varchar(8000),
-  @TFSState varchar(8000),
-  @CrmLinkID int
+  @AttachmentID int,
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateModified datetime,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TicketLinkToTFS]
+  UPDATE [dbo].[Attachments]
   SET
-    [TicketID] = @TicketID,
-    [DateModifiedByTFSSync] = @DateModifiedByTFSSync,
-    [SyncWithTFS] = @SyncWithTFS,
-    [TFSID] = @TFSID,
-    [TFSTitle] = @TFSTitle,
-    [TFSURL] = @TFSURL,
-    [TFSState] = @TFSState,
-    [CrmLinkID] = @CrmLinkID
-  WHERE ([id] = @id)
+    [OrganizationID] = @OrganizationID,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID,
+    [ProductFamilyID] = @ProductFamilyID,
+    [SentToTFS] = @SentToTFS
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketLinkToTFSItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicketLinkToTFSItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
 
 (
-  @id int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TicketLinkToTFS]
-  WHERE ([id] = @id)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectActionLinkToTFSItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectActionLinkToTFSItem
-
-(
-  @id int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [id],
-    [ActionID],
-    [DateModifiedByTFSSync],
-    [TFSID]
-  FROM [dbo].[ActionLinkToTFS]
-  WHERE ([id] = @id)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertActionLinkToTFSItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertActionLinkToTFSItem
-
-(
-  @ActionID int,
-  @DateModifiedByTFSSync datetime,
-  @TFSID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ActionLinkToTFS]
-  (
-    [ActionID],
-    [DateModifiedByTFSSync],
-    [TFSID])
-  VALUES (
-    @ActionID,
-    @DateModifiedByTFSSync,
-    @TFSID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateActionLinkToTFSItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateActionLinkToTFSItem
-
-(
-  @id int,
-  @ActionID int,
-  @DateModifiedByTFSSync datetime,
-  @TFSID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ActionLinkToTFS]
-  SET
-    [ActionID] = @ActionID,
-    [DateModifiedByTFSSync] = @DateModifiedByTFSSync,
-    [TFSID] = @TFSID
-  WHERE ([id] = @id)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteActionLinkToTFSItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteActionLinkToTFSItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteActionLinkToTFSItem
-
-(
-  @id int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ActionLinkToTFS]
-  WHERE ([id] = @id)
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 

@@ -14,9 +14,9 @@ namespace TeamSupport.Data
   {
     public TicketLinkToTFSItemProxy() {}
     [DataMember] public int id { get; set; }
-    [DataMember] public int? TicketID { get; set; }
+    [DataMember] public int TicketID { get; set; }
     [DataMember] public DateTime? DateModifiedByTFSSync { get; set; }
-    [DataMember] public bool? SyncWithTFS { get; set; }
+    [DataMember] public bool SyncWithTFS { get; set; }
     [DataMember] public int? TFSID { get; set; }
     [DataMember] public string TFSTitle { get; set; }
     [DataMember] public string TFSURL { get; set; }

@@ -28,6 +28,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ImportFileID", "ImportFileID", false, false, false);
       _fieldMap.AddMap("EmailReplyToAddress", "EmailReplyToAddress", false, false, false);
       _fieldMap.AddMap("SlaLevelID", "SlaLevelID", false, false, false);
+      _fieldMap.AddMap("TFSProjectName", "TFSProjectName", false, false, false);
             
     }
   }
