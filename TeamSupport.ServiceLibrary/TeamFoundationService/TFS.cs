@@ -23,8 +23,11 @@ namespace TeamSupport.ServiceLibrary
                     using (HttpResponseMessage response = client.GetAsync(string.Format("{0}/DefaultCollection/_apis/projects?api-version=1.0", hostname)).Result) //"https://vavc.visualstudio.com/DefaultCollection/_apis/projects?api-version=1.0").Result)
                     {
                         response.EnsureSuccessStatusCode();
-                        responseBody = await response.Content.ReadAsStringAsync();
-                        //vv
+
+                        if (response.StatusCode.ToString().ToLower() == "ok")
+                        {
+                            responseBody = response.Content.ReadAsStringAsync().Result;
+                        }
                     }
                 }
             }
