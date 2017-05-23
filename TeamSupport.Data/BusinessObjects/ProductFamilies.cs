@@ -7,18 +7,18 @@ using System.Data.SqlClient;
 
 namespace TeamSupport.Data
 {
-  public partial class ProductFamily
-  {
-  }
-  
-  public partial class ProductFamilies
-  {
-      public void LoadBySearchTerm(string searchTerm, int start, int organizationID, int userID)
-      {
-          int end = start + 20;
-          using (SqlCommand command = new SqlCommand())
-          {
-              command.CommandText = @"
+    public partial class ProductFamily
+    {
+    }
+
+    public partial class ProductFamilies
+    {
+        public void LoadBySearchTerm(string searchTerm, int start, int organizationID, int userID)
+        {
+            int end = start + 20;
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
                 SELECT
                   *
                 FROM
@@ -46,66 +46,86 @@ namespace TeamSupport.Data
 				        ORDER BY
                   rownum ASC
                 ";
-              command.CommandType = CommandType.Text;
-              command.Parameters.AddWithValue("@OrganizationID", organizationID);
-              command.Parameters.AddWithValue("@SearchTerm", searchTerm);
-              command.Parameters.AddWithValue("@start", start + 1);
-              command.Parameters.AddWithValue("@end", end);
-              command.Parameters.AddWithValue("@UserID", userID);
-              Fill(command);
-          }
-      }
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@SearchTerm", searchTerm);
+                command.Parameters.AddWithValue("@start", start + 1);
+                command.Parameters.AddWithValue("@end", end);
+                command.Parameters.AddWithValue("@UserID", userID);
+                Fill(command);
+            }
+        }
 
-      public static void DeleteProductFamily(LoginUser loginUser, int productFamilyID)
-      {
-          ProductFamilies productFamilies = new ProductFamilies(loginUser);
-          using (SqlCommand command = new SqlCommand())
-          {
-              command.CommandText = "UPDATE Products SET ProductFamilyID = null WHERE ProductFamilyID = @ProductFamilyID AND OrganizationID = @OrganizationID";
-              command.CommandType = CommandType.Text;
-              command.Parameters.Clear();
-              command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
-              command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
-              productFamilies.ExecuteNonQuery(command, "Products");
+        public static void DeleteProductFamily(LoginUser loginUser, int productFamilyID)
+        {
+            ProductFamilies productFamilies = new ProductFamilies(loginUser);
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "UPDATE Products SET ProductFamilyID = null WHERE ProductFamilyID = @ProductFamilyID AND OrganizationID = @OrganizationID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+                command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+                productFamilies.ExecuteNonQuery(command, "Products");
 
-              command.CommandText = "DELETE RecentlyViewedItems WHERE RefType = 44 AND RefID = @ProductFamilyID";
-              command.CommandType = CommandType.Text;
-              command.Parameters.Clear();
-              command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
-              productFamilies.ExecuteNonQuery(command, "Products");
+                command.CommandText = "DELETE RecentlyViewedItems WHERE RefType = 44 AND RefID = @ProductFamilyID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+                productFamilies.ExecuteNonQuery(command, "Products");
 
-              command.CommandText = "DELETE ProductFamilies WHERE ProductFamilyID = @ProductFamilyID AND OrganizationID = @OrganizationID";
-              command.CommandType = CommandType.Text;
-              command.Parameters.Clear();
-              command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
-              command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
-              productFamilies.ExecuteNonQuery(command, "ProductFamilies");
+                command.CommandText = "DELETE ProductFamilies WHERE ProductFamilyID = @ProductFamilyID AND OrganizationID = @OrganizationID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+                command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+                productFamilies.ExecuteNonQuery(command, "ProductFamilies");
 
-          }
+                command.CommandText = "UPDATE KnowledgeBaseCategories SET ProductFamilyID = -1 WHERE ProductFamilyID = @ProductFamilyID AND OrganizationID = @OrganizationID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+                command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+                productFamilies.ExecuteNonQuery(command, "ProductFamilies");
+
+                command.CommandText = "UPDATE ForumCategories SET ProductFamilyID = -1 WHERE ProductFamilyID = @ProductFamilyID AND OrganizationID = @OrganizationID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+                command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+                productFamilies.ExecuteNonQuery(command, "ProductFamilies");
+
+                command.CommandText = "UPDATE CustomerHubs SET ProductFamilyID = NULL WHERE ProductFamilyID = @ProductFamilyID AND OrganizationID = @OrganizationID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+                command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+                productFamilies.ExecuteNonQuery(command, "ProductFamilies");
+            }
 
 
-          productFamilies.LoadByProductFamilyID(productFamilyID);
-          if (!productFamilies.IsEmpty) productFamilies[0].Delete();
-          productFamilies.Save();
+            productFamilies.LoadByProductFamilyID(productFamilyID);
+            if (!productFamilies.IsEmpty) productFamilies[0].Delete();
+            productFamilies.Save();
 
-      }
+        }
 
-      public void LoadByOrganizationID(int organizationID)
-      {
-          using (SqlCommand command = new SqlCommand())
-          {
-              command.CommandText = "SELECT * FROM ProductFamilies WHERE OrganizationID = @OrganizationID ORDER BY Name";
-              command.CommandType = CommandType.Text;
-              command.Parameters.AddWithValue("@OrganizationID", organizationID);
-              Fill(command);
-          }
-      }
+        public void LoadByOrganizationID(int organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT * FROM ProductFamilies WHERE OrganizationID = @OrganizationID ORDER BY Name";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                Fill(command);
+            }
+        }
 
-      public void LoadByUserRights(int userID)
-      {
-          using (SqlCommand command = new SqlCommand())
-          {
-              command.CommandText = @"
+        public void LoadByUserRights(int userID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
                 SELECT 
                     * 
                 FROM 
@@ -120,25 +140,25 @@ namespace TeamSupport.Data
                         WHERE 
                             urpf.UserID = @UserID
                     )";
-              command.CommandType = CommandType.Text;
-              command.Parameters.AddWithValue("@UserID", userID);
-              Fill(command, "Organizations");
-          }
-      }
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@UserID", userID);
+                Fill(command, "Organizations");
+            }
+        }
 
-      public void LoadByLikeProductFamilyName(int parentID, string name)
-      {
-          LoadByLikeProductFamilyName(parentID, name, int.MaxValue, false);
-      }
+        public void LoadByLikeProductFamilyName(int parentID, string name)
+        {
+            LoadByLikeProductFamilyName(parentID, name, int.MaxValue, false);
+        }
 
-      public void LoadByLikeProductFamilyName(int organizationID, string name, int maxRows, bool filterByUserRights)
-      {
-          User user = Users.GetUser(LoginUser, LoginUser.UserID);
-          bool doFilter = filterByUserRights && (ProductFamiliesRightType)user.ProductFamiliesRights == ProductFamiliesRightType.SomeFamilies;
+        public void LoadByLikeProductFamilyName(int organizationID, string name, int maxRows, bool filterByUserRights)
+        {
+            User user = Users.GetUser(LoginUser, LoginUser.UserID);
+            bool doFilter = filterByUserRights && (ProductFamiliesRightType)user.ProductFamiliesRights == ProductFamiliesRightType.SomeFamilies;
 
-          using (SqlCommand command = new SqlCommand())
-          {
-              StringBuilder text = new StringBuilder(@"
+            using (SqlCommand command = new SqlCommand())
+            {
+                StringBuilder text = new StringBuilder(@"
                 SELECT
                     TOP (@MaxRows) * 
                 FROM 
@@ -147,29 +167,29 @@ namespace TeamSupport.Data
                     (OrganizationID = @OrganizationID) 
                     AND (@UseFilter=0 OR (ProductFamilyID IN (SELECT ProductFamilyID FROM UserRightsProductFamilies WHERE UserID = @UserID)))
                 ");
-              if (name.Trim() != "")
-              {
-                  text.Append(" AND ((Name LIKE '%'+@Name+'%') OR (Description LIKE '%'+@Name+'%')) ");
-              }
+                if (name.Trim() != "")
+                {
+                    text.Append(" AND ((Name LIKE '%'+@Name+'%') OR (Description LIKE '%'+@Name+'%')) ");
+                }
 
-              text.Append(" ORDER BY Name ");
-              command.CommandText = text.ToString();
-              command.CommandType = CommandType.Text;
+                text.Append(" ORDER BY Name ");
+                command.CommandText = text.ToString();
+                command.CommandType = CommandType.Text;
 
-              command.Parameters.AddWithValue("@Name", name.Trim());
-              command.Parameters.AddWithValue("@OrganizationID", organizationID);
-              command.Parameters.AddWithValue("@MaxRows", maxRows);
-              command.Parameters.AddWithValue("@UserID", LoginUser.UserID);
-              command.Parameters.AddWithValue("@UseFilter", doFilter);
-              Fill(command);
-          }
-      }
+                command.Parameters.AddWithValue("@Name", name.Trim());
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@MaxRows", maxRows);
+                command.Parameters.AddWithValue("@UserID", LoginUser.UserID);
+                command.Parameters.AddWithValue("@UseFilter", doFilter);
+                Fill(command);
+            }
+        }
 
-      public void LoadByName(int organizationID, string name)
-      {
-        using (SqlCommand command = new SqlCommand())
+        public void LoadByName(int organizationID, string name)
         {
-          StringBuilder text = new StringBuilder(@"
+            using (SqlCommand command = new SqlCommand())
+            {
+                StringBuilder text = new StringBuilder(@"
                 SELECT
                     * 
                 FROM 
@@ -179,14 +199,14 @@ namespace TeamSupport.Data
                     AND Name = @Name
                 ");
 
-          command.CommandText = text.ToString();
-          command.CommandType = CommandType.Text;
+                command.CommandText = text.ToString();
+                command.CommandType = CommandType.Text;
 
-          command.Parameters.AddWithValue("@Name", name.Trim());
-          command.Parameters.AddWithValue("@OrganizationID", organizationID);
-          Fill(command);
+                command.Parameters.AddWithValue("@Name", name.Trim());
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                Fill(command);
+            }
         }
-      }
-  }
-  
+    }
+
 }
