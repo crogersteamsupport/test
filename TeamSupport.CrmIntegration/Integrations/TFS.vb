@@ -6,6 +6,7 @@ Imports System.Reflection
 Imports System.Text
 Imports TeamSupport.Data
 Imports Newtonsoft.Json
+Imports TFSLibrary = TeamSupport.ServiceLibrary.TFS
 
 Namespace TeamSupport
     Namespace CrmIntegration
@@ -56,14 +57,16 @@ Namespace TeamSupport
 
                 'Make sure credentials are good
                 If (result) Then
-                    'Try
-                    '    'Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest", ""), CRMLinkRow.Username, CRMLinkRow.Password)
-                    '    'Dim serverInfo As ServerInfo = jiraClient.GetServerInfo()
-                    '    AddLog("Tfs credentials ok.")
-                    'Catch jiraEx As JiraClientException
-                    '    result = False
-                    '    _exception = New IntegrationException(jiraEx.InnerException.Message, jiraEx)
-                    'End Try
+                    Try
+                        If (Not String.IsNullOrEmpty(TFSLibrary.GetProjects(CRMLinkRow.HostName, CRMLinkRow.SecurityToken1))) Then
+                            AddLog("Tfs credentials ok.")
+                        Else
+                            AddLog("Tfs credentials didn't work.")
+                        End If
+                    Catch ex As Exception
+                        result = False
+                        _exception = New IntegrationException(ex.InnerException.Message, ex)
+                    End Try
                 End If
 
                 Return result

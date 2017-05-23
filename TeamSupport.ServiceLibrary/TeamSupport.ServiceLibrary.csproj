@@ -151,6 +151,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq">
@@ -191,6 +192,7 @@
     <Compile Include="TaskProcessor.cs" />
     <Compile Include="MailChimp\ListsObject.cs" />
     <Compile Include="MailChimp\MailChimp.cs" />
+    <Compile Include="TeamFoundationService\TFS.cs" />
     <Compile Include="TokTranscoder.cs" />
     <Compile Include="WebHooks.cs" />
     <Compile Include="IndexSources\IndexDataSource.cs" />
