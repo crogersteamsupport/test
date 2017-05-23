@@ -692,7 +692,7 @@ AdminInt = function () {
     else if (type.hasClass('zohocrm')) crmType = 'ZohoCrm';
     else if (type.hasClass('zohoreports')) crmType = 'ZohoReports';
     else if (type.hasClass('hubspot')) crmType = 'HubSpot';
-    else if (type.hasClass('slack')) crmType = 'SlackWebHook';
+    else if (type.hasClass('slackwebhook')) crmType = 'SlackWebHook';
 
     var crmToken = crmToken = parent.find('.int-crm-token').val();
 
