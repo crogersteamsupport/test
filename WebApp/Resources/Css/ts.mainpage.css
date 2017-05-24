@@ -24,7 +24,10 @@
 .main-header-content-wrapper { float: left; width: 100%; }
 .main-header-content .main-quick-ticket {width: 250px; padding: .25em .25em; margin-left: 1em;} 
 .main-header-new-ticket span { margin-top: 12px; height: 50px; width: 115px; background: transparent url('../Images/header_new_ticket.png') no-repeat; float: left; }
-.main-header-title { height: 50px; background:#3d6da7;} 
+.main-header-title {
+    height: 50px;
+    background: #2a3f54;
+} 
 .main-header-new-ticket {line-height: 50px; height: 50px; display:block; float:left; }
 .main-header-menu ul { padding: 0; list-style-type: none;  float:right; margin: 0 1em 0 0;}
 .main-header-menu li { height:50px; float:left; list-style-type: none; margin: 0 0 -1px 0; padding: 0 0 0 5px; border: 1px solid #3d6da7; border-bottom: none;}
@@ -91,3 +94,33 @@
 .ui-dialog .dialog-reminder.ui-dialog-content { overflow:hidden;}
 
 .tmp-visible{height:1px !important;}
+
+
+
+<!-- SIDEBAR -->
+
+div.sidebar-container {
+    background-color: #33485e !important;
+    color:white !important;
+}
+
+div.sidebar-container {
+    color: white !important;
+}
+
+li.ts-menutree-item {
+    color:white !important;
+    font-family:Verdana;
+}
+
+li.ts-menutree-item:hover {
+    background-color:rgba(255,255,255,0.1);
+    color: white !important;
+    font-family: Verdana;
+}
+
+li.ts-menutree-item-selected {
+    background-color: rgba(255,255,255,0.2);
+    color: white !important;
+    font-family: Verdana;
+}

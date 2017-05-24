@@ -3,7 +3,7 @@
 Ts.Ui.MenuTree = function (element) {
   this._element = element;
   var self = this;
-  $(element).addClass('ts-menutree ui-widget-content').disableSelection();
+  $(element).addClass('ts-menutree').disableSelection();
   this._events = [];
   this._callEvent = function (event, sender) { if (self._events[event]) { return self._events[event](sender ? sender : self); } return true; };
 }
@@ -37,9 +37,9 @@ Ts.Ui.MenuTree.prototype = {
     var item = this.find(id, type);
     if (item === null) return null;
     $(item.getElement()).children('div').hover(function () {
-      $(this).addClass('ui-state-hover');
+      //$(this).addClass('ui-state-hover');
     }, function () {
-      $(this).closest('.ts-menutree').find('div').removeClass('ui-state-hover');
+      //$(this).closest('.ts-menutree').find('div').removeClass('ui-state-hover');
     });
     var self = this;
     $(item.getElement()).click(function (e) {
