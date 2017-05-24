@@ -264,8 +264,8 @@
       <div class="main-info-content">
       </div>
     </div>--%>
-    <div class="main-nav ui-widget-content ts-noborder">
-      <div class="main-menutree">
+    <div class="main-nav ts-noborder sidebar-container test" style="background-color: #33485e !important;">
+      <div class="main-menutree sidebar-container" style="background-color: #33485e !important;">
       </div>
     </div>
   </div>
