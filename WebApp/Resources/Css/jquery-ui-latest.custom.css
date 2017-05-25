@@ -233,7 +233,12 @@ body .ui-tooltip { border-width: 2px; }
 .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button { font-family:  Helvetica, Arial, sans-serif; font-size: 1em; }
 .ui-widget-content { border: 1px solid #dddddd; background: #fcfdfd url(images/ui-bg_inset-hard_100_fcfdfd_1x100.png) 50% bottom repeat-x; color: #373737; }
 .ui-widget-content a { color: #373737; }
-.ui-widget-header { border: 1px solid #92b4de; background: #c6dcf7 url(images/ui-bg_flat_100_c6dcf7_40x100.png) 50% 50% repeat-x; color: #154b8c; font-weight: bold; }
+.ui-widget-header {
+    border: 1px solid #92b4de;
+    background-color: #2a3f54;
+    color: #154b8c;
+    font-weight: bold;
+}
 .ui-widget-header a { color: #154b8c; }
 
 /* Interaction states

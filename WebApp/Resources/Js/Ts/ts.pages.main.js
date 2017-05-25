@@ -38,7 +38,7 @@ Ts.Pages.Main.prototype = {
         var colorBorder = $('.main-footer').css('border-top-color');
         var colorContent = $('.main-nav').css('background-color');
         colorContent = "transparent";
-        return '<style type="text/css">.ui-layout-resizer { background-color: ' + colorBorder + '; border: 0px solid ' + colorHeader + '; }' +
+        return '<style type="text/css">.ui-layout-resizer { background-color: #33485e; border: 0px solid ' + colorHeader + '; }' +
             '.ui-layout-toggler { background-color: ' + colorHeader + ';}</style>'; // 'li.ts-menutree-item  div { border:1px solid ' + colorContent + ';}</style>';  
     },
 
