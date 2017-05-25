@@ -9,6 +9,7 @@
         this._users = null;
         this._groups = null;
         this._products = null;
+        this._productFamilies = null;
         this._productVersionStatuses = null;
         this._ticketTypes = null;
         this._ticketStatuses = null;
@@ -52,6 +53,7 @@
           this.getGroups();
           this.getTicketGroups();
           this.getProducts();
+          this.getProductFamilies();
           this.getProductVersionStatuses();
           this.getTicketNextStatuses();
           this.getTicketSeverities();
@@ -261,11 +263,36 @@
           });
           return self._products;
       },
+      getProductFamilies: function (callback) {
+          var self = this;
+          Ts.Services.System.GetCheckSum(Ts.ReferenceTypes.ProductFamilies, function (checksum) {
+              if (!self._productFamilies || !self._productFamilies.CheckSum || checksum != self._productFamilies.CheckSum) {
+                  Ts.Services.Products.GetProductFamilies(function (result) {
+                      self._productFamilies = result;
+                      self._productFamilies.CheckSum = checksum;
+
+                      if (callback) {
+                          callback(self._productFamilies);
+                      }
+                      else
+                          return self._productFamilies;
+                  });
+              }
+
+              if (callback) {
+                  callback(self._productFamilies);
+              }
+              else
+                  return self._productFamilies;
+          });
+      },
       getProduct: function (productID) {
           var products = this.getProducts();
-          for (var i = 0; i < products.length; i++) {
-              if (products[i].ProductID == productID) {
-                  return products[i];
+          if (typeof products !== "undefined") {
+              for (var i = 0; i < products.length; i++) {
+                  if (products[i].ProductID == productID) {
+                      return products[i];
+                  }
               }
           }
           return null;

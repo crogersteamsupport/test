@@ -1027,7 +1027,8 @@
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /y "$(TargetDir)Teamsupport.Data.dll" "$(ProjectDir)..\..\ts-support-hub\TeamSupport.Hub\dependencies\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /y "$(TargetDir)Teamsupport.Data.dll" "$(ProjectDir)..\..\ts-support-hub\TeamSupport.Hub\dependencies\"
+xcopy /y "$(TargetDir)Teamsupport.Data.dll" "$(ProjectDir)..\..\ts-support-hub\TeamSupport.Authentication\dependencies\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

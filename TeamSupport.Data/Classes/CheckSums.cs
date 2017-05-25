@@ -42,6 +42,9 @@ namespace TeamSupport.Data
         case ReferenceType.ProductVersionStatuses:
           sql = string.Format(sql, "ProductVersionStatuses");
           break;
+        case ReferenceType.ProductFamilies:
+          sql = string.Format(sql, "ProductFamilies");
+          break;
         case ReferenceType.TicketSeverities:
           sql = string.Format(sql, "TicketSeverities");
           break;

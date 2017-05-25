@@ -1132,6 +1132,15 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public CustomerHubProxy[] LoadCustomerHubsByContactID(int userID)
+        {
+            CustomerHubs customerHubsHelper = new CustomerHubs(TSAuthentication.GetLoginUser());
+            customerHubsHelper.LoadByContactID(userID);
+
+            return customerHubsHelper.GetCustomerHubProxies();
+        }
+
+        [WebMethod]
         public NoteProxy[] LoadNotes(int refID, ReferenceType refType)
         {
             Notes notes = new Notes(TSAuthentication.GetLoginUser());
@@ -3178,7 +3187,7 @@ SELECT
         }
 
         [WebMethod]
-        public string ChubPasswordReset(int userID)
+        public string ChubPasswordReset(int userID, int? productFamilyID = null)
         {
             Users users = new Users(TSAuthentication.GetLoginUser());
             users.LoadByUserID(userID);
@@ -3194,7 +3203,7 @@ SELECT
                         EmailPosts.SendWelcomeTSUser(TSAuthentication.GetLoginUser(), users[0].UserID, password);
                     else
                     {
-                        EmailPosts.SendWelcomeCustomerHubUser(TSAuthentication.GetLoginUser(), users[0].UserID, password);
+                        EmailPosts.SendWelcomeCustomerHubUser(TSAuthentication.GetLoginUser(), users[0].UserID, password, productFamilyID);
                     }
                     return ("A new password has been sent to " + users[0].FirstName + " " + users[0].LastName);
 
@@ -3203,7 +3212,7 @@ SELECT
                 {
                     users[0].IsPasswordExpired = true;
                     users[0].Collection.Save();
-                    if (DataUtils.ResetPassword(TSAuthentication.GetLoginUser(), users[0], !(TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).ParentID == null), true))
+                    if (DataUtils.ResetPassword(TSAuthentication.GetLoginUser(), users[0], !(TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).ParentID == null), true, productFamilyID))
                     {
                         return ("A customer hub password reset email has been sent to " + users[0].FirstName + " " + users[0].LastName);
                     }

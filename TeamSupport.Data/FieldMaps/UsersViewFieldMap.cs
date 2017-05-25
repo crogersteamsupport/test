@@ -41,7 +41,7 @@ namespace TeamSupport.Data
             _fieldMap.AddMap("CreatorID", "CreatorID", true, true, true);
             _fieldMap.AddMap("ModifierID", "ModifierID", true, true, true);
             _fieldMap.AddMap("IsOnline", "IsOnline", false, false, true);
-            _fieldMap.AddMap("CryptedPassword", "CryptedPassword", true, true, false);
+            _fieldMap.AddMap("CryptedPassword", "CryptedPassword", true, true, true);
             _fieldMap.AddMap("IsChatUser", "IsChatUser", true, true, true);
 
         }

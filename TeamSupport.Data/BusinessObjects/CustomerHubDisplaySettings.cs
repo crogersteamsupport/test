@@ -23,6 +23,19 @@ namespace TeamSupport.Data
 				Fill(command);
 			}
 		}
-	}
+
+        public static void DeleteByCustomerHubID(LoginUser loginUser, int customerHubID)
+        {
+            CustomerHubs customerHubs = new CustomerHubs(loginUser);
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "Delete FROM [CustomerHubDisplaySettings] WHERE CustomerHubID = @CustomerHubID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@CustomerHubID", customerHubID);
+                customerHubs.ExecuteNonQuery(command, "CustomerHubDisplaySettings");
+            }
+        }
+    }
   
 }

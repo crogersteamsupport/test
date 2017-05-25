@@ -214,6 +214,9 @@ namespace TeamSupport.ServiceLibrary
                       );
                     break;
 
+                case EmailPostType.Reaction:
+                    ProcessReaction(emailPost, GetIntParam(emailPost.Param1), GetIntParam(emailPost.Param2), emailPost.Param3);
+                    break;
                 case EmailPostType.TicketUpdateRequest:
                     ProcessTicketUpdateRequest(GetIntParam(emailPost.Param1), GetIntParam(emailPost.Param2));
                     break;
@@ -242,10 +245,10 @@ namespace TeamSupport.ServiceLibrary
                     ProcessChangedPortalPassword(GetIntParam(emailPost.Param1));
                     break;
                 case EmailPostType.WelcomeCustomerHubUser:
-                    ProcessWelcomeCustomerHubUser(GetIntParam(emailPost.Param1), emailPost.Param2);
+                    ProcessWelcomeCustomerHubUser(GetIntParam(emailPost.Param1), emailPost.Param2, GetIntParam(emailPost.Param3));
                     break;
                 case EmailPostType.ResetCustomerHubPassword:
-                    ProcessResetHubPassword(GetIntParam(emailPost.Param1), emailPost.Param2);
+                    ProcessResetHubPassword(GetIntParam(emailPost.Param1), emailPost.Param2, GetIntParam(emailPost.Param3));
                     break;
                 case EmailPostType.InternalSignupNotification:
                     ProcessSignUpNotification(GetIntParam(emailPost.Param1), emailPost.Param2, emailPost.Param3);
@@ -1044,6 +1047,24 @@ namespace TeamSupport.ServiceLibrary
             }
         }
 
+        private void ProcessReaction(EmailPost emailPost, int receiverID, int ticketID, string hostName)
+        {
+            try
+            {
+                User sender   = Users.GetUser(LoginUser, emailPost.CreatorID); 
+                User receiver = Users.GetUser(LoginUser, receiverID);
+
+                MailMessage message = EmailTemplates.GetReaction(LoginUser, ticketID, hostName);
+
+                message.To.Add(GetMailAddress(receiver.Email, receiver.FirstLastName));
+                // message.Subject = message.Subject;
+                string replyAddress = sender.Email;
+                AddMessage(receiver.OrganizationID, "Action Reaction (Applause) [" + ticketID + "]", message, replyAddress);
+            }
+
+            catch { }
+        }
+
         private void ProcessTicketSendEmail(int userID, int ticketID, string addresses, string introduction)
         {
             Ticket ticket = Tickets.GetTicket(LoginUser, ticketID);
@@ -1300,19 +1321,19 @@ namespace TeamSupport.ServiceLibrary
             message.To.Add(GetMailAddress(user.Email, user.FirstLastName));
             AddMessage(organization.OrganizationID, "Portal Password Changed [" + user.FirstLastName + "]", message);
         }
-        public void ProcessResetHubPassword(int userID, string password)
+        public void ProcessResetHubPassword(int userID, string password, int productFamilyID)
         {
             User user = (User)Users.GetUser(LoginUser, userID);
             Organization organization = (Organization)Organizations.GetOrganization(LoginUser, (int)Organizations.GetOrganization(LoginUser, user.OrganizationID).ParentID);
             CustomerHubs hubs = new CustomerHubs(LoginUser);
             hubs.LoadByOrganizationID(organization.OrganizationID);
             if (hubs.IsEmpty) throw new Exception("No customer hub found for user: " + userID.ToString());
-            MailMessage message = EmailTemplates.GetResetPasswordHub(LoginUser, user.GetUserView(), hubs[0], password);
+            MailMessage message = EmailTemplates.GetResetPasswordHub(LoginUser, user.GetUserView(), hubs[0], password, productFamilyID);
             message.To.Add(GetMailAddress(user.Email, user.FirstLastName));
             AddMessage(organization.OrganizationID, "Reset Portal Password [" + user.FirstLastName + "]", message);
         }
 
-        public void ProcessWelcomeCustomerHubUser(int userID, string password)
+        public void ProcessWelcomeCustomerHubUser(int userID, string password, int productFamilyID)
         {
             User user = (User)Users.GetUser(LoginUser, userID);
             Organization organization = (Organization)Organizations.GetOrganization(LoginUser, (int)Organizations.GetOrganization(LoginUser, user.OrganizationID).ParentID);
@@ -1320,7 +1341,7 @@ namespace TeamSupport.ServiceLibrary
             hubs.LoadByOrganizationID(organization.OrganizationID);
             if (hubs.IsEmpty) throw new Exception("No customer hub found for user: " + userID.ToString());
 
-            MailMessage message = EmailTemplates.GetWelcomeCustomerHub(LoginUser, user.GetUserView(), hubs[0], password);
+            MailMessage message = EmailTemplates.GetWelcomeCustomerHub(LoginUser, user.GetUserView(), hubs[0], password, productFamilyID);
             message.To.Add(GetMailAddress(user.Email, user.FirstLastName));
             AddMessage(organization.OrganizationID, "Portal Password Changed [" + user.FirstLastName + "]", message);
         }

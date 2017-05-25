@@ -19,6 +19,10 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("CategoryDesc", "CategoryDesc", false, false, false);
       _fieldMap.AddMap("OrganizationID", "OrganizationID", false, false, false);
       _fieldMap.AddMap("Position", "Position", false, false, false);
+      _fieldMap.AddMap("TicketType", "TicketType", false, false, false);
+      _fieldMap.AddMap("GroupID", "GroupID", false, false, false);
+      _fieldMap.AddMap("ProductID", "ProductID", false, false, false);
+      _fieldMap.AddMap("ProductFamilyID", "ProductFamilyID", false, false, false);
             
     }
   }

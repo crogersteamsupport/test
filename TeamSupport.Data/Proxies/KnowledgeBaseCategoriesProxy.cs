@@ -20,6 +20,7 @@ namespace TeamSupport.Data
     [DataMember] public int OrganizationID { get; set; }
     [DataMember] public int? Position { get; set; }
     [DataMember] public bool? VisibleOnPortal { get; set; }
+    [DataMember] public int? ProductFamilyID { get; set; }
           
   }
   
@@ -28,6 +29,7 @@ namespace TeamSupport.Data
     public KnowledgeBaseCategoryProxy GetProxy()
     {
       KnowledgeBaseCategoryProxy result = new KnowledgeBaseCategoryProxy();
+      result.ProductFamilyID = this.ProductFamilyID;
       result.VisibleOnPortal = this.VisibleOnPortal;
       result.Position = this.Position;
       result.OrganizationID = this.OrganizationID;

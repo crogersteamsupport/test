@@ -2604,8 +2604,10 @@ function LoadProductList(products) {
     if ($('#ticket-Product').length) {
         if (products == null) products = window.parent.Ts.Cache.getProducts();
 
-        for (var i = 0; i < products.length; i++) {
-            AppendSelect('#ticket-Product', products[i], 'product', products[i].ProductID, products[i].Name, (products[i].ProductID === _ticketInfo.Ticket.ProductID));
+        if (typeof products !== "undefined") {
+            for (var i = 0; i < products.length; i++) {
+                AppendSelect('#ticket-Product', products[i], 'product', products[i].ProductID, products[i].Name, (products[i].ProductID === _ticketInfo.Ticket.ProductID));
+            }
         }
 
         var $productselect = $('#ticket-Product').selectize({
@@ -4350,11 +4352,11 @@ function CreateHandleBarHelpers() {
     });
 
     Handlebars.registerHelper('Applause', function () {
+        if (this.item.IsWC) { return; }
         var ticketID = this.item.TicketID;
         var actionID = this.item.RefID;
         var display = (this.item.OrganizationID === window.parent.Ts.System.User.OrganizationID && !this.item.IsWC) ? 'inline' : 'none';
         var output = window.parent.Ts.Services.TicketPage.PullReactions(ticketID, actionID, function (result) {
-            console.log('PullReactions: ' + result);
             if (result != 'negative' && result != 'nothing' && result != 'hidden') {
                 var data = jQuery.parseJSON(result);
                 var tally = data[0].reactions[0].tally;
