@@ -1305,7 +1305,17 @@ namespace TeamSupport.ServiceLibrary
             User user = (User)Users.GetUser(LoginUser, userID);
             Organization organization = (Organization)Organizations.GetOrganization(LoginUser, (int)Organizations.GetOrganization(LoginUser, user.OrganizationID).ParentID);
             CustomerHubs hubs = new CustomerHubs(LoginUser);
-            hubs.LoadByOrganizationID(organization.OrganizationID);
+            
+            //first try by product line
+            if (productFamilyID != -1)
+            {
+                hubs.LoadByProductFamilyID(productFamilyID);
+            }
+            if (hubs.IsEmpty == true)
+            {
+                hubs.LoadByOrganizationID(organization.OrganizationID);
+            }
+
             if (hubs.IsEmpty) throw new Exception("No customer hub found for user: " + userID.ToString());
             MailMessage message = EmailTemplates.GetResetPasswordHub(LoginUser, user.GetUserView(), hubs[0], password, productFamilyID);
             message.To.Add(GetMailAddress(user.Email, user.FirstLastName));
@@ -1317,7 +1327,15 @@ namespace TeamSupport.ServiceLibrary
             User user = (User)Users.GetUser(LoginUser, userID);
             Organization organization = (Organization)Organizations.GetOrganization(LoginUser, (int)Organizations.GetOrganization(LoginUser, user.OrganizationID).ParentID);
             CustomerHubs hubs = new CustomerHubs(LoginUser);
-            hubs.LoadByOrganizationID(organization.OrganizationID);
+
+            if (productFamilyID != -1)
+            {
+                hubs.LoadByProductFamilyID(productFamilyID);
+            }
+            if (hubs.IsEmpty == true)
+            {
+                hubs.LoadByOrganizationID(organization.OrganizationID);
+            }
             if (hubs.IsEmpty) throw new Exception("No customer hub found for user: " + userID.ToString());
 
             MailMessage message = EmailTemplates.GetWelcomeCustomerHub(LoginUser, user.GetUserView(), hubs[0], password, productFamilyID);
