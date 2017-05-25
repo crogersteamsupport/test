@@ -28,8 +28,17 @@ $(document).ready(function () {
             }
         });
 
-        
+        Handlebars.registerHelper("ProductFamilyEnabled", function (ProductFamilyID) {
+            for (i = 0; i < hubList.length; i++) {
+                if (hubList[i].ProductFamilyID == ProductFamilyID)
+                {
+                    return "disabled";
+                }
+            }
+        });
     }
+
+    
 
     function GetHubURL(hubRecord, callback) {
         var encrypted = CryptoJS.AES.encrypt(Date.now() + "," + parent.parent.Ts.System.User.Email + "", parent.parent.Ts.System.Organization.PortalGuid);
@@ -108,7 +117,6 @@ $(document).ready(function () {
         $("#CopyHubList").html(copyHubTemplate(data));
 
         parent.parent.Ts.Services.Products.GetProductFamilies(function (data) {
-
             var productLineTemplate = Handlebars.compile($("#ProductLineTemplate").html());
             data = { ProductLines: data };
 
