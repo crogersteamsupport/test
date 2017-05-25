@@ -64,7 +64,7 @@ $(document).ready(function () {
 
 
     $('#productFamilyDelete').click(function (e) {
-        if (confirm('Are you sure you would like to remove this product line?')) {
+        if (confirm('Are you sure you would like to remove this product line?  Any Customer Hub associations with this product line will be removed as well.')) {
             window.parent.parent.Ts.System.logAction('Product Line Detail - Delete Product Line');
             parent.privateServices.DeleteProductFamily(_productFamilyID, function (e) {
                 window.parent.parent.Ts.MainPage.closeNewProductFamilyTab(_productFamilyID);

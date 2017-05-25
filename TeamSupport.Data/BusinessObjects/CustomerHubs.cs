@@ -17,7 +17,8 @@ namespace TeamSupport.Data
 		{
 			using (SqlCommand command = new SqlCommand())
 			{
-				command.CommandText = "SELECT * FROM [CustomerHubs] WHERE OrganizationID = @OrganizationID";
+				command.CommandText = @"SELECT * FROM [CustomerHubs] WHERE OrganizationID = @OrganizationID 
+                    ORDER BY CASE WHEN ProductFamilyID IS NULL THEN 0 ELSE 1 END, PortalName";
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@OrganizationID", organizationID);
 				Fill(command);
@@ -37,6 +38,17 @@ namespace TeamSupport.Data
 				Fill(command);
 			}
 		}
+
+        public void LoadByProductFamilyID(int productFamilyID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT * FROM [CustomerHubs] WHERE (ProductFamilyID = @ProductFamilyID AND IsActive = 1)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+                Fill(command);
+            }
+        }
 
         public void LoadByContactID(int userID)
         {

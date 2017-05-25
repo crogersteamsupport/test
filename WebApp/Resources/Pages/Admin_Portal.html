@@ -845,6 +845,7 @@
                                                 <div class="hubProperty">
                                                     <label>Product Line</label>
                                                     <select id="ProductLineList" class="form-control"></select>
+                                                    <div style="font-size:10px; margin-bottom:20px;">Note: A product line can be associated to one and only one hub.</div>
                                                 </div>
                                                 <div class="hubProperty">
                                                     <label>Copy All Other Settings From</label>
@@ -1312,7 +1313,7 @@
 <script id="ProductLineTemplate" type="text/x-handlebars-template">
     <option value="-1"></option>
     {{#ProductLines}}
-    <option value="{{ProductFamilyID}}">{{Name}}</option>
+    <option {{ProductFamilyEnabled ProductFamilyID}} value="{{ProductFamilyID}}">{{Name}}</option>
     {{/ProductLines}}
 </script>
 <script id="CopyHubTemplate" type="text/x-handlebars-template">
