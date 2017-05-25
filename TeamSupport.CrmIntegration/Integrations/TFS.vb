@@ -15,6 +15,7 @@ Namespace TeamSupport
 
             Private _baseURI As String
             Private _encodedCredentials As String
+            Private _tfs As TFSLibrary = New TFSLibrary()
             'Private _issueTypeFieldsList As Dictionary(Of IssueTypeFields, JObject) = New Dictionary(Of IssueTypeFields, JObject)
             Private _tfsExceptionMessageFormat As String = "TFS InnerException Message: {0}{1}{2}{2}{2}Jira ErrorResponse: {3}"
             Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
@@ -48,17 +49,24 @@ Namespace TeamSupport
                     _baseURI = protocol + CRMLinkRow.HostName
                 End If
 
-                If CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password Is Nothing Then
+                If CRMLinkRow.SecurityToken1 Is Nothing Then
                     result = False
-                    AddLog("Username and or Password are missing and they are required to sync.")
-                Else
-                    _encodedCredentials = DataUtils.GetEncodedCredentials(CRMLinkRow.Username, CRMLinkRow.Password)
+                    AddLog("Security Token is missing and it is required to sync.")
                 End If
+
+                '//vv The following is not needed AS OF RIGHT NOW, if I end up using that library that needs the username and pasword then we'll also need to check for those credentials.
+                'If CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password Is Nothing Then
+                '    result = False
+                '    AddLog("Username and or Password are missing and they are required to sync.")
+                'Else
+                '    _encodedCredentials = DataUtils.GetEncodedCredentials(CRMLinkRow.Username, CRMLinkRow.Password)
+                'End If
 
                 'Make sure credentials are good
                 If (result) Then
                     Try
-                        If (Not String.IsNullOrEmpty(TFSLibrary.GetProjects(CRMLinkRow.HostName, CRMLinkRow.SecurityToken1))) Then
+                        _tfs = New TFSLibrary(_baseURI, CRMLinkRow.SecurityToken1)
+                        If (Not String.IsNullOrEmpty(_tfs.GetProjects())) Then
                             AddLog("Tfs credentials ok.")
                         Else
                             AddLog("Tfs credentials didn't work.")
@@ -75,30 +83,23 @@ Namespace TeamSupport
             Private Function SyncTickets() As Boolean
                 Dim numberOfWorkItemsToPullAsTickets As Integer = 0
                 Dim ticketLinkToTFS As TicketLinkToTFS = New TicketLinkToTFS(User)
-                Dim issuesToPullAsTickets As List(Of JObject) = New List(Of JObject)
+                Dim workItemsToPullAsTickets As List(Of JObject) = New List(Of JObject)
 
                 ticketLinkToTFS.LoadByCrmLinkId(CRMLinkRow.CRMLinkID, True)
 
                 If ticketLinkToTFS.Any AndAlso ticketLinkToTFS.Count > 0 Then
                     Try
-                        issuesToPullAsTickets = GetWorkItemsToPullAsTickets(ticketLinkToTFS, numberOfWorkItemsToPullAsTickets)
+                        workItemsToPullAsTickets = GetWorkItemsToPullAsTickets(ticketLinkToTFS, numberOfWorkItemsToPullAsTickets)
                     Catch ex As Exception
-                        'AddLog("GetWorkItemsToPullAsTickets with POST failed, using old version now.")
-                        'issuesToPullAsTickets = New List(Of JObject)
-                        'numberOfIssuesToPullAsTickets = 0
-                        'Try
-                        '    issuesToPullAsTickets = GetIssuesToPullAsTickets(numberOfIssuesToPullAsTickets)
-                        'Catch exception As Exception
                         Log.Write(Exception.Message)
                         Log.Write(Exception.StackTrace)
                         _exception = New IntegrationException(Exception.Message, Exception)
                         Return False
-                        'End Try
                     End Try
                 End If
 
-                Dim ticketsLinksToTFSToPushAsIssues As TicketLinkToTFS = Nothing
-                Dim ticketsToPushAsWorkItems As TicketsView = GetTicketsToPushAsIssues(ticketsLinksToTFSToPushAsIssues)
+                Dim ticketsLinksToTFSToPushAsWorkItems As TicketLinkToTFS = Nothing
+                Dim ticketsToPushAsWorkItems As TicketsView = GetTicketsToPushAsWorkItems(ticketsLinksToTFSToPushAsWorkItems)
                 Dim allStatuses As TicketStatuses = New TicketStatuses(User)
                 Dim newActionsTypeID As Integer = 0
 
@@ -108,11 +109,11 @@ Namespace TeamSupport
                 End If
 
                 If ticketsToPushAsWorkItems.Count > 0 Then
-                    PushTicketsAndActionsAsWorkItemsAndComments(ticketsToPushAsWorkItems, ticketsLinksToTFSToPushAsIssues, allStatuses, newActionsTypeID)
+                    PushTicketsAndActionsAsWorkItemsAndComments(ticketsToPushAsWorkItems, ticketsLinksToTFSToPushAsWorkItems, allStatuses, newActionsTypeID)
                 End If
 
-                'If numberOfIssuesToPullAsTickets > 0 Then
-                '    For Each batchOfIssuesToPullAsTicket As JObject In issuesToPullAsTickets
+                'If numberOfWorkItemsToPullAsTickets > 0 Then
+                '    For Each batchOfIssuesToPullAsTicket As JObject In workItemsToPullAsTickets
                 '        PullIssuesAndCommentsAsTicketsAndActions(batchOfIssuesToPullAsTicket("issues"), allStatuses, newActionsTypeID)
                 '    Next
                 'End If
@@ -182,92 +183,32 @@ Namespace TeamSupport
             ''' <summary>
             ''' Search by POSTing the query
             ''' </summary>
-            ''' <param name="tfsIdList">List of the tfs ids to search. These are the ones we know have been linked, already in TeamSupport in the TicketLinkToTFS table.</param>
+            ''' <param name="ticketLinkToTFS">List of the tfs ids to search. These are the ones we know have been linked, already in TeamSupport in the TicketLinkToTFS table.</param>
             ''' <param name="numberOfWorkItemsToPull">variable that will have the count of the issues found.</param>
             ''' <returns>A list of JObject with the issues found based on the query.</returns>
             Private Function GetWorkItemsToPullAsTickets(ByRef ticketLinkToTFS As TicketLinkToTFS, ByRef numberOfWorkItemsToPull As Integer) As List(Of JObject)
                 Dim tfsIdList As List(Of Integer) = ticketLinkToTFS.Where(Function(w) w.CrmLinkID IsNot Nothing).Select(Function(p) CType(p.TFSID, Integer)).ToList()
                 Dim result As List(Of JObject) = New List(Of JObject)
                 Dim recentClause As String = String.Empty
-
-                If CRMLinkRow.LastLink IsNot Nothing Then
-                    recentClause = "updated>-" + GetMinutesSinceLastLink().ToString() + "m"
-                Else
-                    Dim minutesSinceFirstSyncedTicket As Integer = GetMinutesSinceFirstSyncedTicket()
-
-                    If minutesSinceFirstSyncedTicket > 0 Then
-                        recentClause = "updated>-" + minutesSinceFirstSyncedTicket.ToString() + "m"
-                    Else
-                        Log.Write("No tickets have been synced, therefore no issues to pull exist.")
-                        Return result
-                    End If
-                End If
-
-                'Search only for the tfs ids we have, those are the ones linked and the only ones that we need to check for updates
-                Dim URI As String = _baseURI + "/search"
                 Dim tfsIdClause As String = String.Empty
+                numberOfWorkItemsToPull = 0
 
                 If (tfsIdList.Any() AndAlso tfsIdList.Count > 0) Then
                     tfsIdClause = String.Join(",", tfsIdList.ToArray())
                 End If
 
-                If (Not String.IsNullOrEmpty(tfsIdClause)) Then
-                    Dim needToGetMore As Boolean = True
-                    Dim maxResults As Integer? = Nothing
-                    Dim body As StringBuilder = New StringBuilder()
-                    Dim startAt As Integer = 0
-                    Dim batch As JObject = New JObject
-                    Dim listWasScrubbed As Boolean = False
+                Dim fields As List(Of String) = New List(Of String)
 
-                    While needToGetMore
-                        listWasScrubbed = False
-                        body.Append("{")
-                        body.Append(String.Format("""jql"": ""id IN ({0}) AND {1} ORDER BY updated asc"",", tfsIdClause, recentClause))
-                        body.Append("""fields"": [""*all""],")
-                        body.Append(String.Format("""startAt"": {0}", startAt))
-                        body.Append("}")
+                'Search only for the tfs ids we have, those are the ones linked and the only ones that we need to check for updates
+                If (tfsIdList IsNot Nothing AndAlso tfsIdList.Any()) Then
+                    Dim workItemsJsonString As String = _tfs.GetWorkItemsBy(tfsIdList, CRMLinkRow.LastLinkUtc)
+                    Dim resultJson As JObject = JObject.Parse(workItemsJsonString)
 
-                        Try
-                            'batch = GetAPIJObject(URI, "POST", body.ToString())
-                        Catch webEx As WebException
-                            'Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
+                    '//vv we might end up doing this in batches too. We'll see.
+                    result.Add(resultJson)
 
-                            'If (jiraErrors IsNot Nothing AndAlso jiraErrors.HasErrors) Then
-                            '    AddLog("Error when searching issues, scrubbing.")
-                            '    ScrubIssues(jiraIdList, jiraErrors, TicketLinkToJira)
-
-                            '    If (jiraIdList IsNot Nothing AndAlso jiraIdList.Count > 0 AndAlso jiraIdList.Any()) Then
-                            '        jiraIdClause = String.Join(",", jiraIdList.ToArray())
-                            '        startAt = 0
-                            '        body.Clear()
-                            '        batch = New JObject()
-                            '        listWasScrubbed = True
-                            '    Else
-                            '        Exit While
-                            '    End If
-                            'Else
-                            '    numberOfIssuesToPull = 0
-                            '    Throw webEx
-                            'End If
-                        End Try
-
-                        If (Not listWasScrubbed) Then
-                            result.Add(batch)
-                            body.Clear()
-                            Dim batchTotal As Integer = batch("issues").Count
-                            numberOfWorkItemsToPull += batchTotal
-
-                            If maxResults Is Nothing Then
-                                maxResults = CType(batch("maxResults").ToString(), Integer?)
-                            End If
-
-                            If batchTotal = maxResults Then
-                                startAt = numberOfWorkItemsToPull
-                            Else
-                                needToGetMore = False
-                            End If
-                        End If
-                    End While
+                    Dim totalCount As Integer = resultJson("count")
+                    numberOfWorkItemsToPull += totalCount
                 End If
 
                 Log.Write("Got " + numberOfWorkItemsToPull.ToString() + " Work Items To Pull As Tickets.")
@@ -290,13 +231,13 @@ Namespace TeamSupport
                 Return result
             End Function
 
-            Private Function GetTicketsToPushAsIssues(ByRef ticketsLinksToTFSToPushAsIssues As TicketLinkToTFS) As TicketsView
+            Private Function GetTicketsToPushAsWorkItems(ByRef ticketsLinksToTFSToPushAsWorkItems As TicketLinkToTFS) As TicketsView
                 Dim result As New TicketsView(User)
                 result.LoadToPushToTFS(CRMLinkRow)
-                AddLog("Got " + result.Count.ToString() + " Tickets To Push As Issues.")
+                AddLog("Got " + result.Count.ToString() + " Tickets To Push As Work Items.")
 
-                ticketsLinksToTFSToPushAsIssues = New TicketLinkToTFS(User)
-                ticketsLinksToTFSToPushAsIssues.LoadToPushToJira(CRMLinkRow)
+                ticketsLinksToTFSToPushAsWorkItems = New TicketLinkToTFS(User)
+                ticketsLinksToTFSToPushAsWorkItems.LoadToPushToJira(CRMLinkRow)
 
                 Return result
             End Function
@@ -319,7 +260,7 @@ Namespace TeamSupport
             End Function
 
             Private Sub PushTicketsAndActionsAsWorkItemsAndComments(ByVal ticketsToPushAsWorkItems As TicketsView,
-                                                            ByVal ticketsLinksToTFSToPushAsIssues As TicketLinkToTFS,
+                                                            ByVal ticketsLinksToTFSToPushAsWorkItems As TicketLinkToTFS,
                                                             ByVal allStatuses As TicketStatuses,
                                                             ByVal newActionsTypeID As Integer)
                 Dim URI As String = _baseURI + "/issue"
@@ -335,13 +276,13 @@ Namespace TeamSupport
                 'Get the errors only for the tickets to be processed
                 crmLinkErrors.LoadByOperationAndObjectIds(CRMLinkRow.OrganizationID,
                                                         CRMLinkRow.CRMType,
-                                                        GetDescription(Orientation.OutToJira),
+                                                        GetDescription(Orientation.OutToTFS),
                                                         GetDescription(ObjectType.Ticket),
                                                         ticketsToPushAsWorkItems.Select(Function(p) p.TicketID.ToString()).ToList(),
                                                         isCleared:=False)
 
                 For Each ticket As TicketsViewItem In ticketsToPushAsWorkItems
-                    Dim ticketLinkToTFS As TicketLinkToTFSItem = ticketsLinksToTFSToPushAsIssues.FindByTicketID(ticket.TicketID)
+                    Dim ticketLinkToTFS As TicketLinkToTFSItem = ticketsLinksToTFSToPushAsWorkItems.FindByTicketID(ticket.TicketID)
                     Dim ticketLinkToTFSVerify As TicketLinkToTFS = New TicketLinkToTFS(User)
                     ticketLinkToTFSVerify.LoadByTicketID(ticket.TicketID)
 
@@ -361,7 +302,7 @@ Namespace TeamSupport
                     Try
                         crmLinkError = crmLinkErrors.FindUnclearedByObjectIDAndFieldName(ticket.TicketID, String.Empty)
                         TFSProjectName = GetProjectName(ticket, crmLinkErrors)
-                        workItemFields = GetWorkItemsFields(ticket, TFSProjectName, crmLinkError, Orientation.OutToJira)
+                        workItemFields = GetWorkItemsFields(ticket, TFSProjectName, crmLinkError, Orientation.OutToTFS)
                     Catch webEx As WebException
                         '        Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
                         Dim TFSErrors As String
@@ -1175,16 +1116,16 @@ Namespace TeamSupport
 
                 'Try
                 Dim globalId As String = "system=" + domain + "/Ticket.aspx?ticketid=&id=" + ticketID
-                    'Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest", ""), CRMLinkRow.Username, CRMLinkRow.Password)
-                    'Dim remoteLink As RemoteLink = New RemoteLink With {.url = domain + "/Ticket.aspx?ticketid=" + ticketID,
-                    '                                                .title = creatorName + " Ticket #" + ticketNumber,
-                    '                                                .summary = DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(ticketName))),
-                    '                                                .icon = New Icon With {.title = "TeamSupport Logo",
-                    '                                                                        .url16x16 = domain + "/vcr/1_6_5/Images/icons/TeamSupportLogo16.png"}}
-                    'Dim issueRef As IssueRef = New IssueRef With {.id = issueID, .key = issueKey}
+                'Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest", ""), CRMLinkRow.Username, CRMLinkRow.Password)
+                'Dim remoteLink As RemoteLink = New RemoteLink With {.url = domain + "/Ticket.aspx?ticketid=" + ticketID,
+                '                                                .title = creatorName + " Ticket #" + ticketNumber,
+                '                                                .summary = DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(ticketName))),
+                '                                                .icon = New Icon With {.title = "TeamSupport Logo",
+                '                                                                        .url16x16 = domain + "/vcr/1_6_5/Images/icons/TeamSupportLogo16.png"}}
+                'Dim issueRef As IssueRef = New IssueRef With {.id = issueID, .key = issueKey}
 
-                    Log.Write("Creating the RemoteLink with data:")
-                    'Log.Write(JsonConvert.SerializeObject(remoteLink))
+                Log.Write("Creating the RemoteLink with data:")
+                'Log.Write(JsonConvert.SerializeObject(remoteLink))
 
                 'Dim remoteLinkCreated As RemoteLink = jiraClient.CreateRemoteLink(issueRef, remoteLink, globalId)
 
