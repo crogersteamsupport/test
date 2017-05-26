@@ -1486,7 +1486,6 @@ $(document).ready(function () {
 
     function LoadHubs() {
         _mainFrame.Ts.Services.Customers.LoadCustomerHubsByContactID(userID, function (hubs) {
-            console.log(hubs);
             source = $("#hub-password-dropdown-template").html();
 
             var template = Handlebars.compile(source);
