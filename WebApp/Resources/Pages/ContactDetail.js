@@ -1484,17 +1484,6 @@ $(document).ready(function () {
         }
     }
 
-    function LoadHubs() {
-        _mainFrame.Ts.Services.Customers.LoadCustomerHubsByContactID(userID, function (hubs) {
-            source = $("#hub-password-dropdown-template").html();
-
-            var template = Handlebars.compile(source);
-            data = { hubList: hubs };
-
-            $("#hubPasswordResetList").html(template(data));
-        })
-    }
-
     $('.customProperties, #customProductsControls').on('keydown', '.number', function (event) {
         // Allow only backspace and delete
         if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 190 || event.keyCode == 109 || event.keyCode == 173 || (event.keyCode >= 96 && event.keyCode <= 105)) {
@@ -2194,6 +2183,17 @@ $(document).ready(function () {
             //    $('<a>').attr('class', 'list-group-item').text(users[i].FirstName + ' ' + users[i].LastName).appendTo('.userList');
             //}
         });
+    }
+
+    function LoadHubs() {
+        _mainFrame.Ts.Services.Customers.LoadCustomerHubsByContactID(userID, function (hubs) {
+            source = $("#hub-password-dropdown-template").html();
+
+            var template = Handlebars.compile(source);
+            data = { hubList: hubs };
+
+            $("#hubPasswordResetList").html(template(data));
+        })
     }
 
     Handlebars.registerHelper("formatDate", function (datetime) {
