@@ -112,11 +112,11 @@ Namespace TeamSupport
                     PushTicketsAndActionsAsWorkItemsAndComments(ticketsToPushAsWorkItems, ticketsLinksToTFSToPushAsWorkItems, allStatuses, newActionsTypeID)
                 End If
 
-                'If numberOfWorkItemsToPullAsTickets > 0 Then
-                '    For Each batchOfIssuesToPullAsTicket As JObject In workItemsToPullAsTickets
-                '        PullIssuesAndCommentsAsTicketsAndActions(batchOfIssuesToPullAsTicket("issues"), allStatuses, newActionsTypeID)
-                '    Next
-                'End If
+                If numberOfWorkItemsToPullAsTickets > 0 Then
+                    For Each batchOfWorkItemsToPullAsTicket As JObject In workItemsToPullAsTickets
+                        PullWorkItemsAndCommentsAsTicketsAndActions(batchOfWorkItemsToPullAsTicket("workItems"), allStatuses, newActionsTypeID, ticketLinkToTFS)
+                    Next
+                End If
 
                 Return Not SyncError
             End Function
@@ -1487,6 +1487,86 @@ Namespace TeamSupport
                     End If
                 End If
             End Sub
+
+            Private Sub PullWorkItemsAndCommentsAsTicketsAndActions(ByVal workItemsToPullAsTickets As JArray, ByVal allStatuses As TicketStatuses, ByVal newActionsTypeID As Integer, ByVal ticketLinkToTFS As TicketLinkToTFS)
+                Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                Dim ticketIds As List(Of Integer) = New List(Of Integer)()
+
+                For i = 0 To workItemsToPullAsTickets.Count - 1
+                    ticketIds.AddRange(GetLinkedTicketIDs(workItemsToPullAsTickets(i), ticketLinkToTFS))
+                Next
+
+                crmLinkErrors.LoadByOperationAndObjectIds(CRMLinkRow.OrganizationID,
+                                                        CRMLinkRow.CRMType,
+                                                        GetDescription(Orientation.IntoTeamSupport),
+                                                        GetDescription(ObjectType.Ticket),
+                                                        ticketIds.Select(Function(p) p.ToString()).ToList(),
+                                                        isCleared:=False)
+
+                Dim crmLinkError As CRMLinkError = Nothing
+                Dim crmLinkActionErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                crmLinkActionErrors.LoadByOperation(CRMLinkRow.OrganizationID,
+                                                CRMLinkRow.CRMType,
+                                                GetDescription(Orientation.IntoTeamSupport),
+                                                GetDescription(ObjectType.Action),
+                                                isCleared:=False)
+
+                For i = 0 To workItemsToPullAsTickets.Count - 1
+                    Dim newComments As JArray = Nothing
+
+                    For Each ticketID As Integer In GetLinkedTicketIDs(workItemsToPullAsTickets(i), ticketLinkToTFS)
+                        Dim updateTicket As Tickets = New Tickets(User)
+                        updateTicket.LoadByTicketID(ticketID)
+
+                        If updateTicket.Count > 0 AndAlso updateTicket(0).OrganizationID = CRMLinkRow.OrganizationID Then
+                            crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticketID.ToString(), String.Empty)
+
+                            Try
+                                'UpdateTicketWithIssueData(ticketID, workItemsToPullAsTickets(i), newActionsTypeID, allStatuses, crmLinkError, crmLinkErrors)
+                                ClearCrmLinkError(crmLinkError)
+                            Catch ex As Exception
+                                AddLog(ex.ToString() + ex.StackTrace,
+                                    LogType.Text,
+                                    crmLinkError,
+                                    "Error when updating ticket with Work Item data.",
+                                    Orientation.IntoTeamSupport,
+                                    ObjectType.Ticket,
+                                    ticketID.ToString(),
+                                    String.Empty,
+                                    JsonConvert.SerializeObject(workItemsToPullAsTickets(i)),
+                                    OperationType.Update)
+                            End Try
+
+                            If newComments Is Nothing Then
+                                'newComments = GetNewComments(issuesToPullAsTickets(i)("fields")("comment"), ticketID)
+                            End If
+
+                            'AddNewCommentsInTicket(ticketID, newComments, newActionsTypeID, crmLinkActionErrors)
+                        ElseIf updateTicket.Count > 0 Then
+                            AddLog("Ticket with ID: """ + ticketID.ToString() + """ belongs to a different organization and was not updated.")
+                        Else
+                            AddLog("Ticket with ID: """ + ticketID.ToString() + """ was not found to be updated.")
+                        End If
+                    Next
+                Next
+            End Sub
+
+            Private Function GetLinkedTicketIDs(ByVal workItem As JObject, ByVal ticketLinkToTFS As TicketLinkToTFS) As List(Of Integer)
+                Dim result As List(Of Integer) = New List(Of Integer)()
+
+                For Each ticketLinkToTFSItem As TicketLinkToTFSItem In ticketLinkToTFS
+                    Try
+                        'If ticketLinkToTFSItem.TFSID = CType(workItem("id"), Integer) Then
+                        If ticketLinkToTFSItem.TFSID = Convert.ToInt32(workItem("id")) Then
+                            result.Add(ticketLinkToTFSItem.TicketID)
+                        End If
+                    Catch ex As Exception
+                        Log.Write("Exception finding work item id. Skipping work item " + workItem("id").ToString() + ", please review.")
+                    End Try
+                Next
+
+                Return result
+            End Function
         End Class
     End Namespace
 End Namespace
