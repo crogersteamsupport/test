@@ -469,7 +469,10 @@ AdminPortal = function () {
         $('#com_cat_tickettype').combobox('setValue', cat.TicketType == null ? -1 : cat.TicketType);
         $('#com_cat_group').combobox('setValue', cat.GroupID == null ? -1 : cat.GroupID);
         $('#com_cat_product').combobox('setValue', cat.ProductID == null ? -1 : cat.ProductID);
-        $('#com_cat_productfamily').combobox('setValue', cat.ProductFamilyID == null ? -1 : cat.ProductFamilyID);
+
+        if (parent.parent.Ts.System.Organization.UseProductFamilies) {
+            $('#com_cat_productfamily').combobox('setValue', cat.ProductFamilyID == null ? -1 : cat.ProductFamilyID);
+        }
 
         if (cat.ParentID < 0) {
             $('.com-delete-cat').text('Delete this category and all its subcategories');
@@ -691,7 +694,9 @@ AdminPortal = function () {
         $('#kb_cat_name').val(cat.CategoryName);
         $('#kb_cat_description').val(cat.CategoryDesc);
         $('#kb_cat_visible').prop('checked', cat.VisibleOnPortal);
-        $('#kb_cat_productfamily').combobox('setValue', cat.ProductFamilyID == null ? -1 : cat.ProductFamilyID)
+        if (parent.parent.Ts.System.Organization.UseProductFamilies){
+            $('#kb_cat_productfamily').combobox('setValue', cat.ProductFamilyID == null ? -1 : cat.ProductFamilyID)
+        }
 
         if (cat.ParentID < 0) {
             $('.kb-delete-cat').text('Delete this category and all its subcategories');
