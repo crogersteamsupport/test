@@ -18,6 +18,7 @@
   <link href="vcr/1_9_0/Css/jquery.ui.timepicker.css" rel="stylesheet" type="text/css" />
   <!--[if IE 7]><link href="vcr/1_9_0/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="vcr/1_9_0/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
   <link href="vcr/1_9_0/Css/ts.mainpage.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_9_0/Css/ts.ui.tabs.css" rel="stylesheet" type="text/css">
   <link href="vcr/1_9_0/Css/chat.css" rel="stylesheet" type="text/css" />
   <link href="vcr/1_9_0/Css/jquery.pnotify.default.icons.css" rel="stylesheet" />
   <link href="vcr/1_9_0/Css/jquery.pnotify.default.css" rel="stylesheet" />
@@ -36,6 +37,7 @@
   <script src="../js_5/imagepaste.js" type="text/javascript"></script>
   <script src="../js_5/jquery.Jcrop.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/aes.js" type="text/javascript"></script>
+
   <!-- Start Apptegic Code 
   <script type="text/javascript">
     var _aaq = _aaq || [];
@@ -245,7 +247,7 @@
             </div>
           </div>
         </div>
-        <div class="main-tabs ui-widget-header"></div>
+        <div class="main-tabs header-tabs"></div>
       </div>
     </div>
     <div class="main-footer ui-widget-header">

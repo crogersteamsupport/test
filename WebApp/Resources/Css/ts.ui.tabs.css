@@ -1,0 +1,94 @@
+﻿/* TEAM SUPPORT TABS. */
+
+
+div.header-tabs { 
+    position: relative; 
+    padding: 0 .5em; 
+    zoom: 1;  
+    border:none;
+    overflow:hidden; 
+    margin-bottom:3px;
+}
+
+div.header-tabs li {
+    margin: 0px 0px 0px 5px;
+    list-style: none;
+    float: left;
+    position: relative;
+    border: 0 !important;
+    padding: 0 10px;
+    white-space: nowrap;
+    height: 25px;
+    line-height: 25px;
+    cursor: pointer;
+    background-color:#445c75;
+    border-radius: 5px;
+    }
+
+div.header-tabs li a { 
+    float: left; 
+    text-decoration: none; 
+    display:block; 
+    margin: 0 0; 
+    text-align: center ; 
+    min-width: 80px;
+    color:white;
+}
+
+.header-tabs li a:hover { 
+    text-decoration:none;
+}
+
+.header-tabs li.ui-state-active a, 
+.header-tabs li.ui-state-disabled a, 
+.header-tabs li.ui-state-processing a { 
+    cursor: default;
+}
+
+.header-tabs-hide { 
+    display: none !important; 
+}
+
+.header-tabs .ts-icon { 
+    float:left; 
+    margin: .33em .33em 0 0; 
+    padding:0;
+}
+
+.header-tabs .tab-image { 
+    float: left; 
+    display:block;
+    height: 16px; 
+    width: 16px; 
+    margin: .33em .25em 0 0; 
+    padding: 0;
+}
+
+.header-tabs .header-tab-content { 
+    padding: 0 16px; 
+    float:left;
+}
+
+.header-tabs .ui-icon-close { 
+    float:left; 
+    cursor:pointer; 
+    margin: .33em 0 0 0; 
+    padding:0; 
+    width: 16px;
+}
+
+.header-tabs .ui-icon-close.ts-tabs-noclose { 
+    background-position: -1000px -1000px; 
+}
+
+.header-tabs .ui-state-hover .header-tab-content { 
+    padding-right: 0px;
+}
+
+
+<!-- TABS -->
+.main-tab-item {
+    border-radius:10px;
+    background: none !important;
+    background-color: none !important;
+}
