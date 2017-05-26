@@ -6,6 +6,8 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using TeamSupport.Data;
 using System.Text;
+using TeamSupport.Data.WebHooks;
+using System.Web.Services;
 
 public partial class ServiceStatus : System.Web.UI.Page
 {
@@ -95,6 +97,12 @@ AND (
         }
         string bar = string.Format(progress, percent.ToString(), progressColor);
         builder.Append(string.Format("<tr class=\"{0}\"><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td></tr>", status ? "" : "danger", name, status ? "Good" : "Down", lastTime, bar));
+
+        if (!status)
+        {
+            SendMessageToSlack(name + " is down.");
+
+        }
     }
 
     private static void AddQueryRow(StringBuilder builder, string name, bool status, int max, int count, string message)
@@ -110,6 +118,8 @@ AND (
         {
             isBad = true;
             AddQueryRow(builder, name, false, maxCount, result, failedMessage);
+            string message = string.Format("Service: {0} ({1}) records - {2}", name, result.ToString(), failedMessage);
+            SendMessageToSlack(message);
         }
         else
         {
@@ -122,4 +132,29 @@ AND (
 
         return isFailed || isBad;
     }
+
+    [WebMethod]
+    public static void TestSlack()
+    {
+        SendMessageToSlack("Test Message");
+    }
+    private static void SendMessageToSlack(string messageText)
+    {
+              
+        try
+        {
+            SlackMessage message = new SlackMessage(LoginUser.Anonymous);
+            message.TextPlain = messageText;
+            message.TextRich = messageText;
+            message.Color = "#D00000";
+
+            // send to channel
+            message.Send("#service-warnings");
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+
 }
