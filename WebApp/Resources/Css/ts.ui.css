@@ -398,3 +398,14 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 .ticket-action-description table[border="1"] td, .ticket-preview-action table[border="1"] td{ 
     border-width: 1px; border-style: solid;border-color: #999999;
 }
+
+
+
+
+
+<!-- TABS -->
+.main-tab-item {
+    border-radius:10px;
+    background: none !important;
+    background-color: none !important;
+}

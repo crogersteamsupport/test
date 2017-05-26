@@ -48,8 +48,8 @@ Ts.Ui.MenuTree.prototype = {
       e.preventDefault();
       self.onBeforeSelect(mi);
 
-      $(this).parents('.ts-menutree').find('.ui-state-default').removeClass('ui-state-default');
-      $(this).children('div').addClass('ui-state-default');
+      $(this).parents('.ts-menutree').find('.ui-state-default').removeClass('ui-state-default').removeClass('menutree-selected');
+      $(this).children('div').addClass('ui-state-default').addClass('menutree-selected');;
 
       self.onAfterSelect(item);
     });
