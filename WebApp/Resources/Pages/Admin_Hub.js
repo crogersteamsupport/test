@@ -115,15 +115,17 @@ $(document).ready(function () {
 
         $("#CopyHubList").html(copyHubTemplate(data));
 
-        productFamilies = parent.parent.Ts.Services.Products.GetProductFamilies();
+        parent.parent.Ts.Services.Products.GetProductFamilies(function (data) {
+            var productLineTemplate = Handlebars.compile($("#ProductLineTemplate").html());
+            data = { ProductLines: data };
 
-        var productLineTemplate = Handlebars.compile($("#ProductLineTemplate").html());
-        data = { ProductLines: productFamilies };
+            $("#ProductLineList").html(productLineTemplate(data));
 
-        $("#ProductLineList").html(productLineTemplate(data));
+            $('#hub_admin').fadeOut();
+            $('#newHub').delay(400).fadeIn();
+        });
 
-        $('#hub_admin').fadeOut();
-        $('#newHub').delay(400).fadeIn();
+        
 
     });
 
