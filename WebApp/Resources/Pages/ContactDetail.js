@@ -2291,7 +2291,7 @@ $(document).ready(function () {
     });
 
     Handlebars.registerHelper("pluralize", function (hubs) {
-        if (hubs.length > 1)  return true
+        if (hubs.hubList.length <= 1) return;
         else return "(s)";
     });
 });
