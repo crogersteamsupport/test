@@ -57,9 +57,9 @@ $(document).ready(function () {
     LoadProperties();
     LoadCustomProperties();
     LoadReminderUsers();
-    LoadHubs();
     UpdateRecentView();
     GetUser();
+    LoadHubs();
 
     _mainFrame.Ts.Services.Customers.LoadUserAlert(userID, function (note) {
         if (note != null) {
