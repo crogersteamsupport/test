@@ -237,9 +237,9 @@
           <div class="main-header-right">
             <div class="main-header-menu">
             <ul>
-              <li class="menu-chatstatus notlast"><a href="#"><span class="ts-icon"></span><span class="menu-chatstatus-text"></span></a></li>
-              <li class="menu-officestatus notlast"><a href="#"><span class="ts-icon"></span><span>Office Status</span><span class="ui-icon ui-icon-triangle-1-s"></span></a></li>
-              <li class="menu-help notlast"><a href="#"><span>Help</span><span class="ui-icon ui-icon-triangle-1-s"></span></a></li>
+              <li class="menu-chatstatus"><a href="#"><span class="ts-icon"></span><span class="menu-chatstatus-text"></span></a></li>
+              <li class="menu-officestatus" style="margin-right:25px;"><img id="icon-office-status" src="" style="vertical-align:middle;"> <a href="#">Office Status</a></li>
+              <li class="menu-help" style="margin-right:25px;"><a href="#">Help</a></li>
               <li class="menu-signout"><a href="#"><span>Sign Out</span></a></li>
             </ul>
             </div>
@@ -507,8 +507,8 @@
 
   <div class="menu-popup menu-popup-officestatus ui-widget-content ui-widget ui-corner-bottom new-view-menu">
     <ul>
-      <li class="menu-office-online"><a class="ts-link ui-state-default" href="#"><span class="ts-icon ts-icon-online"></span><span>Available</span></a><div class="ts-clearfix"></div></li>
-      <li class="menu-office-offline"><a class=" ts-link ui-state-default" href="#"><span class="ts-icon ts-icon-offline"></span><span>Busy</span></a><div class="ts-clearfix"></div></li>
+      <li class="menu-office-online"><a class="ts-link ui-state-default" href="#"><img src="/vcr/1_9_0/Images/icon-online.png" style="vertical-align:middle;"> Available</a><div class="ts-clearfix"></div></li>
+      <li class="menu-office-offline"><a class=" ts-link ui-state-default" href="#"><img src="/vcr/1_9_0/Images/icon-offline.png" style="vertical-align:middle;"> Busy</a><div class="ts-clearfix"></div></li>
     </ul>
     <div class="ts-clearfix"></div>
     <div class="ts-separator ui-widget-content"></div>

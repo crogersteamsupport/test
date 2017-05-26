@@ -85,10 +85,12 @@ Ts.Pages.Main.prototype = {
 
             if (Ts.System.User.InOffice) {
                 $('.main-status-online').switchClass('ts-icon-offline', 'ts-icon-online', 0);
-                $('.menu-officestatus .ts-icon').addClass('ts-icon-online-small');
+                // $('.menu-officestatus .ts-icon').addClass('ts-icon-online-small');
+                $('#icon-office-status').attr('src', '/vcr/1_9_0/Images/icon-online.png');
             } else {
-                $('.menu-officestatus .ts-icon').addClass('ts-icon-offline-small');
                 $('.main-status-online').switchClass('ts-icon-online', 'ts-icon-offline', 0);
+                // $('.menu-officestatus .ts-icon').addClass('ts-icon-offline-small');
+                $('#icon-office-status').attr('src', '/vcr/1_9_0/Images/icon-offline.png');
             }
 
             var status = Ts.System.User.InOfficeComment === '' ? 'What is your status?' : Ts.System.User.InOfficeComment;
@@ -223,7 +225,8 @@ Ts.Pages.Main.prototype = {
             e.preventDefault();
             e.stopPropagation();
             Ts.Services.Users.UpdateUserStatus(true, function () {
-                $('.menu-officestatus .ts-icon').addClass('ts-icon-online-small').removeClass('ts-icon-offline-small');
+                // $('.menu-officestatus .ts-icon').addClass('ts-icon-online-small').removeClass('ts-icon-offline-small');
+                $('#icon-office-status').attr('src', '/vcr/1_9_0/Images/icon-online.png');
                 mainFrame.Ts.System.logAction('Main Page - Office Status Changed');
             });
             hidePopupMenus();
@@ -234,7 +237,8 @@ Ts.Pages.Main.prototype = {
             e.preventDefault();
             e.stopPropagation();
             Ts.Services.Users.UpdateUserStatus(false, function () {
-                $('.menu-officestatus .ts-icon').addClass('ts-icon-offline-small').removeClass('ts-icon-online-small');
+                // $('.menu-officestatus .ts-icon').addClass('ts-icon-offline-small').removeClass('ts-icon-online-small');
+                $('#icon-office-status').attr('src', '/vcr/1_9_0/Images/icon-offline.png');
                 mainFrame.Ts.System.logAction('Main Page - Office Status Changed');
             });
             hidePopupMenus();
