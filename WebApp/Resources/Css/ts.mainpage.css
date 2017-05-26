@@ -22,28 +22,27 @@
 
 .main-header-content {
     margin-right: 400px;
-    padding: 10px 0px 0px 10px;
+    padding: 0px 0px 0px 10px;
     display: flex;
     display: -webkit-flex;
 }
 
 div.main-header-logo {
-    margin-right: 40px;
+    margin-right:40px;
+    padding-top:5px;
 }
 
 div.main-header-new-ticket {
-
+    padding-top:10px;
     height: 25px;
     width: 100px;
     display: block;
 }
 
 div.main-header-search {
+    padding-top: 12px;
     margin-right: 40px;
-    padding-top:2px;
 }
-
-
 
 .main-header-content-wrapper { float: left; width: 100%; }
 .main-header-content .main-quick-ticket {width: 250px; padding: .25em .25em; margin-left: 1em;}
@@ -157,15 +156,13 @@ li.ts-menutree-item:hover {
     font-family: Verdana;
 }
 
-li.ts-menutree-item-selected {
-    background-color: rgba(255,255,255,0.2);
-    color: white !important;
-    font-family: Verdana;
+div.menutree-selected {
+    background-color: rgba(255,255,255,0.2) !important;
 }
 
-<!-- TABS -->
-
-.main-tab-item {
-    background-color:none !important;
-
+div.menutree-selected a {
+    color: #39b2f0 !important;
 }
+
+
+
