@@ -267,7 +267,7 @@
       </div>
     </div>--%>
     <div class="main-nav ts-noborder sidebar-container test" style="background-color: #33485e !important;">
-      <div class="main-menutree sidebar-container" style="background-color: #33485e !important;">
+      <div id="main-menutree" class="main-menutree sidebar-container" style="background-color: #33485e !important;">
       </div>
     </div>
   </div>

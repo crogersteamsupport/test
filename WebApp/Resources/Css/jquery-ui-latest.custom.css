@@ -236,7 +236,7 @@ body .ui-tooltip { border-width: 2px; }
 .ui-widget-header {
     border: 1px solid #92b4de;
     background-color: #2a3f54;
-    color: #154b8c;
+    color: white;
     font-weight: bold;
 }
 .ui-widget-header a { color: #154b8c; }

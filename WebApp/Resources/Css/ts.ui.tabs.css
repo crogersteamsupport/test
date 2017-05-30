@@ -48,6 +48,13 @@ div.header-tabs li.ui-state-active {
     background-color: #d58279 !important;
 }
 
+div.header-tabs li img {
+    -webkit-filter: brightness(9);
+    filter: brightness(9);
+}
+
+
+
 .header-tabs li.ui-state-active a, 
 .header-tabs li.ui-state-disabled a, 
 .header-tabs li.ui-state-processing a { 
