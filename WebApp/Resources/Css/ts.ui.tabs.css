@@ -19,24 +19,33 @@ div.header-tabs li {
     padding: 0 10px;
     white-space: nowrap;
     height: 25px;
-    line-height: 25px;
+
     cursor: pointer;
     background-color:#445c75;
     border-radius: 5px;
+    vertical-align:middle;
     }
 
-div.header-tabs li a { 
+div.header-tabs li a {
+    font-family:'Lucida Console' !important;
     float: left; 
     text-decoration: none; 
     display:block; 
-    margin: 0 0; 
-    text-align: center ; 
+    margin: 0px; 
+    text-align: center;
+    vertical-align:middle;
     min-width: 80px;
-    color:white;
+    color:white !important;
+    line-height:27px;
 }
 
-.header-tabs li a:hover { 
-    text-decoration:none;
+div.header-tabs li:hover {
+    background-color: #d27065 !important;
+    text-decoration: none;
+}
+
+div.header-tabs li.ui-state-active {
+    background-color: #d58279 !important;
 }
 
 .header-tabs li.ui-state-active a, 

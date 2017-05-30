@@ -270,24 +270,26 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 .ts-menutree li ul { padding:0; margin:0;}
 .ts-menutree li { list-style: none; position: relative; cursor:pointer; padding:2px 0; margin:0; overflow:hidden; }
 .ts-menutree li ul li { padding-left: .5em;}
-    .ts-menutree li a {
-        text-decoration: none;
-        height: 20px;
-        overflow: hidden;
-        font-size: 13px;
-        color: white;
 
-        font-family: 'Lucida Sans Unicode';
-    }
-    .ts-menutree li > div {
-        padding: .25em .1em;
-        height: 20px;
-        line-height: 20px;
-        overflow: hidden;
-        font-size: 13px;
-        font-weight:bold;
-        font-family: 'Lucida Sans Unicode';
-    }
+.ts-menutree li a {
+    text-decoration: none;
+    height: 20px;
+    overflow: hidden;
+    font-size: 13px;
+    color: white;
+    font-family:'Lucida Sans Unicode';
+}
+
+.ts-menutree li > div {
+    padding: .25em .1em;
+    height: 20px;
+    line-height: 20px;
+    overflow: hidden;
+    font-size: 13px;
+    font-weight:bold;
+    font-family: 'Lucida Sans Unicode';
+}
+
 .ts-menutree .ts-icon { float:left; padding-right: .33em;}
 .ts-menutree .ui-icon { float:right; padding: 0 5px 0 0; }
 .ts-menutree img { float:left; padding: 0 7px; height: 20px; width: 20px;}
