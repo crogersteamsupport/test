@@ -292,8 +292,14 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 
 .ts-menutree .ts-icon { float:left; padding-right: .33em;}
 .ts-menutree .ui-icon { float:right; padding: 0 5px 0 0; }
-.ts-menutree img { float:left; padding: 0 7px; height: 20px; width: 20px;}
-.ts-menutree li.ts-menutree-item > div { border:none; background-image: none; }
+.ts-menutree img { 
+    float:left; padding: 0 7px; height: 20px; width: 20px;
+}
+
+.ts-menutree li.ts-menutree-item > div {
+    border: none;
+    background-image: none;
+}
 
 .ts-toolbar { line-height: 29px; height:29px; border-left:none; border-right:none; font-weight:normal;}
 .ts-toolbar .ts-toolbar-button { float:left; display:block; height: 28px; }

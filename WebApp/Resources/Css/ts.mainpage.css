@@ -150,19 +150,48 @@ li.ts-menutree-item {
     font-family:Verdana;
 }
 
+li.ts-menutree-item a {
+    color: white !important;
+    opacity:0.5;
+}
+
+li.ts-menutree-item .ui-icon {
+    -webkit-filter: brightness(9);
+    filter: brightness(9);
+}
+
 li.ts-menutree-item:hover {
     background-color:rgba(255,255,255,0.1);
     color: white !important;
     font-family: Verdana;
 }
 
+ li.ts-menutree-item:hover a {
+    opacity:0.8;
+}
+
 div.menutree-selected {
     background-color: rgba(255,255,255,0.2) !important;
 }
 
+div.menutree-selected img {
+    -webkit-filter: brightness(9);
+    filter: brightness(9);
+}
+
 div.menutree-selected a {
-    color: #39b2f0 !important;
+    color:white !important;
+    opacity:1 !important;
 }
 
 
 
+#main-menutree::-webkit-scrollbar {
+    width: 3px;
+    background-color: #33485e;
+    opacity: 0.5;
+}
+
+#main-menutree::-webkit-scrollbar-thumb {
+    background-color: rgba(255,255,255,0.5);
+}
