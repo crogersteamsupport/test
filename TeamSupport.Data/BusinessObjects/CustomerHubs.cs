@@ -57,8 +57,8 @@ namespace TeamSupport.Data
                 command.CommandText = @"Select Distinct CH.*
                                         from dbo.users as U
                                         inner join dbo.Organizations as O on U.OrganizationID = O.OrganizationID
-                                        inner join dbo.OrganizationProducts as OP on U.OrganizationID = OP.OrganizationID
-                                        inner join dbo.Products as P on P.ProductID = OP.ProductID
+                                        left join dbo.OrganizationProducts as OP on U.OrganizationID = OP.OrganizationID
+                                        left join dbo.Products as P on P.ProductID = OP.ProductID
                                         inner join dbo.CustomerHubs as CH on O.ParentID = CH.OrganizationID
 	                                        and (P.ProductFamilyID = CH.ProductFamilyID OR CH.ProductFamilyID is Null)
                                         Where UserID = @UserID";
