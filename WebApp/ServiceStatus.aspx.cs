@@ -136,13 +136,14 @@ AND (
 
     [WebMethod]
     public static void AckSlack()
-    { 
+    {
+        
         User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
-        SendMessageToSlack(user.FirstLastName + " has acknowledged this issue.");
+        SendMessageToSlack(user.FirstLastName + " has acknowledged this issue on pod " + SystemSettings.GetPodName());
     }
     private static void SendMessageToSlack(string messageText)
     {
-              
+        messageText = string.Format("{0} - {1}/ServiceStatus.aspx", messageText, SystemSettings.GetAppUrl());
         try
         {
             SlackMessage message = new SlackMessage(LoginUser.Anonymous);
