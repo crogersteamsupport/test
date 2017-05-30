@@ -19,7 +19,7 @@
                 e.preventDefault();
                 //$('.queries').html('');
                 var btn = $(this).button('loading')
-                PageMethods.TestSlack(function (result) {
+                PageMethods.AckSlack(function (result) {
                     
                     btn.button('reset');
                 });
@@ -39,7 +39,7 @@
     </asp:ScriptManager>
         <div class="container">
             <div class="page-header">
-                <asp:Literal ID="litStatus" runat="server"></asp:Literal> <button type="button" class="btn btn-primary slack" data-loading-text="Loading...">Test Slack</button>
+                <asp:Literal ID="litStatus" runat="server"></asp:Literal> <button type="button" class="btn btn-primary slack" data-loading-text="Loading...">Acknowlege Issue on Slack</button>
             </div>
 
             <div class="page-header">

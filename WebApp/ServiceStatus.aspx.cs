@@ -8,6 +8,7 @@ using TeamSupport.Data;
 using System.Text;
 using TeamSupport.Data.WebHooks;
 using System.Web.Services;
+using TeamSupport.WebUtils;
 
 public partial class ServiceStatus : System.Web.UI.Page
 {
@@ -134,9 +135,10 @@ AND (
     }
 
     [WebMethod]
-    public static void TestSlack()
-    {
-        SendMessageToSlack("Test Message");
+    public static void AckSlack()
+    { 
+        User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
+        SendMessageToSlack(user.FirstLastName + " has acknowledged this issue.");
     }
     private static void SendMessageToSlack(string messageText)
     {
