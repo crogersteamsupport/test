@@ -15,8 +15,8 @@ li { margin: .5em .5em;}
 strong { font-weight:bold;}
 a { text-decoration: none; }
 a:hover { text-decoration: underline; }
-blockquote { background-color:#E3EEFC; border: 1px solid #92B4DE; margin: 1em 0; padding: .5em .5em; font-family:courier; }
-pre {border: 1px solid #92B4DE; margin: 1em 0; padding: .5em .5em; font-family:courier;}
+blockquote { background-color:#E3EEFC; border: 1px solid #2a3f54; margin: 1em 0; padding: .5em .5em; font-family:courier; }
+pre {border: 1px solid #2a3f54; margin: 1em 0; padding: .5em .5em; font-family:courier;}
 
 .ts-clearfix { clear:both; height: 1px; }
 
