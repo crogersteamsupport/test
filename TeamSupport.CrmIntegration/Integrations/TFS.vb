@@ -16,7 +16,6 @@ Namespace TeamSupport
             Private _baseURI As String
             Private _encodedCredentials As String
             Private _tfs As TFSLibrary = New TFSLibrary()
-            'Private _issueTypeFieldsList As Dictionary(Of IssueTypeFields, JObject) = New Dictionary(Of IssueTypeFields, JObject)
             Private _tfsExceptionMessageFormat As String = "TFS InnerException Message: {0}{1}{2}{2}{2}Jira ErrorResponse: {3}"
             Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
                 MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.Jira)
@@ -36,7 +35,6 @@ Namespace TeamSupport
 
             Private Function ValidateSyncData() As Boolean
                 Dim result As Boolean = True
-                '_issueTypeFieldsList = New Dictionary(Of IssueTypeFields, JObject)
 
                 If CRMLinkRow.HostName Is Nothing Then
                     result = False
@@ -112,11 +110,11 @@ Namespace TeamSupport
                     PushTicketsAndActionsAsWorkItemsAndComments(ticketsToPushAsWorkItems, ticketsLinksToTFSToPushAsWorkItems, allStatuses, newActionsTypeID)
                 End If
 
-                If numberOfWorkItemsToPullAsTickets > 0 Then
-                    For Each batchOfWorkItemsToPullAsTicket As JObject In workItemsToPullAsTickets
-                        PullWorkItemsAndCommentsAsTicketsAndActions(batchOfWorkItemsToPullAsTicket("workItems"), allStatuses, newActionsTypeID, ticketLinkToTFS)
-                    Next
-                End If
+                'If numberOfWorkItemsToPullAsTickets > 0 Then
+                '    For Each batchOfIssuesToPullAsTicket As JObject In workItemsToPullAsTickets
+                '        PullIssuesAndCommentsAsTicketsAndActions(batchOfIssuesToPullAsTicket("issues"), allStatuses, newActionsTypeID)
+                '    Next
+                'End If
 
                 Return Not SyncError
             End Function
@@ -263,9 +261,9 @@ Namespace TeamSupport
                                                             ByVal ticketsLinksToTFSToPushAsWorkItems As TicketLinkToTFS,
                                                             ByVal allStatuses As TicketStatuses,
                                                             ByVal newActionsTypeID As Integer)
-                Dim URI As String = _baseURI + "/issue"
+                Dim URI As String = _baseURI + "/issue" '//vv needed?
                 Dim attachmentFileSizeLimit As Integer = 0
-                Dim attachmentEnabled As Boolean = GetAttachmentEnabled(attachmentFileSizeLimit)
+                Dim attachmentEnabled As Boolean = GetAttachmentEnabled(attachmentFileSizeLimit) '//vv ToDo
                 Dim crmLinkError As CRMLinkError = Nothing
                 Dim ticketData As StringBuilder = Nothing
                 Dim TFSProjectName As String = String.Empty
@@ -297,36 +295,14 @@ Namespace TeamSupport
 
                     Dim updateTicketFlag As Boolean = False
                     Dim sendCustomMappingFields As Boolean = False
-                    Dim workItemFields As JObject = Nothing
+                    Dim workItemFields As List(Of TFSLibrary.WorkItemField) 'JObject = Nothing
 
                     Try
                         crmLinkError = crmLinkErrors.FindUnclearedByObjectIDAndFieldName(ticket.TicketID, String.Empty)
                         TFSProjectName = GetProjectName(ticket, crmLinkErrors)
                         workItemFields = GetWorkItemFields(ticket, TFSProjectName, crmLinkError, Orientation.OutToTFS)
                     Catch webEx As WebException
-                        '        Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
-                        Dim TFSErrors As String
-                        '        If (jiraErrors IsNot Nothing AndAlso jiraErrors.HasErrors) Then
-                        If (TFSErrors IsNot Nothing) Then
-                            AddLog(String.Format(_tfsExceptionMessageFormat,
-                                                webEx.Message,
-                                                Environment.NewLine,
-                                                vbTab,
-                                                TFSErrors.ToString()))
-                            AddLog(webEx.StackTrace,
-                                    LogType.Report,
-                                    crmLinkError,
-                                    String.Format("Error attempting to get TFS project '{0}' information:{1}{2}.", TFSProjectName, Environment.NewLine, TFSErrors.ToString()),
-                                    Orientation.OutToJira,
-                                    ObjectType.Ticket,
-                                    ticket.TicketID,
-                                    String.Empty,
-                                    Nothing,
-                                    OperationType.Unknown)
-                        Else
-                            AddLog(webEx.ToString() + webEx.StackTrace)
-                        End If
-
+                        AddLog(webEx.ToString() + webEx.StackTrace)
                         Continue For
                     Catch ex As Exception
                         AddLog(String.Format("Exception in PushTicketsAndActionsAsWorkItemsAndComments: {0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace))
@@ -336,17 +312,20 @@ Namespace TeamSupport
                     Dim workItem As JObject = Nothing
                     Dim isNew As Boolean = False
                     'Create new WorkItem
-                    If ticketLinkToTFS.TFSTitle Is Nothing OrElse ticketLinkToTFS.TFSTitle.IndexOf("Error") > -1 Then
+                    If ticketLinkToTFS.TFSID Is Nothing OrElse ticketLinkToTFS.TFSTitle.IndexOf("Error") > -1 Then
                         Try
                             crmLinkError = crmLinkErrors.FindUnclearedByObjectIDAndFieldName(ticket.TicketID, String.Empty)
-                            AddLog("No TFSTitle. Creating work item...")
-                            'URI = _baseURI + "/issue"
+                            AddLog("No TFS Id. Creating work item...")
                             isNew = True
 
                             Dim actionDescriptionId As Integer
                             ticketData = New StringBuilder()
-                            ticketData.Append(GetTicketData(ticket, workItemFields, TFSProjectName, actionDescriptionId, customMappingFields, crmLinkErrors))
-                            workItem = GetAPIJObject(URI, "POST", ticketData.ToString())
+
+                            '//ToDo //vv Create workitem here
+
+
+                            'ticketData.Append(GetTicketData(ticket, workItemFields, TFSProjectName, actionDescriptionId, customMappingFields, crmLinkErrors))
+                            'workItem = GetAPIJObject(URI, "POST", ticketData.ToString())
                             '            'The create issue response does not include status and we need it to initialize the synched ticket. So, we do a GET on the recently created issue.
                             '            URI = _baseURI + "/issue/" + issue("key").ToString()
                             '            issue = GetAPIJObject(URI, "GET", String.Empty)
@@ -578,14 +557,16 @@ Namespace TeamSupport
 
                     If sendCustomMappingFields Then
                         'We are now updating the custom mapping fields. We do a call per field to minimize the impact of invalid values attempted to be assigned.
+                        '//ToDo //vv redo this section, we are not using jobjects and instead we are using object properties for the workitem
                         If workItemFields IsNot Nothing Then
-                            For Each field As KeyValuePair(Of String, JToken) In workItemFields
-                                'If (field.Value("name").ToString().ToLower() = "time tracking") Then
-                                '    UpdateIssueTimeTrackingFields(issue("id"), customMappingFields, ticket, field, crmLinkErrors, URI)
-                                'Else
-                                UpdateWorkItemField(workItem("id"), customMappingFields, ticket, field, crmLinkErrors, URI)
-                                'End If
-                            Next
+                            '//vv see comment above
+                            'For Each field As KeyValuePair(Of String, JToken) In workItemFields
+                            '    'If (field.Value("name").ToString().ToLower() = "time tracking") Then
+                            '    '    UpdateIssueTimeTrackingFields(issue("id"), customMappingFields, ticket, field, crmLinkErrors, URI)
+                            '    'Else
+                            '    UpdateWorkItemField(workItem("id"), customMappingFields, ticket, field, crmLinkErrors, URI)
+                            '    'End If
+                            'Next
                         End If
                     ElseIf isNew Then
                         AddLog("Include Non-Required Fields On Issue Creation: Off. Only creating issue with required fields.")
@@ -673,61 +654,41 @@ Namespace TeamSupport
             Private Function GetWorkItemFields(ByVal ticket As TicketsViewItem,
                                         ByVal TFSProjectName As String,
                                         ByRef crmLinkError As CRMLinkError,
-                                        ByVal orientation As Orientation) As JObject
+                                        ByVal orientation As Orientation) As List(Of TFSLibrary.WorkItemField) '//vv As JObject
                 Dim workItemTypeName As String = ticket.TicketTypeName
-                Dim addTypeFieldsToList As Boolean = True
                 Dim result As JObject = Nothing
+                Dim fields As List(Of TFSLibrary.WorkItemField)
 
                 workItemTypeName = Replace(workItemTypeName, " ", "+")
                 TFSProjectName = Replace(TFSProjectName, " ", "+")
 
-                addTypeFieldsToList = True
+                Try
+                    fields = _tfs.WorkItemsFields
 
-                If (addTypeFieldsToList) Then
-                    Dim URI As String = ""
-                    'Dim URI As String = _baseURI +
-                    '                "/issue/createmeta?projectKeys=" +
-                    '                TFSProjectName.ToUpper() +
-                    '                "&issuetypeNames=" + workItemTypeName +
-                    '                "&expand=projects.issuetypes.fields"
-                    'View an example of this response in 
-                    '
+                    If fields Is Nothing OrElse Not fields.Any Then
+                        '//vv TFS api does not return fields per type, it just returns ALL fields.
+                        AddLog("TFS did not return any work item fields.",
+                            LogType.Report,
+                            crmLinkError,
+                            "TFS did not return any work item fields.",
+                            orientation,
+                            ObjectType.Ticket,
+                            ticket.TicketID,
+                            "",
+                            Nothing,
+                            OperationType.Unknown)
+                        AddLog("TFS did not return any work item fields.")
+                    Else
+                        'ToDo //vv ?? result = JObject.Parse(fields)
+                        ClearCrmLinkError(crmLinkError)
+                    End If
+                Catch ex As Exception
+                    AddLog(String.Format("Exception rised attempting to get fields for work items of project {0}{1}{2}{1}", TFSProjectName, Environment.NewLine, ex.Message))
+                    Throw New Exception("project mismatch")
+                End Try
 
-                    Try
-                        Dim fields = GetAPIJObject(URI, "GET", String.Empty)
-
-                        'If (fields("projects").Count > 0) Then
-                        '    For i = 0 To fields("projects")(0)("issuetypes").Count - 1
-                        '        If Replace(fields("projects")(0)("issuetypes")(i)("name").ToString().ToLower(), " ", "+") = issueTypeName.ToLower() Then
-                        '            result = CType(fields("projects")(0)("issuetypes")(i)("fields"), JObject)
-                        '            Exit For
-                        '        End If
-                        '    Next
-                        'End If
-
-                        If result Is Nothing Then
-                            AddLog(String.Format("Work Item Type was '{0}' not found in Project Type '{1}' in TFS.", workItemTypeName, TFSProjectName),
-                                LogType.Report,
-                                crmLinkError,
-                                String.Format("Issue Type was '{0}' not found in Project Type '{1}' in Jira.", workItemTypeName, TFSProjectName),
-                                orientation,
-                                ObjectType.Ticket,
-                                ticket.TicketID,
-                                "",
-                                Nothing,
-                                OperationType.Unknown)
-                            AddLog("Type was not found in list of project types. If an exception ahead, chances are it was caused by missing type.")
-                        Else
-                            '//vv _issueTypeFieldsList.Add(New IssueTypeFields With { .IssueType = issueTypeName.ToLower(), .Project = jiraProjectKey.ToLower() }, result)
-                            ClearCrmLinkError(crmLinkError)
-                        End If
-                    Catch ex As Exception
-                        AddLog(String.Format("Exception rised attempting to get createmeta.{0}{1}{0}{2}{0}{3}", Environment.NewLine, ex.Message, "URI: " + URI, "Type: " + TFSProjectName))
-                        Throw New Exception("project mismatch")
-                    End Try
-                End If
-
-                Return result
+                '//vv Return result
+                Return fields
             End Function
 
             Private Function GetAPIJObject(ByVal URI As String, ByVal verb As String, ByVal body As String) As JObject
@@ -1605,12 +1566,12 @@ Namespace TeamSupport
                     Dim ticketView As TicketsView = New TicketsView(User)
                     ticketView.LoadByTicketID(ticketID)
                     Dim tfsProjectName As String = GetProjectName(ticketView(0), crmlinkErrors)
-                    Dim workItemFields As JObject = GetWorkItemFields(ticketView(0), tfsProjectName, crmLinkError, Orientation.IntoTeamSupport)
+                    Dim workItemFields As List(Of TFSLibrary.WorkItemField) = GetWorkItemFields(ticketView(0), tfsProjectName, crmLinkError, Orientation.IntoTeamSupport)
                     Dim ticketsFieldMap As Tickets = New Tickets(User)
 
                     For Each field As KeyValuePair(Of String, JToken) In CType(workItem("fields"), JObject)
                         Dim value As String = Nothing
-                        Dim cRMLinkField As CRMLinkField = customFields.FindByCRMFieldName(GetFieldNameByKey(field.Key.ToString(), workItemFields))
+                        Dim cRMLinkField As CRMLinkField '//ToDo //vv need to redo this to use the object properties instead of Jobject. = customFields.FindByCRMFieldName(GetFieldNameByKey(field.Key.ToString(), workItemFields))
                         Dim crmLinkCustomFieldError As CRMLinkError = Nothing
 
                         Try

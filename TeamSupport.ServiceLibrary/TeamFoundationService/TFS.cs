@@ -13,6 +13,8 @@ namespace TeamSupport.ServiceLibrary
     {
         private static string _hostname;
         private static string _accessToken;
+        private static List<WorkItemField> _workItemFields;
+
         public TFS()
         {
         }
@@ -30,7 +32,7 @@ namespace TeamSupport.ServiceLibrary
                 using (HttpClient client = new HttpClient())
                 {
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", "", AccessToken))));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials); //ToDo //vv check that this is the same as: Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", "", AccessToken)))
 
                     using (HttpResponseMessage response = client.GetAsync(string.Format("{0}/DefaultCollection/_apis/projects?api-version=1.0", HostName)).Result)
                     {
@@ -54,7 +56,7 @@ namespace TeamSupport.ServiceLibrary
         public string GetWorkItemsBy(List<int> workItemIds, DateTime? lastLink)
         {
             var result = "";
-            string credentials = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", "", AccessToken)));
+            //vv see a few lines below. string credentials = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", "", AccessToken)));
             string idsCommaSeparated = string.Join(",", workItemIds);
             string dateOnly = "1900-01-01";
             
@@ -80,7 +82,7 @@ namespace TeamSupport.ServiceLibrary
                 client.BaseAddress = new Uri(HostName);
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials); //ToDo //vv check that this is the same as: credentials
 
                 //serialize the wiql object into a json string. MediaType needs to be application/json for a post call
                 var postValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(wiql), Encoding.UTF8, "application/json");
@@ -132,9 +134,42 @@ namespace TeamSupport.ServiceLibrary
             return result;
         }
 
-        public void GetWorkItemsFields()
+        private void GetWorkItemsFields()
         {
+            List<WorkItemField> resultList = new List<WorkItemField>();
 
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(HostName);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+
+                HttpResponseMessage response = client.GetAsync("_apis/wit/fields?api-version=2.2").Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    WorkItemFields result = response.Content.ReadAsAsync<WorkItemFields>().Result;
+                    resultList = new List<WorkItemField>(result.value);
+                }
+            }
+
+            _workItemFields = resultList;
+        }
+
+        public class WorkItemFields
+        {
+            public int count { get; set; }
+            public WorkItemField[] value { get; set; }
+        }
+
+        public class WorkItemField
+        {
+            public string name { get; set; }
+            public string referenceName { get; set; }
+            public string type { get; set; }
+            public bool readOnly { get; set; }
+            public string url { get; set; }
         }
 
         #region Properties
@@ -159,6 +194,26 @@ namespace TeamSupport.ServiceLibrary
             set
             {
                 _accessToken = value;
+            }
+        }
+
+        private string EncodedCredentials
+        {
+            get
+            {
+                return Data.DataUtils.GetEncodedCredentials(string.Empty, AccessToken);
+            }
+        }
+
+        public List<WorkItemField> WorkItemsFields
+        {
+            get
+            {
+                if (_workItemFields == null || !_workItemFields.Any())
+                {
+                    GetWorkItemsFields();
+                }
+                return _workItemFields;
             }
         }
         #endregion
