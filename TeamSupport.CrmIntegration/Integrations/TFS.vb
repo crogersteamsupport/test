@@ -302,7 +302,7 @@ Namespace TeamSupport
                     Try
                         crmLinkError = crmLinkErrors.FindUnclearedByObjectIDAndFieldName(ticket.TicketID, String.Empty)
                         TFSProjectName = GetProjectName(ticket, crmLinkErrors)
-                        workItemFields = GetWorkItemsFields(ticket, TFSProjectName, crmLinkError, Orientation.OutToTFS)
+                        workItemFields = GetWorkItemFields(ticket, TFSProjectName, crmLinkError, Orientation.OutToTFS)
                     Catch webEx As WebException
                         '        Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
                         Dim TFSErrors As String
@@ -670,7 +670,7 @@ Namespace TeamSupport
                 End If
             End Function
 
-            Private Function GetWorkItemsFields(ByVal ticket As TicketsViewItem,
+            Private Function GetWorkItemFields(ByVal ticket As TicketsViewItem,
                                         ByVal TFSProjectName As String,
                                         ByRef crmLinkError As CRMLinkError,
                                         ByVal orientation As Orientation) As JObject
@@ -1522,7 +1522,8 @@ Namespace TeamSupport
                             crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticketID.ToString(), String.Empty)
 
                             Try
-                                'UpdateTicketWithIssueData(ticketID, workItemsToPullAsTickets(i), newActionsTypeID, allStatuses, crmLinkError, crmLinkErrors)
+                                Dim ticketLinkToTFSItem As TicketLinkToTFSItem = ticketLinkToTFS.FindByTicketID(ticketID)
+                                UpdateTicketWithWorkItemData(ticketID, workItemsToPullAsTickets(i), newActionsTypeID, allStatuses, crmLinkError, crmLinkErrors, ticketLinkToTFSItem)
                                 ClearCrmLinkError(crmLinkError)
                             Catch ex As Exception
                                 AddLog(ex.ToString() + ex.StackTrace,
@@ -1566,6 +1567,488 @@ Namespace TeamSupport
                 Next
 
                 Return result
+            End Function
+
+            Private Sub UpdateTicketWithWorkItemData(ByVal ticketID As Integer, ByVal workItem As JObject, ByVal newActionsTypeID As Integer, ByVal allStatuses As TicketStatuses, ByRef crmLinkError As CRMLinkError, ByRef crmlinkErrors As CRMLinkErrors, ByVal ticketLinkToTFSItem As TicketLinkToTFSItem)
+                Dim updateTicket As Tickets = New Tickets(User)
+                updateTicket.LoadByTicketID(ticketID)
+
+                If updateTicket.Count > 0 AndAlso updateTicket(0).OrganizationID = CRMLinkRow.OrganizationID Then
+                    Dim ticketTypeId As Integer = 0
+                    Dim customFields As New CRMLinkFields(User)
+                    Dim allTypes As TicketTypes = New TicketTypes(User)
+                    'Dim ticketLinkToTFS As TicketLinkToTFS = New TicketLinkToTFS(User)
+
+                    'ticketLinkToTFS.LoadByTicketID(updateTicket(0).TicketID)
+                    allTypes.LoadByOrganizationID(CRMLinkRow.OrganizationID)
+
+                    'For Each field As KeyValuePair(Of String, JToken) In CType(workItem("fields"), JObject)
+                    '    'If field.Key.Trim().ToLower() = "issuetype" Then
+                    '    Dim issueTypeName As String = GetFieldValue(field)
+                    '        Dim ticketType As TicketType = allTypes.FindByName(issueTypeName)
+
+                    '        If ticketType IsNot Nothing Then
+                    '            ticketTypeId = allTypes.FindByName(issueTypeName).TicketTypeID
+                    '            customFields.LoadByObjectTypeAndCustomFieldAuxID(GetDescription(ObjectType.Ticket), CRMLinkRow.CRMLinkID, ticketTypeId)
+                    '        End If
+
+                    '        Exit For
+                    '    End If
+                    'Next
+
+                    If ticketTypeId = 0 Then
+                        customFields.LoadByObjectTypeAndCustomFieldAuxID(GetDescription(ObjectType.Ticket), CRMLinkRow.CRMLinkID, updateTicket(0).TicketTypeID)
+                    End If
+
+                    Dim ticketValuesChanged = False
+                    Dim workItemStateChangedNotUpdatedInTicket = False
+                    Dim ticketView As TicketsView = New TicketsView(User)
+                    ticketView.LoadByTicketID(ticketID)
+                    Dim tfsProjectName As String = GetProjectName(ticketView(0), crmlinkErrors)
+                    Dim workItemFields As JObject = GetWorkItemFields(ticketView(0), tfsProjectName, crmLinkError, Orientation.IntoTeamSupport)
+                    Dim ticketsFieldMap As Tickets = New Tickets(User)
+
+                    For Each field As KeyValuePair(Of String, JToken) In CType(workItem("fields"), JObject)
+                        Dim value As String = Nothing
+                        Dim cRMLinkField As CRMLinkField = customFields.FindByCRMFieldName(GetFieldNameByKey(field.Key.ToString(), workItemFields))
+                        Dim crmLinkCustomFieldError As CRMLinkError = Nothing
+
+                        Try
+                            'Verify the field is mapped or part of the Select Case below (if more added there then add them to this check too)
+                            Dim isCustomMappedField As Boolean = cRMLinkField IsNot Nothing _
+                                                            OrElse field.Key.Trim().ToLower() = "workitemtype" _
+                                                            OrElse field.Key.Trim().ToLower() = "project" _
+                                                            OrElse field.Key.Trim().ToLower() = "state"
+
+                            If (isCustomMappedField) Then
+                                crmLinkCustomFieldError = crmlinkErrors.FindByObjectIDAndFieldName(ticketID.ToString(), field.Key)
+                                value = GetFieldValue(field)
+                            Else
+                                'Uncomment this line in case more logging is needed to troubleshoot fields not synced
+                                'AddLog(String.Format("Issue field {0} is not mapped, so it was not processed.", field.Key))
+                                Continue For
+                            End If
+
+                            ClearCrmLinkError(crmLinkCustomFieldError)
+                        Catch ex As Exception
+                            AddLog(ex.ToString() + ex.StackTrace,
+                            LogType.TextAndReport,
+                            crmLinkCustomFieldError,
+                            String.Format("Field: ""{0}"" was not updated because the following exception ocurred getting its value: {1}", field.Key, ex.StackTrace),
+                            Orientation.IntoTeamSupport,
+                            ObjectType.Ticket,
+                            updateTicket(0).TicketID.ToString(),
+                            field.Key,
+                            Nothing,
+                            OperationType.Update)
+
+                            Continue For
+                        End Try
+
+                        If cRMLinkField IsNot Nothing Then
+                            Try
+                                Dim fieldMapItem As FieldMapItem = ticketsFieldMap.FieldMap.Items.Find(Function(c) c.PrivateName = cRMLinkField.TSFieldName)
+                                Dim canBeUpdated As Boolean = True
+
+                                If fieldMapItem IsNot Nothing AndAlso (Not fieldMapItem.Insert Or Not fieldMapItem.Update) Then
+                                    canBeUpdated = False
+                                End If
+
+                                Dim translatedFieldValue As String = value
+
+                                If cRMLinkField.CustomFieldID IsNot Nothing Then
+                                    Dim findCustom As New CustomValues(User)
+                                    Dim thisCustom As CustomValue
+
+                                    findCustom.LoadByFieldID(cRMLinkField.CustomFieldID, ticketID)
+
+                                    If findCustom.Count > 0 Then
+                                        thisCustom = findCustom(0)
+                                    Else
+                                        thisCustom = (New CustomValues(User)).AddNewCustomValue()
+                                        thisCustom.CustomFieldID = cRMLinkField.CustomFieldID
+                                        thisCustom.RefID = ticketID
+                                    End If
+
+                                    If (IsDBNull(thisCustom.Value) OrElse thisCustom.Value <> translatedFieldValue) And canBeUpdated Then
+                                        thisCustom.Value = translatedFieldValue
+                                        thisCustom.Collection.Save()
+                                        ticketValuesChanged = True
+                                    End If
+                                ElseIf cRMLinkField.TSFieldName IsNot Nothing Then
+                                    Try
+                                        If (IsDBNull(updateTicket(0).Row(cRMLinkField.TSFieldName)) OrElse updateTicket(0).Row(cRMLinkField.TSFieldName) <> translatedFieldValue) And canBeUpdated Then
+                                            updateTicket(0).Row(cRMLinkField.TSFieldName) = translatedFieldValue
+                                            ticketValuesChanged = True
+                                        End If
+                                    Catch ex As Exception
+                                        'When a ticket view field is mapped an exception migth be thrown when looking for it in the Tickets table
+                                        'The following is to look for its reference field in the Tickets table (e.g. Severity ? TicketSeverityID) and the related value.
+                                        Dim ticketsTableRelatedValue As Integer? = Nothing
+                                        Dim ticketsTableRelatedFieldName As String = GetTicketsTableRelatedFieldName(cRMLinkField.TSFieldName, translatedFieldValue, ticketsTableRelatedValue)
+
+                                        If Not String.IsNullOrEmpty(ticketsTableRelatedFieldName) AndAlso Not ticketsTableRelatedValue Is Nothing Then
+                                            If IsDBNull(updateTicket(0).Row(ticketsTableRelatedFieldName)) OrElse updateTicket(0).Row(ticketsTableRelatedFieldName) <> ticketsTableRelatedValue Then
+                                                updateTicket(0).Row(ticketsTableRelatedFieldName) = ticketsTableRelatedValue
+                                                ticketValuesChanged = True
+                                            End If
+                                        End If
+                                    End Try
+                                End If
+                            Catch mappingException As Exception
+                                AddLog("The following exception was caught mapping the ticket field """ &
+                                        field.Key &
+                                        """ with """ &
+                                        cRMLinkField.TSFieldName &
+                                        """: " &
+                                        mappingException.Message &
+                                        " " & mappingException.StackTrace)
+                            End Try
+                        Else
+                            Select Case field.Key.Trim().ToLower()
+                                Case "workitemtype"
+                                    Dim currentType As TicketType = allTypes.FindByTicketTypeID(updateTicket(0).TicketTypeID)
+                                    Dim newType As TicketType = allTypes.FindByName(value)
+                                    Dim updateType As Boolean = CRMLinkRow.UpdateTicketType
+
+                                    If updateType AndAlso newType IsNot Nothing AndAlso newType.TicketTypeID <> currentType.TicketTypeID Then
+                                        updateTicket(0).TicketTypeID = newType.TicketTypeID
+                                        ticketValuesChanged = True
+                                    End If
+                                Case "project"
+                                    Dim allProducts As Products = New Products(User)
+                                    allProducts.LoadByOrganizationID(CRMLinkRow.OrganizationID)
+                                    Dim newProduct As Product = allProducts.FindByName(value)
+
+                                    If newProduct IsNot Nothing Then
+                                        If updateTicket(0).ProductID IsNot Nothing Then
+                                            If newProduct.ProductID <> updateTicket(0).ProductID Then
+                                                updateTicket(0).ProductID = newProduct.ProductID
+                                                ticketValuesChanged = True
+                                            End If
+                                        Else
+                                            updateTicket(0).ProductID = newProduct.ProductID
+                                            ticketValuesChanged = True
+                                        End If
+                                    End If
+                                Case "state"
+                                    Dim currentStatus As TicketStatus = allStatuses.FindByTicketStatusID(updateTicket(0).TicketStatusID)
+                                    Dim newStatus As TicketStatus = allStatuses.FindByName(value, updateTicket(0).TicketTypeID)
+                                    Dim isCurrentStatusExcluded As Boolean = False
+
+                                    If (Not String.IsNullOrEmpty(CRMLinkRow.ExcludedTicketStatusUpdate)) Then
+                                        Dim exclusionStatusList As List(Of Integer) = New List(Of Integer)
+
+                                        For Each statusExcluded As String In CRMLinkRow.ExcludedTicketStatusUpdate.Split(",")
+                                            exclusionStatusList.Add(CInt(statusExcluded))
+                                        Next
+
+                                        isCurrentStatusExcluded = exclusionStatusList.Where(Function(p) p = currentStatus.TicketStatusID).Any()
+                                    End If
+
+                                    If CRMLinkRow.UpdateStatus _
+                                    AndAlso newStatus IsNot Nothing _
+                                    AndAlso newStatus.TicketStatusID <> currentStatus.TicketStatusID _
+                                    AndAlso Not isCurrentStatusExcluded Then
+                                        updateTicket(0).TicketStatusID = newStatus.TicketStatusID
+                                        ticketValuesChanged = True
+                                    ElseIf Not CRMLinkRow.UpdateStatus Then
+                                        If ticketLinkToTFSItem IsNot Nothing AndAlso (ticketLinkToTFSItem.TFSState Is Nothing OrElse ticketLinkToTFSItem.TFSState <> value) Then
+                                            Dim fromStatement As String = String.Empty
+
+                                            If ticketLinkToTFSItem.TFSState IsNot Nothing Then
+                                                fromStatement = " from """ + ticketLinkToTFSItem.TFSState + """"
+                                            End If
+
+                                            Dim newAction As Actions = New Actions(User)
+                                            newAction.AddNewAction()
+                                            newAction(0).ActionTypeID = newActionsTypeID
+                                            newAction(0).TicketID = updateTicket(0).TicketID
+                                            newAction(0).Description = "TFS' Work Item " + workItem("title").ToString() + "'s state changed" + fromStatement + " to """ + value + """."
+
+                                            Dim actionLinkToTFS As ActionLinkToTFS = New ActionLinkToTFS(User)
+                                            Dim actionLinkToTFSItem As ActionLinkToTFSItem = ActionLinkToTFS.AddNewActionLinkToTFSItem()
+
+                                            actionLinkToTFSItem.TFSID = -1
+                                            actionLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow()
+                                            newAction.Save()
+                                            actionLinkToTFSItem.ActionID = newAction(0).ActionID
+                                            actionLinkToTFS.Save()
+                                            ticketValuesChanged = True
+                                        End If
+                                    End If
+
+                                    If (ticketLinkToTFSItem.TFSState.ToLower().Trim() <> value.ToLower().Trim()) Then
+                                        ticketLinkToTFSItem.TFSState = value
+                                        workItemStateChangedNotUpdatedInTicket = True
+                                    End If
+                            End Select
+                        End If
+                    Next
+
+                    If ticketValuesChanged Then
+                        ticketLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow
+                        updateTicket.Save()
+                        ticketLinkToTFSItem.Collection.Save()
+
+                        Dim actionLogDescription As String = "Updated Ticket with TFS Work Item Title: '" + workItem("title").ToString() + "' changes."
+                        ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, updateTicket(0).TicketID, actionLogDescription)
+                    Else
+                        AddLog("ticketID: " + updateTicket(0).TicketID.ToString() + " values were not updated because have not changed.")
+
+                        If workItemStateChangedNotUpdatedInTicket Then
+                            ticketLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow
+                            ticketLinkToTFSItem.Collection.Save()
+                            AddLog("The ticket status in the TicketLinkToTFS was updated because it changed but was not updated in TeamSupport because either it is setup to be excluded or it does not exist. TFS State:" + ticketLinkToTFSItem.TFSState)
+                        End If
+                    End If
+                Else
+                    AddLog("Ticket with ID: """ + ticketID.ToString() + """ was not found to be updated.")
+                End If
+            End Sub
+
+            Private Function GetFieldValue(ByVal field As KeyValuePair(Of String, JToken)) As String
+                Dim result As String = Nothing
+
+                'If field.Key.ToString().ToLower().Contains("customfield") = True Then
+                '    If field.Value.HasValues AndAlso TypeOf (field.Value) Is JObject Then
+                '        result = field.Value("value").ToString()
+                '    ElseIf field.Value.HasValues AndAlso TypeOf (field.Value) Is JArray Then
+                '        Try
+                '            Dim fieldValue = field.Value(0).ToString()
+                '            Dim fieldValueDictionary = fieldValue.Split(","c).Select(Function(kvp) kvp.Split("="c)).ToDictionary(
+                '                                                                                                    Function(kvp) kvp(0),
+                '                                                                                                    Function(kvp) kvp(1))
+
+                '            If (fieldValueDictionary.Where(Function(p) p.Key.ToLower() = "name").Any()) Then
+                '                result = fieldValueDictionary.Where(Function(p) p.Key.ToLower() = "name").Select(Function(p) p.Value).FirstOrDefault()
+                '            Else
+                '                result = field.Value.ToString()
+                '            End If
+                '        Catch ex As Exception
+                '            Try
+                '                'ToDo //vv This probably is a multiselect jira field. For now we are only taking the first value. We need to handle those fields correctly
+                '                result = field.Value(0)("value").ToString()
+                '            Catch innerEx As Exception
+                '                AddLog(String.Format("Unhandled Jira field type {0} with value: {1}{2}", field.Key.ToString(), Environment.NewLine, field.Value(0).ToString()))
+                '            End Try
+
+                '        End Try
+
+                '    Else
+                '        result = field.Value.ToString()
+                '    End If
+
+                '    If result.ToLower() = "yes" Then
+                '        result = "True"
+                '    ElseIf result.ToLower() = "no" Then
+                '        result = "False"
+                '    End If
+                'Else
+                '    Select Case field.Key.ToString().ToLower()
+                '        Case "aggregatetimeestimate",
+                '    "aggregatetimeoriginalestimate",
+                '    "aggregatetimespent",
+                '    "created",
+                '    "description",
+                '    "duedate",
+                '    "environment",
+                '    "lastviewed",
+                '    "resolutiondate",
+                '    "summary",
+                '    "updated",
+                '    "workratio",
+                '    "timeestimate",
+                '    "timeoriginalestimate",
+                '    "timespent"
+                '            result = field.Value.ToString()
+                '        Case "assignee"
+                '            'Because some orgs are mapping to the Assignee Jira field and they seem to be storing the email address then we need to leave it here, for the rest we should use the Name so it also links from TS to Jira when creating the issue
+                '            If (CRMLinkRow.OrganizationID = 461956 OrElse CRMLinkRow.OrganizationID = 869700 OrElse CRMLinkRow.OrganizationID = 884116) Then
+                '                result = field.Value("emailAddress").ToString()
+                '            Else
+                '                result = field.Value("name").ToString()
+                '            End If
+                '        Case "reporter"
+                '            'Because some orgs are mapping to the Assignee Jira field and they seem to be storing the email address then we need to leave it here, for the rest we should use the Name so it also links from TS to Jira when creating the issue
+                '            If (CRMLinkRow.OrganizationID = 930653 OrElse CRMLinkRow.OrganizationID = 1028984 OrElse CRMLinkRow.OrganizationID = 1136748 OrElse CRMLinkRow.OrganizationID = 995322) Then
+                '                result = field.Value("emailAddress").ToString()
+                '            Else
+                '                result = field.Value("name").ToString()
+                '            End If
+                '        Case "issuetype", "status", "priority", "resolution"
+                '            result = field.Value("name").ToString()
+                '        Case "progress", "worklog"
+                '            result = field.Value("total").ToString()
+                '        Case "project"
+                '            result = field.Value("key").ToString()
+                '        Case "votes"
+                '            result = field.Value("votes").ToString()
+                '        Case "watches"
+                '            result = field.Value("watchCount").ToString()
+                '        Case "timetracking"
+                '            result = field.Value("timeSpentSeconds").ToString()
+                '        Case "aggregrateprogress"
+                '            result = field.Value("progress").ToString()
+                '        Case "attachment"
+                '            Dim attachmentsArray As JArray = DirectCast(field.Value, JArray)
+                '            Dim resultBuilder As StringBuilder = New StringBuilder()
+                '            Dim preffix = String.Empty
+
+                '            For i = 0 To attachmentsArray.Count - 1
+                '                resultBuilder.Append(preffix)
+                '                resultBuilder.Append(attachmentsArray(i)("content").ToString())
+
+                '                If preffix = String.Empty Then
+                '                    preffix = ", "
+                '                End If
+                '            Next
+
+                '            result = resultBuilder.ToString()
+                '        Case "labels"
+                '            Dim labelsArray As JArray = DirectCast(field.Value, JArray)
+                '            Dim resultBuilder As StringBuilder = New StringBuilder()
+                '            Dim preffix = String.Empty
+
+                '            For i = 0 To labelsArray.Count - 1
+                '                resultBuilder.Append(preffix)
+                '                resultBuilder.Append(labelsArray(i).ToString())
+
+                '                If preffix = String.Empty Then
+                '                    preffix = ", "
+                '                End If
+                '            Next
+
+                '            result = resultBuilder.ToString()
+                '        Case "issuelinks"
+                '            Dim issuelinksArray As JArray = DirectCast(field.Value, JArray)
+                '            Dim resultBuilder As StringBuilder = New StringBuilder()
+                '            Dim preffix = String.Empty
+
+                '            For i = 0 To issuelinksArray.Count - 1
+                '                resultBuilder.Append(preffix)
+
+                '                If issuelinksArray(i)("outwardIssue") IsNot Nothing Then
+                '                    resultBuilder.Append(issuelinksArray(i)("outwardIssue")("key").ToString())
+                '                Else
+                '                    resultBuilder.Append(issuelinksArray(i)("inwardIssue")("key").ToString())
+                '                End If
+
+                '                If preffix = String.Empty Then
+                '                    preffix = ", "
+                '                End If
+                '            Next
+
+                '            result = resultBuilder.ToString()
+                '        Case "versions", "fixversions"
+                '            Dim versionsArray As JArray = DirectCast(field.Value, JArray)
+                '            Dim resultBuilder As StringBuilder = New StringBuilder()
+                '            Dim preffix = String.Empty
+
+                '            For i = 0 To versionsArray.Count - 1
+                '                resultBuilder.Append(preffix)
+
+                '                Try
+                '                    resultBuilder.Append(versionsArray(i)("name").ToString())
+                '                Catch ex As Exception
+                '                    resultBuilder.Append(versionsArray(i)("description").ToString())
+                '                End Try
+
+                '                If preffix = String.Empty Then
+                '                    preffix = ", "
+                '                End If
+                '            Next
+
+                '            result = resultBuilder.ToString()
+                '        Case "subtasks"
+                '            Dim subtasksArray As JArray = DirectCast(field.Value, JArray)
+                '            Dim resultBuilder As StringBuilder = New StringBuilder()
+                '            Dim preffix = String.Empty
+
+                '            For i = 0 To subtasksArray.Count - 1
+                '                resultBuilder.Append(preffix)
+                '                resultBuilder.Append(subtasksArray(i)("fields")("summary").ToString())
+
+                '                If preffix = String.Empty Then
+                '                    preffix = ", "
+                '                End If
+                '            Next
+
+                '            result = resultBuilder.ToString()
+                '        Case "components"
+                '            Dim componentsArray As JArray = DirectCast(field.Value, JArray)
+                '            Dim resultBuilder As StringBuilder = New StringBuilder()
+                '            Dim preffix = String.Empty
+
+                '            For i = 0 To componentsArray.Count - 1
+                '                resultBuilder.Append(preffix)
+                '                resultBuilder.Append(componentsArray(i)("name").ToString())
+
+                '                If preffix = String.Empty Then
+                '                    preffix = ", "
+                '                End If
+                '            Next
+
+                '            result = resultBuilder.ToString()
+                '    End Select
+                'End If
+
+                Return result
+            End Function
+
+            Private Function GetFieldNameByKey(ByVal fieldKey As String, ByVal workItemFields As JObject)
+                Dim result As StringBuilder = New StringBuilder()
+
+                If workItemFields IsNot Nothing Then
+                    For Each field As KeyValuePair(Of String, JToken) In workItemFields
+                        If field.Key IsNot Nothing AndAlso fieldKey = field.Key Then
+                            result.Append(field.Value("name").ToString())
+                            Exit For
+                        End If
+                    Next
+                End If
+
+                If result.Length = 0 Then
+                    result.Append(fieldKey)
+                End If
+
+                Return result.ToString()
+            End Function
+
+            Private Function GetTicketsTableRelatedFieldName(ByVal mappedFieldName As String, ByVal value As String, ByRef ticketsTableRelatedValue As Integer?)
+                Dim result As StringBuilder = New StringBuilder()
+                Select Case mappedFieldName
+                    'This is linked to issue product as long as status and type
+                    'Case "ProductName"
+                    '  result.Append("ProductID")
+                    '  Dim products As Products = New Products(User)
+                    '  products.LoadByProductName(CRMLinkRow.OrganizationID, value)
+                    '  If products.Count > 0 Then
+                    '    ticketsTableRelatedValue = products(0).ProductID
+                    '  End If
+                    Case "GroupName"
+                        result.Append("GroupID")
+                        Dim groups As Groups = New Groups(User)
+                        groups.LoadByGroupName(CRMLinkRow.OrganizationID, value, 1)
+                        If groups.Count > 0 Then
+                            ticketsTableRelatedValue = groups(0).GroupID
+                        End If
+                    Case "UserName"
+                        result.Append("UserID")
+                        Dim givenUser As Users = New Users(User)
+                        givenUser.LoadByName(value, CRMLinkRow.OrganizationID, False, False, False)
+                        If givenUser.Count > 0 Then
+                            ticketsTableRelatedValue = givenUser(0).UserID
+                        End If
+                    Case "Severity"
+                        result.Append("TicketSeverityID")
+                        Dim severity As TicketSeverities = New TicketSeverities(User)
+                        severity.LoadByName(CRMLinkRow.OrganizationID, value)
+                        If severity.Count > 0 Then
+                            ticketsTableRelatedValue = severity(0).TicketSeverityID
+                        End If
+                End Select
+                Return result.ToString()
             End Function
         End Class
     End Namespace
