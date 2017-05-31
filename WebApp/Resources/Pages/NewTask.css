@@ -130,7 +130,7 @@ float: left;
 .main-quick-ticket, .company-search, .user-search, .insert-ticket, .group-search, .product-search {width:200px}
 
 .ts-color-bg-accent, .ui-widget-content.ts-color-bg-accent {
-    background-color: #D5E5F7; 
+    background-color: #EEEEEE; 
     background-image: none;
 }
 

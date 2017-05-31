@@ -18,7 +18,7 @@
   <style type="text/css">
 
 
-    #pane-filters h1 {color:#15428B;  background: #DEECFF; margin: 0 0 5px 0; padding: 10px 20px; font-size: 1.2em; border-bottom:1px solid #8BAAD9; line-height:20px; clear:left;}
+    #pane-filters h1 {color:#15428B;  background: #EEEEEE; margin: 0 0 5px 0; padding: 10px 20px; font-size: 1.2em; border-bottom:1px solid #8BAAD9; line-height:20px; clear:left;}
     #pane-filters h1 span.tag-edit { float:right; width: 200px; text-align:right;}
     #pane-filters h1 a, #pane-filters h1 a:link, #pane-filters h1 a:active, #pane-filters h1 a:visited { color:#15428B; text-decoration:underline;  font-weight:normal; line-height:20px;}
     #pane-filters h1 a:hover { background:#15428B; color:#fff;}
@@ -35,8 +35,8 @@
     #tickets .ui-helper-clearfix { height: 1px; clear:both;}
     
     #container-main { height: 100%; min-width: 400px; }
-    #pane-header { background: #DEECFF; } 
-    #pane-filters { background: #F0F6FF;  } 
+    #pane-header { background: #EEEEEE; } 
+    #pane-filters { background: #EEEEEE;  } 
     #filters {overflow-y:auto; overflow-x:hidden; height:100%; width:100%; }
     #tags { width: 90%; margin:0 auto;}
     #tags dl { line-height: 20px;}

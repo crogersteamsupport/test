@@ -85,7 +85,7 @@ li {
 }
 
 .breadcrumb {
-  background-color:#D5E5F7;
+  background-color:#EEEEEE;
   margin-bottom: -15px;
   font-size: medium !important;
   margin-top: 5px;
@@ -145,7 +145,7 @@ img {
     display:none;
     text-indent:-9999px;
     background: url('../Images/icons/icon_top.png') no-repeat;
-    border-color: #D5E5F7;
+    border-color: #EEEEEE;
     outline-style:none !important;
 }
 
