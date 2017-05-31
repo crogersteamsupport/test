@@ -2070,7 +2070,7 @@ Namespace TeamSupport
 
                 If comment("visibility") Is Nothing Then
                     If comment("body").ToString().Length < 20 OrElse comment("body").ToString().Substring(0, 20) <> "TeamSupport ticket #" Then
-                        Dim pulledComment As ActionLinkToTFSItem = ticketActionsLinked.FindByJiraID(CType(comment("id").ToString(), Integer?))
+                        Dim pulledComment As ActionLinkToTFSItem = ticketActionsLinked.FindByTFSID(CType(comment("id").ToString(), Integer?))
                         If pulledComment Is Nothing Then
                             result = True
                         End If
