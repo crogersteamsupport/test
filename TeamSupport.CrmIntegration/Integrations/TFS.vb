@@ -1219,7 +1219,7 @@ Namespace TeamSupport
 
                                 body = New StringBuilder()
                                 body.Append(BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition, actionToPushAsComment.CreatorID))
-                                'Dim commentUpdated As Comment = jiraClient.UpdateComment(issueRef, ActionLinkToJiraItem.JiraID, body.ToString())
+                                'Dim commentUpdated As Comment = jiraClient.UpdateComment(issueRef, ActionLinkToTFSItem.JiraID, body.ToString())
 
                                 actionLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow
                                 Log.Write("updated comment for actionID: " + actionToPushAsComment.ActionID.ToString())
@@ -1500,10 +1500,10 @@ Namespace TeamSupport
                             End Try
 
                             If newComments Is Nothing Then
-                                'newComments = GetNewComments(issuesToPullAsTickets(i)("fields")("comment"), ticketID)
+                                newComments = GetNewComments(workItemsToPullAsTickets(i)("fields")("comment"), ticketID)
                             End If
 
-                            'AddNewCommentsInTicket(ticketID, newComments, newActionsTypeID, crmLinkActionErrors)
+                            AddNewCommentsInTicket(ticketID, newComments, newActionsTypeID, crmLinkActionErrors)
                         ElseIf updateTicket.Count > 0 Then
                             AddLog("Ticket with ID: """ + ticketID.ToString() + """ belongs to a different organization and was not updated.")
                         Else
@@ -2011,6 +2011,100 @@ Namespace TeamSupport
                 End Select
                 Return result.ToString()
             End Function
+
+            Private Function GetNewComments(ByVal comments As JObject, ByVal ticketID As Integer) As JArray
+                Dim result As JArray = New JArray()
+
+                Dim ticketActionsLinked As ActionLinkToTFS = New ActionLinkToTFS(User)
+                ticketActionsLinked.LoadByTicketID(ticketID)
+
+                For i = 0 To comments("comments").Count - 1
+                    If GetIsNewComment(comments("comments")(i), ticketActionsLinked) Then
+                        result.Add(comments("comments")(i))
+                    End If
+                Next
+                Return result
+            End Function
+
+            Private Function GetIsNewComment(ByVal comment As JObject, ByVal ticketActionsLinked As ActionLinkToTFS) As Boolean
+                Dim result As Boolean = False
+
+                If comment("visibility") Is Nothing Then
+                    If comment("body").ToString().Length < 20 OrElse comment("body").ToString().Substring(0, 20) <> "TeamSupport ticket #" Then
+                        Dim pulledComment As ActionLinkToTFSItem = ticketActionsLinked.FindByJiraID(CType(comment("id").ToString(), Integer?))
+                        If pulledComment Is Nothing Then
+                            result = True
+                        End If
+                    End If
+                End If
+
+                Return result
+            End Function
+
+            Private Sub AddNewCommentsInTicket(ByVal ticketID As Integer, ByRef newComments As JArray, ByVal newActionsTypeID As Integer, ByRef crmLinkActionErrors As CRMLinkErrors)
+                Dim crmLinkError As CRMLinkError = Nothing
+
+                For i = 0 To newComments.Count - 1
+                    crmLinkError = crmLinkActionErrors.FindByObjectIDAndFieldName(newComments(i)("id").ToString(), String.Empty)
+
+                    Try
+                        Dim updateActions As Actions = New Actions(User)
+                        updateActions.AddNewAction()
+                        updateActions(0).TicketID = ticketID
+                        updateActions(0).ActionTypeID = newActionsTypeID
+
+                        Dim commentDescription = newComments(i)("body").ToString()
+                        Dim firstLine As String = "<p><em>Comment added in TFS {0}{1}</em></p> <p>&nbsp;</p>"
+                        Dim author As String = String.Empty
+
+                        Try
+                            author = newComments(i)("author")("displayName").ToString()
+                        Catch ex As Exception
+                            AddLog("The author displayName was not found for the comment.")
+                        End Try
+
+                        Dim addedOnTFSString As String = String.Empty
+
+                        Try
+                            Dim addedOnTFS As Date = Convert.ToDateTime(newComments(i)("created"))
+
+                            If (DateDiff(DateInterval.Day, Today.Date, addedOnTFS.Date) <> 0) Then
+                                addedOnTFSString = addedOnTFS.ToString()
+                            End If
+                        Catch ex As Exception
+                            AddLog("The created date was not found for the comment.")
+                        End Try
+
+                        firstLine = String.Format(firstLine,
+                                                If(String.IsNullOrEmpty(author), "", "by " + author),
+                                                If(String.IsNullOrEmpty(addedOnTFSString), "", " on " + addedOnTFSString))
+                        Dim TFSCommentId = CType(newComments(i)("id").ToString(), Integer)
+                        commentDescription = firstLine + commentDescription
+                        updateActions(0).Description = commentDescription
+                        updateActions.ActionLogInstantMessage = "TFS Comment ID: " + TFSCommentId.ToString() + " Created In TeamSupport Action "
+                        Dim actionLinkToTFS As ActionLinkToTFS = New ActionLinkToTFS(User)
+                        Dim actionLinkToTFSItem As ActionLinkToTFSItem = actionLinkToTFS.AddNewActionLinkToTFSItem()
+                        actionLinkToTFSItem.TFSID = TFSCommentId
+                        actionLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow
+                        updateActions.Save()
+                        actionLinkToTFSItem.ActionID = updateActions(0).ActionID
+                        actionLinkToTFS.Save()
+
+                        ClearCrmLinkError(crmLinkError)
+                    Catch ex As Exception
+                        AddLog(ex.ToString() + ex.StackTrace,
+                            LogType.TextAndReport,
+                            crmLinkError,
+                            ex.Message,
+                            Orientation.IntoTeamSupport,
+                            ObjectType.Action,
+                            newComments(i)("id").ToString(),
+                            String.Empty,
+                            newComments(i)("body").ToString(),
+                            OperationType.Create)
+                    End Try
+                Next
+            End Sub
         End Class
     End Namespace
 End Namespace
