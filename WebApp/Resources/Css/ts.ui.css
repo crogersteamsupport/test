@@ -70,7 +70,7 @@ pre {border: 1px solid #92B4DE; margin: 1em 0; padding: .5em .5em; font-family:c
 .ui-button .ui-button-text-only, .ui-button-text-only .ui-button-text { line-height: 2em !important; padding: 0 .4em !important; }
 .ui-button, .ui-widget .ui-button{ font-weight:normal; padding:0; }
 label.checkbox { vertical-align: middle; margin: 0px; top:0; font-weight:bold; display:inline; }    
-input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; width: auto;}
+input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; width:auto;}
 
 /*
 .label { padding: 0 0 .2em 0; display:block; font-size:1em; font-weight:bold; }
@@ -78,6 +78,7 @@ input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; wi
 .label { font-weight:bold; display:block; margin: .5em 0 .25em 0; white-space:nowrap; }
 .label-block { float:left; margin: 1em 1em 0 1em; display:inline; min-height: 4em;}
 */
+
 .label { font-weight:bold; display:block; margin-bottom: .25em; white-space:nowrap; }
 .label-block { float:left; margin: .25em .25em .25em 0; padding: .25em .25em; display:inline; height: 40px; border: 1px solid transparent; }
 .label-block-nofloat {float: none; display: block; clear:both;}
