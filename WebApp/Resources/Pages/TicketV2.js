@@ -5145,7 +5145,7 @@ function CreateTicketToolbarDomEvents() {
         e.preventDefault();
         e.stopPropagation();
         window.parent.Ts.System.logAction('Ticket - Printed');
-        window.open('../../../TicketPrint.aspx?ticketid=' + _ticketID, 'TSPrint' + _ticketID);
+        window.open(window.parent.Ts.System.AppDomain + '/TicketPrint.aspx?ticketid=' + _ticketID, 'TSPrint' + _ticketID);
     });
 
     $('#Ticket-Email').click(function (e) {
