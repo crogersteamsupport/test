@@ -30,10 +30,10 @@ namespace TeamSupport.Data
 					AND tfs.CrmLinkID = @CrmLinkId
 					AND 
 					(
-						tfs.DateModifiedByJiraTFS IS NULL
+						tfs.DateModifiedByTFSSync IS NULL
 						OR 
 						(
-							tfs.DateModified > DATEADD(s, 2, tfs.DateModifiedByJiraTFS)
+							t.DateModified > DATEADD(s, 2, tfs.DateModifiedByTFSSync)
 							AND t.DateModified > @DateModified
 						)
 					)
