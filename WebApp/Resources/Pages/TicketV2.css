@@ -92,7 +92,7 @@
         display: none;
         text-indent: -9999px;
         background: url('../Images/icons/icon_top.png') no-repeat;
-        border-color: #D5E5F7;
+        border-color: #EEEEEE;
         outline-style: none !important;
         z-index:100;
     }
@@ -356,7 +356,7 @@
   width: 16px;
 }
 .ts-color-bg-accent, .ui-widget-content.ts-color-bg-accent {
-  background-color: #D5E5F7;
+  background-color: #EEEEEE;
   background-image: none;
 }
 

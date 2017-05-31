@@ -44,7 +44,7 @@ input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; wi
 .ts-content { background-image:none; border:none; overflow:auto; background-color: #EDF4FC;} 
 */
 .ui-widget-content a.ts-link { border: none; background:none; cursor: pointer;}
-.ts-color-bg-accent, .ui-widget-content.ts-color-bg-accent { background-color:#D5E5F7; /* #E3EEFC;*/ background-image: none;}
+.ts-color-bg-accent, .ui-widget-content.ts-color-bg-accent { background-color:#EEEEEE; /* #E3EEFC;*/ background-image: none;}
 .ui-widget-content.ts-separator { height: 1px; border-bottom: none; border-left:none; border-right:none; margin-bottom: .5em; clear:both; }
 
 /* Old, but used in automation admin */
