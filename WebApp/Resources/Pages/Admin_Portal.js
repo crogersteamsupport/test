@@ -211,19 +211,18 @@ AdminPortal = function () {
         for (var i = 0; i < products.length; i++) {
             $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]).appendTo('#com_cat_product');
         }
-        $('#com_cat_product').combobox({ selected: function (e, ui) { $('.com-cat-save-panel').show(); } });	  
+        $('#com_cat_product').combobox({ selected: function (e, ui) { $('.com-cat-save-panel').show(); } });
 
         if (parent.parent.Ts.System.Organization.UseProductFamilies == true) {
             $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#kb_cat_productfamily');
             $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#com_cat_productfamily');
-            parent.parent.Ts.Cache.getProductFamilies(function (productFamilies) {
-                for (var i = 0; i < productFamilies.length; i++) {
-                    $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#kb_cat_productfamily');
-                    $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#com_cat_productfamily');
-                }
-                $('#kb_cat_productfamily').combobox({ selected: function (e, ui) { $('.kb-cat-save-panel').show(); } });
-                $('#com_cat_productfamily').combobox({ selected: function (e, ui) { $('.com-cat-save-panel').show(); } });
-            });
+            productFamilies = parent.parent.Ts.Cache.getProductFamilies();
+            for (var i = 0; i < productFamilies.length; i++) {
+                $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#kb_cat_productfamily');
+                $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#com_cat_productfamily');
+            }
+            $('#kb_cat_productfamily').combobox({ selected: function (e, ui) { $('.kb-cat-save-panel').show(); } });
+            $('#com_cat_productfamily').combobox({ selected: function (e, ui) { $('.com-cat-save-panel').show(); } });
         }
     }
     $('#portal_theme').combobox({ selected: function (e, ui) { $('.portal-save-panel').show(); } });
@@ -470,7 +469,10 @@ AdminPortal = function () {
         $('#com_cat_tickettype').combobox('setValue', cat.TicketType == null ? -1 : cat.TicketType);
         $('#com_cat_group').combobox('setValue', cat.GroupID == null ? -1 : cat.GroupID);
         $('#com_cat_product').combobox('setValue', cat.ProductID == null ? -1 : cat.ProductID);
-        $('#com_cat_productfamily').combobox('setValue', cat.ProductFamilyID == null ? -1 : cat.ProductFamilyID);
+
+        if (parent.parent.Ts.System.Organization.UseProductFamilies) {
+            $('#com_cat_productfamily').combobox('setValue', cat.ProductFamilyID == null ? -1 : cat.ProductFamilyID);
+        }
 
         if (cat.ParentID < 0) {
             $('.com-delete-cat').text('Delete this category and all its subcategories');
@@ -692,7 +694,9 @@ AdminPortal = function () {
         $('#kb_cat_name').val(cat.CategoryName);
         $('#kb_cat_description').val(cat.CategoryDesc);
         $('#kb_cat_visible').prop('checked', cat.VisibleOnPortal);
-        $('#kb_cat_productfamily').combobox('setValue', cat.ProductFamilyID == null ? -1 : cat.ProductFamilyID)
+        if (parent.parent.Ts.System.Organization.UseProductFamilies){
+            $('#kb_cat_productfamily').combobox('setValue', cat.ProductFamilyID == null ? -1 : cat.ProductFamilyID)
+        }
 
         if (cat.ParentID < 0) {
             $('.kb-delete-cat').text('Delete this category and all its subcategories');

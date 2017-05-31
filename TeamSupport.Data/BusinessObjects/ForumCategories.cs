@@ -23,7 +23,7 @@ namespace TeamSupport.Data
 
                 if (productFamilyID != null)
                 {
-                    str.Append(" AND (ProductFamilyID = -1 OR ProductFamilyID = @ProductFamilyID)");
+                    str.Append(" AND (ProductFamilyID IS NULL OR ProductFamilyID = @ProductFamilyID)");
                     command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
                 }
                 str.Append(" ORDER BY Position");

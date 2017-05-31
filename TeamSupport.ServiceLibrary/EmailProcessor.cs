@@ -1332,7 +1332,7 @@ namespace TeamSupport.ServiceLibrary
             {
                 hubs.LoadByProductFamilyID(productFamilyID);
             }
-            if (hubs.IsEmpty == true)
+            if (hubs.IsEmpty)
             {
                 hubs.LoadByOrganizationID(organization.OrganizationID);
             }
@@ -1353,7 +1353,7 @@ namespace TeamSupport.ServiceLibrary
             {
                 hubs.LoadByProductFamilyID(productFamilyID);
             }
-            if (hubs.IsEmpty == true)
+            if (hubs.IsEmpty)
             {
                 hubs.LoadByOrganizationID(organization.OrganizationID);
             }
