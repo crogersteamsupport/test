@@ -1454,9 +1454,6 @@ Ts.Pages.Main.prototype = {
         this.MainTabs = new Ts.Ui.Tabs($('.main-tabs')[0], '.main-tab-content');
         var mainTabs = this.MainTabs;
 
-
-
-
         $('.main-info-close').click(function (e) {
             e.preventDefault();
             self.MainLayout.close('east');
@@ -2331,12 +2328,24 @@ function () { }, function (e) { console.log(e) });
             });
             // Let's check whether notification permissions have already been granted
         } else if (Notification.permission === "granted") {
-            ShowBrowserNotification(message);
+            var options = {
+                body: message,
+                icon: "https://app.teamsupport.com/images/icons/TeamSupportLogo16.png",
+                tag: ""
+            }
+            var notification = new Notification("TeamSupport", options);
+            notification.onshow = function () { setTimeout(function () { notification.close(); }, 5000) };
             // Otherwise, we need to ask the user for permission
         } else if (Notification.permission !== 'denied') {
             Notification.requestPermission(function (permission) {
                 if (Notification.permission === "granted") {
-                    ShowBrowserNotification(message);
+                    var options = {
+                        body: message,
+                        icon: "https://app.teamsupport.com/images/icons/TeamSupportLogo16.png",
+                        tag: ""
+                    }
+                    var notification = new Notification("TeamSupport", options);
+                    notification.onshow = function () { setTimeout(function () { notification.close(); }, 5000) };
                 } else {
                     $.pnotify({
                         title: title,
@@ -2349,6 +2358,7 @@ function () { }, function (e) { console.log(e) });
             });
         }
     }
+
 
 };
 
