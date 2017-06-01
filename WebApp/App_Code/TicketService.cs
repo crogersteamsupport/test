@@ -2552,9 +2552,8 @@ WHERE t.TicketID = @TicketID
             foreach (TeamSupport.Data.Action action in actions)
             {
                 action.Description = HtmlUtility.RemoveInvalidHtmlTags(action.Description);
-                // action.TicketClean = true;
             }
-            
+            actions.isAdminClean = true;
             actions.Save();
         }
 
