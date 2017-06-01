@@ -184,10 +184,8 @@ div.menutree-selected a {
     opacity:1 !important;
 }
 
-
-
 #main-menutree::-webkit-scrollbar {
-    width: 3px;
+    width: 5px;
     background-color: #33485e;
     opacity: 0.5;
 }

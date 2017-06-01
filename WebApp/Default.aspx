@@ -239,8 +239,8 @@
           <div class="main-header-right">
             <div class="main-header-menu">
             <ul>
-              <li class="menu-chatstatus"><a href="#"><span class="ts-icon"></span><span class="menu-chatstatus-text"></span></a></li>
-              <li class="menu-officestatus" style="margin-right:25px;"><img id="icon-office-status" src="" style="vertical-align:middle;"> <a href="#">Office Status</a></li>
+              <li class="menu-chatstatus" style="margin-right:25px;display:none;"><img id="icon-chatstatus" src="" style="vertical-align:middle;"> <a href="#">Chat Status</a></li>
+              <li class="menu-officestatus" style="margin-right:25px;"><img id="icon-officestatus" src="" style="vertical-align:middle;"> <a href="#">Office Status</a></li>
               <li class="menu-help" style="margin-right:25px;"><a href="#">Help</a></li>
               <li class="menu-signout"><a href="#"><span>Sign Out</span></a></li>
             </ul>

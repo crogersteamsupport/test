@@ -71,12 +71,10 @@ Ts.Pages.Main.prototype = {
                     //tmrChat = setInterval(getChatUpdates, chatInterval);
                     setupChatRequestUpdates();
                     $('.main-status-chat').removeClass('ui-state-disabled');
-                    $('.menu-chatstatus .ts-icon').addClass('ts-icon-chat-small');
-                    $('.menu-chatstatus-text').text('Customer Chat: Online');
+                    $('#icon-chatstatus').attr('src', '/vcr/1_9_0/Images/icon-online.png');
                 } else {
-                    $('.menu-chatstatus-text').text('Customer Chat: Offline');
-                    $('.menu-chatstatus .ts-icon').addClass('ts-icon-nochat-small');
                     $('.main-status-chat').addClass('ui-state-disabled');
+                    $('#icon-chatstatus').attr('src', '/vcr/1_9_0/Images/icon-offline.png');
                 }
             } else {
                 $('.menu-chatstatus').hide();
@@ -86,11 +84,11 @@ Ts.Pages.Main.prototype = {
             if (Ts.System.User.InOffice) {
                 $('.main-status-online').switchClass('ts-icon-offline', 'ts-icon-online', 0);
                 // $('.menu-officestatus .ts-icon').addClass('ts-icon-online-small');
-                $('#icon-office-status').attr('src', '/vcr/1_9_0/Images/icon-online.png');
+                $('#icon-officestatus').attr('src', '/vcr/1_9_0/Images/icon-online.png');
             } else {
                 $('.main-status-online').switchClass('ts-icon-online', 'ts-icon-offline', 0);
                 // $('.menu-officestatus .ts-icon').addClass('ts-icon-offline-small');
-                $('#icon-office-status').attr('src', '/vcr/1_9_0/Images/icon-offline.png');
+                $('#icon-officestatus').attr('src', '/vcr/1_9_0/Images/icon-offline.png');
             }
 
             var status = Ts.System.User.InOfficeComment === '' ? 'What is your status?' : Ts.System.User.InOfficeComment;
@@ -195,12 +193,10 @@ Ts.Pages.Main.prototype = {
                 if (Ts.System.ChatUserSettings.IsAvailable) {
                     //tmrChat = setInterval(getChatUpdates, chatInterval);
                     setupChatRequestUpdates();
-                    $('.menu-chatstatus .ts-icon').addClass('ts-icon-chat-small').removeClass('ts-icon-nochat-small');
-                    $('.menu-chatstatus-text').text('Customer Chat: Online');
+                    $('#icon-chatstatus').attr('src', '/vcr/1_9_0/Images/icon-online.png');
                 } else {
                     turnOffChatRequestUpdates();
-                    $('.menu-chatstatus .ts-icon').addClass('ts-icon-nochat-small').removeClass('ts-icon-chat-small');
-                    $('.menu-chatstatus-text').text('Customer Chat: Offline');
+                    $('#icon-chatstatus').attr('src', '/vcr/1_9_0/Images/icon-offline.png');
                 }
 
                 var element = $('.main-tab-content-item:visible');
@@ -226,11 +222,10 @@ Ts.Pages.Main.prototype = {
             e.stopPropagation();
             Ts.Services.Users.UpdateUserStatus(true, function () {
                 // $('.menu-officestatus .ts-icon').addClass('ts-icon-online-small').removeClass('ts-icon-offline-small');
-                $('#icon-office-status').attr('src', '/vcr/1_9_0/Images/icon-online.png');
+                $('#icon-officestatus').attr('src', '/vcr/1_9_0/Images/icon-online.png');
                 mainFrame.Ts.System.logAction('Main Page - Office Status Changed');
             });
             hidePopupMenus();
-
         });
 
         $('.menu-office-offline').click(function (e) {
@@ -238,7 +233,7 @@ Ts.Pages.Main.prototype = {
             e.stopPropagation();
             Ts.Services.Users.UpdateUserStatus(false, function () {
                 // $('.menu-officestatus .ts-icon').addClass('ts-icon-offline-small').removeClass('ts-icon-online-small');
-                $('#icon-office-status').attr('src', '/vcr/1_9_0/Images/icon-offline.png');
+                $('#icon-officestatus').attr('src', '/vcr/1_9_0/Images/icon-offline.png');
                 mainFrame.Ts.System.logAction('Main Page - Office Status Changed');
             });
             hidePopupMenus();
