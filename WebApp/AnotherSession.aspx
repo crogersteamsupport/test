@@ -10,7 +10,6 @@
         e.preventDefault();
         window.location = '.';
       });
-
     });
   </script>
 </asp:Content>

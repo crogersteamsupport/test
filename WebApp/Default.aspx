@@ -232,7 +232,7 @@
           <div class="main-header-content-wrapper">
             <div class="main-header-content">
               <div class="main-header-logo"><img class="main-company-logo" alt="company_logo" src="../vcr/1_9_0/Images/header_company_logo.png"/></div>
-              <div class="main-header-new-ticket btn-new-ticket"><img src="../vcr/1_9_0/Images/header_new_ticket.png"/></div>
+              <div class="main-header-new-ticket main-link-newticket"><img src="../vcr/1_9_0/Images/header_new_ticket.png"/></div>
               <div class="main-header-search"><input class="ui-corner-all ui-widget-content main-quick-ticket" type="text" /></div>
             </div>
           </div>
