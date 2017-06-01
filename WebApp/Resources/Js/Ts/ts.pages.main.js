@@ -689,23 +689,62 @@ Ts.Pages.Main.prototype = {
                     self.MainMenu.find('mniChat', 'chat').setIsHighlighted(true);
                     for (var i = 0; i < result.NewChatMessages.length; i++) {
                         $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
-                        $.jGrowl(result.NewChatMessages[i].Message, {
-                            life: 5000,
-                            theme: result.NewChatMessages[i].State,
-                            header: result.NewChatMessages[i].Title
-                        });
+
+                        // Let's check if the browser supports notifications
+                        if (!("Notification" in window)) {
+                            $.jGrowl(result.NewChatMessages[i].Message, {
+                                life: 5000,
+                                theme: result.NewChatMessages[i].State,
+                                header: result.NewChatMessages[i].Title
+                            });
+                        // Let's check whether notification permissions have already been granted
+                        } else if (Notification.permission === "granted") {
+                            ShowBrowserNotification(result.NewChatMessages[i].Message);
+                        // Otherwise, we need to ask the user for permission
+                        } else if (Notification.permission !== 'denied') {
+                            Notification.requestPermission(function (permission) {
+                                if (Notification.permission === "granted") {
+                                    ShowBrowserNotification(result.NewChatMessages[i].Message);
+                                } else {
+                                    $.jGrowl(result.NewChatMessages[i].Message, {
+                                        life: 5000,
+                                        theme: result.NewChatMessages[i].State,
+                                        header: result.NewChatMessages[i].Title
+                                    });
+                                }                                
+                            });
+                        }
                     }
                 }
 
                 for (var i = 0; i < result.NewChatRequests.length; i++) {
                     $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
-                    $.jGrowl(result.NewChatRequests[i].Message, {
-                        life: 5000,
-                        theme: result.NewChatRequests[i].State,
-                        header: result.NewChatRequests[i].Title
-                    });
-                }
 
+                    // Let's check if the browser supports notifications
+                    if (!("Notification" in window)) {
+                        $.jGrowl(result.NewChatRequests[i].Message, {
+                            life: 5000,
+                            theme: result.NewChatRequests[i].State,
+                            header: result.NewChatRequests[i].Title
+                        });
+                        // Let's check whether notification permissions have already been granted
+                    } else if (Notification.permission === "granted") {
+                        ShowBrowserNotification(result.NewChatRequests[i].Message);
+                        // Otherwise, we need to ask the user for permission
+                    } else if (Notification.permission !== 'denied') {
+                        Notification.requestPermission(function (permission) {
+                            if (Notification.permission === "granted") {
+                                ShowBrowserNotification(result.NewChatRequests[i].Message);
+                            } else {
+                                $.jGrowl(result.NewChatRequests[i].Message, {
+                                    life: 5000,
+                                    theme: result.NewChatRequests[i].State,
+                                    header: result.NewChatRequests[i].Title
+                                });
+                            }
+                        });
+                    }
+                }
 
                 lastChatMessageID = result.LastChatMessageID;
                 lastChatRequestID = result.LastChatRequestID;
@@ -751,11 +790,30 @@ Ts.Pages.Main.prototype = {
 
                         window.focus();
 
-                        $.jGrowl(data.message, {
-                            life: 5000,
-                            theme: data.theme,
-                            header: data.title
-                        });
+                        // Let's check if the browser supports notifications
+                        if (!("Notification" in window)) {
+                            $.jGrowl(data.message, {
+                                life: 5000,
+                                theme: data.theme,
+                                header: data.title
+                            });
+                        // Let's check whether notification permissions have already been granted
+                        } else if (Notification.permission === "granted") {
+                            ShowBrowserNotification(data.message);
+                        // Otherwise, we need to ask the user for permission
+                        } else if (Notification.permission !== 'denied') {
+                            Notification.requestPermission(function (permission) {
+                                if (Notification.permission === "granted") {
+                                    ShowBrowserNotification(data.message);
+                                } else {
+                                    $.jGrowl(data.message, {
+                                        life: 5000,
+                                        theme: data.theme,
+                                        header: data.title
+                                    });
+                                }
+                            });
+                        }
 
                         $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/chime.mp3" }).jPlayer("play", 0);
 
@@ -764,6 +822,16 @@ Ts.Pages.Main.prototype = {
                 });
 
             });
+        }
+
+        function ShowBrowserNotification(message) {
+            var options = {
+                body: message,
+                icon: "https://app.teamsupport.com/images/icons/TeamSupportLogo16.png",
+                tag: ""
+            }
+            var notification = new Notification("TeamSupport", options);
+            notification.onshow = function () { setTimeout(function () { notification.close(); }, 5000) };
         }
 
         function turnOffChatRequestUpdates() {
@@ -2249,18 +2317,37 @@ function () { }, function (e) { console.log(e) });
     },
 
     AppNotify: function (title, message, options) {
-
         if (options == null)
             options = "info";
 
-        $.pnotify({
-            title: title,
-            text: message,
-            type: options,
-            icon: 'ui-icon ui-icon-lightbulb',
-            sticker: false
-        });
-
+        // Let's check if the browser supports notifications
+        if (!("Notification" in window)) {
+            $.pnotify({
+                title: title,
+                text: message,
+                type: options,
+                icon: 'ui-icon ui-icon-lightbulb',
+                sticker: false
+            });
+            // Let's check whether notification permissions have already been granted
+        } else if (Notification.permission === "granted") {
+            ShowBrowserNotification(message);
+            // Otherwise, we need to ask the user for permission
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission(function (permission) {
+                if (Notification.permission === "granted") {
+                    ShowBrowserNotification(message);
+                } else {
+                    $.pnotify({
+                        title: title,
+                        text: message,
+                        type: options,
+                        icon: 'ui-icon ui-icon-lightbulb',
+                        sticker: false
+                    });
+                }
+            });
+        }
     }
 
 };
