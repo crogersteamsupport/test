@@ -2312,6 +2312,14 @@ function () { }, function (e) { console.log(e) });
         if (options == null)
             options = "info";
 
+        var self = this;
+        var TeamSupportLogo = "https://app.teamsupport.com/images/icons/TeamSupportLogo16.png";
+        var ticketNumber = "";
+
+        if (title.length > 0 && title.toLowerCase().indexOf("ticket ") == 0) {
+            ticketNumber = title.replace(/ticket /i, '');
+        }
+
         // Let's check if the browser supports notifications
         if (!("Notification" in window)) {
             $.pnotify({
@@ -2325,22 +2333,57 @@ function () { }, function (e) { console.log(e) });
         } else if (Notification.permission === "granted") {
             var options = {
                 body: message,
-                icon: "https://app.teamsupport.com/images/icons/TeamSupportLogo16.png",
-                tag: ""
+                icon: TeamSupportLogo,
+                iconUrl: TeamSupportLogo,
+                tag: title
             }
-            var notification = new Notification("TeamSupport", options);
-            notification.onshow = function () { setTimeout(function () { notification.close(); }, 5000) };
+
+            if (ticketNumber.length > 0) {
+                Ts.Services.Tickets.GetTicketName(ticketNumber, function (name) {
+                    title = title + ' - ' + name;
+
+                    var notification = new Notification(title, options);
+                    notification.onshow = function () { setTimeout(function () { notification.close(); }, 5000) };
+
+                    notification.onclick = function () {
+                        notification.close();
+                        self.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Ticket, ticketNumber, 'Ticket: ' + ticketNumber, true, true, false, null, null, null, name);
+                    };
+                });
+            } else {
+                var notification = new Notification(title, options);
+                notification.onshow = function () { setTimeout(function () { notification.close(); }, 5000) };
+            }
+            
             // Otherwise, we need to ask the user for permission
         } else if (Notification.permission !== 'denied') {
             Notification.requestPermission(function (permission) {
                 if (Notification.permission === "granted") {
                     var options = {
                         body: message,
-                        icon: "https://app.teamsupport.com/images/icons/TeamSupportLogo16.png",
-                        tag: ""
+                        icon: TeamSupportLogo,
+                        iconUrl: TeamSupportLogo,
+                        tag: title
                     }
-                    var notification = new Notification("TeamSupport", options);
-                    notification.onshow = function () { setTimeout(function () { notification.close(); }, 5000) };
+                    
+                    if (ticketNumber.length > 0) {
+                        Ts.Services.Tickets.GetTicketName(ticketNumber, function (name) {
+                            title = title + ' - ' + name;
+
+                            var notification = new Notification(title, options);
+                            notification.onshow = function () { setTimeout(function () { notification.close(); }, 5000) };
+
+                            notification.onclick = function () {
+                                notification.close();
+                                Ts.Services.Tickets.GetTicketName(ticketNumber, function (name) {
+                                    self.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Ticket, ticketNumber, 'Ticket: ' + ticketNumber, true, true, false, null, null, null, name);
+                                });
+                            };
+                        });
+                    } else {
+                        var notification = new Notification(title, options);
+                        notification.onshow = function () { setTimeout(function () { notification.close(); }, 5000) };
+                    }
                 } else {
                     $.pnotify({
                         title: title,
@@ -2353,7 +2396,6 @@ function () { }, function (e) { console.log(e) });
             });
         }
     }
-
 
 };
 
