@@ -233,16 +233,21 @@ body .ui-tooltip { border-width: 2px; }
 .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button { font-family:  Helvetica, Arial, sans-serif; font-size: 1em; }
 .ui-widget-content { border: 1px solid #dddddd; background: #fcfdfd url(images/ui-bg_inset-hard_100_fcfdfd_1x100.png) 50% bottom repeat-x; color: #373737; }
 .ui-widget-content a { color: #373737; }
-.ui-widget-header { border: 1px solid #92b4de; background: #c6dcf7 url(images/ui-bg_flat_100_c6dcf7_40x100.png) 50% 50% repeat-x; color: #154b8c; font-weight: bold; }
+.ui-widget-header {
+    border: 1px solid #2a3f54;
+    background-color: #2a3f54;
+    color: white;
+    font-weight: bold;
+}
 .ui-widget-header a { color: #154b8c; }
 
 /* Interaction states
 ----------------------------------*/
-.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default { border: 1px solid #9ebfe8; background: #c6dcf7 url(images/ui-bg_highlight-hard_100_c6dcf7_1x100.png) 50% 50% repeat-x; font-weight: normal; color: #0057c2; }
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {  font-weight: normal; color: #0057c2; }
 .ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited { color: #0057c2; text-decoration: none; }
-.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus { border: 1px solid #9ebfe8; background: #dceafc url(images/ui-bg_highlight-hard_100_dceafc_1x100.png) 50% 50% repeat-x; font-weight: normal; color: #154b8c; }
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {  font-weight: normal; color: #154b8c; }
 .ui-state-hover a, .ui-state-hover a:hover, .ui-state-hover a:link, .ui-state-hover a:visited { color: #154b8c; text-decoration: none; }
-.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active { border: 1px solid #fcd427; background: #fee67c url(images/ui-bg_highlight-hard_100_fee67c_1x100.png) 50% 50% repeat-x; font-weight: normal; color: #080807; }
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active { font-weight: normal; color: #080807; }
 .ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited { color: #080807; text-decoration: none; }
 
 /* Interaction Cues

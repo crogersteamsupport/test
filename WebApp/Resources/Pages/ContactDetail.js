@@ -1219,7 +1219,8 @@ $(document).ready(function () {
         });
     });
 
-    $('#btnSendNewPW').click(function (e) {
+    $('#hubPasswordResetList').on('click', 'a#btnSendNewPW', function (e) {
+        e.preventDefault();
         _mainFrame.Ts.System.logAction('Contact Detail - Send New Password');
         _mainFrame.Ts.Services.Customers.PasswordReset(userID, function (msg) {
             alert(msg);

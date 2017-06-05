@@ -18,6 +18,7 @@
   <link href="vcr/1_9_0/Css/jquery.ui.timepicker.css" rel="stylesheet" type="text/css" />
   <!--[if IE 7]><link href="vcr/1_9_0/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="vcr/1_9_0/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
   <link href="vcr/1_9_0/Css/ts.mainpage.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_9_0/Css/ts.ui.tabs.css" rel="stylesheet" type="text/css">
   <link href="vcr/1_9_0/Css/chat.css" rel="stylesheet" type="text/css" />
   <link href="vcr/1_9_0/Css/jquery.pnotify.default.icons.css" rel="stylesheet" />
   <link href="vcr/1_9_0/Css/jquery.pnotify.default.css" rel="stylesheet" />
@@ -36,6 +37,7 @@
   <script src="../js_5/imagepaste.js" type="text/javascript"></script>
   <script src="../js_5/jquery.Jcrop.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/aes.js" type="text/javascript"></script>
+
   <!-- Start Apptegic Code 
   <script type="text/javascript">
     var _aaq = _aaq || [];
@@ -229,23 +231,23 @@
         <div class="main-header-title">
           <div class="main-header-content-wrapper">
             <div class="main-header-content">
-              <img class="main-company-logo" alt="company_logo" src="../vcr/1_9_0/Images/header_company_logo.png"/>
-              <a class="main-header-new-ticket main-link-newticket" href="#"><span></span></a>
-              <input class="ui-corner-all ui-widget-content main-quick-ticket" type="text" />
+              <div class="main-header-logo"><img class="main-company-logo" alt="company_logo" src="../vcr/1_9_0/Images/header_company_logo.png"/></div>
+              <div class="main-header-new-ticket main-link-newticket"><img src="../vcr/1_9_0/Images/header_new_ticket.png"/></div>
+              <div class="main-header-search"><input class="ui-corner-all ui-widget-content main-quick-ticket" type="text" /></div>
             </div>
           </div>
           <div class="main-header-right">
             <div class="main-header-menu">
             <ul>
-              <li class="menu-chatstatus notlast"><a href="#"><span class="ts-icon"></span><span class="menu-chatstatus-text"></span></a></li>
-              <li class="menu-officestatus notlast"><a href="#"><span class="ts-icon"></span><span>Office Status</span><span class="ui-icon ui-icon-triangle-1-s"></span></a></li>
-              <li class="menu-help notlast"><a href="#"><span>Help</span><span class="ui-icon ui-icon-triangle-1-s"></span></a></li>
+              <li class="menu-chatstatus" style="margin-right:25px;display:none;"><img id="icon-chatstatus" src="" style="vertical-align:middle;"> <a href="#">Chat Status</a></li>
+              <li class="menu-officestatus" style="margin-right:25px;"><img id="icon-officestatus" src="" style="vertical-align:middle;"> <a href="#">Office Status</a></li>
+              <li class="menu-help" style="margin-right:25px;"><a href="#">Help</a></li>
               <li class="menu-signout"><a href="#"><span>Sign Out</span></a></li>
             </ul>
             </div>
           </div>
         </div>
-        <div class="main-tabs ui-widget-header"></div>
+        <div class="main-tabs header-tabs"></div>
       </div>
     </div>
     <div class="main-footer ui-widget-header">
@@ -264,8 +266,8 @@
       <div class="main-info-content">
       </div>
     </div>--%>
-    <div class="main-nav ui-widget-content ts-noborder">
-      <div class="main-menutree">
+    <div class="main-nav ts-noborder sidebar-container test" style="background-color: #33485e !important;">
+      <div id="main-menutree" class="main-menutree sidebar-container" style="background-color: #33485e !important;">
       </div>
     </div>
   </div>
@@ -507,8 +509,8 @@
 
   <div class="menu-popup menu-popup-officestatus ui-widget-content ui-widget ui-corner-bottom new-view-menu">
     <ul>
-      <li class="menu-office-online"><a class="ts-link ui-state-default" href="#"><span class="ts-icon ts-icon-online"></span><span>Available</span></a><div class="ts-clearfix"></div></li>
-      <li class="menu-office-offline"><a class=" ts-link ui-state-default" href="#"><span class="ts-icon ts-icon-offline"></span><span>Busy</span></a><div class="ts-clearfix"></div></li>
+      <li class="menu-office-online"><a class="ts-link ui-state-default" href="#"><img src="/vcr/1_9_0/Images/icon-online.png" style="vertical-align:middle;"> Available</a><div class="ts-clearfix"></div></li>
+      <li class="menu-office-offline"><a class=" ts-link ui-state-default" href="#"><img src="/vcr/1_9_0/Images/icon-offline.png" style="vertical-align:middle;"> Busy</a><div class="ts-clearfix"></div></li>
     </ul>
     <div class="ts-clearfix"></div>
     <div class="ts-separator ui-widget-content"></div>
