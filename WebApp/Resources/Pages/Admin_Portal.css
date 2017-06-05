@@ -93,7 +93,6 @@ form.positive-file-upload input, form.neutral-file-upload input, form.negative-f
 
 .hubName {
     width:146px;
-    display:inline-block;
     overflow-wrap: break-word;
     word-wrap: break-word;
 }

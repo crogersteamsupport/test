@@ -8,13 +8,38 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="vcr/1_9_0/Css/bootstrap3.min.css" rel="stylesheet" />
+    <script src="vcr/1_9_0/Js/jquery-latest.min.js"></script>
+    <script src="vcr/1_9_0/Js/bootstrap3.min.js"></script>
+
+     <script type="text/javascript" language="javascript">    
+        $(document).ready(function () {
+
+            $('.slack').click(function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                //$('.queries').html('');
+                var btn = $(this).button('loading')
+                PageMethods.AckSlack(function (result) {
+                    
+                    btn.button('reset');
+                });
+            });
+        });
+    </script>
+
     <title></title>
 </head>
 <body>
     <form id="form1" runat="server">
+                  <asp:ScriptManager ID="ScriptManagerMain"
+            runat="server"
+            EnablePageMethods="true" 
+            ScriptMode="Release" 
+            LoadScriptsBeforeUI="true">
+    </asp:ScriptManager>
         <div class="container">
             <div class="page-header">
-                <asp:Literal ID="litStatus" runat="server"></asp:Literal>
+                <asp:Literal ID="litStatus" runat="server"></asp:Literal> <button type="button" class="btn btn-primary slack" data-loading-text="Loading...">Acknowlege Issue on Slack</button>
             </div>
 
             <div class="page-header">
@@ -62,10 +87,5 @@
 
         </div>
     </form>
-    <script src="vcr/1_9_0/Js/bootstrap3.min.js"></script>
-    <script type="text/javascript" language="javascript">    
-        var list = document.getElementsByClassName("page-header")[0];
-        list.innerHTML = "Milk";
-    </script>
 </body>
 </html>

@@ -4,7 +4,7 @@
 }
 
 .tab-content {
-    background-color: #D5E5F7;
+    background-color: #EEEEEE;
     height: 88%;
 }
 
@@ -22,7 +22,7 @@
 }
 
     .user-container > li > .active {
-        background-color: #D5E5F7;
+        background-color: #EEEEEE;
     }
 
 .user-container i {

@@ -17,7 +17,8 @@ namespace TeamSupport.Data
 		{
 			using (SqlCommand command = new SqlCommand())
 			{
-				command.CommandText = "SELECT * FROM [CustomerHubs] WHERE OrganizationID = @OrganizationID";
+				command.CommandText = @"SELECT * FROM [CustomerHubs] WHERE OrganizationID = @OrganizationID 
+                    ORDER BY CASE WHEN ProductFamilyID IS NULL THEN 0 ELSE 1 END, PortalName";
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@OrganizationID", organizationID);
 				Fill(command);
@@ -38,6 +39,17 @@ namespace TeamSupport.Data
 			}
 		}
 
+        public void LoadByProductFamilyID(int productFamilyID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT * FROM [CustomerHubs] WHERE (ProductFamilyID = @ProductFamilyID AND IsActive = 1)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+                Fill(command);
+            }
+        }
+
         public void LoadByContactID(int userID)
         {
             using (SqlCommand command = new SqlCommand())
@@ -45,8 +57,8 @@ namespace TeamSupport.Data
                 command.CommandText = @"Select Distinct CH.*
                                         from dbo.users as U
                                         inner join dbo.Organizations as O on U.OrganizationID = O.OrganizationID
-                                        inner join dbo.OrganizationProducts as OP on U.OrganizationID = OP.OrganizationID
-                                        inner join dbo.Products as P on P.ProductID = OP.ProductID
+                                        left join dbo.OrganizationProducts as OP on U.OrganizationID = OP.OrganizationID
+                                        left join dbo.Products as P on P.ProductID = OP.ProductID
                                         inner join dbo.CustomerHubs as CH on O.ParentID = CH.OrganizationID
 	                                        and (P.ProductFamilyID = CH.ProductFamilyID OR CH.ProductFamilyID is Null)
                                         Where UserID = @UserID";

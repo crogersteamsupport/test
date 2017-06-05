@@ -145,13 +145,16 @@
                 column.isCustomField = repCol.IsCustomField;
                 var low = repCol.Name.toLowerCase().replace(/[_ ]/g, '');
                 if (repCol.DataType == "datetime") {
+                    column.formatter = dateTimeFormatter;
+                }
+                else if (repCol.DataType == "date") {
                     column.formatter = dateFormatter;
                 } else if (repCol.DataType == "float") {
                     column.formatter = floatFormatter;
                 } else if (repCol.DataType == "bit") {
                     column.formatter = bitFormatter;
                 } else if (repCol.IsEmail == true) {
-                  column.formatter = emailFormatter;
+                    column.formatter = emailFormatter;
                 } else if (repCol.IsLink == true) {
                     column.formatter = linkFormatter;
                 } else if (repCol.IsOpenable == true) {
@@ -161,7 +164,7 @@
                     column.formatter = ticketNumberFormatter;
                 } else if (low == 'companyname') {
                     column.formatter = companyFormatter;
-                } 
+                }
 
                 columns.push(column);
             }
@@ -334,10 +337,16 @@
 
     }
 
-    var dateFormatter = function (row, cell, value, columnDef, dataContext) {
+    var dateTimeFormatter = function (row, cell, value, columnDef, dataContext) {
     	console.log(_report.ReportType)
         var date = dataContext[columnDef.id];
         return date ? parent.Ts.Utils.getDateString(date, true, !(_report.ReportType == 4), _report.ReportType == 3) : '';
+    };
+
+    var dateFormatter = function (row, cell, value, columnDef, dataContext) {
+        console.log(_report.ReportType)
+        var date = dataContext[columnDef.id];
+        return date ? parent.Ts.Utils.getDateString(date, true, false, _report.ReportType == 3) : '';
     };
 
     var bitFormatter = function (row, cell, value, columnDef, dataContext) {

@@ -12,7 +12,6 @@ namespace TeamSupport.Data
 {
     public partial class Action
     {
-
         public Attachments GetAttachments()
         {
             Attachments attachments = new Attachments(BaseCollection.LoginUser);
@@ -109,7 +108,7 @@ namespace TeamSupport.Data
         private bool _updateChildTickets = true;
 
         private string _actionLogInstantMessage = null;
-
+        private bool _isAdminClean = false;
         public string ActionLogInstantMessage
         {
             get
@@ -119,6 +118,18 @@ namespace TeamSupport.Data
             set
             {
                 _actionLogInstantMessage = value;
+            }
+        }
+
+        public bool isAdminClean
+        {
+            get
+            {
+                return _isAdminClean;
+            }
+            set
+            {
+                _isAdminClean = value;
             }
         }
 
@@ -134,7 +145,7 @@ namespace TeamSupport.Data
             action.Description = HtmlUtility.FixScreenRFrame((action.Row["Description"] == DBNull.Value) ? string.Empty : action.Description);
             string actionNumber = GetActionNumber(action.TicketID, action.ActionID);
             string description = "Modified action #" + actionNumber + " on " + Tickets.GetTicketLink(LoginUser, action.TicketID);
-            if(!action.TicketClean)
+            if(!this.isAdminClean)
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, action.TicketID, description);
         }
 

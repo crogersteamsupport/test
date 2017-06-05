@@ -3569,7 +3569,7 @@ SELECT
                     }
                 }
 
-                total = aru.Count;
+                total = ratings.Count;
                 results.Add((int)Math.Round((negativeRating / total) * 100));
                 results.Add((int)Math.Round((neutralRating / total) * 100));
                 results.Add((int)Math.Round((positiveRating / total) * 100));

@@ -1978,109 +1978,6 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string SetTFSWorkItemTitle(int ticketID, string tfsWorkItemTitle)
-        {
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-            string result = SetSyncWithTFS(loginUser, ticketID, tfsWorkItemTitle);
-
-            return result;
-        }
-
-        [WebMethod]
-        public string SetSyncWithTFS(int ticketID)
-        {
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-            string result = SetSyncWithTFS(loginUser, ticketID, null);
-
-            return result;
-        }
-
-        [WebMethod]
-        public bool UnSetSyncWithTFS(int ticketID)
-        {
-            bool result = false;
-
-            try
-            {
-                CRMLinkTable crmlink = new CRMLinkTable(TSAuthentication.GetLoginUser());
-                crmlink.LoadByOrganizationIDAndCRMType(TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).OrganizationID, "TFS");
-
-                foreach (DataRow crmRow in crmlink.Table.Rows)
-                {
-                    //if (crmRow["CRMType"].ToString() == "TFS")
-                    //{
-                    TicketLinkToTFS linkToTFS = new TicketLinkToTFS(TSAuthentication.GetLoginUser());
-                    linkToTFS.LoadByTicketID(ticketID);
-
-                    TicketLinkToTFSItemProxy ticketLinktoTFSProxy = GetLinkToTFS(ticketID);
-                    int crmLinkId = int.Parse(crmRow["CRMLinkID"].ToString());
-
-                    if (ticketLinktoTFSProxy != null
-                        && linkToTFS.Count > 0
-                        && ticketLinktoTFSProxy.CrmLinkID == linkToTFS[0].CrmLinkID
-                        && crmLinkId == ticketLinktoTFSProxy.CrmLinkID)
-                    {
-                        if (ticketLinktoTFSProxy.TFSID != null && !String.IsNullOrEmpty(ticketLinktoTFSProxy.TFSTitle))
-                        {
-                            //try
-                            //{
-                            //    Jira.JiraClient jiraClient = new Jira.JiraClient(crmRow["HostName"].ToString(), crmRow["Username"].ToString(), crmRow["Password"].ToString());
-                            //    Jira.IssueRef issueRef = new Jira.IssueRef();
-                            //    issueRef.id = ticketLinktoJiraProxy.JiraID.ToString();
-                            //    issueRef.key = ticketLinktoJiraProxy.JiraKey;
-                            //    var issue = jiraClient.LoadIssue(issueRef);
-
-                            //    if (issue != null)
-                            //    {
-                            //        var remoteLinks = jiraClient.GetRemoteLinks(issueRef);
-
-                            //        if (null != remoteLinks)
-                            //        {
-                            //            Jira.RemoteLink linkItem = remoteLinks.Where(p => p.url.Contains("ticketid=" + ticketID.ToString())).FirstOrDefault();
-
-                            //            if (linkItem != null)
-                            //            {
-                            //                jiraClient.DeleteRemoteLink(issueRef, linkItem);
-                            //            }
-                            //        }
-                            //    }
-                            //}
-                            //catch (Jira.JiraClientException jiraException)
-                            //{
-                            //    if (jiraException.Message.ToLower().Trim() != "could not load issue" && !jiraException.InnerException.Message.ToLower().Trim().Contains("not found"))
-                            //    {
-                            //        jiraException.Data.Add("TicketId", ticketID);
-                            //        jiraException.Data.Add("JiraId", ticketLinktoJiraProxy.JiraID);
-                            //        jiraException.Data.Add("JiraKey", ticketLinktoJiraProxy.JiraKey);
-                            //        throw jiraException;
-                            //    }
-                            //}
-                            //catch (Exception ex)
-                            //{
-                            //    //Check if the exception is that the URI is invalid, if so then still delete the crmlink in TS, the customer might have deleted their instance settings, we still need to be able to delete the link in our side.
-                            //    if (!ex.Message.ToLower().Trim().Contains("invalid uri") && !ex.Message.ToLower().Trim().Contains("uri could not be determined"))
-                            //    {
-                            //        throw ex;
-                            //    }
-                            //}
-                        }
-
-                        linkToTFS.DeleteFromDB(ticketLinktoTFSProxy.id);
-                        result = true;
-                    }
-                    //}
-                }
-            }
-            catch (Exception ex)
-            {
-                result = false;
-                ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "UnSetSyncWithTFS");
-            }
-
-            return result;
-        }
-
-        [WebMethod]
         public bool Subscribe(int ticketID)
         {
             Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
@@ -2530,7 +2427,7 @@ namespace TSWebServices
             {
                 ChatClients clients = new ChatClients(TSAuthentication.GetLoginUser());
                 clients.LoadByChatClientID(chat.InitiatorID);
-
+                
                 if (clients != null && clients.Any() && !string.IsNullOrEmpty(clients[0].Email))
                 {
                     string emailDomain = clients[0].Email.Substring(clients[0].Email.LastIndexOf('@') + 1).Trim();
@@ -2655,9 +2552,8 @@ WHERE t.TicketID = @TicketID
             foreach (TeamSupport.Data.Action action in actions)
             {
                 action.Description = HtmlUtility.RemoveInvalidHtmlTags(action.Description);
-                // action.TicketClean = true;
             }
-
+            actions.isAdminClean = true;
             actions.Save();
         }
 
@@ -3064,7 +2960,6 @@ WHERE t.TicketID = @TicketID
 
             info.Actions = actionInfos.ToArray();
             info.LinkToJira = GetLinkToJira(ticket.TicketID);
-            info.LinkToTFS = GetLinkToTFS(ticket.TicketID);
 
             return info;
         }
@@ -4091,18 +3986,6 @@ WHERE t.TicketID = @TicketID
             return result;
         }
 
-        private TicketLinkToTFSItemProxy GetLinkToTFS(int ticketID)
-        {
-            TicketLinkToTFSItemProxy result = null;
-            TicketLinkToTFS linkToTFS = new TicketLinkToTFS(TSAuthentication.GetLoginUser());
-            linkToTFS.LoadByTicketID(ticketID);
-            if (linkToTFS.Count > 0)
-            {
-                result = linkToTFS[0].GetProxy();
-            }
-            return result;
-        }
-
         [WebMethod]
         public CustomValueProxy[] GetParentValues(int ticketID)
         {
@@ -4274,62 +4157,6 @@ WHERE t.TicketID = @TicketID
                     result.IsSuccessful = false;
                     result.Error = ex.Message;
                     ExceptionLogs.LogException(loginUser, ex, "SetJiraIssueKey");
-                }
-            }
-
-            return JsonConvert.SerializeObject(result);
-        }
-
-        private string SetSyncWithTFS(LoginUser loginUser, int ticketId, string TFSWorkItemTitle)
-        {
-            dynamic result = new ExpandoObject();
-
-            TicketLinkToTFS ticketLinkToTFS = new TicketLinkToTFS(loginUser);
-            ticketLinkToTFS.LoadByTicketID(ticketId);
-
-            if (ticketLinkToTFS.Count == 0)
-            {
-                try
-                {
-                    TicketLinkToTFSItem ticketLinkToTFSItem = ticketLinkToTFS.AddNewTicketLinkToTFSItem();
-                    ticketLinkToTFSItem.TicketID = ticketId;
-                    ticketLinkToTFSItem.TFSTitle = TFSWorkItemTitle;
-                    ticketLinkToTFSItem.SyncWithTFS = true;
-                    ticketLinkToTFSItem.CreatorID = loginUser.UserID;
-
-                    //Jira uses this to support multiple instances.
-                    //TicketsViewItem ticket = TicketsView.GetTicketsViewItem(loginUser, ticketId);
-                    //ticketLinkToJiraItem.CrmLinkID = CRMLinkTable.GetIdBy(ticket.OrganizationID, IntegrationType.Jira.ToString().ToLower(), ticket.ProductID, loginUser);
-                    ticketLinkToTFSItem.CrmLinkID = CRMLinkTable.GetIdBy(loginUser.OrganizationID, IntegrationType.TFS.ToString().ToLower(), loginUser);
-
-                    ////If product is not associated to an instance then get the 'default' instance
-                    //if (ticketLinkToJiraItem.CrmLinkID == null || ticketLinkToJiraItem.CrmLinkID <= 0)
-                    //{
-                    //    CRMLinkTable crmlink = new CRMLinkTable(loginUser);
-                    //    crmlink.LoadByOrganizationID(TSAuthentication.OrganizationID);
-
-                    //    ticketLinkToJiraItem.CrmLinkID = crmlink.Where(p => p.InstanceName == "Default"
-                    //                                                        && p.CRMType.ToLower() == IntegrationType.Jira.ToString().ToLower())
-                    //                                                        .Select(p => p.CRMLinkID).FirstOrDefault();
-                    //}
-
-                    if (ticketLinkToTFSItem.CrmLinkID != null && ticketLinkToTFSItem.CrmLinkID > 0)
-                    {
-                        ticketLinkToTFSItem.Collection.Save();
-                        result.IsSuccessful = true;
-                        result.Error = null;
-                    }
-                    else
-                    {
-                        result.IsSuccessful = false;
-                        result.Error = "A TFS Instance associated to this ticket's product or a Default TFS Instance was not found.";
-                    }
-                }
-                catch (Exception ex)
-                {
-                    result.IsSuccessful = false;
-                    result.Error = ex.Message;
-                    ExceptionLogs.LogException(loginUser, ex, "SetTFSWorkItemTitle");
                 }
             }
 
@@ -4567,8 +4394,6 @@ WHERE t.TicketID = @TicketID
         public AssetProxy[] Assets { get; set; }
         [DataMember]
         public TicketLinkToJiraItemProxy LinkToJira { get; set; }
-        [DataMember]
-        public TicketLinkToTFSItemProxy LinkToTFS { get; set; }
     }
 
     [DataContract(Namespace = "http://teamsupport.com/")]

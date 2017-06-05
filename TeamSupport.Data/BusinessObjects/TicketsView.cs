@@ -118,7 +118,18 @@ namespace TeamSupport.Data
             {
 
                 CustomerHubs hubs = new CustomerHubs(BaseCollection.LoginUser);
-                hubs.LoadByOrganizationID(OrganizationID);
+
+                //try for a product family match first
+                if (ProductFamilyID != null)
+                {
+                    hubs.LoadByProductFamilyID((int)ProductFamilyID);
+                }
+
+                if (hubs.IsEmpty)
+                {
+                    hubs.LoadByOrganizationID(OrganizationID);
+                }
+
                 if (!hubs.IsEmpty)
                 {
                     if (string.IsNullOrWhiteSpace(hubs[0].CNameURL))
@@ -1261,13 +1272,13 @@ ORDER BY TicketNumber DESC";
         {
             builder.Append(" FROM UserTicketsView tv ");
 
-            if (filter.UserID != null && filter.GroupID != null && (filter.GroupID == -1 || filter.GroupID == -2) )
+            if (filter.UserID != null && filter.GroupID != null && (filter.GroupID == -1 || filter.GroupID == -2))
             {
                 builder.Append(" INNER JOIN GroupUsers gu ON tv.GroupID = gu.GroupID");
             }
 
             builder.Append(" WHERE (tv.OrganizationID = @OrganizationID)");
- 
+
 
             AddTicketParameter("TicketTypeID", filter.TicketTypeID, false, builder, command);
             if (filter.TicketStatusID != null) AddTicketParameter("TicketStatusID", filter.TicketStatusID, false, builder, command);
