@@ -89,6 +89,7 @@ namespace TSWebServices
             info.Assets = assets.GetAssetProxies();
 
             info.LinkToJira = GetLinkToJira(ticket.TicketID);
+            info.LinkToTFS = GetLinkToTFS(ticket.TicketID);
 
             TicketStatuses ticketStatus = new TicketStatuses(TSAuthentication.GetLoginUser());
             ticketStatus.LoadByStatusIDs(TSAuthentication.OrganizationID, new int[] { ticket.TicketStatusID });
@@ -1366,6 +1367,8 @@ namespace TSWebServices
             [DataMember]
             public TicketLinkToJiraItemProxy LinkToJira { get; set; }
             [DataMember]
+            public TicketLinkToTFSItemProxy LinkToTFS { get; set; }
+            [DataMember]
             public AttachmentProxy[] Attachments { get; set; }
             [DataMember]
             public bool IsSlaPaused { get; set; }
@@ -1531,6 +1534,18 @@ namespace TSWebServices
             if (linkToJira.Count > 0)
             {
                 result = linkToJira[0].GetProxy();
+            }
+            return result;
+        }
+
+        private TicketLinkToTFSItemProxy GetLinkToTFS(int ticketID)
+        {
+            TicketLinkToTFSItemProxy result = null;
+            TicketLinkToTFS linkToTFS = new TicketLinkToTFS(TSAuthentication.GetLoginUser());
+            linkToTFS.LoadByTicketID(ticketID);
+            if (linkToTFS.Count > 0)
+            {
+                result = linkToTFS[0].GetProxy();
             }
             return result;
         }

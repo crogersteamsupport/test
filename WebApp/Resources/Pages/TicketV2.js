@@ -1919,6 +1919,7 @@ function LoadTicketControls() {
     SetupCustomFieldsSection();
     SetupJiraFields();
     SetupJiraFieldValues();
+    SetupTFSFields();
     SetupTFSFieldValues();
 };
 

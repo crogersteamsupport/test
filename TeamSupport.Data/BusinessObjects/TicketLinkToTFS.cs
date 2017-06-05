@@ -111,6 +111,16 @@ namespace TeamSupport.Data
                 Fill(command);
             }
         }
+
+        public virtual TicketLinkToTFSItem AddNewTicketLinkToTFSItem(int ticketID)
+        {
+            if (Table.Columns.Count < 1) LoadColumns("TicketLinkToTFS");
+            DataRow row = Table.NewRow();
+            row["TicketID"] = ticketID;
+            row["SyncWithTFS"] = false;
+            Table.Rows.Add(row);
+            return new TicketLinkToTFSItem(row, this);
+        }
     }
 
 }

@@ -4290,8 +4290,8 @@ WHERE t.TicketID = @TicketID
             {
                 try
                 {
-                    TicketLinkToTFSItem ticketLinkToTFSItem = ticketLinkToTFS.AddNewTicketLinkToTFSItem();
-                    ticketLinkToTFSItem.TicketID = ticketId;
+                    TicketLinkToTFSItem ticketLinkToTFSItem = ticketLinkToTFS.AddNewTicketLinkToTFSItem(ticketId);
+                    //ticketLinkToTFSItem.TicketID = ticketId;
                     ticketLinkToTFSItem.TFSTitle = TFSWorkItemTitle;
                     ticketLinkToTFSItem.SyncWithTFS = true;
                     ticketLinkToTFSItem.CreatorID = loginUser.UserID;
