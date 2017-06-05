@@ -291,8 +291,8 @@ namespace TSWebServices
             WikiHistoryCollection history = new WikiHistoryCollection(loggedInUser);
             WikiHistory newWikiHistory = history.AddNewWikiHistory();
 
-            newWikiHistory.ModifiedBy = wiki.ModifiedBy;
-            newWikiHistory.CreatedBy = wiki.CreatedBy;
+            newWikiHistory.ModifiedBy = loggedInUser.UserID;
+            newWikiHistory.CreatedBy = loggedInUser.UserID;
             newWikiHistory.Version = wiki.Version;
             newWikiHistory.Body = wiki.Body;
             newWikiHistory.ArticleName = wiki.ArticleName;
