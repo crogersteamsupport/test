@@ -263,7 +263,7 @@
                 });
                 return self._products;
             },
-            getProductFamilies: function () {
+            getProductFamilies: function (callback) {
                 var self = this;
                 if (Ts.System.Organization.UseProductFamilies == true && parent.parent.Ts.System.Organization.ProductType == parent.parent.Ts.ProductType.Enterprise) {
                     Ts.Services.System.GetCheckSum(Ts.ReferenceTypes.ProductFamilies, function (checksum) {
@@ -271,11 +271,21 @@
                             Ts.Services.Products.GetProductFamilies(function (result) {
                                 self._productFamilies = result;
                                 self._productFamilies.CheckSum = checksum;
+
+                                if (callback) {
+                                    callback(self._productFamilies);
+                                }
+                                else return self._productFamilies;
+                                
                             });
                         }
                     });
                 }
-                return self._productFamilies;
+
+                if (callback) {
+                    callback(self._productFamilies);
+                }
+                else return self._productFamilies;
             },
             getProduct: function (productID) {
                 var products = this.getProducts();

@@ -791,9 +791,11 @@ function CustomerMessageSound(forceIt) {
 }
 
 function ShowNotificationMessage() {
+    var TeamSupportLogo = "https://app.teamsupport.com/images/icons/TeamSupportLogo16.png";
     var options = {
         body: "New Chat Message!",
-        icon: "https://app.teamsupport.com/images/icons/TeamSupportLogo16.png",
+        icon: TeamSupportLogo,
+        iconUrl: TeamSupportLogo,
         tag: "chat" + _activeChatID
     }
     var notification = new Notification("TeamSupport", options);
