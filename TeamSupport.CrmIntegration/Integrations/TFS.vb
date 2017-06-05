@@ -6,6 +6,7 @@ Imports System.Reflection
 Imports System.Text
 Imports TeamSupport.Data
 Imports Newtonsoft.Json
+Imports Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models
 Imports TFSLibrary = TeamSupport.ServiceLibrary.TFS
 
 Namespace TeamSupport
@@ -263,7 +264,7 @@ Namespace TeamSupport
                                                             ByVal newActionsTypeID As Integer)
                 Dim URI As String = _baseURI + "/issue" '//vv needed?
                 Dim attachmentFileSizeLimit As Integer = 0
-                Dim attachmentEnabled As Boolean = GetAttachmentEnabled(attachmentFileSizeLimit) '//vv ToDo
+                Dim attachmentEnabled As Boolean = GetAttachmentEnabled(attachmentFileSizeLimit) 'ToDo //vv
                 Dim crmLinkError As CRMLinkError = Nothing
                 Dim ticketData As StringBuilder = Nothing
                 Dim TFSProjectName As String = String.Empty
@@ -321,7 +322,10 @@ Namespace TeamSupport
                             Dim actionDescriptionId As Integer
                             ticketData = New StringBuilder()
 
-                            '//ToDo //vv Create workitem here
+                            'ToDo //vv Create workitem here
+                            Dim workItemValues As List(Of TFSLibrary.WorkItemField) = New List(Of TFSLibrary.WorkItemField)
+                            workItemValues = GetTicketData(ticket, workItemFields, TFSProjectName, actionDescriptionId, customMappingFields, crmLinkErrors)
+                            Dim workItemObject As WorkItem = _tfs.CreateWorkItem(workItemValues, TFSProjectName, ticket.TicketTypeName)
 
 
                             'ticketData.Append(GetTicketData(ticket, workItemFields, TFSProjectName, actionDescriptionId, customMappingFields, crmLinkErrors))
@@ -749,32 +753,32 @@ Namespace TeamSupport
             End Function
 
             Private Function GetTicketData(ByVal ticket As TicketsViewItem,
-                                        ByRef fields As JObject,
+                                        ByVal workItemFields As List(Of TFSLibrary.WorkItemField),
                                         ByVal TFSProjectName As String,
                                         ByRef actionDescriptionId As Integer,
                                         ByRef customMappingFields As CRMLinkFields,
-                                        ByRef crmLinkErrors As CRMLinkErrors) As String
-                Dim result As StringBuilder = New StringBuilder()
-                Dim customField As StringBuilder = New StringBuilder()
-                customField = BuildRequiredFields(ticket, fields, customMappingFields, crmLinkErrors)
-                'result.Append("{")
-                'result.Append("""fields"":{")
-                'result.Append("""summary"":""" + DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(ticket.Name))) + """,")
-                'result.Append("""issuetype"":{""name"":""" + ticket.TicketTypeName + """},")
-                If customField.ToString().Trim().Length > 0 Then
-                    result.Append(customField.ToString() + ",")
-                End If
+                                        ByRef crmLinkErrors As CRMLinkErrors) As List(Of TFSLibrary.WorkItemField)
+                Dim workItemValues As List(Of TFSLibrary.WorkItemField) = New List(Of TFSLibrary.WorkItemField)
+                Dim fieldValue As TFSLibrary.WorkItemField
 
-                'result.Append("""project"":{""key"":""" + jiraProjectKey + """},")
+                fieldValue = workItemFields.Where(Function(w) w.name = "Title").FirstOrDefault
+                fieldValue.value = DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(ticket.Name)))
+                workItemValues.Add(fieldValue)
+
                 Dim actionDescription As Action = Actions.GetTicketDescription(User, ticket.TicketID)
                 actionDescriptionId = actionDescription.ActionID
+
                 Dim addLines As Boolean = True
                 Dim description As String = HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(actionDescription.Description), addLines)
-                'result.Append("""description"":""" + DataUtils.GetJsonCompatibleString(description) + """")
-                'result.Append("}")
-                'result.Append("}")
+                fieldValue = workItemFields.Where(Function(w) w.name = "Description").FirstOrDefault
+                'ToDo //vv check if type has Description, if not add a comment
+                fieldValue.value = description
+                workItemValues.Add(fieldValue)
 
-                Return result.ToString()
+                Dim customField As StringBuilder = New StringBuilder()
+                'ToDo //vv ?? customField = BuildRequiredFields(ticket, fields, customMappingFields, crmLinkErrors)
+
+                Return workItemValues
             End Function
 
             Private Function BuildRequiredFields(ByVal ticket As TicketsViewItem,
@@ -1571,7 +1575,7 @@ Namespace TeamSupport
 
                     For Each field As KeyValuePair(Of String, JToken) In CType(workItem("fields"), JObject)
                         Dim value As String = Nothing
-                        Dim cRMLinkField As CRMLinkField '//ToDo //vv need to redo this to use the object properties instead of Jobject. = customFields.FindByCRMFieldName(GetFieldNameByKey(field.Key.ToString(), workItemFields))
+                        Dim cRMLinkField As CRMLinkField 'ToDo //vv need to redo this to use the object properties instead of Jobject. = customFields.FindByCRMFieldName(GetFieldNameByKey(field.Key.ToString(), workItemFields))
                         Dim crmLinkCustomFieldError As CRMLinkError = Nothing
 
                         Try

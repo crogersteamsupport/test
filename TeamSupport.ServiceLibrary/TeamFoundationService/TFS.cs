@@ -134,6 +134,47 @@ namespace TeamSupport.ServiceLibrary
             return result;
         }
 
+        public WorkItem CreateWorkItem(List<WorkItemField> fields, string project, string type)
+        {
+            WorkItem workItem = new WorkItem();
+            int i = 0;
+            Object[] patchDocument = new Object[fields.Count];
+
+            foreach (WorkItemField field in fields)
+            {
+                patchDocument[i] = new
+                {
+                    op = "add",
+                    path = "/fields/" + field.referenceName,
+                    value = field.value
+                };
+
+                i++;
+            }
+
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json-patch+json"));
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+
+                var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json"); // mediaType needs to be application/json-patch+json for a patch call
+
+                var method = new HttpMethod("PATCH");
+                //ToDo //vv need to check if the hostname already has the trailing backslash!
+                var request = new HttpRequestMessage(method, HostName + "/DefaultCollection/" + project + "/_apis/wit/workitems/$" + type + "?api-version=2.2") { Content = patchValue };
+                var response = client.SendAsync(request).Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = response.Content.ReadAsStringAsync().Result;
+                    workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
+                }
+            }
+
+            return workItem;
+        }
+
         private void GetWorkItemsFields()
         {
             List<WorkItemField> resultList = new List<WorkItemField>();
@@ -170,6 +211,7 @@ namespace TeamSupport.ServiceLibrary
             public string type { get; set; }
             public bool readOnly { get; set; }
             public string url { get; set; }
+            public string value { get; set; }
         }
 
         #region Properties
