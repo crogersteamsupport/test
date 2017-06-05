@@ -60,6 +60,13 @@ AdminInt = function () {
   	jiraInstances = result;
   	_anyJiraInstance = false;
 
+        //TFS
+        $('.int-tfs-update-status').prop('checked', false);
+        $('#tfsExclusionTicketStatusList').hide();
+        $('#tfsTicketStatusExceptionSpan').hide();
+        $('#tfsExclusionTicketStatusList').hide();
+        $('#tfsTicketStatusExceptionSpan').hide();
+
     for (var i = 0; i < result.length; i++) {
       //On first load, just load the Default Jira instance.
       if ((result[i].CRMType.toLowerCase() == 'jira' && result[i].InstanceName.toLowerCase() == 'default')
@@ -145,15 +152,30 @@ AdminInt = function () {
   		element.find('.int-crm-portal').prop('checked', false);
   	}
   	if (item.UpdateStatus) {
+            if (item.CRMType == 'Jira') {
   		element.find('.int-crm-update-status').prop('checked', true);
   		loadOrganizationStatusesWithType(element);
   		element.find('#exclusionTicketStatusList').show();
   		element.find('#ticketStatusExceptionSpan').show();
+            } else if (item.CRMType == 'TFS') {
+                element.find('.int-tfs-update-status').prop('checked', true);
+                loadOrganizationStatusesWithType(element);
+                element.find('#tfsExclusionTicketStatusList').show();
+                element.find('#tfsTicketStatusExceptionSpan').show();
+            }
+
   	}
   	else {
+            if (item.CRMType == 'Jira') {
   		element.find('.int-crm-update-status').prop('checked', false);
   		element.find('#exclusionTicketStatusList').hide();
   		element.find('#ticketStatusExceptionSpan').hide();
+            } else if (item.CRMType == 'TFS') {
+                element.find('.int-tfs-update-status').prop('checked', false);
+                element.find('#tfsExclusionTicketStatusList').hide();
+                element.find('#tfsTicketStatusExceptionSpan').hide();
+            }
+
   	}
 
   	element.find('.int-crm-update-type').prop('checked', item.UpdateTicketType);
@@ -185,13 +207,24 @@ AdminInt = function () {
   	}
 
   	if (item.RestrictedToTicketTypes) {
+            if (item.CRMType == 'Jira') {
   		element.find('.int-crm-ticket-types').prop('checked', false);
   		loadTicketTypes(element);
   		element.find('#restrictedTicketTypesList').show();
+            } else if (item.CRMType == 'TFS') {
+                element.find('.int-tfs-ticket-types').prop('checked', false);
+                loadTicketTypes(element);
+                element.find('#restrictedTicketTypesListTFS').show();
+            }
   	}
   	else {
+            if (item.CRMType == 'Jira') {
   		element.find('.int-crm-ticket-types').prop('checked', true);
   		element.find('#restrictedTicketTypesList').hide();
+            } else if (item.CRMType == 'TFS') {
+                element.find('.int-tfs-ticket-types').prop('checked', true);
+                element.find('#restrictedTicketTypesListTFS').hide();
+            }
   	}
 
   	$("#AddingInstanceLabel").hide();
@@ -323,7 +356,8 @@ AdminInt = function () {
         .attr('value', window.parent.parent.Ts.ReferenceTypes.Tickets)
         .appendTo('.int-map-type');
 
-      $('.int-map-type').combobox({ selected: function (e, ui) {
+                    $('.int-map-type').combobox({
+                        selected: function (e, ui) {
         loadFields(element.find('.int-map-tsfield'), element.find('.int-map-type').val());
       }
       });
@@ -349,7 +383,8 @@ AdminInt = function () {
             .attr('value', window.parent.parent.Ts.ReferenceTypes.Contacts)
             .appendTo('.int-zoho-map-type');
 
-          $('.int-zoho-map-type').combobox({ selected: function (e, ui) {
+                    $('.int-zoho-map-type').combobox({
+                        selected: function (e, ui) {
             loadFields(element.find('.int-zoho-map-tsfield'), element.find('.int-zoho-map-type').val());
           }
           });
@@ -692,9 +727,9 @@ AdminInt = function () {
     else if (type.hasClass('zohocrm')) crmType = 'ZohoCrm';
     else if (type.hasClass('zohoreports')) crmType = 'ZohoReports';
     else if (type.hasClass('hubspot')) crmType = 'HubSpot';
-    else if (type.hasClass('slackwebhook')) crmType = 'SlackWebHook';
+        else if (type.hasClass('tfs')) crmType = 'TFS';
 
-    var crmToken = crmToken = parent.find('.int-crm-token').val();
+        var crmToken = parent.find('.int-crm-token').val();
 
     if (typeof crmToken == "undefined") {
       crmToken = null
@@ -764,17 +799,29 @@ AdminInt = function () {
     	includeIssueNonRequired = false;
     }
 
-    var updateTicketStatus = parent.find('.int-crm-update-status').prop('checked');
+        var updateTicketStatus;
+
+        if (crmType == "Jira") {
+            updateTicketStatus = parent.find('.int-crm-update-status').prop('checked');
+        } else if (crmType == "TFS") {
+            updateTicketStatus = parent.find('.int-tfs-update-status').prop('checked');
+        }
+
     if (typeof updateTicketStatus == 'undefined') {
     	updateTicketStatus = false;
     }
 
     var excludedTicketStatuses = null;
-    if (!updateTicketStatus) {
-    	excludedTicketStatuses = null;
+
+        if (updateTicketStatus) {
+            var exclusionTicketStatusList;
+
+            if (crmType == "Jira") {
+                exclusionTicketStatusList = parent.find('#exclusionTicketStatusList');
+            } else if (crmType == "TFS") {
+                exclusionTicketStatusList = parent.find('#tfsExclusionTicketStatusList');
     }
-    else {
-    	var exclusionTicketStatusList = parent.find('#exclusionTicketStatusList');
+
     	if (typeof exclusionTicketStatusList == 'undefined') {
     		excludedTicketStatuses = null;
     	}
@@ -797,7 +844,14 @@ AdminInt = function () {
     	}
     }
 
-    var useAllTicketTypes = parent.find('.int-crm-ticket-types').prop('checked');
+        var useAllTicketTypes;
+
+        if (crmType == "Jira") {
+            useAllTicketTypes = parent.find('.int-crm-ticket-types').prop('checked');
+        } else if (crmType == "TFS") {
+            useAllTicketTypes = parent.find('.int-tfs-ticket-types').prop('checked');
+        }
+
     if (typeof useAllTicketTypes == 'undefined') {
       useAllTicketTypes = true;
     }
@@ -807,7 +861,14 @@ AdminInt = function () {
       restrictedToTicketTypes = null;
     }
     else {
-      var restrictedTicketTypesList = parent.find('#restrictedTicketTypesList');
+            var restrictedTicketTypesList;
+
+            if (crmType == "Jira") {
+                restrictedTicketTypesList = parent.find('#restrictedTicketTypesList');
+            } else if (crmType == "TFS") {
+                restrictedTicketTypesList = parent.find('#restrictedTicketTypesListTFS');
+            }
+
       if (typeof restrictedTicketTypesList == 'undefined') {
         restrictedToTicketTypes = null;
       }
@@ -1100,6 +1161,27 @@ AdminInt = function () {
 		$("#AddingInstanceLabel").show();
 		onNewInstanceClick(this);
 	}
+
+    //TFS
+    $('.int-tfs-update-status').click(function (e) {
+        if ($(this).prop('checked')) {
+            $('#tfsExclusionTicketStatusList').show();
+            $('#tfsTicketStatusExceptionSpan').show();
+        }
+        else {
+            $('#tfsExclusionTicketStatusList').hide();
+            $('#tfsTicketStatusExceptionSpan').hide();
+        }
+    });
+
+    $('.int-tfs-ticket-types').click(function (e) {
+        if ($(this).prop('checked')) {
+            $('#restrictedTicketTypesListTFS').hide();
+        }
+        else {
+            $('#restrictedTicketTypesListTFS').show();
+        }
+    });
 };
 
 AdminInt.prototype = {

@@ -410,17 +410,105 @@
           <div style="clear:both;"></div>
         </div>
       </li>
-        <li class="int-type slackwebhook">
-            <h1 class="collapsable"><span class="ui-icon ui-icon-triangle-1-e" /></span><img src="../Images/party3/slack.png" /><span>Slack</span></h1>
+            <li class="int-type tfs">
+                <h1 class="collapsable"><span class="ui-icon ui-icon-triangle-1-e"></span><img src="../Images/party3/TFS.png" /><span>Team Foundation Server</span></h1>
             <div class="int-panel">
-                <h3>TeamSupport allows posting of messages to Slack through Ticket Automation.</h3>
-                <label>Web Hook URL</label>
-                <input type="text" class="text ui-widget-content ui-corner-all int-crm-host" />
-                <div class="checkboxes">
-                    <input id="cb-slack" type="checkbox" class="checkbox int-crm-active" />
-                    <label for="cb-slack" class="checkbox">Synchronization Active</label>
-                </div>
+                    <h3>TeamSupport has native integration with Team Foundation Server.</h3>
+                    <p>TeamSupport Tickets can be synced with new or existing TFS work items.  This integration allows your company to use best of breed solutions for issues and bug tracking as well as customer service and support!</p>
+                    <p><span style="font-weight: bold;color: Red;">Important:</span>  Before you setup your link to TFS, please <a href="http://www.teamsupport.com/documentation/1/en/topic/tfs" target="_blank" style="font-weight: bold;text-decoration: underline;">read this important information</a> about how TeamSupport Tickets Types and TFS Work Items Types are mapped, otherwise you may experience initial sync issues.</p>
 
+                    <!-- //vv Not now, until v2-->
+                    <!--<div class="int-content-wrapper">
+                        <div>
+                            <div class="label-block jiraInstancesName">
+                                <span id="InstancesLabel" class="label">Instances</span>
+                                <div id="JiraInstacesListWrapper" class="ts-clearfix" style="float: left;">
+                                    <select id="JiraInstances" class="int-jiraInstances"></select>
+                                </div>
+                                <span id="AddingInstanceLabel" class="addingInstanceLabel">Adding new instance</span>
+                            </div>
+                            <div class="label-block">
+                                <button type="button" id="NewInstance" class="btn btn-primary pull-right action-new" data-toggle="dropdown">New Instance</button>
+                            </div>
+                        </div>
+                    </div>-->
+                    <div class="int-content-wrapper">
+                        <div class="int-content-center">
+                            <div class="mappings ui-helper-hidden">
+                                <h2>Custom Field Mapping (Optional)</h2>
+                                <div>
+                                    <div class="label-block">
+                                        <span class="label">TFS Field</span>
+                                        <input type="text" class="int-tfs-map-field text ui-widget-content ui-corner-all" style="width: 200px;" />
+                                    </div>
+                                    <div class="label-block">
+                                        <span class="label">TeamSupport Ticket Field</span>
+                                        <select class="int-tfs-map-tsfield"></select>
+                                    </div>
+                                    <div class="label-block">
+                                        <button class="tfs-map-add">Add Mapping</button>
+                                    </div>
+                                </div>
+                                <div class="ts-clearfix">
+                                </div>
+                                <div>
+                                    <h3>Ticket Mappings</h3>
+                                    <div class="ui-widget-content ts-separator">
+                                    </div>
+                                    <div class="map-ticket"></div>
+                                    <div class="ts-clearfix"></div>
+                                </div>
+                            </div>
+                            <div>&nbsp</div>
+                        </div>
+                    </div>
+                    <div class="int-content-left">
+                        <label>Instance Name</label>
+                        <input id="InstanceName" type="text" class="text ui-widget-content ui-corner-all int-crm-instancename" />
+
+                        <label>TFS Host Name</label>
+                <input type="text" class="text ui-widget-content ui-corner-all int-crm-host" />
+                        <label>TFS API Token</label>
+                        <input type="password" class="text ui-widget-content ui-corner-all int-crm-token" />
+                        <label>Confirm TFS API Token</label>
+                        <input type="password" class="text ui-widget-content ui-corner-all int-crm-token-confirm" />
+
+                        <label>Default Project KEY</label>
+                        <input type="text" class="text ui-widget-content ui-corner-all int-crm-project" />
+                        <span class="label">Actions type to push to TFS as comments</span>
+                        <select class="int-actionTypeToPush"></select>
+                        <div>&nbsp</div>
+                <div class="checkboxes">
+                            <input id="cb-tfs-update-status" type="checkbox" class="checkbox int-tfs-update-status" />
+                            <label for="cb-tfs-update-status" class="checkbox">Update TeamSupport Tickets Statuses</label>
+
+                            <div class="clearfix"></div>
+                            <span id="tfsTicketStatusExceptionSpan" class="label">Exclude the following</span>
+                            <select id="tfsExclusionTicketStatusList" class="int-crm-ticketStatusToExclude" multiple=multiple size="5"></select>
+
+                            <div class="clearfix"></div>
+                            <input id="cb-tfs-update-type" type="checkbox" class="checkbox int-crm-update-type" />
+                            <label for="cb-tfs-update-type" class="checkbox">Update TeamSupport Ticket Type</label>
+                            <div class="clearfix"></div>
+                            <input id="cb-tfs" type="checkbox" class="checkbox int-crm-active" />
+                            <label for="cb-tfs" class="checkbox">Synchronization Active</label>
+
+                            <div class="clearfix"></div>
+                            <input id="cb-tfs-AlwaysDefaultKey" type="checkbox" class="checkbox int-crm-always-use-default-project-key" />
+                            <label for="cb-tfs-AlwaysDefaultKey" class="checkbox">Always Use Default Project Key</label>
+
+                            <div class="clearfix"></div>
+                            <input id="cb-tfs-nonrequired" type="checkbox" class="checkbox int-crm-IncludeWorkItemNonRequired" />
+                            <label for="cb-tfs-nonrequired" class="checkbox">Include Non-Required Fields On Work Item Creation</label>
+                            <div class="clearfix"></div>
+                            <input id="cb-tfs-tickettypes" type="checkbox" class="checkbox int-tfs-ticket-types" />
+                            <label for="cb-tfs-tickettypes" class="checkbox">Use All Ticket Types</label>
+                            <div class="clearfix"></div>
+                            <select id="restrictedTicketTypesListTFS" class="int-ticketTypeToPush" multiple=multiple size="5"></select>
+                            <div class="clearfix"></div>
+                </div>
+                    </div>
+                    <div style="clear:both;"></div>
             </div>
         </li>
       <li class="int-type zohocrm">
