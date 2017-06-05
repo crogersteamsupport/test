@@ -367,7 +367,6 @@ Ts.Ui.Tabs.Tab.prototype = {
             $(this._element).removeClass('ui-state-error ui-state-error-hidden');
         }
     },
-
     getIsSelected: function () {
         return $(this._element).hasClass('ui-state-active');
     },
