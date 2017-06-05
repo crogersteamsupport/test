@@ -58,10 +58,33 @@ namespace TeamSupport.Data
       }
     }
 
-    /// <summary>
-    /// Loads all the active CRM Link Table Items and sorts them by LastProcessed date
-    /// </summary>
-    public void LoadActive(int processInterval)
+        /// <summary>
+        /// Loads the record with the matching OrganizationID and reftype
+        /// </summary>
+        /// <param name="organizationID"></param>
+        public void LoadByOrganizationIDAndCRMType(int organizationID, string CRMType)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+                    SELECT
+                        *
+                    FROM
+                        CRMLinkTable
+                    WHERE
+                        OrganizationID = @OrganizationID
+                        AND CRMType = @CRMType";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@CRMType", CRMType);
+                Fill(command);
+            }
+        }
+
+        /// <summary>
+        /// Loads all the active CRM Link Table Items and sorts them by LastProcessed date
+        /// </summary>
+        public void LoadActive(int processInterval)
     {
       //This Query loads all the active CRMLinkTable items
       using (SqlCommand command = new SqlCommand())
@@ -168,6 +191,46 @@ WHERE organizationId = @organizationId AND crmType = 'Jira' AND DefaultProject I
 
 		 return crmLinkId;
 	 }
-  }
-  
+
+        public static int? GetIdBy(int organizationId, string type, LoginUser login)
+        {
+            int? crmLinkId = null;
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText =
+             @"
+          SELECT 
+            CrmLinkTable.CrmLinkId
+          FROM 
+            CrmLinkTable
+          WHERE 
+				CrmLinkTable.OrganizationID = @OrganizationId
+				AND CrmLinkTable.CRMType = @CrmType
+        ";
+
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationId", organizationId);
+                command.Parameters.AddWithValue("@CrmType", type);
+
+                using (SqlConnection connection = new SqlConnection(login.ConnectionString))
+                {
+                    connection.Open();
+                    SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+                    command.Connection = connection;
+                    command.Transaction = transaction;
+                    command.CommandTimeout = 300;
+                    SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+
+                    while (reader.Read())
+                    {
+                        crmLinkId = (int?)reader["CrmLinkId"];
+                    }
+                }
+            }
+
+            return crmLinkId;
+        }
+    }
+
 }

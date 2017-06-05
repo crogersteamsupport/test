@@ -373,6 +373,7 @@ var loadTicket = function (ticketNumber, refresh) {
         AddInventory(_ticketInfo.Assets);
         LoadTicketHistory();
         SetupJiraFieldValues();
+        SetupTFSFieldValues();
         LoadGroups();
         LoadPlugins(info);
         if (typeof refresh === "undefined") {
@@ -1918,6 +1919,7 @@ function LoadTicketControls() {
     SetupCustomFieldsSection();
     SetupJiraFields();
     SetupJiraFieldValues();
+    SetupTFSFieldValues();
 };
 
 function AppendSelect(parent, data, type, id, name, isSelected) {
@@ -2002,6 +2004,7 @@ function SetupTicketPropertyEvents() {
 
                 AppenCustomValues(result[1]);
                 SetupJiraFieldValues();
+                SetupTFSFieldValues();
 
                 _ticketInfo.Ticket = result[2];
                 setSLAInfo();
@@ -4173,6 +4176,153 @@ var SetupJiraFieldValues = function () {
         }
         else {
             $('#ticket-jirafields').hide();
+        }
+    });
+};
+
+//click events and logic
+var SetupTFSFields = function () {
+    $('#newTFSWorkItem').click(function (e) {
+        e.preventDefault();
+        $('.ts-tfs-buttons-container').hide();
+        var errorMessage = "There was an error setting your TFS Work Item Title. Please contact TeamSupport.com";
+        window.parent.Ts.Services.Tickets.SetSyncWithTFS(_ticketID, function (result) {
+            if (result != null) {
+                var syncResult = JSON.parse(result);
+                if (syncResult.IsSuccessful === true) {
+                    $('#workItemTitleValue').text('Pending...');
+                    $('#workItemTitle').show();
+                }
+                else {
+                    $('.ts-tfs-buttons-container').show();
+                    $('#workItemTitle').hide();
+                    alert(syncResult.Error);
+                }
+            } else {
+                alert(errorMessage);
+            }
+        },
+        function (error) {
+            $('.ts-tfs-buttons-container').show();
+            $('#workItemTitle').hide();
+            alert(errorMessage);
+        });
+    });
+
+    $('#existingTFSWorkItem').click(function (e) {
+        e.preventDefault();
+        $('.ts-tfs-buttons-container').hide();
+        $('#enterWorkItemTitle').show();
+        $('#workItemTitleInput').focus();
+    });
+
+    $('#cancelWorkItemTitleButton').click(function (e) {
+        $('.ts-tfs-buttons-container').show();
+        $('#enterWorkItemTitle').hide();
+    });
+
+    $('#saveWorkItemTitleButton').click(function (e) {
+        if ($.trim($('#workItemTitleInput').val()) === '') {
+            $('.ts-tfs-buttons-container').show();
+            $('#enterWorkItemTitle').hide();
+        }
+        else {
+            $('#workItemTitleValue').text($.trim($('#workItemTitleInput').val()));
+            $('#enterWorkItemTitle').hide();
+            $('#workItemTitle').show();
+            var errorMessage = "There was an error setting your Work Item Title. Please contact TeamSupport.com";
+
+            window.parent.Ts.Services.Tickets.SetTFSWorkItemTitle(_ticketID, $.trim($('#workItemTitleInput').val()), function (result) {
+                if (result != null) {
+                    var syncResult = JSON.parse(result);
+                    if (syncResult.IsSuccessful === false) {
+                        $('.ts-tfs-buttons-container').show();
+                        $('#workItemTitle').hide();
+                        alert(syncResult.Error);
+                    }
+                } else {
+                    alert(errorMessage);
+                }
+            },
+          function (error) {
+              $('.ts-tfs-buttons-container').show();
+              $('#workItemTitle').hide();
+              alert(errorMessage);
+          });
+        }
+    });
+
+    $('#tfsUnlink').click(function (e) {
+        var currentStatus = $("#workItemTitleValue").text().toLowerCase();
+        var confirmMessage = "Are you sure you want to " + ((currentStatus.indexOf("pending") > -1) ? "cancel" : "remove") + " link to TFS?";
+
+        if (confirm(confirmMessage)) {
+            e.preventDefault();
+            window.parent.Ts.Services.Tickets.UnSetSyncWithTFS(_ticketID, function (result) {
+                if (result === true) {
+                    $('.ts-tfs-buttons-container').show();
+                    $('#workItemTitle').hide();
+                }
+                else {
+                    alert('There was an error setting your TFS Work Item Title. Please try again later');
+                    $('.ts-tfs-buttons-container').hide();
+                    $('#workItemTitle').show();
+                }
+            },
+            function (error) {
+                alert('There was an error setting your TFS Work Item Title.');
+                $('.ts-tfs-buttons-container').hide();
+                $('#workItemTitle').show();
+            });
+        }
+    });
+};
+
+//Load and display the proper TFS fields/values
+var SetupTFSFieldValues = function () {
+    window.parent.Ts.Services.Admin.GetTFSCRMLinkTableRecordForTicket(_ticketID, function (result) {
+        if (result.length > 0) {
+            $('#ticket-tfsfields').show();
+
+            if (_ticketInfo.LinkToTFS != null) {
+                if (!_ticketInfo.LinkToTFS.TFSTitle) {
+                    $('#workItemTitleValue').text('Pending...');
+                }
+                else if (!_ticketInfo.LinkToTFS.TFSURL) {
+                    $('#workItemTitleValue').text(_ticketInfo.LinkToTFS.TFSTitle);
+                    if (_ticketInfo.LinkToTFS.TFSTitle.indexOf('Error') > -1) {
+                        $('#workItemTitleValue').closest('.form-group').addClass('fieldError');
+                    }
+                    else {
+                        $('#workItemTitleValue').closest('.form-group').addClass('fieldError');
+                    }
+                }
+                else {
+                    if ($(".tfsLink").length) {
+                        $(".tfsLink").remove();
+                    }
+
+                    var tfsLink = $('<a>')
+                          .attr('href', _ticketInfo.LinkToTFS.TFSURL)
+                          .attr('target', '_blank')
+                          //.attr('title', result + ' instance')
+                          .text(_ticketInfo.LinkToTFS.TFSTitle)
+                          .addClass('tfsLink control-label ticket-anchor ')
+                          .prependTo($('#ticket-workItemTitle-container'));
+                }
+
+                $('#workItemTitleValue').show();
+                $('.ts-tfs-buttons-container').hide();
+            }
+            else {
+                $('#ticket-tfsfields').show();
+                $('#workItemTitle').hide();
+                $('.ts-tfs-buttons-container').show();
+                //$('#newTFSWorkItem').attr('title', result + ' instance');
+            }
+        }
+        else {
+            $('#ticket-tfsfields').hide();
         }
     });
 };
