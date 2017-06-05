@@ -265,42 +265,7 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 .ts-tabs .ui-icon-close.ts-tabs-noclose { background-position: -1000px -1000px; }
 .ts-tabs .ui-state-hover .ts-tab-content { padding-right: 0px;}
 
-/* Ts MenuTree */
-.ts-menutree { border: none; height: 100%; overflow: auto; position:relative; }
-.ts-menutree > ul { padding:0; margin: .5em 0;}
-.ts-menutree li ul { padding:0; margin:0;}
-.ts-menutree li { list-style: none; position: relative; cursor:pointer; padding:2px 0; margin:0; overflow:hidden; }
-.ts-menutree li ul li { padding-left: .5em;}
 
-.ts-menutree li a {
-    text-decoration: none;
-    height: 20px;
-    overflow: hidden;
-    font-size: 13px;
-    color: white;
-    font-family:'Lucida Sans Unicode';
-}
-
-.ts-menutree li > div {
-    padding: .25em .1em;
-    height: 20px;
-    line-height: 20px;
-    overflow: hidden;
-    font-size: 13px;
-    font-weight:bold;
-    font-family: 'Lucida Sans Unicode';
-}
-
-.ts-menutree .ts-icon { float:left; padding-right: .33em;}
-.ts-menutree .ui-icon { float:right; padding: 0 5px 0 0; }
-.ts-menutree img { 
-    float:left; padding: 0 7px; height: 20px; width: 20px;
-}
-
-.ts-menutree li.ts-menutree-item > div {
-    border: none;
-    background-image: none;
-}
 
 .ts-toolbar { line-height: 29px; height:29px; border-left:none; border-right:none; font-weight:normal;}
 .ts-toolbar .ts-toolbar-button { float:left; display:block; height: 28px; }

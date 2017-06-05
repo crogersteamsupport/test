@@ -41,19 +41,19 @@
 
 
 <!-- HEADER // Tabs -->
-
 div.header-tabs {
-    width:200% !important;
+    width: 700% !important;
     position: relative;
     padding: 0 .5em;
     zoom: 1;
     border: none;
     overflow-x: hidden;
     margin-bottom: 3px;
+    background-color: #2a3f54;
 }
 
 div.header-tabs li {
-    margin: 0px 0px 0px 5px;
+    margin: 0px 0px 30px 5px;
     list-style: none;
     float: left;
     position: relative;
@@ -160,7 +160,7 @@ div.sidebar-container {
 
 li.ts-menutree-item {
     color: white !important;
-    font-family: Verdana;
+    font-family: 'Lucida Sans Unicode' !important;
 }
 
 li.ts-menutree-item a {
@@ -208,6 +208,80 @@ div.menutree-selected a {
 }
 
 
+/* Ts MenuTree */
+.ts-menutree {
+    border: none;
+    height: 100%;
+    overflow: auto;
+    position: relative;
+}
+
+.ts-menutree > ul {
+    padding: 0;
+    margin: .5em 0;
+}
+
+.ts-menutree li ul {
+    padding: 0;
+    margin: 0;
+}
+
+.ts-menutree li {
+    list-style: none;
+    position: relative;
+    cursor: pointer;
+    padding: 2px 0;
+    margin: 0;
+    overflow: hidden;
+}
+
+        .ts-menutree li ul li {
+            padding-left: .5em;
+        }
+
+        .ts-menutree li a {
+            text-decoration: none;
+            height: 20px;
+            overflow: hidden;
+            font-size: 12px;
+            color: white;
+            font-family: 'Lucida Sans Unicode';
+        }
+
+        .ts-menutree li > div {
+            padding: .25em .1em;
+            height: 20px;
+            line-height: 20px;
+            overflow: hidden;
+            font-size: 13px;
+            font-weight: normal;
+            font-family: 'Lucida Sans Unicode';
+        }
+
+    .ts-menutree .ts-icon {
+        float: left;
+        padding-right: .33em;
+    }
+
+    .ts-menutree .ui-icon {
+        float: right;
+        padding: 0 5px 0 0;
+    }
+
+    .ts-menutree img {
+        float: left;
+        padding: 0 7px;
+        height: 20px;
+        width: 20px;
+    }
+
+    .ts-menutree li.ts-menutree-item > div {
+        border: none;
+        background-image: none;
+    }
+
+
+
 
 
 
@@ -228,8 +302,12 @@ div.menutree-selected a {
     float: right;
 }
 
+div.tickets-panel-tabs {
+    background-color: #33485e;
+}
+
 div.tickets-panel-tabs li {
-    margin: 2px 0px 0px 5px;
+    margin: 2px 0px 20px 5px;
     list-style: none;
     float: left;
     position: relative;

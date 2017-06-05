@@ -1,8 +1,8 @@
 ﻿.main-container { height: 100%; min-height: 500px; min-width: 1000px;}
 .main-tab-content, .main-tab-content-item, .main-nav-content-item { height: 100%; }
-.main-tabs { 
+.main-tabs {
     border-top: none;
-    width:600%;
+    background-color: #2a3f54;
 }
 .new-view .main-tabs { border:none; height: 30px; }
 .new-view .main-tabs.ts-tabs { margin: 0; padding: 0; }

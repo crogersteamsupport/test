@@ -249,7 +249,7 @@
             </div>
           </div>
         </div>
-        <div class="main-tabs header-tabs"></div>
+        <div class="header-tabs main-tabs"></div>
       </div>
     </div>
     <div class="main-footer ui-widget-header">
