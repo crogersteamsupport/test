@@ -310,167 +310,164 @@ Namespace TeamSupport
                         Continue For
                     End Try
 
-                    Dim workItem As JObject = Nothing
-                    Dim isNew As Boolean = False
-                    'Create new WorkItem
-                    If ticketLinkToTFS.TFSID Is Nothing OrElse ticketLinkToTFS.TFSTitle.IndexOf("Error") > -1 Then
-                        Try
-                            crmLinkError = crmLinkErrors.FindUnclearedByObjectIDAndFieldName(ticket.TicketID, String.Empty)
-                            AddLog("No TFS Id. Creating work item...")
-                            isNew = True
+					Dim workItem As WorkItem = New WorkItem()
+					Dim isNew As Boolean = False
 
-                            Dim actionDescriptionId As Integer
-                            ticketData = New StringBuilder()
+					'Create new WorkItem
+					If ticketLinkToTFS.TFSID Is Nothing OrElse ticketLinkToTFS.TFSTitle.IndexOf("Error") > -1 Then
+						Try
+							crmLinkError = crmLinkErrors.FindUnclearedByObjectIDAndFieldName(ticket.TicketID, String.Empty)
+							AddLog("No TFS Id. Creating work item...")
+							isNew = True
 
-                            'ToDo //vv Create workitem here
-                            Dim workItemValues As List(Of TFSLibrary.WorkItemField) = New List(Of TFSLibrary.WorkItemField)
-                            workItemValues = GetTicketData(ticket, workItemFields, TFSProjectName, actionDescriptionId, customMappingFields, crmLinkErrors)
-                            Dim workItemObject As WorkItem = _tfs.CreateWorkItem(workItemValues, TFSProjectName, ticket.TicketTypeName)
+							Dim actionDescriptionId As Integer
+							Dim workItemValues As List(Of TFSLibrary.WorkItemField) = New List(Of TFSLibrary.WorkItemField)
 
+							workItemValues = GetTicketData(ticket, workItemFields, TFSProjectName, actionDescriptionId, customMappingFields, crmLinkErrors)
+							workItem = _tfs.CreateWorkItem(workItemValues, TFSProjectName, ticket.TicketTypeName)
 
-                            'ticketData.Append(GetTicketData(ticket, workItemFields, TFSProjectName, actionDescriptionId, customMappingFields, crmLinkErrors))
-                            'workItem = GetAPIJObject(URI, "POST", ticketData.ToString())
-                            '            'The create issue response does not include status and we need it to initialize the synched ticket. So, we do a GET on the recently created issue.
-                            '            URI = _baseURI + "/issue/" + issue("key").ToString()
-                            '            issue = GetAPIJObject(URI, "GET", String.Empty)
-                            '            updateTicketFlag = True
-                            '            sendCustomMappingFields = CRMLinkRow.IncludeIssueNonRequired
+							'We don't know if the workItem's type has Description or not, so we will always add a Comment with it too.
+							If (workItem IsNot Nothing AndAlso workItem.Id > 0) Then
+								_tfs.CreateComment(workItem.Id, workItemValues.Where(Function(f) f.name = "Description").FirstOrDefault().value)
+							End If
 
-                            'Check if Ticket Description Action has Attachment
-                            If (attachmentEnabled AndAlso actionDescriptionId > 0) Then
-                                Dim actionDescriptionAttachment As Data.Attachment = Attachments.GetAttachment(User, actionDescriptionId)
-                                'The Action Description should always be 1, if for any reason this is not the case call: Actions.GetActionPosition(User, actionDescriptionId)
-                                Dim actionPosition As Integer = 1
-                                'PushAttachments(actionDescriptionId, ticket.TicketNumber, workItem, workItem("title"), attachmentFileSizeLimit, actionPosition)
-                            End If
+							updateTicketFlag = True
+							sendCustomMappingFields = CRMLinkRow.IncludeIssueNonRequired
 
-                            ClearCrmLinkError(crmLinkError)
-                        Catch webEx As WebException
-                            '        Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
-                            Dim TFSErrors As String
-                            '        If (jiraErrors IsNot Nothing AndAlso jiraErrors.HasErrors) Then
-                            If (TFSErrors IsNot Nothing) Then
-                                AddLog(String.Format(_tfsExceptionMessageFormat,
-                                                    webEx.Message,
-                                                    Environment.NewLine,
-                                                    vbTab,
-                                                    TFSErrors.ToString()))
-                                AddLog(webEx.StackTrace,
-                                        LogType.Report,
-                                        crmLinkError,
-                                        String.Format("Jira Issue was not created due to:{0}{1}", Environment.NewLine, TFSErrors.ToString()),
-                                        Orientation.OutToJira,
-                                        ObjectType.Ticket,
-                                        ticket.TicketID,
-                                        String.Empty,
-                                        ticketData.ToString(),
-                                        OperationType.Create)
-                            Else
-                                AddLog(webEx.ToString() + webEx.StackTrace)
-                            End If
+							'Check if Ticket Description Action has Attachment
+							If (attachmentEnabled AndAlso actionDescriptionId > 0) Then
+								Dim actionDescriptionAttachment As Data.Attachment = Attachments.GetAttachment(User, actionDescriptionId)
+								'The Action Description should always be 1, if for any reason this is not the case call: Actions.GetActionPosition(User, actionDescriptionId)
+								Dim actionPosition As Integer = 1
+								'PushAttachments(actionDescriptionId, ticket.TicketNumber, workItem, workItem("title"), attachmentFileSizeLimit, actionPosition)
+							End If
 
-                            Continue For
-                        Catch ex As Exception
-                            Dim updateLinkToTFS As Boolean = True
-                            Dim errorMessage As String = String.Empty
+							ClearCrmLinkError(crmLinkError)
+						Catch webEx As WebException
+							'        Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
+							Dim TFSErrors As String
+							'        If (jiraErrors IsNot Nothing AndAlso jiraErrors.HasErrors) Then
+							If (TFSErrors IsNot Nothing) Then
+								AddLog(String.Format(_tfsExceptionMessageFormat,
+													webEx.Message,
+													Environment.NewLine,
+													vbTab,
+													TFSErrors.ToString()))
+								AddLog(webEx.StackTrace,
+										LogType.Report,
+										crmLinkError,
+										String.Format("WorkItem was not created due to:{0}{1}", Environment.NewLine, TFSErrors.ToString()),
+										Orientation.OutToJira,
+										ObjectType.Ticket,
+										ticket.TicketID,
+										String.Empty,
+										ticketData.ToString(),
+										OperationType.Create)
+							Else
+								AddLog(webEx.ToString() + webEx.StackTrace)
+							End If
 
-                            'Select Case ex.Message
-                            '    Case "no project"
-                            '        errorMessage = "Error: Specify Project (Product)."
-                            '    Case "type mismatch"
-                            '        errorMessage = "Error: Specify valid Type."
-                            '    Case "project mismatch"
-                            '        errorMessage = "Error: Specify valid Project (Product)."
-                            '    Case Else
-                            '        errorMessage = ex.Message
-                            '        updateLinkToTFS = False
-                            'End Select
+							Continue For
+						Catch ex As Exception
+							Dim updateLinkToTFS As Boolean = True
+							Dim errorMessage As String = String.Empty
 
-                            If updateLinkToTFS Then
-                                ticketLinkToTFS.TFSTitle = errorMessage
-                                ticketLinkToTFS.DateModifiedByTFSSync = DateTime.UtcNow()
-                                ticketLinkToTFS.Collection.Save()
-                            End If
+							'Select Case ex.Message
+							'    Case "no project"
+							'        errorMessage = "Error: Specify Project (Product)."
+							'    Case "type mismatch"
+							'        errorMessage = "Error: Specify valid Type."
+							'    Case "project mismatch"
+							'        errorMessage = "Error: Specify valid Project (Product)."
+							'    Case Else
+							'        errorMessage = ex.Message
+							'        updateLinkToTFS = False
+							'End Select
 
-                            AddLog(ex.ToString() + ex.StackTrace,
-                                LogType.TextAndReport,
-                                crmLinkError,
-                                errorMessage,
-                                Orientation.OutToJira,
-                                ObjectType.Ticket,
-                                ticket.TicketID.ToString(),
-                                "create",
-                                ticketData.ToString(),
-                                OperationType.Create)
-                            Continue For
-                        End Try
+							If updateLinkToTFS Then
+								ticketLinkToTFS.TFSTitle = errorMessage
+								ticketLinkToTFS.DateModifiedByTFSSync = DateTime.UtcNow()
+								ticketLinkToTFS.Collection.Save()
+							End If
 
-                        'WorkItem already exists. 
-                        'We are not updating WorkItems, but if this is a second ticket relating to WorkItem we add a link and update ticket fields for TFS
-                    ElseIf ticketLinkToTFS.TFSID Is Nothing Then
-                        crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticket.TicketID, "update")
+							AddLog(ex.ToString() + ex.StackTrace,
+								LogType.TextAndReport,
+								crmLinkError,
+								errorMessage,
+								Orientation.OutToJira,
+								ObjectType.Ticket,
+								ticket.TicketID.ToString(),
+								"create",
+								ticketData.ToString(),
+								OperationType.Create)
+							Continue For
+						End Try
 
-                        Try
-                            'URI = _baseURI + "/issue/" + TicketLinkToJira.JiraKey
-                            workItem = GetAPIJObject(URI, "GET", String.Empty)
-                            updateTicketFlag = True
-                            Log.Write("No TFSID. We'll add link.")
+						'WorkItem already exists. 
+						'We are not updating WorkItems, but if this is a second ticket relating to WorkItem we add a link and update ticket fields for TFS
+					ElseIf ticketLinkToTFS.TFSID IsNot Nothing AndAlso Not ticketLinkToTFS.DateModifiedByTFSSync.HasValue Then
+						crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticket.TicketID, "update")
 
-                            'An update error could has been caused here or below.
-                            'We'll only clear when successfull below.
-                        Catch webEx As WebException
-                            Dim invalidTFSTitle As String = String.Empty
+						Try
+							workItem = _tfs.GetWorkItemBy(ticketLinkToTFS.TFSID)
+							updateTicketFlag = True
+							Log.Write("No TFSID. We'll add link.")
 
-                            If ticketLinkToTFS.TFSTitle.ToLower().Contains("http") _
-                            Or ticketLinkToTFS.TFSTitle.ToLower().Contains(":") _
-                            Or ticketLinkToTFS.TFSTitle.ToLower().Contains("/") Then
-                                invalidTFSTitle = "The TFS Work Item Title entered is not valid or does not exist in TFS."
-                            End If
+							'An update error could has been caused here or below.
+							'We'll only clear when successfull below.
+						Catch webEx As WebException
+							Dim invalidTFSTitle As String = String.Empty
 
-                            If (String.IsNullOrEmpty(invalidTFSTitle)) Then
-                                '        Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
-                                Dim TFSErrors As String
-                                '        If (jiraErrors IsNot Nothing AndAlso jiraErrors.HasErrors) Then
-                                If (TFSErrors IsNot Nothing) Then
-                                    AddLog(String.Format(_tfsExceptionMessageFormat,
-                                                        webEx.Message,
-                                                        Environment.NewLine,
-                                                        vbTab,
-                                                        TFSErrors.ToString()))
-                                    AddLog(webEx.StackTrace,
-                                            LogType.Report,
-                                            crmLinkError,
-                                            String.Format("Could not get TFS WorkItem:{0}{1}", Environment.NewLine, TFSErrors.ToString()),
-                                            Orientation.OutToJira,
-                                            ObjectType.Ticket,
-                                            ticket.TicketID,
-                                            "update",
-                                            URI,
-                                            OperationType.Create)
-                                Else
-                                    AddLog(String.Format("{0}{1}{2}", webEx.Message, Environment.NewLine, webEx.StackTrace))
-                                End If
-                            Else
-                                AddLog(String.Format(_tfsExceptionMessageFormat,
-                                                    webEx.Message,
-                                                    Environment.NewLine,
-                                                    vbTab,
-                                                    invalidTFSTitle))
-                                AddLog(webEx.StackTrace,
-                                        LogType.Report,
-                                        crmLinkError,
-                                        String.Format("Could not get Jira Issue:{0}{1}", Environment.NewLine, invalidTFSTitle),
-                                        Orientation.OutToJira,
-                                        ObjectType.Ticket,
-                                        ticket.TicketID,
-                                        "update",
-                                        URI,
-                                        OperationType.Create)
-                            End If
+							If ticketLinkToTFS.TFSTitle.ToLower().Contains("http") _
+							Or ticketLinkToTFS.TFSTitle.ToLower().Contains(":") _
+							Or ticketLinkToTFS.TFSTitle.ToLower().Contains("/") Then
+								invalidTFSTitle = "The TFS Work Item Title entered is not valid or does not exist in TFS."
+							End If
 
-                            Continue For
-                        Catch ex As Exception
-                            AddLog(String.Format("{0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace))
+							If (String.IsNullOrEmpty(invalidTFSTitle)) Then
+								'        Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
+								Dim TFSErrors As String
+								'        If (jiraErrors IsNot Nothing AndAlso jiraErrors.HasErrors) Then
+								If (TFSErrors IsNot Nothing) Then
+									AddLog(String.Format(_tfsExceptionMessageFormat,
+														webEx.Message,
+														Environment.NewLine,
+														vbTab,
+														TFSErrors.ToString()))
+									AddLog(webEx.StackTrace,
+											LogType.Report,
+											crmLinkError,
+											String.Format("Could not get TFS WorkItem:{0}{1}", Environment.NewLine, TFSErrors.ToString()),
+											Orientation.OutToJira,
+											ObjectType.Ticket,
+											ticket.TicketID,
+											"update",
+											URI,
+											OperationType.Create)
+								Else
+									AddLog(String.Format("{0}{1}{2}", webEx.Message, Environment.NewLine, webEx.StackTrace))
+								End If
+							Else
+								AddLog(String.Format(_tfsExceptionMessageFormat,
+													webEx.Message,
+													Environment.NewLine,
+													vbTab,
+													invalidTFSTitle))
+								AddLog(webEx.StackTrace,
+										LogType.Report,
+										crmLinkError,
+										String.Format("Could not get Jira Issue:{0}{1}", Environment.NewLine, invalidTFSTitle),
+										Orientation.OutToJira,
+										ObjectType.Ticket,
+										ticket.TicketID,
+										"update",
+										URI,
+										OperationType.Create)
+							End If
+
+							Continue For
+						Catch ex As Exception
+							AddLog(String.Format("{0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace))
                             Continue For
                         End Try
                     Else
@@ -491,14 +488,29 @@ Namespace TeamSupport
                                                                                 creator(0).LastName)
                             End If
 
-                            'AddRemoteLinkInTFS(workItem("id").ToString(), workItem("title").ToString(), ticket.TicketID.ToString(), ticket.TicketNumber.ToString(), ticket.Name, creatorName)
+							'ToDO //vv add the 'remotelink'
+							Dim ticketName As String = DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(ticket.Name)))
+							Dim domain As String = SystemSettings.ReadStringForCrmService(User, "AppDomain", "https://app.teamsupport.com")
+							Dim remoteLink As String = domain + "/Ticket.aspx?ticketid=&id=" + ticket.TicketID
 
-                            'ticketLinkToTFS.TFSID = CType(workItem("id").ToString(), Integer?)
-                            'ticketLinkToTFS.TFSTitle = workItem("key").ToString()
-                            'ticketLinkToTFS.TFSURL = CRMLinkRow.HostName + "/browse/" + ticketLinkToTFS.TFSTitle
-                            'ticketLinkToTFS.TFSState = workItem("fields")("state")("name").ToString()
+							_tfs.CreateTeamSupportHyperlink(workItem.Id, remoteLink, String.Format("{0} Ticket #{1} - {2}", creatorName, ticket.TicketNumber, ticketName))
+							ticketLinkToTFS.TFSID = workItem.Id
 
-                            If CRMLinkRow.UpdateStatus Then
+							If (workItem.Fields.Where(Function(w) w.Key = "System.Title").Any()) Then
+								ticketLinkToTFS.TFSTitle = workItem.Fields.Where(Function(w) w.Key = "System.Title").Select(Function(p) p.Value)(0)
+							Else
+								ticketLinkToTFS.TFSTitle = ticketName
+							End If
+
+							If (workItem.Fields.Where(Function(w) w.Key = "System.Title").Any()) Then
+								ticketLinkToTFS.TFSState = workItem.Fields.Where(Function(w) w.Key = "System.State").Select(Function(p) p.Value)(0)
+							Else
+								ticketLinkToTFS.TFSState = "System.State not found in workitem" 'ToDo //vv what to do if the System.Title is not found?
+							End If
+
+							ticketLinkToTFS.TFSURL = workItem.Url
+
+							If CRMLinkRow.UpdateStatus Then
                                 Dim newStatus As TicketStatus = allStatuses.FindByName(ticketLinkToTFS.TFSState, ticket.TicketTypeID)
 
                                 If newStatus IsNot Nothing Then
@@ -525,9 +537,9 @@ Namespace TeamSupport
                                 newAction.AddNewAction()
                                 newAction(0).ActionTypeID = newActionsTypeID
                                 newAction(0).TicketID = ticket.TicketID
-                                newAction(0).Description = "Ticket has been synced with TFS' work item " + workItem("title").ToString() + " with state """ + ticketLinkToTFS.TFSState + """."
-                                ticketLinkToTFS.DateModifiedByTFSSync = DateTime.UtcNow()
-                                newAction.Save()
+								newAction(0).Description = "Ticket has been synced with TFS' work item " + workItem.Fields.Where(Function(w) w.Key = "System.Title").Select(Function(p) p.Value).FirstOrDefault() + " with state """ + ticketLinkToTFS.TFSState + """."
+								ticketLinkToTFS.DateModifiedByTFSSync = DateTime.UtcNow()
+								newAction.Save()
 
                                 Dim newActionLinkToTFS As ActionLinkToTFS = New ActionLinkToTFS(User)
                                 newActionLinkToTFS.AddNewActionLinkToTFSItem()
@@ -557,9 +569,9 @@ Namespace TeamSupport
                         End Try
                     End If
 
-                    PushActionsAsComments(ticket.TicketID, ticket.TicketNumber, workItem, ticketLinkToTFS.TFSTitle, attachmentEnabled, attachmentFileSizeLimit)
+					PushActionsAsComments(ticket.TicketID, ticket.TicketNumber, workItem, attachmentEnabled, attachmentFileSizeLimit)
 
-                    If sendCustomMappingFields Then
+					If sendCustomMappingFields Then
                         'We are now updating the custom mapping fields. We do a call per field to minimize the impact of invalid values attempted to be assigned.
                         '//ToDo //vv redo this section, we are not using jobjects and instead we are using object properties for the workitem
                         If workItemFields IsNot Nothing Then
@@ -752,36 +764,35 @@ Namespace TeamSupport
                 Return request.GetResponse()
             End Function
 
-            Private Function GetTicketData(ByVal ticket As TicketsViewItem,
-                                        ByVal workItemFields As List(Of TFSLibrary.WorkItemField),
-                                        ByVal TFSProjectName As String,
-                                        ByRef actionDescriptionId As Integer,
-                                        ByRef customMappingFields As CRMLinkFields,
-                                        ByRef crmLinkErrors As CRMLinkErrors) As List(Of TFSLibrary.WorkItemField)
-                Dim workItemValues As List(Of TFSLibrary.WorkItemField) = New List(Of TFSLibrary.WorkItemField)
-                Dim fieldValue As TFSLibrary.WorkItemField
+			Private Function GetTicketData(ByVal ticket As TicketsViewItem,
+										ByVal workItemFields As List(Of TFSLibrary.WorkItemField),
+										ByVal TFSProjectName As String,
+										ByRef actionDescriptionId As Integer,
+										ByRef customMappingFields As CRMLinkFields,
+										ByRef crmLinkErrors As CRMLinkErrors) As List(Of TFSLibrary.WorkItemField)
+				Dim workItemValues As List(Of TFSLibrary.WorkItemField) = New List(Of TFSLibrary.WorkItemField)
+				Dim fieldValue As TFSLibrary.WorkItemField
 
-                fieldValue = workItemFields.Where(Function(w) w.name = "Title").FirstOrDefault
-                fieldValue.value = DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(ticket.Name)))
-                workItemValues.Add(fieldValue)
+				fieldValue = workItemFields.Where(Function(w) w.name = "Title").FirstOrDefault
+				fieldValue.value = DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(ticket.Name)))
+				workItemValues.Add(fieldValue)
 
-                Dim actionDescription As Action = Actions.GetTicketDescription(User, ticket.TicketID)
-                actionDescriptionId = actionDescription.ActionID
+				Dim actionDescription As Action = Actions.GetTicketDescription(User, ticket.TicketID)
+				actionDescriptionId = actionDescription.ActionID
 
-                Dim addLines As Boolean = True
-                Dim description As String = HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(actionDescription.Description), addLines)
-                fieldValue = workItemFields.Where(Function(w) w.name = "Description").FirstOrDefault
-                'ToDo //vv check if type has Description, if not add a comment
-                fieldValue.value = description
-                workItemValues.Add(fieldValue)
+				Dim addLines As Boolean = True
+				Dim description As String = HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(actionDescription.Description), addLines)
+				fieldValue = workItemFields.Where(Function(w) w.name = "Description").FirstOrDefault
+				fieldValue.value = description
+				workItemValues.Add(fieldValue)
 
-                Dim customField As StringBuilder = New StringBuilder()
-                'ToDo //vv ?? customField = BuildRequiredFields(ticket, fields, customMappingFields, crmLinkErrors)
+				Dim customField As StringBuilder = New StringBuilder()
+				'ToDo //vv ?? customField = BuildRequiredFields(ticket, fields, customMappingFields, crmLinkErrors)
 
-                Return workItemValues
-            End Function
+				Return workItemValues
+			End Function
 
-            Private Function BuildRequiredFields(ByVal ticket As TicketsViewItem,
+			Private Function BuildRequiredFields(ByVal ticket As TicketsViewItem,
                                             ByRef fields As JObject,
                                             ByRef customMappingFields As CRMLinkFields,
                                             ByRef crmLinkErrors As CRMLinkErrors)
@@ -958,125 +969,124 @@ Namespace TeamSupport
                 Return message.ToString()
             End Function
 
-            Private Sub PushAttachments(
-            ByVal actionID As Integer,
-            ByVal ticketNumber As Integer,
-            ByVal workItem As JObject,
-            ByVal workItemTitle As String,
-            ByVal fileSizeLimit As Integer,
-            ByVal actionPosition As Integer)
+			Private Sub PushAttachments(
+			ByVal actionID As Integer,
+			ByVal ticketNumber As Integer,
+			ByVal workItemTitle As String,
+			ByVal fileSizeLimit As Integer,
+			ByVal actionPosition As Integer)
 
-                Dim attachments As Attachments = New Attachments(User)
-                attachments.LoadForTFS(actionID)
+				Dim attachments As Attachments = New Attachments(User)
+				attachments.LoadForTFS(actionID)
 
-                Dim crmLinkAttachmentErrors As CRMLinkErrors = New CRMLinkErrors(User)
-                crmLinkAttachmentErrors.LoadByOperationAndObjectIds(CRMLinkRow.OrganizationID,
-                                                                CRMLinkRow.CRMType,
-                                                                GetDescription(Orientation.OutToJira),
-                                                                GetDescription(ObjectType.Attachment),
-                                                                attachments.Select(Function(p) p.AttachmentID.ToString()).ToList(),
-                                                                isCleared:=False)
-                Dim updateAttachments As Boolean = False
-                Dim crmLinkError As CRMLinkError = Nothing
-                Dim attachmentError As String = String.Empty
+				Dim crmLinkAttachmentErrors As CRMLinkErrors = New CRMLinkErrors(User)
+				crmLinkAttachmentErrors.LoadByOperationAndObjectIds(CRMLinkRow.OrganizationID,
+																CRMLinkRow.CRMType,
+																GetDescription(Orientation.OutToJira),
+																GetDescription(ObjectType.Attachment),
+																attachments.Select(Function(p) p.AttachmentID.ToString()).ToList(),
+																isCleared:=False)
+				Dim updateAttachments As Boolean = False
+				Dim crmLinkError As CRMLinkError = Nothing
+				Dim attachmentError As String = String.Empty
 
-                For Each attachment As Data.Attachment In attachments
-                    crmLinkError = crmLinkAttachmentErrors.FindByObjectIDAndFieldName(attachment.AttachmentID.ToString(), "file")
+				For Each attachment As Data.Attachment In attachments
+					crmLinkError = crmLinkAttachmentErrors.FindByObjectIDAndFieldName(attachment.AttachmentID.ToString(), "file")
 
-                    If (Not File.Exists(attachment.Path)) Then
-                        attachmentError = "Attachment was not sent as it was not found on server"
-                        AddLog(attachmentError,
-                            LogType.TextAndReport,
-                            crmLinkError,
-                            attachmentError,
-                            Orientation.OutToJira,
-                            ObjectType.Attachment,
-                            attachment.AttachmentID,
-                            "file",
-                            attachment.FileName,
-                            OperationType.Create)
-                    Else
-                        Dim fs = New FileStream(attachment.Path, FileMode.Open, FileAccess.Read)
+					If (Not File.Exists(attachment.Path)) Then
+						attachmentError = "Attachment was not sent as it was not found on server"
+						AddLog(attachmentError,
+							LogType.TextAndReport,
+							crmLinkError,
+							attachmentError,
+							Orientation.OutToJira,
+							ObjectType.Attachment,
+							attachment.AttachmentID,
+							"file",
+							attachment.FileName,
+							OperationType.Create)
+					Else
+						Dim fs = New FileStream(attachment.Path, FileMode.Open, FileAccess.Read)
 
-                        If (fs.Length > fileSizeLimit) Then
-                            attachmentError = String.Format("Attachment was not sent as its file size ({0}) exceeded the file size limit of {1}", fs.Length.ToString(), fileSizeLimit.ToString())
-                            AddLog(attachmentError,
-                                LogType.TextAndReport,
-                                crmLinkError,
-                                attachmentError,
-                                Orientation.OutToJira,
-                                ObjectType.Attachment,
-                                attachment.AttachmentID,
-                                "file",
-                                attachment.FileName,
-                                OperationType.Create)
-                        Else
-                            Try
-                                'Dim URIString As String = _baseURI + "/issue/" + issue("id").ToString() + "/attachments/"
-                                Dim URIString As String = ""
-                                Dim request As HttpWebRequest = WebRequest.Create(URIString)
-                                request.Headers.Add("Authorization", "Basic " + _encodedCredentials)
-                                'request.Headers.Add("X-Atlassian-Token", "nocheck")
-                                request.Method = "POST"
-                                Dim boundary As String = String.Format("----------{0:N}", Guid.NewGuid())
-                                request.ContentType = String.Format("multipart/form-data; boundary={0}", boundary)
-                                request.UserAgent = Client
+						If (fs.Length > fileSizeLimit) Then
+							attachmentError = String.Format("Attachment was not sent as its file size ({0}) exceeded the file size limit of {1}", fs.Length.ToString(), fileSizeLimit.ToString())
+							AddLog(attachmentError,
+								LogType.TextAndReport,
+								crmLinkError,
+								attachmentError,
+								Orientation.OutToJira,
+								ObjectType.Attachment,
+								attachment.AttachmentID,
+								"file",
+								attachment.FileName,
+								OperationType.Create)
+						Else
+							Try
+								'Dim URIString As String = _baseURI + "/issue/" + issue("id").ToString() + "/attachments/"
+								Dim URIString As String = ""
+								Dim request As HttpWebRequest = WebRequest.Create(URIString)
+								request.Headers.Add("Authorization", "Basic " + _encodedCredentials)
+								'request.Headers.Add("X-Atlassian-Token", "nocheck")
+								request.Method = "POST"
+								Dim boundary As String = String.Format("----------{0:N}", Guid.NewGuid())
+								request.ContentType = String.Format("multipart/form-data; boundary={0}", boundary)
+								request.UserAgent = Client
 
-                                Dim content = New MemoryStream()
-                                Dim writer = New StreamWriter(content)
-                                writer.WriteLine("--{0}", boundary)
-                                writer.WriteLine("Content-Disposition: form-data; name=""file""; filename=""{0}""", ("TeamSupport Ticket #" + ticketNumber.ToString() + " action #" + actionPosition.ToString() + " - " + attachment.FileName))
-                                writer.WriteLine("Content-Type: application/octet-stream")
-                                writer.WriteLine()
-                                writer.Flush()
-                                Dim data(fs.Length) As Byte
-                                fs.Read(data, 0, data.Length)
-                                fs.Close()
-                                content.Write(data, 0, data.Length)
-                                writer.WriteLine()
-                                writer.WriteLine("--" + boundary + "--")
-                                writer.Flush()
-                                content.Seek(0, SeekOrigin.Begin)
-                                request.ContentLength = content.Length
+								Dim content = New MemoryStream()
+								Dim writer = New StreamWriter(content)
+								writer.WriteLine("--{0}", boundary)
+								writer.WriteLine("Content-Disposition: form-data; name=""file""; filename=""{0}""", ("TeamSupport Ticket #" + ticketNumber.ToString() + " action #" + actionPosition.ToString() + " - " + attachment.FileName))
+								writer.WriteLine("Content-Type: application/octet-stream")
+								writer.WriteLine()
+								writer.Flush()
+								Dim data(fs.Length) As Byte
+								fs.Read(data, 0, data.Length)
+								fs.Close()
+								content.Write(data, 0, data.Length)
+								writer.WriteLine()
+								writer.WriteLine("--" + boundary + "--")
+								writer.Flush()
+								content.Seek(0, SeekOrigin.Begin)
+								request.ContentLength = content.Length
 
-                                Using requestStream As Stream = request.GetRequestStream()
-                                    content.WriteTo(requestStream)
-                                    requestStream.Close()
-                                End Using
+								Using requestStream As Stream = request.GetRequestStream()
+									content.WriteTo(requestStream)
+									requestStream.Close()
+								End Using
 
-                                Using response As HttpWebResponse = request.GetResponse()
-                                    Log.Write("Attachment """ + attachment.FileName + """ sent.")
-                                    response.Close()
-                                End Using
+								Using response As HttpWebResponse = request.GetResponse()
+									Log.Write("Attachment """ + attachment.FileName + """ sent.")
+									response.Close()
+								End Using
 
-                                content.Flush()
-                                content.Close()
-                                attachment.SentToJira = True
-                                updateAttachments = True
+								content.Flush()
+								content.Close()
+								attachment.SentToJira = True
+								updateAttachments = True
 
-                                ClearCrmLinkError(crmLinkError)
-                            Catch ex As Exception
-                                AddLog(String.Format("{0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace),
-                                    LogType.TextAndReport,
-                                    crmLinkError,
-                                    "Attachment could not be sent. " + ex.Message.ToString(),
-                                    Orientation.OutToJira,
-                                    ObjectType.Attachment,
-                                    attachment.AttachmentID,
-                                    "file",
-                                    attachment.FileName,
-                                    OperationType.Create)
-                            End Try
-                        End If
-                    End If
-                Next
+								ClearCrmLinkError(crmLinkError)
+							Catch ex As Exception
+								AddLog(String.Format("{0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace),
+									LogType.TextAndReport,
+									crmLinkError,
+									"Attachment could not be sent. " + ex.Message.ToString(),
+									Orientation.OutToJira,
+									ObjectType.Attachment,
+									attachment.AttachmentID,
+									"file",
+									attachment.FileName,
+									OperationType.Create)
+							End Try
+						End If
+					End If
+				Next
 
-                If updateAttachments Then
-                    attachments.Save()
-                End If
-            End Sub
+				If updateAttachments Then
+					attachments.Save()
+				End If
+			End Sub
 
-            Private Sub AddRemoteLinkInTFS(ByVal workItemID As String, ByVal workItemTitle As String, ByVal ticketID As String, ByVal ticketNumber As String, ByVal ticketName As String, ByVal creatorName As String)
+			Private Sub AddRemoteLinkInTFS(ByVal workItemID As String, ByVal workItemTitle As String, ByVal ticketID As String, ByVal ticketNumber As String, ByVal ticketName As String, ByVal creatorName As String)
                 Dim domain As String = SystemSettings.ReadStringForCrmService(User, "AppDomain", "https://app.teamsupport.com")
 
                 'Try
@@ -1135,134 +1145,81 @@ Namespace TeamSupport
                 'End Try
             End Sub
 
-            Private Sub PushActionsAsComments(
-                ByVal ticketID As Integer,
-                ByVal ticketNumber As Integer,
-                ByVal workItem As JObject,
-                ByVal workItemTitle As String,
-                ByVal attachmentEnabled As Boolean,
-                ByVal attachmentFileSizeLimit As Integer)
+			Private Sub PushActionsAsComments(
+				ByVal ticketID As Integer,
+				ByVal ticketNumber As Integer,
+				ByVal workItem As WorkItem,
+				ByVal attachmentEnabled As Boolean,
+				ByVal attachmentFileSizeLimit As Integer)
 
-                Dim actionsToPushAsComments As Actions = New Actions(User)
-                actionsToPushAsComments.LoadToPushToTFS(CRMLinkRow, ticketID)
-                Log.Write("Found " + actionsToPushAsComments.Count.ToString() + " actions to push as comments.")
+				Dim actionsToPushAsComments As Actions = New Actions(User)
+				actionsToPushAsComments.LoadToPushToTFS(CRMLinkRow, ticketID)
+				Log.Write("Found " + actionsToPushAsComments.Count.ToString() + " actions to push as comments.")
 
-                Dim actionLinkToTFS As ActionLinkToTFS = New ActionLinkToTFS(User)
-                actionLinkToTFS.LoadToPushToTFS(CRMLinkRow, ticketID)
+				Dim actionLinkToTFS As ActionLinkToTFS = New ActionLinkToTFS(User)
+				actionLinkToTFS.LoadToPushToTFS(CRMLinkRow, ticketID)
 
-                Dim crmLinkActionErrors As CRMLinkErrors = New CRMLinkErrors(User)
-                crmLinkActionErrors.LoadByOperationAndObjectIds(CRMLinkRow.OrganizationID,
-                                                        CRMLinkRow.CRMType,
-                                                        GetDescription(Orientation.OutToJira),
-                                                        GetDescription(ObjectType.Action),
-                                                        actionsToPushAsComments.Select(Function(p) p.ActionID.ToString()).ToList(),
-                                                        isCleared:=False)
-                Dim crmLinkError As CRMLinkError = Nothing
-                Dim body As StringBuilder = Nothing
+				Dim crmLinkActionErrors As CRMLinkErrors = New CRMLinkErrors(User)
+				crmLinkActionErrors.LoadByOperationAndObjectIds(CRMLinkRow.OrganizationID,
+														CRMLinkRow.CRMType,
+														GetDescription(Orientation.OutToJira),
+														GetDescription(ObjectType.Action),
+														actionsToPushAsComments.Select(Function(p) p.ActionID.ToString()).ToList(),
+														isCleared:=False)
+				Dim crmLinkError As CRMLinkError = Nothing
 
-                For Each actionToPushAsComment As Action In actionsToPushAsComments
-                    Dim actionLinkToTFSItem As ActionLinkToTFSItem = actionLinkToTFS.FindByActionID(actionToPushAsComment.ActionID)
-                    Dim actionPosition As Integer = Actions.GetActionPosition(User, actionToPushAsComment.ActionID)
-                    crmLinkError = crmLinkActionErrors.FindByObjectIDAndFieldName(actionToPushAsComment.ActionID.ToString(), String.Empty)
-                    Log.Write("Processing actionID: " + actionToPushAsComment.ActionID.ToString())
+				For Each actionToPushAsComment As Action In actionsToPushAsComments
+					Dim actionLinkToTFSItem As ActionLinkToTFSItem = actionLinkToTFS.FindByActionID(actionToPushAsComment.ActionID)
+					Dim actionPosition As Integer = Actions.GetActionPosition(User, actionToPushAsComment.ActionID)
+					crmLinkError = crmLinkActionErrors.FindByObjectIDAndFieldName(actionToPushAsComment.ActionID.ToString(), String.Empty)
+					Log.Write("Processing actionID: " + actionToPushAsComment.ActionID.ToString())
 
-                    If actionLinkToTFSItem Is Nothing Then
-                        Try
-                            If workItem Is Nothing Then
-                                'workItem = GetAPIJObject(_baseURI + "/workItem/" + workItemTitle, "GET", String.Empty)
-                            End If
+					If actionLinkToTFSItem Is Nothing Then
+						Try
+							Dim TFSComment As String = BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition, actionToPushAsComment.CreatorID)
+							Dim commentId As Integer = _tfs.CreateComment(workItem.Id, TFSComment)
+							Dim newActionLinkToTFS As ActionLinkToTFS = New ActionLinkToTFS(User)
+							Dim newActionLinkToTFSItem As ActionLinkToTFSItem = newActionLinkToTFS.AddNewActionLinkToTFSItem()
 
-                            'Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest", ""), CRMLinkRow.Username, CRMLinkRow.Password)
-                            'Dim issueRef As IssueRef = New IssueRef With {.id = issue("id"), .key = issueKey}
+							newActionLinkToTFSItem.ActionID = actionToPushAsComment.ActionID
+							newActionLinkToTFSItem.TFSID = commentId
+							newActionLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow
+							newActionLinkToTFS.Save()
+							Log.Write("Created comment for action")
 
-                            body = New StringBuilder()
-                            Dim TFSComment As String = BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition, actionToPushAsComment.CreatorID)
-                            body.Append(TFSComment)
-                            'Dim commentCreated As Comment = jiraClient.CreateComment(issueRef, jiraComment)
-                            Dim newActionLinkToTFS As ActionLinkToTFS = New ActionLinkToTFS(User)
-                            Dim newActionLinkToTFSItem As ActionLinkToTFSItem = newActionLinkToTFS.AddNewActionLinkToTFSItem()
+							ClearCrmLinkError(crmLinkError)
+						Catch ex As Exception
+							AddLog(ex.ToString() + ex.StackTrace)
+							Continue For
+						End Try
+					Else
+						Try
+							Log.Write("action.TFSID: " + actionLinkToTFSItem.TFSID.ToString())
+							If actionLinkToTFSItem.TFSID <> -1 Then
+								Dim TFSComment As String = BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition, actionToPushAsComment.CreatorID)
+								'ToDo //vv update a comment. Is it possible?
+								'Dim commentUpdated As Comment = jiraClient.UpdateComment(issueRef, ActionLinkToTFSItem.JiraID, body.ToString())
 
-                            newActionLinkToTFSItem.ActionID = actionToPushAsComment.ActionID
-                            'newActionLinkToTFSItem.TFSID = commentCreated.id
-                            newActionLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow
-                            newActionLinkToTFS.Save()
-                            Log.Write("Created comment for action")
+								actionLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow
+								Log.Write("updated comment for actionID: " + actionToPushAsComment.ActionID.ToString())
+							End If
 
-                            ClearCrmLinkError(crmLinkError)
-                            'Catch jiraEx As JiraClientException
-                            '    AddLog(String.Format(_jiraExceptionMessageFormat,
-                            '                            jiraEx.InnerException.Message,
-                            '                            Environment.NewLine,
-                            '                            vbTab,
-                            '                            DirectCast(jiraEx.InnerException, JiraClientException).ErrorResponse))
-                            '    AddLog(jiraEx.StackTrace,
-                            '        LogType.Report,
-                            '        crmLinkError,
-                            '        jiraEx.Message,
-                            '        Orientation.OutToJira,
-                            '        ObjectType.Action,
-                            '        actionToPushAsComment.ActionID.ToString(),
-                            '        String.Empty,
-                            '        If(body IsNot Nothing, body.ToString(), Nothing),
-                            '        OperationType.Create)
-                            '    Continue For
-                        Catch ex As Exception
-                            AddLog(ex.ToString() + ex.StackTrace)
-                            Continue For
-                        End Try
-                    Else
-                        Try
-                            Log.Write("action.TFSID: " + actionLinkToTFSItem.TFSID.ToString())
-                            If actionLinkToTFSItem.TFSID <> -1 Then
-                                If workItem Is Nothing Then
-                                    'workItem = GetAPIJObject(_baseURI + "/workItem/" + workItemTitle, "GET", String.Empty)
-                                End If
+							ClearCrmLinkError(crmLinkError)
+						Catch ex As Exception
+							AddLog(ex.ToString() + ex.StackTrace)
+							Continue For
+						End Try
+					End If
+					Dim test As String = workItem.Fields.Keys.Where(Function(w) w = "System.Title").Select(Function(p) p).ToString()
+					If (attachmentEnabled) Then
+						PushAttachments(actionToPushAsComment.ActionID, ticketNumber, workItem.Fields.Keys.Where(Function(w) w = "System.Title").Select(Function(p) p).ToString(), attachmentFileSizeLimit, actionPosition)
+					End If
+				Next
 
-                                'Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest", ""), CRMLinkRow.Username, CRMLinkRow.Password)
-                                'Dim issueRef As IssueRef = New IssueRef With {.id = issue("id"), .key = issueKey}
+				actionLinkToTFS.Save()
+			End Sub
 
-                                body = New StringBuilder()
-                                body.Append(BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition, actionToPushAsComment.CreatorID))
-                                'Dim commentUpdated As Comment = jiraClient.UpdateComment(issueRef, ActionLinkToTFSItem.JiraID, body.ToString())
-
-                                actionLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow
-                                Log.Write("updated comment for actionID: " + actionToPushAsComment.ActionID.ToString())
-                            End If
-
-                            ClearCrmLinkError(crmLinkError)
-                            'Catch jiraEx As JiraClientException
-                            '    AddLog(String.Format(_jiraExceptionMessageFormat,
-                            '                            jiraEx.InnerException.Message,
-                            '                            Environment.NewLine,
-                            '                            vbTab,
-                            '                            DirectCast(jiraEx.InnerException, JiraClientException).ErrorResponse))
-                            '    AddLog(jiraEx.StackTrace,
-                            '        LogType.Report,
-                            '        crmLinkError,
-                            '        jiraEx.Message,
-                            '        Orientation.OutToJira,
-                            '        ObjectType.Action,
-                            '        actionToPushAsComment.ActionID.ToString(),
-                            '        String.Empty,
-                            '        If(body IsNot Nothing, body.ToString(), Nothing),
-                            '        OperationType.Update)
-
-                            '    Continue For
-                        Catch ex As Exception
-                            AddLog(ex.ToString() + ex.StackTrace)
-                            Continue For
-                        End Try
-                    End If
-
-                    If (attachmentEnabled) Then
-                        PushAttachments(actionToPushAsComment.ActionID, ticketNumber, workItem, workItemTitle, attachmentFileSizeLimit, actionPosition)
-                    End If
-                Next
-
-                actionLinkToTFS.Save()
-            End Sub
-
-            Private Function BuildCommentBody(ByVal ticketNumber As String, ByVal actionDescription As String, ByVal actionPosition As Integer, creatorId As Integer) As String
+			Private Function BuildCommentBody(ByVal ticketNumber As String, ByVal actionDescription As String, ByVal actionPosition As Integer, creatorId As Integer) As String
                 Dim result As StringBuilder = New StringBuilder()
                 Dim creatorUser As UsersViewItem = UsersView.GetUsersViewItem(User, creatorId)
                 Dim creatorUserName As String = If(creatorUser IsNot Nothing, String.Format(" added by {0} {1}", creatorUser.FirstName, creatorUser.LastName), String.Empty)
