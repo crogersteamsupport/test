@@ -216,7 +216,7 @@ AdminPortal = function () {
         if (parent.parent.Ts.System.Organization.UseProductFamilies == true) {
             $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#kb_cat_productfamily');
             $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#com_cat_productfamily');
-            parent.parent.Ts.Cache.getProductFamilies(function (productFamilies) {
+            getProductFamilies(function (productFamilies) {
                 for (var i = 0; i < productFamilies.length; i++) {
                     $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#kb_cat_productfamily');
                     $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#com_cat_productfamily');
@@ -243,9 +243,16 @@ AdminPortal = function () {
                 });
             });
         });
-    }
 
+
+    }
     getData();
+
+    function getProductFamilies(callback) {
+        parent.parent.Ts.Services.Products.GetProductFamilies(function (result) {
+            callback(result);
+        });
+    }
 
     function loadValues(organization, portalOption, externalLink) {
         $('#portal_name').val(portalOption.PortalName);
