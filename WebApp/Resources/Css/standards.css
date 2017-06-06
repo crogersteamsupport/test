@@ -208,7 +208,7 @@ div.menutree-highlighted {
 }
 
 div.menutree-selected a,
-div.menutree-highlighted {
+div.menutree-highlighted a {
     color: white !important;
     opacity: 1 !important;
 }
