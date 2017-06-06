@@ -528,7 +528,23 @@ namespace TSWebServices
             item.ExcludedTicketStatusUpdate = excludedTicketStatuses;
 
             item.Collection.Save();
+
+            if (item.CRMType == "TFS" && item.Active == true)
+            {
+                AddTFSInTicketPageOrder(item.OrganizationID);
+            }
+
             return item.GetProxy();
+        }
+
+        private void AddTFSInTicketPageOrder(int organizationID)
+        {
+            string customPageOrder = Settings.OrganizationDB.ReadString("TicketFieldsOrder", string.Empty);
+            if (customPageOrder != string.Empty && customPageOrder.IndexOf("TFS") < 0)
+            {
+                Settings.OrganizationDB.WriteString("TicketFieldsOrder", customPageOrder.Replace("]", ",{\"CatID\":\"TFS\",\"CatName\":\"TFS\",\"Disabled\":\"false\"}]"));
+            }
+
         }
 
         [WebMethod]
