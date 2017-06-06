@@ -93,7 +93,10 @@ Ts.Ui.Tabs.prototype = {
         $('<span>').addClass('ts-tabs-hide tab-icon ts-icon').appendTo(contentSpan);
         $('<img>').addClass('ts-tabs-hide tab-image').appendTo(contentSpan);
         $('<a>').attr('href', '#').appendTo(contentSpan);
-        $('<span>').addClass('tab-close ui-icon ui-icon-close').appendTo(contentSpan).hide();
+        // $('<span>').addClass('tab-close ui-icon ui-icon-close').appendTo(contentSpan).hide();
+        if (isClosable) {
+            $('<img>').attr('src','/vcr/1_9_0/images/icons/close.png').addClass('close tab-close').appendTo(contentSpan);
+        }
 
         li.insertAfter($(this._list).find('li:first'));
 
