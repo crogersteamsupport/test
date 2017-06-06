@@ -201,12 +201,14 @@ div.menutree-selected {
     background-color: rgba(255,255,255,0.2) !important;
 }
 
-div.menutree-selected img {
+div.menutree-selected img,
+div.menutree-highlighted {
     -webkit-filter: brightness(9);
     filter: brightness(9);
 }
 
-div.menutree-selected a {
+div.menutree-selected a,
+div.menutree-highlighted {
     color: white !important;
     opacity: 1 !important;
 }
