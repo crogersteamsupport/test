@@ -9,9 +9,9 @@
 .new-view .main-tabs .ts-tab { margin:0; padding:0; border:none; line-height:30px; -moz-border-radius: 0px; -webkit-border-radius: 0px; border-radius: 0px; }
 .new-view .main-tabs .ts-tab .ui-icon-close { margin: 6px 2px 0 0; width: 16px;}
 .new-view .main-tabs .ts-tab .tab-image { margin-top: 7px;}
-.new-view .main-tabs .ts-tab-content { padding: 0 18px; }
+.new-view .main-tabs .ts-tab-content { padding: 0px 0px 0px 10px; }
 .new-view .main-tabs .ui-state-hover .ts-tab-content { padding-right: 0px;}
-.new-view .main-tabs .ts-tab-main-0 .ts-tab-content { padding-left: 17px; }
+.new-view .main-tabs .ts-tab-main-0 .ts-tab-content { padding: 0px 5px; }
 
 .main-tab-content-item > iframe, iframe.pane  { height:100%; width:100%; overflow:hidden; margin-top:0px; border-width:0;}
 .main-header.new-view-header { border:none; }

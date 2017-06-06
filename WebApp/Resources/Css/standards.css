@@ -58,7 +58,7 @@ div.header-tabs li {
     float: left;
     position: relative;
     border: 0 !important;
-    padding: 0 10px;
+    padding: 0px 10px 0px 10px;
     white-space: nowrap;
     height: 25px;
     cursor: pointer;
@@ -100,7 +100,7 @@ div.header-tabs li img {
 }
 
 div.header-tabs li img.close {
-    margin:3px 0px 0px 5px;
+    margin:3px 0px 0px;
     opacity:0;
 }
 
@@ -279,7 +279,7 @@ div.menutree-selected a {
 
 .ts-menutree .ui-icon {
     float: right;
-    padding: 0 5px 0 0;
+    margin: 0 5px 0 0;
 }
 
 .ts-menutree img {

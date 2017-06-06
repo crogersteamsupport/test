@@ -78,14 +78,14 @@ Ts.Ui.Tabs.prototype = {
         if (self._callEvent('beforeAdd') === false) {
             return null;
         }
-        var html = '<li class="ui-state-default ui-corner-top ts-tab-' + tabType + '-' + id + '"><span class="ts-tabs-hide tab-icon ts-icon"></span><img class="ts-tabs-hide tab-image"/>    <a href="#"></a><span class="ts-tabs-hide tab-close ui-icon ui-icon-close"></span></li>';
-        var li = $('<li>').addClass('ui-state-default ui-corner-top ts-tab-' + tabType + '-' + id).hover(
+        // var html = '<li class="ui-state-default ts-tab-' + tabType + '-' + id + '"><span class="ts-tabs-hide tab-icon ts-icon"></span><img class="ts-tabs-hide tab-image"/>    <a href="#"></a><span class="ts-tabs-hide tab-close ui-icon ui-icon-close"></span></li>';
+        var li = $('<li>').addClass('ui-state-default ts-tab-' + tabType + '-' + id).hover(
             function () {
-                $(this).addClass('ui-state-hover').find('.ui-icon-close').show();
+                // $(this).addClass('ui-state-hover').find('.ui-icon-close').show();
             },
             function () {
-                $('.ts-tab').removeClass('ui-state-hover');
-                $('.ts-tab .ui-icon-close').hide();
+                // $('.ts-tab').removeClass('ui-state-hover');
+                // $('.ts-tab .ui-icon-close').hide();
             }
         );
         if (title && title != null) li.attr('title', title);
@@ -193,8 +193,8 @@ Ts.Ui.Tabs.prototype = {
                 // $(this).addClass('ui-state-hover').find('.ui-icon-close').show();
             },
             function () {
-                $('.ts-tab').removeClass('ui-state-hover');
-                $('.ts-tab .ui-icon-close').hide();
+                // $('.ts-tab').removeClass('ui-state-hover');
+                // $('.ts-tab .ui-icon-close').hide();
             }
         );
         if (title && title != null) li.attr('title', title);
