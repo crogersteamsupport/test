@@ -80,18 +80,22 @@ div.header-tabs li a {
     line-height: 27px;
 }
 
-div.header-tabs li:hover {
-    background-color: #2c9ecf !important;
-    text-decoration: none;
-}
+    div.header-tabs li:hover {
+        background-color: #21779C !important;
+        text-decoration: none;
+    }
 
 div.header-tabs li.ui-state-active {
-    background-color: #f2616e !important;
+    background-color: #2c9ecf !important;
 }
 
 div.header-tabs li img {
     -webkit-filter: brightness(9);
     filter: brightness(9);
+}
+
+div.header-tabs li img.close {
+    margin:3px 0px 0px 5px;
 }
 
 .header-tabs li.ui-state-active a,

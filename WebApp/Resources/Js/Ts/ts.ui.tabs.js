@@ -184,10 +184,10 @@ Ts.Ui.Tabs.prototype = {
         if (self._callEvent('beforeAdd') === false) {
             return null;
         }
-        var html = '<li class="ui-state-default ts-tab-' + tabType + '-' + id + '"><span class="ts-tabs-hide tab-icon ts-icon"></span><img class="ts-tabs-hide tab-image"/>    <a href="#"></a><span class="ts-tabs-hide tab-close ui-icon ui-icon-close"></span></li>';
+        // var html = '<li class="ui-state-default ts-tab-' + tabType + '-' + id + '"><span class="ts-tabs-hide tab-icon ts-icon"></span><img class="ts-tabs-hide tab-image"/> <a href="#"></a> <span class="fa fa-close ts-tabs-hide tab-close ui-icon ui-icon-close"></span></li>';
         var li = $('<li>').addClass('ui-state-default ts-tab-' + tabType + '-' + id).hover(
             function () {
-                $(this).addClass('ui-state-hover').find('.ui-icon-close').show();
+                // $(this).addClass('ui-state-hover').find('.ui-icon-close').show();
             },
             function () {
                 $('.ts-tab').removeClass('ui-state-hover');
@@ -199,7 +199,10 @@ Ts.Ui.Tabs.prototype = {
         $('<span>').addClass('ts-tabs-hide tab-icon ts-icon').appendTo(contentSpan);
         $('<img>').addClass('ts-tabs-hide tab-image').appendTo(contentSpan);
         $('<a>').attr('href', '#').appendTo(contentSpan);
-        $('<span>').addClass('tab-close ui-icon ui-icon-close').appendTo(contentSpan).hide();
+        // $('<span>').addClass('tab-close ui-icon ui-icon-close').appendTo(contentSpan);
+        if (isClosable) {
+            $('<img>').attr('src','/vcr/1_9_0/images/icons/close.png').addClass('close tab-close').appendTo(contentSpan);
+        }
 
         $(this._list).append(li);
         var element = $(this._list).find('.ts-tab-' + tabType + '-' + id);
