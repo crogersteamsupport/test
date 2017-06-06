@@ -85,13 +85,15 @@ div.header-tabs li:hover {
     text-decoration: none;
 }
 
-div.header-tabs li.ui-state-active {
-    background-color: #2c9ecf !important;
-}
-
 div.header-tabs li.ui-state-error {
     background-color: #f2616e !important;
 }
+
+div.header-tabs li.ui-state-active,
+div.header-tabs li.ui-state-active ui-state-error {
+    background-color: #2c9ecf !important;
+}
+
 
 
 div.header-tabs li img {
@@ -330,15 +332,12 @@ div.tickets-panel-tabs li a {
 }
 
 div.tickets-panel-tabs li:hover {
-    background-color: #2c9ecf !important;
+    background-color: #21779C !important;
 }
 
 div.tickets-panel-tabs li.ui-state-active {
-    background-color: #f2616e !important;
+    background-color: #2c9ecf !important;
 }
-
-
-
 
 
 div.main-footer {
