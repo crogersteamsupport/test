@@ -669,6 +669,7 @@ namespace TeamSupport.Data
 			  AfterRowDelete(id);
 			}
 		  }
+          this.isAdminClean = false;
 		  //transaction.Commit();
 		}
 		catch (Exception)
