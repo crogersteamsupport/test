@@ -190,7 +190,7 @@ li.ts-menutree-item .ui-icon {
 li.ts-menutree-item:hover {
     background-color: rgba(255,255,255,0.1);
     color: white !important;
-    font-family: Verdana;
+    font-family: 'Roboto';
 }
 
 li.ts-menutree-item:hover a {
