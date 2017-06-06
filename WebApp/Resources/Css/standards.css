@@ -174,7 +174,7 @@ div.sidebar-container {
 
 li.ts-menutree-item {
     color: white !important;
-    font-family: 'Lucida Sans Unicode' !important;
+    font-family: 'Roboto' !important;
 }
 
 li.ts-menutree-item a {
@@ -259,9 +259,9 @@ div.menutree-highlighted a {
     text-decoration: none;
     height: 20px;
     overflow: hidden;
-    font-size: 12px;
+    font-size: 13px;
     color: white;
-    font-family: 'Lucida Sans Unicode';
+    font-family: 'Roboto';
 }
 
 .ts-menutree li > div {
@@ -271,7 +271,7 @@ div.menutree-highlighted a {
     overflow: hidden;
     font-size: 13px;
     font-weight: normal;
-    font-family: 'Lucida Sans Unicode';
+    font-family: 'Roboto';
 }
 
 .ts-menutree .ts-icon {
