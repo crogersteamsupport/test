@@ -58,8 +58,8 @@ li { margin: .5em .5em;}
 strong { font-weight:bold;}
 a { text-decoration: none; }
 a:hover { text-decoration: underline; }
-blockquote { background-color:#E3EEFC; border: 1px solid #92B4DE; margin: 1em 0; padding: .5em .5em; font-family:courier; }
-pre {border: 1px solid #92B4DE; margin: 1em 0; padding: .5em .5em; font-family:courier;}
+blockquote { background-color:#E3EEFC; border: 1px solid #2a3f54; margin: 1em 0; padding: .5em .5em; font-family:courier; }
+pre {border: 1px solid #2a3f54; margin: 1em 0; padding: .5em .5em; font-family:courier;}
 
 .ts-clearfix { clear:both; height: 1px; }
 
@@ -70,7 +70,7 @@ pre {border: 1px solid #92B4DE; margin: 1em 0; padding: .5em .5em; font-family:c
 .ui-button .ui-button-text-only, .ui-button-text-only .ui-button-text { line-height: 2em !important; padding: 0 .4em !important; }
 .ui-button, .ui-widget .ui-button{ font-weight:normal; padding:0; }
 label.checkbox { vertical-align: middle; margin: 0px; top:0; font-weight:bold; display:inline; }    
-input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; width: auto;}
+input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; width:auto;}
 
 /*
 .label { padding: 0 0 .2em 0; display:block; font-size:1em; font-weight:bold; }
@@ -78,6 +78,7 @@ input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; wi
 .label { font-weight:bold; display:block; margin: .5em 0 .25em 0; white-space:nowrap; }
 .label-block { float:left; margin: 1em 1em 0 1em; display:inline; min-height: 4em;}
 */
+
 .label { font-weight:bold; display:block; margin-bottom: .25em; white-space:nowrap; }
 .label-block { float:left; margin: .25em .25em .25em 0; padding: .25em .25em; display:inline; height: 40px; border: 1px solid transparent; }
 .label-block-nofloat {float: none; display: block; clear:both;}
@@ -125,7 +126,7 @@ label.ts-checkbox {display:block; margin-bottom: 5px; min-height: 20px; padding-
 .ts-content { background-image:none; border:none; overflow:auto; background-color: #EDF4FC;} 
 */
 .ui-widget-content a.ts-link { border: none; background:none; cursor: pointer;}
-.ts-color-bg-accent, .ui-widget-content.ts-color-bg-accent { background-color:#D5E5F7; /* #E3EEFC;*/ background-image: none;}
+.ts-color-bg-accent, .ui-widget-content.ts-color-bg-accent { background-color:#EEEEEE; /* #E3EEFC;*/ background-image: none;}
 .ui-widget-content.ts-separator { height: 1px; border-bottom: none; border-left:none; border-right:none; margin-bottom: .5em; clear:both; }
 .ts-content { background-image:none; border:none; overflow:auto; } 
 .ts-section { margin: 1em 1em; padding: 1em .75em; border: none; clear:both;}
@@ -264,18 +265,7 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 .ts-tabs .ui-icon-close.ts-tabs-noclose { background-position: -1000px -1000px; }
 .ts-tabs .ui-state-hover .ts-tab-content { padding-right: 0px;}
 
-/* Ts MenuTree */
-.ts-menutree { border: none; height: 100%; overflow: auto; position:relative; }
-.ts-menutree > ul { padding:0; margin: .5em 0;}
-.ts-menutree li ul { padding:0; margin:0;}
-.ts-menutree li { list-style: none; position: relative; cursor:pointer; padding:2px 0; margin:0; overflow:hidden; }
-.ts-menutree li ul li { padding-left: .5em;}
-.ts-menutree li a { text-decoration: none;  height: 20px; overflow:hidden; font-size:14px;}
-.ts-menutree li > div { padding: .25em .1em; height: 20px; line-height:20px; overflow:hidden; }
-.ts-menutree .ts-icon { float:left; padding-right: .33em;}
-.ts-menutree .ui-icon { float:right; padding: 0 5px 0 0; }
-.ts-menutree img { float:left; padding: 0 7px; height: 20px; width: 20px;}
-.ts-menutree li.ts-menutree-item > div { border:none; background-image: none; }
+
 
 .ts-toolbar { line-height: 29px; height:29px; border-left:none; border-right:none; font-weight:normal;}
 .ts-toolbar .ts-toolbar-button { float:left; display:block; height: 28px; }
@@ -381,4 +371,15 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 .ticket-action-description table[border="1"] tbody th, .ticket-preview-action table[border="1"] tbody th, 
 .ticket-action-description table[border="1"] td, .ticket-preview-action table[border="1"] td{ 
     border-width: 1px; border-style: solid;border-color: #999999;
+}
+
+
+
+
+
+<!-- TABS -->
+.main-tab-item {
+    border-radius:10px;
+    background: none !important;
+    background-color: none !important;
 }

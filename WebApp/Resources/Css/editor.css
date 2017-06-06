@@ -15,8 +15,8 @@ li { margin: .5em .5em;}
 strong { font-weight:bold;}
 a { text-decoration: none; }
 a:hover { text-decoration: underline; }
-blockquote { background-color:#E3EEFC; border: 1px solid #92B4DE; margin: 1em 0; padding: .5em .5em; font-family:courier; }
-pre {border: 1px solid #92B4DE; margin: 1em 0; padding: .5em .5em; font-family:courier;}
+blockquote { background-color:#E3EEFC; border: 1px solid #2a3f54; margin: 1em 0; padding: .5em .5em; font-family:courier; }
+pre {border: 1px solid #2a3f54; margin: 1em 0; padding: .5em .5em; font-family:courier;}
 
 .ts-clearfix { clear:both; height: 1px; }
 
@@ -44,7 +44,7 @@ input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; wi
 .ts-content { background-image:none; border:none; overflow:auto; background-color: #EDF4FC;} 
 */
 .ui-widget-content a.ts-link { border: none; background:none; cursor: pointer;}
-.ts-color-bg-accent, .ui-widget-content.ts-color-bg-accent { background-color:#D5E5F7; /* #E3EEFC;*/ background-image: none;}
+.ts-color-bg-accent, .ui-widget-content.ts-color-bg-accent { background-color:#EEEEEE; /* #E3EEFC;*/ background-image: none;}
 .ui-widget-content.ts-separator { height: 1px; border-bottom: none; border-left:none; border-right:none; margin-bottom: .5em; clear:both; }
 
 /* Old, but used in automation admin */

@@ -61,10 +61,10 @@
 
 .ui-layout-pane {
   border:           0px solid !important;
-  border-color:     #D6E7F7 !important;
+  border-color:     #EEEEEE !important;
   /*border-radius:    20px !important;
 
-  background-color: #D6E7F7 !important;*/
+  background-color: #EEEEEE !important;*/
 
   font-family:      "Lucida Grande" ,Helvetica,Arial,Verdana,sans-serif; 
   font-size:        12px; 
@@ -80,7 +80,7 @@
 }
 
 .ui-layout-toggler-east {
-  background-color: #92B4DE !important;
+  background-color: #2a3f54 !important;
 }*/
 
 

@@ -38,8 +38,8 @@ Ts.Pages.Main.prototype = {
         var colorBorder = $('.main-footer').css('border-top-color');
         var colorContent = $('.main-nav').css('background-color');
         colorContent = "transparent";
-        return '<style type="text/css">.ui-layout-resizer { background-color: ' + colorBorder + '; border: 0px solid ' + colorHeader + '; }' +
-            '.ui-layout-toggler { background-color: ' + colorHeader + ';}</style>'; // 'li.ts-menutree-item  div { border:1px solid ' + colorContent + ';}</style>';  
+        return '<style type="text/css">.ui-layout-resizer { background-color: #33485e; border: 0px solid ' + colorHeader + '; }' +
+            '.ui-layout-toggler { background-color: ' + colorHeader + ';}</style>'; // 'li.ts-menutree-item  div { border:1px solid ' + colorContent + ';}</style>';
     },
 
     init: function () {
@@ -71,12 +71,10 @@ Ts.Pages.Main.prototype = {
                     //tmrChat = setInterval(getChatUpdates, chatInterval);
                     setupChatRequestUpdates();
                     $('.main-status-chat').removeClass('ui-state-disabled');
-                    $('.menu-chatstatus .ts-icon').addClass('ts-icon-chat-small');
-                    $('.menu-chatstatus-text').text('Customer Chat: Online');
+                    $('#icon-chatstatus').attr('src', '/vcr/1_9_0/Images/icon-online.png');
                 } else {
-                    $('.menu-chatstatus-text').text('Customer Chat: Offline');
-                    $('.menu-chatstatus .ts-icon').addClass('ts-icon-nochat-small');
                     $('.main-status-chat').addClass('ui-state-disabled');
+                    $('#icon-chatstatus').attr('src', '/vcr/1_9_0/Images/icon-offline.png');
                 }
             } else {
                 $('.menu-chatstatus').hide();
@@ -85,10 +83,12 @@ Ts.Pages.Main.prototype = {
 
             if (Ts.System.User.InOffice) {
                 $('.main-status-online').switchClass('ts-icon-offline', 'ts-icon-online', 0);
-                $('.menu-officestatus .ts-icon').addClass('ts-icon-online-small');
+                // $('.menu-officestatus .ts-icon').addClass('ts-icon-online-small');
+                $('#icon-officestatus').attr('src', '/vcr/1_9_0/Images/icon-online.png');
             } else {
-                $('.menu-officestatus .ts-icon').addClass('ts-icon-offline-small');
                 $('.main-status-online').switchClass('ts-icon-online', 'ts-icon-offline', 0);
+                // $('.menu-officestatus .ts-icon').addClass('ts-icon-offline-small');
+                $('#icon-officestatus').attr('src', '/vcr/1_9_0/Images/icon-offline.png');
             }
 
             var status = Ts.System.User.InOfficeComment === '' ? 'What is your status?' : Ts.System.User.InOfficeComment;
@@ -126,7 +126,7 @@ Ts.Pages.Main.prototype = {
         $('.menu-signout').click(function (e) {
             e.preventDefault();
             var result = true;
-            var iframes = document.getElementsByTagName('iframe'); 
+            var iframes = document.getElementsByTagName('iframe');
             for (var i = 0; i < iframes.length; i++) {
                 try {
                     if (iframes[i].contentWindow.tinyMCE.activeEditor)
@@ -193,12 +193,10 @@ Ts.Pages.Main.prototype = {
                 if (Ts.System.ChatUserSettings.IsAvailable) {
                     //tmrChat = setInterval(getChatUpdates, chatInterval);
                     setupChatRequestUpdates();
-                    $('.menu-chatstatus .ts-icon').addClass('ts-icon-chat-small').removeClass('ts-icon-nochat-small');
-                    $('.menu-chatstatus-text').text('Customer Chat: Online');
+                    $('#icon-chatstatus').attr('src', '/vcr/1_9_0/Images/icon-online.png');
                 } else {
                     turnOffChatRequestUpdates();
-                    $('.menu-chatstatus .ts-icon').addClass('ts-icon-nochat-small').removeClass('ts-icon-chat-small');
-                    $('.menu-chatstatus-text').text('Customer Chat: Offline');
+                    $('#icon-chatstatus').attr('src', '/vcr/1_9_0/Images/icon-offline.png');
                 }
 
                 var element = $('.main-tab-content-item:visible');
@@ -223,18 +221,19 @@ Ts.Pages.Main.prototype = {
             e.preventDefault();
             e.stopPropagation();
             Ts.Services.Users.UpdateUserStatus(true, function () {
-                $('.menu-officestatus .ts-icon').addClass('ts-icon-online-small').removeClass('ts-icon-offline-small');
+                // $('.menu-officestatus .ts-icon').addClass('ts-icon-online-small').removeClass('ts-icon-offline-small');
+                $('#icon-officestatus').attr('src', '/vcr/1_9_0/Images/icon-online.png');
                 mainFrame.Ts.System.logAction('Main Page - Office Status Changed');
             });
             hidePopupMenus();
-
         });
 
         $('.menu-office-offline').click(function (e) {
             e.preventDefault();
             e.stopPropagation();
             Ts.Services.Users.UpdateUserStatus(false, function () {
-                $('.menu-officestatus .ts-icon').addClass('ts-icon-offline-small').removeClass('ts-icon-online-small');
+                // $('.menu-officestatus .ts-icon').addClass('ts-icon-offline-small').removeClass('ts-icon-online-small');
+                $('#icon-officestatus').attr('src', '/vcr/1_9_0/Images/icon-offline.png');
                 mainFrame.Ts.System.logAction('Main Page - Office Status Changed');
             });
             hidePopupMenus();
@@ -385,7 +384,7 @@ Ts.Pages.Main.prototype = {
                 cleardialog();
             }
         });
-		
+
 
         var execSelectTicket = null;
 
@@ -630,7 +629,7 @@ Ts.Pages.Main.prototype = {
                     if (result.IsExpired == true) {
                         window.location = 'AnotherSession.aspx';
                     }
-                    
+
                     if (refreshID > -1 && result.RefreshID != refreshID)
                     {
                       window.location = '.';
@@ -676,7 +675,7 @@ Ts.Pages.Main.prototype = {
                 success: callback,
                 error: function (xhr, status, error) { }
             });
-            
+
             function callback(result)
             {
                 var menuID = self.MainMenu.getSelected().getId();
@@ -685,23 +684,62 @@ Ts.Pages.Main.prototype = {
                     self.MainMenu.find('mniChat', 'chat').setIsHighlighted(true);
                     for (var i = 0; i < result.NewChatMessages.length; i++) {
                         $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
-                        $.jGrowl(result.NewChatMessages[i].Message, {
-                            life: 5000,
-                            theme: result.NewChatMessages[i].State,
-                            header: result.NewChatMessages[i].Title
-                        });
+
+                        // Let's check if the browser supports notifications
+                        if (!("Notification" in window)) {
+                            $.jGrowl(result.NewChatMessages[i].Message, {
+                                life: 5000,
+                                theme: result.NewChatMessages[i].State,
+                                header: result.NewChatMessages[i].Title
+                            });
+                        // Let's check whether notification permissions have already been granted
+                        } else if (Notification.permission === "granted") {
+                            ShowBrowserNotification(result.NewChatMessages[i].Message);
+                        // Otherwise, we need to ask the user for permission
+                        } else if (Notification.permission !== 'denied') {
+                            Notification.requestPermission(function (permission) {
+                                if (Notification.permission === "granted") {
+                                    ShowBrowserNotification(result.NewChatMessages[i].Message);
+                                } else {
+                                    $.jGrowl(result.NewChatMessages[i].Message, {
+                                        life: 5000,
+                                        theme: result.NewChatMessages[i].State,
+                                        header: result.NewChatMessages[i].Title
+                                    });
+                                }
+                            });
+                        }
                     }
                 }
 
                 for (var i = 0; i < result.NewChatRequests.length; i++) {
                     $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
-                    $.jGrowl(result.NewChatRequests[i].Message, {
-                        life: 5000,
-                        theme: result.NewChatRequests[i].State,
-                        header: result.NewChatRequests[i].Title
-                    });
-                }
 
+                    // Let's check if the browser supports notifications
+                    if (!("Notification" in window)) {
+                        $.jGrowl(result.NewChatRequests[i].Message, {
+                            life: 5000,
+                            theme: result.NewChatRequests[i].State,
+                            header: result.NewChatRequests[i].Title
+                        });
+                        // Let's check whether notification permissions have already been granted
+                    } else if (Notification.permission === "granted") {
+                        ShowBrowserNotification(result.NewChatRequests[i].Message);
+                        // Otherwise, we need to ask the user for permission
+                    } else if (Notification.permission !== 'denied') {
+                        Notification.requestPermission(function (permission) {
+                            if (Notification.permission === "granted") {
+                                ShowBrowserNotification(result.NewChatRequests[i].Message);
+                            } else {
+                                $.jGrowl(result.NewChatRequests[i].Message, {
+                                    life: 5000,
+                                    theme: result.NewChatRequests[i].State,
+                                    header: result.NewChatRequests[i].Title
+                                });
+                            }
+                        });
+                    }
+                }
 
                 lastChatMessageID = result.LastChatMessageID;
                 lastChatRequestID = result.LastChatRequestID;
@@ -728,12 +766,12 @@ Ts.Pages.Main.prototype = {
 
         var pusher = null;
         var request_channel = null;
-        function setupChatRequestUpdates() {        
+        function setupChatRequestUpdates() {
             top.Ts.Settings.System.read('PusherKey', '1', function (key) {
                 var chatGUID = top.Ts.System.Organization.ChatID;
                 pusher = new Pusher(key);
                 request_channel = pusher.subscribe('chat-requests-' + chatGUID);
-                
+
                 request_channel.bind('new-chat-request', function (data) {
 
                     if (data.userIdInvited === undefined || data.userIdInvited == top.Ts.System.User.UserID) {
@@ -747,11 +785,30 @@ Ts.Pages.Main.prototype = {
 
                         window.focus();
 
-                        $.jGrowl(data.message, {
-                            life: 5000,
-                            theme: data.theme,
-                            header: data.title
-                        });
+                        // Let's check if the browser supports notifications
+                        if (!("Notification" in window)) {
+                            $.jGrowl(data.message, {
+                                life: 5000,
+                                theme: data.theme,
+                                header: data.title
+                            });
+                        // Let's check whether notification permissions have already been granted
+                        } else if (Notification.permission === "granted") {
+                            ShowBrowserNotification(data.message);
+                        // Otherwise, we need to ask the user for permission
+                        } else if (Notification.permission !== 'denied') {
+                            Notification.requestPermission(function (permission) {
+                                if (Notification.permission === "granted") {
+                                    ShowBrowserNotification(data.message);
+                                } else {
+                                    $.jGrowl(data.message, {
+                                        life: 5000,
+                                        theme: data.theme,
+                                        header: data.title
+                                    });
+                                }
+                            });
+                        }
 
                         $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/chime.mp3" }).jPlayer("play", 0);
 
@@ -760,6 +817,16 @@ Ts.Pages.Main.prototype = {
                 });
 
             });
+        }
+
+        function ShowBrowserNotification(message) {
+            var options = {
+                body: message,
+                icon: "https://app.teamsupport.com/images/icons/TeamSupportLogo16.png",
+                tag: ""
+            }
+            var notification = new Notification("TeamSupport", options);
+            notification.onshow = function () { setTimeout(function () { notification.close(); }, 5000) };
         }
 
         function turnOffChatRequestUpdates() {
@@ -1381,9 +1448,6 @@ Ts.Pages.Main.prototype = {
 
         this.MainTabs = new Ts.Ui.Tabs($('.main-tabs')[0], '.main-tab-content');
         var mainTabs = this.MainTabs;
-
-
-
 
         $('.main-info-close').click(function (e) {
             e.preventDefault();
@@ -2245,23 +2309,92 @@ function () { }, function (e) { console.log(e) });
     },
 
     AppNotify: function (title, message, options) {
-
         if (options == null)
             options = "info";
 
-        $.pnotify({
-            title: title,
-            text: message,
-            type: options,
-            icon: 'ui-icon ui-icon-lightbulb',
-            sticker: false
-        });
+        var self = this;
+        var TeamSupportLogo = "https://app.teamsupport.com/images/icons/TeamSupportLogo16.png";
+        var ticketNumber = "";
 
+        if (title.length > 0 && title.toLowerCase().indexOf("ticket ") == 0) {
+            ticketNumber = title.replace(/ticket /i, '');
+        }
+
+        // Let's check if the browser supports notifications
+        if (!("Notification" in window)) {
+            $.pnotify({
+                title: title,
+                text: message,
+                type: options,
+                icon: 'ui-icon ui-icon-lightbulb',
+                sticker: false
+            });
+            // Let's check whether notification permissions have already been granted
+        } else if (Notification.permission === "granted") {
+            var options = {
+                body: message,
+                icon: TeamSupportLogo,
+                iconUrl: TeamSupportLogo,
+                tag: title
+            }
+
+            if (ticketNumber.length > 0) {
+                Ts.Services.Tickets.GetTicketName(ticketNumber, function (name) {
+                    title = title + ' - ' + name;
+
+                    var notification = new Notification(title, options);
+                    notification.onshow = function () { setTimeout(function () { notification.close(); }, 5000) };
+
+                    notification.onclick = function () {
+                        notification.close();
+                        self.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Ticket, ticketNumber, 'Ticket: ' + ticketNumber, true, true, false, null, null, null, name);
+                    };
+                });
+            } else {
+                var notification = new Notification(title, options);
+                notification.onshow = function () { setTimeout(function () { notification.close(); }, 5000) };
+            }
+
+            // Otherwise, we need to ask the user for permission
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission(function (permission) {
+                if (Notification.permission === "granted") {
+                    var options = {
+                        body: message,
+                        icon: TeamSupportLogo,
+                        iconUrl: TeamSupportLogo,
+                        tag: title
+                    }
+
+                    if (ticketNumber.length > 0) {
+                        Ts.Services.Tickets.GetTicketName(ticketNumber, function (name) {
+                            title = title + ' - ' + name;
+
+                            var notification = new Notification(title, options);
+                            notification.onshow = function () { setTimeout(function () { notification.close(); }, 5000) };
+
+                            notification.onclick = function () {
+                                notification.close();
+                                Ts.Services.Tickets.GetTicketName(ticketNumber, function (name) {
+                                    self.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Ticket, ticketNumber, 'Ticket: ' + ticketNumber, true, true, false, null, null, null, name);
+                                });
+                            };
+                        });
+                    } else {
+                        var notification = new Notification(title, options);
+                        notification.onshow = function () { setTimeout(function () { notification.close(); }, 5000) };
+                    }
+                } else {
+                    $.pnotify({
+                        title: title,
+                        text: message,
+                        type: options,
+                        icon: 'ui-icon ui-icon-lightbulb',
+                        sticker: false
+                    });
+                }
+            });
+        }
     }
 
 };
-
-
-
-
-
