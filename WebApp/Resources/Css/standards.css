@@ -67,7 +67,7 @@ div.header-tabs li {
     vertical-align: middle;
 }
 
-div.header-tabs li a {
+ div.header-tabs li a {
     font-family: 'Roboto' !important;
     float: left;
     text-decoration: none;
@@ -78,6 +78,7 @@ div.header-tabs li a {
     min-width: 80px;
     color: white !important;
     line-height: 27px;
+    letter-spacing: 0.4px;
 }
 
 div.header-tabs li:hover {
@@ -175,6 +176,7 @@ div.sidebar-container {
 li.ts-menutree-item {
     color: white !important;
     font-family: 'Roboto' !important;
+    letter-spacing: 0.4px;
 }
 
 li.ts-menutree-item a {
