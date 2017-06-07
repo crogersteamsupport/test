@@ -173,3 +173,7 @@ hr, .divider {
 .com-cat-productfamily-only {
     display:none;
 }
+
+.hub-container > a {
+    color:black;
+}
