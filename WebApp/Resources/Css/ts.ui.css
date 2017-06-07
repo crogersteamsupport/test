@@ -67,7 +67,7 @@ pre {border: 1px solid #2a3f54; margin: 1em 0; padding: .5em .5em; font-family:c
 .ui-widget-header a:hover { text-decoration: underline;}
 .ui-widget .ui-autocomplete-input, .ui-autocomplete-input, input.text  { padding: .2em .2em; text-align:left; height: 14px;}
 .ui-menu .ui-menu-item a { padding: 0 .1em 0 .2em; }
-.ui-button .ui-button-text-only, .ui-button-text-only .ui-button-text { line-height: 2em !important; padding: 0 .4em !important; }
+/*.ui-button .ui-button-text-only, .ui-button-text-only .ui-button-text { line-height: 2em !important; padding: 0 .4em !important; }*/
 .ui-button, .ui-widget .ui-button{ font-weight:normal; padding:0; }
 label.checkbox { vertical-align: middle; margin: 0px; top:0; font-weight:bold; display:inline; }    
 input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; width:auto;}
