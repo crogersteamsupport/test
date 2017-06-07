@@ -10,7 +10,7 @@
 .ticket-preview-property-value {}
 .ticket-preview-actions { border: none;}
 .ticket-preview-actions { padding: 10px 10px;}
-.ticket-preview-action h1 { font-size: 1em; padding: .33em 0 .33em 1em; margin: 2em 0 1em 0; color:black; }
+.ticket-preview-action h1 { font-size: 1em; padding: 12px; margin: 2em 0 1em 0; background-color:#F3F3F3; border:none; color:#676767;}
 .ticket-preview-action p {}
 .ticket-preview-action { line-height: 1.2em; font-size:1.2em;}
 .ticket-preview-action div { padding-top: 1em;}
