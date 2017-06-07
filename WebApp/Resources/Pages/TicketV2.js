@@ -1045,7 +1045,7 @@ function SetupActionEditor(elem, action) {
 
     element.find('#stoptokScreen').hide();
     element.find('#stoptokScreen').click(function (e) {
-        element.find('#statusTextScreen').text("Processing...");
+        element.find('#statusTextScreen').text("Saving video...");
         clearTimeout(tokTimer);
         $("#tokScreenCountdown").html("0:00");
         window.parent.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
@@ -1063,7 +1063,7 @@ function SetupActionEditor(elem, action) {
             else {
                 $('#action-new-editor').summernote('insertNode', videoURL);
             }
-            element.find('#statusTextScreen').text("");
+            element.find('#statusTextScreen').text("Your video is currently processing. It may not play in the editor below but should be live within a minute.");
             session.unpublish(screenSharingPublisher);
             session.unpublish(publisher);
             recordingID = null;
