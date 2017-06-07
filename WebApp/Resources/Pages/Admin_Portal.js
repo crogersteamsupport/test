@@ -216,10 +216,12 @@ AdminPortal = function () {
         if (parent.parent.Ts.System.Organization.UseProductFamilies == true) {
             $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#kb_cat_productfamily');
             $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#com_cat_productfamily');
-            productFamilies = parent.parent.Ts.Cache.getProductFamilies();
-            for (var i = 0; i < productFamilies.length; i++) {
-                $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#kb_cat_productfamily');
-                $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#com_cat_productfamily');
+            productFamilies = parent.parent.Ts.Cache.getProductFamilies
+            if (productFamilies) {
+                for (var i = 0; i < productFamilies.length; i++) {
+                    $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#kb_cat_productfamily');
+                    $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#com_cat_productfamily');
+                }
             }
             $('#kb_cat_productfamily').combobox({ selected: function (e, ui) { $('.kb-cat-save-panel').show(); } });
             $('#com_cat_productfamily').combobox({ selected: function (e, ui) { $('.com-cat-save-panel').show(); } });
