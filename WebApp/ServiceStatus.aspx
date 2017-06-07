@@ -14,13 +14,34 @@
      <script type="text/javascript" language="javascript">    
         $(document).ready(function () {
 
-            $('.slack').click(function (e) {
+            $('.slack-ack').click(function (e) {
                 e.stopPropagation();
                 e.preventDefault();
                 //$('.queries').html('');
                 var btn = $(this).button('loading')
-                PageMethods.AckSlack(function (result) {
+                PageMethods.SendSlackMsg("has acknowledged this issue.", function (result) {
                     
+                    btn.button('reset');
+                });
+            });
+
+            $('.slack-resolve').click(function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                //$('.queries').html('');
+                var btn = $(this).button('loading')
+                PageMethods.SendSlackMsg("has resolved this issue.", function (result) {
+
+                    btn.button('reset');
+                });
+            });
+            $('.slack-ignore').click(function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                //$('.queries').html('');
+                var btn = $(this).button('loading')
+                PageMethods.SendSlackMsg("says you can ignore this issue.", function (result) {
+
                     btn.button('reset');
                 });
             });
@@ -39,7 +60,11 @@
     </asp:ScriptManager>
         <div class="container">
             <div class="page-header">
-                <asp:Literal ID="litStatus" runat="server"></asp:Literal> <button type="button" class="btn btn-primary slack" data-loading-text="Loading...">Acknowlege Issue on Slack</button>
+                <asp:Literal ID="litStatus" runat="server"></asp:Literal> 
+                <button type="button" class="btn btn-primary slack-ack" data-loading-text="Sending...">Acknowlege Issue on Slack</button>
+            <button type="button" class="btn btn-primary slack-resolve" data-loading-text="Sending...">Update issue as resolved</button>
+            <button type="button" class="btn btn-primary slack-ignore" data-loading-text="Sending...">Ignore this issue.</button>
+            
             </div>
 
             <div class="page-header">
