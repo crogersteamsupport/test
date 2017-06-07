@@ -39,7 +39,7 @@ Ts.Pages.Main.prototype = {
         var colorContent = $('.main-nav').css('background-color');
         colorContent = "transparent";
         return '<style type="text/css">.ui-layout-resizer { background-color: #33485e; border: 0px solid ' + colorHeader + '; }' +
-            '.ui-layout-toggler { background-color: ' + colorHeader + ';}</style>'; // 'li.ts-menutree-item  div { border:1px solid ' + colorContent + ';}</style>';  
+            '.ui-layout-toggler { background-color: ' + colorHeader + ';}</style>'; // 'li.ts-menutree-item  div { border:1px solid ' + colorContent + ';}</style>';
     },
 
     init: function () {
@@ -126,7 +126,7 @@ Ts.Pages.Main.prototype = {
         $('.menu-signout').click(function (e) {
             e.preventDefault();
             var result = true;
-            var iframes = document.getElementsByTagName('iframe'); 
+            var iframes = document.getElementsByTagName('iframe');
             for (var i = 0; i < iframes.length; i++) {
                 try {
                     if (iframes[i].contentWindow.tinyMCE.activeEditor)
@@ -384,7 +384,7 @@ Ts.Pages.Main.prototype = {
                 cleardialog();
             }
         });
-		
+
 
         var execSelectTicket = null;
 
@@ -629,7 +629,7 @@ Ts.Pages.Main.prototype = {
                     if (result.IsExpired == true) {
                         window.location = 'AnotherSession.aspx';
                     }
-                    
+
                     if (refreshID > -1 && result.RefreshID != refreshID)
                     {
                       window.location = '.';
@@ -675,7 +675,7 @@ Ts.Pages.Main.prototype = {
                 success: callback,
                 error: function (xhr, status, error) { }
             });
-            
+
             function callback(result)
             {
                 var menuID = self.MainMenu.getSelected().getId();
@@ -706,7 +706,7 @@ Ts.Pages.Main.prototype = {
                                         theme: result.NewChatMessages[i].State,
                                         header: result.NewChatMessages[i].Title
                                     });
-                                }                                
+                                }
                             });
                         }
                     }
@@ -766,12 +766,12 @@ Ts.Pages.Main.prototype = {
 
         var pusher = null;
         var request_channel = null;
-        function setupChatRequestUpdates() {        
+        function setupChatRequestUpdates() {
             top.Ts.Settings.System.read('PusherKey', '1', function (key) {
                 var chatGUID = top.Ts.System.Organization.ChatID;
                 pusher = new Pusher(key);
                 request_channel = pusher.subscribe('chat-requests-' + chatGUID);
-                
+
                 request_channel.bind('new-chat-request', function (data) {
 
                     if (data.userIdInvited === undefined || data.userIdInvited == top.Ts.System.User.UserID) {
@@ -2354,7 +2354,7 @@ function () { }, function (e) { console.log(e) });
                 var notification = new Notification(title, options);
                 notification.onshow = function () { setTimeout(function () { notification.close(); }, 5000) };
             }
-            
+
             // Otherwise, we need to ask the user for permission
         } else if (Notification.permission !== 'denied') {
             Notification.requestPermission(function (permission) {
@@ -2365,7 +2365,7 @@ function () { }, function (e) { console.log(e) });
                         iconUrl: TeamSupportLogo,
                         tag: title
                     }
-                    
+
                     if (ticketNumber.length > 0) {
                         Ts.Services.Tickets.GetTicketName(ticketNumber, function (name) {
                             title = title + ' - ' + name;
@@ -2398,8 +2398,3 @@ function () { }, function (e) { console.log(e) });
     }
 
 };
-
-
-
-
-

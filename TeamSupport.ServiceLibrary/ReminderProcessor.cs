@@ -90,7 +90,12 @@ namespace TeamSupport.ServiceLibrary
                     break;
                 case ReferenceType.Tasks:
                     TasksViewItem task = TasksView.GetTasksViewItem(LoginUser, reminder.RefID);
-                    if (task == null) return;
+                    if (task == null || task.IsComplete)
+                    {
+                        reminder.IsDismissed = true;
+                        reminder.Collection.Save();
+                        return;
+                    }
                     message = EmailTemplates.GetReminderTaskEmail(LoginUser, reminder, user, task);
                     description = String.Format("Reminder sent to {0} for Task {1}", message.To.ToString(), task.Name);
                     Logs.WriteEvent("ver. 05162017: " + description);

@@ -31,7 +31,7 @@ Ts.Ui.MenuTree.prototype = {
     else {
       list = $(this._element).children('ul');
       if (list.length < 1) { list = $(this._element).append('<ul></ul').children('ul'); }
-  } 
+  }
     list.append(html);
 
     var item = this.find(id, type);
@@ -114,8 +114,8 @@ Ts.Ui.MenuTree.Item.prototype = {
     else
       $(this._element).children('div').children('img').attr('src', value);
   },
-  getIsHighlighted: function () { return $(this._element).children('div').hasClass('ui-state-active'); },
-  setIsHighlighted: function (value) { if (value) { $(this._element).children('div').addClass('ui-state-active'); } else { $(this._element).children('div').removeClass('ui-state-active'); } },
+  getIsHighlighted: function () { return $(this._element).children('div').hasClass('menutree-highlighted'); },
+  setIsHighlighted: function (value) { if (value) { $(this._element).children('div').addClass('menutree-highlighted'); } else { $(this._element).children('div').removeClass('menutree-highlighted'); } },
   getIsSelected: function () { return $(this._element).children('div').hasClass('ui-state-default'); },
   getIsExpanded: function () { return $(this._element).children('div').children('.ui-icon').hasClass('ui-icon-carat-1-s'); },
   setIsExpanded: function (value) {
