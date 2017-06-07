@@ -243,8 +243,8 @@ body .ui-tooltip { border-width: 2px; }
 
 /* Interaction states
 ----------------------------------*/
-.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {  font-weight: normal; color: #0057c2; }
-.ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited { color: #0057c2; text-decoration: none; }
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {  font-weight: normal; }
+.ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited { text-decoration: none; }
 .ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {  font-weight: normal; color: #154b8c; }
 .ui-state-hover a, .ui-state-hover a:hover, .ui-state-hover a:link, .ui-state-hover a:visited { color: #154b8c; text-decoration: none; }
 .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active { font-weight: normal; color: #080807; }
