@@ -130,7 +130,7 @@ div.header-tabs li:hover img.close {
     display: block;
     height: 16px;
     width: 16px;
-    margin: .33em .25em 0 0;
+    margin: 5px 4px 0 0 !important;
     padding: 0;
 }
 
