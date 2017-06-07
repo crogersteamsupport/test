@@ -339,7 +339,7 @@ Namespace TeamSupport
 								Dim actionDescriptionAttachment As Data.Attachment = Attachments.GetAttachment(User, actionDescriptionId)
 								'The Action Description should always be 1, if for any reason this is not the case call: Actions.GetActionPosition(User, actionDescriptionId)
 								Dim actionPosition As Integer = 1
-								'PushAttachments(actionDescriptionId, ticket.TicketNumber, workItem, workItem("title"), attachmentFileSizeLimit, actionPosition)
+								PushAttachments(actionDescriptionId, ticket.TicketNumber, workItem, attachmentFileSizeLimit, actionPosition)
 							End If
 
 							ClearCrmLinkError(crmLinkError)
@@ -491,7 +491,7 @@ Namespace TeamSupport
 							'ToDO //vv add the 'remotelink'
 							Dim ticketName As String = DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(ticket.Name)))
 							Dim domain As String = SystemSettings.ReadStringForCrmService(User, "AppDomain", "https://app.teamsupport.com")
-							Dim remoteLink As String = domain + "/Ticket.aspx?ticketid=&id=" + ticket.TicketID
+							Dim remoteLink As String = String.Format("{0}/Ticket.aspx?ticketid={1}", domain, ticket.TicketID.ToString())
 
 							_tfs.CreateTeamSupportHyperlink(workItem.Id, remoteLink, String.Format("{0} Ticket #{1} - {2}", creatorName, ticket.TicketNumber, ticketName))
 							ticketLinkToTFS.TFSID = workItem.Id
@@ -593,11 +593,9 @@ Namespace TeamSupport
             Private Function GetAttachmentEnabled(ByRef attachmentFileSizeLimit As Integer) As String
                 Dim result As Boolean = False
 
-                'Dim URI As String = _baseURI + "/attachment/meta"
-                'Dim batch As JObject = GetAPIJObject(URI, "GET", String.Empty)
-                'result = Convert.ToBoolean(batch("enabled").ToString())
-                'attachmentFileSizeLimit = Convert.ToInt32(batch("uploadLimit").ToString())
-                Log.Write("Attachment enabled is " + result.ToString())
+				'ToDo //vv It looks like TFS does not have a enable/disable for attachments, so it'll be true here until we find if TFS has this check. We will not set the attachmentFileSizeLimit yet either. However, there is a limit of 100 attachments per work item, we could check on this at some point.
+				result = True
+				Log.Write("Attachment enabled is " + result.ToString())
 
                 Return result
             End Function
@@ -972,7 +970,7 @@ Namespace TeamSupport
 			Private Sub PushAttachments(
 			ByVal actionID As Integer,
 			ByVal ticketNumber As Integer,
-			ByVal workItemTitle As String,
+			ByVal workItem As WorkItem,
 			ByVal fileSizeLimit As Integer,
 			ByVal actionPosition As Integer)
 
@@ -1008,7 +1006,8 @@ Namespace TeamSupport
 					Else
 						Dim fs = New FileStream(attachment.Path, FileMode.Open, FileAccess.Read)
 
-						If (fs.Length > fileSizeLimit) Then
+						'ToDo //vv attachmentFileSizeLimit is always zero at this point because I have not found if TFS limits the attachments or not.
+						If (fileSizeLimit > 0 AndAlso fs.Length > fileSizeLimit) Then
 							attachmentError = String.Format("Attachment was not sent as its file size ({0}) exceeded the file size limit of {1}", fs.Length.ToString(), fileSizeLimit.ToString())
 							AddLog(attachmentError,
 								LogType.TextAndReport,
@@ -1022,46 +1021,47 @@ Namespace TeamSupport
 								OperationType.Create)
 						Else
 							Try
-								'Dim URIString As String = _baseURI + "/issue/" + issue("id").ToString() + "/attachments/"
-								Dim URIString As String = ""
-								Dim request As HttpWebRequest = WebRequest.Create(URIString)
-								request.Headers.Add("Authorization", "Basic " + _encodedCredentials)
-								'request.Headers.Add("X-Atlassian-Token", "nocheck")
-								request.Method = "POST"
-								Dim boundary As String = String.Format("----------{0:N}", Guid.NewGuid())
-								request.ContentType = String.Format("multipart/form-data; boundary={0}", boundary)
-								request.UserAgent = Client
+								_tfs.UploadAttachment(workItem.Id, attachment.Path, attachment.FileName)
 
-								Dim content = New MemoryStream()
-								Dim writer = New StreamWriter(content)
-								writer.WriteLine("--{0}", boundary)
-								writer.WriteLine("Content-Disposition: form-data; name=""file""; filename=""{0}""", ("TeamSupport Ticket #" + ticketNumber.ToString() + " action #" + actionPosition.ToString() + " - " + attachment.FileName))
-								writer.WriteLine("Content-Type: application/octet-stream")
-								writer.WriteLine()
-								writer.Flush()
-								Dim data(fs.Length) As Byte
-								fs.Read(data, 0, data.Length)
-								fs.Close()
-								content.Write(data, 0, data.Length)
-								writer.WriteLine()
-								writer.WriteLine("--" + boundary + "--")
-								writer.Flush()
-								content.Seek(0, SeekOrigin.Begin)
-								request.ContentLength = content.Length
+								'Dim URIString As String = ""
+								'Dim request As HttpWebRequest = WebRequest.Create(URIString)
+								'request.Headers.Add("Authorization", "Basic " + _encodedCredentials)
+								''request.Headers.Add("X-Atlassian-Token", "nocheck")
+								'request.Method = "POST"
+								'Dim boundary As String = String.Format("----------{0:N}", Guid.NewGuid())
+								'request.ContentType = String.Format("multipart/form-data; boundary={0}", boundary)
+								'request.UserAgent = Client
 
-								Using requestStream As Stream = request.GetRequestStream()
-									content.WriteTo(requestStream)
-									requestStream.Close()
-								End Using
+								'Dim content = New MemoryStream()
+								'Dim writer = New StreamWriter(content)
+								'writer.WriteLine("--{0}", boundary)
+								'writer.WriteLine("Content-Disposition: form-data; name=""file""; filename=""{0}""", ("TeamSupport Ticket #" + ticketNumber.ToString() + " action #" + actionPosition.ToString() + " - " + attachment.FileName))
+								'writer.WriteLine("Content-Type: application/octet-stream")
+								'writer.WriteLine()
+								'writer.Flush()
+								'Dim data(fs.Length) As Byte
+								'fs.Read(data, 0, data.Length)
+								'fs.Close()
+								'content.Write(data, 0, data.Length)
+								'writer.WriteLine()
+								'writer.WriteLine("--" + boundary + "--")
+								'writer.Flush()
+								'content.Seek(0, SeekOrigin.Begin)
+								'request.ContentLength = content.Length
 
-								Using response As HttpWebResponse = request.GetResponse()
-									Log.Write("Attachment """ + attachment.FileName + """ sent.")
-									response.Close()
-								End Using
+								'Using requestStream As Stream = request.GetRequestStream()
+								'	content.WriteTo(requestStream)
+								'	requestStream.Close()
+								'End Using
 
-								content.Flush()
-								content.Close()
-								attachment.SentToJira = True
+								'Using response As HttpWebResponse = request.GetResponse()
+								'	Log.Write("Attachment """ + attachment.FileName + """ sent.")
+								'	response.Close()
+								'End Using
+
+								'content.Flush()
+								'content.Close()
+								attachment.SentToTFS = True
 								updateAttachments = True
 
 								ClearCrmLinkError(crmLinkError)
@@ -1212,7 +1212,7 @@ Namespace TeamSupport
 					End If
 					Dim test As String = workItem.Fields.Keys.Where(Function(w) w = "System.Title").Select(Function(p) p).ToString()
 					If (attachmentEnabled) Then
-						PushAttachments(actionToPushAsComment.ActionID, ticketNumber, workItem.Fields.Keys.Where(Function(w) w = "System.Title").Select(Function(p) p).ToString(), attachmentFileSizeLimit, actionPosition)
+						PushAttachments(actionToPushAsComment.ActionID, ticketNumber, workItem, attachmentFileSizeLimit, actionPosition)
 					End If
 				Next
 

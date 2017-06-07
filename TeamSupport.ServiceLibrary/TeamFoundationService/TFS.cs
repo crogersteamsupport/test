@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -250,6 +252,7 @@ namespace TeamSupport.ServiceLibrary
                 {
                     var result = response.Content.ReadAsStringAsync().Result;
                     workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
+					
                 }
             }
 
@@ -293,7 +296,7 @@ namespace TeamSupport.ServiceLibrary
 
 		public void CreateTeamSupportHyperlink(int workItemId, string remoteLink, string comment)
 		{
-			Object[] patchDocument = GetPatchDocumentForHyperLink(remoteLink, comment);
+			Object[] patchDocument = GetPatchDocumentForRelations(RelationsType.Hyperlink, remoteLink, comment);
 
 			using (var client = new HttpClient())
 			{
@@ -313,6 +316,68 @@ namespace TeamSupport.ServiceLibrary
 					var result = response.Content.ReadAsStringAsync().Result;
 				}
 			}
+		}
+
+		public bool UploadAttachment(int workItemId, string filePath, string fileName)
+		{
+			bool result = false;
+			string URI = HostName + "/DefaultCollection/_apis/wit/attachments?fileName=test.txt&api-version=2.2"; //Use correct values here
+			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URI);
+			string boundary = "---------------------------" + DateTime.Now.Ticks.ToString("x");
+			request.Headers.Add("Authorization", "Basic " + EncodedCredentials);
+			request.Method = "POST";
+			//vv request.ContentType = "application/octet-stream; boundary=" + boundary;
+			request.ContentType = "application/octet-stream;";//vv
+			request.Accept = "text/html, application/xhtml+xml, */*";
+			request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip, deflate");
+
+			MemoryStream stream = new MemoryStream();
+			Stream postDataStream = GetPostStream(filePath, boundary);
+			request.ContentLength = postDataStream.Length;
+			Stream reqStream = request.GetRequestStream();
+			postDataStream.Position = 0;
+
+			byte[] buffer = new byte[1024];
+			int bytesRead = 0;
+
+			while ((bytesRead = postDataStream.Read(buffer, 0, buffer.Length)) != 0)
+			{
+				reqStream.Write(buffer, 0, bytesRead);
+			}
+
+			postDataStream.Close();
+			reqStream.Close();
+
+			StreamReader sr = new StreamReader(request.GetResponse().GetResponseStream());
+			string streamResult = sr.ReadToEnd();
+
+			if (!string.IsNullOrEmpty(streamResult))
+			{
+				AttachmentInfo attachmentinfo = Newtonsoft.Json.JsonConvert.DeserializeObject<AttachmentInfo>(streamResult);
+				Object[] patchDocument = GetPatchDocumentForRelations(RelationsType.AttachedFile, attachmentinfo.url, fileName);
+
+				using (var client = new HttpClient())
+				{
+					client.DefaultRequestHeaders.Accept.Clear();
+					client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json-patch+json"));
+					client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+
+					var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json");
+
+					var method = new HttpMethod("PATCH");
+					//ToDo //vv need to check if the hostname already has the trailing backslash!
+					var requestMessage = new HttpRequestMessage(method, HostName + "/DefaultCollection/_apis/wit/workitems/" + workItemId + "?api-version=2.2") { Content = patchValue };
+					var response = client.SendAsync(requestMessage).Result;
+
+					if (response.IsSuccessStatusCode)
+					{
+						var resultContent = response.Content.ReadAsStringAsync().Result;
+						result = true;
+					}
+				}
+			}
+
+			return result;
 		}
 
 		private void GetWorkItemsFields()
@@ -359,7 +424,7 @@ namespace TeamSupport.ServiceLibrary
 			return patchDocument;
 		}
 
-		private Object[] GetPatchDocumentForHyperLink(string url, string comment)
+		private Object[] GetPatchDocumentForRelations(RelationsType type, string url, string comment)
 		{
 			int i = 0;
 			Object[] patchDocument = new Object[1];
@@ -377,13 +442,40 @@ namespace TeamSupport.ServiceLibrary
 				path = string.Format("/{0}/-", path),
 				value = new
 				{
-					rel = "Hyperlink",
+					rel = type.ToString(),
 					url = url,
 					attributes = attributes
 				}
 			};
 
 			return patchDocument;
+		}
+
+		private static Stream GetPostStream(string filePath, string boundary)
+		{
+			Stream postDataStream = new MemoryStream();
+			FileInfo fileInfo = new FileInfo(filePath);
+			//string fileHeaderTemplate = "--" + boundary + Environment.NewLine +
+			//"Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"" +
+			//Environment.NewLine + "Content-Type: application/octet-stream" + Environment.NewLine + Environment.NewLine;
+			//byte[] fileHeaderBytes = Encoding.UTF8.GetBytes(string.Format(fileHeaderTemplate, "UploadFile", fileInfo.FullName));
+			//postDataStream.Write(fileHeaderBytes, 0, fileHeaderBytes.Length);
+
+			FileStream fileStream = fileInfo.OpenRead();
+			byte[] buffer = new byte[1024];
+			int bytesRead = 0;
+
+			while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) != 0)
+			{
+				postDataStream.Write(buffer, 0, bytesRead);
+			}
+
+			fileStream.Close();
+
+			//byte[] endBoundaryBytes = Encoding.UTF8.GetBytes(Environment.NewLine + "--" + boundary);
+			//postDataStream.Write(endBoundaryBytes, 0, endBoundaryBytes.Length);
+
+			return postDataStream;
 		}
 
 		public class WorkItemFields
@@ -401,6 +493,19 @@ namespace TeamSupport.ServiceLibrary
             public string url { get; set; }
             public string value { get; set; }
         }
+
+		private class AttachmentInfo
+		{
+			public string id { get; set; }
+			public string url { get; set; }
+		}
+
+		private enum RelationsType : byte
+		{
+			unknown = 0,
+			Hyperlink = 1,
+			AttachedFile = 2
+		}
 
         #region Properties
         public string HostName
