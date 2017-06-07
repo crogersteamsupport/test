@@ -1012,7 +1012,7 @@ function SetupActionEditor(elem, action) {
               });
       }
       else {
-          window.parent.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
+          window.parent.Ts.Services.Tickets.StartArchivingScreen(sessionId, function (resultID) {
               element.find('#rcdtokScreen').hide();
               element.find('#stoptokScreen').show();
               element.find('#deletetokScreen').hide();
