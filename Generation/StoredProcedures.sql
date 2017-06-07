@@ -1,775 +1,850 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
+CREATE PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
 
 (
-  @AttachmentID int
+  @ProductVersionID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [AttachmentID],
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
+    [ProductVersionID],
+    [ProductID],
+    [ProductVersionStatusID],
+    [VersionNumber],
+    [ReleaseDate],
+    [IsReleased],
     [Description],
+    [ImportID],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID],
+    [NeedsIndexing],
+    [VersionStatus],
+    [ProductName],
+    [OrganizationID],
     [ProductFamilyID],
-    [SentToTFS]
-  FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+    [JiraProjectKey],
+    [TFSProjectName]
+  FROM [dbo].[ProductVersionsView]
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
+CREATE PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
 
 (
-  @OrganizationID int,
-  @FileName nvarchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path nvarchar(1000),
-  @Description varchar(2000),
+  @ProductVersionID int,
+  @ProductID int,
+  @ProductVersionStatusID int,
+  @VersionNumber varchar(50),
+  @ReleaseDate datetime,
+  @IsReleased bit,
+  @Description varchar(MAX),
+  @ImportID varchar(50),
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
+  @NeedsIndexing bit,
+  @VersionStatus varchar(255),
+  @ProductName varchar(255),
+  @OrganizationID int,
   @ProductFamilyID int,
-  @SentToTFS bit,
+  @JiraProjectKey varchar(250),
+  @TFSProjectName nvarchar(MAX),
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Attachments]
+  INSERT INTO [dbo].[ProductVersionsView]
   (
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
+    [ProductVersionID],
+    [ProductID],
+    [ProductVersionStatusID],
+    [VersionNumber],
+    [ReleaseDate],
+    [IsReleased],
     [Description],
+    [ImportID],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID],
+    [NeedsIndexing],
+    [VersionStatus],
+    [ProductName],
+    [OrganizationID],
     [ProductFamilyID],
-    [SentToTFS])
+    [JiraProjectKey],
+    [TFSProjectName])
   VALUES (
-    @OrganizationID,
-    @FileName,
-    @FileType,
-    @FileSize,
-    @Path,
+    @ProductVersionID,
+    @ProductID,
+    @ProductVersionStatusID,
+    @VersionNumber,
+    @ReleaseDate,
+    @IsReleased,
     @Description,
+    @ImportID,
     @DateCreated,
     @DateModified,
     @CreatorID,
     @ModifierID,
-    @RefType,
-    @RefID,
-    @SentToJira,
-    @AttachmentGUID,
+    @NeedsIndexing,
+    @VersionStatus,
+    @ProductName,
+    @OrganizationID,
     @ProductFamilyID,
-    @SentToTFS)
+    @JiraProjectKey,
+    @TFSProjectName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
+CREATE PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
 
 (
-  @AttachmentID int,
-  @OrganizationID int,
-  @FileName nvarchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path nvarchar(1000),
-  @Description varchar(2000),
+  @ProductVersionID int,
+  @ProductID int,
+  @ProductVersionStatusID int,
+  @VersionNumber varchar(50),
+  @ReleaseDate datetime,
+  @IsReleased bit,
+  @Description varchar(MAX),
+  @ImportID varchar(50),
   @DateModified datetime,
   @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
+  @NeedsIndexing bit,
+  @VersionStatus varchar(255),
+  @ProductName varchar(255),
+  @OrganizationID int,
   @ProductFamilyID int,
-  @SentToTFS bit
+  @JiraProjectKey varchar(250),
+  @TFSProjectName nvarchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Attachments]
+  UPDATE [dbo].[ProductVersionsView]
   SET
-    [OrganizationID] = @OrganizationID,
-    [FileName] = @FileName,
-    [FileType] = @FileType,
-    [FileSize] = @FileSize,
-    [Path] = @Path,
+    [ProductID] = @ProductID,
+    [ProductVersionStatusID] = @ProductVersionStatusID,
+    [VersionNumber] = @VersionNumber,
+    [ReleaseDate] = @ReleaseDate,
+    [IsReleased] = @IsReleased,
     [Description] = @Description,
+    [ImportID] = @ImportID,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [SentToJira] = @SentToJira,
-    [AttachmentGUID] = @AttachmentGUID,
+    [NeedsIndexing] = @NeedsIndexing,
+    [VersionStatus] = @VersionStatus,
+    [ProductName] = @ProductName,
+    [OrganizationID] = @OrganizationID,
     [ProductFamilyID] = @ProductFamilyID,
-    [SentToTFS] = @SentToTFS
-  WHERE ([AttachmentID] = @AttachmentID)
+    [JiraProjectKey] = @JiraProjectKey,
+    [TFSProjectName] = @TFSProjectName
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
+CREATE PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
 
 (
-  @AttachmentID int
+  @ProductVersionID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+  DELETE FROM [dbo].[ProductVersionsView]
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
+CREATE PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
 
 (
-  @AttachmentID int
+  @ProductVersionID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [AttachmentID],
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
+    [ProductVersionID],
+    [ProductID],
+    [ProductVersionStatusID],
+    [VersionNumber],
+    [ReleaseDate],
+    [IsReleased],
     [Description],
+    [ImportID],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID],
+    [NeedsIndexing],
+    [VersionStatus],
+    [ProductName],
+    [OrganizationID],
     [ProductFamilyID],
-    [SentToTFS]
-  FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+    [JiraProjectKey],
+    [TFSProjectName]
+  FROM [dbo].[ProductVersionsView]
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
+CREATE PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
 
 (
-  @OrganizationID int,
-  @FileName nvarchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path nvarchar(1000),
-  @Description varchar(2000),
+  @ProductVersionID int,
+  @ProductID int,
+  @ProductVersionStatusID int,
+  @VersionNumber varchar(50),
+  @ReleaseDate datetime,
+  @IsReleased bit,
+  @Description varchar(MAX),
+  @ImportID varchar(50),
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
+  @NeedsIndexing bit,
+  @VersionStatus varchar(255),
+  @ProductName varchar(255),
+  @OrganizationID int,
   @ProductFamilyID int,
-  @SentToTFS bit,
+  @JiraProjectKey varchar(250),
+  @TFSProjectName nvarchar(MAX),
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Attachments]
+  INSERT INTO [dbo].[ProductVersionsView]
   (
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
+    [ProductVersionID],
+    [ProductID],
+    [ProductVersionStatusID],
+    [VersionNumber],
+    [ReleaseDate],
+    [IsReleased],
     [Description],
+    [ImportID],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID],
+    [NeedsIndexing],
+    [VersionStatus],
+    [ProductName],
+    [OrganizationID],
     [ProductFamilyID],
-    [SentToTFS])
+    [JiraProjectKey],
+    [TFSProjectName])
   VALUES (
-    @OrganizationID,
-    @FileName,
-    @FileType,
-    @FileSize,
-    @Path,
+    @ProductVersionID,
+    @ProductID,
+    @ProductVersionStatusID,
+    @VersionNumber,
+    @ReleaseDate,
+    @IsReleased,
     @Description,
+    @ImportID,
     @DateCreated,
     @DateModified,
     @CreatorID,
     @ModifierID,
-    @RefType,
-    @RefID,
-    @SentToJira,
-    @AttachmentGUID,
+    @NeedsIndexing,
+    @VersionStatus,
+    @ProductName,
+    @OrganizationID,
     @ProductFamilyID,
-    @SentToTFS)
+    @JiraProjectKey,
+    @TFSProjectName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
+CREATE PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
 
 (
-  @AttachmentID int,
-  @OrganizationID int,
-  @FileName nvarchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path nvarchar(1000),
-  @Description varchar(2000),
+  @ProductVersionID int,
+  @ProductID int,
+  @ProductVersionStatusID int,
+  @VersionNumber varchar(50),
+  @ReleaseDate datetime,
+  @IsReleased bit,
+  @Description varchar(MAX),
+  @ImportID varchar(50),
   @DateModified datetime,
   @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
+  @NeedsIndexing bit,
+  @VersionStatus varchar(255),
+  @ProductName varchar(255),
+  @OrganizationID int,
   @ProductFamilyID int,
-  @SentToTFS bit
+  @JiraProjectKey varchar(250),
+  @TFSProjectName nvarchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Attachments]
+  UPDATE [dbo].[ProductVersionsView]
   SET
-    [OrganizationID] = @OrganizationID,
-    [FileName] = @FileName,
-    [FileType] = @FileType,
-    [FileSize] = @FileSize,
-    [Path] = @Path,
+    [ProductID] = @ProductID,
+    [ProductVersionStatusID] = @ProductVersionStatusID,
+    [VersionNumber] = @VersionNumber,
+    [ReleaseDate] = @ReleaseDate,
+    [IsReleased] = @IsReleased,
     [Description] = @Description,
+    [ImportID] = @ImportID,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [SentToJira] = @SentToJira,
-    [AttachmentGUID] = @AttachmentGUID,
+    [NeedsIndexing] = @NeedsIndexing,
+    [VersionStatus] = @VersionStatus,
+    [ProductName] = @ProductName,
+    [OrganizationID] = @OrganizationID,
     [ProductFamilyID] = @ProductFamilyID,
-    [SentToTFS] = @SentToTFS
-  WHERE ([AttachmentID] = @AttachmentID)
+    [JiraProjectKey] = @JiraProjectKey,
+    [TFSProjectName] = @TFSProjectName
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
+CREATE PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
 
 (
-  @AttachmentID int
+  @ProductVersionID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+  DELETE FROM [dbo].[ProductVersionsView]
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
+CREATE PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
 
 (
-  @AttachmentID int
+  @ProductVersionID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [AttachmentID],
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
+    [ProductVersionID],
+    [ProductID],
+    [ProductVersionStatusID],
+    [VersionNumber],
+    [ReleaseDate],
+    [IsReleased],
     [Description],
+    [ImportID],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID],
+    [NeedsIndexing],
+    [VersionStatus],
+    [ProductName],
+    [OrganizationID],
     [ProductFamilyID],
-    [SentToTFS]
-  FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+    [JiraProjectKey],
+    [TFSProjectName]
+  FROM [dbo].[ProductVersionsView]
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
+CREATE PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
 
 (
-  @OrganizationID int,
-  @FileName nvarchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path nvarchar(1000),
-  @Description varchar(2000),
+  @ProductVersionID int,
+  @ProductID int,
+  @ProductVersionStatusID int,
+  @VersionNumber varchar(50),
+  @ReleaseDate datetime,
+  @IsReleased bit,
+  @Description varchar(MAX),
+  @ImportID varchar(50),
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
+  @NeedsIndexing bit,
+  @VersionStatus varchar(255),
+  @ProductName varchar(255),
+  @OrganizationID int,
   @ProductFamilyID int,
-  @SentToTFS bit,
+  @JiraProjectKey varchar(250),
+  @TFSProjectName nvarchar(MAX),
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Attachments]
+  INSERT INTO [dbo].[ProductVersionsView]
   (
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
+    [ProductVersionID],
+    [ProductID],
+    [ProductVersionStatusID],
+    [VersionNumber],
+    [ReleaseDate],
+    [IsReleased],
     [Description],
+    [ImportID],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID],
+    [NeedsIndexing],
+    [VersionStatus],
+    [ProductName],
+    [OrganizationID],
     [ProductFamilyID],
-    [SentToTFS])
+    [JiraProjectKey],
+    [TFSProjectName])
   VALUES (
-    @OrganizationID,
-    @FileName,
-    @FileType,
-    @FileSize,
-    @Path,
+    @ProductVersionID,
+    @ProductID,
+    @ProductVersionStatusID,
+    @VersionNumber,
+    @ReleaseDate,
+    @IsReleased,
     @Description,
+    @ImportID,
     @DateCreated,
     @DateModified,
     @CreatorID,
     @ModifierID,
-    @RefType,
-    @RefID,
-    @SentToJira,
-    @AttachmentGUID,
+    @NeedsIndexing,
+    @VersionStatus,
+    @ProductName,
+    @OrganizationID,
     @ProductFamilyID,
-    @SentToTFS)
+    @JiraProjectKey,
+    @TFSProjectName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
+CREATE PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
 
 (
-  @AttachmentID int,
-  @OrganizationID int,
-  @FileName nvarchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path nvarchar(1000),
-  @Description varchar(2000),
+  @ProductVersionID int,
+  @ProductID int,
+  @ProductVersionStatusID int,
+  @VersionNumber varchar(50),
+  @ReleaseDate datetime,
+  @IsReleased bit,
+  @Description varchar(MAX),
+  @ImportID varchar(50),
   @DateModified datetime,
   @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
+  @NeedsIndexing bit,
+  @VersionStatus varchar(255),
+  @ProductName varchar(255),
+  @OrganizationID int,
   @ProductFamilyID int,
-  @SentToTFS bit
+  @JiraProjectKey varchar(250),
+  @TFSProjectName nvarchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Attachments]
+  UPDATE [dbo].[ProductVersionsView]
   SET
-    [OrganizationID] = @OrganizationID,
-    [FileName] = @FileName,
-    [FileType] = @FileType,
-    [FileSize] = @FileSize,
-    [Path] = @Path,
+    [ProductID] = @ProductID,
+    [ProductVersionStatusID] = @ProductVersionStatusID,
+    [VersionNumber] = @VersionNumber,
+    [ReleaseDate] = @ReleaseDate,
+    [IsReleased] = @IsReleased,
     [Description] = @Description,
+    [ImportID] = @ImportID,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [SentToJira] = @SentToJira,
-    [AttachmentGUID] = @AttachmentGUID,
+    [NeedsIndexing] = @NeedsIndexing,
+    [VersionStatus] = @VersionStatus,
+    [ProductName] = @ProductName,
+    [OrganizationID] = @OrganizationID,
     [ProductFamilyID] = @ProductFamilyID,
-    [SentToTFS] = @SentToTFS
-  WHERE ([AttachmentID] = @AttachmentID)
+    [JiraProjectKey] = @JiraProjectKey,
+    [TFSProjectName] = @TFSProjectName
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
+CREATE PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
 
 (
-  @AttachmentID int
+  @ProductVersionID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+  DELETE FROM [dbo].[ProductVersionsView]
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
+CREATE PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
 
 (
-  @AttachmentID int
+  @ProductVersionID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [AttachmentID],
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
+    [ProductVersionID],
+    [ProductID],
+    [ProductVersionStatusID],
+    [VersionNumber],
+    [ReleaseDate],
+    [IsReleased],
     [Description],
+    [ImportID],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID],
+    [NeedsIndexing],
+    [VersionStatus],
+    [ProductName],
+    [OrganizationID],
     [ProductFamilyID],
-    [SentToTFS]
-  FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+    [JiraProjectKey],
+    [TFSProjectName]
+  FROM [dbo].[ProductVersionsView]
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
+CREATE PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
 
 (
-  @OrganizationID int,
-  @FileName nvarchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path nvarchar(1000),
-  @Description varchar(2000),
+  @ProductVersionID int,
+  @ProductID int,
+  @ProductVersionStatusID int,
+  @VersionNumber varchar(50),
+  @ReleaseDate datetime,
+  @IsReleased bit,
+  @Description varchar(MAX),
+  @ImportID varchar(50),
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
+  @NeedsIndexing bit,
+  @VersionStatus varchar(255),
+  @ProductName varchar(255),
+  @OrganizationID int,
   @ProductFamilyID int,
-  @SentToTFS bit,
+  @JiraProjectKey varchar(250),
+  @TFSProjectName nvarchar(MAX),
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Attachments]
+  INSERT INTO [dbo].[ProductVersionsView]
   (
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
+    [ProductVersionID],
+    [ProductID],
+    [ProductVersionStatusID],
+    [VersionNumber],
+    [ReleaseDate],
+    [IsReleased],
     [Description],
+    [ImportID],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID],
+    [NeedsIndexing],
+    [VersionStatus],
+    [ProductName],
+    [OrganizationID],
     [ProductFamilyID],
-    [SentToTFS])
+    [JiraProjectKey],
+    [TFSProjectName])
   VALUES (
-    @OrganizationID,
-    @FileName,
-    @FileType,
-    @FileSize,
-    @Path,
+    @ProductVersionID,
+    @ProductID,
+    @ProductVersionStatusID,
+    @VersionNumber,
+    @ReleaseDate,
+    @IsReleased,
     @Description,
+    @ImportID,
     @DateCreated,
     @DateModified,
     @CreatorID,
     @ModifierID,
-    @RefType,
-    @RefID,
-    @SentToJira,
-    @AttachmentGUID,
+    @NeedsIndexing,
+    @VersionStatus,
+    @ProductName,
+    @OrganizationID,
     @ProductFamilyID,
-    @SentToTFS)
+    @JiraProjectKey,
+    @TFSProjectName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
+CREATE PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
 
 (
-  @AttachmentID int,
-  @OrganizationID int,
-  @FileName nvarchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path nvarchar(1000),
-  @Description varchar(2000),
+  @ProductVersionID int,
+  @ProductID int,
+  @ProductVersionStatusID int,
+  @VersionNumber varchar(50),
+  @ReleaseDate datetime,
+  @IsReleased bit,
+  @Description varchar(MAX),
+  @ImportID varchar(50),
   @DateModified datetime,
   @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
+  @NeedsIndexing bit,
+  @VersionStatus varchar(255),
+  @ProductName varchar(255),
+  @OrganizationID int,
   @ProductFamilyID int,
-  @SentToTFS bit
+  @JiraProjectKey varchar(250),
+  @TFSProjectName nvarchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Attachments]
+  UPDATE [dbo].[ProductVersionsView]
   SET
-    [OrganizationID] = @OrganizationID,
-    [FileName] = @FileName,
-    [FileType] = @FileType,
-    [FileSize] = @FileSize,
-    [Path] = @Path,
+    [ProductID] = @ProductID,
+    [ProductVersionStatusID] = @ProductVersionStatusID,
+    [VersionNumber] = @VersionNumber,
+    [ReleaseDate] = @ReleaseDate,
+    [IsReleased] = @IsReleased,
     [Description] = @Description,
+    [ImportID] = @ImportID,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [SentToJira] = @SentToJira,
-    [AttachmentGUID] = @AttachmentGUID,
+    [NeedsIndexing] = @NeedsIndexing,
+    [VersionStatus] = @VersionStatus,
+    [ProductName] = @ProductName,
+    [OrganizationID] = @OrganizationID,
     [ProductFamilyID] = @ProductFamilyID,
-    [SentToTFS] = @SentToTFS
-  WHERE ([AttachmentID] = @AttachmentID)
+    [JiraProjectKey] = @JiraProjectKey,
+    [TFSProjectName] = @TFSProjectName
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
+CREATE PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
 
 (
-  @AttachmentID int
+  @ProductVersionID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+  DELETE FROM [dbo].[ProductVersionsView]
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
+CREATE PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
 
 (
-  @AttachmentID int
+  @ProductVersionID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [AttachmentID],
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
+    [ProductVersionID],
+    [ProductID],
+    [ProductVersionStatusID],
+    [VersionNumber],
+    [ReleaseDate],
+    [IsReleased],
     [Description],
+    [ImportID],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID],
+    [NeedsIndexing],
+    [VersionStatus],
+    [ProductName],
+    [OrganizationID],
     [ProductFamilyID],
-    [SentToTFS]
-  FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+    [JiraProjectKey],
+    [TFSProjectName]
+  FROM [dbo].[ProductVersionsView]
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
+CREATE PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
 
 (
-  @OrganizationID int,
-  @FileName nvarchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path nvarchar(1000),
-  @Description varchar(2000),
+  @ProductVersionID int,
+  @ProductID int,
+  @ProductVersionStatusID int,
+  @VersionNumber varchar(50),
+  @ReleaseDate datetime,
+  @IsReleased bit,
+  @Description varchar(MAX),
+  @ImportID varchar(50),
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
+  @NeedsIndexing bit,
+  @VersionStatus varchar(255),
+  @ProductName varchar(255),
+  @OrganizationID int,
   @ProductFamilyID int,
-  @SentToTFS bit,
+  @JiraProjectKey varchar(250),
+  @TFSProjectName nvarchar(MAX),
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Attachments]
+  INSERT INTO [dbo].[ProductVersionsView]
   (
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
+    [ProductVersionID],
+    [ProductID],
+    [ProductVersionStatusID],
+    [VersionNumber],
+    [ReleaseDate],
+    [IsReleased],
     [Description],
+    [ImportID],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID],
+    [NeedsIndexing],
+    [VersionStatus],
+    [ProductName],
+    [OrganizationID],
     [ProductFamilyID],
-    [SentToTFS])
+    [JiraProjectKey],
+    [TFSProjectName])
   VALUES (
-    @OrganizationID,
-    @FileName,
-    @FileType,
-    @FileSize,
-    @Path,
+    @ProductVersionID,
+    @ProductID,
+    @ProductVersionStatusID,
+    @VersionNumber,
+    @ReleaseDate,
+    @IsReleased,
     @Description,
+    @ImportID,
     @DateCreated,
     @DateModified,
     @CreatorID,
     @ModifierID,
-    @RefType,
-    @RefID,
-    @SentToJira,
-    @AttachmentGUID,
+    @NeedsIndexing,
+    @VersionStatus,
+    @ProductName,
+    @OrganizationID,
     @ProductFamilyID,
-    @SentToTFS)
+    @JiraProjectKey,
+    @TFSProjectName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
+CREATE PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
 
 (
-  @AttachmentID int,
-  @OrganizationID int,
-  @FileName nvarchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path nvarchar(1000),
-  @Description varchar(2000),
+  @ProductVersionID int,
+  @ProductID int,
+  @ProductVersionStatusID int,
+  @VersionNumber varchar(50),
+  @ReleaseDate datetime,
+  @IsReleased bit,
+  @Description varchar(MAX),
+  @ImportID varchar(50),
   @DateModified datetime,
   @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
+  @NeedsIndexing bit,
+  @VersionStatus varchar(255),
+  @ProductName varchar(255),
+  @OrganizationID int,
   @ProductFamilyID int,
-  @SentToTFS bit
+  @JiraProjectKey varchar(250),
+  @TFSProjectName nvarchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Attachments]
+  UPDATE [dbo].[ProductVersionsView]
   SET
-    [OrganizationID] = @OrganizationID,
-    [FileName] = @FileName,
-    [FileType] = @FileType,
-    [FileSize] = @FileSize,
-    [Path] = @Path,
+    [ProductID] = @ProductID,
+    [ProductVersionStatusID] = @ProductVersionStatusID,
+    [VersionNumber] = @VersionNumber,
+    [ReleaseDate] = @ReleaseDate,
+    [IsReleased] = @IsReleased,
     [Description] = @Description,
+    [ImportID] = @ImportID,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [SentToJira] = @SentToJira,
-    [AttachmentGUID] = @AttachmentGUID,
+    [NeedsIndexing] = @NeedsIndexing,
+    [VersionStatus] = @VersionStatus,
+    [ProductName] = @ProductName,
+    [OrganizationID] = @OrganizationID,
     [ProductFamilyID] = @ProductFamilyID,
-    [SentToTFS] = @SentToTFS
-  WHERE ([AttachmentID] = @AttachmentID)
+    [JiraProjectKey] = @JiraProjectKey,
+    [TFSProjectName] = @TFSProjectName
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
+CREATE PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
 
 (
-  @AttachmentID int
+  @ProductVersionID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+  DELETE FROM [dbo].[ProductVersionsView]
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
 

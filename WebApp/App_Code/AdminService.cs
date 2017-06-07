@@ -392,6 +392,29 @@ namespace TSWebServices
             return result;
         }
 
+        /// <summary>
+        /// Checks if the TFS Integration is active.
+        /// </summary>
+        /// <returns>True or False</returns>
+        [WebMethod]
+        public bool GetIsTFSLinkActiveForOrganization()
+        {
+            bool result = false;
+
+            CRMLinkTable organizationLinks = new CRMLinkTable(TSAuthentication.GetLoginUser());
+            organizationLinks.LoadByOrganizationIDAndCRMType(TSAuthentication.OrganizationID, "TFS");
+
+            foreach (CRMLinkTableItem link in organizationLinks)
+            {
+                if (link.Active)
+                {
+                    result = true;
+                }
+            }
+
+            return result;
+        }
+
         [WebMethod]
         public string GetTFSCRMLinkTableRecordForTicket(int ticketId)
         {
