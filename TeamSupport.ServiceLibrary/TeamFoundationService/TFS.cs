@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
@@ -24,9 +23,11 @@ namespace TeamSupport.ServiceLibrary
             _hostname = hostname;
             _accessToken = accessToken;
         }
-        public string GetProjects()
+
+		public string GetProjects()
         {
             string responseBody = null;
+
             try
             {
                 using (HttpClient client = new HttpClient())
@@ -134,23 +135,103 @@ namespace TeamSupport.ServiceLibrary
             return result;
         }
 
-        public WorkItem CreateWorkItem(List<WorkItemField> fields, string project, string type)
+		public WorkItem GetWorkItemBy(int workItemId, bool expandAll = false)
+		{
+			WorkItem workItem = new WorkItem();
+
+			try
+			{
+				using (HttpClient client = new HttpClient())
+				{
+					client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+					client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+
+					using (HttpResponseMessage response = client.GetAsync(string.Format("{0}/DefaultCollection/_apis/wit/workItems/{1}?api-version=2.2{2}", HostName, workItemId, (expandAll ? "&$expand=all" : ""))).Result)
+					{
+						response.EnsureSuccessStatusCode();
+
+						if (response.StatusCode.ToString().ToLower() == "ok")
+						{
+							string responseBody = response.Content.ReadAsStringAsync().Result;
+							workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(responseBody);
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				//vv
+			}
+
+			return workItem;
+		}
+
+		public WorkItemComments GetCommentsBy(int workItemId)
+		{
+			WorkItemComments comments = new WorkItemComments();
+
+			try
+			{
+				using (HttpClient client = new HttpClient())
+				{
+					client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+					client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+
+					using (HttpResponseMessage response = client.GetAsync(string.Format("{0}/DefaultCollection/_apis/wit/workItems/{1}/comments", HostName, workItemId)).Result)
+					{
+						response.EnsureSuccessStatusCode();
+
+						if (response.StatusCode.ToString().ToLower() == "ok")
+						{
+							string responseBody = response.Content.ReadAsStringAsync().Result;
+							comments = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemComments>(responseBody);
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				//vv
+			}
+
+			return comments;
+		}
+
+		public WorkItemComment GetCommentBy(int workItemId, int revisionId)
+		{
+			WorkItemComment comments = new WorkItemComment();
+
+			try
+			{
+				using (HttpClient client = new HttpClient())
+				{
+					client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+					client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+
+					using (HttpResponseMessage response = client.GetAsync(string.Format("{0}/DefaultCollection/_apis/wit/workItems/{1}/comments/{2}", HostName, workItemId, revisionId)).Result)
+					{
+						response.EnsureSuccessStatusCode();
+
+						if (response.StatusCode.ToString().ToLower() == "ok")
+						{
+							string responseBody = response.Content.ReadAsStringAsync().Result;
+							comments = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemComment>(responseBody);
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				//vv
+			}
+
+			return comments;
+		}
+
+		public WorkItem CreateWorkItem(List<WorkItemField> fields, string project, string type)
         {
             WorkItem workItem = new WorkItem();
-            int i = 0;
-            Object[] patchDocument = new Object[fields.Count];
-
-            foreach (WorkItemField field in fields)
-            {
-                patchDocument[i] = new
-                {
-                    op = "add",
-                    path = "/fields/" + field.referenceName,
-                    value = field.value
-                };
-
-                i++;
-            }
+			Object[] patchDocument = GetPatchDocument(fields);
 
             using (var client = new HttpClient())
             {
@@ -175,7 +256,66 @@ namespace TeamSupport.ServiceLibrary
             return workItem;
         }
 
-        private void GetWorkItemsFields()
+		public int CreateComment(int workItemId, string comment)
+		{
+			int commentId = 0;
+			List<WorkItemField> field = new List<WorkItemField>()
+			{
+				new WorkItemField { referenceName = "System.History", value = comment }
+			};
+
+			Object[] patchDocument = GetPatchDocument(field);
+
+			using (var client = new HttpClient())
+			{
+				client.DefaultRequestHeaders.Accept.Clear();
+				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json-patch+json"));
+				client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+
+				var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json");
+
+				var method = new HttpMethod("PATCH");
+				//ToDo //vv need to check if the hostname already has the trailing backslash!
+				var request = new HttpRequestMessage(method, HostName + "/DefaultCollection/_apis/wit/workitems/" + workItemId + "?api-version=2.2") { Content = patchValue };
+				var response = client.SendAsync(request).Result;
+
+				if (response.IsSuccessStatusCode)
+				{
+					var result = response.Content.ReadAsStringAsync().Result;
+					WorkItem workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
+					//ToDo //vv needed? WorkItemComment workItemComment = GetCommentBy((int)workItem.Id, (int)workItem.Rev);
+					commentId = (int)workItem.Rev;
+				}
+			}
+
+			return commentId;
+		}
+
+		public void CreateTeamSupportHyperlink(int workItemId, string remoteLink, string comment)
+		{
+			Object[] patchDocument = GetPatchDocumentForHyperLink(remoteLink, comment);
+
+			using (var client = new HttpClient())
+			{
+				client.DefaultRequestHeaders.Accept.Clear();
+				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json-patch+json"));
+				client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+
+				var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json");
+
+				var method = new HttpMethod("PATCH");
+				//ToDo //vv need to check if the hostname already has the trailing backslash!
+				var request = new HttpRequestMessage(method, HostName + "/DefaultCollection/_apis/wit/workitems/" + workItemId + "?api-version=2.2") { Content = patchValue };
+				var response = client.SendAsync(request).Result;
+
+				if (response.IsSuccessStatusCode)
+				{
+					var result = response.Content.ReadAsStringAsync().Result;
+				}
+			}
+		}
+
+		private void GetWorkItemsFields()
         {
             List<WorkItemField> resultList = new List<WorkItemField>();
 
@@ -198,7 +338,55 @@ namespace TeamSupport.ServiceLibrary
             _workItemFields = resultList;
         }
 
-        public class WorkItemFields
+		private Object[] GetPatchDocument(List<WorkItemField> fields)
+		{
+			int i = 0;
+			Object[] patchDocument = new Object[fields.Count];
+			string path = "fields";
+
+			foreach (WorkItemField field in fields)
+			{
+				patchDocument[i] = new
+				{
+					op = "add",
+					path = string.Format("/{0}/", path) + field.referenceName,
+					value = field.value
+				};
+
+				i++;
+			}
+
+			return patchDocument;
+		}
+
+		private Object[] GetPatchDocumentForHyperLink(string url, string comment)
+		{
+			int i = 0;
+			Object[] patchDocument = new Object[1];
+			string path = "relations";
+
+			object attributes =
+					new
+					{
+						comment = comment
+					};
+
+			patchDocument[0] = new
+			{
+				op = "add",
+				path = string.Format("/{0}/-", path),
+				value = new
+				{
+					rel = "Hyperlink",
+					url = url,
+					attributes = attributes
+				}
+			};
+
+			return patchDocument;
+		}
+
+		public class WorkItemFields
         {
             public int count { get; set; }
             public WorkItemField[] value { get; set; }
