@@ -977,11 +977,13 @@ namespace TeamSupport.Data
             return template.GetMessage();
         }
 
-        public static MailMessage GetReaction(LoginUser loginUser, int ticketID, string hostName)
+        public static MailMessage GetReaction(LoginUser loginUser, User sender, User receiver, int ticketID, string hostName)
         {
-            EmailTemplate template = EmailTemplates.GetEmailTemplate(loginUser,40);
-            string senderName = loginUser.GetUserFullName();
-            template.ReplaceParameter("Sender.Name", senderName).ReplaceParameter("ticketid", ticketID.ToString()).ReplaceParameter("hostname", hostName);
+            EmailTemplate template = EmailTemplates.GetEmailTemplate(loginUser, 40);
+
+            template.ReplaceParameter("sender.name", sender.FirstLastName);
+            template.ReplaceParameter("ticketid", ticketID.ToString());
+            template.ReplaceParameter("hostname", hostName);
             return template.GetMessage();
         }
 
