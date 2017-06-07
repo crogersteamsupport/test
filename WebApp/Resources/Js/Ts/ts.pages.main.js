@@ -213,7 +213,7 @@ Ts.Pages.Main.prototype = {
             e.stopPropagation();
             hidePopupMenus();
             $(this).addClass('selected ui-widget-content ui-corner-top').removeClass('hover');
-            $('.menu-popup-officestatus').css('left', $(this).offset().left).show().find('.menu-input').focus();
+            $('.menu-popup-officestatus').css('left', $(this).offset().left - 1).show().find('.menu-input').focus();
 
         });
 
@@ -280,7 +280,7 @@ Ts.Pages.Main.prototype = {
             e.stopPropagation();
             hidePopupMenus();
             $(this).addClass('selected ui-widget-content ui-corner-top').removeClass('hover');
-            $('.menu-popup-help').show().css('left', $(this).offset().left + $(this).outerWidth() - $('.menu-popup-help').outerWidth()).find('.menu-input').focus();
+            $('.menu-popup-help').show().css('left', $(this).offset().left + $(this).outerWidth() - $('.menu-popup-help').outerWidth() + 1).find('.menu-input').focus();
         });
 
         var menuBlur = null;
