@@ -980,6 +980,7 @@ namespace TeamSupport.Data
         public static MailMessage GetReaction(LoginUser loginUser, User sender, User receiver, int ticketID, string hostName)
         {
             EmailTemplate template = EmailTemplates.GetEmailTemplate(loginUser, 40);
+            Organization organization = Organizations.GetOrganization(loginUser, sender.OrganizationID);
 
             template.ReplaceParameter("sender.name", sender.FirstLastName);
             template.ReplaceParameter("ticketid", ticketID.ToString());
