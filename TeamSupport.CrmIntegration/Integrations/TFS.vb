@@ -493,9 +493,6 @@ Namespace TeamSupport
 
 							_tfs.CreateTeamSupportHyperlink(workItem.Id, remoteLink, String.Format("{0} Ticket #{1} - {2}", creatorName, ticket.TicketNumber, ticketName))
 
-							'//vv Testing: 
-							_tfs.DeleteTeamSupportHyperlink(workItem.Id, ticket.TicketID)
-
 							ticketLinkToTFS.TFSID = workItem.Id
 
 							If (workItem.Fields.Where(Function(w) w.Key = "System.Title").Any()) Then
