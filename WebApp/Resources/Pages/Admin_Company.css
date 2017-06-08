@@ -43,8 +43,26 @@ form.positive-file-upload input, form.neutral-file-upload input, form.negative-f
 }
 
 #cdi-green .ui-slider-range { background: #8ae234; }
-#cdi-green .ui-slider-handle { border-color: #8ae234; }
 
 #cdi-yellow .ui-slider-range { background: #ffd800; }
-#cdi-yellow .ui-slider-handle { border-color: #ffd800; }
 
+.ui-slider-handle {
+    border: 1px solid lightgrey;
+    background-color: lightgrey;
+    font-weight: normal;
+    color: #2A3F54;
+}
+
+.ui-slider-handle:hover {
+    border: 1px solid darkgrey;
+    background-color: darkgrey;
+    font-weight: normal;
+    color: #2A3F54;
+}
+
+.ui-slider-range {
+    border: 1px solid #92b4de;
+    background: #21779C;
+    color: #154b8c;
+    font-weight: bold;
+}
