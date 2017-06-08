@@ -1059,7 +1059,7 @@ namespace TeamSupport.ServiceLibrary
                 message.To.Add(GetMailAddress(receiver.Email, receiver.FirstLastName));
                 // message.Subject = message.Subject;
                 string replyAddress = sender.Email;
-                AddMessage(receiver.OrganizationID, "Action Reaction (Applause) [" + ticketID + "]", message, replyAddress);
+                AddMessage(receiver.OrganizationID, "Action Reaction (Applause) [" + ticketID.ToString() + "]", message, replyAddress);
             }
 
             catch (Exception ex)
