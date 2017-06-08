@@ -435,7 +435,7 @@ namespace TeamSupport.Data
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = @"SELECT u.*
-                                FROM Users u 
+                                FROM Users u
                                 WHERE (u.OrganizationID = @OrganizationID)
                                 AND (u.Email = @Email)
                                 AND (u.MarkDeleted = 0)";
@@ -453,7 +453,7 @@ namespace TeamSupport.Data
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = @"SELECT u.*
-                                FROM Users u 
+                                FROM Users u
                                 WHERE (u.OrganizationID = @OrganizationID)
                                 AND (u.Email = @Email)";
 
@@ -470,7 +470,7 @@ namespace TeamSupport.Data
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = @"SELECT u.*
-                                FROM Users u 
+                                FROM Users u
                                 LEFT JOIN Organizations o
                                 ON o.OrganizationID = u.OrganizationID
                                 WHERE (o.ParentID = @ParentID)
@@ -491,11 +491,11 @@ namespace TeamSupport.Data
 			using (SqlCommand command = new SqlCommand())
 			{
 				command.CommandText = @"SELECT u.*
-                                FROM Users u 
+                                FROM Users u
                                 LEFT JOIN Organizations o
                                 ON o.OrganizationID = u.OrganizationID
                                 WHERE (u.OrganizationID = @OrganizationID)
-								AND (u.IsSystemAdmin = 1) 
+								AND (u.IsSystemAdmin = 1)
                                 AND (u.Email = @Email)
                                 AND (u.MarkDeleted = 0)";
 
@@ -512,7 +512,7 @@ namespace TeamSupport.Data
 			using (SqlCommand command = new SqlCommand())
 			{
 				command.CommandText = @"SELECT u.*
-                                FROM Users u 
+                                FROM Users u
                                 LEFT JOIN Organizations o
                                 ON o.OrganizationID = u.OrganizationID
                                 WHERE (o.ParentID = @ParentID)
@@ -533,7 +533,7 @@ namespace TeamSupport.Data
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = @"SELECT u.*
-                                FROM Users u 
+                                FROM Users u
                                 LEFT JOIN Organizations o
                                 ON o.OrganizationID = u.OrganizationID
                                 WHERE ((o.ParentID = @OrgID) or (o.OrganizationID = @OrgID))
@@ -600,12 +600,12 @@ namespace TeamSupport.Data
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = @"
-                    SELECT 
+                    SELECT
                         *
-                        , LastName + ', ' + FirstName AS DisplayName 
-                    FROM 
-                        Users 
-                    WHERE 
+                        , LastName + ', ' + FirstName AS DisplayName
+                    FROM
+                        Users
+                    WHERE
                         (
                             OrganizationID IN
 					        (
@@ -621,9 +621,9 @@ namespace TeamSupport.Data
                                     AND @IncludeChildren = 1
 					        )
                         )
-                        AND (@ActiveOnly = 0 OR IsActive = 1) 
-                        AND (MarkDeleted = 0) 
-                    ORDER BY 
+                        AND (@ActiveOnly = 0 OR IsActive = 1)
+                        AND (MarkDeleted = 0)
+                    ORDER BY
                         LastName
                         , FirstName";
                 command.CommandType = CommandType.Text;
@@ -642,12 +642,12 @@ namespace TeamSupport.Data
                 command.CommandText = @"
                     WITH OrderedContact AS
                     (
-	                    SELECT 
-		                    UserID, 
+	                    SELECT
+		                    UserID,
 		                    ROW_NUMBER() OVER (ORDER BY LastName, FirstName ASC) AS rownum
-	                    FROM 
-		                    Users 
-	                    WHERE 
+	                    FROM
+		                    Users
+	                    WHERE
                             (
                                 OrganizationID IN
 					            (
@@ -663,19 +663,19 @@ namespace TeamSupport.Data
                                         AND @IncludeChildren = 1
 					            )
                             )
-                            AND (@ActiveOnly = 0 OR IsActive = 1) 
-                            AND (MarkDeleted = 0) 
-                    ) 
-                    SELECT 
+                            AND (@ActiveOnly = 0 OR IsActive = 1)
+                            AND (MarkDeleted = 0)
+                    )
+                    SELECT
                         u.*
-                        , LastName + ', ' + FirstName AS DisplayName 
-                    FROM 
+                        , LastName + ', ' + FirstName AS DisplayName
+                    FROM
                         Users u
                         JOIN OrderedContact oc
                             ON u.UserID = oc.UserID
-                    WHERE 
+                    WHERE
 	                    oc.rownum BETWEEN @start and @end
-                    ORDER BY 
+                    ORDER BY
                         LastName
                         , FirstName";
                 command.CommandType = CommandType.Text;
@@ -721,7 +721,7 @@ namespace TeamSupport.Data
             *
           FROM
             Users
-          WHERE 
+          WHERE
             FirstName + ' ' + LastName = @FirstAndLastName
             AND OrganizationID = @OrganizationID";
                 command.CommandType = CommandType.Text;
@@ -749,14 +749,14 @@ namespace TeamSupport.Data
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = @"SELECT u.*, u.LastName + ', ' + u.FirstName AS DisplayName 
-                                FROM Users u 
+                command.CommandText = @"SELECT u.*, u.LastName + ', ' + u.FirstName AS DisplayName
+                                FROM Users u
                                 LEFT JOIN Organizations o
                                 ON o.OrganizationID = u.OrganizationID
                                 WHERE (o.OrganizationID = @OrganizationID OR o.ParentID = @OrganizationID)
-                                AND (@ActiveOnly = 0 OR u.IsActive = 1) 
+                                AND (@ActiveOnly = 0 OR u.IsActive = 1)
                                 AND (@ActiveOnly = 0 OR o.IsActive = 1)
-                                AND (u.MarkDeleted = 0) 
+                                AND (u.MarkDeleted = 0)
                                 ORDER BY u.LastName, u.FirstName";
 
                 command.CommandType = CommandType.Text;
@@ -770,14 +770,14 @@ namespace TeamSupport.Data
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = @"SELECT u.*, u.LastName + ', ' + u.FirstName AS DisplayName 
-                                FROM Users u 
+                command.CommandText = @"SELECT u.*, u.LastName + ', ' + u.FirstName AS DisplayName
+                                FROM Users u
                                 LEFT JOIN Organizations o
                                 ON o.OrganizationID = u.OrganizationID
                                 WHERE (o.ParentID = @OrganizationID)
-                                AND (@ActiveOnly = 0 OR u.IsActive = 1) 
+                                AND (@ActiveOnly = 0 OR u.IsActive = 1)
                                 AND (@ActiveOnly = 0 OR o.IsActive = 1)
-                                AND (u.MarkDeleted = 0) 
+                                AND (u.MarkDeleted = 0)
                                 ORDER BY u.LastName, u.FirstName";
 
                 command.CommandType = CommandType.Text;
@@ -796,8 +796,8 @@ namespace TeamSupport.Data
                                 CASE
                                   WHEN DATEDIFF(ss, u.LastActivity, GETUTCDATE()) < 300 THEN 1 ELSE 0 END AS IsOnline
                                 FROM Users u
-                                WHERE (OrganizationID = @OrganizationID) 
-                                AND (@ActiveOnly = 0 OR IsActive = 1) 
+                                WHERE (OrganizationID = @OrganizationID)
+                                AND (@ActiveOnly = 0 OR IsActive = 1)
                                 AND (u.MarkDeleted = 0)
                                 ORDER BY LastName, FirstName";
                 command.CommandType = CommandType.Text;
@@ -835,8 +835,8 @@ namespace TeamSupport.Data
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = @"SELECT 
-                                u.*, 
+                command.CommandText = @"SELECT
+                                u.*,
                                 o.Name AS OrganizationName,
                                 CASE
                                   WHEN DATEDIFF(ss, u.LastActivity, GETUTCDATE()) > 300 THEN u.LastName + ', ' + u.FirstName + ' (Idle)'
@@ -1034,12 +1034,12 @@ namespace TeamSupport.Data
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText =
-        @"SELECT u.* FROM Users u 
-WHERE(u.IsActive = 1) 
+        @"SELECT u.* FROM Users u
+WHERE(u.IsActive = 1)
 AND (u.MarkDeleted = 0)
 AND u.UserID IN
 (
-  SELECT s.UserID FROM Subscriptions s 
+  SELECT s.UserID FROM Subscriptions s
   WHERE s.RefType= @RefType
   AND s.RefID IN (SELECT ot.OrganizationID FROM OrganizationTickets ot WHERE (ot.TicketID = @TicketID))
 )
@@ -1055,7 +1055,7 @@ AND u.UserID IN
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = @"SELECT u.* FROM Users u 
+                command.CommandText = @"SELECT u.* FROM Users u
 LEFT JOIN UserTickets ut ON ut.UserID = u.UserID
 LEFT JOIN Organizations o ON o.OrganizationID = u.OrganizationID
 WHERE ut.TicketID = @TicketID
@@ -1072,7 +1072,7 @@ AND (o.HasPortalAccess = 0 OR u.IsPortalUser = 0)";
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = @"SELECT u.* FROM Users u 
+                command.CommandText = @"SELECT u.* FROM Users u
 LEFT JOIN UserTickets ut ON ut.UserID = u.UserID
 LEFT JOIN Organizations o ON o.OrganizationID = u.OrganizationID
 WHERE ut.TicketID = @TicketID
@@ -1104,9 +1104,9 @@ AND u.IsPortalUser = 1";
             {
                 command.CommandText =
                 @"
-          SELECT 
-            u.* 
-          FROM 
+          SELECT
+            u.*
+          FROM
             Users u
             JOIN Organizations o
               ON u.OrganizationID = o.OrganizationID
@@ -1587,7 +1587,7 @@ INSERT INTO [Users]
            ,[DoNotAutoSubscribe])
      VALUES
            (
-54,'kjones@murocsystems.com','Kevin','','Jones','','C6E3C4E8F7BFAFF9A1FC35C07BD5574E',1,0,'Central Standard Time','en-US','2011-11-15 05:20:46.050','2011-11-15 05:41:54.820','2011-11-15 06:04:28.203',17961,1,1,0,1,1,NULL,1,'',1,0,0,'2008-06-27 22:05:10.993',NULL,1,'1.2.9','C4735AE0-5C96-4969-B7C9-485E48167FFB',NULL,'2008-07-01 11:31:39.737','2011-11-15 05:41:54.823',30,-1,NULL,0           
+54,'kjones@murocsystems.com','Kevin','','Jones','','C6E3C4E8F7BFAFF9A1FC35C07BD5574E',1,0,'Central Standard Time','en-US','2011-11-15 05:20:46.050','2011-11-15 05:41:54.820','2011-11-15 06:04:28.203',17961,1,1,0,1,1,NULL,1,'',1,0,0,'2008-06-27 22:05:10.993',NULL,1,'1.2.9','C4735AE0-5C96-4969-B7C9-485E48167FFB',NULL,'2008-07-01 11:31:39.737','2011-11-15 05:41:54.823',30,-1,NULL,0
            )
 
 SET IDENTITY_INSERT Users Off
@@ -1643,7 +1643,7 @@ INSERT INTO [Users]
            ,[DoNotAutoSubscribe])
      VALUES
            (
-34,'kjones@murocsystems.com','Kevin','','Jones','','C6E3C4E8F7BFAFF9A1FC35C07BD5574E',1,0,'Central Standard Time','en-US','2011-11-15 05:20:46.050','2011-11-15 05:41:54.820','2011-11-15 06:04:28.203',17961,1,1,0,1,1,NULL,1,'',1,0,0,'2008-06-27 22:05:10.993',NULL,1078,'1.2.9','C4735AE0-5C96-4969-B7C9-485E48167FFB',NULL,'2008-07-01 11:31:39.737','2011-11-15 05:41:54.823',30,-1,NULL,0           
+34,'kjones@murocsystems.com','Kevin','','Jones','','C6E3C4E8F7BFAFF9A1FC35C07BD5574E',1,0,'Central Standard Time','en-US','2011-11-15 05:20:46.050','2011-11-15 05:41:54.820','2011-11-15 06:04:28.203',17961,1,1,0,1,1,NULL,1,'',1,0,0,'2008-06-27 22:05:10.993',NULL,1078,'1.2.9','C4735AE0-5C96-4969-B7C9-485E48167FFB',NULL,'2008-07-01 11:31:39.737','2011-11-15 05:41:54.823',30,-1,NULL,0
            )
 
 SET IDENTITY_INSERT Users Off
@@ -1674,7 +1674,7 @@ SET IDENTITY_INSERT Users Off
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = @"SELECT u.*
-                                FROM Users u 
+                                FROM Users u
                                 LEFT JOIN Organizations o
                                 ON o.OrganizationID = u.OrganizationID
                                 WHERE (o.ParentID = @ParentID)
@@ -1704,7 +1704,7 @@ SET IDENTITY_INSERT Users Off
 				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
 				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
 				  log.Collection.Save();
-				  errLocation = string.Format("Error merging contact tickets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+				  errLocation = string.Format("Error merging contact tickets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
 			  }
 
 			  try
@@ -1719,7 +1719,7 @@ SET IDENTITY_INSERT Users Off
 				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
 				  log.Collection.Save();
 
-				  errLocation = string.Format("Error merging contact notes. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+				  errLocation = string.Format("Error merging contact notes. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
 			  }
 
 			  try
@@ -1734,7 +1734,7 @@ SET IDENTITY_INSERT Users Off
 				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
 				  log.Collection.Save();
 
-				  errLocation = string.Format("Error merging contact files. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+				  errLocation = string.Format("Error merging contact files. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
 			  }
 
 			  try
@@ -1749,7 +1749,7 @@ SET IDENTITY_INSERT Users Off
 				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
 				  log.Collection.Save();
 
-				  errLocation = string.Format("Error merging contact products. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+				  errLocation = string.Format("Error merging contact products. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
 			  }
 
 			  try
@@ -1764,7 +1764,7 @@ SET IDENTITY_INSERT Users Off
 				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
 				  log.Collection.Save();
 
-				  errLocation = string.Format("Error merging contact assets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+				  errLocation = string.Format("Error merging contact assets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
 			  }
 
 			  try
@@ -1779,7 +1779,7 @@ SET IDENTITY_INSERT Users Off
 				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
 				  log.Collection.Save();
 
-				  errLocation = string.Format("Error merging contact ratings. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+				  errLocation = string.Format("Error merging contact ratings. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
 			  }
 
 			  try
@@ -1794,7 +1794,7 @@ SET IDENTITY_INSERT Users Off
 				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
 				  log.Collection.Save();
 
-				  errLocation = string.Format("Error merging contact custom values. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+				  errLocation = string.Format("Error merging contact custom values. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
 			  }
 
 			  try
@@ -1809,7 +1809,7 @@ SET IDENTITY_INSERT Users Off
 				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
 				  log.Collection.Save();
 
-				  errLocation = string.Format("Error merging company ratings. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+				  errLocation = string.Format("Error merging company ratings. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
 			  }
 
 			  try
@@ -1824,7 +1824,7 @@ SET IDENTITY_INSERT Users Off
 				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
 				  log.Collection.Save();
 
-				  errLocation = string.Format("Error deleting losing company from database. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+				  errLocation = string.Format("Error deleting losing company from database. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
 			  }
 
 			  contact.NeedsIndexing = true;
@@ -1839,9 +1839,9 @@ SET IDENTITY_INSERT Users Off
             {
                 command.CommandText = @"
 			 UPDATE
-				Actions 
+				Actions
 			 SET
-				CreatorID = @winningUserID 
+				CreatorID = @winningUserID
 				, ModifierID = -5
 			 WHERE
 				CreatorID = @losingUserID";
@@ -1869,7 +1869,7 @@ SET IDENTITY_INSERT Users Off
 					  ticket.Collection.RemoveContact(losingUserID, ticket.TicketID);
 				  }
 			  }
-				
+
 			  string description = "Merged '" + contactName + "' tickets.";
 			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
 			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tickets, winningUserID, description);
@@ -1881,12 +1881,12 @@ SET IDENTITY_INSERT Users Off
 			  {
 				  command.CommandText = @"
 			 UPDATE
-				Notes 
+				Notes
 			 SET
-				RefID = @winningUserID 
+				RefID = @winningUserID
 				, NeedsIndexing = 1
 			 WHERE
-				RefID = @losingUserID 
+				RefID = @losingUserID
 				AND RefType = 22";
 				  command.CommandType = CommandType.Text;
 				  command.Parameters.AddWithValue("@winningUserID", winningUserID);
@@ -1936,19 +1936,19 @@ SET IDENTITY_INSERT Users Off
 			  {
 				  command.CommandText = @"
 			 UPDATE
-				l 
+				l
 			 SET
-				l.UserID = @winningUserID 
+				l.UserID = @winningUserID
 			 FROM
 				UserProducts l
 				LEFT JOIN UserProducts w
 					ON l.ProductID = w.ProductID
-					AND 
+					AND
 					(
 						(l.ProductVersionID IS NULL AND w.ProductVersionID IS NULL)
 						OR	l.ProductVersionID = w.ProductVersionID
 					)
-					AND w.UserID = @winningUserID 
+					AND w.UserID = @winningUserID
 			 WHERE
 				l.UserID = @losingUserID
 				AND w.ProductID IS NULL";
@@ -1987,9 +1987,9 @@ SET IDENTITY_INSERT Users Off
 			  {
 				  command.CommandText = @"
 			 UPDATE
-				AssetHistory 
+				AssetHistory
 			 SET
-				ShippedTo = @winningUserID 
+				ShippedTo = @winningUserID
 			 WHERE
 				ShippedTo = @losingUserID
 				AND RefType = 32
@@ -2004,9 +2004,9 @@ SET IDENTITY_INSERT Users Off
 			  {
 				  command.CommandText = @"
 			 UPDATE
-				AssetHistory 
+				AssetHistory
 			 SET
-				ShippedFrom = @winningUserID 
+				ShippedFrom = @winningUserID
 			 WHERE
 				ShippedFrom = @losingUserID
 				AND RefType = 32
@@ -2028,9 +2028,9 @@ SET IDENTITY_INSERT Users Off
 			  {
 				  command.CommandText = @"
 			 UPDATE
-				AgentRatings 
+				AgentRatings
 			 SET
-				CompanyID = (SELECT OrganizationID FROM Users WHERE UserID = @winningUserID) 
+				CompanyID = (SELECT OrganizationID FROM Users WHERE UserID = @winningUserID)
 				, ContactID = @winningUserID
 			 WHERE
 				ContactID = @losingUserID
@@ -2156,7 +2156,7 @@ SET IDENTITY_INSERT Users Off
 			  {
 				  command.CommandText = @"
 			 DELETE
-				RecentlyViewedItems 
+				RecentlyViewedItems
 			 WHERE
 				RefID = @losingUserID
 				AND RefType = 0";
