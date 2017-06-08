@@ -233,12 +233,12 @@
         <div class="main-header-title">
           <div class="main-header-content-wrapper">
             <div class="main-header-content">
-              <div class="main-header-logo"><img class="main-company-logo" alt="company_logo" src="../vcr/1_9_0/Images/header_company_logo.png"/></div>
-              <div class="main-header-new-ticket main-link-newticket"><img src="../vcr/1_9_0/Images/header_new_ticket.png"/></div>
-              <div class="main-header-search"><input class="ui-corner-all ui-widget-content main-quick-ticket" type="text" /></div>
+              <div class="main-header-logo" style="float:left;"><img class="main-company-logo" alt="company_logo" src="../vcr/1_9_0/Images/header_company_logo.png"/></div>
+              <div class="main-header-new-ticket main-link-newticket" style="float:left;"><img src="../vcr/1_9_0/Images/header_new_ticket.png"/></div>
+              <div class="main-header-search" style="float:left;"><input class="ui-corner-all ui-widget-content main-quick-ticket" type="text" /></div>
             </div>
           </div>
-          <div class="main-header-right">
+          <div class="main-header-right" style="float:left;">
             <div class="main-header-menu">
             <ul>
               <li class="menu-chatstatus" style="margin-right:25px;display:none;"><img id="icon-chatstatus" src="" style="vertical-align:middle;"> <a href="#">Chat Status</a></li>
