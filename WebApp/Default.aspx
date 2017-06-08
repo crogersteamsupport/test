@@ -40,7 +40,7 @@
   <script src="../js_5/jquery.Jcrop.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/aes.js" type="text/javascript"></script>
 
-  <!-- Start Apptegic Code 
+  <!-- Start Apptegic Code
   <script type="text/javascript">
     var _aaq = _aaq || [];
     var _evergageAccount = 'teamsupport';
@@ -82,7 +82,7 @@
       g_PrivateServices = privateServices = new TeamSupport.Services.PrivateServices();
       g_PrivateServices.set_defaultSucceededCallback(function (result) { });
       g_PrivateServices.set_defaultFailedCallback(function (error, userContext, methodName) { });
-      var signalRUrl = $("#SignalRUrl").val(); 
+      var signalRUrl = $("#SignalRUrl").val();
       if (BrowserDetect.browser != 'Safari' || BrowserDetect.isMobile != 1) {
         try {
           $.getScript(signalRUrl + "/hubs", function (data, textStatus, jqxhr) {
@@ -164,7 +164,7 @@
 </head>
 <body>
   <form id="form1" runat="server">
-  <asp:ScriptManager ID="ScriptManager1" runat="server" ScriptMode="Release" 
+  <asp:ScriptManager ID="ScriptManager1" runat="server" ScriptMode="Release"
     EnableScriptGlobalization="True" >
     <services>
         <asp:ServiceReference Path="~/Services/TSSystem.asmx" />
@@ -190,7 +190,7 @@
         <asp:ServiceReference Path="~/Services/TaskService.asmx" />
       </services>
     <scripts>
-    
+
           <asp:ScriptReference Path="vcr/1_9_0/Js/json2.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/jquery.layout.min.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/jquery.jgrowl_minimized.js" />
@@ -211,7 +211,7 @@
         <Scripts>
           <asp:ScriptReference name="MicrosoftAjax.js"/>
 	        <asp:ScriptReference name="MicrosoftAjaxWebForms.js"/>
-          
+
         </Scripts>
       </compositescript>
   </asp:ScriptManager>
@@ -340,7 +340,7 @@
       <telerik:RadWindow ID="wndHelp" runat="server" Style="display: none;">
       </telerik:RadWindow>
     </Windows>
-  </telerik:RadWindowManager> 
+  </telerik:RadWindowManager>
 
   <telerik:RadWindow ID="wndSelectUserDialog" runat="server" Width="300px" Height="150px"
     Animation="None" KeepInScreenBounds="True" VisibleStatusbar="False" VisibleTitlebar="True"
@@ -475,14 +475,14 @@
                 </div>
 
                 <br />
-                
+
                 <div id="resizeOptions" style="text-align:center;display:none">
                     <input type="text" id="imgWidth" placeholder="width" />
                     <span>x</span>
-                    <input type="text" id="imgHeight" placeholder="height" />   
-                    <button id="saveResizeButton">Resize</button>   
-                    <p><input type="checkbox" id="paste-dialog-aspectRatio" checked />Lock aspect ratio</p>                  
-                </div>                
+                    <input type="text" id="imgHeight" placeholder="height" />
+                    <button id="saveResizeButton">Resize</button>
+                    <p><input type="checkbox" id="paste-dialog-aspectRatio" checked />Lock aspect ratio</p>
+                </div>
                 <div style="text-align:center;display:none">
                     <div class="preview" ></div>
                     <input id="img1" type="hidden" class="result" value="" runat="server" />
@@ -529,7 +529,7 @@
     <ul>
       <li><a class="ts-link ui-state-default menu-help-docs" href="http://help.teamsupport.com" target="TSHelp">Documentation</a></li>
       <li><a class="menu-help-chat ts-link ui-state-default" href="#">Chat with us</a></li>
-      <li><a class="menu-help-support ts-link ui-state-default" href="#">Support portal</a></li>
+      <li><a class="menu-help-support ts-link ui-state-default" href="#">Support Hub</a></li>
       <%--I'm not deleting the following line because it is a hidden field that might be used to store important data in one or some of the app pages --%>
       <input type="text"  class="menu-input menu-input-hidden"/>
     </ul>
