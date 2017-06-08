@@ -2540,6 +2540,7 @@ WHERE t.TicketID = @TicketID
             if (TSAuthentication.OrganizationID != 1078) return;
             TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
             action.Description = HtmlUtility.RemoveInvalidHtmlTags(action.Description);
+            action.Collection.isAdminClean = true;
             action.Collection.Save();
         }
 
