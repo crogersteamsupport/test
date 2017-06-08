@@ -162,8 +162,12 @@ div.header-tabs li:hover img.close {
 }
 
 
-<!-- SIDEBAR // Menutree -->
+div.main-header-new-ticket img:hover {
+    cursor: pointer; 
+}
 
+
+<!-- SIDEBAR // Menutree -->
 div.sidebar-container {
     background-color: #33485e !important;
     color: white !important;
