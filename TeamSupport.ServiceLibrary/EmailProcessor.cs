@@ -1062,7 +1062,12 @@ namespace TeamSupport.ServiceLibrary
                 AddMessage(receiver.OrganizationID, "Action Reaction (Applause) [" + ticketID + "]", message, replyAddress);
             }
 
-            catch { }
+            catch (Exception ex)
+            {
+                Logs.WriteEvent("Error with ProcessReaction");
+                Logs.WriteException(ex);
+                ExceptionLogs.LogException(LoginUser, ex, "ProcessReaction");
+            }
         }
 
         private void ProcessTicketSendEmail(int userID, int ticketID, string addresses, string introduction)
