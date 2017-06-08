@@ -189,12 +189,7 @@ Namespace TeamSupport
                 Dim tfsIdList As List(Of Integer) = ticketLinkToTFS.Where(Function(w) w.CrmLinkID IsNot Nothing).Select(Function(p) CType(p.TFSID, Integer)).ToList()
                 Dim result As List(Of JObject) = New List(Of JObject)
                 Dim recentClause As String = String.Empty
-                Dim tfsIdClause As String = String.Empty
                 numberOfWorkItemsToPull = 0
-
-                If (tfsIdList.Any() AndAlso tfsIdList.Count > 0) Then
-                    tfsIdClause = String.Join(",", tfsIdList.ToArray())
-                End If
 
                 Dim fields As List(Of String) = New List(Of String)
 
