@@ -13,8 +13,8 @@ namespace TeamSupport.Data
 
     public partial class TicketLinkToTFS
     {
-        //Changes to this method needs to be applied to TicketsView.LoadToPushToJira also.
-        public void LoadToPushToJira(CRMLinkTableItem item)
+        //Changes to this method needs to be applied to TicketsView.LoadToPushToTFS also.
+        public void LoadToPushToTFS(CRMLinkTableItem item)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -44,13 +44,6 @@ namespace TeamSupport.Data
                 command.Parameters.AddWithValue("@OrgID", item.OrganizationID);
                 command.Parameters.AddWithValue("@DateModified", item.LastLink == null ? new DateTime(1753, 1, 1) : item.LastLinkUtc.Value.AddHours(-1));
                 command.Parameters.AddWithValue("@CrmLinkId", item.CRMLinkID);
-
-                //command.CommandText = "TicketLinkToJiraGet";
-                //command.CommandType = CommandType.StoredProcedure;
-                //command.Parameters.AddWithValue("@organizationId", item.OrganizationID);
-                //command.Parameters.AddWithValue("@dateModified", item.LastLink == null ? new DateTime(1753, 1, 1) : item.LastLinkUtc.Value.AddHours(-1));
-                //command.Parameters.AddWithValue("@crmLinkId", item.CRMLinkID);
-                //command.Parameters.AddWithValue("@isTicketLinkToJira", 1);
                 command.CommandTimeout = 90;
                 Fill(command);
             }
@@ -123,4 +116,26 @@ namespace TeamSupport.Data
         }
     }
 
+	public class WorkItemRelations
+	{
+		public List<Relation> relations { get; set; }
+	}
+
+	public class Relation
+	{
+		public string rel { get; set; }
+		public string url { get; set; }
+		public Attributes attributes { get; set; }
+	}
+
+	public class Attributes
+	{
+		public bool isLocked { get; set; }
+		public string comment { get; set; }
+		public string authorizedDate { get; set; }
+		public int? id { get; set; }
+		public string resourceCreatedDate { get; set; }
+		public string resourceModifiedDate { get; set; }
+		public string revisedDate { get; set; }
+	}
 }

@@ -109,24 +109,27 @@ namespace TeamSupport.ServiceLibrary
 
                     string ids = builder.ToString().TrimEnd(new char[] { ',' });
 
-                    //vv we could just bring the specific fields if needed, I don't see this happening now.
-                    //string fieldsCommaSeparated = string.Join(",", fields);
-                    //string queryString = string.Format("_apis/wit/workitems?ids={0}&fields={1}&asOf={2}&api-version=2.2", ids, fieldsCommaSeparated, workItemQueryResult.AsOf);
+					if (!string.IsNullOrEmpty(ids))
+					{
+						//vv we could just bring the specific fields if needed, I don't see this happening now.
+						//string fieldsCommaSeparated = string.Join(",", fields);
+						//string queryString = string.Format("_apis/wit/workitems?ids={0}&fields={1}&asOf={2}&api-version=2.2", ids, fieldsCommaSeparated, workItemQueryResult.AsOf);
 
-                    //ToDo //vv The 'asOf' should be the last processed timestamp
-                    //ToDo //vv we probably should have a 'max' of ids here because there is a limit in the query string size. We'll need to loop if needed. https://stackoverflow.com/questions/812925/what-is-the-maximum-possible-length-of-a-query-string
+						//ToDo //vv The 'asOf' should be the last processed timestamp
+						//ToDo //vv we probably should have a 'max' of ids here because there is a limit in the query string size. We'll need to loop if needed. https://stackoverflow.com/questions/812925/what-is-the-maximum-possible-length-of-a-query-string
 
-                    string queryString = string.Format("_apis/wit/workitems?ids={0}&asOf={1}&api-version=2.2", ids, workItemQueryResult.AsOf);
-                    HttpResponseMessage getWorkItemsHttpResponse = client.GetAsync(queryString).Result;
+						string queryString = string.Format("_apis/wit/workitems?ids={0}&asOf={1}&api-version=2.2", ids, workItemQueryResult.AsOf);
+						HttpResponseMessage getWorkItemsHttpResponse = client.GetAsync(queryString).Result;
 
-                    if (getWorkItemsHttpResponse.IsSuccessStatusCode)
-                    {
-                        result = getWorkItemsHttpResponse.Content.ReadAsStringAsync().Result;
-                    }
-                    else
-                    {
-                        //ToDo //vv we have to return the error somehow..
-                    }
+						if (getWorkItemsHttpResponse.IsSuccessStatusCode)
+						{
+							result = getWorkItemsHttpResponse.Content.ReadAsStringAsync().Result;
+						}
+						else
+						{
+							//ToDo //vv we have to return the error somehow..
+						}
+					}
                 }
                 else
                 {
@@ -318,6 +321,42 @@ namespace TeamSupport.ServiceLibrary
 			}
 		}
 
+		public void DeleteTeamSupportHyperlink(int workItemId, int ticketId)
+		{
+			WorkItem workItem = new WorkItem();
+			workItem = GetWorkItemBy(workItemId, expandAll: true);
+
+			//Find the position of the TeamSupport hyperlink
+			for (int i =0; i < workItem.Relations.Count(); i++)
+			{
+				if (string.Compare(workItem.Relations[i].Rel, RelationsType.Hyperlink.ToString(), ignoreCase: true) == 0
+					&& workItem.Relations[i].Url.Contains("teamsupport.com")
+					&& workItem.Relations[i].Url.Contains(string.Format("ticketid={0}", ticketId.ToString())))
+				{
+					Object[] patchDocument = GetPatchDocumentForRelationsDelete(RelationsType.Hyperlink, i);
+
+					using (var client = new HttpClient())
+					{
+						client.DefaultRequestHeaders.Accept.Clear();
+						client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json-patch+json"));
+						client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+
+						var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json");
+
+						var method = new HttpMethod("PATCH");
+						//ToDo //vv need to check if the hostname already has the trailing backslash!
+						var request = new HttpRequestMessage(method, HostName + "/DefaultCollection/_apis/wit/workitems/" + workItemId + "?api-version=2.2") { Content = patchValue };
+						var response = client.SendAsync(request).Result;
+
+						if (!response.IsSuccessStatusCode)
+						{
+							//ToDo //vv we have to return the error somehow..
+						}
+					}
+				}
+			}
+		}
+
 		public bool UploadAttachment(int workItemId, string filePath, string fileName)
 		{
 			bool result = false;
@@ -413,7 +452,7 @@ namespace TeamSupport.ServiceLibrary
 			{
 				patchDocument[i] = new
 				{
-					op = "add",
+					op = field.operation.ToString(),
 					path = string.Format("/{0}/", path) + field.referenceName,
 					value = field.value
 				};
@@ -424,31 +463,50 @@ namespace TeamSupport.ServiceLibrary
 			return patchDocument;
 		}
 
-		private Object[] GetPatchDocumentForRelations(RelationsType type, string url, string comment)
+		private Object[] GetPatchDocumentForRelations(RelationsType type, string url, string comment, Operation operation = Operation.add, int linkPosition = 0)
 		{
 			int i = 0;
 			Object[] patchDocument = new Object[1];
 			string path = "relations";
 
-			object attributes =
+			switch (operation)
+			{
+				case Operation.add:
+					object attributes =
 					new
 					{
 						comment = comment
 					};
 
-			patchDocument[0] = new
-			{
-				op = "add",
-				path = string.Format("/{0}/-", path),
-				value = new
-				{
-					rel = type.ToString(),
-					url = url,
-					attributes = attributes
-				}
-			};
+					patchDocument[0] = new
+					{
+						op = operation.ToString(),
+						path = string.Format("/{0}/-", path),
+						value = new
+						{
+							rel = type.ToString(),
+							url = url,
+							attributes = attributes
+						}
+					};
+					break;
+				case Operation.remove:
+					patchDocument[0] = new
+					{
+						op = operation.ToString(),
+						path = string.Format("/{0}/{1}", path, linkPosition)
+					};
+					break;
+				default:
+					break;
+			}
 
 			return patchDocument;
+		}
+
+		private Object[] GetPatchDocumentForRelationsDelete(RelationsType type, int linkPosition)
+		{
+			return GetPatchDocumentForRelations(type, null, null, Operation.remove, linkPosition);
 		}
 
 		private static Stream GetPostStream(string filePath, string boundary)
@@ -492,7 +550,13 @@ namespace TeamSupport.ServiceLibrary
             public bool readOnly { get; set; }
             public string url { get; set; }
             public string value { get; set; }
-        }
+			public Operation operation { get; set; }
+
+			public WorkItemField()
+			{
+				operation = Operation.add;
+			}
+		}
 
 		private class AttachmentInfo
 		{
@@ -500,15 +564,26 @@ namespace TeamSupport.ServiceLibrary
 			public string url { get; set; }
 		}
 
+		//To get the other relation types do a GET to: https://{url}/DefaultCollection/_apis/wit/workitemrelationtypes?api-version=2.2
+		//For now we are only using these two.
 		private enum RelationsType : byte
 		{
-			unknown = 0,
+			Unknown = 0,
 			Hyperlink = 1,
 			AttachedFile = 2
 		}
 
-        #region Properties
-        public string HostName
+		public enum Operation : byte
+		{
+			Unknown = 0,
+			add = 1,
+			replace = 2,
+			remove = 3,
+			test = 4
+		}
+
+		#region Properties
+		public string HostName
         {
             get
             {

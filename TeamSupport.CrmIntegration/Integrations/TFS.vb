@@ -189,23 +189,26 @@ Namespace TeamSupport
                 Dim tfsIdList As List(Of Integer) = ticketLinkToTFS.Where(Function(w) w.CrmLinkID IsNot Nothing).Select(Function(p) CType(p.TFSID, Integer)).ToList()
                 Dim result As List(Of JObject) = New List(Of JObject)
                 Dim recentClause As String = String.Empty
-                numberOfWorkItemsToPull = 0
+				numberOfWorkItemsToPull = 0
 
-                Dim fields As List(Of String) = New List(Of String)
+				Dim fields As List(Of String) = New List(Of String)
 
-                'Search only for the tfs ids we have, those are the ones linked and the only ones that we need to check for updates
-                If (tfsIdList IsNot Nothing AndAlso tfsIdList.Any()) Then
-                    Dim workItemsJsonString As String = _tfs.GetWorkItemsBy(tfsIdList, CRMLinkRow.LastLinkUtc)
-                    Dim resultJson As JObject = JObject.Parse(workItemsJsonString)
+				'Search only for the tfs ids we have, those are the ones linked and the only ones that we need to check for updates
+				If (tfsIdList IsNot Nothing AndAlso tfsIdList.Any()) Then
+					Dim workItemsJsonString As String = _tfs.GetWorkItemsBy(tfsIdList, CRMLinkRow.LastLinkUtc)
 
-                    '//vv we might end up doing this in batches too. We'll see.
-                    result.Add(resultJson)
+					If (String.IsNullOrEmpty(workItemsJsonString)) Then
+						Dim resultJson As JObject = JObject.Parse(workItemsJsonString)
 
-                    Dim totalCount As Integer = resultJson("count")
-                    numberOfWorkItemsToPull += totalCount
-                End If
+						'//vv we might end up doing this in batches too. We'll see.
+						result.Add(resultJson)
 
-                Log.Write("Got " + numberOfWorkItemsToPull.ToString() + " Work Items To Pull As Tickets.")
+						Dim totalCount As Integer = resultJson("count")
+						numberOfWorkItemsToPull += totalCount
+					End If
+				End If
+
+				Log.Write("Got " + numberOfWorkItemsToPull.ToString() + " Work Items To Pull As Tickets.")
                 Return result
             End Function
 
@@ -231,9 +234,9 @@ Namespace TeamSupport
                 AddLog("Got " + result.Count.ToString() + " Tickets To Push As Work Items.")
 
                 ticketsLinksToTFSToPushAsWorkItems = New TicketLinkToTFS(User)
-                ticketsLinksToTFSToPushAsWorkItems.LoadToPushToJira(CRMLinkRow)
+				ticketsLinksToTFSToPushAsWorkItems.LoadToPushToTFS(CRMLinkRow)
 
-                Return result
+				Return result
             End Function
 
             Private Function GetNewActionsTypeID(ByVal organizationID As Integer) As Integer
@@ -291,9 +294,9 @@ Namespace TeamSupport
 
                     Dim updateTicketFlag As Boolean = False
                     Dim sendCustomMappingFields As Boolean = False
-                    Dim workItemFields As List(Of TFSLibrary.WorkItemField) 'JObject = Nothing
+					Dim workItemFields As List(Of TFSLibrary.WorkItemField)
 
-                    Try
+					Try
                         crmLinkError = crmLinkErrors.FindUnclearedByObjectIDAndFieldName(ticket.TicketID, String.Empty)
                         TFSProjectName = GetProjectName(ticket, crmLinkErrors)
                         workItemFields = GetWorkItemFields(ticket, TFSProjectName, crmLinkError, Orientation.OutToTFS)
@@ -489,6 +492,10 @@ Namespace TeamSupport
 							Dim remoteLink As String = String.Format("{0}/Ticket.aspx?ticketid={1}", domain, ticket.TicketID.ToString())
 
 							_tfs.CreateTeamSupportHyperlink(workItem.Id, remoteLink, String.Format("{0} Ticket #{1} - {2}", creatorName, ticket.TicketNumber, ticketName))
+
+							'//vv Testing: 
+							_tfs.DeleteTeamSupportHyperlink(workItem.Id, ticket.TicketID)
+
 							ticketLinkToTFS.TFSID = workItem.Id
 
 							If (workItem.Fields.Where(Function(w) w.Key = "System.Title").Any()) Then

@@ -2007,8 +2007,6 @@ namespace TSWebServices
 
                 foreach (DataRow crmRow in crmlink.Table.Rows)
                 {
-                    //if (crmRow["CRMType"].ToString() == "TFS")
-                    //{
                     TicketLinkToTFS linkToTFS = new TicketLinkToTFS(TSAuthentication.GetLoginUser());
                     linkToTFS.LoadByTicketID(ticketID);
 
@@ -2022,53 +2020,64 @@ namespace TSWebServices
                     {
                         if (ticketLinktoTFSProxy.TFSID != null && !String.IsNullOrEmpty(ticketLinktoTFSProxy.TFSTitle))
                         {
-                            //try
-                            //{
-                            //    Jira.JiraClient jiraClient = new Jira.JiraClient(crmRow["HostName"].ToString(), crmRow["Username"].ToString(), crmRow["Password"].ToString());
-                            //    Jira.IssueRef issueRef = new Jira.IssueRef();
-                            //    issueRef.id = ticketLinktoJiraProxy.JiraID.ToString();
-                            //    issueRef.key = ticketLinktoJiraProxy.JiraKey;
-                            //    var issue = jiraClient.LoadIssue(issueRef);
+							string securityToken = crmRow["SecurityToken"].ToString();
+							string authorization = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", "", securityToken)));
+							string hostName = crmRow["HostName"].ToString();
+							string url = string.Format("{0}/DefaultCollection/_apis/wit/workitems/{1}?api-version=2.2&$expand=relations", hostName, ticketLinktoTFSProxy.TFSID);
 
-                            //    if (issue != null)
-                            //    {
-                            //        var remoteLinks = jiraClient.GetRemoteLinks(issueRef);
+							try
+							{
+								//Get workItem first, to get its relations
+								HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
+								request.Method = "GET";
+								request.Headers[HttpRequestHeader.Authorization] = "Basic " + authorization;
+								String getResult = String.Empty;
+								using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+								{
+									Stream dataStream = response.GetResponseStream();
+									StreamReader reader = new StreamReader(dataStream);
+									getResult = reader.ReadToEnd();
+									reader.Close();
+									dataStream.Close();
+								}
 
-                            //        if (null != remoteLinks)
-                            //        {
-                            //            Jira.RemoteLink linkItem = remoteLinks.Where(p => p.url.Contains("ticketid=" + ticketID.ToString())).FirstOrDefault();
+								WorkItemRelations workItemRelations = JsonConvert.DeserializeObject<WorkItemRelations>(getResult);
 
-                            //            if (linkItem != null)
-                            //            {
-                            //                jiraClient.DeleteRemoteLink(issueRef, linkItem);
-                            //            }
-                            //        }
-                            //    }
-                            //}
-                            //catch (Jira.JiraClientException jiraException)
-                            //{
-                            //    if (jiraException.Message.ToLower().Trim() != "could not load issue" && !jiraException.InnerException.Message.ToLower().Trim().Contains("not found"))
-                            //    {
-                            //        jiraException.Data.Add("TicketId", ticketID);
-                            //        jiraException.Data.Add("JiraId", ticketLinktoJiraProxy.JiraID);
-                            //        jiraException.Data.Add("JiraKey", ticketLinktoJiraProxy.JiraKey);
-                            //        throw jiraException;
-                            //    }
-                            //}
-                            //catch (Exception ex)
-                            //{
-                            //    //Check if the exception is that the URI is invalid, if so then still delete the crmlink in TS, the customer might have deleted their instance settings, we still need to be able to delete the link in our side.
-                            //    if (!ex.Message.ToLower().Trim().Contains("invalid uri") && !ex.Message.ToLower().Trim().Contains("uri could not be determined"))
-                            //    {
-                            //        throw ex;
-                            //    }
-                            //}
-                        }
+								//Find the position of the TeamSupport hyperlink
+								for (int i = 0; i < workItemRelations.relations.Count(); i++)
+								{
+									if (string.Compare(workItemRelations.relations[i].rel, "Hyperlink", ignoreCase: true) == 0
+										&& workItemRelations.relations[i].url.Contains("teamsupport.com")
+										&& workItemRelations.relations[i].url.Contains(string.Format("ticketid={0}", ticketID.ToString())))
+									{
+
+										//Now we can try to delete the hyperlink
+										using (var client = new WebClient())
+										{
+											client.Headers[HttpRequestHeader.ContentType] = "application/json-patch+json";
+											client.Headers[HttpRequestHeader.Authorization] = string.Format("Basic {0}", authorization);
+											Object[] patchDocument = new Object[1];
+											patchDocument[0] = new
+											{
+												op = "remove",
+												path = string.Format("/relations/{0}", i.ToString())
+											};
+
+											var patchValue = Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument);
+											string postResult = client.UploadString(url, "PATCH", patchValue);
+										}
+									}
+								}
+							}
+							catch (Exception ex)
+							{
+								//Check if the exception is that the URI is invalid, maybe the workitem id does not longer exist. if so we should go ahead and delete the link in the TS db.
+							}
+						}
 
                         linkToTFS.DeleteFromDB(ticketLinktoTFSProxy.id);
                         result = true;
                     }
-                    //}
                 }
             }
             catch (Exception ex)
