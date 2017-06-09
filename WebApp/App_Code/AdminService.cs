@@ -1018,7 +1018,7 @@ namespace TSWebServices
             setting.CustomerHubID = customerHubID;
             setting.FontColor = portal.FontColor;
             setting.FontFamily = portal.FontFamily;
-            setting.Color1 = "#3D6DA7";
+            setting.Color1 = "#2A3F54";
             setting.Color2 = "#FFFFFF";
             setting.Color3 = "#7C7C7C";
             setting.Color4 = "#41414D";
@@ -1037,7 +1037,7 @@ namespace TSWebServices
             setting.CustomerHubID = customerHubID;
             setting.FontColor = "#131111";
             setting.FontFamily = null;
-            setting.Color1 = "#3D6DA7";
+            setting.Color1 = "#2A3F54";
             setting.Color2 = "#FFFFFF";
             setting.Color3 = "#7C7C7C";
             setting.Color4 = "#41414D";

@@ -102,11 +102,11 @@ form.positive-file-upload input, form.neutral-file-upload input, form.negative-f
 }
 
 .hub-container:hover > a {
-    color: #3D6DA7;
+    color: #2A3F54;
 }
 
 .hub-container.active > a, .hub-container.active {
-    background-color: #3D6DA7;
+    background-color: #2A3F54;
     color: white;
 }
 
