@@ -264,7 +264,7 @@ Namespace TeamSupport
                 Dim attachmentFileSizeLimit As Integer = 0
                 Dim attachmentEnabled As Boolean = GetAttachmentEnabled(attachmentFileSizeLimit) 'ToDo //vv
                 Dim crmLinkError As CRMLinkError = Nothing
-                Dim ticketData As StringBuilder = Nothing
+                Dim ticketData As StringBuilder = New StringBuilder()
                 Dim TFSProjectName As String = String.Empty
                 Dim customMappingFields As New CRMLinkFields(User)
                 Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(User)
@@ -321,11 +321,12 @@ Namespace TeamSupport
 							Dim actionDescriptionId As Integer
 							Dim workItemValues As List(Of TFSLibrary.WorkItemField) = New List(Of TFSLibrary.WorkItemField)
 
-							workItemValues = GetTicketData(ticket, workItemFields, TFSProjectName, actionDescriptionId, customMappingFields, crmLinkErrors)
-							workItem = _tfs.CreateWorkItem(workItemValues, TFSProjectName, ticket.TicketTypeName)
+                            workItemValues = GetTicketData(ticket, workItemFields, TFSProjectName, actionDescriptionId, customMappingFields, crmLinkErrors)
+                            ticketData.Append(String.Join(",", workItemValues.Select(Function(p) String.Format("""{0}""=""{1}""", p.name, p.value)).ToArray()))
+                            workItem = _tfs.CreateWorkItem(workItemValues, TFSProjectName, ticket.TicketTypeName)
 
-							'We don't know if the workItem's type has Description or not, so we will always add a Comment with it too.
-							If (workItem IsNot Nothing AndAlso workItem.Id > 0) Then
+                            'We don't know if the workItem's type has Description or not, so we will always add a Comment with it too.
+                            If (workItem IsNot Nothing AndAlso workItem.Id > 0) Then
 								_tfs.CreateComment(workItem.Id, workItemValues.Where(Function(f) f.name = "Description").FirstOrDefault().value)
 							End If
 
@@ -341,54 +342,54 @@ Namespace TeamSupport
 							End If
 
 							ClearCrmLinkError(crmLinkError)
-						Catch webEx As WebException
-							'        Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
-							Dim TFSErrors As String
-							'        If (jiraErrors IsNot Nothing AndAlso jiraErrors.HasErrors) Then
-							If (TFSErrors IsNot Nothing) Then
-								AddLog(String.Format(_tfsExceptionMessageFormat,
-													webEx.Message,
-													Environment.NewLine,
-													vbTab,
-													TFSErrors.ToString()))
-								AddLog(webEx.StackTrace,
-										LogType.Report,
-										crmLinkError,
-										String.Format("WorkItem was not created due to:{0}{1}", Environment.NewLine, TFSErrors.ToString()),
-										Orientation.OutToJira,
-										ObjectType.Ticket,
-										ticket.TicketID,
-										String.Empty,
-										ticketData.ToString(),
-										OperationType.Create)
-							Else
-								AddLog(webEx.ToString() + webEx.StackTrace)
-							End If
+                            'Catch webEx As WebException
+                            '	'        Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
+                            '	Dim TFSErrors As String
+                            '	'        If (jiraErrors IsNot Nothing AndAlso jiraErrors.HasErrors) Then
+                            '	If (TFSErrors IsNot Nothing) Then
+                            '		AddLog(String.Format(_tfsExceptionMessageFormat,
+                            '							webEx.Message,
+                            '							Environment.NewLine,
+                            '							vbTab,
+                            '							TFSErrors.ToString()))
+                            '		AddLog(webEx.StackTrace,
+                            '				LogType.Report,
+                            '				crmLinkError,
+                            '				String.Format("WorkItem was not created due to:{0}{1}", Environment.NewLine, TFSErrors.ToString()),
+                            '				Orientation.OutToJira,
+                            '				ObjectType.Ticket,
+                            '				ticket.TicketID,
+                            '				String.Empty,
+                            '				ticketData.ToString(),
+                            '				OperationType.Create)
+                            '	Else
+                            '		AddLog(webEx.ToString() + webEx.StackTrace)
+                            '	End If
 
-							Continue For
-						Catch ex As Exception
+                            '	Continue For
+                        Catch ex As Exception
 							Dim updateLinkToTFS As Boolean = True
 							Dim errorMessage As String = String.Empty
 
-							'Select Case ex.Message
-							'    Case "no project"
-							'        errorMessage = "Error: Specify Project (Product)."
-							'    Case "type mismatch"
-							'        errorMessage = "Error: Specify valid Type."
-							'    Case "project mismatch"
-							'        errorMessage = "Error: Specify valid Project (Product)."
-							'    Case Else
-							'        errorMessage = ex.Message
-							'        updateLinkToTFS = False
-							'End Select
+                            'Select Case ex.Message
+                            '    Case "no project"
+                            '        errorMessage = "Error: Specify Project (Product)."
+                            '    Case "type mismatch"
+                            '        errorMessage = "Error: Specify valid Type."
+                            '    Case "project mismatch"
+                            errorMessage = "Error: Specify valid Type and/or Project (Product)."
+                            '    Case Else
+                            '        errorMessage = ex.Message
+                            '        updateLinkToTFS = False
+                            'End Select
 
-							If updateLinkToTFS Then
-								ticketLinkToTFS.TFSTitle = errorMessage
-								ticketLinkToTFS.DateModifiedByTFSSync = DateTime.UtcNow()
-								ticketLinkToTFS.Collection.Save()
-							End If
+                            If updateLinkToTFS Then
+                                ticketLinkToTFS.TFSTitle = errorMessage
+                                ticketLinkToTFS.DateModifiedByTFSSync = DateTime.UtcNow()
+                                ticketLinkToTFS.Collection.Save()
+                            End If
 
-							AddLog(ex.ToString() + ex.StackTrace,
+                            AddLog(ex.ToString() + ex.StackTrace,
 								LogType.TextAndReport,
 								crmLinkError,
 								errorMessage,
@@ -789,7 +790,7 @@ Namespace TeamSupport
 				Return workItemValues
 			End Function
 
-			Private Function BuildRequiredFields(ByVal ticket As TicketsViewItem,
+            Private Function BuildRequiredFields(ByVal ticket As TicketsViewItem,
                                             ByRef fields As JObject,
                                             ByRef customMappingFields As CRMLinkFields,
                                             ByRef crmLinkErrors As CRMLinkErrors)

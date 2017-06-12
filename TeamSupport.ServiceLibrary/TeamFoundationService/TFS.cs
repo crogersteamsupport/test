@@ -254,8 +254,11 @@ namespace TeamSupport.ServiceLibrary
                 if (response.IsSuccessStatusCode)
                 {
                     var result = response.Content.ReadAsStringAsync().Result;
-                    workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
-					
+                    workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);			
+                }
+                else
+                {
+                    throw new Exception(response.RequestMessage.RequestUri.ToString() + " response " + response.ReasonPhrase);
                 }
             }
 
