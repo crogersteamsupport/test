@@ -245,9 +245,7 @@ namespace TeamSupport.ServiceLibrary
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
 
                 var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json"); // mediaType needs to be application/json-patch+json for a patch call
-
                 var method = new HttpMethod("PATCH");
-                //ToDo //vv need to check if the hostname already has the trailing backslash!
                 var request = new HttpRequestMessage(method, HostName + "/DefaultCollection/" + project + "/_apis/wit/workitems/$" + type + "?api-version=2.2") { Content = patchValue };
                 var response = client.SendAsync(request).Result;
 
@@ -279,9 +277,7 @@ namespace TeamSupport.ServiceLibrary
 				client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
 
 				var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json");
-
 				var method = new HttpMethod("PATCH");
-				//ToDo //vv need to check if the hostname already has the trailing backslash!
 				var request = new HttpRequestMessage(method, HostName + "/DefaultCollection/_apis/wit/workitems/" + workItemId + "?api-version=2.2") { Content = patchValue };
 				var response = client.SendAsync(request).Result;
 
@@ -308,9 +304,7 @@ namespace TeamSupport.ServiceLibrary
 				client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
 
 				var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json");
-
 				var method = new HttpMethod("PATCH");
-				//ToDo //vv need to check if the hostname already has the trailing backslash!
 				var request = new HttpRequestMessage(method, HostName + "/DefaultCollection/_apis/wit/workitems/" + workItemId + "?api-version=2.2") { Content = patchValue };
 				var response = client.SendAsync(request).Result;
 
@@ -319,6 +313,33 @@ namespace TeamSupport.ServiceLibrary
 					var result = response.Content.ReadAsStringAsync().Result;
 				}
 			}
+		}
+
+		public WorkItem UpdateWorkItem(int workItemId, List<WorkItemField> fields)
+		{
+			WorkItem workItem = new WorkItem();
+			Object[] patchDocument = GetPatchDocument(fields);
+
+			using (var client = new HttpClient())
+			{
+				client.DefaultRequestHeaders.Accept.Clear();
+				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json-patch+json"));
+				client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+
+				var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json"); // mediaType needs to be application/json-patch+json for a patch call
+				var method = new HttpMethod("PATCH");
+				var request = new HttpRequestMessage(method, HostName + "/DefaultCollection/_apis/wit/workitems/" + workItemId.ToString() + "?api-version=2.2") { Content = patchValue };
+				var response = client.SendAsync(request).Result;
+
+				if (response.IsSuccessStatusCode)
+				{
+					var result = response.Content.ReadAsStringAsync().Result;
+					workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
+
+				}
+			}
+
+			return workItem;
 		}
 
 		public void DeleteTeamSupportHyperlink(int workItemId, int ticketId)
@@ -342,9 +363,7 @@ namespace TeamSupport.ServiceLibrary
 						client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
 
 						var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json");
-
 						var method = new HttpMethod("PATCH");
-						//ToDo //vv need to check if the hostname already has the trailing backslash!
 						var request = new HttpRequestMessage(method, HostName + "/DefaultCollection/_apis/wit/workitems/" + workItemId + "?api-version=2.2") { Content = patchValue };
 						var response = client.SendAsync(request).Result;
 
@@ -402,9 +421,7 @@ namespace TeamSupport.ServiceLibrary
 					client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
 
 					var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json");
-
 					var method = new HttpMethod("PATCH");
-					//ToDo //vv need to check if the hostname already has the trailing backslash!
 					var requestMessage = new HttpRequestMessage(method, HostName + "/DefaultCollection/_apis/wit/workitems/" + workItemId + "?api-version=2.2") { Content = patchValue };
 					var response = client.SendAsync(requestMessage).Result;
 
@@ -587,7 +604,7 @@ namespace TeamSupport.ServiceLibrary
         {
             get
             {
-                return _hostname;
+                return _hostname.TrimEnd('/');
             }
             set
             {
