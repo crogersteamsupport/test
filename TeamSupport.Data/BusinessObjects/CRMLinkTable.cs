@@ -98,7 +98,6 @@ WHERE clt.Active = 1 AND o.IsActive=1
 	AND clt.LastProcessed < DATEADD(MINUTE, @ProcessInterval, GETUTCDATE())
 ORDER BY clt.LastProcessed ASC
 ";
-				command.CommandText = @"SELECT clt.* FROM CRMLinkTable clt WHERE CRMLinkID = 109"; //vv delete this
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@ProcessInterval", processInterval * -1);
         Fill(command);
