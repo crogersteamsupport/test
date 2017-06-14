@@ -1134,10 +1134,13 @@ Namespace TeamSupport
 							Log.Write("action.TFSID: " + actionLinkToTFSItem.TFSID.ToString())
 							If actionLinkToTFSItem.TFSID <> -1 Then
 								Dim TFSComment As String = BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition, actionToPushAsComment.CreatorID)
-								'ToDo //vv update a comment. Is it possible?
-								'Dim commentUpdated As Comment = jiraClient.UpdateComment(issueRef, ActionLinkToTFSItem.JiraID, body.ToString())
+								TFSComment = String.Format("{0}{1}{2}", TFSComment, Environment.NewLine, "Action updated in TeamSupport.")
 
+								'It is not possible to update/modify a comment in TFS, so we'll create a new one specifying it was updated in TeamSupport.
+								Dim commentId As Integer = _tfs.CreateComment(workItem.Id, TFSComment)
+								actionLinkToTFSItem.TFSID = commentId
 								actionLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow
+								actionLinkToTFSItem.Collection.Save()
 								Log.Write("updated comment for actionID: " + actionToPushAsComment.ActionID.ToString())
 							End If
 
