@@ -10,6 +10,9 @@
   <title>Teamsupport</title>
    <link rel="SHORTCUT ICON" href="~/favicon.ico" />
 	<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/laehkaldepkacogpkokmimggbepafabg">
+
+  <link href="vcr/1_9_0/Css/standards.css" rel="stylesheet" type="text/css">
+
   <link href="vcr/1_9_0/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <link href="vcr/1_9_0/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
   <link href="vcr/1_9_0/Css/jquery.jgrowl.css" rel="stylesheet" type="text/css" />
@@ -18,7 +21,6 @@
   <link href="vcr/1_9_0/Css/jquery.ui.timepicker.css" rel="stylesheet" type="text/css" />
   <!--[if IE 7]><link href="vcr/1_9_0/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="vcr/1_9_0/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
   <link href="vcr/1_9_0/Css/ts.mainpage.css" rel="stylesheet" type="text/css" />
-  <link href="vcr/1_9_0/Css/ts.ui.tabs.css" rel="stylesheet" type="text/css">
   <link href="vcr/1_9_0/Css/chat.css" rel="stylesheet" type="text/css" />
   <link href="vcr/1_9_0/Css/jquery.pnotify.default.icons.css" rel="stylesheet" />
   <link href="vcr/1_9_0/Css/jquery.pnotify.default.css" rel="stylesheet" />
@@ -247,7 +249,7 @@
             </div>
           </div>
         </div>
-        <div class="main-tabs header-tabs"></div>
+        <div class="header-tabs main-tabs"></div>
       </div>
     </div>
     <div class="main-footer ui-widget-header">

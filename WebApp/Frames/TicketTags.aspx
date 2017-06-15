@@ -33,11 +33,11 @@
     #tickets-loading { margin:0 auto; text-align:center; padding-top: 40px;}
     #tickets { overflow-y:auto; overflow-x:hidden; height:100%;}
     #tickets .ui-helper-clearfix { height: 1px; clear:both;}
-    
+
     #container-main { height: 100%; min-width: 400px; }
-    #pane-header { background: #EEEEEE; } 
-    #pane-filters { background: #EEEEEE;  } 
-    #filters {overflow-y:auto; overflow-x:hidden; height:100%; width:100%; }
+    #pane-header { background: #EEEEEE; }
+    #pane-filters { background: #EEEEEE;  }
+    #filters {overflow-y:auto; overflow-x:hidden; height:100%; width:100%; color:black !important; }
     #tags { width: 90%; margin:0 auto;}
     #tags dl { line-height: 20px;}
     #tags dt { float:left; margin-right: 12px; min-height:100%; text-align:center; width: 15px; font-weight:bold; font-size: 1.1em;}
@@ -56,7 +56,7 @@
     #header-pager span { }
     #pager { float:right; line-height:30px; }*/
     #header-filter { height: 40px; line-height:40px; }
-    #header-tags { font-size: 1.5em; font-weight:bold;}
+    #header-tags { font-size: 1.5em; font-weight:bold; color:black; }
     #header-tags strong { font-size: 1em; padding-right: 5px; }
     #header-filter a, #header-filter a:link, #header-filter a:active, #header-filter a:visited { color:#15428B; text-decoration:underline;  font-weight:normal; margin: 0 0 0 7px; font-size: .8em; }
     #header-filter a:hover {  }
@@ -176,7 +176,7 @@
           e.preventDefault();
           loaded = false;
           location.reload();
-          
+
       });
 
       $('#tag-rename-save').click(function (e) {
@@ -392,7 +392,7 @@
       <div id="pane-grid" class="pane">
         <div id="tickets-loading"><img alt="loading..." src="../images/loading/loading2.gif"/></div>
         <div id="tickets" class="ui-helper-hidden">
-          
+
         </div>
       </div>
       <div id="pane-header" class="pane">
@@ -422,14 +422,13 @@
       <h1><span class="tag-edit"><a href="#" id="lnk-reset-tags" class="ui-helper-hidden">Clear selected</a> &nbsp; <a href="#" id="lnk-multiple-tags">Select multiple tags</a></span>Tags</h1>
       <div id="tags">
         <dl>
-          
+
         </dl>
       </div>
       </div>
     </div>
-    
+
   </div>
   </form>
 </body>
 </html>
-
