@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -341,7 +342,9 @@ namespace TeamSupport.ServiceLibrary
                 }
                 else
                 {
-                    throw new Exception(response.RequestMessage.RequestUri.ToString() + " response " + response.ReasonPhrase);
+					var contents = response.Content.ReadAsStringAsync().Result;
+					TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
+					throw new TFSClientException(tfsError);
                 }
             }
 
@@ -675,9 +678,37 @@ namespace TeamSupport.ServiceLibrary
 			public string url { get; set; }
 		}
 
-		//To get the other relation types do a GET to: https://{url}/DefaultCollection/_apis/wit/workitemrelationtypes?api-version=2.2
-		//For now we are only using these two.
-		private enum RelationsType : byte
+		[Serializable]
+		public class TFSClientException : Exception
+		{
+			private readonly string response;
+			public TFSClientException() { }
+			public TFSClientException(string message) : base(message) { }
+			public TFSClientException(string message, string response) : base(message) { this.response = response; }
+			public TFSClientException(string message, Exception inner) : base(message, inner) { }
+			public TFSClientException(TFSErrorsResponse tfsError)
+			{
+				ErrorResponse = tfsError;
+			}
+
+			public TFSErrorsResponse ErrorResponse { get; private set; }
+		}
+
+		public class TFSErrorsResponse
+		{
+			[Newtonsoft.Json.JsonProperty(PropertyName = "$id")]
+			public string id { get; set; }
+			public object innerException { get; set; }
+			public string message { get; set; }
+			public string typeName { get; set; }
+			public string typeKey { get; set; }
+			public int errorCode { get; set; }
+			public int eventId { get; set; }
+		}
+
+	//To get the other relation types do a GET to: https://{url}/DefaultCollection/_apis/wit/workitemrelationtypes?api-version=2.2
+	//For now we are only using these two.
+	private enum RelationsType : byte
 		{
 			Unknown = 0,
 			Hyperlink = 1,
