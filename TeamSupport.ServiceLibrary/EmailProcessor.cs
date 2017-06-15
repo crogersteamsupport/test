@@ -1059,10 +1059,15 @@ namespace TeamSupport.ServiceLibrary
                 message.To.Add(GetMailAddress(receiver.Email, receiver.FirstLastName));
                 // message.Subject = message.Subject;
                 string replyAddress = sender.Email;
-                AddMessage(receiver.OrganizationID, "Action Reaction (Applause) [" + ticketID + "]", message, replyAddress);
+                AddMessage(receiver.OrganizationID, "Action Reaction (Applause) [" + ticketID.ToString() + "]", message, replyAddress);
             }
 
-            catch { }
+            catch (Exception ex)
+            {
+                Logs.WriteEvent("Error with ProcessReaction");
+                Logs.WriteException(ex);
+                ExceptionLogs.LogException(LoginUser, ex, "ProcessReaction");
+            }
         }
 
         private void ProcessTicketSendEmail(int userID, int ticketID, string addresses, string introduction)
