@@ -1303,6 +1303,14 @@ namespace TSWebServices
         {
             TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
             if (!CanDeleteAction(action)) return;
+
+            ActionLinkToJiraItem actionlink = ActionLinkToJira.GetActionLinkToJiraItemByActionID(TSAuthentication.GetLoginUser(), actionID);
+            if (actionlink != null)
+            {
+                actionlink.Delete();
+                actionlink.Collection.Save();
+            }
+
             action.Delete();
             action.Collection.Save();
         }
