@@ -17,7 +17,7 @@ Namespace TeamSupport
 			Private _baseURI As String
 			Private _encodedCredentials As String
 			Private _tfs As TFSLibrary = New TFSLibrary()
-			Private _tfsExceptionMessageFormat As String = "TFS InnerException Message: {0}{1}{2}{2}{2}Jira ErrorResponse: {3}"
+			Private _tfsExceptionMessageFormat As String = "TFS Error Message: {0}"
 			Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
 				MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.Jira)
 			End Sub
@@ -330,53 +330,42 @@ Namespace TeamSupport
 							End If
 
 							ClearCrmLinkError(crmLinkError)
-							'Catch webEx As WebException
-							'	'        Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
-							'	Dim TFSErrors As String
-							'	'        If (jiraErrors IsNot Nothing AndAlso jiraErrors.HasErrors) Then
-							'	If (TFSErrors IsNot Nothing) Then
-							'		AddLog(String.Format(_tfsExceptionMessageFormat,
-							'							webEx.Message,
-							'							Environment.NewLine,
-							'							vbTab,
-							'							TFSErrors.ToString()))
-							'		AddLog(webEx.StackTrace,
-							'				LogType.Report,
-							'				crmLinkError,
-							'				String.Format("WorkItem was not created due to:{0}{1}", Environment.NewLine, TFSErrors.ToString()),
-							'				Orientation.OutToJira,
-							'				ObjectType.Ticket,
-							'				ticket.TicketID,
-							'				String.Empty,
-							'				ticketData.ToString(),
-							'				OperationType.Create)
-							'	Else
-							'		AddLog(webEx.ToString() + webEx.StackTrace)
-							'	End If
+						Catch tfsEx As TFSLibrary.TFSClientException
+							Dim errorMessage As String = tfsEx.ErrorResponse.typeKey
+							AddLog(String.Format(_tfsExceptionMessageFormat, tfsEx.Message))
+							AddLog(tfsEx.Message,
+									LogType.Report,
+									crmLinkError,
+									String.Format("WorkItem was not created due to:{0}{1}", Environment.NewLine, TFSErrors.ToString()),
+									Orientation.OutToJira,
+									ObjectType.Ticket,
+									ticket.TicketID,
+									String.Empty,
+									ticketData.ToString(),
+									OperationType.Create)
 
-							'	Continue For
-						Catch ex As Exception
 							Dim updateLinkToTFS As Boolean = True
-							Dim errorMessage As String = String.Empty
 
-							'Select Case ex.Message
-							'    Case "no project"
-							'        errorMessage = "Error: Specify Project (Product)."
-							'    Case "type mismatch"
-							'        errorMessage = "Error: Specify valid Type."
-							'    Case "project mismatch"
-							errorMessage = "Error: Specify valid Type and/or Project (Product)."
-							'    Case Else
-							'        errorMessage = ex.Message
-							'        updateLinkToTFS = False
-							'End Select
+							'ToDo need to set the rest of the cases
+							Select Case tfsEx.ErrorResponse.typeKey.ToLower()
+								Case "no project" 'ToDo pending
+									errorMessage = "Error: Specify Project (Product)."
+								Case "workitemtypenotfoundexception"
+									errorMessage = "Error: Specify valid Type."
+								Case "project mismatch" 'ToDo pending
+									errorMessage = "Error: Specify valid Type and/or Project (Product)."
+								Case Else
+									errorMessage = tfsEx.ErrorResponse.message
+									updateLinkToTFS = False
+							End Select
 
 							If updateLinkToTFS Then
 								ticketLinkToTFS.TFSTitle = errorMessage
 								ticketLinkToTFS.DateModifiedByTFSSync = DateTime.UtcNow()
 								ticketLinkToTFS.Collection.Save()
 							End If
-
+						Catch ex As Exception
+							Dim errorMessage As String = ex.Message
 							AddLog(ex.ToString() + ex.StackTrace,
 								LogType.TextAndReport,
 								crmLinkError,
@@ -1133,15 +1122,17 @@ Namespace TeamSupport
 						Try
 							Log.Write("action.TFSID: " + actionLinkToTFSItem.TFSID.ToString())
 							If actionLinkToTFSItem.TFSID <> -1 Then
-								Dim TFSComment As String = BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition, actionToPushAsComment.CreatorID)
-								TFSComment = String.Format("{0}{1}{2}", TFSComment, Environment.NewLine, "Action updated in TeamSupport.")
-
 								'It is not possible to update/modify a comment in TFS, so we'll create a new one specifying it was updated in TeamSupport.
-								Dim commentId As Integer = _tfs.CreateComment(workItem.Id, TFSComment)
-								actionLinkToTFSItem.TFSID = commentId
-								actionLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow
-								actionLinkToTFSItem.Collection.Save()
-								Log.Write("updated comment for actionID: " + actionToPushAsComment.ActionID.ToString())
+								'This won't be offered as of now. If we create a new one instead we'll run into the issue of the old comment in TFS becoming un-linked in TS and bringing it over again (duplication)
+								Log.Write("Sync is not updating comments in TFS")
+
+								'Dim TFSComment As String = BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition, actionToPushAsComment.CreatorID)
+								'TFSComment = String.Format("{0}{1}{2}", TFSComment, Environment.NewLine, "Action updated in TeamSupport.")
+								'Dim commentId As Integer = _tfs.CreateComment(workItem.Id, TFSComment)
+								'actionLinkToTFSItem.TFSID = commentId
+								'actionLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow
+								'actionLinkToTFSItem.Collection.Save()
+								'Log.Write("updated comment for actionID: " + actionToPushAsComment.ActionID.ToString())
 							End If
 
 							ClearCrmLinkError(crmLinkError)
