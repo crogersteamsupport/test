@@ -228,23 +228,37 @@ namespace TeamSupport.Handlers
             WriteJson(context, result);
         }
 
-        private List<TicketSearchItem> GetTicketResults(SearchResults results, LoginUser loginUser, int userID, int parentID)
+        private List<TicketSearchItem> GetTicketResults(SearchResults results, LoginUser loginUser, int contactID, int parentID)
         {
 
             List<TicketSearchItem> items = new List<TicketSearchItem>();
-            int customerID = 0;
-            User user = Users.GetUser(loginUser, userID);
-            if (user != null) customerID = user.OrganizationID;
-
-            //List<CustomPortalColumnProxy> portalColumns = CustomPortalColumns.GetDefaultColumns(parentID);
-
             TicketLoadFilter filters = new TicketLoadFilter();
+
+            int customerID = 0;
+            User user = Users.GetUser(loginUser, contactID);
+            if (user != null)
+            {
+                customerID = user.OrganizationID;
+                Organizations orgHelper = new Organizations(loginUser);
+                orgHelper.LoadByUnknownCompany(parentID);
+
+                if (orgHelper.Any())
+                {
+                    if (orgHelper[0].OrganizationID == user.OrganizationID)
+                    {
+                        filters.ContactID = contactID;
+                    }
+                }
+
+            }
+
             filters.CustomerID = user.OrganizationID;
             filters.IsVisibleOnPortal = true;
             filters.ForumCategoryID = null;
 
+
             TicketsView ticketsViewHelper = new TicketsView(loginUser);
-            ticketsViewHelper.LoadHubtickets(loginUser, userID, parentID, filters, null, 0, 100000000);
+            ticketsViewHelper.LoadHubtickets(loginUser, contactID, parentID, filters, null, 0, 100000000);
 
             for (int i = 0; i < results.Count; i++)
             {
@@ -264,7 +278,7 @@ namespace TeamSupport.Handlers
                                 item.Ticket.Name = ticket.Name;
                                 item.Ticket.TicketNumber = ticket.TicketNumber;
                                 item.Ticket.DateCreated = ticket.DateCreated;
-                               
+
                                 item.HitRating = results.CurrentItem.ScorePercent;
 
                                 items.Add(item);
