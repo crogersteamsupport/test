@@ -177,7 +177,6 @@ Ts.Ui.Tabs.prototype = {
     },
 
     add: function (isSelected, tabType, id, caption, isClosable, isSortable, isHighlighted, icon, imageUrl, data, title) {
-        console.log(tabType + caption);
         var tab = this.find(id, tabType);
         if (tab) {
             tab.select();

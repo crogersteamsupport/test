@@ -4,7 +4,7 @@
 
 .panel-body { padding: 0px; height: calc(100vh - 95px); overflow-y:auto; }
 
-.panel-heading { background-color: #3d6da7 !important; color: white !important; }
+.panel-heading { background-color: #2A3F54 !important; color: white !important; }
 
 .form-footer {
     padding: 4px 15px;
@@ -180,13 +180,13 @@
     left: 4px;
 }
 .chat-body .answer.right .text {
-    background: #3d6da7 ;
+    background: #2A3F54 ;
     color: #ffffff;
     border-radius: 8px 8px 0 8px;
 }
 .chat-body .answer.right .text:before {
     right: -30px;
-    border-left-color: #3d6da7 ;
+    border-left-color: #2A3F54 ;
     border-left-width: 12px;
 }
 .chat-body .answer.right .time {

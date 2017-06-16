@@ -40,7 +40,48 @@
 }
 
 
+
+
+body.white, div.white {
+    background-color:white !important;
+}
+.bg-curiousblue {
+    background-color: #2C9ECF !important;
+}
+
+.bg-bluewood {
+    background-color: #33485e !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!-- HEADER // Tabs -->
+header, div.headerDiv {
+    position: relative;
+    width: 100%;
+    height: 75px;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.26);
+    background: #2A3F54 !important;
+    font-size: 30px;
+    font-weight: 300;
+    color: rgb(242, 251, 253);
+    text-align: center;
+    line-height: 75px;
+}
+
 div.header-tabs {
     width: 700% !important;
     position: relative;
@@ -162,8 +203,12 @@ div.header-tabs li:hover img.close {
 }
 
 
-<!-- SIDEBAR // Menutree -->
+div.main-header-new-ticket img:hover {
+    cursor: pointer; 
+}
 
+
+<!-- SIDEBAR // Menutree -->
 div.sidebar-container {
     background-color: #33485e !important;
     color: white !important;
@@ -348,4 +393,26 @@ div.tickets-panel-tabs li.ui-state-active {
 
 div.main-footer {
     background-color: #2a3f54;
+}
+
+
+
+
+
+.nav-curiousblue > li > a {
+    margin-right: 5px;
+    font-family: 'Roboto';
+    color: white !important;
+    font-size: 12px;
+    background-color: #445c75 !important;
+}
+
+.nav-curiousblue > li.active > a,
+.nav-curiousblue > li.active > a:focus,
+.nav-curiousblue > li.active > a:hover {
+    background-color: #2C9ECF !important;
+}
+
+.nav-curiousblue > li > a:hover {
+    background-color: #21779C !important;
 }
