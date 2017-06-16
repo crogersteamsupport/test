@@ -40,8 +40,35 @@
 }
 
 
-<!-- HEADER // Tabs -->
 
+
+body.white, div.white {
+    background-color:white !important;
+}
+.bg-curiousblue {
+    background-color: #2C9ECF !important;
+}
+
+.bg-bluewood {
+    background-color: #33485e !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- HEADER // Tabs -->
 header, div.headerDiv {
     position: relative;
     width: 100%;
@@ -366,4 +393,26 @@ div.tickets-panel-tabs li.ui-state-active {
 
 div.main-footer {
     background-color: #2a3f54;
+}
+
+
+
+
+
+.nav-curiousblue > li > a {
+    margin-right: 5px;
+    font-family: 'Roboto';
+    color: white !important;
+    font-size: 12px;
+    background-color: #445c75 !important;
+}
+
+.nav-curiousblue > li.active > a,
+.nav-curiousblue > li.active > a:focus,
+.nav-curiousblue > li.active > a:hover {
+    background-color: #2C9ECF !important;
+}
+
+.nav-curiousblue > li > a:hover {
+    background-color: #21779C !important;
 }
