@@ -17,7 +17,7 @@ Namespace TeamSupport
 			Private _baseURI As String
 			Private _encodedCredentials As String
 			Private _tfs As TFSLibrary = New TFSLibrary()
-			Private _tfsExceptionMessageFormat As String = "TFS Error Message: {0}"
+			Private _tfsExceptionMessageFormat As String = "TFS Error Message: {0}{1}{2}{1}{3}"
 			Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
 				MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.Jira)
 			End Sub
@@ -332,11 +332,11 @@ Namespace TeamSupport
 							ClearCrmLinkError(crmLinkError)
 						Catch tfsEx As TFSLibrary.TFSClientException
 							Dim errorMessage As String = tfsEx.ErrorResponse.typeKey
-							AddLog(String.Format(_tfsExceptionMessageFormat, tfsEx.Message))
+							AddLog(String.Format(_tfsExceptionMessageFormat, tfsEx.Message, Environment.NewLine, tfsEx.ErrorResponse.typeKey, tfsEx.ErrorResponse.message))
 							AddLog(tfsEx.Message,
 									LogType.Report,
 									crmLinkError,
-									String.Format("WorkItem was not created due to:{0}{1}", Environment.NewLine, TFSErrors.ToString()),
+									String.Format("WorkItem was not created due to:{0}{1}", Environment.NewLine, tfsEx.ErrorResponse.message),
 									Orientation.OutToJira,
 									ObjectType.Ticket,
 									ticket.TicketID,
