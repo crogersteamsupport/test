@@ -99,8 +99,8 @@ Namespace TeamSupport
 
 				Dim ticketsLinksToTFSToPushAsWorkItems As TicketLinkToTFS = Nothing
 				Dim ticketsToPushAsWorkItems As TicketsView = GetTicketsToPushAsWorkItems(ticketsLinksToTFSToPushAsWorkItems)
-				Dim allStatuses As TicketStatuses = New TicketStatuses(User)
-				Dim newActionsTypeID As Integer = 0
+                Dim allStatuses As TicketStatuses = New TicketStatuses(User)
+                Dim newActionsTypeID As Integer = 0
 
 				If ticketsToPushAsWorkItems.Count > 0 OrElse numberOfWorkItemsToPullAsTickets > 0 Then
 					allStatuses.LoadByOrganizationID(CRMLinkRow.OrganizationID)
@@ -333,28 +333,28 @@ Namespace TeamSupport
 						Catch tfsEx As TFSLibrary.TFSClientException
 							Dim errorMessage As String = tfsEx.ErrorResponse.typeKey
 							AddLog(String.Format(_tfsExceptionMessageFormat, tfsEx.Message))
-							AddLog(tfsEx.Message,
-									LogType.Report,
-									crmLinkError,
-									String.Format("WorkItem was not created due to:{0}{1}", Environment.NewLine, TFSErrors.ToString()),
-									Orientation.OutToJira,
-									ObjectType.Ticket,
-									ticket.TicketID,
-									String.Empty,
-									ticketData.ToString(),
-									OperationType.Create)
+                            AddLog(tfsEx.Message,
+                                    LogType.Report,
+                                    crmLinkError,
+                                    String.Format("WorkItem was not created due to:{0}{1}", Environment.NewLine, errorMessage),
+                                    Orientation.OutToJira,
+                                    ObjectType.Ticket,
+                                    ticket.TicketID,
+                                    String.Empty,
+                                    ticketData.ToString(),
+                                    OperationType.Create)
 
-							Dim updateLinkToTFS As Boolean = True
+                            Dim updateLinkToTFS As Boolean = True
 
 							'ToDo need to set the rest of the cases
 							Select Case tfsEx.ErrorResponse.typeKey.ToLower()
-								Case "no project" 'ToDo pending
-									errorMessage = "Error: Specify Project (Product)."
+                                Case "ProjectDoesNotExistWithNameExceptiont" 'ToDo pending
+                                    errorMessage = "Error: Specify Project (Product)."
 								Case "workitemtypenotfoundexception"
 									errorMessage = "Error: Specify valid Type."
-								Case "project mismatch" 'ToDo pending
-									errorMessage = "Error: Specify valid Type and/or Project (Product)."
-								Case Else
+                                    'Case "project mismatch" 'ToDo pending
+                                    '	errorMessage = "Error: Specify valid Type and/or Project (Product)."
+                                Case Else
 									errorMessage = tfsEx.ErrorResponse.message
 									updateLinkToTFS = False
 							End Select
