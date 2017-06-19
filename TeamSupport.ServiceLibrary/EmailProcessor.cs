@@ -215,7 +215,7 @@ namespace TeamSupport.ServiceLibrary
                     break;
 
                 case EmailPostType.Reaction:
-                    ProcessReaction(emailPost, GetIntParam(emailPost.Param1), GetIntParam(emailPost.Param2), emailPost.Param3);
+                    ProcessReaction(emailPost.CreatorID, GetIntParam(emailPost.Param1), GetIntParam(emailPost.Param2), emailPost.Param3);
                     break;
                 case EmailPostType.TicketUpdateRequest:
                     ProcessTicketUpdateRequest(GetIntParam(emailPost.Param1), GetIntParam(emailPost.Param2));
@@ -1047,22 +1047,27 @@ namespace TeamSupport.ServiceLibrary
             }
         }
 
-        private void ProcessReaction(EmailPost emailPost, int receiverID, int ticketID, string hostName)
+        private void ProcessReaction(int creatorID, int receiverID, int ticketID, string hostName)
         {
             try
             {
-                User sender   = Users.GetUser(LoginUser, emailPost.CreatorID); 
+                User sender   = Users.GetUser(LoginUser, creatorID); 
                 User receiver = Users.GetUser(LoginUser, receiverID);
 
-                MailMessage message = EmailTemplates.GetReaction(LoginUser, ticketID, hostName);
+                MailMessage message = EmailTemplates.GetReaction(LoginUser, sender, receiver, ticketID, hostName);
 
                 message.To.Add(GetMailAddress(receiver.Email, receiver.FirstLastName));
                 // message.Subject = message.Subject;
                 string replyAddress = sender.Email;
-                AddMessage(receiver.OrganizationID, "Action Reaction (Applause) [" + ticketID + "]", message, replyAddress);
+                AddMessage(receiver.OrganizationID, "Action Reaction (Applause) [" + ticketID.ToString() + "]", message, replyAddress);
             }
 
-            catch { }
+            catch (Exception ex)
+            {
+                Logs.WriteEvent("Error with ProcessReaction");
+                Logs.WriteException(ex);
+                ExceptionLogs.LogException(LoginUser, ex, "ProcessReaction");
+            }
         }
 
         private void ProcessTicketSendEmail(int userID, int ticketID, string addresses, string introduction)

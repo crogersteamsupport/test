@@ -1013,7 +1013,7 @@ function SetupActionEditor(elem, action) {
               });
       }
       else {
-          window.parent.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {
+          window.parent.Ts.Services.Tickets.StartArchivingScreen(sessionId, function (resultID) {
               element.find('#rcdtokScreen').hide();
               element.find('#stoptokScreen').show();
               element.find('#deletetokScreen').hide();
@@ -1046,7 +1046,7 @@ function SetupActionEditor(elem, action) {
 
     element.find('#stoptokScreen').hide();
     element.find('#stoptokScreen').click(function (e) {
-        element.find('#statusTextScreen').text("Processing...");
+        element.find('#statusTextScreen').text("Saving video...");
         clearTimeout(tokTimer);
         $("#tokScreenCountdown").html("0:00");
         window.parent.Ts.Services.Tickets.StopArchiving(recordingID, function (result) {
@@ -1057,14 +1057,14 @@ function SetupActionEditor(elem, action) {
             element.find('#unmuteTokScreen').hide();
             element.find('#muteTokScreen').hide();
             tokurl = result;
-            videoURL = '<video controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/screenview.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
+            videoURL = '<video width="100%" controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/screenview.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
             if (window.parent.Ts.System.User.OrganizationID !== 13679) {
                 tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
             }
             else {
                 $('#action-new-editor').summernote('insertNode', videoURL);
             }
-            element.find('#statusTextScreen').text("");
+            element.find('#statusTextScreen').text("Your video is currently processing. It may not play in the editor below but should be live within a minute.");
             session.unpublish(screenSharingPublisher);
             session.unpublish(publisher);
             recordingID = null;

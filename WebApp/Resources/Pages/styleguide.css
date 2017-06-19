@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
+body {
+    padding:200px 30px;
+    background-color: #f4f6f8;
+}
+
+div {
+    margin:0px;
+    font-family: 'Roboto', sans-serif;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+   margin:0px 0px 10px;
+   font-family: 'Roboto', sans-serif;
+}
+
+
+
+
+
+
+div.complete {
+    margin:0px auto 50px;
+}
+div.mainbar    { max-width:740px; }
+div.mainspacer { padding:50px 30px 100px; }
+div.sidebar    { max-width:240px; }
+div.sidespacer { padding:40px 20px 0px 10px; }
+div.whitebg    { background-color:white; }
+div.blackebg   { background-color:black; }
+
+/* FLEXBOX */
+div.flexbox    { display:flex;display:-webkit-flex; }
+div.flexrow    { flex-direction:row; }
+div.flexcolumn { flex-direction:column; }
+div.flexwrap   { flex-wrap:wrap;-webkit-flex-wrap:wrap; }
+div.flexalign  { justify-content:center; align-items:center; }
+div.flex1      { flex:1;-webkit-flex:1; }
+div.flex2      { flex:2;-webkit-flex:2; }
+div.flex3      { flex:3;-webkit-flex:3; }
+div.flex4      { flex:4;-webkit-flex:4; }
+div.flex5      { flex:5;-webkit-flex:5; }
+div.flex6      { flex:6;-webkit-flex:6; }
+div.flex7      { flex:7;-webkit-flex:7; }
+div.flex8      { flex:8;-webkit-flex:8; }
+div.flex9      { flex:9;-webkit-flex:9; }

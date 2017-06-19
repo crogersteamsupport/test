@@ -2652,6 +2652,7 @@ WHERE t.TicketID = @TicketID
             if (TSAuthentication.OrganizationID != 1078) return;
             TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
             action.Description = HtmlUtility.RemoveInvalidHtmlTags(action.Description);
+            action.Collection.isAdminClean = true;
             action.Collection.Save();
         }
 
@@ -3843,7 +3844,7 @@ WHERE t.TicketID = @TicketID
                 log.Message = e.Message.Replace(Environment.NewLine, "<br />");
                 log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
                 log.Collection.Save();
-                errLocation = string.Format("Error merging ticket contacts. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+                errLocation = string.Format("Error merging ticket contacts. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
             }
 
             try
@@ -3858,7 +3859,7 @@ WHERE t.TicketID = @TicketID
                 log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
                 log.Collection.Save();
 
-                errLocation = string.Format("Error merging ticket tags. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+                errLocation = string.Format("Error merging ticket tags. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
             }
 
             try
@@ -3873,7 +3874,7 @@ WHERE t.TicketID = @TicketID
                 log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
                 log.Collection.Save();
 
-                errLocation = string.Format("Error merging ticket subscribers. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+                errLocation = string.Format("Error merging ticket subscribers. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
             }
 
             try
@@ -3888,7 +3889,7 @@ WHERE t.TicketID = @TicketID
                 log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
                 log.Collection.Save();
 
-                errLocation = string.Format("Error merging ticket queres. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+                errLocation = string.Format("Error merging ticket queres. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
             }
 
             try
@@ -3903,7 +3904,7 @@ WHERE t.TicketID = @TicketID
                 log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
                 log.Collection.Save();
 
-                errLocation = string.Format("Error merging ticket reminders. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+                errLocation = string.Format("Error merging ticket reminders. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
             }
 
             try
@@ -3918,7 +3919,7 @@ WHERE t.TicketID = @TicketID
                 log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
                 log.Collection.Save();
 
-                errLocation = string.Format("Error merging ticket assets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+                errLocation = string.Format("Error merging ticket assets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
             }
 
             try
@@ -3933,7 +3934,7 @@ WHERE t.TicketID = @TicketID
                 log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
                 log.Collection.Save();
 
-                errLocation = string.Format("Error merging ticket actions. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+                errLocation = string.Format("Error merging ticket actions. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
             }
 
             try
@@ -3948,7 +3949,7 @@ WHERE t.TicketID = @TicketID
                 log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
                 log.Collection.Save();
 
-                errLocation = string.Format("Error merging ticket attachments. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+                errLocation = string.Format("Error merging ticket attachments. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
             }
 
             try
@@ -3963,7 +3964,7 @@ WHERE t.TicketID = @TicketID
                 log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
                 log.Collection.Save();
 
-                errLocation = string.Format("Error merging ticket relationships. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+                errLocation = string.Format("Error merging ticket relationships. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
             }
 
             try
@@ -3995,7 +3996,7 @@ WHERE t.TicketID = @TicketID
                 log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
                 log.Collection.Save();
 
-                errLocation = string.Format("Error updating winning ticket modifier and date modified. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support portal in the upper right of your account.", log.ExceptionLogID);
+                errLocation = string.Format("Error updating winning ticket modifier and date modified. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
             }
 
             return errLocation;

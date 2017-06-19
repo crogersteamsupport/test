@@ -7,7 +7,7 @@
 }
 
 .chatboxhead {
-	background-color: #3D6DA7;
+	background-color: #2A3F54;
 	padding:7px;
 	color: #ffffff;
 
@@ -55,7 +55,7 @@
 }
 
 .chatboxtextareaselected {
-	border: 1px solid #3D6DA7;
+	border: 1px solid #2A3F54;
 	margin:0;
 }
 
@@ -77,7 +77,7 @@
 .chatboxmessageto {
 	margin-left:-1em;
 	font-weight: bold;
-	color: #3D6DA7;
+	color: #2A3F54;
 }
 
 .chatboxmessagecontent 
