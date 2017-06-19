@@ -351,7 +351,26 @@ namespace TeamSupport.Data
         return actionLinkToJira[0];
     }
     
+    public static ActionLinkToJiraItem GetActionLinkToJiraItemByActionID(LoginUser loginUser, int id)
+    {
+      ActionLinkToJira actionLinkToJira = new ActionLinkToJira(loginUser);
+      actionLinkToJira.LoadByActionid(id);
+      if (actionLinkToJira.IsEmpty)
+        return null;
+      else
+        return actionLinkToJira[0];
+    }    
     
+	    public virtual void LoadByActionid(int id)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SET NOCOUNT OFF; SELECT [id], [ActionID], [DateModifiedByJiraSync], [JiraID] FROM [dbo].[ActionLinkToJira] WHERE ([ActionID] = @id);";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("id", id);
+        Fill(command);
+      }
+    }    
     
 
     #endregion
