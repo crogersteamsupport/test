@@ -10,6 +10,7 @@ var _isChatWindowPotentiallyHidden = false;
 var siteUrl;
 var _agentHasJoined = false;
 var _typingTimer;                //timer identifier
+var isSubmittingAlready = false;
 
 $(document).ready(function () {
     var windowUrl = window.location.href;
@@ -83,7 +84,8 @@ $(document).ready(function () {
 
     $("#message-form").submit(function (e) {
         e.preventDefault();
-        if ($('#message').val() !== '') {
+        if ($('#message').val() !== '' && !isSubmittingAlready) {
+            isSubmittingAlready = true;
             $('#send-message').prop("disabled", true);
             clearTimeout(_typingTimer);
             doneTyping();
@@ -93,10 +95,9 @@ $(document).ready(function () {
             IssueAjaxRequest("AddMessage", messageData,
             function (result) {
                 $('#message').val('');
-                $('#send-message').prop("disabled", false);
             },
             function (error) {
-
+                console.log(error)
             });
         }
     });
@@ -223,6 +224,8 @@ function setupChat(chatID, participantID, pusherKey, callback) {
         $('#typing').remove();
         createMessageElement(data, (data.CreatorType == 0) ? 'left' : 'right');
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
+        $('#send-message').prop("disabled", false);
+        isSubmittingAlready = false;
     });
 
     pressenceChannel.bind('client-tok-screen', function (data) {

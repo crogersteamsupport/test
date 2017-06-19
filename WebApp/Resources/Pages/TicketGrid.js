@@ -1229,7 +1229,7 @@ TicketGrid = function (options) {
 			return;
 		}
 		$('.ticket-action').prop('disabled', false);
-		$('.tickets-delete').prop('disabled', ticket.CreatorID != mainFrame.Ts.System.User.UserID && !mainFrame.Ts.System.User.IsSystemAdmin);
+		$('.tickets-delete').prop('disabled', !mainFrame.Ts.System.User.IsSystemAdmin);
 
 		function writeProp(name, val, colSpan) {
 			if (val == null || val == '') val = '[Unassigned]';

@@ -12,7 +12,6 @@ namespace TeamSupport.Data
 {
     public partial class Action
     {
-
         public Attachments GetAttachments()
         {
             Attachments attachments = new Attachments(BaseCollection.LoginUser);
@@ -109,7 +108,6 @@ namespace TeamSupport.Data
         private bool _updateChildTickets = true;
 
         private string _actionLogInstantMessage = null;
-
         private bool _isAdminClean = false;
         public string ActionLogInstantMessage
         {
@@ -133,7 +131,8 @@ namespace TeamSupport.Data
             {
                 _isAdminClean = value;
             }
-        }
+        }
+
         partial void BeforeRowDelete(int actionID)
         {
             Action action = (Action)Actions.GetAction(LoginUser, actionID);
@@ -146,9 +145,8 @@ namespace TeamSupport.Data
             action.Description = HtmlUtility.FixScreenRFrame((action.Row["Description"] == DBNull.Value) ? string.Empty : action.Description);
             string actionNumber = GetActionNumber(action.TicketID, action.ActionID);
             string description = "Modified action #" + actionNumber + " on " + Tickets.GetTicketLink(LoginUser, action.TicketID);
-            if (!this.isAdminClean)
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, action.TicketID, description);
-
+            if(!this.isAdminClean)
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, action.TicketID, description);
         }
 
         private string GetActionNumber(int ticketID, int actionID)

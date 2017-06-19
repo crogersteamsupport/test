@@ -1303,6 +1303,14 @@ namespace TSWebServices
         {
             TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
             if (!CanDeleteAction(action)) return;
+
+            ActionLinkToJiraItem actionlink = ActionLinkToJira.GetActionLinkToJiraItemByActionID(TSAuthentication.GetLoginUser(), actionID);
+            if (actionlink != null)
+            {
+                actionlink.Delete();
+                actionlink.Collection.Save();
+            }
+
             action.Delete();
             action.Collection.Save();
         }
@@ -2553,9 +2561,8 @@ WHERE t.TicketID = @TicketID
             foreach (TeamSupport.Data.Action action in actions)
             {
                 action.Description = HtmlUtility.RemoveInvalidHtmlTags(action.Description);
-                actions.isAdminClean = true;
             }
-            
+            actions.isAdminClean = true;
             actions.Save();
         }
 
