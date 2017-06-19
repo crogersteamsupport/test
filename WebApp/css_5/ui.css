@@ -1,8 +1,50 @@
-﻿body { font-family: "Lucida Grande" ,Helvetica,Arial,Verdana,sans-serif; font-size: 12px; color: #15428B; background-color: #DBE6F4; }
+﻿
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/roboto/Roboto-Thin-webfont.eot');
+    src: url('../fonts/roboto/Roboto-Thin-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/roboto/Roboto-Thin-webfont.woff') format('woff'), url('../fonts/roboto/Roboto-Thin-webfont.ttf') format('truetype'), url('../fonts/roboto/Roboto-Thin-webfont.svg#robotoregular') format('svg');
+    font-weight: 200;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/roboto/Roboto-Light-webfont.eot');
+    src: url('../fonts/roboto/Roboto-Light-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/roboto/Roboto-Light-webfont.woff') format('woff'), url('../fonts/roboto/Roboto-Light-webfont.ttf') format('truetype'), url('../fonts/roboto/Roboto-Light-webfont.svg#robotolight') format('svg');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/roboto/Roboto-Regular-webfont.eot');
+    src: url('../fonts/roboto/Roboto-Regular-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/roboto/Roboto-Regular-webfont.woff') format('woff'), url('../fonts/roboto/Roboto-Regular-webfont.ttf') format('truetype'), url('../fonts/roboto/Roboto-Regular-webfont.svg#robotoregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/roboto/Roboto-Medium-webfont.eot');
+    src: url('../fonts/roboto/Roboto-Medium-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/roboto/Roboto-Medium-webfont.woff') format('woff'), url('../fonts/roboto/Roboto-Medium-webfont.ttf') format('truetype'), url('../fonts/roboto/Roboto-Medium-webfont.svg#robotoregular') format('svg');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/roboto/Roboto-Bold-webfont.eot');
+    src: url('../fonts/roboto/Roboto-Bold-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/roboto/Roboto-Bold-webfont.woff') format('woff'), url('../fonts/roboto/Roboto-Bold-webfont.ttf') format('truetype'), url('../fonts/roboto/Roboto-Bold-webfont.svg#robotoregular') format('svg');
+    font-weight: bold;
+    font-style: normal;
+}
+
+
+body { font-family: 'Roboto'; font-size: 12px; color: #15428B; background-color: #DBE6F4; }
 a:focus { outline: 0; }
 :focus { -moz-outline-style: none; }
 
-td, th, span, form, body { font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif; font-size: 12px; color: #15428B; }
+td, th, span, form, body { font-family: 'Roboto'; font-size: 12px; color: #15428B; }
 
 a.ts-link, a.ts-link:link, a.ts-link:active, a.ts-link:visited { text-decoration: none; color: #15428B; outline: 0; }
 a.ts-link:hover { text-decoration: underline; }
@@ -39,7 +81,7 @@ span.checkBox input { top: 0px; margin: 0 10px 0 0; padding: 0; }
 
 /* Panel Buttons */
 .panel-caption-buttons { float:right;}
-a.panel-caption-button{ color: #204d89; text-decoration: none; font-style: normal; font-size: 12px; font-family: "Lucida Grande" ,Helvetica,Arial,Verdana,sans-serif; background-color: Transparent; background-image: none; display: block; float: left; height: 26px; cursor: pointer; padding-right: 8px;}
+a.panel-caption-button{ color: #204d89; text-decoration: none; font-style: normal; font-size: 12px; font-family: 'Roboto'; background-color: Transparent; background-image: none; display: block; float: left; height: 26px; cursor: pointer; padding-right: 8px;}
 .panel-caption-button-contents {  background: none; height:26px; display:block; padding-left: 8px;}
 .panel-caption-button-text { display:block; float:left; padding-left:5px;} 
 .panel-caption-button-icon { height: 16px; width:16px; margin-top: 5px; background-repeat:no-repeat; display:block; float:left;}
@@ -85,7 +127,22 @@ div.NoRoundedCornerEnds, div.NoRoundedCornerEnds .rtbOuter, div.NoRoundedCornerE
 .groupBarButtonsSpan { float: right; padding-right: 12px; }
 .groupBarBlue .groupBarHeaderDiv { background-image: url( '../images/bar_blue_left.gif' ); }
 .groupBarBlue .groupBarHeaderSpan { background-image: url( '../images/bar_blue_right.gif' ); }
-a.groupBarButtonLink, a.groupBarButtonLink:link { color: #204d89; text-decoration: none; font-style: normal; font-size: 12px; font-family: "Lucida Grande" ,Helvetica,Arial,Verdana,sans-serif; background-color: Transparent; background-image: none; display: block; float: left; height: 36px; margin-right: 0; padding: 0 6px 0 0; margin-top: 0px; cursor: pointer; }
+a.groupBarButtonLink, a.groupBarButtonLink:link {
+    color: #204d89;
+    text-decoration: none;
+    font-style: normal;
+    font-size: 12px;
+    font-family: 'Roboto';
+    background-color: Transparent;
+    background-image: none;
+    display: block;
+    float: left;
+    height: 36px;
+    margin-right: 0;
+    padding: 0 6px 0 0;
+    margin-top: 0px;
+    cursor: pointer;
+}
 a.groupBarButtonLink span.groupBarButtonSpan { text-decoration: none; background: none; height: 20px; line-height: 20px; padding: 0 0 5px 5px; display: block; }
 span.groupBarButtonSpan, a.groupBarButtonLink { display: block; }
 .groupBarButtonTextSpan { margin: -23px 0 0 20px; display: block; }
@@ -107,7 +164,23 @@ span.groupBarButtonSpan, a.groupBarButtonLink { display: block; }
 .groupBodyDiv { border: Solid 1px #a2b8ce; border-top-width: 0px; margin-right: 0px; overflow: hidden; min-height: 20px; }
 .groupLightBlue .groupHeaderDiv { background-image: url( '../images/group_main_left.gif' ); }
 .groupLightBlue .groupHeaderSpan { background-image: url( '../images/group_main_right.gif' ); }
-a.groupButtonLink, a.groupButtonLink:link { color: #15428B; text-decoration: none; font-style: normal; font-weight: bold; font-size: 12px; font-family: "Lucida Grande" ,Helvetica,Arial,Verdana,sans-serif; background-color: Transparent; background-image: none; display: block; float: left; margin-right: 5px; padding: 0 8px 0 0; margin-top: 0; text-decoration: none; cursor: pointer; }
+a.groupButtonLink, a.groupButtonLink:link {
+    color: #15428B;
+    text-decoration: none;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 12px;
+    font-family: 'Roboto';
+    background-color: Transparent;
+    background-image: none;
+    display: block;
+    float: left;
+    margin-right: 5px;
+    padding: 0 8px 0 0;
+    margin-top: 0;
+    text-decoration: none;
+    cursor: pointer;
+}
 a.groupButtonLink span.groupButtonSpan { background: none; height: 23px; line-height: 23px; padding: 0 0 0 10px; display: block; }
 span.groupButtonSpan { display: block; }
 .groupButtonTextSpan { margin: -26px 0 0 25px; display: block; }
