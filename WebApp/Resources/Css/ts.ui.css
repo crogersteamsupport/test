@@ -129,7 +129,7 @@ label.ts-checkbox {display:block; margin-bottom: 5px; min-height: 20px; padding-
 .ts-color-bg-accent, .ui-widget-content.ts-color-bg-accent { background-color:#EEEEEE; /* #E3EEFC;*/ background-image: none;}
 .ui-widget-content.ts-separator { height: 1px; border-bottom: none; border-left:none; border-right:none; margin-bottom: .5em; clear:both; }
 .ts-content { background-image:none; border:none; overflow:auto; } 
-.ts-section { margin: 1em 1em; padding: 1em .75em; border: none; clear:both;}
+.ts-section { margin: 1em 1em; padding: 1.2em 1.2em; border: none; clear:both;}
 .ts-section h1, .ts-section h2, .ts-section h3 { color: #555; font-weight: normal; }
 .ts-section h1 { font-size: 1.5em; margin: .5em 0; }
 .ts-section h2 { font-size: 1.3em; margin: .5em 0; }

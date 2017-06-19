@@ -243,7 +243,7 @@ function addTicketsToSection(tickets, inSubcategoryPage) {
     html =
       '<li>' +
         '<div class="item-icon">' +
-          '<img alt="item icon" src="' + iconPath + '" />' +
+          '<i class="fa fa-file-text-o icon" aria-hidden="true"></i>' +
         '</div>' +
         '<a href="#" onclick="' + onClickHandler + '" class="ts-link">' + text + '</a>' +
       '</li>';
