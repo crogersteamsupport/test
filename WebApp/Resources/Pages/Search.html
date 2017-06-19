@@ -4,7 +4,7 @@
     <meta http-equiv="Pragma" content="no-cache" />
 
     <!--Uncomment bootstrap3.min.css to add notes when completing tasks-->
-    <!--<link href="../Css/bootstrap3.min.css"                rel="stylesheet" type="text/css" />-->
+    <link href="../Css/bootstrap3.min.css"                rel="stylesheet" type="text/css" />
     <link href="../Css/frame.css"                         rel="stylesheet" type="text/css" />
     <link href="../Css/jquery-ui-latest.custom.css"       rel="stylesheet" type="text/css" />
     <link href="../Css/jquery.ui.combobox.css"            rel="stylesheet" type="text/css" />
@@ -18,7 +18,7 @@
     <link href="Search.css" rel ="stylesheet" type="text/css" />
     <script src="../Js/Ts/ts.pendo.js"                  type="text/javascript"></script>
     <script src="../Js/jquery-latest.min.js"            type="text/javascript"></script>
-    <!--<script src="../Js/bootstrap3.min.js"               type="text/javascript"></script>-->
+    <script src="../Js/bootstrap3.min.js"               type="text/javascript"></script>
     <script src="../Js/jquery-ui-latest.custom.min.js"  type="text/javascript"></script>
     <script src="../Js/jquery.layout.min.js"            type="text/javascript"></script>
     <script src="../Js/jquery.ui.combobox.js"           type="text/javascript"></script>
@@ -34,33 +34,20 @@
 
       <!--This container is added because the left and right properties in an input element are ignored in ie and ff-->
       <div id="search-input-container">
-        <input
-          id          ="search-input"
-          type        ="search"
-          placeholder ="Search"
-          autofocus   ="autofocus" />
+        <input id="search-input" type="search" placeholder="Search" autofocus="autofocus" class="form-control"/>
       </div>
 
-      <button
-        id    ="search-button"
-        type  ="button" >
-        <img
-          id  = "eyeglass"
-          src = "/vcr/153/images/nav/16/search2.png" 
-          alt = "Search" />
+      <button id="search-button" type="button" >
+        <img id="eyeglass" src="/vcr/153/images/nav/16/search2.png" alt="Search" />
       </button>
   
       <p id="search-results-summary">
         &nbsp;
       </p>
 
-      <div 
-        id    ="search-results-pane" 
-        class ="ui-layout-content">
+      <div id="search-results-pane" class ="ui-layout-content">
         <div id="search-results-loading">
-          <img 
-            alt="loading..." 
-            src="../images/loading/loading2.gif"/>
+          <img alt="loading..." src="../images/loading/loading2.gif"/>
         </div>
         <div id="search-results" >
 
@@ -74,10 +61,10 @@
       <fieldset id="search-standard-filters" class="search-options-fieldset">
         <legend></legend>
 
-          <p style="margin-bottom:5px;"><input id="include-all" class="checkbox form-control" type="checkbox" style="margin-right:5px;"/> All</p>
-          <p style="margin-bottom:5px;"><input id="include-tickets" class="checkbox form-control" type="checkbox" style="margin-right:5px;" /> Tickets</p>
-          <p style="margin-bottom:5px;"><input id="include-knowledge-base" class="checkbox form-control" type="checkbox" style="margin-right:5px;" /> Knowledge Base</p>
-          <p style="margin-bottom:5px;"><span id="include-wikis-span"><input id="include-wikis" class="checkbox form-control" type="checkbox" style="margin-right:5px;" /> Wikis</span></p>
+          <p style="margin-bottom:5px;"><input id="include-all" class="checkbox" type="checkbox" style="margin-right:5px;"/> All</p>
+          <p style="margin-bottom:5px;"><input id="include-tickets" class="checkbox" type="checkbox" style="margin-right:5px;" /> Tickets</p>
+          <p style="margin-bottom:5px;"><input id="include-knowledge-base" class="checkbox" type="checkbox" style="margin-right:5px;" /> Knowledge Base</p>
+          <p style="margin-bottom:5px;"><span id="include-wikis-span"><input id="include-wikis" class="checkbox" type="checkbox" style="margin-right:5px;" /> Wikis</span></p>
 
       </fieldset>
 
