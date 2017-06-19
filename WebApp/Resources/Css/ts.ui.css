@@ -12,7 +12,7 @@ fieldset, form, label, legend, caption, tbody, tfoot, thead, tr, th {
 	font-weight: inherit;
 	font-style: inherit;
 	font-size: 100%;
-	font-family: inherit;
+	font-family: 'Roboto';
 	vertical-align: baseline;
 }
 :focus {
