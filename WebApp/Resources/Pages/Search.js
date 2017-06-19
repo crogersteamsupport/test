@@ -31,7 +31,7 @@ $(document).ready(function () {
         }
     });
 
-    // The include-all is also a checkbox. When clicked first will handle the IncludeAllClickEvent and afterwards the StandardFilter click event. 
+    // The include-all is also a checkbox. When clicked first will handle the IncludeAllClickEvent and afterwards the StandardFilter click event.
     $('#include-all').click(function () { HandleIncludeAllClickEvent(); });
     $('.checkbox').click(function () { HandleStandardFilterClickEvent(); });
     $('#search-options-add-filter').click(function () { HandleAddFilterClickEvent(); });
@@ -102,14 +102,14 @@ function LoadAdvancedOptions() {
 
 function LoadStandardFilters() {
     if (parent.Ts.System.Organization.ProductType > 0) {
-        $('#search-standard-filters').append($('<input id="include-notes" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()"/> Customer Notes<br />'));
+        $('#search-standard-filters').append($('<p style="margin-bottom:5px;"><input id="include-notes" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()" style="margin-right:5px;"> Customer Notes</p>'));
 
         if (parent.Ts.System.Organization.ProductType > 1) {
-            $('#search-standard-filters').append($('<input id="include-product-versions" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()" /> Product Versions<br />'));
-            $('#search-standard-filters').append($('<input id="include-tasks" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()" /> Tasks<br />'));
+            $('#search-standard-filters').append($('<p style="margin-bottom:5px;"><input id="include-product-versions" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()" style="margin-right:5px;"> Product Versions</p>'));
+            $('#search-standard-filters').append($('<p style="margin-bottom:5px;"><input id="include-tasks" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()" style="margin-right:5px;"> Tasks</p>'));
         }
 
-        $('#search-standard-filters').append($('<input id="include-water-cooler" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()"/> Water Cooler<br />'));
+        $('#search-standard-filters').append($('<p style="margin-bottom:5px;"><input id="include-water-cooler" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()" style="margin-right:5px;"> Water Cooler</p>'));
     }
     else {
         $('#include-wikis-span').hide();
