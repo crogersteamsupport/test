@@ -281,8 +281,8 @@ Namespace TeamSupport
 					customMappingFields.LoadByObjectTypeAndCustomFieldAuxID(GetDescription(ObjectType.Ticket), CRMLinkRow.CRMLinkID, ticket.TicketTypeID)
 
 					Dim updateTicketFlag As Boolean = False
-					Dim sendCustomMappingFields As Boolean = False
-					Dim workItemFields As List(Of TFSLibrary.WorkItemField)
+                    'Dim sendCustomMappingFields As Boolean = False
+                    Dim workItemFields As List(Of TFSLibrary.WorkItemField)
 					Dim workItemValues As List(Of TFSLibrary.WorkItemField) = New List(Of TFSLibrary.WorkItemField)
 
 					Try
@@ -319,10 +319,10 @@ Namespace TeamSupport
 							End If
 
 							updateTicketFlag = True
-							sendCustomMappingFields = CRMLinkRow.IncludeIssueNonRequired
+                            'sendCustomMappingFields = CRMLinkRow.IncludeIssueNonRequired
 
-							'Check if Ticket Description Action has Attachment
-							If (attachmentEnabled AndAlso actionDescriptionId > 0) Then
+                            'Check if Ticket Description Action has Attachment
+                            If (attachmentEnabled AndAlso actionDescriptionId > 0) Then
 								Dim actionDescriptionAttachment As Data.Attachment = Attachments.GetAttachment(User, actionDescriptionId)
 								'The Action Description should always be 1, if for any reason this is not the case call: Actions.GetActionPosition(User, actionDescriptionId)
 								Dim actionPosition As Integer = 1
@@ -547,17 +547,17 @@ Namespace TeamSupport
 
 					PushActionsAsComments(ticket.TicketID, ticket.TicketNumber, workItem, attachmentEnabled, attachmentFileSizeLimit)
 
-					If sendCustomMappingFields Then
-						'We are now updating the custom mapping fields. We do a call per field to minimize the impact of invalid values attempted to be assigned.
-						If workItemFields IsNot Nothing Then
+                    'If sendCustomMappingFields Then
+                    'We are now updating the custom mapping fields. We do a call per field to minimize the impact of invalid values attempted to be assigned.
+                    If workItemFields IsNot Nothing Then
 							For Each field As TFSLibrary.WorkItemField In workItemFields
 								UpdateWorkItemField(workItem.Id, customMappingFields, ticket, field, crmLinkErrors, URI)
 							Next
 						End If
-					ElseIf isNew Then
-						AddLog("Include Non-Required Fields On Issue Creation: Off. Only creating issue with required fields.")
-					End If
-				Next
+                    'ElseIf isNew Then
+                    '	AddLog("Include Non-Required Fields On Issue Creation: Off. Only creating issue with required fields.")
+                    'End If
+                Next
 			End Sub
 
 			Private Function GetAttachmentEnabled(ByRef attachmentFileSizeLimit As Integer) As String
@@ -855,15 +855,14 @@ Namespace TeamSupport
 
 				'//vv What cases should we handle? we might need to be filling this over time
 				Select Case fieldType.ToLower()
-					Case "select"
-					Case "multiselect"
-					Case "date"
-					Case "datetime"
-						result = Convert.ToDateTime(fieldValue).ToString("'yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'")
-					Case "float"
-					Case "string"
-					Case "radiobuttons"
-					Case Else
+                    'Case "select"
+                    'Case "multiselect"
+                    Case "date", "datetime"
+                        result = Convert.ToDateTime(fieldValue).ToString()
+                        'Case "float"
+                        'Case "string"
+                        'Case "radiobuttons"
+                    Case Else
 						result = fieldValue
 				End Select
 
