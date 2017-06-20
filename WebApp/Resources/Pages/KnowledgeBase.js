@@ -313,7 +313,7 @@ function BuildRecentlyModifiedArticles(tickets) {
     '<li>' +
       '<h1 class="ts-section-header">' +
         '<a href="#" onclick="GetSubCategoryPage(null, \'Recently Modified Articles\', null); return false;">' +
-          'Recently Modified Articles' +
+          'Recently Modified' +
         '</a>' +
       '</h1>' +
     '</li>';

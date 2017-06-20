@@ -44,7 +44,6 @@
 }
 
 h1  {
-  margin: 0px !important;
   padding: 0px !important;
   line-height: normal !important;
 }
@@ -56,6 +55,7 @@ h1 a {
 li {
   /*font-size: smaller !important;*/
   margin-top: 8px;
+  font-size: .9em;
 }
 
 .nav > li > a:hover {
@@ -63,13 +63,11 @@ li {
 }
 
 .nav-header a  {
-  color: ##445C75 !important;
-  font-size: small; 
+  color: ##445C75 !important; 
   text-transform: none;
 }
 
 .inactiveSubCategory {
-  font-size: small; 
   text-transform: none;
   margin-left:6px !important;
 }
@@ -88,7 +86,6 @@ li {
 
 #new-article { 
  float:right;
- font-size: normal !important;
  margin-top: 18px;
  line-height: 13px;
  display:block;
@@ -165,8 +162,12 @@ img {
     margin-bottom: 20px !important;
 }
 
-.kb-article {
+.kb-article-container {
     margin: 10px 0px 0px 0px;
+}
+
+.nav-header {
+    font-size:1.1em;
 }
 
 
