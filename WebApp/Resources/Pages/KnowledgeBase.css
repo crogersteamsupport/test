@@ -50,18 +50,12 @@ h1  {
 }
 
 h1 a {
-  color: #0051C6 !important;
-  margin-left: -15px !important;
-}
-
-#UncategorizedHeader {
-  margin-left: -4px !important;
+  color: #0051C6;
 }
 
 li {
-  line-height: 13px;
   /*font-size: smaller !important;*/
-  margin-top: -5px;
+  margin-top: 8px;
 }
 
 .nav > li > a:hover {
@@ -77,6 +71,7 @@ li {
 .inactiveSubCategory {
   font-size: small; 
   text-transform: none;
+  margin-left:6px !important;
 }
 
 .allLink {
@@ -109,13 +104,12 @@ li {
   font-weight:bold !important
 }
 
-a.ts-link
-, a.ts-link:link
-, a.ts-link:active
-, a.ts-link:visited {
-  text-decoration:  none; 
-  color:            #15428B; 
-  outline:          0; 
+a.ts-link, a.ts-link:link, a.ts-link:active, a.ts-link:visited {
+    text-decoration: none;
+    color: #15428B;
+    outline: 0;
+    display: inline;
+    margin-left: 6px;
 }
 
 label.nav-header-main
@@ -124,7 +118,7 @@ label.nav-header-main
 }
 
 .item-icon {
-  float: left;
+  display:inline;
   width: 20px;
   text-align: left;
   margin-top: -9px;
@@ -152,12 +146,6 @@ img {
     outline-style:none !important;
 }
 
-.sideBarSections
-{
-    overflow-y: auto;
-    max-height: 230px;
-}
-
 #HomePageContent
 {
   margin-right: -30px;
@@ -167,4 +155,18 @@ img {
 {
   margin-bottom: 10px !important;
 }
+
+.nav-list {
+    padding-left:0px;
+}
+
+.ts-section-header {
+    text-align: center;
+    margin-bottom: 20px !important;
+}
+
+.kb-article {
+    margin: 10px 0px 0px 0px;
+}
+
 
