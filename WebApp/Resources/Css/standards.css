@@ -57,17 +57,6 @@ body.white, div.white {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 <!-- HEADER // Tabs -->
 header, div.headerDiv {
     position: relative;
@@ -204,7 +193,7 @@ div.header-tabs li:hover img.close {
 
 
 div.main-header-new-ticket img:hover {
-    cursor: pointer; 
+    cursor: pointer;
 }
 
 
@@ -415,4 +404,14 @@ div.main-footer {
 
 .nav-curiousblue > li > a:hover {
     background-color: #21779C !important;
+}
+
+
+
+.btn-curiousblue {
+    margin-right: 5px;
+    font-family: 'Roboto';
+    color: white !important;
+    font-size: 12px;
+    background-color: #445c75 !important;
 }

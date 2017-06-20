@@ -197,7 +197,7 @@ function AddCustomFilter(customFilterID, reportTableFieldID, measure, testValue)
         displayFieldSet.addClass('filter-' + customFilterID);
     }
 
-    var fields = $('<select>').addClass('condition-field').appendTo(div).width('180px');
+    var fields = $('<select>').addClass('condition-field').addClass('form-control').appendTo(div).width('180px');
     loadComboFields(fields, true).combobox({
         selected: function (e, ui) {
             createConditionValue(div, fields.find('option:selected').data('field'));
@@ -209,7 +209,7 @@ function AddCustomFilter(customFilterID, reportTableFieldID, measure, testValue)
         fieldText.html(fields.find('option:selected').text());
     }
 
-    var measures = $('<select>').addClass('condition-measure').appendTo(div).width('150px');
+    var measures = $('<select>').addClass('condition-measure').addClass('form-control').appendTo(div).width('150px');
     loadComboMeasures(measures).combobox({
         selected: function (e, ui) {
         }
@@ -532,8 +532,9 @@ function createConditionValue(condition, field, value) {
         var input = $('<input>')
           .addClass('text ui-corner-all ui-widget-content condition-value')
           .attr('type', 'text')
-          .width('200px')
-          .height('14px')
+          .width('150px')
+          .height('20px')
+          .css('padding','5px')
           .keydown(function () { isModified(true, condition); })
           .appendTo(container);
         return;
@@ -549,7 +550,7 @@ function createConditionValue(condition, field, value) {
         var select = $('<select>')
             .addClass('condition-value')
             .width('125px')
-            .height('14px')
+            .height('20px')
             .appendTo(container);
         $('<option>').attr('value', 'true').text('True').appendTo(select);
         $('<option>').attr('value', 'false').text('False').appendTo(select);
@@ -560,7 +561,7 @@ function createConditionValue(condition, field, value) {
     else if (field.DataType == 'list') {
         var select = $('<select>')
             .addClass('condition-value')
-            .height('14px')
+            .height('20px')
             .appendTo(container);
         for (var i = 0; i < field.ListValues.length; i++) {
             $('<option>').attr('value', field.ListValues[i]).text(field.ListValues[i]).appendTo(select);
@@ -573,8 +574,9 @@ function createConditionValue(condition, field, value) {
         var input = $('<input>')
             .addClass('text ui-corner-all ui-widget-content condition-value')
             .attr('type', 'text')
-            .width('200px')
-            .height('14px')
+            .width('150px')
+            .height('20px')
+            .css('padding','5px')
             .keydown(function () { isModified(true, condition); })
             .appendTo(container)
             .val((value ? value : ""));
