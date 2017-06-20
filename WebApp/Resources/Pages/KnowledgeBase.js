@@ -110,7 +110,7 @@ function BuildSection(category) {
   var subCategoriesRow = $('<div>').addClass('row-fluid');
   if (category != null) {
     var parentCategoryName = category.Category.CategoryName;
-    categorySection.append($('<h1>' + category.Category.CategoryName + '</h1>'));
+    categorySection.append($('<h1 class="ts-section-header">' + category.Category.CategoryName + '</h1></div>'));
 
     var amountOfSubcategories = category.Subcategories.length;
     // We add one more index to add the "Without subcategory" section.
@@ -212,10 +212,10 @@ function addTicketsToSection(tickets, inSubcategoryPage) {
     if (inSubcategoryPage == null) {
       if (tickets.Count > 0) {
           onShowAllClickHandler = 'GetSubCategoryPage(null, null, null); return false;';
-        $('#UncategorizedHeader').html('<h1><a href="#" onclick="' + onShowAllClickHandler + '">Uncategorized (' + tickets.Count + ')</a></h1>');
+          $('#UncategorizedHeader').html('<h1 class="ts-section-header"><a href="#" onclick="' + onShowAllClickHandler + '">Uncategorized (' + tickets.Count + ')</a></h1>');
       }
       else {
-        $('#UncategorizedHeader').html('<h1>Uncategorized (' + tickets.Count + ')</h1>');
+          $('#UncategorizedHeader').html('<h1 class="ts-section-header">Uncategorized (' + tickets.Count + ')</h1>');
       }
     }
     else {
@@ -241,10 +241,7 @@ function addTicketsToSection(tickets, inSubcategoryPage) {
     var text            = tickets.Items[i].Name;
 
     html =
-      '<li>' +
-        '<div class="item-icon">' +
-          '<img alt="item icon" src="' + iconPath + '" />' +
-        '</div>' +
+      '<li class="kb-article-container">' +
         '<a href="#" onclick="' + onClickHandler + '" class="ts-link">' + text + '</a>' +
       '</li>';
 
@@ -259,7 +256,7 @@ function addTicketsToSection(tickets, inSubcategoryPage) {
 
   if ((inSubcategoryPage == null) && (tickets.Count > _pageSize)) {
     html =
-      '<li>' +
+      '<li class="kb-see-more">' +
         '<a href="#" onclick="' + onShowAllClickHandler + '" class="ts-link allLink">>> See all...</a>' +
       '</li>';
 
@@ -273,7 +270,7 @@ function BuildNewArticles(tickets) {
 
   var html = 
     '<li>' +
-      '<h1>' +
+      '<h1 class="ts-section-header">' +
         '<a href="#" onclick="GetSubCategoryPage(null, \'New Articles\', null); return false;">' +
           'New Articles' +
         '</a>' +
@@ -288,9 +285,9 @@ function BuildNewArticles(tickets) {
     var text = tickets.Items[i].Name;
 
     html =
-      '<li>' +
+      '<li class="kb-article-container">' +
         '<div class="item-icon">' +
-          '<img alt="item icon" src="' + iconPath + '" />' +
+            '<i class="fa fa-file-text"></i>' +
         '</div>' +
         '<a href="#" onclick="' + onClickHandler + '" class="ts-link">' + text + '</a>' +
       '</li>';
@@ -314,7 +311,7 @@ function BuildRecentlyModifiedArticles(tickets) {
 
   var html =
     '<li>' +
-      '<h1>' +
+      '<h1 class="ts-section-header">' +
         '<a href="#" onclick="GetSubCategoryPage(null, \'Recently Modified Articles\', null); return false;">' +
           'Recently Modified Articles' +
         '</a>' +
@@ -332,7 +329,7 @@ function BuildRecentlyModifiedArticles(tickets) {
     html =
       '<li>' +
         '<div class="item-icon">' +
-          '<img alt="item icon" src="' + iconPath + '" />' +
+        '<i class="fa fa-file-text"></i>' +
         '</div>' +
         '<a href="#" onclick="' + onClickHandler + '" class="ts-link">' + text + '</a>' +
       '</li>';
@@ -369,7 +366,7 @@ function GetSubCategoryPage(categoryID, categoryName, parentCategoryName) {
   $('.frame-content').animate({ scrollTop: 0 }, 600);
 
   $('#SubCategoryPageContent').empty();
-  $('#SubCategoryPageContent').append($('<h1 id="SubCategoryPageHeader"></h1>'));
+  $('#SubCategoryPageContent').append($('<h1 id="SubCategoryPageHeader ts-section-header"></h1>'));
 
   if (categoryID != null) {
     var ul = $('<ul>').addClass('nav nav-list').attr('id', 'subcatID-' + categoryID);
@@ -453,9 +450,9 @@ function appendTicketsToSection(tickets, inSubcategoryPage) {
     var text = tickets.Items[i].Name;
 
     html =
-      '<li>' +
+      '<li class="kb-article-container">' +
         '<div class="item-icon">' +
-          '<img alt="item icon" src="' + iconPath + '" />' +
+            '<i class="fa fa-file-text"></i>' +
         '</div>' +
         '<a href="#" onclick="' + onClickHandler + '" class="ts-link">' + text + '</a>' +
       '</li>';
