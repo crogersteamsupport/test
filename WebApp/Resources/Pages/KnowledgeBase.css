@@ -45,24 +45,17 @@
 
 h1  {
   margin: 0px !important;
-  margin-left: 15px !important;
   padding: 0px !important;
   line-height: normal !important;
 }
 
 h1 a {
-  color: #0051C6 !important;
-  margin-left: -15px !important;
-}
-
-#UncategorizedHeader {
-  margin-left: -4px !important;
+  color: #0051C6;
 }
 
 li {
-  line-height: 13px;
-  font-size: smaller !important;
-  margin-top: -5px;
+  /*font-size: smaller !important;*/
+  margin-top: 8px;
 }
 
 .nav > li > a:hover {
@@ -70,7 +63,7 @@ li {
 }
 
 .nav-header a  {
-  color: #0051C6 !important;
+  color: ##445C75 !important;
   font-size: small; 
   text-transform: none;
 }
@@ -78,6 +71,7 @@ li {
 .inactiveSubCategory {
   font-size: small; 
   text-transform: none;
+  margin-left:6px !important;
 }
 
 .allLink {
@@ -110,13 +104,12 @@ li {
   font-weight:bold !important
 }
 
-a.ts-link
-, a.ts-link:link
-, a.ts-link:active
-, a.ts-link:visited {
-  text-decoration:  none; 
-  color:            #15428B; 
-  outline:          0; 
+a.ts-link, a.ts-link:link, a.ts-link:active, a.ts-link:visited {
+    text-decoration: none;
+    color: #15428B;
+    outline: 0;
+    display: inline;
+    margin-left: 6px;
 }
 
 label.nav-header-main
@@ -125,10 +118,14 @@ label.nav-header-main
 }
 
 .item-icon {
-  float: left;
+  display:inline;
   width: 20px;
   text-align: left;
   margin-top: -9px;
+}
+
+.icon {
+  margin-top:10px;
 }
 
 img {
@@ -149,12 +146,6 @@ img {
     outline-style:none !important;
 }
 
-.sideBarSections
-{
-    overflow-y: auto;
-    max-height: 230px;
-}
-
 #HomePageContent
 {
   margin-right: -30px;
@@ -164,4 +155,18 @@ img {
 {
   margin-bottom: 10px !important;
 }
+
+.nav-list {
+    padding-left:0px;
+}
+
+.ts-section-header {
+    text-align: center;
+    margin-bottom: 20px !important;
+}
+
+.kb-article {
+    margin: 10px 0px 0px 0px;
+}
+
 
