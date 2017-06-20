@@ -175,21 +175,24 @@ namespace TeamSupport.Data
 					break;
                 case ScheduledReportFrequency.Daily:
                     DateTime now = DateTime.UtcNow;
+					Debug(string.Format("now : {0}", now.ToString("MM/dd/yyyy HH:mm")));
 
-                    if (dateOnly.Add(timeOnly.TimeOfDay) < now)
+					if (dateOnly.Add(timeOnly.TimeOfDay) < now)
                     {
                         dateOnly = now.Date;
-                    }
+						Debug("dateOnly = now.Date : " + dateOnly.ToString("MM/dd/yyyy HH:mm"));
+					}
 
                     if (dateOnly.Add(timeOnly.TimeOfDay) < now)
                     {
                         NextRun = dateOnly.AddDays(1).Add(timeOnly.TimeOfDay);
-                    }
+						Debug(string.Format("NextRun = dateOnly.AddDays(1).Add(timeOnly.TimeOfDay) : {0}", NextRun.Value.ToString("MM/dd/yyyy HH:mm")));
+					}
                     else
                     {
                         NextRun = dateOnly.Add(timeOnly.TimeOfDay);
-                    }
-
+						Debug(string.Format("NextRun = dateOnly.Add(timeOnly.TimeOfDay) : ", NextRun.Value.ToString("MM/dd/yyyy HH:mm")));
+					}
                     
                     break;
 				default:
@@ -199,20 +202,25 @@ namespace TeamSupport.Data
             //Check for DLS and update if needed
             if (NextRun.HasValue)
             {
-                User creator = Users.GetUser(LoginUser.Anonymous, CreatorId);
+				User creator = Users.GetUser(LoginUser.Anonymous, CreatorId);
                 TimeZoneInfo tz = TimeZoneInfo.Local;
 
                 if (!string.IsNullOrWhiteSpace(creator.TimeZoneID))
                 {
                     tz = TimeZoneInfo.FindSystemTimeZoneById(creator.TimeZoneID);
+					Debug(string.Format("CreatorId: {0} TimeZoneID: {1} tz.DisplayName: {2}", CreatorId.ToString(), creator.TimeZoneID.ToString(), tz.DisplayName));
                 }
 
                 DateTime StartDateLocal = TimeZoneInfo.ConvertTimeFromUtc(StartDateUtc, tz);
+				Debug(string.Format("StartDateLocal = TimeZoneInfo.ConvertTimeFromUtc(StartDateUtc, tz): {0}", StartDateLocal.ToString("MM/dd/yyyy HH:mm")));
 
                 if (TimeSpan.Compare(StartDateLocal.TimeOfDay, NextRun.Value.TimeOfDay) != 0)
                 {
                     DateTime fixedDateForDLS = TimeZoneInfo.ConvertTimeToUtc(new DateTime(NextRun.Value.Year, NextRun.Value.Month, NextRun.Value.Day, StartDateLocal.Hour, StartDateLocal.Minute, 0), tz);
-                    NextRun = fixedDateForDLS;
+					Debug(string.Format("fixedDateForDLS = TimeZoneInfo.ConvertTimeToUtc(new DateTime(NextRun.Value.Year, NextRun.Value.Month, NextRun.Value.Day, StartDateLocal.Hour, StartDateLocal.Minute, 0), tz): {0}", fixedDateForDLS.ToString("MM/dd/yyyy HH:mm")));
+
+					NextRun = fixedDateForDLS;
+					Debug(string.Format("NextRun: {0}", NextRun.Value.ToString("MM/dd/yyyy HH:mm")));
                 }
             }
 		}
@@ -274,6 +282,26 @@ namespace TeamSupport.Data
                 }
             }
         }
+
+		private void Debug(string message)
+		{
+			try
+			{
+				System.Collections.Specialized.NameValueCollection settings = System.Configuration.ConfigurationManager.AppSettings;
+				string orgIdToDebug = settings["DebugOrgId"];
+
+				if (OrganizationId.ToString() == orgIdToDebug)
+				{
+					string path = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+					string debugFile = System.IO.Path.Combine(path, "Debug.txt");
+					System.IO.File.AppendAllText(debugFile, string.Format("{0} (orgId {1}): {2}{3}", DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"), orgIdToDebug, message, Environment.NewLine));
+				}
+			}
+			catch (Exception ex)
+			{
+				ExceptionLogs.LogException(LoginUser.Anonymous, ex, "ScheduledReports-Debug", "Tickets.Clone - Actions");
+			}
+		}
     }
 
 	public partial class ScheduledReports
@@ -314,6 +342,7 @@ WHERE
     ORDER BY NextRun
     )
 ";
+				command.CommandText = "SELECT * FROM ScheduledReports WHERE Id = 35";
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@ProcessID", processID);
                 scheduledReports.Fill(command);

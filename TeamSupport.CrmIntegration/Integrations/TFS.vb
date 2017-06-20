@@ -332,11 +332,11 @@ Namespace TeamSupport
 							ClearCrmLinkError(crmLinkError)
 						Catch tfsEx As TFSLibrary.TFSClientException
 							Dim errorMessage As String = tfsEx.ErrorResponse.typeKey
-							AddLog(String.Format(_tfsExceptionMessageFormat, tfsEx.Message))
+							AddLog(String.Format(_tfsExceptionMessageFormat, tfsEx.ErrorResponse.message))
 							AddLog(tfsEx.Message,
 									LogType.Report,
 									crmLinkError,
-									String.Format("WorkItem was not created due to:{0}{1}", Environment.NewLine, errorMessage),
+									String.Format("WorkItem was not created due to:{0}{1}", Environment.NewLine, tfsEx.ErrorResponse.message),
 									Orientation.OutToJira,
 									ObjectType.Ticket,
 									ticket.TicketID,
