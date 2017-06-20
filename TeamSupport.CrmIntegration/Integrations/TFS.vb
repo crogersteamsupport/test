@@ -17,7 +17,7 @@ Namespace TeamSupport
 			Private _baseURI As String
 			Private _encodedCredentials As String
 			Private _tfs As TFSLibrary = New TFSLibrary()
-			Private _tfsExceptionMessageFormat As String = "TFS Error Message: {0}{1}{2}{1}{3}"
+			Private _tfsExceptionMessageFormat As String = "TFS Error Message: {0}"
 			Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
 				MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.Jira)
 			End Sub
@@ -281,7 +281,7 @@ Namespace TeamSupport
 					customMappingFields.LoadByObjectTypeAndCustomFieldAuxID(GetDescription(ObjectType.Ticket), CRMLinkRow.CRMLinkID, ticket.TicketTypeID)
 
 					Dim updateTicketFlag As Boolean = False
-					Dim sendCustomMappingFields As Boolean = False
+					'Dim sendCustomMappingFields As Boolean = False
 					Dim workItemFields As List(Of TFSLibrary.WorkItemField)
 					Dim workItemValues As List(Of TFSLibrary.WorkItemField) = New List(Of TFSLibrary.WorkItemField)
 
@@ -319,7 +319,7 @@ Namespace TeamSupport
 							End If
 
 							updateTicketFlag = True
-							sendCustomMappingFields = CRMLinkRow.IncludeIssueNonRequired
+							'sendCustomMappingFields = CRMLinkRow.IncludeIssueNonRequired
 
 							'Check if Ticket Description Action has Attachment
 							If (attachmentEnabled AndAlso actionDescriptionId > 0) Then
@@ -332,11 +332,11 @@ Namespace TeamSupport
 							ClearCrmLinkError(crmLinkError)
 						Catch tfsEx As TFSLibrary.TFSClientException
 							Dim errorMessage As String = tfsEx.ErrorResponse.typeKey
-							AddLog(String.Format(_tfsExceptionMessageFormat, tfsEx.Message, Environment.NewLine, tfsEx.ErrorResponse.typeKey, tfsEx.ErrorResponse.message))
+							AddLog(String.Format(_tfsExceptionMessageFormat, tfsEx.Message))
 							AddLog(tfsEx.Message,
 									LogType.Report,
 									crmLinkError,
-									String.Format("WorkItem was not created due to:{0}{1}", Environment.NewLine, tfsEx.ErrorResponse.message),
+									String.Format("WorkItem was not created due to:{0}{1}", Environment.NewLine, errorMessage),
 									Orientation.OutToJira,
 									ObjectType.Ticket,
 									ticket.TicketID,
@@ -348,12 +348,12 @@ Namespace TeamSupport
 
 							'ToDo need to set the rest of the cases
 							Select Case tfsEx.ErrorResponse.typeKey.ToLower()
-								Case "no project" 'ToDo pending
+								Case "ProjectDoesNotExistWithNameExceptiont" 'ToDo pending
 									errorMessage = "Error: Specify Project (Product)."
 								Case "workitemtypenotfoundexception"
 									errorMessage = "Error: Specify valid Type."
-								Case "project mismatch" 'ToDo pending
-									errorMessage = "Error: Specify valid Type and/or Project (Product)."
+									'Case "project mismatch" 'ToDo pending
+									'	errorMessage = "Error: Specify valid Type and/or Project (Product)."
 								Case Else
 									errorMessage = tfsEx.ErrorResponse.message
 									updateLinkToTFS = False
@@ -547,16 +547,16 @@ Namespace TeamSupport
 
 					PushActionsAsComments(ticket.TicketID, ticket.TicketNumber, workItem, attachmentEnabled, attachmentFileSizeLimit)
 
-					If sendCustomMappingFields Then
-						'We are now updating the custom mapping fields. We do a call per field to minimize the impact of invalid values attempted to be assigned.
-						If workItemFields IsNot Nothing Then
-							For Each field As TFSLibrary.WorkItemField In workItemFields
-								UpdateWorkItemField(workItem.Id, customMappingFields, ticket, field, crmLinkErrors, URI)
-							Next
-						End If
-					ElseIf isNew Then
-						AddLog("Include Non-Required Fields On Issue Creation: Off. Only creating issue with required fields.")
+					'If sendCustomMappingFields Then
+					'We are now updating the custom mapping fields. We do a call per field to minimize the impact of invalid values attempted to be assigned.
+					If workItemFields IsNot Nothing Then
+						For Each field As TFSLibrary.WorkItemField In workItemFields
+							UpdateWorkItemField(workItem.Id, customMappingFields, ticket, field, crmLinkErrors, URI)
+						Next
 					End If
+					'ElseIf isNew Then
+					'	AddLog("Include Non-Required Fields On Issue Creation: Off. Only creating issue with required fields.")
+					'End If
 				Next
 			End Sub
 
@@ -855,14 +855,13 @@ Namespace TeamSupport
 
 				'//vv What cases should we handle? we might need to be filling this over time
 				Select Case fieldType.ToLower()
-					Case "select"
-					Case "multiselect"
-					Case "date"
-					Case "datetime"
-						result = Convert.ToDateTime(fieldValue).ToString("'yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'")
-					Case "float"
-					Case "string"
-					Case "radiobuttons"
+					'Case "select"
+					'Case "multiselect"
+					Case "date", "datetime"
+						result = Convert.ToDateTime(fieldValue).ToString()
+						'Case "float"
+						'Case "string"
+						'Case "radiobuttons"
 					Case Else
 						result = fieldValue
 				End Select
