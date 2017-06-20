@@ -33,7 +33,7 @@
 }
 
 #search-input {
-    width: 100%;
+    width: 99%;
     height: 25px;
     line-height: 25px;
     font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
@@ -49,19 +49,12 @@
     position: absolute;
     top: 10px;
     right: 10px;
-    width: 55px;
     height: 25px;
     border: 0;
-    border-radius: 10px;
-    /*Background*/
-    /*Blue gradient for webkit browsers like Safari and Chrome*/
-    background: -webkit-gradient(linear, left bottom, left top, from(#357AE8), to(#4D90FE));
-    /*Blue gradient for Firefox 3.6+*/
-    background: -moz-linear-gradient(bottom, #357AE8, #4D90FE);
-    /*Blue gradient for IE*/
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4D90FE', endColorstr='#357AE8');
-    /*Blue for other browsers*/
-    background-color: #357AE8;
+    border-radius: 5px;
+    background-color: #445c75;
+    color:white;
+    font-size:11px;
 }
 
 #eyeglass {
