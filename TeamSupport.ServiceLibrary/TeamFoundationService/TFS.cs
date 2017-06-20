@@ -246,12 +246,18 @@ namespace TeamSupport.ServiceLibrary
 							string responseBody = response.Content.ReadAsStringAsync().Result;
 							workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(responseBody);
 						}
+						else
+						{
+							var contents = response.Content.ReadAsStringAsync().Result;
+							TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
+							throw new TFSClientException(tfsError);
+						}
 					}
 				}
 			}
 			catch (Exception ex)
 			{
-				//vv
+				throw;
 			}
 
 			return workItem;
@@ -545,6 +551,12 @@ namespace TeamSupport.ServiceLibrary
                     WorkItemFields result = response.Content.ReadAsAsync<WorkItemFields>().Result;
                     resultList = new List<WorkItemField>(result.value);
                 }
+				else
+				{
+					var contents = response.Content.ReadAsStringAsync().Result;
+					TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
+					throw new TFSClientException(tfsError);
+				}
             }
 
             _workItemFields = resultList;

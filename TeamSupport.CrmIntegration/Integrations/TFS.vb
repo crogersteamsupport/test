@@ -289,8 +289,8 @@ Namespace TeamSupport
 						crmLinkError = crmLinkErrors.FindUnclearedByObjectIDAndFieldName(ticket.TicketID, String.Empty)
 						TFSProjectName = GetProjectName(ticket, crmLinkErrors)
 						workItemFields = GetWorkItemFields(ticket, TFSProjectName, crmLinkError, Orientation.OutToTFS)
-					Catch webEx As WebException
-						AddLog(webEx.ToString() + webEx.StackTrace)
+					Catch tfsEx As TFSLibrary.TFSClientException
+						AddLog(tfsEx.ErrorResponse.message + " " + tfsEx.StackTrace)
 						Continue For
 					Catch ex As Exception
 						AddLog(String.Format("Exception in PushTicketsAndActionsAsWorkItemsAndComments: {0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace))
@@ -391,7 +391,7 @@ Namespace TeamSupport
 
 							'An update error could has been caused here or below.
 							'We'll only clear when successfull below.
-						Catch webEx As WebException
+						Catch tfsEx As TFSLibrary.TFSClientException
 							Dim invalidTFSTitle As String = String.Empty
 
 							If ticketLinkToTFS.TFSTitle.ToLower().Contains("http") _
@@ -401,16 +401,15 @@ Namespace TeamSupport
 							End If
 
 							If (String.IsNullOrEmpty(invalidTFSTitle)) Then
-								'        Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
-								Dim TFSErrors As String
+								Dim TFSErrors As String = tfsEx.ErrorResponse.message
 								'        If (jiraErrors IsNot Nothing AndAlso jiraErrors.HasErrors) Then
-								If (TFSErrors IsNot Nothing) Then
+								If (Not String.IsNullOrEmpty(TFSErrors)) Then
 									AddLog(String.Format(_tfsExceptionMessageFormat,
-														webEx.Message,
+														TFSErrors,
 														Environment.NewLine,
 														vbTab,
 														TFSErrors.ToString()))
-									AddLog(webEx.StackTrace,
+									AddLog(tfsEx.StackTrace,
 											LogType.Report,
 											crmLinkError,
 											String.Format("Could not get TFS WorkItem:{0}{1}", Environment.NewLine, TFSErrors.ToString()),
@@ -421,18 +420,18 @@ Namespace TeamSupport
 											URI,
 											OperationType.Create)
 								Else
-									AddLog(String.Format("{0}{1}{2}", webEx.Message, Environment.NewLine, webEx.StackTrace))
+									AddLog(String.Format("{0}{1}{2}", tfsEx.Message, Environment.NewLine, tfsEx.StackTrace))
 								End If
 							Else
 								AddLog(String.Format(_tfsExceptionMessageFormat,
-													webEx.Message,
+													tfsEx.Message,
 													Environment.NewLine,
 													vbTab,
 													invalidTFSTitle))
-								AddLog(webEx.StackTrace,
+								AddLog(tfsEx.StackTrace,
 										LogType.Report,
 										crmLinkError,
-										String.Format("Could not get Jira Issue:{0}{1}", Environment.NewLine, invalidTFSTitle),
+										String.Format("Could not get WorkItem:{0}{1}", ticketLinkToTFS.TFSID, Environment.NewLine),
 										Orientation.OutToJira,
 										ObjectType.Ticket,
 										ticket.TicketID,
@@ -638,7 +637,7 @@ Namespace TeamSupport
 			Private Function GetWorkItemFields(ByVal ticket As TicketsViewItem,
 										ByVal TFSProjectName As String,
 										ByRef crmLinkError As CRMLinkError,
-										ByVal orientation As Orientation) As List(Of TFSLibrary.WorkItemField) '//vv As JObject
+										ByVal orientation As Orientation) As List(Of TFSLibrary.WorkItemField)
 				Dim workItemTypeName As String = ticket.TicketTypeName
 				Dim result As JObject = Nothing
 				Dim fields As List(Of TFSLibrary.WorkItemField)
@@ -650,7 +649,7 @@ Namespace TeamSupport
 					fields = _tfs.WorkItemsFields
 
 					If fields Is Nothing OrElse Not fields.Any Then
-						'//vv TFS api does not return fields per type, it just returns ALL fields.
+						'//TFS api does not return fields per type, it just returns ALL fields.
 						AddLog("TFS did not return any work item fields.",
 							LogType.Report,
 							crmLinkError,
@@ -666,12 +665,10 @@ Namespace TeamSupport
 						'ToDo //vv ?? result = JObject.Parse(fields)
 						ClearCrmLinkError(crmLinkError)
 					End If
-				Catch ex As Exception
-					AddLog(String.Format("Exception rised attempting to get fields for work items of project {0}{1}{2}{1}", TFSProjectName, Environment.NewLine, ex.Message))
-					Throw New Exception("project mismatch")
+				Catch tfsEx As TFSLibrary.TFSClientException
+					Throw
 				End Try
 
-				'//vv Return result
 				Return fields
 			End Function
 
