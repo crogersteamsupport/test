@@ -7,13 +7,13 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
   <telerik:RadWindowManager ID="RadWindowManager1" runat="server">
   </telerik:RadWindowManager>
-  
+
   <telerik:RadSplitter ID="RadSplitter1" runat="server" BorderSize="0" Height="100%"
     Width="100%" VisibleDuringInit="false">
     <telerik:RadPane ID="RadPane1" runat="server" Scrolling="Y" Height="100%" Width="100%"
       BackColor="White">
   <div style="margin: 0 auto; padding: 0 40px 20px 20px;">
-    
+
           <div class="groupDiv groupLightBlue" style="padding-top: 10px;">
             <div class="groupHeaderDiv">
               <span class="groupHeaderSpan"></span>
@@ -22,10 +22,11 @@
                       <span class="groupButtonsSpan">
                         <asp:LinkButton ID="btnAddUser" runat="server" CssClass="groupButtonLink">
                         <span class="groupButtonSpan">
+                          <i class="fa fa-plus groupButtonImage" /></i>
                           <img alt="" src="../images/icons/add.png" class="groupButtonImage" />
                           <span class="groupButtonTextSpan">Add User</span> </span></asp:LinkButton>
                       </span>
-                    </span>              
+                    </span>
             </div>
             <div class="groupBodyWrapperDiv">
               <div class="groupBodyDiv">
@@ -38,7 +39,7 @@
 
                     </div>
                       <span style="display:inline-block">
-                        <%# DataBinder.Eval(Container.DataItem, "Name")%>  
+                        <%# DataBinder.Eval(Container.DataItem, "Name")%>
                       </span>
                   </div>
                 </ItemTemplate>
@@ -49,12 +50,12 @@
             </div>
           </div>
 
-    
-  </div>    
+
+  </div>
     </telerik:RadPane>
   </telerik:RadSplitter>
-  
-  
+
+
   <telerik:RadScriptBlock ID="RadScriptBlock1" runat="server">
 
     <script type="text/javascript" language="javascript">
@@ -78,8 +79,8 @@
         parent.Ts.System.logAction('Group Info - User Removed');
 
       }
-    
-    
+
+
     </script>
 
   </telerik:RadScriptBlock>

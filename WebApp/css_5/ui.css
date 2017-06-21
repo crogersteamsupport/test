@@ -145,8 +145,8 @@ a.groupButtonLink span.groupButtonSpan { background: none; height: 23px; line-he
 span.groupButtonSpan { display: block; }
 .groupButtonTextSpan { margin: -26px 0 0 25px; display: block; }
 .groupButtonImage { border: none; margin: 3px 5px 0 0; display: inline; }
-.groupLightBlue a.groupButtonLink:hover { background: transparent url(../images/header_button_right.gif) no-repeat scroll top right; }
-.groupLightBlue a.groupButtonLink:hover span.groupButtonSpan { background: transparent url(../images/header_button_left.gif) no-repeat; }
+.groupLightBlue a.groupButtonLink:hover { background: none; }
+.groupLightBlue a.groupButtonLink:hover span.groupButtonSpan { background: none; }
 
 /* Button */
 .button { }
