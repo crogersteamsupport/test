@@ -3003,13 +3003,21 @@ WHERE t.TicketID = @TicketID
                         {
                             log.CreatorName = IntegrationType.Jira.ToString() + " Integration";
                         }
+						else if(log.OrganizationID == null && log.Description.ToLower().StartsWith("updated ticket with tfs work item title:"))
+						{
+							log.CreatorName = IntegrationType.TFS.ToString() + " Integration";
+						}
                         break;
                 }
             }
 
             //TODO: vv. Right now we are only pulling and displaying in the Ticket history the Jira Integration changes. Later we'll have to add the others, here and for the Company/Contact pages.
             CRMLinkErrors integrationErrors = new CRMLinkErrors(ticket.Collection.LoginUser);
-            integrationErrors.LoadByTicketID(ticketID, IntegrationType.Jira.ToString(), isCleared: false);
+			List<IntegrationType> crmType = new List<IntegrationType>();
+			crmType.Add(IntegrationType.Jira);
+			crmType.Add(IntegrationType.TFS);
+
+			integrationErrors.LoadByTicketID(ticketID, IntegrationType.Jira.ToString(), isCleared: false);
 
             if (integrationErrors != null && integrationErrors.Any() && integrationErrors.Count > 0)
             {

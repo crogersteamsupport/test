@@ -99,8 +99,8 @@ Namespace TeamSupport
 
 				Dim ticketsLinksToTFSToPushAsWorkItems As TicketLinkToTFS = Nothing
 				Dim ticketsToPushAsWorkItems As TicketsView = GetTicketsToPushAsWorkItems(ticketsLinksToTFSToPushAsWorkItems)
-                Dim allStatuses As TicketStatuses = New TicketStatuses(User)
-                Dim newActionsTypeID As Integer = 0
+				Dim allStatuses As TicketStatuses = New TicketStatuses(User)
+				Dim newActionsTypeID As Integer = 0
 
 				If ticketsToPushAsWorkItems.Count > 0 OrElse numberOfWorkItemsToPullAsTickets > 0 Then
 					allStatuses.LoadByOrganizationID(CRMLinkRow.OrganizationID)
@@ -281,16 +281,16 @@ Namespace TeamSupport
 					customMappingFields.LoadByObjectTypeAndCustomFieldAuxID(GetDescription(ObjectType.Ticket), CRMLinkRow.CRMLinkID, ticket.TicketTypeID)
 
 					Dim updateTicketFlag As Boolean = False
-                    'Dim sendCustomMappingFields As Boolean = False
-                    Dim workItemFields As List(Of TFSLibrary.WorkItemField)
+					'Dim sendCustomMappingFields As Boolean = False
+					Dim workItemFields As List(Of TFSLibrary.WorkItemField)
 					Dim workItemValues As List(Of TFSLibrary.WorkItemField) = New List(Of TFSLibrary.WorkItemField)
 
 					Try
 						crmLinkError = crmLinkErrors.FindUnclearedByObjectIDAndFieldName(ticket.TicketID, String.Empty)
 						TFSProjectName = GetProjectName(ticket, crmLinkErrors)
 						workItemFields = GetWorkItemFields(ticket, TFSProjectName, crmLinkError, Orientation.OutToTFS)
-					Catch webEx As WebException
-						AddLog(webEx.ToString() + webEx.StackTrace)
+					Catch tfsEx As TFSLibrary.TFSClientException
+						AddLog(tfsEx.ErrorResponse.message + " " + tfsEx.StackTrace)
 						Continue For
 					Catch ex As Exception
 						AddLog(String.Format("Exception in PushTicketsAndActionsAsWorkItemsAndComments: {0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace))
@@ -319,10 +319,10 @@ Namespace TeamSupport
 							End If
 
 							updateTicketFlag = True
-                            'sendCustomMappingFields = CRMLinkRow.IncludeIssueNonRequired
+							'sendCustomMappingFields = CRMLinkRow.IncludeIssueNonRequired
 
-                            'Check if Ticket Description Action has Attachment
-                            If (attachmentEnabled AndAlso actionDescriptionId > 0) Then
+							'Check if Ticket Description Action has Attachment
+							If (attachmentEnabled AndAlso actionDescriptionId > 0) Then
 								Dim actionDescriptionAttachment As Data.Attachment = Attachments.GetAttachment(User, actionDescriptionId)
 								'The Action Description should always be 1, if for any reason this is not the case call: Actions.GetActionPosition(User, actionDescriptionId)
 								Dim actionPosition As Integer = 1
@@ -332,29 +332,29 @@ Namespace TeamSupport
 							ClearCrmLinkError(crmLinkError)
 						Catch tfsEx As TFSLibrary.TFSClientException
 							Dim errorMessage As String = tfsEx.ErrorResponse.typeKey
-							AddLog(String.Format(_tfsExceptionMessageFormat, tfsEx.Message))
-                            AddLog(tfsEx.Message,
-                                    LogType.Report,
-                                    crmLinkError,
-                                    String.Format("WorkItem was not created due to:{0}{1}", Environment.NewLine, errorMessage),
-                                    Orientation.OutToJira,
-                                    ObjectType.Ticket,
-                                    ticket.TicketID,
-                                    String.Empty,
-                                    ticketData.ToString(),
-                                    OperationType.Create)
+							AddLog(String.Format(_tfsExceptionMessageFormat, tfsEx.ErrorResponse.message))
+							AddLog(tfsEx.Message,
+									LogType.Report,
+									crmLinkError,
+									String.Format("WorkItem was not created due to:{0}{1}", Environment.NewLine, tfsEx.ErrorResponse.message),
+									Orientation.OutToJira,
+									ObjectType.Ticket,
+									ticket.TicketID,
+									String.Empty,
+									ticketData.ToString(),
+									OperationType.Create)
 
-                            Dim updateLinkToTFS As Boolean = True
+							Dim updateLinkToTFS As Boolean = True
 
 							'ToDo need to set the rest of the cases
 							Select Case tfsEx.ErrorResponse.typeKey.ToLower()
-                                Case "ProjectDoesNotExistWithNameExceptiont" 'ToDo pending
-                                    errorMessage = "Error: Specify Project (Product)."
+								Case "ProjectDoesNotExistWithNameExceptiont" 'ToDo pending
+									errorMessage = "Error: Specify Project (Product)."
 								Case "workitemtypenotfoundexception"
 									errorMessage = "Error: Specify valid Type."
-                                    'Case "project mismatch" 'ToDo pending
-                                    '	errorMessage = "Error: Specify valid Type and/or Project (Product)."
-                                Case Else
+									'Case "project mismatch" 'ToDo pending
+									'	errorMessage = "Error: Specify valid Type and/or Project (Product)."
+								Case Else
 									errorMessage = tfsEx.ErrorResponse.message
 									updateLinkToTFS = False
 							End Select
@@ -391,7 +391,7 @@ Namespace TeamSupport
 
 							'An update error could has been caused here or below.
 							'We'll only clear when successfull below.
-						Catch webEx As WebException
+						Catch tfsEx As TFSLibrary.TFSClientException
 							Dim invalidTFSTitle As String = String.Empty
 
 							If ticketLinkToTFS.TFSTitle.ToLower().Contains("http") _
@@ -401,16 +401,15 @@ Namespace TeamSupport
 							End If
 
 							If (String.IsNullOrEmpty(invalidTFSTitle)) Then
-								'        Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
-								Dim TFSErrors As String
+								Dim TFSErrors As String = tfsEx.ErrorResponse.message
 								'        If (jiraErrors IsNot Nothing AndAlso jiraErrors.HasErrors) Then
-								If (TFSErrors IsNot Nothing) Then
+								If (Not String.IsNullOrEmpty(TFSErrors)) Then
 									AddLog(String.Format(_tfsExceptionMessageFormat,
-														webEx.Message,
+														TFSErrors,
 														Environment.NewLine,
 														vbTab,
 														TFSErrors.ToString()))
-									AddLog(webEx.StackTrace,
+									AddLog(tfsEx.StackTrace,
 											LogType.Report,
 											crmLinkError,
 											String.Format("Could not get TFS WorkItem:{0}{1}", Environment.NewLine, TFSErrors.ToString()),
@@ -421,18 +420,18 @@ Namespace TeamSupport
 											URI,
 											OperationType.Create)
 								Else
-									AddLog(String.Format("{0}{1}{2}", webEx.Message, Environment.NewLine, webEx.StackTrace))
+									AddLog(String.Format("{0}{1}{2}", tfsEx.Message, Environment.NewLine, tfsEx.StackTrace))
 								End If
 							Else
 								AddLog(String.Format(_tfsExceptionMessageFormat,
-													webEx.Message,
+													tfsEx.Message,
 													Environment.NewLine,
 													vbTab,
 													invalidTFSTitle))
-								AddLog(webEx.StackTrace,
+								AddLog(tfsEx.StackTrace,
 										LogType.Report,
 										crmLinkError,
-										String.Format("Could not get Jira Issue:{0}{1}", Environment.NewLine, invalidTFSTitle),
+										String.Format("Could not get WorkItem:{0}{1}", ticketLinkToTFS.TFSID, Environment.NewLine),
 										Orientation.OutToJira,
 										ObjectType.Ticket,
 										ticket.TicketID,
@@ -547,17 +546,17 @@ Namespace TeamSupport
 
 					PushActionsAsComments(ticket.TicketID, ticket.TicketNumber, workItem, attachmentEnabled, attachmentFileSizeLimit)
 
-                    'If sendCustomMappingFields Then
-                    'We are now updating the custom mapping fields. We do a call per field to minimize the impact of invalid values attempted to be assigned.
-                    If workItemFields IsNot Nothing Then
-							For Each field As TFSLibrary.WorkItemField In workItemFields
-								UpdateWorkItemField(workItem.Id, customMappingFields, ticket, field, crmLinkErrors, URI)
-							Next
-						End If
-                    'ElseIf isNew Then
-                    '	AddLog("Include Non-Required Fields On Issue Creation: Off. Only creating issue with required fields.")
-                    'End If
-                Next
+					'If sendCustomMappingFields Then
+					'We are now updating the custom mapping fields. We do a call per field to minimize the impact of invalid values attempted to be assigned.
+					If workItemFields IsNot Nothing Then
+						For Each field As TFSLibrary.WorkItemField In workItemFields
+							UpdateWorkItemField(workItem.Id, customMappingFields, ticket, field, crmLinkErrors, URI)
+						Next
+					End If
+					'ElseIf isNew Then
+					'	AddLog("Include Non-Required Fields On Issue Creation: Off. Only creating issue with required fields.")
+					'End If
+				Next
 			End Sub
 
 			Private Function GetAttachmentEnabled(ByRef attachmentFileSizeLimit As Integer) As String
@@ -638,7 +637,7 @@ Namespace TeamSupport
 			Private Function GetWorkItemFields(ByVal ticket As TicketsViewItem,
 										ByVal TFSProjectName As String,
 										ByRef crmLinkError As CRMLinkError,
-										ByVal orientation As Orientation) As List(Of TFSLibrary.WorkItemField) '//vv As JObject
+										ByVal orientation As Orientation) As List(Of TFSLibrary.WorkItemField)
 				Dim workItemTypeName As String = ticket.TicketTypeName
 				Dim result As JObject = Nothing
 				Dim fields As List(Of TFSLibrary.WorkItemField)
@@ -650,7 +649,7 @@ Namespace TeamSupport
 					fields = _tfs.WorkItemsFields
 
 					If fields Is Nothing OrElse Not fields.Any Then
-						'//vv TFS api does not return fields per type, it just returns ALL fields.
+						'//TFS api does not return fields per type, it just returns ALL fields.
 						AddLog("TFS did not return any work item fields.",
 							LogType.Report,
 							crmLinkError,
@@ -666,12 +665,10 @@ Namespace TeamSupport
 						'ToDo //vv ?? result = JObject.Parse(fields)
 						ClearCrmLinkError(crmLinkError)
 					End If
-				Catch ex As Exception
-					AddLog(String.Format("Exception rised attempting to get fields for work items of project {0}{1}{2}{1}", TFSProjectName, Environment.NewLine, ex.Message))
-					Throw New Exception("project mismatch")
+				Catch tfsEx As TFSLibrary.TFSClientException
+					Throw
 				End Try
 
-				'//vv Return result
 				Return fields
 			End Function
 
@@ -855,14 +852,14 @@ Namespace TeamSupport
 
 				'//vv What cases should we handle? we might need to be filling this over time
 				Select Case fieldType.ToLower()
-                    'Case "select"
-                    'Case "multiselect"
-                    Case "date", "datetime"
-                        result = Convert.ToDateTime(fieldValue).ToString()
-                        'Case "float"
-                        'Case "string"
-                        'Case "radiobuttons"
-                    Case Else
+					'Case "select"
+					'Case "multiselect"
+					Case "date", "datetime"
+						result = Convert.ToDateTime(fieldValue).ToString()
+						'Case "float"
+						'Case "string"
+						'Case "radiobuttons"
+					Case Else
 						result = fieldValue
 				End Select
 
