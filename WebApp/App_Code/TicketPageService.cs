@@ -62,6 +62,7 @@ namespace TSWebServices
                 info.Ticket.TicketStatusID = statuses[0].TicketStatusID;
                 Ticket newticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
                 newticket.TicketStatusID = ticket.TicketStatusID;
+                ticket.TicketStatusID = info.Ticket.TicketStatusID;
                 newticket.Collection.Save();
             }
 
