@@ -263,9 +263,9 @@ namespace TeamSupport.ServiceLibrary
 			return workItem;
 		}
 
-		public WorkItemComments GetCommentsBy(int workItemId)
+		public WorkItemCommentList GetCommentsBy(int workItemId)
 		{
-			WorkItemComments comments = new WorkItemComments();
+			WorkItemCommentList comments = new WorkItemCommentList();
 
 			try
 			{
@@ -281,7 +281,7 @@ namespace TeamSupport.ServiceLibrary
 						if (response.StatusCode.ToString().ToLower() == "ok")
 						{
 							string responseBody = response.Content.ReadAsStringAsync().Result;
-							comments = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemComments>(responseBody);
+							comments = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemCommentList>(responseBody);
 						}
 					}
 				}
@@ -684,7 +684,22 @@ namespace TeamSupport.ServiceLibrary
 			}
 		}
 
-		private class AttachmentInfo
+        [DataContract]
+        public class WorkItemCommentList
+        {
+            public WorkItemCommentList() { }
+
+            [DataMember]
+            public IEnumerable<WorkItemComment> Comments { get; set; }
+            [DataMember]
+            public int Count { get; set; }
+            [DataMember]
+            public int FromRevisionCount { get; set; }
+            [DataMember]
+            public int TotalCount { get; set; }
+        }
+
+        private class AttachmentInfo
 		{
 			public string id { get; set; }
 			public string url { get; set; }

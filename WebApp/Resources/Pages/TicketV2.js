@@ -4214,7 +4214,7 @@ var SetupTFSFields = function () {
         e.preventDefault();
         $('.ts-tfs-buttons-container').hide();
         $('#enterWorkItemTitle').show();
-        $('#workItemTitleInput').focus();
+        $('#workItemIDInput').focus();
     });
 
     $('#cancelWorkItemTitleButton').click(function (e) {
@@ -4223,17 +4223,17 @@ var SetupTFSFields = function () {
     });
 
     $('#saveWorkItemTitleButton').click(function (e) {
-        if ($.trim($('#workItemTitleInput').val()) === '') {
+        if ($.trim($('#workItemIDInput').val()) === '') {
             $('.ts-tfs-buttons-container').show();
             $('#enterWorkItemTitle').hide();
         }
         else {
-            $('#workItemTitleValue').text($.trim($('#workItemTitleInput').val()));
+            $('#workItemTitleValue').text($.trim($('#workItemIDInput').val()));
             $('#enterWorkItemTitle').hide();
             $('#workItemTitle').show();
             var errorMessage = "There was an error setting your Work Item Title. Please contact TeamSupport.com";
 
-            window.parent.Ts.Services.Tickets.SetTFSWorkItemTitle(_ticketID, $.trim($('#workItemTitleInput').val()), function (result) {
+            window.parent.Ts.Services.Tickets.SetTFSWorkItemID(_ticketID, $.trim($('#workItemIDInput').val()), function (result) {
                 if (result != null) {
                     var syncResult = JSON.parse(result);
                     if (syncResult.IsSuccessful === false) {

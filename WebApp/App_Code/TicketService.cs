@@ -1978,10 +1978,10 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string SetTFSWorkItemTitle(int ticketID, string tfsWorkItemTitle)
+        public string SetTFSWorkItemID(int ticketID, string tfsWorkItemID)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            string result = SetSyncWithTFS(loginUser, ticketID, tfsWorkItemTitle);
+            string result = SetSyncWithTFS(loginUser, ticketID, tfsWorkItemID);
 
             return result;
         }
@@ -4297,7 +4297,7 @@ WHERE t.TicketID = @TicketID
             return JsonConvert.SerializeObject(result);
         }
 
-        private string SetSyncWithTFS(LoginUser loginUser, int ticketId, string TFSWorkItemTitle)
+        private string SetSyncWithTFS(LoginUser loginUser, int ticketId, string TFSWorkItemID)
         {
             dynamic result = new ExpandoObject();
 
@@ -4308,45 +4308,55 @@ WHERE t.TicketID = @TicketID
             {
                 try
                 {
-                    TicketLinkToTFSItem ticketLinkToTFSItem = ticketLinkToTFS.AddNewTicketLinkToTFSItem(ticketId);
-                    //ticketLinkToTFSItem.TicketID = ticketId;
-                    ticketLinkToTFSItem.TFSTitle = TFSWorkItemTitle;
-                    ticketLinkToTFSItem.SyncWithTFS = true;
-                    ticketLinkToTFSItem.CreatorID = loginUser.UserID;
-
-                    //Jira uses this to support multiple instances.
-                    //TicketsViewItem ticket = TicketsView.GetTicketsViewItem(loginUser, ticketId);
-                    //ticketLinkToJiraItem.CrmLinkID = CRMLinkTable.GetIdBy(ticket.OrganizationID, IntegrationType.Jira.ToString().ToLower(), ticket.ProductID, loginUser);
-                    ticketLinkToTFSItem.CrmLinkID = CRMLinkTable.GetIdBy(loginUser.OrganizationID, IntegrationType.TFS.ToString().ToLower(), loginUser);
-
-                    ////If product is not associated to an instance then get the 'default' instance
-                    //if (ticketLinkToJiraItem.CrmLinkID == null || ticketLinkToJiraItem.CrmLinkID <= 0)
-                    //{
-                    //    CRMLinkTable crmlink = new CRMLinkTable(loginUser);
-                    //    crmlink.LoadByOrganizationID(TSAuthentication.OrganizationID);
-
-                    //    ticketLinkToJiraItem.CrmLinkID = crmlink.Where(p => p.InstanceName == "Default"
-                    //                                                        && p.CRMType.ToLower() == IntegrationType.Jira.ToString().ToLower())
-                    //                                                        .Select(p => p.CRMLinkID).FirstOrDefault();
-                    //}
-
-                    if (ticketLinkToTFSItem.CrmLinkID != null && ticketLinkToTFSItem.CrmLinkID > 0)
+                    int tfsWorkItemID;
+                    bool idIsNumeric = int.TryParse(TFSWorkItemID, out tfsWorkItemID);
+                    if (idIsNumeric)
                     {
-                        ticketLinkToTFSItem.Collection.Save();
-                        result.IsSuccessful = true;
-                        result.Error = null;
+                        TicketLinkToTFSItem ticketLinkToTFSItem = ticketLinkToTFS.AddNewTicketLinkToTFSItem(ticketId);
+                        ticketLinkToTFSItem.TFSID = tfsWorkItemID;
+                        ticketLinkToTFSItem.TFSTitle = TFSWorkItemID;
+                        ticketLinkToTFSItem.SyncWithTFS = true;
+                        ticketLinkToTFSItem.CreatorID = loginUser.UserID;
+
+                        //Jira uses this to support multiple instances.
+                        //TicketsViewItem ticket = TicketsView.GetTicketsViewItem(loginUser, ticketId);
+                        //ticketLinkToJiraItem.CrmLinkID = CRMLinkTable.GetIdBy(ticket.OrganizationID, IntegrationType.Jira.ToString().ToLower(), ticket.ProductID, loginUser);
+                        ticketLinkToTFSItem.CrmLinkID = CRMLinkTable.GetIdBy(loginUser.OrganizationID, IntegrationType.TFS.ToString().ToLower(), loginUser);
+
+                        ////If product is not associated to an instance then get the 'default' instance
+                        //if (ticketLinkToJiraItem.CrmLinkID == null || ticketLinkToJiraItem.CrmLinkID <= 0)
+                        //{
+                        //    CRMLinkTable crmlink = new CRMLinkTable(loginUser);
+                        //    crmlink.LoadByOrganizationID(TSAuthentication.OrganizationID);
+
+                        //    ticketLinkToJiraItem.CrmLinkID = crmlink.Where(p => p.InstanceName == "Default"
+                        //                                                        && p.CRMType.ToLower() == IntegrationType.Jira.ToString().ToLower())
+                        //                                                        .Select(p => p.CRMLinkID).FirstOrDefault();
+                        //}
+
+                        if (ticketLinkToTFSItem.CrmLinkID != null && ticketLinkToTFSItem.CrmLinkID > 0)
+                        {
+                            ticketLinkToTFSItem.Collection.Save();
+                            result.IsSuccessful = true;
+                            result.Error = null;
+                        }
+                        else
+                        {
+                            result.IsSuccessful = false;
+                            result.Error = "A TFS Instance associated to this ticket's product or a Default TFS Instance was not found.";
+                        }
                     }
                     else
                     {
                         result.IsSuccessful = false;
-                        result.Error = "A TFS Instance associated to this ticket's product or a Default TFS Instance was not found.";
+                        result.Error = "Entered TFS Work Item ID is not numeric.";
                     }
                 }
                 catch (Exception ex)
                 {
                     result.IsSuccessful = false;
                     result.Error = ex.Message;
-                    ExceptionLogs.LogException(loginUser, ex, "SetTFSWorkItemTitle");
+                    ExceptionLogs.LogException(loginUser, ex, "SetTFSWorkItemID");
                 }
             }
 
