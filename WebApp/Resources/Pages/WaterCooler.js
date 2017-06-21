@@ -509,7 +509,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").show();
         $(this).parent().parent().find("#ticketinsert").show();
-        $(this).parent().find(".arrow-up").css('left', '7px');
+        $(this).parent().find(".arrow-up").css('left', '10px');
     })
     .tooltip();
     $('.addticket').click(function (e) {
@@ -521,7 +521,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '30px');
+        $(this).parent().find(".arrow-up").css('left', '41px');
     })
     .tooltip();
     $('.adduser').click(function (e) {
@@ -533,7 +533,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").show();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '53px');
+        $(this).parent().find(".arrow-up").css('left', '73px');
     })
     .tooltip();
     $('.addcustomer').click(function (e) {
@@ -545,7 +545,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '78px');
+        $(this).parent().find(".arrow-up").css('left', '103px');
     })
     .tooltip();
     $('.addgroup').click(function (e) {
@@ -557,7 +557,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '104px');
+        $(this).parent().find(".arrow-up").css('left', '137px');
     })
     .tooltip();
     $('.addproduct').click(function (e) {
@@ -569,7 +569,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '125px');
+        $(this).parent().find(".arrow-up").css('left', '174px');
 
     })
     .tooltip();
@@ -1582,8 +1582,8 @@ function createCommentContainer(messageid) {
         .addClass('attachrow')
         .appendTo(cc);
 
-        var attbtn = $('<span>')
-        .addClass('addatt')
+        var attbtn = $('<i>')
+        .addClass('addatt fa fa-paperclip')
         .attr('title', 'Add Attachments')
         .click(function (e) {
             e.preventDefault();
@@ -1594,13 +1594,13 @@ function createCommentContainer(messageid) {
             $(this).parent().parent().find("#userinput").hide();
             $(this).parent().parent().find("#attachmentinput").show();
             $(this).parent().parent().find("#ticketinsert").show();
-            $(this).parent().find(".arrow-up").css('left', '7px');
+            $(this).parent().find(".arrow-up").css('left', '11px');
         })
         .tooltip()
         .appendTo(attrow);
 
-        var tixbtn = $('<span>')
-        .addClass('addticket')
+        var tixbtn = $('<i>')
+        .addClass('addticket fa fa-ticket')
         .attr('title', 'Associate Ticket')
         .click(function (e) {
             e.preventDefault();
@@ -1611,13 +1611,13 @@ function createCommentContainer(messageid) {
             $(this).parent().parent().find("#userinput").hide();
             $(this).parent().parent().find("#attachmentinput").hide();
             $(this).parent().parent().find("#ticketinsert").hide();
-            $(this).parent().find(".arrow-up").css('left', '30px');
+            $(this).parent().find(".arrow-up").css('left', '41px');
         })
         .tooltip()
         .appendTo(attrow);
 
-        var usrbtn = $('<span>')
-        .addClass('adduser')
+        var usrbtn = $('<i>')
+        .addClass('adduser fa fa-user')
         .attr('title', 'Associate User')
         .click(function (e) {
             e.preventDefault();
@@ -1628,13 +1628,13 @@ function createCommentContainer(messageid) {
             $(this).parent().parent().find("#userinput").show();
             $(this).parent().parent().find("#attachmentinput").hide();
             $(this).parent().parent().find("#ticketinsert").hide();
-            $(this).parent().find(".arrow-up").css('left', '53px');
+            $(this).parent().find(".arrow-up").css('left', '73px');
         })
         .tooltip()
         .appendTo(attrow);
 
-        var custbtn = $('<span>')
-        .addClass('addcustomer')
+        var custbtn = $('<i>')
+        .addClass('addcustomer fa fa-building')
         .attr('title', 'Associate Company')
         .click(function (e) {
             e.preventDefault();
@@ -1645,13 +1645,13 @@ function createCommentContainer(messageid) {
             $(this).parent().parent().find("#userinput").hide();
             $(this).parent().parent().find("#attachmentinput").hide();
             $(this).parent().parent().find("#ticketinsert").hide();
-            $(this).parent().find(".arrow-up").css('left', '78px');
+            $(this).parent().find(".arrow-up").css('left', '103px');
         })
         .tooltip()
         .appendTo(attrow);
 
-        var grpbtn = $('<span>')
-        .addClass('addgroup')
+        var grpbtn = $('<i>')
+        .addClass('addgroup fa fa-users')
         .attr('title', 'Associate Group')
         .click(function (e) {
             e.preventDefault();
@@ -1662,13 +1662,13 @@ function createCommentContainer(messageid) {
             $(this).parent().parent().find("#userinput").hide();
             $(this).parent().parent().find("#attachmentinput").hide();
             $(this).parent().parent().find("#ticketinsert").hide();
-            $(this).parent().find(".arrow-up").css('left', '104px');
+            $(this).parent().find(".arrow-up").css('left', '137px');
         })
         .tooltip()
         .appendTo(attrow);
 
-        var prodbtn = $('<span>')
-        .addClass('addproduct')
+        var prodbtn = $('<i>')
+        .addClass('addproduct fa fa-truck')
         .attr('title', 'Associate Product')
         .click(function (e) {
             e.preventDefault();
@@ -1679,7 +1679,7 @@ function createCommentContainer(messageid) {
             $(this).parent().parent().find("#userinput").hide();
             $(this).parent().parent().find("#attachmentinput").hide();
             $(this).parent().parent().find("#ticketinsert").hide();
-            $(this).parent().find(".arrow-up").css('left', '125px');
+            $(this).parent().find(".arrow-up").css('left', '174px');
         })
         .tooltip()
         .appendTo(attrow);
