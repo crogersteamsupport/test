@@ -40,6 +40,34 @@ namespace TeamSupport.Data
 			}
 		}
 
+		public void LoadByTicketID(int ticketId, List<IntegrationType> crmType, bool? isCleared)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				string crmTypeCommaList = string.Join(",", crmType.Select(p => "'" + p.ToString() + "'").ToList());
+				string sql = @"SELECT *
+										FROM
+											CRMLinkErrors
+										WHERE
+											ObjectID = @ObjectId
+											AND CRMType IN ({0})
+											{1}
+										ORDER BY DateModified DESC";
+				sql = string.Format(sql, crmTypeCommaList, isCleared != null ? "AND isCleared = @isCleared" : string.Empty);
+				command.CommandText = sql;
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@ObjectId", ticketId);
+				command.Parameters.AddWithValue("@crmType", crmType);
+
+				if (isCleared != null)
+				{
+					command.Parameters.AddWithValue("@isCleared", (bool)isCleared);
+				}
+
+				Fill(command);
+			}
+		}
+
 		public void LoadByOperation(int organizationID, string CRMType, string orientation, string objectType, bool? isCleared = null)
 		{
 			using (SqlCommand command = new SqlCommand())

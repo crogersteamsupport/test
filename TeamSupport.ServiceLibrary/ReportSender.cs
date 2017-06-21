@@ -251,13 +251,13 @@ namespace TeamSupport.ServiceLibrary
                     total += (int)records[1].data[i];
                 }
 
-                string seriesFormat = "[{{ type: 'pie', name: '" + options.ts.seriesTitle.ToString() + "', data: [{0}]}}]";
+                string seriesFormat = @"[{{ type: ""pie"", name: """ + options.ts.seriesTitle.ToString() + @""", data: [{0}]}}]";
                 List<string> seriesData = new List<string>();
 
                 for (var i = 0; i < records[1].data.Count; i++)
                 {
                     float val = (float)(records[1].data[i]) / total * 100;
-                    seriesData.Add("['" + FixBlankSeriesName(records[0].data[i].ToString()) + "', " + val.ToString("#.00") + "]");
+                    seriesData.Add(@"[""" + FixBlankSeriesName(records[0].data[i].ToString()) + @""", " + val.ToString("#.00") + "]");
                 }
 
                 if (seriesData.Any() && seriesData.Count > 0)
@@ -272,7 +272,7 @@ namespace TeamSupport.ServiceLibrary
             else if ((records[0].fieldType == "datetime" && records[0].format == "date") || (records[1].fieldType == "datetime" && records[1].format == "date"))
             {
                 List<SeriesValues> seriesList = new List<SeriesValues>();
-                xAxis = "{ type: 'datetime' }";
+                xAxis = @"{ type: ""datetime"" }";
 
                 if (records.Count == 3)
                 {
@@ -300,7 +300,7 @@ namespace TeamSupport.ServiceLibrary
                         values.Data.Add("[" + ((DateTime)records[1].data[i]).ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds + "," + records[2].data[i] + "]");
                     }
 
-                    string seriesFormat = "{{'name': '{0}','value': '{1}','data': [{2}]}},";
+                    string seriesFormat = @"{{""name"": ""{0}"",""value"": ""{1}"",""data"": [{2}]}},";
 
                     foreach (SeriesValues serie in seriesList)
                     {
@@ -354,7 +354,7 @@ namespace TeamSupport.ServiceLibrary
                         }
                     }
 
-                    xAxis = "{ categories: [" + (categoriesList.Any() ? string.Join(",", categoriesList.Select(x => string.Format("'{0}'", x)).ToArray()) : "") + "]}";
+                    xAxis = "{ categories: [" + (categoriesList.Any() ? string.Join(",", categoriesList.Select(x => string.Format(@"""{0}""", x)).ToArray()) : "") + "]}";
                     List<SeriesValues> seriesValues = new List<SeriesValues>();
 
                     for (int i = 0; i < records[0].data.Count; i++)
@@ -391,7 +391,7 @@ namespace TeamSupport.ServiceLibrary
                         }
                     }
 
-                    string seriesFormat = "{{'name': '{0}','value': '{1}','data': [{2}]}},";
+                    string seriesFormat = @"{{""name"": ""{0}"",""value"": ""{1}"",""data"": [{2}]}},";
 
                     foreach (SeriesValues serie in seriesValues)
                     {
@@ -417,9 +417,9 @@ namespace TeamSupport.ServiceLibrary
                         list.Add(records[0].data[i].ToString());
                     }
 
-                    xAxis = "{ categories: [" + (list.Any() ? string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToArray()) : "") + "]}";
+                    xAxis = "{ categories: [" + (list.Any() ? string.Join(",", list.Select(x => string.Format(@"""{0}""", x)).ToArray()) : "") + "]}";
 
-                    string seriesFormat = "[{{ name: '" + records[1].name.ToString() + "', data: [{0}]}}]";
+                    string seriesFormat = @"[{{ name: """ + records[1].name.ToString() + @""", data: [{0}]}}]";
                     list = new List<string>();
 
                     for (int i = 0; i < records[1].data.Count; i++)

@@ -61,7 +61,14 @@ $(document).ready(function () {
           $('#fieldJiraProjectKey').text(productVersion.JiraProjectKey != null && productVersion.JiraProjectKey != "" ? productVersion.JiraProjectKey : "Not Set");
         }
       });
-      
+
+      top.Ts.Services.Admin.GetIsTFSLinkActiveForOrganization(function (result) {
+          if (result) {
+              $('#TFSIntegrationBox').show();
+              $('#fieldTFSProjectName').text(productVersion.TFSProjectName != null && productVersion.TFSProjectName != "" ? productVersion.TFSProjectName : "Not Set");
+          }
+      });
+
       top.privateServices.SetUserSetting('SelectedProductID', _productID);
       top.privateServices.SetUserSetting('SelectedProductVersionID', _productVersionID);
     }
@@ -576,6 +583,56 @@ $(document).ready(function () {
       })
       .insertAfter(container1);
     $('#productVersionEdit').addClass("disabled");
+  });
+
+  $('#fieldTFSProjectName').click(function (e) {
+      e.preventDefault();
+      if (!$(this).hasClass('editable'))
+          return false;
+
+      top.Ts.System.logAction('Product Version Detail - Edit TFS Project Name');
+      var header = $(this).hide();
+      var container = $('<div>')
+        .insertAfter(header);
+
+      var container1 = $('<div>')
+          .addClass('col-xs-8')
+        .appendTo(container);
+
+      $('<input type="text">')
+        .addClass('col-xs-8 form-control')
+        .val($(this).text())
+        .appendTo(container1)
+        .focus();
+
+      $('<i>')
+        .addClass('col-xs-1 fa fa-times')
+        .click(function (e) {
+            $(this).closest('div').remove();
+            header.show();
+            $('#productVersionEdit').removeClass("disabled");
+        })
+        .insertAfter(container1);
+      $('<i>')
+        .addClass('col-xs-1 fa fa-check')
+        .click(function (e) {
+            top.Ts.System.logAction('Product Version Detail - Save TFS Project Name Edit');
+            var isForProductVersion = true;
+            top.Ts.Services.Products.SetProductTFSProjectName(_productVersionID, $(this).prev().find('input').val(), isForProductVersion, function (result) {
+                header.text(result);
+                $('#fieldTFSProjectName').text(result);
+            },
+            function (error) {
+                header.show();
+                alert('There was an error saving the product version tfs project name.');
+            });
+
+            $('#productVersionEdit').removeClass("disabled");
+            $(this).closest('div').remove();
+            header.show();
+        })
+        .insertAfter(container1);
+      $('#productVersionEdit').addClass("disabled");
   });
 
   $('#fieldReleased').click(function (e) {

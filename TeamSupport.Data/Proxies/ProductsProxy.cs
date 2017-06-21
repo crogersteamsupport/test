@@ -28,6 +28,7 @@ namespace TeamSupport.Data
     [DataMember] public int? ImportFileID { get; set; }
     [DataMember] public string EmailReplyToAddress { get; set; }
     [DataMember] public int? SlaLevelID { get; set; }
+    [DataMember] public string TFSProjectName { get; set; }
           
   }
   
@@ -36,6 +37,7 @@ namespace TeamSupport.Data
     public ProductProxy GetProxy()
     {
       ProductProxy result = new ProductProxy();
+      result.TFSProjectName = this.TFSProjectName;
       result.SlaLevelID = this.SlaLevelID;
       result.EmailReplyToAddress = this.EmailReplyToAddress;
       result.ImportFileID = this.ImportFileID;

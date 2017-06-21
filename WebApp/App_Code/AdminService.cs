@@ -392,6 +392,103 @@ namespace TSWebServices
             return result;
         }
 
+        /// <summary>
+        /// Checks if the TFS Integration is active.
+        /// </summary>
+        /// <returns>True or False</returns>
+        [WebMethod]
+        public bool GetIsTFSLinkActiveForOrganization()
+        {
+            bool result = false;
+
+            CRMLinkTable organizationLinks = new CRMLinkTable(TSAuthentication.GetLoginUser());
+            organizationLinks.LoadByOrganizationIDAndCRMType(TSAuthentication.OrganizationID, "TFS");
+
+            foreach (CRMLinkTableItem link in organizationLinks)
+            {
+                if (link.Active)
+                {
+                    result = true;
+                }
+            }
+
+            return result;
+        }
+
+        [WebMethod]
+        public string GetTFSCRMLinkTableRecordForTicket(int ticketId)
+        {
+            string result = string.Empty;
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            CRMLinkTable organizationLinks = new CRMLinkTable(loginUser);
+            organizationLinks.LoadByOrganizationID(TSAuthentication.OrganizationID);
+
+            List<CRMLinkTableItem> organizationTFSLinks = organizationLinks.Where(p => p.CRMType.ToLower() == "tfs" && p.Active).ToList();
+
+            if (organizationTFSLinks != null)
+            {
+                // For now all we need to know is if there is an active TFS integration record.
+                result = "active";
+                //TicketLinkToJira ticketLink = new TicketLinkToJira(loginUser);
+                //ticketLink.LoadByTicketID(ticketId);
+
+                //if (ticketLink != null
+                //        && ticketLink.Any()
+                //        && organizationJiraLinks.Where(p => p.CRMLinkID == ticketLink[0].CrmLinkID).Any())
+                //{
+                //    CRMLinkTableItem crmJiraInstance = CRMLinkTable.GetCRMLinkTableItem(loginUser, (int)ticketLink[0].CrmLinkID);
+
+                //    if (crmJiraInstance != null && !string.IsNullOrEmpty(crmJiraInstance.InstanceName))
+                //    {
+                //        jiraInstanceName = crmJiraInstance.InstanceName;
+                //    }
+                //}
+                //else
+                //{
+                //    TicketsViewItem ticket = TicketsView.GetTicketsViewItem(loginUser, ticketId);
+                //    CRMLinkTableItem ticketJiraInstance = organizationJiraLinks.Where(p => p.Active).FirstOrDefault();
+
+                //    if (ticket.ProductID != null)
+                //    {
+                //        JiraInstanceProducts jiraInstanceProduct = new JiraInstanceProducts(loginUser);
+                //        jiraInstanceProduct.LoadByProductAndOrganization((int)ticket.ProductID, ticket.OrganizationID, "Jira");
+
+                //        if (jiraInstanceProduct != null && jiraInstanceProduct.Count > 0)
+                //        {
+                //            ticketJiraInstance = organizationJiraLinks.Where(p => p.CRMLinkID == jiraInstanceProduct[0].CrmLinkId && p.Active).SingleOrDefault();
+                //        }
+                //    }
+
+                //    //if ticket does not have Product then use the default instance if it's active
+                //    if (ticketJiraInstance == null && ticket.ProductID == null)
+                //    {
+                //        ticketJiraInstance = organizationJiraLinks.Where(p => p.InstanceName.Trim().ToLower() == "default" && p.Active).SingleOrDefault();
+                //    }
+
+                //    if (ticketJiraInstance != null && ticketJiraInstance.CRMLinkID != 0)
+                //    {
+                //        if (string.IsNullOrEmpty(ticketJiraInstance.RestrictedToTicketTypes))
+                //        {
+                //            jiraInstanceName = ticketJiraInstance.InstanceName;
+                //        }
+                //        else
+                //        {
+                //            foreach (string allowedTicketType in ticketJiraInstance.RestrictedToTicketTypes.Split(','))
+                //            {
+                //                if (ticket.TicketTypeID.ToString() == allowedTicketType)
+                //                {
+                //                    jiraInstanceName = ticketJiraInstance.InstanceName;
+                //                    break;
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+            }
+
+            return result;
+        }
+
         [WebMethod]
         public void RollbackImport(int importFileID, ReferenceType refType)
         {

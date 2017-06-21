@@ -204,7 +204,8 @@ namespace TeamSupport.Data
         ZohoReports = 7,
         Jira = 8,
         Oracle = 9,
-        HubSpot = 10
+        HubSpot = 10,
+        TFS = 11
     }
 
     public enum IntegrationObject : byte

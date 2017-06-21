@@ -31,6 +31,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
       _fieldMap.AddMap("ProductFamilyID", "ProductLineID", false, false, false);
       _fieldMap.AddMap("JiraProjectKey", "JiraProjectKey", false, false, false);
+      _fieldMap.AddMap("TFSProjectName", "TFSProjectName", false, false, false);
             
     }
   }
