@@ -29,8 +29,8 @@ span.checkBox { display: block; padding: 0; margin: 0; }
 span.checkBox input { top: 0px; margin: 0 10px 0 0; padding: 0; }
 
 .labelColTD { width: 150px; }
-.inputColTD { width: 200px; }  
-.customFieldValid { color:Red; padding-left: 2px; display: none;} 
+.inputColTD { width: 200px; }
+.customFieldValid { color:Red; padding-left: 2px; display: none;}
 
 /* Panel */
 .panel { margin: 10px 10px; }
@@ -43,7 +43,7 @@ span.checkBox input { top: 0px; margin: 0 10px 0 0; padding: 0; }
 .panel-caption-buttons { float:right;}
 a.panel-caption-button{ color: #204d89; text-decoration: none; font-style: normal; font-size: 12px; font-family: 'Roboto'; background-color: Transparent; background-image: none; display: block; float: left; height: 26px; cursor: pointer; padding-right: 8px;}
 .panel-caption-button-contents {  background: none; height:26px; display:block; padding-left: 8px;}
-.panel-caption-button-text { display:block; float:left; padding-left:5px;} 
+.panel-caption-button-text { display:block; float:left; padding-left:5px;}
 .panel-caption-button-icon { height: 16px; width:16px; margin-top: 5px; background-repeat:no-repeat; display:block; float:left;}
 a.panel-caption-button:hover { background: transparent url(../images/panel_caption_button_right.png) no-repeat scroll top right; }
 a.panel-caption-button:hover .panel-caption-button-contents { background: transparent url(../images/panel_caption_button_left.png) no-repeat; }
@@ -121,9 +121,9 @@ span.groupBarButtonSpan, a.groupBarButtonLink { display: block; }
 .groupButtonSpanWrapper { width: 100%; float: right; display: inline; margin-top: -24px; }
 .groupButtonsSpan { float: right; padding-right: 5px; }
 .groupBodyWrapperDiv { width: 100%; padding: 0; }
-.groupBodyDiv { border: Solid 1px #a2b8ce; border-top-width: 0px; margin-right: 0px; overflow: hidden; min-height: 20px; }
-.groupLightBlue .groupHeaderDiv { background-image: url( '../images/group_main_left.gif' ); }
-.groupLightBlue .groupHeaderSpan { background-image: url( '../images/group_main_right.gif' ); }
+.groupBodyDiv { border: none; margin-right: 0px; overflow: hidden; min-height: 20px; }
+.groupLightBlue .groupHeaderDiv { background-image: none; }
+.groupLightBlue .groupHeaderSpan { background-image: none; }
 a.groupButtonLink, a.groupButtonLink:link {
     color: #15428B;
     text-decoration: none;
