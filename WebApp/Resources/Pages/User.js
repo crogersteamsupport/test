@@ -166,12 +166,14 @@ UserPage = function () {
       appendCustomValues(customValues);
     });
 
-    $('#userWebsite').parent().parent()
-    .hover(function () {
-      $(this).find('.ts-icon-edit').show();
+
+    $('#userWebsite').parent().parent().hover(function (e) {
+        $('#editWebsite').show();
     }, function () {
-      $(this).find('.ts-icon-edit').hide();
+        $('#editWebsite').hide();
     });
+
+
 
     if (user.MenuItems == null) {
       $('#divMenuItems input').each(function () {
@@ -1562,7 +1564,7 @@ UserPage = function () {
     			$('#userSignature').empty();
     		});
     	}
-    	
+
 
     });
 

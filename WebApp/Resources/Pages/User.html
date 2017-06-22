@@ -1,8 +1,11 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-    <link href="../Css/standards.css" rel="stylesheet" type="text/css" />
+    <head>
+        <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+        <link href="../Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+        <link href="../Css/standards.css" rel="stylesheet" type="text/css" />
+
+
   <link href="../Css/frame.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery.ui.combobox.css" rel="stylesheet" type="text/css" />
@@ -13,6 +16,8 @@
   <!--[if IE 7]><link href="vcr/1_7_9/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="vcr/1_7_9/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
   <link href="User.css" rel="stylesheet" type="text/css" />
   <link href="../Css/intlTelInput.css" rel="stylesheet" type="text/css" />
+
+
   <script src="../Js/Ts/ts.pendo.js" type="text/javascript"></script>
   <script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
   <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
@@ -41,7 +46,7 @@
 
           <div>
             <!--<span class="ts-icon ts-icon-edit user-profile-edit" title="Edit user profile."></span>-->
-            
+
             <div id="divActionForm" style="display:none;" class="fleft">
                 <textarea class="userSignatureText" style="width: 100%; height: 50px;"></textarea>
 
@@ -75,7 +80,7 @@
                     <span class="property">WebSite:</span>
                     <div class="inline">
                         <span class="value" ><a id="userWebsite" class="ui-state-default ts-link"></a></span>
-                        <span class="fleft ts-icon ts-icon-edit" id="editWebsite"></span>
+                        <i class="fa fa-pencil" id="editWebsite"></i>
                     </div>
                 </div>
                 <div class="user-name-value">
@@ -85,9 +90,9 @@
                     </div>
                     <div class="clearfix">
                         <span class="property">&nbsp;</span>
-                        
+
                     </div>
-                    
+
                 </div>
 
                 <div id="customProperties"></div>
@@ -136,7 +141,7 @@
                         <span class="property">&nbsp;</span>
                         <a href="#" id="addgroup" class="ts-add user-info-add user-group-add">+ Group</a>
                     </div>
-                    
+
                 </div>
 
               <div id="twoFactorDiv" style="display:none;">
@@ -151,30 +156,30 @@
                    </div>
                 </div>
               </div>
-                
 
-                
+
+
             </div>
 
             <div class="clearfix"></div>
            <!-- <div class="ts-seperator ui-widget-content"></div>-->
 
             <div id="ts-user-rail">
-                
-                
+
+
             </div>
 
             <div id="userProfile">
 
-                
-                
+
+
             </div>
 
             <div class="clearfix"></div>
         </div>
 
         <div class="ts-section ui-widget-content ui-corner-all">
-            
+
             <h2 >Properties</h2>
             <div id="userProperties" style="display: block;">
                 <div class="user-name-value"><span class="property-wide">Active:</span><a id="userActive" class="ts-link" href="#"></a></div>
@@ -194,9 +199,9 @@
                 <div class="user-name-value"><span class="property-wide">Automatically subscribe to new tickets I post:</span><a id="userSubscribeTickets" class="ts-link" href="#"></a></div>
                 <div class="user-name-value"><span class="property-wide">Automatically subscribe to tickets when I post an action:</span><a id="userSubscribeActions" class="ts-link" href="#"></a></div>
                 <div class="user-name-value"><span class="property-wide">Do not subscribe to tickets when cc'd on email:</span><a id="userAutoSubscribe" class="ts-link" href="#"></a></div>
-                
+
             </div>
-            
+
             <div class="clearfix"></div>
           </div>
 
@@ -253,10 +258,10 @@
             <div class="clearfix">
             </div>
           </div>
-    
+
           <div class="ts-section ui-widget-content ui-corner-all ui-helper-hidden" id="divMenuItems">
             <h2>User Menu Items</h2>
-            
+
             <ul id="ulMenuItems">
               <li id="mniDashboard"><label class="checkbox"><input type="checkbox"  />Dashboard</label></li>
               <li id="mniMyTickets"><label class="checkbox"><input type="checkbox"  />My Tickets</label></li>
@@ -288,7 +293,7 @@
     <form class="file-upload" action="Upload/Actions/555" method="POST" enctype="multipart/form-data" title="You can drag and drop your attachments here.">
     <input type="file" name="file[]">
     <a class="ui-state-default ts-link" href="#" title="You can drag and drop your attachments here.">Select Image</a>
-    </form>  
+    </form>
   </div>
 </body>
 </html>
