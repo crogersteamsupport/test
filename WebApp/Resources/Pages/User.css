@@ -87,7 +87,11 @@
     cursor: pointer;
 }
 
-
+.fa-check-square {
+    margin:0px 0px 0px 5px;
+    padding:0px;
+    font-size: 20px !important;
+}
 
 
     .ts-section .collapsable .ui-icon-triangle-1-s, .ts-section .collapsable .ui-icon-triangle-1-e { float:left;}

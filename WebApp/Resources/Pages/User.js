@@ -434,7 +434,7 @@ UserPage = function () {
         .focus();
 
       $('<span>')
-        .addClass('ts-icon ts-icon-save')
+        .addClass('fa fa-check-square')
         .click(function (e) {
           $(this).closest('div').remove();
           header.show().find('img').show();
@@ -534,7 +534,7 @@ UserPage = function () {
         .focus();
 
       $('<span>')
-        .addClass('ts-icon ts-icon-save')
+        .addClass('fa fa-check-square')
         .click(function (e) {
           $(this).closest('div').remove();
           header.show().find('img').show();
@@ -576,7 +576,7 @@ UserPage = function () {
         .focus();
 
       $('<span>')
-        .addClass('ts-icon ts-icon-save')
+        .addClass('fa fa-check-square')
         .click(function (e) {
           $(this).closest('div').remove();
           header.show().find('img').show();
@@ -623,7 +623,7 @@ UserPage = function () {
           .focus();
 
       $('<span>')
-          .addClass('ts-icon ts-icon-save')
+          .addClass('fa fa-check-square')
           .click(function (e) {
             $(this).closest('div').remove();
             header.show().find('img').show();
@@ -2147,7 +2147,7 @@ UserPage = function () {
                   .focus();
 
             $('<span>')
-                .addClass('ts-icon ts-icon-save')
+                .addClass('fa fa-check-square')
                 .click(function (e) {
                   parent.show().find('img').show();
                   var value = input.val();
@@ -2243,7 +2243,7 @@ UserPage = function () {
             }
 
             $('<span>')
-                .addClass('ts-icon ts-icon-save')
+                .addClass('fa fa-check-square')
                 .click(function (e) {
                   parent.show().find('img').show();
                   var value = input.val();
@@ -2309,7 +2309,7 @@ UserPage = function () {
                   .focus();
 
             $('<span>')
-                .addClass('ts-icon ts-icon-save')
+                .addClass('fa fa-check-square')
                 .click(function (e) {
                   parent.show().find('img').show();
                   var value = window.parent.parent.Ts.Utils.getMsDate(input.datepicker('getDate'));
@@ -2377,7 +2377,7 @@ UserPage = function () {
                   .focus();
 
             $('<span>')
-                .addClass('ts-icon ts-icon-save')
+                .addClass('fa fa-check-square')
                 .click(function (e) {
                   parent.show().find('img').show();
                   var time = new Date("January 1, 1970 00:00:00");
@@ -2448,7 +2448,7 @@ UserPage = function () {
                   .focus();
 
             $('<span>')
-                .addClass('ts-icon ts-icon-save')
+                .addClass('fa fa-check-square')
                 .click(function (e) {
                   parent.show().find('img').show();
                   var value = window.parent.parent.Ts.Utils.getMsDate(input.datetimepicker('getDate'));
