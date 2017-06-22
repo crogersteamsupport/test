@@ -428,16 +428,6 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
     cursor: pointer;
 }
 
-.associations > i {
-    color:#2A3F54;
-    margin:0px 8px 0px 0px;
-    font-size:1.3em;
-}
-
-.associations > i:hover {
-    cursor: pointer;
-}
-
 <!-- TABS -->
 .main-tab-item {
     border-radius:10px;

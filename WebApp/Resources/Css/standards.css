@@ -415,3 +415,14 @@ div.main-footer {
     font-size: 12px;
     background-color: #445c75 !important;
 }
+
+/*Icons*/
+.associations > i {
+    color:#2A3F54;
+    margin:0px 8px 0px 0px;
+    font-size:1.3em;
+}
+
+.associations > i:hover {
+    cursor: pointer;
+}
