@@ -489,7 +489,7 @@ UserPage = function () {
         .focus();
 
       $('<span>')
-        .addClass('ts-icon ts-icon-save')
+        .addClass('fa fa-check-square')
         .click(function (e) {
           $(this).closest('div').remove();
           header.show().find('img').show();
