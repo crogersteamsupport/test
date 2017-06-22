@@ -2496,9 +2496,11 @@ Namespace TeamSupport
 		Public Enum Orientation
 			<Description("in")>
 			IntoTeamSupport
-			<Description("out")>
-			OutToJira
-		End Enum
+            <Description("out")>
+            OutToJira
+            <Description("out")>
+            OutToTFS
+        End Enum
 
 		Public Enum OperationType
 			<Description("unknown")>

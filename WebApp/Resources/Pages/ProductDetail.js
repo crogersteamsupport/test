@@ -93,6 +93,7 @@ $(document).ready(function () {
           LoadCustomProperties();
           LoadProperties();
           LoadJiraProjectKey();
+          LoadTFSProjectName();
           _viewingCustomers = false;
           _viewingInventory = false;
           _viewingVersions = false;
@@ -356,6 +357,20 @@ $(document).ready(function () {
     });
   }
 
+  function LoadTFSProjectName() {
+      window.parent.Ts.Services.Admin.GetIsTFSLinkActiveForOrganization(function (isActive) {
+          if (isActive) {
+              window.parent.Ts.Services.Products.GetProperties(_productID, function (result) {
+                  $('#TFSIntegrationBox').show();
+                  $('#fieldTFSProjectName').text(result.TFSProjectName != null && result.TFSProjectName != "" ? result.TFSProjectName : "Not Set");
+
+                  //$('#fieldJiraInstance').text(result.JiraInstance);
+                  //$('#fieldJiraInstance').data('field', result.CrmLinkId);
+              });
+          }
+      });
+  }
+
   var historyLoaded = 0;
 
   $('#historyToggle').on('click', function () {
@@ -548,6 +563,56 @@ $(document).ready(function () {
   	});
 
   	$('#productEdit').addClass("disabled");
+  });
+
+  $('#fieldTFSProjectName').click(function (e) {
+      e.preventDefault();
+      if (!$(this).hasClass('editable'))
+          return false;
+
+      window.parent.Ts.System.logAction('Product Detail - Edit TFS Project Name');
+      var header = $(this).hide();
+      var container = $('<div>')
+        .insertAfter(header);
+
+      var container1 = $('<div>')
+          .addClass('col-xs-8')
+        .appendTo(container);
+
+      $('<input type="text">')
+        .addClass('col-xs-8 form-control')
+        .val($(this).text())
+        .appendTo(container1)
+        .focus();
+
+      $('<i>')
+        .addClass('col-xs-1 fa fa-times')
+        .click(function (e) {
+            $(this).closest('div').remove();
+            header.show();
+            $('#productEdit').removeClass("disabled");
+        })
+        .insertAfter(container1);
+      $('<i>')
+        .addClass('col-xs-1 fa fa-check')
+        .click(function (e) {
+            window.parent.Ts.System.logAction('Product Detail - Save TFS Project Name Edit');
+            var isForProductVersion = false;
+            window.parent.Ts.Services.Products.SetProductTFSProjectName(_productID, $(this).prev().find('input').val(), isForProductVersion, function (result) {
+                header.text(result);
+                $('#fieldTFSProjectName').text(result);
+            },
+            function (error) {
+                header.show();
+                alert('There was an error saving the product tfs project name.');
+            });
+
+            $('#productEdit').removeClass("disabled");
+            $(this).closest('div').remove();
+            header.show();
+        })
+        .insertAfter(container1);
+      $('#productEdit').addClass("disabled");
   });
 
   $('#fieldEmailReplyToAddress').click(function (e) {

@@ -24,11 +24,12 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
-    [DataMember] public ReferenceType RefType { get; set; }
+    [DataMember] public int RefType { get; set; }
     [DataMember] public int RefID { get; set; }
     [DataMember] public bool SentToJira { get; set; }
     [DataMember] public Guid AttachmentGUID { get; set; }
     [DataMember] public int? ProductFamilyID { get; set; }
+    [DataMember] public bool SentToTFS { get; set; }
           
   }
   
@@ -37,6 +38,7 @@ namespace TeamSupport.Data
     public AttachmentProxy GetProxy()
     {
       AttachmentProxy result = new AttachmentProxy();
+      result.SentToTFS = this.SentToTFS;
       result.ProductFamilyID = this.ProductFamilyID;
       result.AttachmentGUID = this.AttachmentGUID;
       result.SentToJira = this.SentToJira;

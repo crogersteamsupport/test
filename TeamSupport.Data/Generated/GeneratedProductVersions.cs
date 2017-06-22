@@ -58,6 +58,12 @@ namespace TeamSupport.Data
       set { Row["ImportFileID"] = CheckValue("ImportFileID", value); }
     }
     
+    public string TFSProjectName
+    {
+      get { return Row["TFSProjectName"] != DBNull.Value ? (string)Row["TFSProjectName"] : null; }
+      set { Row["TFSProjectName"] = CheckValue("TFSProjectName", value); }
+    }
+    
 
     
     public bool NeedsIndexing
@@ -238,7 +244,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ProductVersions] SET     [ProductID] = @ProductID,    [ProductVersionStatusID] = @ProductVersionStatusID,    [VersionNumber] = @VersionNumber,    [ReleaseDate] = @ReleaseDate,    [IsReleased] = @IsReleased,    [Description] = @Description,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [NeedsIndexing] = @NeedsIndexing,    [JiraProjectKey] = @JiraProjectKey,    [ImportFileID] = @ImportFileID  WHERE ([ProductVersionID] = @ProductVersionID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ProductVersions] SET     [ProductID] = @ProductID,    [ProductVersionStatusID] = @ProductVersionStatusID,    [VersionNumber] = @VersionNumber,    [ReleaseDate] = @ReleaseDate,    [IsReleased] = @IsReleased,    [Description] = @Description,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [NeedsIndexing] = @NeedsIndexing,    [JiraProjectKey] = @JiraProjectKey,    [ImportFileID] = @ImportFileID,    [TFSProjectName] = @TFSProjectName  WHERE ([ProductVersionID] = @ProductVersionID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ProductVersionID", SqlDbType.Int, 4);
@@ -332,13 +338,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("TFSProjectName", SqlDbType.NVarChar, -1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ProductVersions] (    [ProductID],    [ProductVersionStatusID],    [VersionNumber],    [ReleaseDate],    [IsReleased],    [Description],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [NeedsIndexing],    [JiraProjectKey],    [ImportFileID]) VALUES ( @ProductID, @ProductVersionStatusID, @VersionNumber, @ReleaseDate, @IsReleased, @Description, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @NeedsIndexing, @JiraProjectKey, @ImportFileID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ProductVersions] (    [ProductID],    [ProductVersionStatusID],    [VersionNumber],    [ReleaseDate],    [IsReleased],    [Description],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [NeedsIndexing],    [JiraProjectKey],    [ImportFileID],    [TFSProjectName]) VALUES ( @ProductID, @ProductVersionStatusID, @VersionNumber, @ReleaseDate, @IsReleased, @Description, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @NeedsIndexing, @JiraProjectKey, @ImportFileID, @TFSProjectName); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("TFSProjectName", SqlDbType.NVarChar, -1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -550,7 +570,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ProductVersionID], [ProductID], [ProductVersionStatusID], [VersionNumber], [ReleaseDate], [IsReleased], [Description], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [NeedsIndexing], [JiraProjectKey], [ImportFileID] FROM [dbo].[ProductVersions] WHERE ([ProductVersionID] = @ProductVersionID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ProductVersionID], [ProductID], [ProductVersionStatusID], [VersionNumber], [ReleaseDate], [IsReleased], [Description], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [NeedsIndexing], [JiraProjectKey], [ImportFileID], [TFSProjectName] FROM [dbo].[ProductVersions] WHERE ([ProductVersionID] = @ProductVersionID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ProductVersionID", productVersionID);
         Fill(command);

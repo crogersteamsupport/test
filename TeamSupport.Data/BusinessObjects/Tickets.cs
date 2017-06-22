@@ -3396,6 +3396,27 @@ AND
             }
         }
 
+        public void LoadFirstTFSSynced(int organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+                    SELECT
+                        TOP 1 t.*
+                    FROM
+                        Tickets t
+                        JOIN TicketLinkToTFS tfs
+                            ON t.TicketID = tfs.TicketID
+                    WHERE
+                        t.OrganizationID = @OrganizationID
+                    ORDER BY
+                        t.DateCreated";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                Fill(command);
+            }
+        }
+
         public int GetProductVersionTicketCount(int productVersionID, int closed)
         {
             using (SqlCommand command = new SqlCommand())

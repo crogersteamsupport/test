@@ -1,1660 +1,850 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTask
+CREATE PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
 
 (
-  @TaskID int
+  @ProductVersionID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
+    [ProductVersionID],
+    [ProductID],
+    [ProductVersionStatusID],
+    [VersionNumber],
+    [ReleaseDate],
+    [IsReleased],
     [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
-    [CreatorID],
+    [ImportID],
     [DateCreated],
-    [ModifierID],
     [DateModified],
-    [ReminderID],
+    [CreatorID],
+    [ModifierID],
     [NeedsIndexing],
-    [CompletionComment]
-  FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
+    [VersionStatus],
+    [ProductName],
+    [OrganizationID],
+    [ProductFamilyID],
+    [JiraProjectKey],
+    [TFSProjectName]
+  FROM [dbo].[ProductVersionsView]
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTask
+CREATE PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
 
 (
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @CreatorID int,
+  @ProductVersionID int,
+  @ProductID int,
+  @ProductVersionStatusID int,
+  @VersionNumber varchar(50),
+  @ReleaseDate datetime,
+  @IsReleased bit,
+  @Description varchar(MAX),
+  @ImportID varchar(50),
   @DateCreated datetime,
-  @ModifierID int,
   @DateModified datetime,
-  @ReminderID int,
+  @CreatorID int,
+  @ModifierID int,
   @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000),
+  @VersionStatus varchar(255),
+  @ProductName varchar(255),
+  @OrganizationID int,
+  @ProductFamilyID int,
+  @JiraProjectKey varchar(250),
+  @TFSProjectName nvarchar(MAX),
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tasks]
+  INSERT INTO [dbo].[ProductVersionsView]
   (
-    [OrganizationID],
-    [Name],
+    [ProductVersionID],
+    [ProductID],
+    [ProductVersionStatusID],
+    [VersionNumber],
+    [ReleaseDate],
+    [IsReleased],
     [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
-    [CreatorID],
+    [ImportID],
     [DateCreated],
-    [ModifierID],
     [DateModified],
-    [ReminderID],
+    [CreatorID],
+    [ModifierID],
     [NeedsIndexing],
-    [CompletionComment])
+    [VersionStatus],
+    [ProductName],
+    [OrganizationID],
+    [ProductFamilyID],
+    [JiraProjectKey],
+    [TFSProjectName])
   VALUES (
-    @OrganizationID,
-    @Name,
+    @ProductVersionID,
+    @ProductID,
+    @ProductVersionStatusID,
+    @VersionNumber,
+    @ReleaseDate,
+    @IsReleased,
     @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @ParentID,
-    @CreatorID,
+    @ImportID,
     @DateCreated,
-    @ModifierID,
     @DateModified,
-    @ReminderID,
+    @CreatorID,
+    @ModifierID,
     @NeedsIndexing,
-    @CompletionComment)
+    @VersionStatus,
+    @ProductName,
+    @OrganizationID,
+    @ProductFamilyID,
+    @JiraProjectKey,
+    @TFSProjectName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTask
+CREATE PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
 
 (
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @ModifierID int,
+  @ProductVersionID int,
+  @ProductID int,
+  @ProductVersionStatusID int,
+  @VersionNumber varchar(50),
+  @ReleaseDate datetime,
+  @IsReleased bit,
+  @Description varchar(MAX),
+  @ImportID varchar(50),
   @DateModified datetime,
-  @ReminderID int,
+  @ModifierID int,
   @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000)
+  @VersionStatus varchar(255),
+  @ProductName varchar(255),
+  @OrganizationID int,
+  @ProductFamilyID int,
+  @JiraProjectKey varchar(250),
+  @TFSProjectName nvarchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Tasks]
+  UPDATE [dbo].[ProductVersionsView]
   SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
+    [ProductID] = @ProductID,
+    [ProductVersionStatusID] = @ProductVersionStatusID,
+    [VersionNumber] = @VersionNumber,
+    [ReleaseDate] = @ReleaseDate,
+    [IsReleased] = @IsReleased,
     [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [ParentID] = @ParentID,
-    [ModifierID] = @ModifierID,
+    [ImportID] = @ImportID,
     [DateModified] = @DateModified,
-    [ReminderID] = @ReminderID,
+    [ModifierID] = @ModifierID,
     [NeedsIndexing] = @NeedsIndexing,
-    [CompletionComment] = @CompletionComment
-  WHERE ([TaskID] = @TaskID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTask
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTask
-
-(
-  @TaskID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
-
-(
-
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing]
-  FROM [dbo].[TasksView]
-  WH)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
-
-(
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TasksView]
-  (
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing])
-  VALUES (
-    @TaskID,
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @CompletionComment,
-    @ParentID,
-    @IsDismissed,
-    @HasEmailSent,
-    @ReminderDueDate,
-    @TaskParentName,
-    @UserName,
-    @Creator,
-    @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @NeedsIndexing)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
-
-(
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[TasksView]
-  SET
-    [TaskID] = @TaskID,
+    [VersionStatus] = @VersionStatus,
+    [ProductName] = @ProductName,
     [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [CompletionComment] = @CompletionComment,
-    [ParentID] = @ParentID,
-    [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent,
-    [ReminderDueDate] = @ReminderDueDate,
-    [TaskParentName] = @TaskParentName,
-    [UserName] = @UserName,
-    [Creator] = @Creator,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [NeedsIndexing] = @NeedsIndexing
-  WH)
+    [ProductFamilyID] = @ProductFamilyID,
+    [JiraProjectKey] = @JiraProjectKey,
+    [TFSProjectName] = @TFSProjectName
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
 
 (
-
+  @ProductVersionID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TasksView]
-  WH)
+  DELETE FROM [dbo].[ProductVersionsView]
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTask
+CREATE PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
 
 (
-  @TaskID int
+  @ProductVersionID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
+    [ProductVersionID],
+    [ProductID],
+    [ProductVersionStatusID],
+    [VersionNumber],
+    [ReleaseDate],
+    [IsReleased],
     [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
-    [CreatorID],
+    [ImportID],
     [DateCreated],
-    [ModifierID],
     [DateModified],
-    [ReminderID],
+    [CreatorID],
+    [ModifierID],
     [NeedsIndexing],
-    [CompletionComment]
-  FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
+    [VersionStatus],
+    [ProductName],
+    [OrganizationID],
+    [ProductFamilyID],
+    [JiraProjectKey],
+    [TFSProjectName]
+  FROM [dbo].[ProductVersionsView]
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTask
+CREATE PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
 
 (
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @CreatorID int,
+  @ProductVersionID int,
+  @ProductID int,
+  @ProductVersionStatusID int,
+  @VersionNumber varchar(50),
+  @ReleaseDate datetime,
+  @IsReleased bit,
+  @Description varchar(MAX),
+  @ImportID varchar(50),
   @DateCreated datetime,
-  @ModifierID int,
   @DateModified datetime,
-  @ReminderID int,
+  @CreatorID int,
+  @ModifierID int,
   @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000),
+  @VersionStatus varchar(255),
+  @ProductName varchar(255),
+  @OrganizationID int,
+  @ProductFamilyID int,
+  @JiraProjectKey varchar(250),
+  @TFSProjectName nvarchar(MAX),
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tasks]
+  INSERT INTO [dbo].[ProductVersionsView]
   (
-    [OrganizationID],
-    [Name],
+    [ProductVersionID],
+    [ProductID],
+    [ProductVersionStatusID],
+    [VersionNumber],
+    [ReleaseDate],
+    [IsReleased],
     [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
-    [CreatorID],
+    [ImportID],
     [DateCreated],
-    [ModifierID],
     [DateModified],
-    [ReminderID],
+    [CreatorID],
+    [ModifierID],
     [NeedsIndexing],
-    [CompletionComment])
+    [VersionStatus],
+    [ProductName],
+    [OrganizationID],
+    [ProductFamilyID],
+    [JiraProjectKey],
+    [TFSProjectName])
   VALUES (
-    @OrganizationID,
-    @Name,
+    @ProductVersionID,
+    @ProductID,
+    @ProductVersionStatusID,
+    @VersionNumber,
+    @ReleaseDate,
+    @IsReleased,
     @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @ParentID,
-    @CreatorID,
+    @ImportID,
     @DateCreated,
-    @ModifierID,
     @DateModified,
-    @ReminderID,
+    @CreatorID,
+    @ModifierID,
     @NeedsIndexing,
-    @CompletionComment)
+    @VersionStatus,
+    @ProductName,
+    @OrganizationID,
+    @ProductFamilyID,
+    @JiraProjectKey,
+    @TFSProjectName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTask
+CREATE PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
 
 (
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @ModifierID int,
+  @ProductVersionID int,
+  @ProductID int,
+  @ProductVersionStatusID int,
+  @VersionNumber varchar(50),
+  @ReleaseDate datetime,
+  @IsReleased bit,
+  @Description varchar(MAX),
+  @ImportID varchar(50),
   @DateModified datetime,
-  @ReminderID int,
+  @ModifierID int,
   @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000)
+  @VersionStatus varchar(255),
+  @ProductName varchar(255),
+  @OrganizationID int,
+  @ProductFamilyID int,
+  @JiraProjectKey varchar(250),
+  @TFSProjectName nvarchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Tasks]
+  UPDATE [dbo].[ProductVersionsView]
   SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
+    [ProductID] = @ProductID,
+    [ProductVersionStatusID] = @ProductVersionStatusID,
+    [VersionNumber] = @VersionNumber,
+    [ReleaseDate] = @ReleaseDate,
+    [IsReleased] = @IsReleased,
     [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [ParentID] = @ParentID,
-    [ModifierID] = @ModifierID,
+    [ImportID] = @ImportID,
     [DateModified] = @DateModified,
-    [ReminderID] = @ReminderID,
+    [ModifierID] = @ModifierID,
     [NeedsIndexing] = @NeedsIndexing,
-    [CompletionComment] = @CompletionComment
-  WHERE ([TaskID] = @TaskID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTask
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTask
-
-(
-  @TaskID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
-
-(
-
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing]
-  FROM [dbo].[TasksView]
-  WH)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
-
-(
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TasksView]
-  (
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing])
-  VALUES (
-    @TaskID,
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @CompletionComment,
-    @ParentID,
-    @IsDismissed,
-    @HasEmailSent,
-    @ReminderDueDate,
-    @TaskParentName,
-    @UserName,
-    @Creator,
-    @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @NeedsIndexing)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
-
-(
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[TasksView]
-  SET
-    [TaskID] = @TaskID,
+    [VersionStatus] = @VersionStatus,
+    [ProductName] = @ProductName,
     [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [CompletionComment] = @CompletionComment,
-    [ParentID] = @ParentID,
-    [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent,
-    [ReminderDueDate] = @ReminderDueDate,
-    [TaskParentName] = @TaskParentName,
-    [UserName] = @UserName,
-    [Creator] = @Creator,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [NeedsIndexing] = @NeedsIndexing
-  WH)
+    [ProductFamilyID] = @ProductFamilyID,
+    [JiraProjectKey] = @JiraProjectKey,
+    [TFSProjectName] = @TFSProjectName
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
 
 (
-
+  @ProductVersionID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TasksView]
-  WH)
+  DELETE FROM [dbo].[ProductVersionsView]
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTask
+CREATE PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
 
 (
-  @TaskID int
+  @ProductVersionID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
+    [ProductVersionID],
+    [ProductID],
+    [ProductVersionStatusID],
+    [VersionNumber],
+    [ReleaseDate],
+    [IsReleased],
     [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
-    [CreatorID],
+    [ImportID],
     [DateCreated],
-    [ModifierID],
     [DateModified],
-    [ReminderID],
+    [CreatorID],
+    [ModifierID],
     [NeedsIndexing],
-    [CompletionComment]
-  FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
+    [VersionStatus],
+    [ProductName],
+    [OrganizationID],
+    [ProductFamilyID],
+    [JiraProjectKey],
+    [TFSProjectName]
+  FROM [dbo].[ProductVersionsView]
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTask
+CREATE PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
 
 (
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @CreatorID int,
+  @ProductVersionID int,
+  @ProductID int,
+  @ProductVersionStatusID int,
+  @VersionNumber varchar(50),
+  @ReleaseDate datetime,
+  @IsReleased bit,
+  @Description varchar(MAX),
+  @ImportID varchar(50),
   @DateCreated datetime,
-  @ModifierID int,
   @DateModified datetime,
-  @ReminderID int,
+  @CreatorID int,
+  @ModifierID int,
   @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000),
+  @VersionStatus varchar(255),
+  @ProductName varchar(255),
+  @OrganizationID int,
+  @ProductFamilyID int,
+  @JiraProjectKey varchar(250),
+  @TFSProjectName nvarchar(MAX),
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tasks]
+  INSERT INTO [dbo].[ProductVersionsView]
   (
-    [OrganizationID],
-    [Name],
+    [ProductVersionID],
+    [ProductID],
+    [ProductVersionStatusID],
+    [VersionNumber],
+    [ReleaseDate],
+    [IsReleased],
     [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
-    [CreatorID],
+    [ImportID],
     [DateCreated],
-    [ModifierID],
     [DateModified],
-    [ReminderID],
+    [CreatorID],
+    [ModifierID],
     [NeedsIndexing],
-    [CompletionComment])
+    [VersionStatus],
+    [ProductName],
+    [OrganizationID],
+    [ProductFamilyID],
+    [JiraProjectKey],
+    [TFSProjectName])
   VALUES (
-    @OrganizationID,
-    @Name,
+    @ProductVersionID,
+    @ProductID,
+    @ProductVersionStatusID,
+    @VersionNumber,
+    @ReleaseDate,
+    @IsReleased,
     @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @ParentID,
-    @CreatorID,
+    @ImportID,
     @DateCreated,
-    @ModifierID,
     @DateModified,
-    @ReminderID,
+    @CreatorID,
+    @ModifierID,
     @NeedsIndexing,
-    @CompletionComment)
+    @VersionStatus,
+    @ProductName,
+    @OrganizationID,
+    @ProductFamilyID,
+    @JiraProjectKey,
+    @TFSProjectName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTask
+CREATE PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
 
 (
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @ModifierID int,
+  @ProductVersionID int,
+  @ProductID int,
+  @ProductVersionStatusID int,
+  @VersionNumber varchar(50),
+  @ReleaseDate datetime,
+  @IsReleased bit,
+  @Description varchar(MAX),
+  @ImportID varchar(50),
   @DateModified datetime,
-  @ReminderID int,
+  @ModifierID int,
   @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000)
+  @VersionStatus varchar(255),
+  @ProductName varchar(255),
+  @OrganizationID int,
+  @ProductFamilyID int,
+  @JiraProjectKey varchar(250),
+  @TFSProjectName nvarchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Tasks]
+  UPDATE [dbo].[ProductVersionsView]
   SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
+    [ProductID] = @ProductID,
+    [ProductVersionStatusID] = @ProductVersionStatusID,
+    [VersionNumber] = @VersionNumber,
+    [ReleaseDate] = @ReleaseDate,
+    [IsReleased] = @IsReleased,
     [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [ParentID] = @ParentID,
-    [ModifierID] = @ModifierID,
+    [ImportID] = @ImportID,
     [DateModified] = @DateModified,
-    [ReminderID] = @ReminderID,
+    [ModifierID] = @ModifierID,
     [NeedsIndexing] = @NeedsIndexing,
-    [CompletionComment] = @CompletionComment
-  WHERE ([TaskID] = @TaskID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTask
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTask
-
-(
-  @TaskID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
-
-(
-
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing]
-  FROM [dbo].[TasksView]
-  WH)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
-
-(
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TasksView]
-  (
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing])
-  VALUES (
-    @TaskID,
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @CompletionComment,
-    @ParentID,
-    @IsDismissed,
-    @HasEmailSent,
-    @ReminderDueDate,
-    @TaskParentName,
-    @UserName,
-    @Creator,
-    @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @NeedsIndexing)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
-
-(
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[TasksView]
-  SET
-    [TaskID] = @TaskID,
+    [VersionStatus] = @VersionStatus,
+    [ProductName] = @ProductName,
     [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [CompletionComment] = @CompletionComment,
-    [ParentID] = @ParentID,
-    [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent,
-    [ReminderDueDate] = @ReminderDueDate,
-    [TaskParentName] = @TaskParentName,
-    [UserName] = @UserName,
-    [Creator] = @Creator,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [NeedsIndexing] = @NeedsIndexing
-  WH)
+    [ProductFamilyID] = @ProductFamilyID,
+    [JiraProjectKey] = @JiraProjectKey,
+    [TFSProjectName] = @TFSProjectName
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
 
 (
-
+  @ProductVersionID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TasksView]
-  WH)
+  DELETE FROM [dbo].[ProductVersionsView]
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTask
+CREATE PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
 
 (
-  @TaskID int
+  @ProductVersionID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
+    [ProductVersionID],
+    [ProductID],
+    [ProductVersionStatusID],
+    [VersionNumber],
+    [ReleaseDate],
+    [IsReleased],
     [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
-    [CreatorID],
+    [ImportID],
     [DateCreated],
-    [ModifierID],
     [DateModified],
-    [ReminderID],
+    [CreatorID],
+    [ModifierID],
     [NeedsIndexing],
-    [CompletionComment]
-  FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
+    [VersionStatus],
+    [ProductName],
+    [OrganizationID],
+    [ProductFamilyID],
+    [JiraProjectKey],
+    [TFSProjectName]
+  FROM [dbo].[ProductVersionsView]
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTask
+CREATE PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
 
 (
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @CreatorID int,
+  @ProductVersionID int,
+  @ProductID int,
+  @ProductVersionStatusID int,
+  @VersionNumber varchar(50),
+  @ReleaseDate datetime,
+  @IsReleased bit,
+  @Description varchar(MAX),
+  @ImportID varchar(50),
   @DateCreated datetime,
-  @ModifierID int,
   @DateModified datetime,
-  @ReminderID int,
+  @CreatorID int,
+  @ModifierID int,
   @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000),
+  @VersionStatus varchar(255),
+  @ProductName varchar(255),
+  @OrganizationID int,
+  @ProductFamilyID int,
+  @JiraProjectKey varchar(250),
+  @TFSProjectName nvarchar(MAX),
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tasks]
+  INSERT INTO [dbo].[ProductVersionsView]
   (
-    [OrganizationID],
-    [Name],
+    [ProductVersionID],
+    [ProductID],
+    [ProductVersionStatusID],
+    [VersionNumber],
+    [ReleaseDate],
+    [IsReleased],
     [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
-    [CreatorID],
+    [ImportID],
     [DateCreated],
-    [ModifierID],
     [DateModified],
-    [ReminderID],
+    [CreatorID],
+    [ModifierID],
     [NeedsIndexing],
-    [CompletionComment])
+    [VersionStatus],
+    [ProductName],
+    [OrganizationID],
+    [ProductFamilyID],
+    [JiraProjectKey],
+    [TFSProjectName])
   VALUES (
-    @OrganizationID,
-    @Name,
+    @ProductVersionID,
+    @ProductID,
+    @ProductVersionStatusID,
+    @VersionNumber,
+    @ReleaseDate,
+    @IsReleased,
     @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @ParentID,
-    @CreatorID,
+    @ImportID,
     @DateCreated,
-    @ModifierID,
     @DateModified,
-    @ReminderID,
+    @CreatorID,
+    @ModifierID,
     @NeedsIndexing,
-    @CompletionComment)
+    @VersionStatus,
+    @ProductName,
+    @OrganizationID,
+    @ProductFamilyID,
+    @JiraProjectKey,
+    @TFSProjectName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTask
+CREATE PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
 
 (
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @ModifierID int,
+  @ProductVersionID int,
+  @ProductID int,
+  @ProductVersionStatusID int,
+  @VersionNumber varchar(50),
+  @ReleaseDate datetime,
+  @IsReleased bit,
+  @Description varchar(MAX),
+  @ImportID varchar(50),
   @DateModified datetime,
-  @ReminderID int,
+  @ModifierID int,
   @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000)
+  @VersionStatus varchar(255),
+  @ProductName varchar(255),
+  @OrganizationID int,
+  @ProductFamilyID int,
+  @JiraProjectKey varchar(250),
+  @TFSProjectName nvarchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Tasks]
+  UPDATE [dbo].[ProductVersionsView]
   SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
+    [ProductID] = @ProductID,
+    [ProductVersionStatusID] = @ProductVersionStatusID,
+    [VersionNumber] = @VersionNumber,
+    [ReleaseDate] = @ReleaseDate,
+    [IsReleased] = @IsReleased,
     [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [ParentID] = @ParentID,
-    [ModifierID] = @ModifierID,
+    [ImportID] = @ImportID,
     [DateModified] = @DateModified,
-    [ReminderID] = @ReminderID,
+    [ModifierID] = @ModifierID,
     [NeedsIndexing] = @NeedsIndexing,
-    [CompletionComment] = @CompletionComment
-  WHERE ([TaskID] = @TaskID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTask
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTask
-
-(
-  @TaskID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
-
-(
-
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing]
-  FROM [dbo].[TasksView]
-  WH)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
-
-(
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TasksView]
-  (
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing])
-  VALUES (
-    @TaskID,
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @CompletionComment,
-    @ParentID,
-    @IsDismissed,
-    @HasEmailSent,
-    @ReminderDueDate,
-    @TaskParentName,
-    @UserName,
-    @Creator,
-    @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @NeedsIndexing)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
-
-(
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[TasksView]
-  SET
-    [TaskID] = @TaskID,
+    [VersionStatus] = @VersionStatus,
+    [ProductName] = @ProductName,
     [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [CompletionComment] = @CompletionComment,
-    [ParentID] = @ParentID,
-    [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent,
-    [ReminderDueDate] = @ReminderDueDate,
-    [TaskParentName] = @TaskParentName,
-    [UserName] = @UserName,
-    [Creator] = @Creator,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [NeedsIndexing] = @NeedsIndexing
-  WH)
+    [ProductFamilyID] = @ProductFamilyID,
+    [JiraProjectKey] = @JiraProjectKey,
+    [TFSProjectName] = @TFSProjectName
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
 
 (
-
+  @ProductVersionID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TasksView]
-  WH)
+  DELETE FROM [dbo].[ProductVersionsView]
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTask
+CREATE PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
 
 (
-  @TaskID int
+  @ProductVersionID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
+    [ProductVersionID],
+    [ProductID],
+    [ProductVersionStatusID],
+    [VersionNumber],
+    [ReleaseDate],
+    [IsReleased],
     [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
-    [CreatorID],
+    [ImportID],
     [DateCreated],
-    [ModifierID],
     [DateModified],
-    [ReminderID],
+    [CreatorID],
+    [ModifierID],
     [NeedsIndexing],
-    [CompletionComment]
-  FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
+    [VersionStatus],
+    [ProductName],
+    [OrganizationID],
+    [ProductFamilyID],
+    [JiraProjectKey],
+    [TFSProjectName]
+  FROM [dbo].[ProductVersionsView]
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTask
+CREATE PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
 
 (
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @CreatorID int,
+  @ProductVersionID int,
+  @ProductID int,
+  @ProductVersionStatusID int,
+  @VersionNumber varchar(50),
+  @ReleaseDate datetime,
+  @IsReleased bit,
+  @Description varchar(MAX),
+  @ImportID varchar(50),
   @DateCreated datetime,
-  @ModifierID int,
   @DateModified datetime,
-  @ReminderID int,
+  @CreatorID int,
+  @ModifierID int,
   @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000),
+  @VersionStatus varchar(255),
+  @ProductName varchar(255),
+  @OrganizationID int,
+  @ProductFamilyID int,
+  @JiraProjectKey varchar(250),
+  @TFSProjectName nvarchar(MAX),
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tasks]
+  INSERT INTO [dbo].[ProductVersionsView]
   (
-    [OrganizationID],
-    [Name],
+    [ProductVersionID],
+    [ProductID],
+    [ProductVersionStatusID],
+    [VersionNumber],
+    [ReleaseDate],
+    [IsReleased],
     [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
-    [CreatorID],
+    [ImportID],
     [DateCreated],
-    [ModifierID],
     [DateModified],
-    [ReminderID],
+    [CreatorID],
+    [ModifierID],
     [NeedsIndexing],
-    [CompletionComment])
+    [VersionStatus],
+    [ProductName],
+    [OrganizationID],
+    [ProductFamilyID],
+    [JiraProjectKey],
+    [TFSProjectName])
   VALUES (
-    @OrganizationID,
-    @Name,
+    @ProductVersionID,
+    @ProductID,
+    @ProductVersionStatusID,
+    @VersionNumber,
+    @ReleaseDate,
+    @IsReleased,
     @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @ParentID,
-    @CreatorID,
+    @ImportID,
     @DateCreated,
-    @ModifierID,
     @DateModified,
-    @ReminderID,
+    @CreatorID,
+    @ModifierID,
     @NeedsIndexing,
-    @CompletionComment)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTask
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTask
-
-(
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Tasks]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [ParentID] = @ParentID,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [ReminderID] = @ReminderID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [CompletionComment] = @CompletionComment
-  WHERE ([TaskID] = @TaskID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTask
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTask
-
-(
-  @TaskID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
-
-(
-
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing]
-  FROM [dbo].[TasksView]
-  WH)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
-
-(
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TasksView]
-  (
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing])
-  VALUES (
-    @TaskID,
+    @VersionStatus,
+    @ProductName,
     @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @CompletionComment,
-    @ParentID,
-    @IsDismissed,
-    @HasEmailSent,
-    @ReminderDueDate,
-    @TaskParentName,
-    @UserName,
-    @Creator,
-    @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @NeedsIndexing)
+    @ProductFamilyID,
+    @JiraProjectKey,
+    @TFSProjectName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
 
 (
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @ModifierID int,
+  @ProductVersionID int,
+  @ProductID int,
+  @ProductVersionStatusID int,
+  @VersionNumber varchar(50),
+  @ReleaseDate datetime,
+  @IsReleased bit,
+  @Description varchar(MAX),
+  @ImportID varchar(50),
   @DateModified datetime,
-  @NeedsIndexing bit
+  @ModifierID int,
+  @NeedsIndexing bit,
+  @VersionStatus varchar(255),
+  @ProductName varchar(255),
+  @OrganizationID int,
+  @ProductFamilyID int,
+  @JiraProjectKey varchar(250),
+  @TFSProjectName nvarchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TasksView]
+  UPDATE [dbo].[ProductVersionsView]
   SET
-    [TaskID] = @TaskID,
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
+    [ProductID] = @ProductID,
+    [ProductVersionStatusID] = @ProductVersionStatusID,
+    [VersionNumber] = @VersionNumber,
+    [ReleaseDate] = @ReleaseDate,
+    [IsReleased] = @IsReleased,
     [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [CompletionComment] = @CompletionComment,
-    [ParentID] = @ParentID,
-    [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent,
-    [ReminderDueDate] = @ReminderDueDate,
-    [TaskParentName] = @TaskParentName,
-    [UserName] = @UserName,
-    [Creator] = @Creator,
-    [ModifierID] = @ModifierID,
+    [ImportID] = @ImportID,
     [DateModified] = @DateModified,
-    [NeedsIndexing] = @NeedsIndexing
-  WH)
+    [ModifierID] = @ModifierID,
+    [NeedsIndexing] = @NeedsIndexing,
+    [VersionStatus] = @VersionStatus,
+    [ProductName] = @ProductName,
+    [OrganizationID] = @OrganizationID,
+    [ProductFamilyID] = @ProductFamilyID,
+    [JiraProjectKey] = @JiraProjectKey,
+    [TFSProjectName] = @TFSProjectName
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
 
 (
-
+  @ProductVersionID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TasksView]
-  WH)
+  DELETE FROM [dbo].[ProductVersionsView]
+  WHERE ([ProductVersionID] = @ProductVersionID)
 GO
 
 

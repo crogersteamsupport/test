@@ -200,6 +200,28 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadForTFS(int actionID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+            SELECT
+                a.*, 
+                (u.FirstName + ' ' + u.LastName) AS CreatorName 
+            FROM
+                Attachments a 
+            LEFT JOIN Users u 
+                ON u.UserID = a.CreatorID
+            WHERE
+                RefID = @RefID
+                AND RefType = 0 
+                AND SentToTFS = 0";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@RefID", actionID);
+        Fill(command);
+      }
+    }
+
     public void TempLoadFix()
     {
       using (SqlCommand command = new SqlCommand())

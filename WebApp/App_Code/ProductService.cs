@@ -156,6 +156,7 @@ namespace TSWebServices
             prodProp.ProductFamily = productFamily;
             prodProp.SlaAssigned = slaAssigned;
             prodProp.prodproxy = products[0].GetProxy();
+            prodProp.TFSProjectName = products[0].TFSProjectName;
             prodProp.JiraProjectKey = products[0].JiraProjectKey;
             prodProp.JiraInstance = "None";
             JiraInstanceProducts jiraInstanceProducts = new JiraInstanceProducts(loginUser);
@@ -861,6 +862,32 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public string SetProductTFSProjectName(int id, string value, bool isForProductVersion)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            string description = string.Empty;
+
+            if (isForProductVersion)
+            {
+                ProductVersion productVersion = ProductVersions.GetProductVersion(loginUser, id);
+                productVersion.TFSProjectName = string.IsNullOrEmpty(value) ? null : value;
+                productVersion.Collection.Save();
+                description = String.Format("{0} set product version tfs project name as {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, string.IsNullOrEmpty(value) ? "NULL" : value);
+            }
+            else
+            {
+                Product product = Products.GetProduct(loginUser, id);
+                product.TFSProjectName = string.IsNullOrEmpty(value) ? null : value;
+                product.Collection.Save();
+                description = String.Format("{0} set product tfs project name as {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, string.IsNullOrEmpty(value) ? "NULL" : value);
+            }
+
+            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Products, id, description);
+
+            return value;
+        }
+
+        [WebMethod]
         public string SetEmailReplyToAddress(int id, string value)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
@@ -1490,6 +1517,8 @@ namespace TSWebServices
         public int CrmLinkId { get; set; }
         [DataMember]
         public string SlaAssigned { get; set; }
+        [DataMember]
+        public string TFSProjectName { get; set; }
     }
 
     [DataContract]
