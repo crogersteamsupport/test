@@ -77,10 +77,16 @@
     .ts-section .ts-icon-edit, .ts-icon-edit { display:none; font-size:14px; }
 
 .fa-pencil {
-    display: none;
-    margin-left:5px;
-    font-size: 16px !important;
+    display:none;
+    margin:0px 0px 0px 5px;
+    padding:0px;
+    font-size: 20px !important;
 }
+
+.fa-pencil:hover {
+    cursor: pointer;
+}
+
 
 
 
