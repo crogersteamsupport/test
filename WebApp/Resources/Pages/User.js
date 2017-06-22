@@ -98,11 +98,10 @@ UserPage = function () {
 
     $('.user-displayname').html(user.FirstName + ' ' + user.LastName);
     $('#userEmail').html('<a class=fleft href="mailto:' + user.Email + '">' + user.Email + '</a>');
-    var email = $('#userEmail').parent()
-        .hover(function () {
-          $(this).find('.ts-icon-edit').show();
+    var email = $('#userEmail').parent().hover(function (e) {
+            $('#editEmail').show();
         }, function () {
-          $(this).find('.ts-icon-edit').hide();
+            $('#editEmail').hide();
         });
 
     $('#userTitle').html(user.Title == '' || user.Title == null ? 'None' : user.Title);
@@ -166,12 +165,14 @@ UserPage = function () {
       appendCustomValues(customValues);
     });
 
-    $('#userWebsite').parent().parent()
-    .hover(function () {
-      $(this).find('.ts-icon-edit').show();
+
+    $('#userWebsite').parent().parent().hover(function (e) {
+        $('#editWebsite').show();
     }, function () {
-      $(this).find('.ts-icon-edit').hide();
+        $('#editWebsite').hide();
     });
+
+
 
     if (user.MenuItems == null) {
       $('#divMenuItems input').each(function () {
@@ -1562,7 +1563,7 @@ UserPage = function () {
     			$('#userSignature').empty();
     		});
     	}
-    	
+
 
     });
 
