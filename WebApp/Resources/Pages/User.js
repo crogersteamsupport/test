@@ -464,7 +464,7 @@ UserPage = function () {
         .appendTo(container)
 
       $('<span>')
-        .addClass('ts-icon ts-icon-cancel')
+        .addClass('fa fa-window-close')
         .click(function (e) {
           $(this).closest('div').remove();
           header.show();
@@ -510,7 +510,7 @@ UserPage = function () {
         .appendTo(container)
 
       $('<span>')
-        .addClass('ts-icon ts-icon-cancel')
+        .addClass('fa fa-window-close')
         .click(function (e) {
           $(this).closest('div').remove();
           header.show();
@@ -551,7 +551,7 @@ UserPage = function () {
         .appendTo(container)
 
       $('<span>')
-        .addClass('ts-icon ts-icon-cancel')
+        .addClass('fa fa-window-close')
         .click(function (e) {
           $(this).closest('div').remove();
           header.show();
@@ -598,7 +598,7 @@ UserPage = function () {
         .appendTo(container)
 
       $('<span>')
-        .addClass('ts-icon ts-icon-cancel')
+        .addClass('fa fa-window-close')
         .click(function (e) {
           $(this).closest('div').remove();
           header.show();
@@ -653,7 +653,7 @@ UserPage = function () {
           .appendTo(container)
 
       $('<span>')
-          .addClass('ts-icon ts-icon-cancel')
+          .addClass('fa fa-window-close')
           .click(function (e) {
             $(this).closest('div').remove();
             header.show();
@@ -2170,7 +2170,7 @@ UserPage = function () {
                 .appendTo(container);
 
             $('<span>')
-                .addClass('ts-icon ts-icon-cancel')
+                .addClass('fa fa-window-close')
                 .click(function (e) {
                   parent.show();
                   parent.find('a').show();
@@ -2265,7 +2265,7 @@ UserPage = function () {
                 .appendTo(container);
 
             $('<span>')
-                .addClass('ts-icon ts-icon-cancel')
+                .addClass('fa fa-window-close')
                 .click(function (e) {
                   parent.show();
                   parent.find('a').show();
@@ -2333,7 +2333,7 @@ UserPage = function () {
                 .appendTo(container);
 
             $('<span>')
-                .addClass('ts-icon ts-icon-cancel')
+                .addClass('fa fa-window-close')
                 .click(function (e) {
                   parent.show();
                   parent.find('a').show();
@@ -2404,7 +2404,7 @@ UserPage = function () {
                 .appendTo(container);
 
             $('<span>')
-                .addClass('ts-icon ts-icon-cancel')
+                .addClass('fa fa-window-close')
                 .click(function (e) {
                   parent.show();
                   parent.find('a').show();
@@ -2472,7 +2472,7 @@ UserPage = function () {
                 .appendTo(container);
 
             $('<span>')
-                .addClass('ts-icon ts-icon-cancel')
+                .addClass('fa fa-window-close')
                 .click(function (e) {
                   parent.show();
                   parent.find('a').show();
