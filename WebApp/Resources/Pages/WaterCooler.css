@@ -254,11 +254,4 @@ margin-top: -4px;
 
 i {
     font-size:1.6em !important;
-    color:#95A0AB;
-    margin:0px 6px 0px 6px;
-}
-
-i:hover {
-    color:#2A3F54;
-    cursor: pointer;
 }
