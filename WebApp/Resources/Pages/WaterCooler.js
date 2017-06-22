@@ -1579,7 +1579,7 @@ function createCommentContainer(messageid) {
         .appendTo(s);
 
         var attrow = $('<div>')
-        .addClass('attachrow associations')
+        .addClass('attachrow add-associations')
         .appendTo(cc);
 
         var attbtn = $('<i>')
