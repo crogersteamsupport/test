@@ -74,5 +74,10 @@ tr.strikeout td:before {
 }
 
 input[type=checkbox] {
-  transform: scale(1.5);
+  transform: scale(1.2);
+}
+
+.associations > i {
+    color:#2A3F54;
+    margin:0px 6px 0px 0px;
 }
