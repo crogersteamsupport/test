@@ -2037,7 +2037,7 @@ UserPage = function () {
 
       var field = fields[i];
 
-      var div = $('<div>').addClass('user-name-value').data('field', field);
+      var div = $('<div>').addClass('user-name-value').css('height','20px').data('field', field);
       $('<span>')
             .addClass('property')
             .text(field.Name + ': ')
