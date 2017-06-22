@@ -9,10 +9,6 @@
     color: #3276B1 !important
 }
 
-.fa-ticket {
-    color: #FEC21E !important
-}
-
 .mce-i-image {
     color: #BA55D3 !important
 }
@@ -31,21 +27,6 @@
     padding: .5em;*/
     margin-top: 5px;
 }
-
-.addatt{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/icons/attachment.png');cursor:pointer}
-.addticket {margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Tickets.png');cursor:pointer}
-.addgroup {margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Groups.png');cursor:pointer}
-.addcustomer {margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Customers.png');cursor:pointer}
-.addcontact {margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Contacts.png');cursor:pointer}
-.addproduct {margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Products.png');cursor:pointer}
-.adduser {margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Users.png');cursor:pointer}
-
-.ticketIcon {margin:2px 0px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Tickets.png');cursor:pointer}
-.groupIcon {margin:2px 0px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Groups.png');cursor:pointer}
-.companyIcon {margin:2px 0px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Customers.png');cursor:pointer}
-.contactIcon {margin:2px 0px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Contacts.png');cursor:pointer}
-.productIcon {margin:2px 0px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Products.png');cursor:pointer}
-.userIcon {margin:2px 0px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Users.png');cursor:pointer}
 
 .attfilenamefix {
     margin-left: 10px;
