@@ -4318,10 +4318,12 @@ WHERE t.TicketID = @TicketID
                 {
                     int tfsWorkItemID;
                     bool idIsNumeric = int.TryParse(TFSWorkItemID, out tfsWorkItemID);
-                    if (idIsNumeric)
+
+                    //If it's numeric then we are linking to an existing workitem, it is null then we are creating a new one
+                    if (idIsNumeric || string.IsNullOrEmpty(TFSWorkItemID))
                     {
                         TicketLinkToTFSItem ticketLinkToTFSItem = ticketLinkToTFS.AddNewTicketLinkToTFSItem(ticketId);
-                        ticketLinkToTFSItem.TFSID = tfsWorkItemID;
+                        ticketLinkToTFSItem.TFSID = (idIsNumeric ? tfsWorkItemID : (int?)null);
                         ticketLinkToTFSItem.TFSTitle = TFSWorkItemID;
                         ticketLinkToTFSItem.SyncWithTFS = true;
                         ticketLinkToTFSItem.CreatorID = loginUser.UserID;
