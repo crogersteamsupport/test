@@ -107,7 +107,7 @@ namespace TeamSupport.Data
             DataRow row = Table.NewRow();
             row["ActionID"] = actionID;
             Table.Rows.Add(row);
-            return new TicketLinkToTFSItem(row, this);
+            return new ActionLinkToTFSItem(row, this);
         }
 
     }
