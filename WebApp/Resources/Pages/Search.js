@@ -260,7 +260,7 @@ function AddCustomFilter(customFilterID, reportTableFieldID, measure, testValue)
     iconsDiv.css('margin-top', '3px');
 
     var saveIcon = $('<span>')
-      .addClass('ts-icon ts-icon-save')
+      .addClass('fa fa-check-square')
       .click(function (e) {
           parent.Ts.System.logAction('Search - Filter Added');
           var fieldID = $(this).parent().parent().find('.condition-field').val();
@@ -302,7 +302,7 @@ function AddCustomFilter(customFilterID, reportTableFieldID, measure, testValue)
     saveIcon.appendTo(iconsDiv);
 
     var cancelIcon = $('<span>')
-      .addClass('ts-icon ts-icon-cancel')
+      .addClass('fa fa-window-close')
       .click(function (e) {
           if (Ts.Utils.getIdFromElement('filter', $(this).parent().parent()) == null) {
               $(this).parent().parent().remove();
@@ -403,7 +403,7 @@ function AddCustomSorter(sorterID, fieldID, descending) {
     var iconsDiv = $('<div>').addClass('condition-sorter-icons');
 
     var saveIcon = $('<span>')
-          .addClass('ts-icon ts-icon-save')
+          .addClass('fa fa-check-square')
           .click(function (e) {
               parent.Ts.System.logAction('Search - Sort Condition Added');
               var fieldID = $(this).parent().parent().find('.condition-field').val();
@@ -449,7 +449,7 @@ function AddCustomSorter(sorterID, fieldID, descending) {
     saveIcon.appendTo(iconsDiv);
 
     var cancelIcon = $('<span>')
-          .addClass('ts-icon ts-icon-cancel')
+          .addClass('fa fa-window-close')
           .click(function (e) {
               if (Ts.Utils.getIdFromElement('sorter', $(this).parent().parent()) == null) {
                   $(this).parent().parent().remove();

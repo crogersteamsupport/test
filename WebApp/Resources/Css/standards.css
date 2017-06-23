@@ -437,3 +437,17 @@ div.main-footer {
     color:#2A3F54;
     cursor: pointer;
 }
+
+
+
+
+
+
+
+
+.fa-check-square, .fa-window-close {
+    margin:0px 0px 0px 5px;
+    padding:0px;
+    font-size: 20px !important;
+    color:black;
+}
