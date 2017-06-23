@@ -519,9 +519,9 @@ Namespace TeamSupport
 								newAction.Save()
 
 								Dim newActionLinkToTFS As ActionLinkToTFS = New ActionLinkToTFS(User)
-								newActionLinkToTFS.AddNewActionLinkToTFSItem()
-								newActionLinkToTFS(0).ActionID = newAction(0).ActionID
-								newActionLinkToTFS(0).TFSID = -1
+                                newActionLinkToTFS.AddNewActionLinkToTFSItem(newAction(0).ActionID)
+                                'newActionLinkToTFS(0).ActionID = newAction(0).ActionID
+                                newActionLinkToTFS(0).TFSID = -1
 								newActionLinkToTFS(0).DateModifiedByTFSSync = ticketLinkToTFS.DateModifiedByTFSSync
 								newActionLinkToTFS.Save()
 
@@ -1103,10 +1103,10 @@ Namespace TeamSupport
 							Dim TFSComment As String = BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition, actionToPushAsComment.CreatorID)
 							Dim commentId As Integer = _tfs.CreateComment(workItem.Id, TFSComment)
 							Dim newActionLinkToTFS As ActionLinkToTFS = New ActionLinkToTFS(User)
-							Dim newActionLinkToTFSItem As ActionLinkToTFSItem = newActionLinkToTFS.AddNewActionLinkToTFSItem()
+                            Dim newActionLinkToTFSItem As ActionLinkToTFSItem = newActionLinkToTFS.AddNewActionLinkToTFSItem(actionToPushAsComment.ActionID)
 
-							newActionLinkToTFSItem.ActionID = actionToPushAsComment.ActionID
-							newActionLinkToTFSItem.TFSID = commentId
+                            'newActionLinkToTFSItem.ActionID = actionToPushAsComment.ActionID
+                            newActionLinkToTFSItem.TFSID = commentId
 							newActionLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow
 							newActionLinkToTFS.Save()
 							Log.Write("Created comment for action")
@@ -1537,12 +1537,12 @@ Namespace TeamSupport
                                             newAction(0).Description = "TFS' Work Item " + workItem.Fields("System.Title").ToString() + "'s state changed" + fromStatement + " to """ + value + """."
 
                                             Dim actionLinkToTFS As ActionLinkToTFS = New ActionLinkToTFS(User)
-                                            Dim actionLinkToTFSItem As ActionLinkToTFSItem = actionLinkToTFS.AddNewActionLinkToTFSItem()
+                                            Dim actionLinkToTFSItem As ActionLinkToTFSItem = actionLinkToTFS.AddNewActionLinkToTFSItem(newAction(0).ActionID)
 
                                             actionLinkToTFSItem.TFSID = -1
                                             actionLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow()
                                             newAction.Save()
-                                            actionLinkToTFSItem.ActionID = newAction(0).ActionID
+                                            'actionLinkToTFSItem.ActionID = newAction(0).ActionID
                                             actionLinkToTFS.Save()
                                             ticketValuesChanged = True
                                         End If
@@ -1892,12 +1892,12 @@ Namespace TeamSupport
 						updateActions(0).Description = commentDescription
 						updateActions.ActionLogInstantMessage = "TFS Comment ID: " + TFSCommentId.ToString() + " Created In TeamSupport Action "
 						Dim actionLinkToTFS As ActionLinkToTFS = New ActionLinkToTFS(User)
-						Dim actionLinkToTFSItem As ActionLinkToTFSItem = actionLinkToTFS.AddNewActionLinkToTFSItem()
-						actionLinkToTFSItem.TFSID = TFSCommentId
+                        Dim actionLinkToTFSItem As ActionLinkToTFSItem = actionLinkToTFS.AddNewActionLinkToTFSItem(updateActions(0).ActionID)
+                        actionLinkToTFSItem.TFSID = TFSCommentId
 						actionLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow
 						updateActions.Save()
-						actionLinkToTFSItem.ActionID = updateActions(0).ActionID
-						actionLinkToTFS.Save()
+                        'actionLinkToTFSItem.ActionID = updateActions(0).ActionID
+                        actionLinkToTFS.Save()
 
 						ClearCrmLinkError(crmLinkError)
 					Catch ex As Exception

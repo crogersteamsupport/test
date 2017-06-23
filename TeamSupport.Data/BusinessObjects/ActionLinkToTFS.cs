@@ -101,6 +101,15 @@ namespace TeamSupport.Data
             return null;
         }
 
+        public virtual ActionLinkToTFSItem AddNewActionLinkToTFSItem(int actionID)
+        {
+            if (Table.Columns.Count < 1) LoadColumns("ActionLinkToTFS");
+            DataRow row = Table.NewRow();
+            row["ActionID"] = actionID;
+            Table.Rows.Add(row);
+            return new TicketLinkToTFSItem(row, this);
+        }
+
     }
 
 }
