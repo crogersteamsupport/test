@@ -368,7 +368,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("TFSProjectName", SqlDbType.NVarChar, -1);
+		tempParameter = updateCommand.Parameters.Add("TFSProjectName", SqlDbType.NVarChar, 256);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -383,7 +383,7 @@ namespace TeamSupport.Data
 		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ProductVersionsView] (    [ProductVersionID],    [ProductID],    [ProductVersionStatusID],    [VersionNumber],    [ReleaseDate],    [IsReleased],    [Description],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [NeedsIndexing],    [VersionStatus],    [ProductName],    [OrganizationID],    [ProductFamilyID],    [JiraProjectKey],    [TFSProjectName]) VALUES ( @ProductVersionID, @ProductID, @ProductVersionStatusID, @VersionNumber, @ReleaseDate, @IsReleased, @Description, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @NeedsIndexing, @VersionStatus, @ProductName, @OrganizationID, @ProductFamilyID, @JiraProjectKey, @TFSProjectName); SET @Identity = SCOPE_IDENTITY();";
 
 		
-		tempParameter = insertCommand.Parameters.Add("TFSProjectName", SqlDbType.NVarChar, -1);
+		tempParameter = insertCommand.Parameters.Add("TFSProjectName", SqlDbType.NVarChar, 256);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

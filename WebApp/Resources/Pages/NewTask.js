@@ -177,7 +177,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").show();
         $(this).parent().parent().find("#ticketinsert").show();
-        $(this).parent().find(".arrow-up").css('left', '7px');
+        $(this).parent().find(".arrow-up").css('left', '6px');
         $('#associationsBreak').addClass('associationsBreakAdjustement');
     }).tooltip();
     $('.addticket').click(function (e) {
@@ -190,7 +190,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '30px');
+        $(this).parent().find(".arrow-up").css('left', '32px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
     $('.adduser').click(function (e) {
@@ -203,7 +203,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").show();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '53px');
+        $(this).parent().find(".arrow-up").css('left', '64px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
     $('.addcustomer').click(function (e) {
@@ -216,7 +216,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '78px');
+        $(this).parent().find(".arrow-up").css('left', '91px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
     $('.addcontact').click(function (e) {
@@ -229,7 +229,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '102px');
+        $(this).parent().find(".arrow-up").css('left', '124px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
     $('.addgroup').click(function (e) {
@@ -242,7 +242,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '128px');
+        $(this).parent().find(".arrow-up").css('left', '158px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
     $('.addproduct').click(function (e) {
@@ -255,7 +255,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '150px');
+        $(this).parent().find(".arrow-up").css('left', '193px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
 

@@ -200,6 +200,7 @@ $(document).ready(function () {
             window.parent.parent.Ts.Services.Task.LoadAssociations(_taskID, function (associations) {
                 for (var i = 0; i < associations.length; i++) {
                     var blockDiv = $('<div>')
+                    .addClass('associations')
                     .data('refID', associations[i].RefID)
                     .data('refType', associations[i].RefType)
                     .hover(function (e) {
@@ -218,7 +219,7 @@ $(document).ready(function () {
                     })
                     .appendTo(attdiv);
 
-                    var atticon = $('<span>')
+                    var atticon = $('<i>')
                     //.addClass('ts-icon ts-icon-attachment')
                     .appendTo(blockDiv);
 
@@ -232,42 +233,42 @@ $(document).ready(function () {
 
                     switch (associations[i].RefType) {
                         case window.parent.parent.Ts.ReferenceTypes.Tickets:
-                            atticon.addClass('ticketIcon');
+                            atticon.addClass('ticketIcon fa fa-ticket fa-fw');
                             link.text(ellipseString(associations[i].TicketNumber + ': ' + associations[i].TicketName, 100));
                             link.attr('href', window.parent.parent.Ts.System.AppDomain + '?TicketID=' + associations[i].RefID);
                             link.attr('target', '_blank');
                             link.attr('onclick', 'window.parent.parent.Ts.MainPage.openTicketByID(' + associations[i].RefID + '); return false;');
                             break;
                         case window.parent.parent.Ts.ReferenceTypes.Users:
-                            atticon.addClass('userIcon');
+                            atticon.addClass('userIcon fa fa-user fa-fw');
                             link.text(ellipseString(associations[i].User, 100));
                             link.attr('href', '#');
                             link.attr('target', '_blank');
                             link.attr('onclick', 'window.parent.parent.Ts.MainPage.openUser(' + associations[i].RefID + '); return false;');
                             break;
                         case window.parent.parent.Ts.ReferenceTypes.Organizations:
-                            atticon.addClass('companyIcon');
+                            atticon.addClass('companyIcon fa fa-building fa-fw');
                             link.text(ellipseString(associations[i].Company, 100));
                             link.attr('href', '#');
                             link.attr('target', '_blank');
                             link.attr('onclick', 'window.parent.parent.Ts.MainPage.openNewCustomer(' + associations[i].RefID + '); return false;');
                             break;
                         case window.parent.parent.Ts.ReferenceTypes.Contacts:
-                            atticon.addClass('contactIcon');
+                            atticon.addClass('contactIcon fa fa-user-circle-o fa-fw');
                             link.text(ellipseString(associations[i].Contact, 100));
                             link.attr('href', '#');
                             link.attr('target', '_blank');
                             link.attr('onclick', 'window.parent.parent.Ts.MainPage.openNewContact(' + associations[i].RefID + '); return false;');
                             break;
                         case window.parent.parent.Ts.ReferenceTypes.Groups:
-                            atticon.addClass('groupIcon');
+                            atticon.addClass('groupIcon fa fa-users fa-fw');
                             link.text(ellipseString(associations[i].Group, 100));
                             link.attr('href', '#');
                             link.attr('target', '_blank');
                             link.attr('onclick', 'window.parent.parent.Ts.MainPage.openGroup(' + associations[i].RefID + '); return false;');
                             break;
                         case window.parent.parent.Ts.ReferenceTypes.Products:
-                            atticon.addClass('productIcon');
+                            atticon.addClass('productIcon fa fa-truck fa-fw');
                             link.text(ellipseString(associations[i].Product, 100));
                             link.attr('href', '#');
                             link.attr('target', '_blank');
@@ -801,7 +802,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").show();
         $(this).parent().parent().find("#ticketinsert").show();
-        $(this).parent().find(".arrow-up").css('left', '7px');
+        $(this).parent().find(".arrow-up").css('left', '6px');
         $('#associationsBreak').addClass('associationsBreakAdjustement');
     }).tooltip();
     $('.addticket').click(function (e) {
@@ -814,7 +815,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '30px');
+        $(this).parent().find(".arrow-up").css('left', '32px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
     $('.adduser').click(function (e) {
@@ -827,7 +828,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").show();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '53px');
+        $(this).parent().find(".arrow-up").css('left', '64px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
     $('.addcustomer').click(function (e) {
@@ -840,7 +841,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '78px');
+        $(this).parent().find(".arrow-up").css('left', '91px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
     $('.addcontact').click(function (e) {
@@ -853,7 +854,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '102px');
+        $(this).parent().find(".arrow-up").css('left', '124px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
     $('.addgroup').click(function (e) {
@@ -866,7 +867,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '128px');
+        $(this).parent().find(".arrow-up").css('left', '158px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
     $('.addproduct').click(function (e) {
@@ -879,7 +880,7 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '150px');
+        $(this).parent().find(".arrow-up").css('left', '193px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
 
