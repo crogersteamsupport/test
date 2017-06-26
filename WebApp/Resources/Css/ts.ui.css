@@ -109,7 +109,7 @@ pre {border: 1px solid #2a3f54; margin: 1em 0; padding: .5em .5em; font-family:c
 
 .ui-widget-header a, .ui-widget-header a:link, .ui-widget-header a:visited, .ui-widget-header a:active { text-decoration: none;}
 .ui-widget-header a:hover { text-decoration: underline;}
-.ui-widget .ui-autocomplete-input, .ui-autocomplete-input, input.text  { padding: .2em .2em; text-align:left; height: 14px;}
+/*.ui-widget .ui-autocomplete-input, .ui-autocomplete-input, input.text  { padding: .2em .2em; text-align:left; height: 14px;}*/
 .ui-menu .ui-menu-item a { padding: 0 .1em 0 .2em; }
 /*.ui-button .ui-button-text-only, .ui-button-text-only .ui-button-text { line-height: 2em !important; padding: 0 .4em !important; }*/
 .ui-button, .ui-widget .ui-button{ font-weight:normal; padding:0; }
@@ -143,7 +143,7 @@ input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; wi
 .ts-rail-left { float: left; width: 300px; }
 .ts-content-right { margin-left: 320px; }
 
-.ts-setting-field { padding: 1em 0; border-top: 0; border-left: 0; border-right: 0;  border-style: dotted;}
+.ts-setting-field { padding: 1em 0; border-top: 0; border-left: 0; border-right: 0;  border-style: solid; border-color:#F7F7F9;}
 .ts-setting-field.last { border: 0; }
 .ts-setting-field.two-column .ts-setting-field-content { margin-left: 220px; }
 .ts-setting-field.two-column .ts-setting-field-description { float: left; width: 200px; }
