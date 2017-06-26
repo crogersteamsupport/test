@@ -3,12 +3,14 @@
 <head>
     <title></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="Tasks.css" rel="stylesheet" type="text/css" />
     <link href="../Css/standards.css" rel="stylesheet" type="text/css" />
     <link href="../Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
     <link href="../Css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css" />
     <link href="../Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
     <link href="../Css/tsbs.css" rel="stylesheet" type="text/css" />
     <link href="../Css/ts.editor.css" rel="stylesheet" />
+    <!--<link href="Tasks.css" rel="stylesheet" type="text/css" />-->
     <!--[if IE]><link href="../Css/tsbs-ie.css" rel="stylesheet" type="text/css" /><![endif]-->
     <link href="../Css/jquery-ui-bs3.min.css" rel="stylesheet" type="text/css" />
     <link href="contactdetail.css" rel="stylesheet" type="text/css" />
@@ -504,7 +506,7 @@
                                 </div>
                                 <div class="box-content">
                                     <div class="row">
-                                        <table class="table">
+                                        <table class="table table-striped">
                                             <thead>
                                                 <tr>
                                                     <td></td>
@@ -880,7 +882,9 @@
             <input {{taskComplete IsComplete}} type="checkbox" class="change-task-status" data-taskid="{{TaskID}}" />
         </td>
         <td>
-            {{Name}}
+            <a href="#" class="tasklink" id="cb{{TaskID}}" data-taskid="{{TaskID}}">
+                {{Name}}
+            </a>
         </td>
         <td>{{AssignedTo}}</td>
         <td>{{formatDate DueDate}}</</td>

@@ -342,3 +342,34 @@ div[data-toggle="collapse"] .ui-icon {
 .contactIcon {margin:2px 0px;width: 16px;height: 16px;float: left; border:none; background:none; background-image:url('../Images/nav/16/Contacts.png');cursor:pointer}
 .productIcon {margin:2px 2px;width: 16px;height: 16px;float: left; border:none; background:none; background-image:url('../Images/nav/16/Products.png');cursor:pointer}
 .userIcon {margin:2px 2px;width: 16px;height: 16px;float: left; border:none; background:none; background-image:url('../Images/nav/16/Users.png');cursor:pointer}
+
+table.table-striped > tbody > tr.over-due td {
+    background: #f2616E;
+    color: #FFFFFF;
+}
+
+tr.over-due > td > span > i, .over-due > td > a {
+    color: #FFFFFF;
+}
+
+/*Icons*/
+.associations > i {
+    color: #2A3F54;
+    margin: 0px 8px 0px 0px;
+    font-size: 1.3em;
+}
+
+    .associations > i:hover {
+        cursor: pointer;
+    }
+
+.add-associations > i {
+    color: #95A0AB;
+    margin: 0px 12px 0px 0px;
+    font-size: 1.5em !important;
+}
+
+    .add-associations > i:hover {
+        color: #2A3F54;
+        cursor: pointer;
+    }
