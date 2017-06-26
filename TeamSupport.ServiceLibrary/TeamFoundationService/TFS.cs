@@ -15,6 +15,8 @@ namespace TeamSupport.ServiceLibrary
     {
         private static string _hostname;
         private static string _accessToken;
+        private static string _username;
+        private static string _password;
         private static List<WorkItemField> _workItemFields;
 
         public TFS()
@@ -25,9 +27,19 @@ namespace TeamSupport.ServiceLibrary
         {
             _hostname = hostname;
             _accessToken = accessToken;
+            _username = string.Empty;
+            _password = string.Empty;
         }
 
-		public string GetProjects()
+        public TFS(string hostname, string username, string password)
+        {
+            _hostname = hostname;
+            _username = username;
+            _password = password;
+            _accessToken = string.Empty;
+        }
+
+        public string GetProjects()
         {
             string responseBody = null;
 
@@ -776,11 +788,42 @@ namespace TeamSupport.ServiceLibrary
             }
         }
 
+        public string UserName
+        {
+            get
+            {
+                return _username;
+            }
+            set
+            {
+                _username = value;
+            }
+        }
+
+        public string Password
+        {
+            get
+            {
+                return _password;
+            }
+            set
+            {
+                _password = value;
+            }
+        }
+
         private string EncodedCredentials
         {
             get
             {
-                return Data.DataUtils.GetEncodedCredentials(string.Empty, AccessToken);
+                if (!string.IsNullOrEmpty(_accessToken))
+                {
+                    return Data.DataUtils.GetEncodedCredentials(string.Empty, AccessToken);
+                }
+                else
+                {
+                    return Data.DataUtils.GetEncodedCredentials(UserName, Password);
+                }
             }
         }
 

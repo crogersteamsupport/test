@@ -48,30 +48,34 @@ Namespace TeamSupport
 					_baseURI = protocol + CRMLinkRow.HostName
 				End If
 
-				If CRMLinkRow.SecurityToken1 Is Nothing Then
-					result = False
-					AddLog("Security Token is missing and it is required to sync.")
-				End If
+                If CRMLinkRow.SecurityToken1 Is Nothing Then
+                    result = False
+                    AddLog("Security Token is missing and it is required to sync.")
+                End If
 
-				'//vv The following is not needed AS OF RIGHT NOW, if I end up using that library that needs the username and pasword then we'll also need to check for those credentials.
-				'If CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password Is Nothing Then
-				'    result = False
-				'    AddLog("Username and or Password are missing and they are required to sync.")
-				'Else
-				'    _encodedCredentials = DataUtils.GetEncodedCredentials(CRMLinkRow.Username, CRMLinkRow.Password)
-				'End If
+                If  CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password Is Nothing Then
+                    result = False
+                    AddLog("Username and or Password are missing and they are required to sync.")
+                Else
+                    _encodedCredentials = DataUtils.GetEncodedCredentials(CRMLinkRow.Username, CRMLinkRow.Password)
+                End If
 
-				'Make sure credentials are good
-				If (result) Then
-					Try
-						_tfs = New TFSLibrary(_baseURI, CRMLinkRow.SecurityToken1)
-						If (Not String.IsNullOrEmpty(_tfs.GetProjects())) Then
-							AddLog("Tfs credentials ok.")
-						Else
-							AddLog("Tfs credentials didn't work.")
-						End If
-					Catch ex As Exception
-						result = False
+                'Make sure credentials are good
+                If (result) Then
+                    Try
+                        If (CRMLinkRow.SecurityToken1 IsNot Nothing) Then
+                            _tfs = New TFSLibrary(_baseURI, CRMLinkRow.SecurityToken1)
+                        Else
+                            _tfs = New TFSLibrary(_baseURI, CRMLinkRow.Username, CRMLinkRow.Password)
+                        End If
+
+                        If (Not String.IsNullOrEmpty(_tfs.GetProjects())) Then
+                            AddLog("Tfs credentials ok.")
+                        Else
+                            AddLog("Tfs credentials didn't work.")
+                        End If
+                    Catch ex As Exception
+                        result = False
 						_exception = New IntegrationException(ex.InnerException.Message, ex)
 					End Try
 				End If
