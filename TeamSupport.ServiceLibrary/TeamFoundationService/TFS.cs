@@ -275,33 +275,15 @@ namespace TeamSupport.ServiceLibrary
 
 			try
 			{
-				using (HttpClient client = new HttpClient())
-				{
-					client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-					client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
-
-					using (HttpResponseMessage response = client.GetAsync(string.Format("{0}/DefaultCollection/_apis/wit/workItems/{1}?api-version=2.2{2}", HostName, workItemId, (expandAll ? "&$expand=all" : ""))).Result)
-					{
-						response.EnsureSuccessStatusCode();
-
-						if (response.StatusCode.ToString().ToLower() == "ok")
-						{
-							string responseBody = response.Content.ReadAsStringAsync().Result;
-							workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(responseBody);
-						}
-						else
-						{
-							var contents = response.Content.ReadAsStringAsync().Result;
-							TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
-							throw new TFSClientException(tfsError);
-						}
-					}
-				}
+                string response = MakeRequest(string.Format("{0}/_apis/wit/workItems/{1}?api-version=2.2{2}", HostName, workItemId, (expandAll ? "&$expand=all" : "")), ApiMethod.Get);
+                workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(response);
 			}
 			catch (Exception ex)
 			{
-				throw;
-			}
+                //var contents = response.Content.ReadAsStringAsync().Result;
+                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
+                //throw new TFSClientException(tfsError);
+            }
 
 			return workItem;
 		}
@@ -312,29 +294,17 @@ namespace TeamSupport.ServiceLibrary
 
 			try
 			{
-				using (HttpClient client = new HttpClient())
-				{
-					client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-					client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
-
-					using (HttpResponseMessage response = client.GetAsync(string.Format("{0}/DefaultCollection/_apis/wit/workItems/{1}/comments", HostName, workItemId)).Result)
-					{
-						response.EnsureSuccessStatusCode();
-
-						if (response.StatusCode.ToString().ToLower() == "ok")
-						{
-							string responseBody = response.Content.ReadAsStringAsync().Result;
-							comments = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemCommentList>(responseBody);
-						}
-					}
-				}
+                string response = MakeRequest(string.Format("{0}/_apis/wit/workItems/{1}/comments", HostName, workItemId), ApiMethod.Get);
+                comments = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemCommentList>(response);
 			}
 			catch (Exception ex)
 			{
-				//vv
-			}
+                //var contents = response.Content.ReadAsStringAsync().Result;
+                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
+                //throw new TFSClientException(tfsError);
+            }
 
-			return comments;
+            return comments;
 		}
 
 		public WorkItemComment GetCommentBy(int workItemId, int revisionId)
@@ -343,29 +313,17 @@ namespace TeamSupport.ServiceLibrary
 
 			try
 			{
-				using (HttpClient client = new HttpClient())
-				{
-					client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-					client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
-
-					using (HttpResponseMessage response = client.GetAsync(string.Format("{0}/DefaultCollection/_apis/wit/workItems/{1}/comments/{2}", HostName, workItemId, revisionId)).Result)
-					{
-						response.EnsureSuccessStatusCode();
-
-						if (response.StatusCode.ToString().ToLower() == "ok")
-						{
-							string responseBody = response.Content.ReadAsStringAsync().Result;
-							comments = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemComment>(responseBody);
-						}
-					}
-				}
+                string response = MakeRequest(string.Format("{0}/_apis/wit/workItems/{1}/comments/{2}", HostName, workItemId, revisionId), ApiMethod.Get);
+                comments = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemComment>(response);
 			}
 			catch (Exception ex)
 			{
-				//vv
-			}
+                //var contents = response.Content.ReadAsStringAsync().Result;
+                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
+                //throw new TFSClientException(tfsError);
+            }
 
-			return comments;
+            return comments;
 		}
 
 		public WorkItem CreateWorkItem(List<WorkItemField> fields, string project, string type)
@@ -547,26 +505,17 @@ namespace TeamSupport.ServiceLibrary
         {
             List<WorkItemField> resultList = new List<WorkItemField>();
 
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri(HostName);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
-
-                HttpResponseMessage response = client.GetAsync("_apis/wit/fields?api-version=2.2").Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    WorkItemFields result = response.Content.ReadAsAsync<WorkItemFields>().Result;
-                    resultList = new List<WorkItemField>(result.value);
-                }
-				else
-				{
-					var contents = response.Content.ReadAsStringAsync().Result;
-					TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
-					throw new TFSClientException(tfsError);
-				}
+                string response = MakeRequest(string.Format("{0}/_apis/wit/fields?api-version=2.2", HostName), ApiMethod.Get);
+                WorkItemFields workItemFields = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemFields>(response);
+                resultList = new List<WorkItemField>(workItemFields.value);
+            }
+            catch (Exception ex)
+            {
+                //var contents = response.Content.ReadAsStringAsync().Result;
+                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
+                //throw new TFSClientException(tfsError);
             }
 
             _workItemFields = resultList;
