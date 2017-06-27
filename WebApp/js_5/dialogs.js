@@ -177,7 +177,7 @@ function GetMyCompanyDialog(organizationID) {
     if (organizationID != null) {
         url = url + '?OrganizationID=' + organizationID;
     }
-    wnd.setSize(800, 500);
+    wnd.setSize(820, 500);
 
     wnd.setUrl(url);
     return wnd;

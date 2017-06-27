@@ -77,7 +77,11 @@ input[type=checkbox] {
   transform: scale(1.2);
 }
 
-.associations > i {
-    color:#2A3F54;
-    margin:0px 6px 0px 0px;
+table.table-striped > tbody > tr.over-due td {
+    background: #f2616E;
+    color: #FFFFFF;
+}
+
+tr.over-due > td > span > i, .over-due > td > a {
+    color: #FFFFFF;
 }

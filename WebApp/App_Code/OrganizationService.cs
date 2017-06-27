@@ -475,7 +475,8 @@ namespace TSWebServices
             bool includeIssueNonRequired,
             string restrictedToTicketTypes,
             string excludedTicketStatuses,
-            string jiraInstanceName
+            string jiraInstanceName,
+            bool useNetworkCredentials
             )
         {
             if (!TSAuthentication.IsSystemAdmin) return null;
@@ -526,6 +527,7 @@ namespace TSWebServices
             item.IncludeIssueNonRequired = includeIssueNonRequired;
             item.RestrictedToTicketTypes = restrictedToTicketTypes;
             item.ExcludedTicketStatusUpdate = excludedTicketStatuses;
+            item.UseNetworkCredentials = useNetworkCredentials;
 
             item.Collection.Save();
 

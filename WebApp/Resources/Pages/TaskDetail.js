@@ -162,6 +162,7 @@ $(document).ready(function () {
             //}
             for (var i = 0; i < attachments.length; i++) {
                 var blockDiv = $('<div>')
+                .addClass('associations')
                 .data('attachmentID', attachments[i].AttachmentID)
                 .hover(function (e) {
                     $(this).find('.associationDelete').show();
@@ -179,8 +180,8 @@ $(document).ready(function () {
 	            })
                 .appendTo(attdiv);
 
-                var atticon = $('<span>')
-                .addClass('ts-icon ts-icon-attachment')
+                var atticon = $('<i>')
+                .addClass('fa-paperclip fa fa-fw')
                 .appendTo(blockDiv);
 
                 $('<a>')

@@ -333,7 +333,7 @@ $(document).ready(function () {
 
         if (task.DueDate != null) {
             if (task.IsComplete != true && new Date() > new Date(task.DueDate)) {
-                cssClasses = 'danger';
+                cssClasses = 'over-due';
             }
             else {
                 return null;

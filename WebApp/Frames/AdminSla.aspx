@@ -11,7 +11,7 @@
     }
     .divTriggers thead
     {
-      background-color: #D6E6F4;
+      background-color: #E2E2E2;
       border-bottom: solid 1px #73A3FE;
       text-align:left;
     }

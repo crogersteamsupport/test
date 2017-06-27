@@ -503,7 +503,7 @@ AdminAuto = function () {
     }
     else {
       var input = $('<input>')
-        .addClass('text ui-corner-all ui-widget-content condition-value')
+        .addClass('ui-corner-all ui-widget-content condition-value form-control')
         .attr('type', 'text')
         .width('200px')
         .keydown(function () { isModified(true); })
@@ -676,7 +676,7 @@ AdminAuto = function () {
       case 'ContactList':
       case 'TextBox':
         var input = $('<input type="text">')
-          .addClass('action-value ui-widget-content ui-corner-all text')
+          .addClass('action-value ui-widget-content ui-corner-all form-control')
           .width('250px')
           .insertAfter(select);
         select.remove();
@@ -723,7 +723,7 @@ AdminAuto = function () {
       case 'CustomFieldList':
         loadComboCustomFields(select).combobox('update');
         var input = $('<input type="text">')
-          .addClass('action-value2 ui-widget-content ui-corner-all text')
+          .addClass('action-value2 ui-widget-content ui-corner-all form-control')
           .width('250px')
           .val(value2)
           .insertAfter(select.next());
