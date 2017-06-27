@@ -41,7 +41,6 @@ namespace TeamSupport.ServiceLibrary
             _accessToken = string.Empty;
         }
 
-        //vv
         private string MakeRequest(string uri, ApiMethod method, string patchDocument = null)
         {
             string result = null;
@@ -56,13 +55,7 @@ namespace TeamSupport.ServiceLibrary
             {
                 client.Headers.Add(HttpRequestHeader.ContentType, contentType);
 
-                bool useApiToken = !string.IsNullOrEmpty(AccessToken);
-
-                if (useApiToken)
-                {
-                    client.Headers.Add(HttpRequestHeader.Authorization, "Basic " + EncodedCredentials);
-                }
-                else if (_useNetworkCredentials)
+                if (_useNetworkCredentials)
                 {
                     NetworkCredential netCred = new NetworkCredential(UserName, Password);
                     client.Credentials = netCred;
@@ -128,7 +121,6 @@ namespace TeamSupport.ServiceLibrary
         public string GetWorkItemsJsonBy(List<int> workItemIds, DateTime? lastLink)
         {
             var result = "";
-            //vv see a few lines below. string credentials = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", "", AccessToken)));
             string idsCommaSeparated = string.Join(",", workItemIds);
             string dateOnly = "1900-01-01";
             
@@ -154,7 +146,7 @@ namespace TeamSupport.ServiceLibrary
                 client.BaseAddress = new Uri(HostName);
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials); //ToDo //vv check that this is the same as: credentials
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
 
                 //serialize the wiql object into a json string. MediaType needs to be application/json for a post call
                 var postValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(wiql), Encoding.UTF8, "application/json");
@@ -212,7 +204,6 @@ namespace TeamSupport.ServiceLibrary
 		public WorkItems GetWorkItemsBy(List<int> workItemIds, DateTime? lastLink)
 		{
 			WorkItems result = new WorkItems();
-			//vv see a few lines below. string credentials = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", "", AccessToken)));
 			string idsCommaSeparated = string.Join(",", workItemIds);
 			string dateOnly = "1900-01-01";
 
@@ -265,14 +256,27 @@ namespace TeamSupport.ServiceLibrary
                     result = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItems>(response);
                 }
             }
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
+
+                if (responseStream != null)
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                        throw new TFSClientException(tfsError);
+                    }
+                }
+            }
             catch (Exception ex)
             {
-                //var contents = response.Content.ReadAsStringAsync().Result;
-                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
-                //throw new TFSClientException(tfsError);
+                throw;
             }
 
-			return result;
+            return result;
 		}
 
 		public WorkItem GetWorkItemBy(int workItemId, bool expandAll = false)
@@ -284,14 +288,27 @@ namespace TeamSupport.ServiceLibrary
                 string response = MakeRequest(string.Format("{0}/_apis/wit/workItems/{1}?api-version=2.2{2}", HostName, workItemId, (expandAll ? "&$expand=all" : "")), ApiMethod.Get);
                 workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(response);
 			}
-			catch (Exception ex)
-			{
-                //var contents = response.Content.ReadAsStringAsync().Result;
-                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
-                //throw new TFSClientException(tfsError);
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
+
+                if (responseStream != null)
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                        throw new TFSClientException(tfsError);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
 
-			return workItem;
+            return workItem;
 		}
 
 		public WorkItemCommentList GetCommentsBy(int workItemId)
@@ -303,11 +320,24 @@ namespace TeamSupport.ServiceLibrary
                 string response = MakeRequest(string.Format("{0}/_apis/wit/workItems/{1}/comments", HostName, workItemId), ApiMethod.Get);
                 comments = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemCommentList>(response);
 			}
-			catch (Exception ex)
-			{
-                //var contents = response.Content.ReadAsStringAsync().Result;
-                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
-                //throw new TFSClientException(tfsError);
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
+
+                if (responseStream != null)
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                        throw new TFSClientException(tfsError);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
 
             return comments;
@@ -322,11 +352,24 @@ namespace TeamSupport.ServiceLibrary
                 string response = MakeRequest(string.Format("{0}/_apis/wit/workItems/{1}/comments/{2}", HostName, workItemId, revisionId), ApiMethod.Get);
                 comments = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemComment>(response);
 			}
-			catch (Exception ex)
-			{
-                //var contents = response.Content.ReadAsStringAsync().Result;
-                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
-                //throw new TFSClientException(tfsError);
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
+
+                if (responseStream != null)
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                        throw new TFSClientException(tfsError);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
 
             return comments;
@@ -343,11 +386,24 @@ namespace TeamSupport.ServiceLibrary
                 string result = MakeRequest(HostName + "/" + project + "/_apis/wit/workitems/$" + type + "?api-version=2.2", ApiMethod.Patch, patchValue.ReadAsStringAsync().Result);
                 workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
             }
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
+
+                if (responseStream != null)
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                        throw new TFSClientException(tfsError);
+                    }
+                }
+            }
             catch (Exception ex)
             {
-                //var contents = response.Content.ReadAsStringAsync().Result;
-                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
-                //throw new TFSClientException(tfsError);
+                throw;
             }
 
             return workItem;
@@ -371,14 +427,27 @@ namespace TeamSupport.ServiceLibrary
                 WorkItem workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
                 commentId = (int)workItem.Rev;
             }
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
+
+                if (responseStream != null)
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                        throw new TFSClientException(tfsError);
+                    }
+                }
+            }
             catch (Exception ex)
             {
-                //var contents = response.Content.ReadAsStringAsync().Result;
-                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
-                //throw new TFSClientException(tfsError);
+                throw;
             }
 
-			return commentId;
+            return commentId;
 		}
 
 		public void CreateTeamSupportHyperlink(int workItemId, string remoteLink, string comment)
@@ -391,13 +460,26 @@ namespace TeamSupport.ServiceLibrary
             {
                 string result = MakeRequest(HostName + "/_apis/wit/workitems/" + workItemId + "?api-version=2.2", ApiMethod.Patch, patchValue.ReadAsStringAsync().Result);
             }
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
+
+                if (responseStream != null)
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                        throw new TFSClientException(tfsError);
+                    }
+                }
+            }
             catch (Exception ex)
             {
-                //var contents = response.Content.ReadAsStringAsync().Result;
-                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
-                //throw new TFSClientException(tfsError);
+                throw;
             }
-		}
+        }
 
 		public WorkItem UpdateWorkItem(int workItemId, List<WorkItemField> fields)
 		{
@@ -411,14 +493,27 @@ namespace TeamSupport.ServiceLibrary
                 string result = MakeRequest(HostName + "/_apis/wit/workitems/" + workItemId.ToString() + "?api-version=2.2", ApiMethod.Patch, patchValue.ReadAsStringAsync().Result);
                 workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
             }
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
+
+                if (responseStream != null)
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                        throw new TFSClientException(tfsError);
+                    }
+                }
+            }
             catch (Exception ex)
             {
-                //var contents = response.Content.ReadAsStringAsync().Result;
-                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
-                //throw new TFSClientException(tfsError);
+                throw;
             }
 
-			return workItem;
+            return workItem;
 		}
 
 		public void DeleteTeamSupportHyperlink(int workItemId, int ticketId)
@@ -441,13 +536,26 @@ namespace TeamSupport.ServiceLibrary
                     {
                         string result = MakeRequest(HostName + "/_apis/wit/workitems/" + workItemId + "?api-version=2.2", ApiMethod.Patch, patchValue.ReadAsStringAsync().Result);
                     }
+                    catch (WebException webEx)
+                    {
+                        string exceptionResponse;
+                        var responseStream = webEx.Response?.GetResponseStream();
+
+                        if (responseStream != null)
+                        {
+                            using (var reader = new StreamReader(responseStream))
+                            {
+                                exceptionResponse = reader.ReadToEnd();
+                                TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                                throw new TFSClientException(tfsError);
+                            }
+                        }
+                    }
                     catch (Exception ex)
                     {
-                        //var contents = response.Content.ReadAsStringAsync().Result;
-                        //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
-                        //throw new TFSClientException(tfsError);
+                        throw;
                     }
-				}
+                }
 			}
 		}
 
@@ -459,8 +567,7 @@ namespace TeamSupport.ServiceLibrary
 			string boundary = "---------------------------" + DateTime.Now.Ticks.ToString("x");
 			request.Headers.Add("Authorization", "Basic " + EncodedCredentials);
 			request.Method = "POST";
-			//vv request.ContentType = "application/octet-stream; boundary=" + boundary;
-			request.ContentType = "application/octet-stream;";//vv
+			request.ContentType = "application/octet-stream;";
 			request.Accept = "text/html, application/xhtml+xml, */*";
 			request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip, deflate");
 
@@ -496,13 +603,26 @@ namespace TeamSupport.ServiceLibrary
                     string resultContent = MakeRequest(HostName + "/_apis/wit/workitems/" + workItemId + "?api-version=2.2", ApiMethod.Patch, patchValue.ReadAsStringAsync().Result);
                     result = true;
                 }
+                catch (WebException webEx)
+                {
+                    string exceptionResponse;
+                    var responseStream = webEx.Response?.GetResponseStream();
+
+                    if (responseStream != null)
+                    {
+                        using (var reader = new StreamReader(responseStream))
+                        {
+                            exceptionResponse = reader.ReadToEnd();
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                    }
+                }
                 catch (Exception ex)
                 {
-                    //var contents = response.Content.ReadAsStringAsync().Result;
-                    //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
-                    //throw new TFSClientException(tfsError);
+                    throw;
                 }
-			}
+            }
 
 			return result;
 		}
@@ -517,11 +637,24 @@ namespace TeamSupport.ServiceLibrary
                 WorkItemFields workItemFields = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemFields>(response);
                 resultList = new List<WorkItemField>(workItemFields.value);
             }
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
+
+                if (responseStream != null)
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                        throw new TFSClientException(tfsError);
+                    }
+                }
+            }
             catch (Exception ex)
             {
-                //var contents = response.Content.ReadAsStringAsync().Result;
-                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
-                //throw new TFSClientException(tfsError);
+                throw;
             }
 
             _workItemFields = resultList;
