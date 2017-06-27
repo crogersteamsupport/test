@@ -40,7 +40,7 @@ namespace TeamSupport.ServiceLibrary
         }
 
         //vv
-        private string MakeRequest(string uri, ApiMethod method)
+        private string MakeRequest(string uri, ApiMethod method, string patchDocument = null)
         {
             string result = null;
             string contentType = "application/json";
@@ -66,23 +66,17 @@ namespace TeamSupport.ServiceLibrary
                     client.Credentials = netCred;
                 }
 
-                Stream stream = new MemoryStream();
                 if (method == ApiMethod.Get)
                 {
-                    stream = client.OpenRead(uri);
+                    Stream stream = client.OpenRead(uri);
+                    StreamReader sr = new StreamReader(stream);
+                    result = sr.ReadToEnd();
                 }
                 else
                 {
-                    //var data = JsonConvert.SerializeObject(new
-                    //{
-                    //    Property1 = 1,
-                    //    Property2 = "blah"
-                    //});
-                    //stream = client.UploadData(uri, data);
+                    byte[] response = client.UploadData(uri, Encoding.UTF8.GetBytes(patchDocument));
+                    result = client.Encoding.GetString(response);
                 }
-                
-                StreamReader sr = new StreamReader(stream);
-                result = sr.ReadToEnd();
             }
 
             return result;
@@ -397,29 +391,18 @@ namespace TeamSupport.ServiceLibrary
         {
             WorkItem workItem = new WorkItem();
 			Object[] patchDocument = GetPatchDocument(fields);
+            var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json"); // mediaType needs to be application/json-patch+json for a patch call
 
-            using (var client = new HttpClient())
+            try
             {
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json-patch+json"));
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
-
-                var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json"); // mediaType needs to be application/json-patch+json for a patch call
-                var method = new HttpMethod("PATCH");
-                var request = new HttpRequestMessage(method, HostName + "/DefaultCollection/" + project + "/_apis/wit/workitems/$" + type + "?api-version=2.2") { Content = patchValue };
-                var response = client.SendAsync(request).Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = response.Content.ReadAsStringAsync().Result;
-                    workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
-                }
-                else
-                {
-					var contents = response.Content.ReadAsStringAsync().Result;
-					TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
-					throw new TFSClientException(tfsError);
-                }
+                string result = MakeRequest(HostName + "/" + project + "/_apis/wit/workitems/$" + type + "?api-version=2.2", ApiMethod.Patch, patchValue.ReadAsStringAsync().Result);
+                workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
+            }
+            catch (Exception ex)
+            {
+                //var contents = response.Content.ReadAsStringAsync().Result;
+                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
+                //throw new TFSClientException(tfsError);
             }
 
             return workItem;
@@ -435,25 +418,20 @@ namespace TeamSupport.ServiceLibrary
 
 			Object[] patchDocument = GetPatchDocument(field);
 
-			using (var client = new HttpClient())
-			{
-				client.DefaultRequestHeaders.Accept.Clear();
-				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json-patch+json"));
-				client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+            var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json"); // mediaType needs to be application/json-patch+json for a patch call
 
-				var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json");
-				var method = new HttpMethod("PATCH");
-				var request = new HttpRequestMessage(method, HostName + "/DefaultCollection/_apis/wit/workitems/" + workItemId + "?api-version=2.2") { Content = patchValue };
-				var response = client.SendAsync(request).Result;
-
-				if (response.IsSuccessStatusCode)
-				{
-					var result = response.Content.ReadAsStringAsync().Result;
-					WorkItem workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
-					//ToDo //vv needed? WorkItemComment workItemComment = GetCommentBy((int)workItem.Id, (int)workItem.Rev);
-					commentId = (int)workItem.Rev;
-				}
-			}
+            try
+            {
+                string result = MakeRequest(HostName + "/_apis/wit/workitems/" + workItemId + "?api-version=2.2", ApiMethod.Patch, patchValue.ReadAsStringAsync().Result);
+                WorkItem workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
+                commentId = (int)workItem.Rev;
+            }
+            catch (Exception ex)
+            {
+                //var contents = response.Content.ReadAsStringAsync().Result;
+                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
+                //throw new TFSClientException(tfsError);
+            }
 
 			return commentId;
 		}
@@ -462,22 +440,18 @@ namespace TeamSupport.ServiceLibrary
 		{
 			Object[] patchDocument = GetPatchDocumentForRelations(RelationsType.Hyperlink, remoteLink, comment);
 
-			using (var client = new HttpClient())
-			{
-				client.DefaultRequestHeaders.Accept.Clear();
-				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json-patch+json"));
-				client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+            var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json"); // mediaType needs to be application/json-patch+json for a patch call
 
-				var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json");
-				var method = new HttpMethod("PATCH");
-				var request = new HttpRequestMessage(method, HostName + "/DefaultCollection/_apis/wit/workitems/" + workItemId + "?api-version=2.2") { Content = patchValue };
-				var response = client.SendAsync(request).Result;
-
-				if (response.IsSuccessStatusCode)
-				{
-					var result = response.Content.ReadAsStringAsync().Result;
-				}
-			}
+            try
+            {
+                string result = MakeRequest(HostName + "/_apis/wit/workitems/" + workItemId + "?api-version=2.2", ApiMethod.Patch, patchValue.ReadAsStringAsync().Result);
+            }
+            catch (Exception ex)
+            {
+                //var contents = response.Content.ReadAsStringAsync().Result;
+                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
+                //throw new TFSClientException(tfsError);
+            }
 		}
 
 		public WorkItem UpdateWorkItem(int workItemId, List<WorkItemField> fields)
@@ -485,24 +459,19 @@ namespace TeamSupport.ServiceLibrary
 			WorkItem workItem = new WorkItem();
 			Object[] patchDocument = GetPatchDocument(fields);
 
-			using (var client = new HttpClient())
-			{
-				client.DefaultRequestHeaders.Accept.Clear();
-				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json-patch+json"));
-				client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+            var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json"); // mediaType needs to be application/json-patch+json for a patch call
 
-				var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json"); // mediaType needs to be application/json-patch+json for a patch call
-				var method = new HttpMethod("PATCH");
-				var request = new HttpRequestMessage(method, HostName + "/DefaultCollection/_apis/wit/workitems/" + workItemId.ToString() + "?api-version=2.2") { Content = patchValue };
-				var response = client.SendAsync(request).Result;
-
-				if (response.IsSuccessStatusCode)
-				{
-					var result = response.Content.ReadAsStringAsync().Result;
-					workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
-
-				}
-			}
+            try
+            {
+                string result = MakeRequest(HostName + "/_apis/wit/workitems/" + workItemId.ToString() + "?api-version=2.2", ApiMethod.Patch, patchValue.ReadAsStringAsync().Result);
+                workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
+            }
+            catch (Exception ex)
+            {
+                //var contents = response.Content.ReadAsStringAsync().Result;
+                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
+                //throw new TFSClientException(tfsError);
+            }
 
 			return workItem;
 		}
@@ -521,22 +490,18 @@ namespace TeamSupport.ServiceLibrary
 				{
 					Object[] patchDocument = GetPatchDocumentForRelationsDelete(RelationsType.Hyperlink, i);
 
-					using (var client = new HttpClient())
-					{
-						client.DefaultRequestHeaders.Accept.Clear();
-						client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json-patch+json"));
-						client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+                    var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json"); // mediaType needs to be application/json-patch+json for a patch call
 
-						var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json");
-						var method = new HttpMethod("PATCH");
-						var request = new HttpRequestMessage(method, HostName + "/DefaultCollection/_apis/wit/workitems/" + workItemId + "?api-version=2.2") { Content = patchValue };
-						var response = client.SendAsync(request).Result;
-
-						if (!response.IsSuccessStatusCode)
-						{
-							//ToDo //vv we have to return the error somehow..
-						}
-					}
+                    try
+                    {
+                        string result = MakeRequest(HostName + "/_apis/wit/workitems/" + workItemId + "?api-version=2.2", ApiMethod.Patch, patchValue.ReadAsStringAsync().Result);
+                    }
+                    catch (Exception ex)
+                    {
+                        //var contents = response.Content.ReadAsStringAsync().Result;
+                        //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
+                        //throw new TFSClientException(tfsError);
+                    }
 				}
 			}
 		}
@@ -579,23 +544,19 @@ namespace TeamSupport.ServiceLibrary
 				AttachmentInfo attachmentinfo = Newtonsoft.Json.JsonConvert.DeserializeObject<AttachmentInfo>(streamResult);
 				Object[] patchDocument = GetPatchDocumentForRelations(RelationsType.AttachedFile, attachmentinfo.url, fileName);
 
-				using (var client = new HttpClient())
-				{
-					client.DefaultRequestHeaders.Accept.Clear();
-					client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json-patch+json"));
-					client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+                var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json"); // mediaType needs to be application/json-patch+json for a patch call
 
-					var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json");
-					var method = new HttpMethod("PATCH");
-					var requestMessage = new HttpRequestMessage(method, HostName + "/DefaultCollection/_apis/wit/workitems/" + workItemId + "?api-version=2.2") { Content = patchValue };
-					var response = client.SendAsync(requestMessage).Result;
-
-					if (response.IsSuccessStatusCode)
-					{
-						var resultContent = response.Content.ReadAsStringAsync().Result;
-						result = true;
-					}
-				}
+                try
+                {
+                    string resultContent = MakeRequest(HostName + "/_apis/wit/workitems/" + workItemId + "?api-version=2.2", ApiMethod.Patch, patchValue.ReadAsStringAsync().Result);
+                    result = true;
+                }
+                catch (Exception ex)
+                {
+                    //var contents = response.Content.ReadAsStringAsync().Result;
+                    //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
+                    //throw new TFSClientException(tfsError);
+                }
 			}
 
 			return result;
