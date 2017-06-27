@@ -227,63 +227,44 @@ namespace TeamSupport.ServiceLibrary
 						"Order By [Changed Date] Desc"
 			};
 
-			using (var client = new HttpClient())
-			{
-				client.BaseAddress = new Uri(HostName);
-				client.DefaultRequestHeaders.Accept.Clear();
-				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-				client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials); //ToDo //vv check that this is the same as: credentials
+            var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(wiql), Encoding.UTF8, "application/json");
 
-				//serialize the wiql object into a json string. MediaType needs to be application/json for a post call
-				var postValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(wiql), Encoding.UTF8, "application/json");
-				var method = new HttpMethod("POST");
+            try
+            {
+                string response = MakeRequest(string.Format("{0}/_apis/wit/wiql?api-version=2.2", HostName), ApiMethod.Post, patchValue.ReadAsStringAsync().Result);
+                WorkItemQueryResult workItemQueryResult = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemQueryResult>(response);
 
-				//ToDo //vv The example I found for this uses the api version 2.2, the other examples uses 1.0. Check which one should we use and where to check the api versions.
-				var httpRequestMessage = new HttpRequestMessage(method, string.Format("{0}/_apis/wit/wiql?api-version=2.2", HostName)) { Content = postValue };
-				var httpResponseMessage = client.SendAsync(httpRequestMessage).Result;
+                //now that we have a bunch of work items, build a list of id's so we can get details
+                var builder = new StringBuilder();
 
-				if (httpResponseMessage.IsSuccessStatusCode)
-				{
-					WorkItemQueryResult workItemQueryResult = httpResponseMessage.Content.ReadAsAsync<WorkItemQueryResult>().Result;
+                foreach (var item in workItemQueryResult.WorkItems)
+                {
+                    builder.Append(item.Id.ToString()).Append(",");
+                }
 
-					//now that we have a bunch of work items, build a list of id's so we can get details
-					var builder = new StringBuilder();
+                string ids = builder.ToString().TrimEnd(new char[] { ',' });
 
-					foreach (var item in workItemQueryResult.WorkItems)
-					{
-						builder.Append(item.Id.ToString()).Append(",");
-					}
+                if (!string.IsNullOrEmpty(ids))
+                {
+                    //vv we could just bring the specific fields if needed, I don't see this happening now.
+                    //string fieldsCommaSeparated = string.Join(",", fields);
+                    //string queryString = string.Format("_apis/wit/workitems?ids={0}&fields={1}&asOf={2}&api-version=2.2", ids, fieldsCommaSeparated, workItemQueryResult.AsOf);
 
-					string ids = builder.ToString().TrimEnd(new char[] { ',' });
+                    //ToDo //vv The 'asOf' should be the last processed timestamp
+                    //ToDo //vv we probably should have a 'max' of ids here because there is a limit in the query string size. We'll need to loop if needed. https://stackoverflow.com/questions/812925/what-is-the-maximum-possible-length-of-a-query-string
 
-					if (!string.IsNullOrEmpty(ids))
-					{
-						//vv we could just bring the specific fields if needed, I don't see this happening now.
-						//string fieldsCommaSeparated = string.Join(",", fields);
-						//string queryString = string.Format("_apis/wit/workitems?ids={0}&fields={1}&asOf={2}&api-version=2.2", ids, fieldsCommaSeparated, workItemQueryResult.AsOf);
+                    string queryString = string.Format("_apis/wit/workitems?ids={0}&asOf={1}&api-version=2.2", ids, workItemQueryResult.AsOf);
+                    response = MakeRequest(HostName + "/" + queryString, ApiMethod.Get);
 
-						//ToDo //vv The 'asOf' should be the last processed timestamp
-						//ToDo //vv we probably should have a 'max' of ids here because there is a limit in the query string size. We'll need to loop if needed. https://stackoverflow.com/questions/812925/what-is-the-maximum-possible-length-of-a-query-string
-
-						string queryString = string.Format("_apis/wit/workitems?ids={0}&asOf={1}&api-version=2.2", ids, workItemQueryResult.AsOf);
-						HttpResponseMessage getWorkItemsHttpResponse = client.GetAsync(queryString).Result;
-
-						if (getWorkItemsHttpResponse.IsSuccessStatusCode)
-						{
-							string jsonResult = getWorkItemsHttpResponse.Content.ReadAsStringAsync().Result;
-							result = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItems>(jsonResult);
-						}
-						else
-						{
-							//ToDo //vv we have to return the error somehow..
-						}
-					}
-				}
-				else
-				{
-					//ToDo //vv we have to return the error somehow..
-				}
-			}
+                    result = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItems>(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                //var contents = response.Content.ReadAsStringAsync().Result;
+                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
+                //throw new TFSClientException(tfsError);
+            }
 
 			return result;
 		}
@@ -685,6 +666,7 @@ namespace TeamSupport.ServiceLibrary
 			return postDataStream;
 		}
 
+        [Serializable]
 		public class WorkItems
 		{
 			public int count { get; set; }
