@@ -69,10 +69,11 @@ Namespace TeamSupport
                             _tfs = New TFSLibrary(_baseURI, CRMLinkRow.Username, CRMLinkRow.Password)
                         End If
 
-                        If (Not String.IsNullOrEmpty(_tfs.GetProjects())) Then
+                        Dim errorMessage As String = _tfs.CheckCredentialsAndHost()
+                        If (String.IsNullOrEmpty(errorMessage)) Then
                             AddLog("Tfs credentials ok.")
                         Else
-                            AddLog("Tfs credentials didn't work.")
+                            AddLog("Tfs credentials didn't work. " + errorMessage)
                         End If
                     Catch ex As Exception
                         result = False

@@ -39,31 +39,87 @@ namespace TeamSupport.ServiceLibrary
             _accessToken = string.Empty;
         }
 
-        public string GetProjects()
+        //vv
+        private string MakeRequest(string uri, ApiMethod method)
+        {
+            string result = null;
+            string contentType = "application/json";
+
+            if (method == ApiMethod.Patch)
+            {
+                contentType = "application/json-patch+json";
+            }
+
+            using (var client = new WebClient { UseDefaultCredentials = false })
+            {
+                client.Headers.Add(HttpRequestHeader.ContentType, contentType);
+
+                bool useApiToken = !string.IsNullOrEmpty(AccessToken);
+
+                if (useApiToken)
+                {
+                    client.Headers.Add(HttpRequestHeader.Authorization, "Basic " + EncodedCredentials);
+                }
+                else
+                {
+                    NetworkCredential netCred = new NetworkCredential(UserName, Password);
+                    client.Credentials = netCred;
+                }
+
+                Stream stream = new MemoryStream();
+                if (method == ApiMethod.Get)
+                {
+                    stream = client.OpenRead(uri);
+                }
+                else
+                {
+                    //var data = JsonConvert.SerializeObject(new
+                    //{
+                    //    Property1 = 1,
+                    //    Property2 = "blah"
+                    //});
+                    //stream = client.UploadData(uri, data);
+                }
+                
+                StreamReader sr = new StreamReader(stream);
+                result = sr.ReadToEnd();
+            }
+
+            return result;
+        }
+
+        public string CheckCredentialsAndHost()
         {
             string responseBody = null;
 
             try
             {
-                using (HttpClient client = new HttpClient())
+                responseBody = MakeRequest(string.Format("{0}/_apis/wit/workitems/1", HostName), ApiMethod.Get);
+
+                //This is what we check for vs team services (cloud). If the credentials are wrong then there is a result back, with the html code for the sign in page.
+                if (!responseBody.Contains("<!DOCTYPE html PUBLIC") && !responseBody.Contains("Visual Studio Team Services | Sign In"))
                 {
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials); //ToDo //vv check that this is the same as: Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", "", AccessToken)))
-
-                    using (HttpResponseMessage response = client.GetAsync(string.Format("{0}/DefaultCollection/_apis/projects?api-version=1.0", HostName)).Result)
-                    {
-                        response.EnsureSuccessStatusCode();
-
-                        if (response.StatusCode.ToString().ToLower() == "ok")
-                        {
-                            responseBody = response.Content.ReadAsStringAsync().Result;
-                        }
-                    }
+                    responseBody = null;
                 }
             }
             catch (Exception ex)
             {
-                //vv
+                //we are just checking if credentials and hostname are correct.
+                if (ex.Message.ToLower().Contains("unauthorized") || ex.Message.ToLower().Contains("401"))
+                {
+                    //invalid credentials
+                    responseBody = ex.Message;
+                }
+                else if (ex.Message.ToLower().Contains("could not be resolved"))
+                {
+                    //hostname is invalid
+                    responseBody = ex.Message;
+                }
+                else if (ex.Message.ToLower().Contains("error") || ex.Message.ToLower().Contains("404"))
+                {
+                    //hostname is invalid
+                    responseBody = ex.Message;
+                }
             }
 
             return responseBody;
@@ -747,7 +803,7 @@ namespace TeamSupport.ServiceLibrary
 
 	//To get the other relation types do a GET to: https://{url}/DefaultCollection/_apis/wit/workitemrelationtypes?api-version=2.2
 	//For now we are only using these two.
-	private enum RelationsType : byte
+	    private enum RelationsType : byte
 		{
 			Unknown = 0,
 			Hyperlink = 1,
@@ -763,8 +819,18 @@ namespace TeamSupport.ServiceLibrary
 			test = 4
 		}
 
-		#region Properties
-		public string HostName
+        public enum ApiMethod : byte
+        {
+            Unsupported = 0,
+            Get = 1,
+            Put = 2,
+            Post = 3,
+            Delete = 4,
+            Patch = 5
+        }
+
+        #region Properties
+        public string HostName
         {
             get
             {
