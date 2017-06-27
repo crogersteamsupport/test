@@ -18,7 +18,7 @@
   <div style="width: 100%; height: 100%; background-color: #ffffff; margin: 0 auto; overflow:auto; 
     text-align: center;">
     <div style="padding-bottom:20px;">
-    <div style="width: 97%; margin: 0 auto; text-align: center;">
+    <div style="margin: 0 auto; text-align: center;">
       <div class="groupDiv groupLightBlue" style="padding-top: 10px;">
         <div class="groupHeaderDiv">
           <span class="groupHeaderSpan"></span>
