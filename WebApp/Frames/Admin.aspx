@@ -4,8 +4,8 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
-  <telerik:RadSplitter VisibleDuringInit="false" ID="RadSplitter1" runat="server" Height="100%" Width="100%" Orientation="Horizontal" BorderSize="0" BackColor="#DBE6F4">
-    <telerik:RadPane ID="RadPane1" runat="server" Height="40px" BackColor="#BFDBFF" Scrolling="None">
+  <telerik:RadSplitter VisibleDuringInit="false" ID="RadSplitter1" runat="server" Height="100%" Width="100%" Orientation="Horizontal" BorderSize="0" BackColor="#FAFAFA">
+    <telerik:RadPane ID="RadPane1" runat="server" Height="40px" BackColor="#FCFDFD" Scrolling="None">
       <div style="padding-top: 14px;">
        <telerik:RadTabStrip ID="tsMain" runat="server" SelectedIndex="1"  
           OnClientTabSelected="TabSelected" PerTabScrolling="True" 
