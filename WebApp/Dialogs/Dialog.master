@@ -26,29 +26,46 @@
     	overflow-y: auto;
     	width:100%;
     	height:100%;
-    	
+
     	}
     .dialogContentDiv
     {
     	padding:10px 10px;
   	}
-  	
+
     .reToolbar.Office2007 .InsertTicketLink
     {
       background-image: url(../images/icons/add.png);
     }
-    
+
     .reButton_text
     {
         text-indent:0px !important;
-    }    
-    
+    }
+
     .relativePane
     {
     	position:relative;
     	}
+
+      [type="button"] {
+      margin: 0px 0px 30px 5px;
+      list-style: none;
+      float: left;
+      position: relative;
+      border: 0 !important;
+      padding: 0px 10px 0px 10px;
+      white-space: nowrap;
+      height: 25px;
+      cursor: pointer;
+      background-color: #445c75 !important;
+      border-radius: 5px;
+      vertical-align: middle;
+      color:white;
+      }
+
   </style>
-  	
+
 
   <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
 </head>
@@ -91,16 +108,16 @@
     </telerik:RadPane>
   </telerik:RadSplitter>
   </div>
-  
+
   <asp:HiddenField ID="fieldPostToken" runat="server" />
-  
+
   <telerik:RadCodeBlock ID="RadCodeBlock1" runat="server">
     <script language="javascript" type="text/javascript">
       function clearCache() {
         top.Ts.Cache.checkAll();
         top.Ts.Settings.clearCache();
         setTimeout(function () { top.Ts.System.refreshUser(); }, 2000);
-        
+
       }
 
       function GetRadWindow() {
@@ -117,7 +134,7 @@
       }
 
 
-          
+
     </script>
   </telerik:RadCodeBlock>
   </form>
