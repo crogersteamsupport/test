@@ -17,6 +17,7 @@ namespace TeamSupport.ServiceLibrary
         private static string _accessToken;
         private static string _username;
         private static string _password;
+        private static bool _useNetworkCredentials;
         private static List<WorkItemField> _workItemFields;
 
         public TFS()
@@ -31,11 +32,12 @@ namespace TeamSupport.ServiceLibrary
             _password = string.Empty;
         }
 
-        public TFS(string hostname, string username, string password)
+        public TFS(string hostname, string username, string password, bool useNetworkCredentials)
         {
             _hostname = hostname;
             _username = username;
             _password = password;
+            _useNetworkCredentials = useNetworkCredentials;
             _accessToken = string.Empty;
         }
 
@@ -60,10 +62,14 @@ namespace TeamSupport.ServiceLibrary
                 {
                     client.Headers.Add(HttpRequestHeader.Authorization, "Basic " + EncodedCredentials);
                 }
-                else
+                else if (_useNetworkCredentials)
                 {
                     NetworkCredential netCred = new NetworkCredential(UserName, Password);
                     client.Credentials = netCred;
+                }
+                else
+                {
+                    client.Headers.Add(HttpRequestHeader.Authorization, "Basic " + EncodedCredentials);
                 }
 
                 if (method == ApiMethod.Get)
