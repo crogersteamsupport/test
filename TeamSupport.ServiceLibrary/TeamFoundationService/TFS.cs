@@ -233,63 +233,44 @@ namespace TeamSupport.ServiceLibrary
 						"Order By [Changed Date] Desc"
 			};
 
-			using (var client = new HttpClient())
-			{
-				client.BaseAddress = new Uri(HostName);
-				client.DefaultRequestHeaders.Accept.Clear();
-				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-				client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials); //ToDo //vv check that this is the same as: credentials
+            var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(wiql), Encoding.UTF8, "application/json");
 
-				//serialize the wiql object into a json string. MediaType needs to be application/json for a post call
-				var postValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(wiql), Encoding.UTF8, "application/json");
-				var method = new HttpMethod("POST");
+            try
+            {
+                string response = MakeRequest(string.Format("{0}/_apis/wit/wiql?api-version=2.2", HostName), ApiMethod.Post, patchValue.ReadAsStringAsync().Result);
+                WorkItemQueryResult workItemQueryResult = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemQueryResult>(response);
 
-				//ToDo //vv The example I found for this uses the api version 2.2, the other examples uses 1.0. Check which one should we use and where to check the api versions.
-				var httpRequestMessage = new HttpRequestMessage(method, string.Format("{0}/_apis/wit/wiql?api-version=2.2", HostName)) { Content = postValue };
-				var httpResponseMessage = client.SendAsync(httpRequestMessage).Result;
+                //now that we have a bunch of work items, build a list of id's so we can get details
+                var builder = new StringBuilder();
 
-				if (httpResponseMessage.IsSuccessStatusCode)
-				{
-					WorkItemQueryResult workItemQueryResult = httpResponseMessage.Content.ReadAsAsync<WorkItemQueryResult>().Result;
+                foreach (var item in workItemQueryResult.WorkItems)
+                {
+                    builder.Append(item.Id.ToString()).Append(",");
+                }
 
-					//now that we have a bunch of work items, build a list of id's so we can get details
-					var builder = new StringBuilder();
+                string ids = builder.ToString().TrimEnd(new char[] { ',' });
 
-					foreach (var item in workItemQueryResult.WorkItems)
-					{
-						builder.Append(item.Id.ToString()).Append(",");
-					}
+                if (!string.IsNullOrEmpty(ids))
+                {
+                    //vv we could just bring the specific fields if needed, I don't see this happening now.
+                    //string fieldsCommaSeparated = string.Join(",", fields);
+                    //string queryString = string.Format("_apis/wit/workitems?ids={0}&fields={1}&asOf={2}&api-version=2.2", ids, fieldsCommaSeparated, workItemQueryResult.AsOf);
 
-					string ids = builder.ToString().TrimEnd(new char[] { ',' });
+                    //ToDo //vv The 'asOf' should be the last processed timestamp
+                    //ToDo //vv we probably should have a 'max' of ids here because there is a limit in the query string size. We'll need to loop if needed. https://stackoverflow.com/questions/812925/what-is-the-maximum-possible-length-of-a-query-string
 
-					if (!string.IsNullOrEmpty(ids))
-					{
-						//vv we could just bring the specific fields if needed, I don't see this happening now.
-						//string fieldsCommaSeparated = string.Join(",", fields);
-						//string queryString = string.Format("_apis/wit/workitems?ids={0}&fields={1}&asOf={2}&api-version=2.2", ids, fieldsCommaSeparated, workItemQueryResult.AsOf);
+                    string queryString = string.Format("_apis/wit/workitems?ids={0}&asOf={1}&api-version=2.2", ids, workItemQueryResult.AsOf);
+                    response = MakeRequest(HostName + "/" + queryString, ApiMethod.Get);
 
-						//ToDo //vv The 'asOf' should be the last processed timestamp
-						//ToDo //vv we probably should have a 'max' of ids here because there is a limit in the query string size. We'll need to loop if needed. https://stackoverflow.com/questions/812925/what-is-the-maximum-possible-length-of-a-query-string
-
-						string queryString = string.Format("_apis/wit/workitems?ids={0}&asOf={1}&api-version=2.2", ids, workItemQueryResult.AsOf);
-						HttpResponseMessage getWorkItemsHttpResponse = client.GetAsync(queryString).Result;
-
-						if (getWorkItemsHttpResponse.IsSuccessStatusCode)
-						{
-							string jsonResult = getWorkItemsHttpResponse.Content.ReadAsStringAsync().Result;
-							result = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItems>(jsonResult);
-						}
-						else
-						{
-							//ToDo //vv we have to return the error somehow..
-						}
-					}
-				}
-				else
-				{
-					//ToDo //vv we have to return the error somehow..
-				}
-			}
+                    result = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItems>(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                //var contents = response.Content.ReadAsStringAsync().Result;
+                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
+                //throw new TFSClientException(tfsError);
+            }
 
 			return result;
 		}
@@ -300,33 +281,15 @@ namespace TeamSupport.ServiceLibrary
 
 			try
 			{
-				using (HttpClient client = new HttpClient())
-				{
-					client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-					client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
-
-					using (HttpResponseMessage response = client.GetAsync(string.Format("{0}/DefaultCollection/_apis/wit/workItems/{1}?api-version=2.2{2}", HostName, workItemId, (expandAll ? "&$expand=all" : ""))).Result)
-					{
-						response.EnsureSuccessStatusCode();
-
-						if (response.StatusCode.ToString().ToLower() == "ok")
-						{
-							string responseBody = response.Content.ReadAsStringAsync().Result;
-							workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(responseBody);
-						}
-						else
-						{
-							var contents = response.Content.ReadAsStringAsync().Result;
-							TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
-							throw new TFSClientException(tfsError);
-						}
-					}
-				}
+                string response = MakeRequest(string.Format("{0}/_apis/wit/workItems/{1}?api-version=2.2{2}", HostName, workItemId, (expandAll ? "&$expand=all" : "")), ApiMethod.Get);
+                workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(response);
 			}
 			catch (Exception ex)
 			{
-				throw;
-			}
+                //var contents = response.Content.ReadAsStringAsync().Result;
+                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
+                //throw new TFSClientException(tfsError);
+            }
 
 			return workItem;
 		}
@@ -337,29 +300,17 @@ namespace TeamSupport.ServiceLibrary
 
 			try
 			{
-				using (HttpClient client = new HttpClient())
-				{
-					client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-					client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
-
-					using (HttpResponseMessage response = client.GetAsync(string.Format("{0}/DefaultCollection/_apis/wit/workItems/{1}/comments", HostName, workItemId)).Result)
-					{
-						response.EnsureSuccessStatusCode();
-
-						if (response.StatusCode.ToString().ToLower() == "ok")
-						{
-							string responseBody = response.Content.ReadAsStringAsync().Result;
-							comments = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemCommentList>(responseBody);
-						}
-					}
-				}
+                string response = MakeRequest(string.Format("{0}/_apis/wit/workItems/{1}/comments", HostName, workItemId), ApiMethod.Get);
+                comments = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemCommentList>(response);
 			}
 			catch (Exception ex)
 			{
-				//vv
-			}
+                //var contents = response.Content.ReadAsStringAsync().Result;
+                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
+                //throw new TFSClientException(tfsError);
+            }
 
-			return comments;
+            return comments;
 		}
 
 		public WorkItemComment GetCommentBy(int workItemId, int revisionId)
@@ -368,29 +319,17 @@ namespace TeamSupport.ServiceLibrary
 
 			try
 			{
-				using (HttpClient client = new HttpClient())
-				{
-					client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-					client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
-
-					using (HttpResponseMessage response = client.GetAsync(string.Format("{0}/DefaultCollection/_apis/wit/workItems/{1}/comments/{2}", HostName, workItemId, revisionId)).Result)
-					{
-						response.EnsureSuccessStatusCode();
-
-						if (response.StatusCode.ToString().ToLower() == "ok")
-						{
-							string responseBody = response.Content.ReadAsStringAsync().Result;
-							comments = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemComment>(responseBody);
-						}
-					}
-				}
+                string response = MakeRequest(string.Format("{0}/_apis/wit/workItems/{1}/comments/{2}", HostName, workItemId, revisionId), ApiMethod.Get);
+                comments = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemComment>(response);
 			}
 			catch (Exception ex)
 			{
-				//vv
-			}
+                //var contents = response.Content.ReadAsStringAsync().Result;
+                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
+                //throw new TFSClientException(tfsError);
+            }
 
-			return comments;
+            return comments;
 		}
 
 		public WorkItem CreateWorkItem(List<WorkItemField> fields, string project, string type)
@@ -572,26 +511,17 @@ namespace TeamSupport.ServiceLibrary
         {
             List<WorkItemField> resultList = new List<WorkItemField>();
 
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri(HostName);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
-
-                HttpResponseMessage response = client.GetAsync("_apis/wit/fields?api-version=2.2").Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    WorkItemFields result = response.Content.ReadAsAsync<WorkItemFields>().Result;
-                    resultList = new List<WorkItemField>(result.value);
-                }
-				else
-				{
-					var contents = response.Content.ReadAsStringAsync().Result;
-					TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
-					throw new TFSClientException(tfsError);
-				}
+                string response = MakeRequest(string.Format("{0}/_apis/wit/fields?api-version=2.2", HostName), ApiMethod.Get);
+                WorkItemFields workItemFields = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemFields>(response);
+                resultList = new List<WorkItemField>(workItemFields.value);
+            }
+            catch (Exception ex)
+            {
+                //var contents = response.Content.ReadAsStringAsync().Result;
+                //TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
+                //throw new TFSClientException(tfsError);
             }
 
             _workItemFields = resultList;
@@ -691,6 +621,7 @@ namespace TeamSupport.ServiceLibrary
 			return postDataStream;
 		}
 
+        [Serializable]
 		public class WorkItems
 		{
 			public int count { get; set; }
