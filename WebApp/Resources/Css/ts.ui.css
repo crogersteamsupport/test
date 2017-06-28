@@ -426,4 +426,5 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 
 .scroll-wrapper {
     -webkit-overflow-scrolling: touch;
+    overflow-y:scroll;
 }
