@@ -13,7 +13,7 @@
 .new-view .main-tabs .ui-state-hover .ts-tab-content { padding-right: 0px;}
 .new-view .main-tabs .ts-tab-main-0 .ts-tab-content { padding: 0px 5px; }
 
-.main-tab-content-item > iframe, iframe.pane  { height:100%; width:100%; overflow:hidden; margin-top:0px; border-width:0;}
+.main-tab-content-item > iframe, iframe.pane  { height:100%; width:100%; -webkit-overflow-scrolling: touch; overflow-y:scroll; margin-top:0px; border-width:0;}
 .main-header.new-view-header { border:none; }
 .main-header-left { padding: 4px 0 0 10px;  float:left;}
 .main-header-status { float:left; padding: 18px 0 0 0px; font-weight:normal;}
