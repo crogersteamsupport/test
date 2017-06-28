@@ -1032,7 +1032,7 @@ Ts.Pages.Main.prototype = {
                     div = $('.main-tab-content .main-ticket-' + ticketID);
                     if (div.length < 1) {
                         div = $('<div>')
-              .addClass('main-tab-content-item main-tab-ticket main-ticket-' + ticketID)
+              .addClass('main-tab-content-item main-tab-ticket main-ticket-' + ticketID + ' scroll-wrapper')
               .appendTo('.main-tab-content');
 
                         $('<iframe>')

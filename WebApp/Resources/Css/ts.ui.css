@@ -423,3 +423,7 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
     background: none !important;
     background-color: none !important;
 }
+
+.scroll-wrapper {
+    -webkit-overflow-scrolling: touch;
+}
