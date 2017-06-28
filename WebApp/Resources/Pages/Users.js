@@ -90,8 +90,8 @@ $(document).ready(function () {
         if (parent.Ts.System.User.IsSystemAdmin) {
             var item = $(this);
             parent.Ts.Services.Users.UpdateSpecificUserStatus($(this).attr('userid'), false, function (result) {
-                item.removeClass('ts-icon-online-small');
-                item.addClass('ts-icon-offline-small');
+                item.removeClass('ts-icon-online-small').addClass('fa fa-circle');
+                item.addClass('ts-icon-offline-small').addClass('fa fa-circle');
             });
         }
     });
@@ -100,8 +100,8 @@ $(document).ready(function () {
         if (parent.Ts.System.User.IsSystemAdmin) {
             var item = $(this);
             parent.Ts.Services.Users.UpdateSpecificUserStatus($(this).attr('userid'), true, function (result) {
-                item.removeClass('ts-icon-offline-small');
-                item.addClass('ts-icon-online-small');
+                item.removeClass('ts-icon-offline-small').addClass('fa fa-circle');
+                item.addClass('ts-icon-online-small').addClass('fa fa-circle');
             });
         }
     });
@@ -156,8 +156,8 @@ $(document).ready(function () {
         if (parent.Ts.System.User.IsSystemAdmin) {
             var item = $(this);
             parent.Ts.Services.Users.UpdateSpecificUserStatus($(this).attr('userid'), false, function (result) {
-                item.removeClass('ts-icon-online-small');
-                item.addClass('ts-icon-offline-small');
+                item.removeClass('ts-icon-online-small').addClass('fa fa-circle');
+                item.addClass('ts-icon-offline-small').addClass('fa fa-circle');
             });
         }
     });
@@ -166,8 +166,8 @@ $(document).ready(function () {
         if (parent.Ts.System.User.IsSystemAdmin) {
             var item = $(this);
             parent.Ts.Services.Users.UpdateSpecificUserStatus($(this).attr('userid'), true, function (result) {
-                item.removeClass('ts-icon-offline-small');
-                item.addClass('ts-icon-online-small');
+                item.removeClass('ts-icon-offline-small').addClass('fa fa-circle');
+                item.addClass('ts-icon-online-small').addClass('fa fa-circle');
             });
         }
     });
