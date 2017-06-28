@@ -428,3 +428,7 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
     -webkit-overflow-scrolling: touch;
     overflow-y:scroll;
 }
+
+iframe {
+    -webkit-overflow-scrolling: touch;
+}
