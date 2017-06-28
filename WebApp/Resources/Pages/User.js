@@ -1664,7 +1664,7 @@ UserPage = function () {
 
 
           $('<span>')
-                .addClass('fleft ts-icon ts-icon-delete')
+                .addClass('fleft ts-icon ts-icon-delete fa fa-trash')
                 .click(function (e) {
                   if (confirm('Are you sure you would like to remove this address?')) {
                     var item = $(this).parent();
@@ -1735,7 +1735,7 @@ UserPage = function () {
                 .appendTo(header);
 
           $('<span>')
-                .addClass('fleft ts-icon ts-icon-delete')
+                .addClass('fleft ts-icon ts-icon-delete fa fa-trash')
                 .click(function (e) {
                   if (confirm('Are you sure you would like to remove this phone number?')) {
                     var item = $(this).parent();
@@ -1777,7 +1777,7 @@ UserPage = function () {
                                 .appendTo(header);
         if (isSysAdmin) {
           $('<span>')
-                .addClass('fleft ts-icon ts-icon-delete')
+                .addClass('fleft ts-icon ts-icon-delete fa fa-trash')
                 .click(function (e) {
                   if (confirm('Are you sure you would like to remove this group?')) {
                     var item = $(this).parent();

@@ -64,7 +64,6 @@ AdminInt = function () {
         $('.int-tfs-update-status').prop('checked', false);
         $('#tfsExclusionTicketStatusList').hide();
         $('#tfsTicketStatusExceptionSpan').hide();
-        $('#tfsExclusionTicketStatusList').hide();
         $('#tfsTicketStatusExceptionSpan').hide();
 
         for (var i = 0; i < result.length; i++) {
@@ -541,6 +540,37 @@ AdminInt = function () {
                         }
                     }
                 });
+            } else {
+                if (typeof ticketTypes == "undefined") {
+                    ticketTypes = window.parent.parent.Ts.Cache.getTicketTypes();
+                }
+
+                for (var i = 0; i < organizationStatuses.length; i++) {
+                    var selected = '">';
+                    if (item != null && item.ExcludedTicketStatusUpdate != null) {
+                        //replace RestrictedToTicketTypes to the right column name
+                        var excludeTicketStatusArray = item.ExcludedTicketStatusUpdate.split(',');
+                        var found = jQuery.inArray(organizationStatuses[i].TicketStatusID.toString(), excludeTicketStatusArray);
+
+                        if (found > -1) {
+                            selected = '" selected="selected">';
+                        }
+                    }
+
+                    var statusName = organizationStatuses[i].Name;
+                    var typeName = "";
+
+                    for (var x = 0; x < ticketTypes.length; x++) {
+                        if (organizationStatuses[i].TicketTypeID == ticketTypes[x].TicketTypeID) {
+                            typeName = ticketTypes[x].Name;
+                            break;
+                        }
+                    }
+
+                    if (typeName != "") {
+                        ticketStatusList.append('<option value="' + organizationStatuses[i].TicketStatusID + selected + typeName + ' - ' + statusName + '</option>');
+                    }
+                }
             }
         }
         else {

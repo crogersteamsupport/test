@@ -58,7 +58,7 @@ Namespace TeamSupport
                 'Make sure credentials are good
                 If (result) Then
                     Try
-                        If (CRMLinkRow.SecurityToken1 IsNot Nothing) Then
+                        If (Not String.IsNullOrEmpty(CRMLinkRow.SecurityToken1)) Then
                             _tfs = New TFSLibrary(_baseURI, CRMLinkRow.SecurityToken1)
                         Else
                             _tfs = New TFSLibrary(_baseURI, CRMLinkRow.Username, CRMLinkRow.Password, CRMLinkRow.UseNetworkCredentials)
