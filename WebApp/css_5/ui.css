@@ -169,3 +169,7 @@ a.buttonLink span.buttonSpan { background: none; display: block; height: 27px; l
 .chat-message-user .chat-name { color:#329938;}
 .chat-message-client .chat-name  { color:#333399; }
 .chat-message-self .chat-name { color:#696969;}
+
+.rtsUL {
+    min-width:1200px !important;
+}
