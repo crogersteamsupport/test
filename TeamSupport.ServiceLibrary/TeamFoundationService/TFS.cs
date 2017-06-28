@@ -17,6 +17,7 @@ namespace TeamSupport.ServiceLibrary
         private static string _accessToken;
         private static string _username;
         private static string _password;
+        private static bool _useNetworkCredentials;
         private static List<WorkItemField> _workItemFields;
 
         public TFS()
@@ -31,16 +32,16 @@ namespace TeamSupport.ServiceLibrary
             _password = string.Empty;
         }
 
-        public TFS(string hostname, string username, string password)
+        public TFS(string hostname, string username, string password, bool useNetworkCredentials)
         {
             _hostname = hostname;
             _username = username;
             _password = password;
+            _useNetworkCredentials = useNetworkCredentials;
             _accessToken = string.Empty;
         }
 
-        //vv
-        private string MakeRequest(string uri, ApiMethod method)
+        private string MakeRequest(string uri, ApiMethod method, string patchDocument = null)
         {
             string result = null;
             string contentType = "application/json";
@@ -54,35 +55,27 @@ namespace TeamSupport.ServiceLibrary
             {
                 client.Headers.Add(HttpRequestHeader.ContentType, contentType);
 
-                bool useApiToken = !string.IsNullOrEmpty(AccessToken);
-
-                if (useApiToken)
-                {
-                    client.Headers.Add(HttpRequestHeader.Authorization, "Basic " + EncodedCredentials);
-                }
-                else
+                if (_useNetworkCredentials)
                 {
                     NetworkCredential netCred = new NetworkCredential(UserName, Password);
                     client.Credentials = netCred;
                 }
+                else
+                {
+                    client.Headers.Add(HttpRequestHeader.Authorization, "Basic " + EncodedCredentials);
+                }
 
-                Stream stream = new MemoryStream();
                 if (method == ApiMethod.Get)
                 {
-                    stream = client.OpenRead(uri);
+                    Stream stream = client.OpenRead(uri);
+                    StreamReader sr = new StreamReader(stream);
+                    result = sr.ReadToEnd();
                 }
                 else
                 {
-                    //var data = JsonConvert.SerializeObject(new
-                    //{
-                    //    Property1 = 1,
-                    //    Property2 = "blah"
-                    //});
-                    //stream = client.UploadData(uri, data);
+                    byte[] response = client.UploadData(uri, Encoding.UTF8.GetBytes(patchDocument));
+                    result = client.Encoding.GetString(response);
                 }
-                
-                StreamReader sr = new StreamReader(stream);
-                result = sr.ReadToEnd();
             }
 
             return result;
@@ -128,7 +121,6 @@ namespace TeamSupport.ServiceLibrary
         public string GetWorkItemsJsonBy(List<int> workItemIds, DateTime? lastLink)
         {
             var result = "";
-            //vv see a few lines below. string credentials = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", "", AccessToken)));
             string idsCommaSeparated = string.Join(",", workItemIds);
             string dateOnly = "1900-01-01";
             
@@ -154,7 +146,7 @@ namespace TeamSupport.ServiceLibrary
                 client.BaseAddress = new Uri(HostName);
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials); //ToDo //vv check that this is the same as: credentials
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
 
                 //serialize the wiql object into a json string. MediaType needs to be application/json for a post call
                 var postValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(wiql), Encoding.UTF8, "application/json");
@@ -212,7 +204,6 @@ namespace TeamSupport.ServiceLibrary
 		public WorkItems GetWorkItemsBy(List<int> workItemIds, DateTime? lastLink)
 		{
 			WorkItems result = new WorkItems();
-			//vv see a few lines below. string credentials = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", "", AccessToken)));
 			string idsCommaSeparated = string.Join(",", workItemIds);
 			string dateOnly = "1900-01-01";
 
@@ -233,65 +224,59 @@ namespace TeamSupport.ServiceLibrary
 						"Order By [Changed Date] Desc"
 			};
 
-			using (var client = new HttpClient())
-			{
-				client.BaseAddress = new Uri(HostName);
-				client.DefaultRequestHeaders.Accept.Clear();
-				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-				client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials); //ToDo //vv check that this is the same as: credentials
+            var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(wiql), Encoding.UTF8, "application/json");
 
-				//serialize the wiql object into a json string. MediaType needs to be application/json for a post call
-				var postValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(wiql), Encoding.UTF8, "application/json");
-				var method = new HttpMethod("POST");
+            try
+            {
+                string response = MakeRequest(string.Format("{0}/_apis/wit/wiql?api-version=2.2", HostName), ApiMethod.Post, patchValue.ReadAsStringAsync().Result);
+                WorkItemQueryResult workItemQueryResult = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemQueryResult>(response);
 
-				//ToDo //vv The example I found for this uses the api version 2.2, the other examples uses 1.0. Check which one should we use and where to check the api versions.
-				var httpRequestMessage = new HttpRequestMessage(method, string.Format("{0}/_apis/wit/wiql?api-version=2.2", HostName)) { Content = postValue };
-				var httpResponseMessage = client.SendAsync(httpRequestMessage).Result;
+                //now that we have a bunch of work items, build a list of id's so we can get details
+                var builder = new StringBuilder();
 
-				if (httpResponseMessage.IsSuccessStatusCode)
-				{
-					WorkItemQueryResult workItemQueryResult = httpResponseMessage.Content.ReadAsAsync<WorkItemQueryResult>().Result;
+                foreach (var item in workItemQueryResult.WorkItems)
+                {
+                    builder.Append(item.Id.ToString()).Append(",");
+                }
 
-					//now that we have a bunch of work items, build a list of id's so we can get details
-					var builder = new StringBuilder();
+                string ids = builder.ToString().TrimEnd(new char[] { ',' });
 
-					foreach (var item in workItemQueryResult.WorkItems)
-					{
-						builder.Append(item.Id.ToString()).Append(",");
-					}
+                if (!string.IsNullOrEmpty(ids))
+                {
+                    //vv we could just bring the specific fields if needed, I don't see this happening now.
+                    //string fieldsCommaSeparated = string.Join(",", fields);
+                    //string queryString = string.Format("_apis/wit/workitems?ids={0}&fields={1}&asOf={2}&api-version=2.2", ids, fieldsCommaSeparated, workItemQueryResult.AsOf);
 
-					string ids = builder.ToString().TrimEnd(new char[] { ',' });
+                    //ToDo //vv The 'asOf' should be the last processed timestamp
+                    //ToDo //vv we probably should have a 'max' of ids here because there is a limit in the query string size. We'll need to loop if needed. https://stackoverflow.com/questions/812925/what-is-the-maximum-possible-length-of-a-query-string
 
-					if (!string.IsNullOrEmpty(ids))
-					{
-						//vv we could just bring the specific fields if needed, I don't see this happening now.
-						//string fieldsCommaSeparated = string.Join(",", fields);
-						//string queryString = string.Format("_apis/wit/workitems?ids={0}&fields={1}&asOf={2}&api-version=2.2", ids, fieldsCommaSeparated, workItemQueryResult.AsOf);
+                    string queryString = string.Format("_apis/wit/workitems?ids={0}&asOf={1}&api-version=2.2", ids, workItemQueryResult.AsOf);
+                    response = MakeRequest(HostName + "/" + queryString, ApiMethod.Get);
 
-						//ToDo //vv The 'asOf' should be the last processed timestamp
-						//ToDo //vv we probably should have a 'max' of ids here because there is a limit in the query string size. We'll need to loop if needed. https://stackoverflow.com/questions/812925/what-is-the-maximum-possible-length-of-a-query-string
+                    result = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItems>(response);
+                }
+            }
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
 
-						string queryString = string.Format("_apis/wit/workitems?ids={0}&asOf={1}&api-version=2.2", ids, workItemQueryResult.AsOf);
-						HttpResponseMessage getWorkItemsHttpResponse = client.GetAsync(queryString).Result;
+                if (responseStream != null)
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                        throw new TFSClientException(tfsError);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
 
-						if (getWorkItemsHttpResponse.IsSuccessStatusCode)
-						{
-							string jsonResult = getWorkItemsHttpResponse.Content.ReadAsStringAsync().Result;
-							result = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItems>(jsonResult);
-						}
-						else
-						{
-							//ToDo //vv we have to return the error somehow..
-						}
-					}
-				}
-				else
-				{
-					//ToDo //vv we have to return the error somehow..
-				}
-			}
-
-			return result;
+            return result;
 		}
 
 		public WorkItem GetWorkItemBy(int workItemId, bool expandAll = false)
@@ -300,35 +285,30 @@ namespace TeamSupport.ServiceLibrary
 
 			try
 			{
-				using (HttpClient client = new HttpClient())
-				{
-					client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-					client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
-
-					using (HttpResponseMessage response = client.GetAsync(string.Format("{0}/DefaultCollection/_apis/wit/workItems/{1}?api-version=2.2{2}", HostName, workItemId, (expandAll ? "&$expand=all" : ""))).Result)
-					{
-						response.EnsureSuccessStatusCode();
-
-						if (response.StatusCode.ToString().ToLower() == "ok")
-						{
-							string responseBody = response.Content.ReadAsStringAsync().Result;
-							workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(responseBody);
-						}
-						else
-						{
-							var contents = response.Content.ReadAsStringAsync().Result;
-							TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
-							throw new TFSClientException(tfsError);
-						}
-					}
-				}
+                string response = MakeRequest(string.Format("{0}/_apis/wit/workItems/{1}?api-version=2.2{2}", HostName, workItemId, (expandAll ? "&$expand=all" : "")), ApiMethod.Get);
+                workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(response);
 			}
-			catch (Exception ex)
-			{
-				throw;
-			}
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
 
-			return workItem;
+                if (responseStream != null)
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                        throw new TFSClientException(tfsError);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            return workItem;
 		}
 
 		public WorkItemCommentList GetCommentsBy(int workItemId)
@@ -337,29 +317,30 @@ namespace TeamSupport.ServiceLibrary
 
 			try
 			{
-				using (HttpClient client = new HttpClient())
-				{
-					client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-					client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
-
-					using (HttpResponseMessage response = client.GetAsync(string.Format("{0}/DefaultCollection/_apis/wit/workItems/{1}/comments", HostName, workItemId)).Result)
-					{
-						response.EnsureSuccessStatusCode();
-
-						if (response.StatusCode.ToString().ToLower() == "ok")
-						{
-							string responseBody = response.Content.ReadAsStringAsync().Result;
-							comments = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemCommentList>(responseBody);
-						}
-					}
-				}
+                string response = MakeRequest(string.Format("{0}/_apis/wit/workItems/{1}/comments", HostName, workItemId), ApiMethod.Get);
+                comments = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemCommentList>(response);
 			}
-			catch (Exception ex)
-			{
-				//vv
-			}
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
 
-			return comments;
+                if (responseStream != null)
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                        throw new TFSClientException(tfsError);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            return comments;
 		}
 
 		public WorkItemComment GetCommentBy(int workItemId, int revisionId)
@@ -368,58 +349,61 @@ namespace TeamSupport.ServiceLibrary
 
 			try
 			{
-				using (HttpClient client = new HttpClient())
-				{
-					client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-					client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
-
-					using (HttpResponseMessage response = client.GetAsync(string.Format("{0}/DefaultCollection/_apis/wit/workItems/{1}/comments/{2}", HostName, workItemId, revisionId)).Result)
-					{
-						response.EnsureSuccessStatusCode();
-
-						if (response.StatusCode.ToString().ToLower() == "ok")
-						{
-							string responseBody = response.Content.ReadAsStringAsync().Result;
-							comments = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemComment>(responseBody);
-						}
-					}
-				}
+                string response = MakeRequest(string.Format("{0}/_apis/wit/workItems/{1}/comments/{2}", HostName, workItemId, revisionId), ApiMethod.Get);
+                comments = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemComment>(response);
 			}
-			catch (Exception ex)
-			{
-				//vv
-			}
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
 
-			return comments;
+                if (responseStream != null)
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                        throw new TFSClientException(tfsError);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            return comments;
 		}
 
 		public WorkItem CreateWorkItem(List<WorkItemField> fields, string project, string type)
         {
             WorkItem workItem = new WorkItem();
 			Object[] patchDocument = GetPatchDocument(fields);
+            var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json"); // mediaType needs to be application/json-patch+json for a patch call
 
-            using (var client = new HttpClient())
+            try
             {
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json-patch+json"));
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+                string result = MakeRequest(HostName + "/" + project + "/_apis/wit/workitems/$" + type + "?api-version=2.2", ApiMethod.Patch, patchValue.ReadAsStringAsync().Result);
+                workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
+            }
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
 
-                var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json"); // mediaType needs to be application/json-patch+json for a patch call
-                var method = new HttpMethod("PATCH");
-                var request = new HttpRequestMessage(method, HostName + "/DefaultCollection/" + project + "/_apis/wit/workitems/$" + type + "?api-version=2.2") { Content = patchValue };
-                var response = client.SendAsync(request).Result;
-
-                if (response.IsSuccessStatusCode)
+                if (responseStream != null)
                 {
-                    var result = response.Content.ReadAsStringAsync().Result;
-                    workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                        throw new TFSClientException(tfsError);
+                    }
                 }
-                else
-                {
-					var contents = response.Content.ReadAsStringAsync().Result;
-					TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
-					throw new TFSClientException(tfsError);
-                }
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
 
             return workItem;
@@ -435,76 +419,101 @@ namespace TeamSupport.ServiceLibrary
 
 			Object[] patchDocument = GetPatchDocument(field);
 
-			using (var client = new HttpClient())
-			{
-				client.DefaultRequestHeaders.Accept.Clear();
-				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json-patch+json"));
-				client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+            var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json"); // mediaType needs to be application/json-patch+json for a patch call
 
-				var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json");
-				var method = new HttpMethod("PATCH");
-				var request = new HttpRequestMessage(method, HostName + "/DefaultCollection/_apis/wit/workitems/" + workItemId + "?api-version=2.2") { Content = patchValue };
-				var response = client.SendAsync(request).Result;
+            try
+            {
+                string result = MakeRequest(HostName + "/_apis/wit/workitems/" + workItemId + "?api-version=2.2", ApiMethod.Patch, patchValue.ReadAsStringAsync().Result);
+                WorkItem workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
+                commentId = (int)workItem.Rev;
+            }
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
 
-				if (response.IsSuccessStatusCode)
-				{
-					var result = response.Content.ReadAsStringAsync().Result;
-					WorkItem workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
-					//ToDo //vv needed? WorkItemComment workItemComment = GetCommentBy((int)workItem.Id, (int)workItem.Rev);
-					commentId = (int)workItem.Rev;
-				}
-			}
+                if (responseStream != null)
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                        throw new TFSClientException(tfsError);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
 
-			return commentId;
+            return commentId;
 		}
 
 		public void CreateTeamSupportHyperlink(int workItemId, string remoteLink, string comment)
 		{
 			Object[] patchDocument = GetPatchDocumentForRelations(RelationsType.Hyperlink, remoteLink, comment);
 
-			using (var client = new HttpClient())
-			{
-				client.DefaultRequestHeaders.Accept.Clear();
-				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json-patch+json"));
-				client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+            var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json"); // mediaType needs to be application/json-patch+json for a patch call
 
-				var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json");
-				var method = new HttpMethod("PATCH");
-				var request = new HttpRequestMessage(method, HostName + "/DefaultCollection/_apis/wit/workitems/" + workItemId + "?api-version=2.2") { Content = patchValue };
-				var response = client.SendAsync(request).Result;
+            try
+            {
+                string result = MakeRequest(HostName + "/_apis/wit/workitems/" + workItemId + "?api-version=2.2", ApiMethod.Patch, patchValue.ReadAsStringAsync().Result);
+            }
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
 
-				if (response.IsSuccessStatusCode)
-				{
-					var result = response.Content.ReadAsStringAsync().Result;
-				}
-			}
-		}
+                if (responseStream != null)
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                        throw new TFSClientException(tfsError);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
 
 		public WorkItem UpdateWorkItem(int workItemId, List<WorkItemField> fields)
 		{
 			WorkItem workItem = new WorkItem();
 			Object[] patchDocument = GetPatchDocument(fields);
 
-			using (var client = new HttpClient())
-			{
-				client.DefaultRequestHeaders.Accept.Clear();
-				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json-patch+json"));
-				client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+            var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json"); // mediaType needs to be application/json-patch+json for a patch call
 
-				var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json"); // mediaType needs to be application/json-patch+json for a patch call
-				var method = new HttpMethod("PATCH");
-				var request = new HttpRequestMessage(method, HostName + "/DefaultCollection/_apis/wit/workitems/" + workItemId.ToString() + "?api-version=2.2") { Content = patchValue };
-				var response = client.SendAsync(request).Result;
+            try
+            {
+                string result = MakeRequest(HostName + "/_apis/wit/workitems/" + workItemId.ToString() + "?api-version=2.2", ApiMethod.Patch, patchValue.ReadAsStringAsync().Result);
+                workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
+            }
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
 
-				if (response.IsSuccessStatusCode)
-				{
-					var result = response.Content.ReadAsStringAsync().Result;
-					workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
+                if (responseStream != null)
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                        throw new TFSClientException(tfsError);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
 
-				}
-			}
-
-			return workItem;
+            return workItem;
 		}
 
 		public void DeleteTeamSupportHyperlink(int workItemId, int ticketId)
@@ -521,23 +530,32 @@ namespace TeamSupport.ServiceLibrary
 				{
 					Object[] patchDocument = GetPatchDocumentForRelationsDelete(RelationsType.Hyperlink, i);
 
-					using (var client = new HttpClient())
-					{
-						client.DefaultRequestHeaders.Accept.Clear();
-						client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json-patch+json"));
-						client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+                    var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json"); // mediaType needs to be application/json-patch+json for a patch call
 
-						var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json");
-						var method = new HttpMethod("PATCH");
-						var request = new HttpRequestMessage(method, HostName + "/DefaultCollection/_apis/wit/workitems/" + workItemId + "?api-version=2.2") { Content = patchValue };
-						var response = client.SendAsync(request).Result;
+                    try
+                    {
+                        string result = MakeRequest(HostName + "/_apis/wit/workitems/" + workItemId + "?api-version=2.2", ApiMethod.Patch, patchValue.ReadAsStringAsync().Result);
+                    }
+                    catch (WebException webEx)
+                    {
+                        string exceptionResponse;
+                        var responseStream = webEx.Response?.GetResponseStream();
 
-						if (!response.IsSuccessStatusCode)
-						{
-							//ToDo //vv we have to return the error somehow..
-						}
-					}
-				}
+                        if (responseStream != null)
+                        {
+                            using (var reader = new StreamReader(responseStream))
+                            {
+                                exceptionResponse = reader.ReadToEnd();
+                                TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                                throw new TFSClientException(tfsError);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw;
+                    }
+                }
 			}
 		}
 
@@ -549,8 +567,7 @@ namespace TeamSupport.ServiceLibrary
 			string boundary = "---------------------------" + DateTime.Now.Ticks.ToString("x");
 			request.Headers.Add("Authorization", "Basic " + EncodedCredentials);
 			request.Method = "POST";
-			//vv request.ContentType = "application/octet-stream; boundary=" + boundary;
-			request.ContentType = "application/octet-stream;";//vv
+			request.ContentType = "application/octet-stream;";
 			request.Accept = "text/html, application/xhtml+xml, */*";
 			request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip, deflate");
 
@@ -579,24 +596,33 @@ namespace TeamSupport.ServiceLibrary
 				AttachmentInfo attachmentinfo = Newtonsoft.Json.JsonConvert.DeserializeObject<AttachmentInfo>(streamResult);
 				Object[] patchDocument = GetPatchDocumentForRelations(RelationsType.AttachedFile, attachmentinfo.url, fileName);
 
-				using (var client = new HttpClient())
-				{
-					client.DefaultRequestHeaders.Accept.Clear();
-					client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json-patch+json"));
-					client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+                var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json"); // mediaType needs to be application/json-patch+json for a patch call
 
-					var patchValue = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument), Encoding.UTF8, "application/json-patch+json");
-					var method = new HttpMethod("PATCH");
-					var requestMessage = new HttpRequestMessage(method, HostName + "/DefaultCollection/_apis/wit/workitems/" + workItemId + "?api-version=2.2") { Content = patchValue };
-					var response = client.SendAsync(requestMessage).Result;
+                try
+                {
+                    string resultContent = MakeRequest(HostName + "/_apis/wit/workitems/" + workItemId + "?api-version=2.2", ApiMethod.Patch, patchValue.ReadAsStringAsync().Result);
+                    result = true;
+                }
+                catch (WebException webEx)
+                {
+                    string exceptionResponse;
+                    var responseStream = webEx.Response?.GetResponseStream();
 
-					if (response.IsSuccessStatusCode)
-					{
-						var resultContent = response.Content.ReadAsStringAsync().Result;
-						result = true;
-					}
-				}
-			}
+                    if (responseStream != null)
+                    {
+                        using (var reader = new StreamReader(responseStream))
+                        {
+                            exceptionResponse = reader.ReadToEnd();
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+            }
 
 			return result;
 		}
@@ -605,26 +631,30 @@ namespace TeamSupport.ServiceLibrary
         {
             List<WorkItemField> resultList = new List<WorkItemField>();
 
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri(HostName);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", EncodedCredentials);
+                string response = MakeRequest(string.Format("{0}/_apis/wit/fields?api-version=2.2", HostName), ApiMethod.Get);
+                WorkItemFields workItemFields = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemFields>(response);
+                resultList = new List<WorkItemField>(workItemFields.value);
+            }
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
 
-                HttpResponseMessage response = client.GetAsync("_apis/wit/fields?api-version=2.2").Result;
-
-                if (response.IsSuccessStatusCode)
+                if (responseStream != null)
                 {
-                    WorkItemFields result = response.Content.ReadAsAsync<WorkItemFields>().Result;
-                    resultList = new List<WorkItemField>(result.value);
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                        throw new TFSClientException(tfsError);
+                    }
                 }
-				else
-				{
-					var contents = response.Content.ReadAsStringAsync().Result;
-					TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(contents);
-					throw new TFSClientException(tfsError);
-				}
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
 
             _workItemFields = resultList;
@@ -724,6 +754,7 @@ namespace TeamSupport.ServiceLibrary
 			return postDataStream;
 		}
 
+        [Serializable]
 		public class WorkItems
 		{
 			public int count { get; set; }

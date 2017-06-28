@@ -105,6 +105,9 @@ AdminInt = function () {
         element.find('.int-crm-user').val(item.Username);
         element.find('.int-crm-password').val(item.Password);
         element.find('.int-crm-password-confirm').val(item.Password);
+
+        element.find('.int-crm-use-network-credentials').prop('checked', item.UseNetworkCredentials);
+
         element.find('.int-crm-token').val(item.SecurityToken1);
         element.find('.int-crm-token-confirm').val(item.SecurityToken1);
         element.find('.int-crm-tag').val(item.TypeFieldMatch);
@@ -771,6 +774,11 @@ AdminInt = function () {
             defaultSlaLevelId = null;
         }
 
+        var useNetworkCredentials = parent.find('.int-crm-use-network-credentials').prop('checked');
+        if (!useNetworkCredentials)
+        {
+            useNetworkCredentials = false;
+        }
         var pullCasesAsTickets = parent.find('.int-crm-pull-cases-as-tickets').prop('checked');
         var pushTicketsAsCases = parent.find('.int-crm-push-tickets-as-cases').prop('checked');
         var pushTicketsAsComments = parent.find('.int-crm-push-tickets-as-account-comments').prop('checked');
@@ -957,6 +965,7 @@ AdminInt = function () {
               restrictedToTicketTypes,
               excludedTicketStatuses,
               jiraInstanceName,
+              useNetworkCredentials,
               function (result) {
                   parent.data('link', result).find('.int-message').removeClass('ui-state-error').html('Your information was saved.').show().delay(1000).fadeOut('slow');
                   loadMaps(parent);

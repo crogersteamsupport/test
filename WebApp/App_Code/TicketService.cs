@@ -2028,59 +2028,79 @@ namespace TSWebServices
                     {
                         if (ticketLinktoTFSProxy.TFSID != null && !String.IsNullOrEmpty(ticketLinktoTFSProxy.TFSTitle))
                         {
-							string securityToken = crmRow["SecurityToken"].ToString();
-							string authorization = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", "", securityToken)));
-							string hostName = crmRow["HostName"].ToString();
-							string url = string.Format("{0}/DefaultCollection/_apis/wit/workitems/{1}?api-version=2.2&$expand=relations", hostName, ticketLinktoTFSProxy.TFSID);
+                            bool useNetworkCredentials = (bool)crmRow["UseNetworkCredentials"];
+                            string hostName = crmRow["HostName"].ToString();
+                            string username = crmRow["Username"].ToString();
+                            string password = crmRow["Password"].ToString();
+                            string securityToken = crmRow["SecurityToken"].ToString();
+                            NetworkCredential netCred = new NetworkCredential(username, password);
+                            string authorization = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", "", securityToken)));
+                            string url = string.Format("{0}/_apis/wit/workitems/{1}?api-version=2.2&$expand=relations", hostName, ticketLinktoTFSProxy.TFSID);
+                            string contentType = "application/json";
+                            string getResult = string.Empty;
 
-							try
-							{
-								//Get workItem first, to get its relations
-								HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
-								request.Method = "GET";
-								request.Headers[HttpRequestHeader.Authorization] = "Basic " + authorization;
-								String getResult = String.Empty;
-								using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-								{
-									Stream dataStream = response.GetResponseStream();
-									StreamReader reader = new StreamReader(dataStream);
-									getResult = reader.ReadToEnd();
-									reader.Close();
-									dataStream.Close();
-								}
+                            try
+                            {
+                                using (var client = new WebClient { UseDefaultCredentials = false })
+                                {
+                                    client.Headers.Add(HttpRequestHeader.ContentType, contentType);
 
-								WorkItemRelations workItemRelations = JsonConvert.DeserializeObject<WorkItemRelations>(getResult);
+                                    if (useNetworkCredentials)
+                                    {
+                                        client.Credentials = netCred;
+                                    }
+                                    else
+                                    {
+                                        client.Headers.Add(HttpRequestHeader.Authorization, "Basic " + authorization);
+                                    }
 
-								//Find the position of the TeamSupport hyperlink
-								for (int i = 0; i < workItemRelations.relations.Count(); i++)
-								{
-									if (string.Compare(workItemRelations.relations[i].rel, "Hyperlink", ignoreCase: true) == 0
-										&& workItemRelations.relations[i].url.Contains("teamsupport.com")
-										&& workItemRelations.relations[i].url.Contains(string.Format("ticketid={0}", ticketID.ToString())))
-									{
+                                    Stream stream = client.OpenRead(url);
+                                    StreamReader sr = new StreamReader(stream);
+                                    getResult = sr.ReadToEnd();
+                                }
 
-										//Now we can try to delete the hyperlink
-										using (var client = new WebClient())
-										{
-											client.Headers[HttpRequestHeader.ContentType] = "application/json-patch+json";
-											client.Headers[HttpRequestHeader.Authorization] = string.Format("Basic {0}", authorization);
-											Object[] patchDocument = new Object[1];
-											patchDocument[0] = new
-											{
-												op = "remove",
-												path = string.Format("/relations/{0}", i.ToString())
-											};
+                                WorkItemRelations workItemRelations = JsonConvert.DeserializeObject<WorkItemRelations>(getResult);
 
-											var patchValue = Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument);
-											string postResult = client.UploadString(url, "PATCH", patchValue);
-										}
-									}
-								}
-							}
-							catch (Exception ex)
-							{
-								//Check if the exception is that the URI is invalid, maybe the workitem id does not longer exist. if so we should go ahead and delete the link in the TS db.
-							}
+                                //Find the position of the TeamSupport hyperlink
+                                for (int i = 0; i < workItemRelations.relations.Count(); i++)
+                                {
+                                    if (string.Compare(workItemRelations.relations[i].rel, "Hyperlink", ignoreCase: true) == 0
+                                        && workItemRelations.relations[i].url.Contains("teamsupport.com")
+                                        && workItemRelations.relations[i].url.Contains(string.Format("ticketid={0}", ticketID.ToString())))
+                                    {
+
+                                        //Now we can try to delete the hyperlink
+                                        using (var client = new WebClient { UseDefaultCredentials = false })
+                                        {
+                                            contentType = "application/json-patch+json";
+                                            client.Headers.Add(HttpRequestHeader.ContentType, contentType);
+
+                                            if (useNetworkCredentials)
+                                            {
+                                                client.Credentials = netCred;
+                                            }
+                                            else
+                                            {
+                                                client.Headers.Add(HttpRequestHeader.Authorization, "Basic " + authorization);
+                                            }
+
+                                            Object[] patchDocument = new Object[1];
+                                            patchDocument[0] = new
+                                            {
+                                                op = "remove",
+                                                path = string.Format("/relations/{0}", i.ToString())
+                                            };
+
+                                            var patchValue = JsonConvert.SerializeObject(patchDocument);
+                                            string postResult = client.UploadString(url, "PATCH", patchValue);
+                                        }
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                //Check if the exception is that the URI is invalid, maybe the workitem id does not longer exist. if so we should go ahead and delete the link in the TS db.
+                            }
 						}
 
                         linkToTFS.DeleteFromDB(ticketLinktoTFSProxy.id);

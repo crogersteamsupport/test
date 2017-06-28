@@ -15,49 +15,44 @@ Namespace TeamSupport
 			Inherits Integration
 
 			Private _baseURI As String
-			Private _encodedCredentials As String
-			Private _tfs As TFSLibrary = New TFSLibrary()
-			Private _tfsExceptionMessageFormat As String = "TFS Error Message: {0}"
-			Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
-				MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.Jira)
-			End Sub
+            'Private _encodedCredentials As String
+            Private _tfs As TFSLibrary = New TFSLibrary()
+            Private _tfsExceptionMessageFormat As String = "TFS Error Message: {0}"
+            Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
+                MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.Jira)
+            End Sub
 
-			Public Overrides Function PerformSync() As Boolean
-				Dim Success As Boolean = True
+            Public Overrides Function PerformSync() As Boolean
+                Dim Success As Boolean = True
 
-				If ValidateSyncData() Then
-					Success = SyncTickets()
-				Else
-					Success = False
-				End If
-
-				Return Success
-			End Function
-
-			Private Function ValidateSyncData() As Boolean
-				Dim result As Boolean = True
-
-				If CRMLinkRow.HostName Is Nothing Then
-					result = False
-					AddLog("HostName is missing and it is required to sync.")
-				Else
-					Dim protocol As String = String.Empty
-					If CRMLinkRow.HostName.Length > 4 AndAlso CRMLinkRow.HostName.Substring(0, 4).ToLower() <> "http" Then
-						protocol = "https://"
-					End If
-					_baseURI = protocol + CRMLinkRow.HostName
-				End If
-
-                If CRMLinkRow.SecurityToken1 Is Nothing Then
-                    result = False
-                    AddLog("Security Token is missing and it is required to sync.")
+                If ValidateSyncData() Then
+                    Success = SyncTickets()
+                Else
+                    Success = False
                 End If
 
-                If  CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password Is Nothing Then
+                Return Success
+            End Function
+
+            Private Function ValidateSyncData() As Boolean
+                Dim result As Boolean = True
+
+                If CRMLinkRow.HostName Is Nothing Then
                     result = False
-                    AddLog("Username and or Password are missing and they are required to sync.")
+                    AddLog("HostName is missing and it is required to sync.")
                 Else
-                    _encodedCredentials = DataUtils.GetEncodedCredentials(CRMLinkRow.Username, CRMLinkRow.Password)
+                    Dim protocol As String = String.Empty
+                    If CRMLinkRow.HostName.Length > 4 AndAlso CRMLinkRow.HostName.Substring(0, 4).ToLower() <> "http" Then
+                        protocol = "https://"
+                    End If
+                    _baseURI = protocol + CRMLinkRow.HostName
+                End If
+
+                If CRMLinkRow.SecurityToken1 Is Nothing Then
+                    If CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password Is Nothing Then
+                        result = False
+                        AddLog("The API Token and the Username and or Password are missing and they are required to sync.")
+                    End If
                 End If
 
                 'Make sure credentials are good
@@ -66,7 +61,7 @@ Namespace TeamSupport
                         If (CRMLinkRow.SecurityToken1 IsNot Nothing) Then
                             _tfs = New TFSLibrary(_baseURI, CRMLinkRow.SecurityToken1)
                         Else
-                            _tfs = New TFSLibrary(_baseURI, CRMLinkRow.Username, CRMLinkRow.Password)
+                            _tfs = New TFSLibrary(_baseURI, CRMLinkRow.Username, CRMLinkRow.Password, CRMLinkRow.UseNetworkCredentials)
                         End If
 
                         Dim errorMessage As String = _tfs.CheckCredentialsAndHost()
