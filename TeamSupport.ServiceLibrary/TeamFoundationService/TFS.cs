@@ -73,7 +73,7 @@ namespace TeamSupport.ServiceLibrary
                 }
                 else
                 {
-                    byte[] response = client.UploadData(uri, Encoding.UTF8.GetBytes(patchDocument));
+                    byte[] response = client.UploadData(uri, method.ToString(), Encoding.UTF8.GetBytes(patchDocument));
                     result = client.Encoding.GetString(response);
                 }
             }
@@ -822,7 +822,6 @@ namespace TeamSupport.ServiceLibrary
 
 		public class TFSErrorsResponse
 		{
-			[Newtonsoft.Json.JsonProperty(PropertyName = "$id")]
 			public string id { get; set; }
 			public object innerException { get; set; }
 			public string message { get; set; }
@@ -830,11 +829,32 @@ namespace TeamSupport.ServiceLibrary
 			public string typeKey { get; set; }
 			public int errorCode { get; set; }
 			public int eventId { get; set; }
-		}
+            public int count { get; set; }
+            public Value value { get; set; }
+            public string ErrorMessage
+            {
+                get
+                {
+                    if (value != null)
+                    {
+                        return value.Message;
+                    }
+                    else
+                    {
+                        return message;
+                    }
+                }
+            }
+        }
 
-	//To get the other relation types do a GET to: https://{url}/DefaultCollection/_apis/wit/workitemrelationtypes?api-version=2.2
-	//For now we are only using these two.
-	    private enum RelationsType : byte
+        public class Value
+        {
+            public string Message { get; set; }
+        }
+
+        //To get the other relation types do a GET to: https://{url}/DefaultCollection/_apis/wit/workitemrelationtypes?api-version=2.2
+        //For now we are only using these two.
+        private enum RelationsType : byte
 		{
 			Unknown = 0,
 			Hyperlink = 1,
