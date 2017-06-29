@@ -291,8 +291,8 @@ Namespace TeamSupport
 						TFSProjectName = GetProjectName(ticket, crmLinkErrors)
 						workItemFields = GetWorkItemFields(ticket, TFSProjectName, crmLinkError, Orientation.OutToTFS)
 					Catch tfsEx As TFSLibrary.TFSClientException
-						AddLog(tfsEx.ErrorResponse.message + " " + tfsEx.StackTrace)
-						Continue For
+                        AddLog(tfsEx.ErrorResponse.ErrorMessage + " " + tfsEx.StackTrace)
+                        Continue For
 					Catch ex As Exception
 						AddLog(String.Format("Exception in PushTicketsAndActionsAsWorkItemsAndComments: {0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace))
 						Continue For
@@ -334,11 +334,11 @@ Namespace TeamSupport
                             ClearCrmLinkError(crmLinkError)
                         Catch tfsEx As TFSLibrary.TFSClientException
                             Dim errorMessage As String = tfsEx.ErrorResponse.typeKey
-                            AddLog(String.Format(_tfsExceptionMessageFormat, tfsEx.ErrorResponse.message))
+                            AddLog(String.Format(_tfsExceptionMessageFormat, tfsEx.ErrorResponse.ErrorMessage))
                             AddLog(tfsEx.Message,
                                     LogType.Report,
                                     crmLinkError,
-                                    String.Format("WorkItem was not created due to:{0}{1}", Environment.NewLine, tfsEx.ErrorResponse.message),
+                                    String.Format("WorkItem was not created due to:{0}{1}", Environment.NewLine, tfsEx.ErrorResponse.ErrorMessage),
                                     Orientation.OutToJira,
                                     ObjectType.Ticket,
                                     ticket.TicketID,
@@ -357,7 +357,7 @@ Namespace TeamSupport
                                     'Case "project mismatch" 'ToDo pending
                                     '	errorMessage = "Error: Specify valid Type and/or Project (Product)."
                                 Case Else
-                                    errorMessage = tfsEx.ErrorResponse.message
+                                    errorMessage = tfsEx.ErrorResponse.ErrorMessage
                                     updateLinkToTFS = False
                             End Select
 
@@ -403,7 +403,7 @@ Namespace TeamSupport
                             'End If
 
                             'If (String.IsNullOrEmpty(invalidTFSTitle)) Then
-                            Dim TFSErrors As String = tfsEx.ErrorResponse.message
+                            Dim TFSErrors As String = tfsEx.ErrorResponse.ErrorMessage
                             '        If (jiraErrors IsNot Nothing AndAlso jiraErrors.HasErrors) Then
                             If (Not String.IsNullOrEmpty(TFSErrors)) Then
                                 AddLog(String.Format(_tfsExceptionMessageFormat,
