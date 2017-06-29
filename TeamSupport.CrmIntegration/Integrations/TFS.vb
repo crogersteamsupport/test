@@ -546,7 +546,7 @@ Namespace TeamSupport
 						End Try
 					End If
 
-					PushActionsAsComments(ticket.TicketID, ticket.TicketNumber, workItem, attachmentEnabled, attachmentFileSizeLimit)
+                    PushActionsAsComments(ticket.TicketID, ticket.TicketNumber, workItem, ticketLinkToTFS.TFSID, attachmentEnabled, attachmentFileSizeLimit)
 
 					'If sendCustomMappingFields Then
 					'We are now updating the custom mapping fields. We do a call per field to minimize the impact of invalid values attempted to be assigned.
@@ -1073,6 +1073,7 @@ Namespace TeamSupport
 				ByVal ticketID As Integer,
 				ByVal ticketNumber As Integer,
 				ByVal workItem As WorkItem,
+                ByVal workItemID As Integer,
 				ByVal attachmentEnabled As Boolean,
 				ByVal attachmentFileSizeLimit As Integer)
 
@@ -1100,6 +1101,10 @@ Namespace TeamSupport
 
 					If actionLinkToTFSItem Is Nothing Then
 						Try
+                            If workItem.Id Is Nothing Then
+                                workItem = _tfs.GetWorkItemBy(workItemID)
+                            End If
+
 							Dim TFSComment As String = BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition, actionToPushAsComment.CreatorID)
 							Dim commentId As Integer = _tfs.CreateComment(workItem.Id, TFSComment)
 							Dim newActionLinkToTFS As ActionLinkToTFS = New ActionLinkToTFS(User)
