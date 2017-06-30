@@ -266,8 +266,15 @@ namespace TeamSupport.ServiceLibrary
                     using (var reader = new StreamReader(responseStream))
                     {
                         exceptionResponse = reader.ReadToEnd();
-                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                        throw new TFSClientException(tfsError);
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
                     }
                 }
             }
@@ -298,8 +305,15 @@ namespace TeamSupport.ServiceLibrary
                     using (var reader = new StreamReader(responseStream))
                     {
                         exceptionResponse = reader.ReadToEnd();
-                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                        throw new TFSClientException(tfsError);
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
                     }
                 }
             }
@@ -330,8 +344,15 @@ namespace TeamSupport.ServiceLibrary
                     using (var reader = new StreamReader(responseStream))
                     {
                         exceptionResponse = reader.ReadToEnd();
-                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                        throw new TFSClientException(tfsError);
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
                     }
                 }
             }
@@ -362,8 +383,15 @@ namespace TeamSupport.ServiceLibrary
                     using (var reader = new StreamReader(responseStream))
                     {
                         exceptionResponse = reader.ReadToEnd();
-                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                        throw new TFSClientException(tfsError);
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
                     }
                 }
             }
@@ -394,8 +422,15 @@ namespace TeamSupport.ServiceLibrary
                     using (var reader = new StreamReader(responseStream))
                     {
                         exceptionResponse = reader.ReadToEnd();
-                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                        throw new TFSClientException(tfsError);
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
                     }
                 }
             }
@@ -426,8 +461,15 @@ namespace TeamSupport.ServiceLibrary
                     using (var reader = new StreamReader(responseStream))
                     {
                         exceptionResponse = reader.ReadToEnd();
-                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                        throw new TFSClientException(tfsError);
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
                     }
                 }
             }
@@ -460,8 +502,15 @@ namespace TeamSupport.ServiceLibrary
                     using (var reader = new StreamReader(responseStream))
                     {
                         exceptionResponse = reader.ReadToEnd();
-                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                        throw new TFSClientException(tfsError);
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
                     }
                 }
             }
@@ -501,8 +550,15 @@ namespace TeamSupport.ServiceLibrary
                     using (var reader = new StreamReader(responseStream))
                     {
                         exceptionResponse = reader.ReadToEnd();
-                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                        throw new TFSClientException(tfsError);
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
                     }
                 }
             }
@@ -534,8 +590,15 @@ namespace TeamSupport.ServiceLibrary
                     using (var reader = new StreamReader(responseStream))
                     {
                         exceptionResponse = reader.ReadToEnd();
-                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                        throw new TFSClientException(tfsError);
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
                     }
                 }
             }
@@ -567,8 +630,15 @@ namespace TeamSupport.ServiceLibrary
                     using (var reader = new StreamReader(responseStream))
                     {
                         exceptionResponse = reader.ReadToEnd();
-                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                        throw new TFSClientException(tfsError);
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
                     }
                 }
             }
@@ -610,8 +680,15 @@ namespace TeamSupport.ServiceLibrary
                             using (var reader = new StreamReader(responseStream))
                             {
                                 exceptionResponse = reader.ReadToEnd();
-                                TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                                throw new TFSClientException(tfsError);
+                                try
+                                {
+                                    TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                                    throw new TFSClientException(tfsError);
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new Exception(exceptionResponse);
+                                }
                             }
                         }
                     }
@@ -695,8 +772,15 @@ namespace TeamSupport.ServiceLibrary
                         using (var reader = new StreamReader(responseStream))
                         {
                             exceptionResponse = reader.ReadToEnd();
-                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                            throw new TFSClientException(tfsError);
+                            try
+                            {
+                                TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                                throw new TFSClientException(tfsError);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(exceptionResponse);
+                            }
                         }
                     }
                 }
@@ -729,8 +813,15 @@ namespace TeamSupport.ServiceLibrary
                     using (var reader = new StreamReader(responseStream))
                     {
                         exceptionResponse = reader.ReadToEnd();
-                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                        throw new TFSClientException(tfsError);
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
                     }
                 }
             }

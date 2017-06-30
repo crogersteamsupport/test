@@ -1304,34 +1304,38 @@ Namespace TeamSupport
 						Dim updateTicket As Tickets = New Tickets(User)
 						updateTicket.LoadByTicketID(ticketID)
 
-						If updateTicket.Count > 0 AndAlso updateTicket(0).OrganizationID = CRMLinkRow.OrganizationID Then
-							crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticketID.ToString(), String.Empty)
+                        If updateTicket.Count > 0 AndAlso updateTicket(0).OrganizationID = CRMLinkRow.OrganizationID Then
+                            crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticketID.ToString(), String.Empty)
 
-							Try
-								Dim ticketLinkToTFSItem As TicketLinkToTFSItem = ticketLinkToTFS.FindByTicketID(ticketID)
-								UpdateTicketWithWorkItemData(ticketID, workItem, newActionsTypeID, allStatuses, crmLinkError, crmLinkErrors, ticketLinkToTFSItem)
-								ClearCrmLinkError(crmLinkError)
-							Catch ex As Exception
-								AddLog(ex.ToString() + ex.StackTrace,
-									LogType.Text,
-									crmLinkError,
-									"Error when updating ticket with Work Item data.",
-									Orientation.IntoTeamSupport,
-									ObjectType.Ticket,
-									ticketID.ToString(),
-									String.Empty,
-									JsonConvert.SerializeObject(workItem),
-									OperationType.Update)
-							End Try
+                            Try
+                                Dim ticketLinkToTFSItem As TicketLinkToTFSItem = ticketLinkToTFS.FindByTicketID(ticketID)
+                                UpdateTicketWithWorkItemData(ticketID, workItem, newActionsTypeID, allStatuses, crmLinkError, crmLinkErrors, ticketLinkToTFSItem)
+                                ClearCrmLinkError(crmLinkError)
 
-							If newComments Is Nothing Then
-								newComments = New List(Of WorkItemComment)
-								newComments = GetNewComments(workItem.Id, ticketID)
-							End If
+                                If newComments Is Nothing Then
+                                    newComments = New List(Of WorkItemComment)
+                                    If CRMLinkRow.UseNetworkCredentials Then
+                                        newComments = GetNewHistoryAsComments(workItem.Id, ticketID)
+                                    Else
+                                        newComments = GetNewComments(workItem.Id, ticketID)
+                                    End If
+                                End If
 
-							AddNewCommentsInTicket(ticketID, newComments, newActionsTypeID, crmLinkActionErrors)
-						ElseIf updateTicket.Count > 0 Then
-							AddLog("Ticket with ID: """ + ticketID.ToString() + """ belongs to a different organization and was not updated.")
+                                AddNewCommentsInTicket(ticketID, newComments, newActionsTypeID, crmLinkActionErrors)
+                            Catch ex As Exception
+                                AddLog(ex.ToString() + ex.StackTrace,
+                                    LogType.Text,
+                                    crmLinkError,
+                                    "Error when updating ticket with Work Item data.",
+                                    Orientation.IntoTeamSupport,
+                                    ObjectType.Ticket,
+                                    ticketID.ToString(),
+                                    String.Empty,
+                                    JsonConvert.SerializeObject(workItem),
+                                    OperationType.Update)
+                            End Try
+                        ElseIf updateTicket.Count > 0 Then
+                            AddLog("Ticket with ID: """ + ticketID.ToString() + """ belongs to a different organization and was not updated.")
 						Else
 							AddLog("Ticket with ID: """ + ticketID.ToString() + """ was not found to be updated.")
 						End If
@@ -1856,7 +1860,38 @@ Namespace TeamSupport
 				Return newComments
 			End Function
 
-			Private Function GetIsNewComment(ByVal comment As WorkItemComment, ByVal ticketActionsLinked As ActionLinkToTFS) As Boolean
+            Private Function GetNewHistoryAsComments(ByVal workItemId As Integer, ByVal ticketID As Integer) As List(Of WorkItemComment)
+                Dim newHistory As List(Of WorkItemHistory) = New List(Of WorkItemHistory)
+                Dim history As TFSLibrary.WorkItemHistoryList = _tfs.GetHistoryBy(workItemId)
+                Dim ticketActionsLinked As ActionLinkToTFS = New ActionLinkToTFS(User)
+
+                ticketActionsLinked.LoadByTicketID(ticketID)
+
+                Dim newComments As List(Of WorkItemComment) = New List(Of WorkItemComment)
+
+                For Each historyEntry As WorkItemHistory In history.value
+                    Dim comment As WorkItemComment = ConvertHistoryToComment(historyEntry)
+                    If GetIsNewComment(comment, ticketActionsLinked) Then
+                        newComments.Add(comment)
+                    End If
+                Next
+
+                Return newComments
+            End Function
+
+            Private Function ConvertHistoryToComment(ByVal history As WorkItemHistory) As WorkItemComment
+                Dim result As WorkItemComment = New WorkItemComment()
+
+                result.Text = history.Value
+                result.RevisedBy = history.RevisedBy
+                result.RevisedDate = history.RevisedDate
+                result.Revision = history.Rev
+                result.Url = history.Url
+                'result.Links = history.Links
+
+                Return result
+            End Function
+            Private Function GetIsNewComment(ByVal comment As WorkItemComment, ByVal ticketActionsLinked As ActionLinkToTFS) As Boolean
 				Dim result As Boolean = False
 
                 If (comment.Text.Length < 19 OrElse comment.Text.Substring(0, 20) <> "TeamSupport ticket #") Then
@@ -1910,11 +1945,11 @@ Namespace TeamSupport
 						commentDescription = firstLine + commentDescription
 						updateActions(0).Description = commentDescription
 						updateActions.ActionLogInstantMessage = "TFS Comment ID: " + TFSCommentId.ToString() + " Created In TeamSupport Action "
-						Dim actionLinkToTFS As ActionLinkToTFS = New ActionLinkToTFS(User)
+                        updateActions.Save()
+                        Dim actionLinkToTFS As ActionLinkToTFS = New ActionLinkToTFS(User)
                         Dim actionLinkToTFSItem As ActionLinkToTFSItem = actionLinkToTFS.AddNewActionLinkToTFSItem(updateActions(0).ActionID)
                         actionLinkToTFSItem.TFSID = TFSCommentId
 						actionLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow
-						updateActions.Save()
                         'actionLinkToTFSItem.ActionID = updateActions(0).ActionID
                         actionLinkToTFS.Save()
 
