@@ -1158,7 +1158,7 @@ Namespace TeamSupport
                             Continue For
                         End Try
                     End If
-                    Dim test As String = workItem.Fields.Keys.Where(Function(w) w = "System.Title").Select(Function(p) p).ToString()
+
                     If (attachmentEnabled) Then
                         PushAttachments(actionToPushAsComment.ActionID, ticketNumber, workItem, attachmentFileSizeLimit, actionPosition)
                     End If

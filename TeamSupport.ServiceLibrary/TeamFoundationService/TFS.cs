@@ -703,28 +703,24 @@ namespace TeamSupport.ServiceLibrary
 		public bool UploadAttachment(int workItemId, string filePath, string fileName)
 		{
 			bool result = false;
-			string URI = HostName + "/_apis/wit/attachments?fileName=" + fileName + "&api-version=2.2"; //Use correct values here
-
-            using (var client = new WebClient { UseDefaultCredentials = false })
-            {
-                client.Headers.Add(HttpRequestHeader.ContentType, "application/octet-stream;");
-                if (_useNetworkCredentials)
-                {
-                    NetworkCredential netCred = new NetworkCredential(UserName, Password);
-                    client.Credentials = netCred;
-                }
-                else
-                {
-                    client.Headers.Add(HttpRequestHeader.Authorization, "Basic " + EncodedCredentials);
-                }
-
-                client.UploadFile(URI, filePath);
-            }
-
+			string URI = HostName + "/_apis/wit/attachments?fileName=" + fileName + "&api-version=2.2";
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URI);
 			string boundary = "---------------------------" + DateTime.Now.Ticks.ToString("x");
-			request.Headers.Add("Authorization", "Basic " + EncodedCredentials);
+
+            if (_useNetworkCredentials)
+            {
+                NetworkCredential nc = new NetworkCredential(UserName, Password);
+                CredentialCache cache = new CredentialCache();
+                Uri uriObject = new Uri(URI);
+                cache.Add(uriObject, "NTLM", nc);
+                request.Credentials = cache;
+            }
+            else
+            {
+                request.Headers.Add("Authorization", "Basic " + EncodedCredentials);
+            }
+
 			request.Method = "POST";
 			request.ContentType = "application/octet-stream;";
 			request.Accept = "text/html, application/xhtml+xml, */*";
