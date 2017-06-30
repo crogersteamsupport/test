@@ -775,7 +775,7 @@ function CreateNewActionLI() {
                     }
                     else {
                         EnableCreateBtns();
-                        alert("There was a error creating your action.  Please try again.")
+                        alert("There was a error creating your action.  Please try again.");
                     }
                 });
             }
@@ -786,7 +786,7 @@ function CreateNewActionLI() {
             }
         });
 
-        $(this).parent().dropdown('toggle');
+        //$(this).parent().dropdown('toggle');
     });
 
     $('#action-timeline').on('click', '.remove-attachment', function (e) {
@@ -822,7 +822,7 @@ function CreateNewActionLI() {
                     $('#action-new-editor').summernote('insertNode', result);
                 }
             }
-            elem.parent().fadeIn('normal');
+            //elem.parent().fadeIn('normal');
         });
     });
 
