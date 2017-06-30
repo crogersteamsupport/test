@@ -1,4 +1,48 @@
-﻿html, body, div, span, applet, object, iframe,
+﻿
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/roboto/Roboto-Thin-webfont.eot');
+    src: url('../fonts/roboto/Roboto-Thin-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/roboto/Roboto-Thin-webfont.woff') format('woff'), url('../fonts/roboto/Roboto-Thin-webfont.ttf') format('truetype'), url('../fonts/roboto/Roboto-Thin-webfont.svg#robotoregular') format('svg');
+    font-weight: 200;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/roboto/Roboto-Light-webfont.eot');
+    src: url('../fonts/roboto/Roboto-Light-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/roboto/Roboto-Light-webfont.woff') format('woff'), url('../fonts/roboto/Roboto-Light-webfont.ttf') format('truetype'), url('../fonts/roboto/Roboto-Light-webfont.svg#robotolight') format('svg');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/roboto/Roboto-Regular-webfont.eot');
+    src: url('../fonts/roboto/Roboto-Regular-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/roboto/Roboto-Regular-webfont.woff') format('woff'), url('../fonts/roboto/Roboto-Regular-webfont.ttf') format('truetype'), url('../fonts/roboto/Roboto-Regular-webfont.svg#robotoregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/roboto/Roboto-Medium-webfont.eot');
+    src: url('../fonts/roboto/Roboto-Medium-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/roboto/Roboto-Medium-webfont.woff') format('woff'), url('../fonts/roboto/Roboto-Medium-webfont.ttf') format('truetype'), url('../fonts/roboto/Roboto-Medium-webfont.svg#robotoregular') format('svg');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/roboto/Roboto-Bold-webfont.eot');
+    src: url('../fonts/roboto/Roboto-Bold-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/roboto/Roboto-Bold-webfont.woff') format('woff'), url('../fonts/roboto/Roboto-Bold-webfont.ttf') format('truetype'), url('../fonts/roboto/Roboto-Bold-webfont.svg#robotoregular') format('svg');
+    font-weight: bold;
+    font-style: normal;
+}
+
+
+
+
+html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
 del, dfn, font, img, ins, kbd, q, s, samp,
@@ -12,7 +56,7 @@ fieldset, form, label, legend, caption, tbody, tfoot, thead, tr, th {
 	font-weight: inherit;
 	font-style: inherit;
 	font-size: 100%;
-	font-family: inherit;
+	font-family: 'Roboto';
 	vertical-align: baseline;
 }
 :focus {
@@ -65,11 +109,11 @@ pre {border: 1px solid #2a3f54; margin: 1em 0; padding: .5em .5em; font-family:c
 
 .ui-widget-header a, .ui-widget-header a:link, .ui-widget-header a:visited, .ui-widget-header a:active { text-decoration: none;}
 .ui-widget-header a:hover { text-decoration: underline;}
-.ui-widget .ui-autocomplete-input, .ui-autocomplete-input, input.text  { padding: .2em .2em; text-align:left; height: 14px;}
+/*.ui-widget .ui-autocomplete-input, .ui-autocomplete-input, input.text  { padding: .2em .2em; text-align:left; height: 14px;}*/
 .ui-menu .ui-menu-item a { padding: 0 .1em 0 .2em; }
 /*.ui-button .ui-button-text-only, .ui-button-text-only .ui-button-text { line-height: 2em !important; padding: 0 .4em !important; }*/
 .ui-button, .ui-widget .ui-button{ font-weight:normal; padding:0; }
-label.checkbox { vertical-align: middle; margin: 0px; top:0; font-weight:bold; display:inline; }    
+label.checkbox { vertical-align: middle; margin: 0px; top:0; font-weight:bold; display:inline; }
 input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; width:auto;}
 
 /*
@@ -85,7 +129,7 @@ input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; wi
 .label-description { display:block; margin-bottom: .5em;}
 
 .checkbox.label-block { line-height: 40px; height:40px; }
-.checkbox.label-block label { vertical-align: middle; margin: 0px; top:0; font-weight:bold; padding-left: .5em;}    
+.checkbox.label-block label { vertical-align: middle; margin: 0px; top:0; font-weight:bold; padding-left: .5em;}
 .checkbox.label-block input { vertical-align: middle; margin: 0px; top:0;  }
 
 .ts-loading { background-color: transparent; background-image: url('../images/loading/loading2.gif'); background-repeat: no-repeat;  background-position: 50% 25%; height:100%; min-height: 200px; }
@@ -99,7 +143,7 @@ input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; wi
 .ts-rail-left { float: left; width: 300px; }
 .ts-content-right { margin-left: 320px; }
 
-.ts-setting-field { padding: 1em 0; border-top: 0; border-left: 0; border-right: 0;  border-style: dotted;}
+.ts-setting-field { padding: 1em 0; border-top: 0; border-left: 0; border-right: 0;  border-style: solid; border-color:#F7F7F9;}
 .ts-setting-field.last { border: 0; }
 .ts-setting-field.two-column .ts-setting-field-content { margin-left: 220px; }
 .ts-setting-field.two-column .ts-setting-field-description { float: left; width: 200px; }
@@ -123,13 +167,13 @@ label.ts-checkbox {display:block; margin-bottom: 5px; min-height: 20px; padding-
 .ts-separator { height: 1px; background-color:#D7E6F9;}
 .ts-section { margin: .5em .5em; padding: 0 .5em .5em .5em; border: 2px solid #D7E6F9; clear:both;}
 .ts-side-widget { background-color: #EDF4FC; }
-.ts-content { background-image:none; border:none; overflow:auto; background-color: #EDF4FC;} 
+.ts-content { background-image:none; border:none; overflow:auto; background-color: #EDF4FC;}
 */
 .ui-widget-content a.ts-link { border: none; background:none; cursor: pointer;}
 .ts-color-bg-accent, .ui-widget-content.ts-color-bg-accent { background-color:#EEEEEE; /* #E3EEFC;*/ background-image: none;}
 .ui-widget-content.ts-separator { height: 1px; border-bottom: none; border-left:none; border-right:none; margin-bottom: .5em; clear:both; }
-.ts-content { background-image:none; border:none; overflow:auto; } 
-.ts-section { margin: 1em 1em; padding: 1em .75em; border: none; clear:both;}
+.ts-content { background-image:none; border:none; overflow:auto; }
+.ts-section { margin: 1em 1em; padding: 1.2em 1.2em; border: none; clear:both;}
 .ts-section h1, .ts-section h2, .ts-section h3 { color: #555; font-weight: normal; }
 .ts-section h1 { font-size: 1.5em; margin: .5em 0; }
 .ts-section h2 { font-size: 1.3em; margin: .5em 0; }
@@ -139,7 +183,7 @@ label.ts-checkbox {display:block; margin-bottom: 5px; min-height: 20px; padding-
 /* Old, but used in automation admin
 .ts-section { margin: .5em .5em; padding: .5em .5em .5em .5em; border: none; clear:both;}
 .ts-side-widget { background-color: #fff; }
-.ts-content { background-image:none; border:none; overflow:auto; background-color: #fff;} 
+.ts-content { background-image:none; border:none; overflow:auto; background-color: #fff;}
 .ts-content h1 { padding: .5em 0 .5em 0; font-size: 1.5em; }
 .ts-content h2 { padding: .5em 0 .5em 0; font-size: 1.25em; }
 .ts-content h2 { padding: .5em 0 .5em 0; font-size: 1em; }
@@ -170,7 +214,12 @@ label.ts-checkbox {display:block; margin-bottom: 5px; min-height: 20px; padding-
 .ts-icon-open { background-position: -96px 0; }
 .ts-icon-top { background-position: -592px 0; }
 .ts-icon-add { background-position: -912px 0; }
-.ts-icon-delete { background-position: -976px 0; }
+.ts-icon-delete {
+  margin-left: 0;
+  background-image: none !important;
+  text-indent: 0 !important;
+  font-size: 14px;
+}
 .ts-icon-pin { background-position: -738px -16px; }
 .ts-icon-pinnot { background-position: -722px -16px; }
 .ts-icon-remove { background-position: -832px 0; }
@@ -252,7 +301,7 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 .chat-message-self .chat-name { color:#696969;}
 
 /* Ts Tabs */
-.ts-tabs { position: relative; padding: 0 .5em; zoom: 1;  border-left: none; border-right:none; border-top:none; overflow:hidden; margin-top:1px;} 
+.ts-tabs { position: relative; padding: 0 .5em; zoom: 1;  border-left: none; border-right:none; border-top:none; overflow:hidden; margin-top:1px;}
 .ts-tabs li { list-style: none; float: left; position: relative; border-bottom: 0 !important; padding: 0 .33em; white-space: nowrap; height:25px; line-height:25px; margin: 5px .1em 0 0; cursor:pointer;}
 .ts-tabs li a { float: left; text-decoration: none; display:block; margin: 0 0; text-align: center ; min-width: 80px;}
 .ts-tabs li a:hover { text-decoration:none;}
@@ -279,12 +328,12 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 .ts-layout-toolbar { height: 31px; }
 .ts-layout-container { height: 100%; }
 
-.ui-cluetip-content h1 { padding: 0 0 .5em 0; line-height: inherit; font-size: 1.5em;} 
-.ui-cluetip-content h2 { padding: 0 0 .5em 0; font-size: 1.2em; font-weight:normal;line-height: inherit;} 
-.ui-cluetip-content h3 { } 
-.ui-cluetip-content dl { font-size:1em; line-height: 1.5em; padding: 0 0 1em 0;margin-bottom: 0px;} 
-.ui-cluetip-content dt { float:left; width: 25%; font-weight:bold; clear:both;} 
-.ui-cluetip-content dd { float:left; width: 70%;} 
+.ui-cluetip-content h1 { padding: 0 0 .5em 0; line-height: inherit; font-size: 1.5em;}
+.ui-cluetip-content h2 { padding: 0 0 .5em 0; font-size: 1.2em; font-weight:normal;line-height: inherit;}
+.ui-cluetip-content h3 { }
+.ui-cluetip-content dl { font-size:1em; line-height: 1.5em; padding: 0 0 1em 0;margin-bottom: 0px;}
+.ui-cluetip-content dt { float:left; width: 25%; font-weight:bold; clear:both;}
+.ui-cluetip-content dd { float:left; width: 70%;}
 .ui-cluetip-content { padding: 1em 1em;  border:none;}
 
 .removable-item { padding: .25em .5em; margin: 0 .5em .5em 0; float:left;  }
@@ -293,19 +342,19 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 .removable-item-title, .removable-item-title a.ui-state-default { font-weight:bold; float:left; line-height: 20px; font-size: 12px;}
 .removable-item-description { float:left; clear:left; line-height: 20px; font-size: 12px; margin-top: .25em;}
 .removable-item .removable-text, .removable-item a { float:left; margin-right: .25em; }
- 
+
 .paste-dialog-instructions{
     position: absolute;
     top: 50%;
     font-weight: bold;
     font-size: larger;
     text-align: center;
-    width: 98%; 
+    width: 98%;
 }
 
 .image-cropper{
     /*display:inline;*/
-    width: 98%; 
+    width: 98%;
 }
 /*
 #mainImageDiv{
@@ -365,17 +414,13 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 }
 
 
-.ticket-action-description table[border="1"] tbody, .ticket-preview-action table[border="1"] tbody 
-.ticket-action-description table[border="1"] tbody > thead, .ticket-preview-action table[border="1"] tbody > thead, 
-.ticket-action-description table[border="1"] tbody tr, .ticket-preview-action table[border="1"] tbody tr, 
-.ticket-action-description table[border="1"] tbody th, .ticket-preview-action table[border="1"] tbody th, 
-.ticket-action-description table[border="1"] td, .ticket-preview-action table[border="1"] td{ 
+.ticket-action-description table[border="1"] tbody, .ticket-preview-action table[border="1"] tbody
+.ticket-action-description table[border="1"] tbody > thead, .ticket-preview-action table[border="1"] tbody > thead,
+.ticket-action-description table[border="1"] tbody tr, .ticket-preview-action table[border="1"] tbody tr,
+.ticket-action-description table[border="1"] tbody th, .ticket-preview-action table[border="1"] tbody th,
+.ticket-action-description table[border="1"] td, .ticket-preview-action table[border="1"] td{
     border-width: 1px; border-style: solid;border-color: #999999;
 }
-
-
-
-
 
 <!-- TABS -->
 .main-tab-item {

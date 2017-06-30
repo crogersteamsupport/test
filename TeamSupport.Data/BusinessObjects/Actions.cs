@@ -12,7 +12,6 @@ namespace TeamSupport.Data
 {
     public partial class Action
     {
-
         public Attachments GetAttachments()
         {
             Attachments attachments = new Attachments(BaseCollection.LoginUser);
@@ -109,7 +108,6 @@ namespace TeamSupport.Data
         private bool _updateChildTickets = true;
 
         private string _actionLogInstantMessage = null;
-
         private bool _isAdminClean = false;
         public string ActionLogInstantMessage
         {
@@ -133,7 +131,8 @@ namespace TeamSupport.Data
             {
                 _isAdminClean = value;
             }
-        }
+        }
+
         partial void BeforeRowDelete(int actionID)
         {
             Action action = (Action)Actions.GetAction(LoginUser, actionID);
@@ -146,9 +145,8 @@ namespace TeamSupport.Data
             action.Description = HtmlUtility.FixScreenRFrame((action.Row["Description"] == DBNull.Value) ? string.Empty : action.Description);
             string actionNumber = GetActionNumber(action.TicketID, action.ActionID);
             string description = "Modified action #" + actionNumber + " on " + Tickets.GetTicketLink(LoginUser, action.TicketID);
-            if (!this.isAdminClean)
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, action.TicketID, description);
-
+            if(!this.isAdminClean)
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, action.TicketID, description);
         }
 
         private string GetActionNumber(int ticketID, int actionID)
@@ -527,6 +525,47 @@ WHERE a.SalesForceID = @SalesForceID";
             (
               j.DateModifiedByJiraSync IS NULL
               OR a.DateModified > DATEADD(s, 2, j.DateModifiedByJiraSync)
+            )
+          ORDER BY
+            a.DateCreated ASC
+        ";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ticketID", ticketID);
+                command.Parameters.AddWithValue("@DateModified", item.LastLink == null ? new DateTime(1753, 1, 1) : item.LastLinkUtc.Value.AddHours(-1));
+                command.Parameters.AddWithValue("@actionTypeID", item.ActionTypeIDToPush == null ? -1 : item.ActionTypeIDToPush);
+
+                Fill(command, "Actions");
+            }
+        }
+
+        //Changes to this method needs to be applied to ActionLinkToJira.LoadToPushToJira also.
+        public void LoadToPushToTFS(CRMLinkTableItem item, int ticketID)
+        {
+            string actionTypeFilter = "1 = 1";
+
+            if (item.ActionTypeIDToPush != null)
+            {
+                actionTypeFilter = "a.ActionTypeID = @actionTypeID";
+            }
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText =
+                @"
+          SELECT 
+            a.* 
+          FROM 
+            Actions a
+            LEFT JOIN ActionLinkToTFS tfs
+              ON a.ActionID = tfs.ActionID
+          WHERE
+            a.SystemActionTypeID <> 1
+            AND a.TicketID = @ticketID
+            AND " + actionTypeFilter + @"
+            AND
+            (
+              tfs.DateModifiedByTFSSync IS NULL
+              OR a.DateModified > DATEADD(s, 2, tfs.DateModifiedByTFSSync)
             )
           ORDER BY
             a.DateCreated ASC

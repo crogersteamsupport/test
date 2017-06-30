@@ -129,7 +129,12 @@ IF EXISTS(SELECT * FROM SystemSettings WHERE (SettingKey=@SettingKey))
 			return ReadString("Domain", "teamsupport.com");
 		}
 
-		public static string GetPodName()
+        public static string GetEmailDomain()
+        {
+            return ReadString("EmailDomain", "teamsupport.com");
+        }
+
+        public static string GetPodName()
 		{
 			return ReadString("PodName", "None");
 		}

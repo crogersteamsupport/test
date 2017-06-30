@@ -1,8 +1,10 @@
-﻿body { font-family: "Lucida Grande" ,Helvetica,Arial,Verdana,sans-serif; font-size: 12px; color: #15428B; background-color: #DBE6F4; }
+﻿@import url('https://fonts.googleapis.com/css?family=Roboto');
+
+body { font-family: 'Roboto'; font-size: 12px; color: #15428B; background-color: #EEEEEE; }
 a:focus { outline: 0; }
 :focus { -moz-outline-style: none; }
 
-td, th, span, form, body { font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif; font-size: 12px; color: #15428B; }
+td, th, span, form, body { font-family: 'Roboto'; font-size: 12px; color: #15428B; }
 
 a.ts-link, a.ts-link:link, a.ts-link:active, a.ts-link:visited { text-decoration: none; color: #15428B; outline: 0; }
 a.ts-link:hover { text-decoration: underline; }
@@ -27,8 +29,8 @@ span.checkBox { display: block; padding: 0; margin: 0; }
 span.checkBox input { top: 0px; margin: 0 10px 0 0; padding: 0; }
 
 .labelColTD { width: 150px; }
-.inputColTD { width: 200px; }  
-.customFieldValid { color:Red; padding-left: 2px; display: none;} 
+.inputColTD { width: 200px; }
+.customFieldValid { color:Red; padding-left: 2px; display: none;}
 
 /* Panel */
 .panel { margin: 10px 10px; }
@@ -39,9 +41,9 @@ span.checkBox input { top: 0px; margin: 0 10px 0 0; padding: 0; }
 
 /* Panel Buttons */
 .panel-caption-buttons { float:right;}
-a.panel-caption-button{ color: #204d89; text-decoration: none; font-style: normal; font-size: 12px; font-family: "Lucida Grande" ,Helvetica,Arial,Verdana,sans-serif; background-color: Transparent; background-image: none; display: block; float: left; height: 26px; cursor: pointer; padding-right: 8px;}
+a.panel-caption-button{ color: #204d89; text-decoration: none; font-style: normal; font-size: 12px; font-family: 'Roboto'; background-color: Transparent; background-image: none; display: block; float: left; height: 26px; cursor: pointer; padding-right: 8px;}
 .panel-caption-button-contents {  background: none; height:26px; display:block; padding-left: 8px;}
-.panel-caption-button-text { display:block; float:left; padding-left:5px;} 
+.panel-caption-button-text { display:block; float:left; padding-left:5px;}
 .panel-caption-button-icon { height: 16px; width:16px; margin-top: 5px; background-repeat:no-repeat; display:block; float:left;}
 a.panel-caption-button:hover { background: transparent url(../images/panel_caption_button_right.png) no-repeat scroll top right; }
 a.panel-caption-button:hover .panel-caption-button-contents { background: transparent url(../images/panel_caption_button_left.png) no-repeat; }
@@ -85,7 +87,22 @@ div.NoRoundedCornerEnds, div.NoRoundedCornerEnds .rtbOuter, div.NoRoundedCornerE
 .groupBarButtonsSpan { float: right; padding-right: 12px; }
 .groupBarBlue .groupBarHeaderDiv { background-image: url( '../images/bar_blue_left.gif' ); }
 .groupBarBlue .groupBarHeaderSpan { background-image: url( '../images/bar_blue_right.gif' ); }
-a.groupBarButtonLink, a.groupBarButtonLink:link { color: #204d89; text-decoration: none; font-style: normal; font-size: 12px; font-family: "Lucida Grande" ,Helvetica,Arial,Verdana,sans-serif; background-color: Transparent; background-image: none; display: block; float: left; height: 36px; margin-right: 0; padding: 0 6px 0 0; margin-top: 0px; cursor: pointer; }
+a.groupBarButtonLink, a.groupBarButtonLink:link {
+    color: #204d89;
+    text-decoration: none;
+    font-style: normal;
+    font-size: 12px;
+    font-family: 'Roboto';
+    background-color: Transparent;
+    background-image: none;
+    display: block;
+    float: left;
+    height: 36px;
+    margin-right: 0;
+    padding: 0 6px 0 0;
+    margin-top: 0px;
+    cursor: pointer;
+}
 a.groupBarButtonLink span.groupBarButtonSpan { text-decoration: none; background: none; height: 20px; line-height: 20px; padding: 0 0 5px 5px; display: block; }
 span.groupBarButtonSpan, a.groupBarButtonLink { display: block; }
 .groupBarButtonTextSpan { margin: -23px 0 0 20px; display: block; }
@@ -104,16 +121,32 @@ span.groupBarButtonSpan, a.groupBarButtonLink { display: block; }
 .groupButtonSpanWrapper { width: 100%; float: right; display: inline; margin-top: -24px; }
 .groupButtonsSpan { float: right; padding-right: 5px; }
 .groupBodyWrapperDiv { width: 100%; padding: 0; }
-.groupBodyDiv { border: Solid 1px #a2b8ce; border-top-width: 0px; margin-right: 0px; overflow: hidden; min-height: 20px; }
-.groupLightBlue .groupHeaderDiv { background-image: url( '../images/group_main_left.gif' ); }
-.groupLightBlue .groupHeaderSpan { background-image: url( '../images/group_main_right.gif' ); }
-a.groupButtonLink, a.groupButtonLink:link { color: #15428B; text-decoration: none; font-style: normal; font-weight: bold; font-size: 12px; font-family: "Lucida Grande" ,Helvetica,Arial,Verdana,sans-serif; background-color: Transparent; background-image: none; display: block; float: left; margin-right: 5px; padding: 0 8px 0 0; margin-top: 0; text-decoration: none; cursor: pointer; }
+.groupBodyDiv { border: none; margin-right: 0px; overflow: hidden; min-height: 20px; }
+.groupLightBlue .groupHeaderDiv { background-image: none; }
+.groupLightBlue .groupHeaderSpan { background-image: none; }
+a.groupButtonLink, a.groupButtonLink:link {
+    color: #15428B;
+    text-decoration: none;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 12px;
+    font-family: 'Roboto';
+    background-color: Transparent;
+    background-image: none;
+    display: block;
+    float: left;
+    margin-right: 5px;
+    padding: 0 8px 0 0;
+    margin-top: 0;
+    text-decoration: none;
+    cursor: pointer;
+}
 a.groupButtonLink span.groupButtonSpan { background: none; height: 23px; line-height: 23px; padding: 0 0 0 10px; display: block; }
 span.groupButtonSpan { display: block; }
 .groupButtonTextSpan { margin: -26px 0 0 25px; display: block; }
 .groupButtonImage { border: none; margin: 3px 5px 0 0; display: inline; }
-.groupLightBlue a.groupButtonLink:hover { background: transparent url(../images/header_button_right.gif) no-repeat scroll top right; }
-.groupLightBlue a.groupButtonLink:hover span.groupButtonSpan { background: transparent url(../images/header_button_left.gif) no-repeat; }
+.groupLightBlue a.groupButtonLink:hover { background: none; }
+.groupLightBlue a.groupButtonLink:hover span.groupButtonSpan { background: none; }
 
 /* Button */
 .button { }
@@ -136,3 +169,7 @@ a.buttonLink span.buttonSpan { background: none; display: block; height: 27px; l
 .chat-message-user .chat-name { color:#329938;}
 .chat-message-client .chat-name  { color:#333399; }
 .chat-message-self .chat-name { color:#696969;}
+
+.rtsUL {
+    min-width:1200px !important;
+}

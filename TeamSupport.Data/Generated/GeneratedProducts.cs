@@ -76,6 +76,12 @@ namespace TeamSupport.Data
       set { Row["SlaLevelID"] = CheckValue("SlaLevelID", value); }
     }
     
+    public string TFSProjectName
+    {
+      get { return Row["TFSProjectName"] != DBNull.Value ? (string)Row["TFSProjectName"] : null; }
+      set { Row["TFSProjectName"] = CheckValue("TFSProjectName", value); }
+    }
+    
 
     
     public bool NeedsIndexing
@@ -233,7 +239,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Products] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [NeedsIndexing] = @NeedsIndexing,    [ProductFamilyID] = @ProductFamilyID,    [JiraProjectKey] = @JiraProjectKey,    [ImportFileID] = @ImportFileID,    [EmailReplyToAddress] = @EmailReplyToAddress,    [SlaLevelID] = @SlaLevelID  WHERE ([ProductID] = @ProductID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Products] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [NeedsIndexing] = @NeedsIndexing,    [ProductFamilyID] = @ProductFamilyID,    [JiraProjectKey] = @JiraProjectKey,    [ImportFileID] = @ImportFileID,    [EmailReplyToAddress] = @EmailReplyToAddress,    [SlaLevelID] = @SlaLevelID,    [TFSProjectName] = @TFSProjectName  WHERE ([ProductID] = @ProductID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ProductID", SqlDbType.Int, 4);
@@ -327,13 +333,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("TFSProjectName", SqlDbType.NVarChar, 256);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Products] (    [OrganizationID],    [Name],    [Description],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [NeedsIndexing],    [ProductFamilyID],    [JiraProjectKey],    [ImportFileID],    [EmailReplyToAddress],    [SlaLevelID]) VALUES ( @OrganizationID, @Name, @Description, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @NeedsIndexing, @ProductFamilyID, @JiraProjectKey, @ImportFileID, @EmailReplyToAddress, @SlaLevelID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Products] (    [OrganizationID],    [Name],    [Description],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [NeedsIndexing],    [ProductFamilyID],    [JiraProjectKey],    [ImportFileID],    [EmailReplyToAddress],    [SlaLevelID],    [TFSProjectName]) VALUES ( @OrganizationID, @Name, @Description, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @NeedsIndexing, @ProductFamilyID, @JiraProjectKey, @ImportFileID, @EmailReplyToAddress, @SlaLevelID, @TFSProjectName); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("TFSProjectName", SqlDbType.NVarChar, 256);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("SlaLevelID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -545,7 +565,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ProductID], [OrganizationID], [Name], [Description], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [NeedsIndexing], [ProductFamilyID], [JiraProjectKey], [ImportFileID], [EmailReplyToAddress], [SlaLevelID] FROM [dbo].[Products] WHERE ([ProductID] = @ProductID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ProductID], [OrganizationID], [Name], [Description], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [NeedsIndexing], [ProductFamilyID], [JiraProjectKey], [ImportFileID], [EmailReplyToAddress], [SlaLevelID], [TFSProjectName] FROM [dbo].[Products] WHERE ([ProductID] = @ProductID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ProductID", productID);
         Fill(command);

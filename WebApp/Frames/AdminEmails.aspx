@@ -47,7 +47,7 @@
     
     function getDomain()
     {
-        return "@" + parent.parent.Ts.System.Domain;
+        return "@" + parent.parent.Ts.System.EmailDomain;
     }
 
     function loadSettings() {

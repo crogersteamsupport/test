@@ -32,6 +32,7 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
 
     channel.bind('new-comment', function (data) {
         newCommentCallback(data, true, false);
+        isSubmittingAlready = false;
     });
 
     var typeTemplate;

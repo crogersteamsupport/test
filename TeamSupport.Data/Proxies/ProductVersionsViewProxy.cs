@@ -33,6 +33,7 @@ namespace TeamSupport.Data
     [DataMember] public int OrganizationID { get; set; }
     [DataMember] public int? ProductFamilyID { get; set; }
     [DataMember] public string JiraProjectKey { get; set; }
+    [DataMember] public string TFSProjectName { get; set; }
           
   }
   
@@ -41,7 +42,7 @@ namespace TeamSupport.Data
     public ProductVersionsViewItemProxy GetProxy()
     {
       ProductVersionsViewItemProxy result = new ProductVersionsViewItemProxy();
-
+      result.TFSProjectName = this.TFSProjectName;
       result.JiraProjectKey = this.JiraProjectKey;
       result.ProductFamilyID = this.ProductFamilyID;
       result.OrganizationID = this.OrganizationID;

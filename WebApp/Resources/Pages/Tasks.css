@@ -74,5 +74,14 @@ tr.strikeout td:before {
 }
 
 input[type=checkbox] {
-  transform: scale(1.5);
+  transform: scale(1.2);
+}
+
+table.table-striped > tbody > tr.over-due td {
+    background: #f2616E;
+    color: #FFFFFF;
+}
+
+tr.over-due > td > span > i, .over-due > td > a {
+    color: #FFFFFF;
 }

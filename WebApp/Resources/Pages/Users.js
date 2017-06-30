@@ -90,8 +90,8 @@ $(document).ready(function () {
         if (parent.Ts.System.User.IsSystemAdmin) {
             var item = $(this);
             parent.Ts.Services.Users.UpdateSpecificUserStatus($(this).attr('userid'), false, function (result) {
-                item.removeClass('ts-icon-online-small');
-                item.addClass('ts-icon-offline-small');
+                item.removeClass('ts-icon-online-small').addClass('fa fa-circle');
+                item.addClass('ts-icon-offline-small').addClass('fa fa-circle');
             });
         }
     });
@@ -100,8 +100,8 @@ $(document).ready(function () {
         if (parent.Ts.System.User.IsSystemAdmin) {
             var item = $(this);
             parent.Ts.Services.Users.UpdateSpecificUserStatus($(this).attr('userid'), true, function (result) {
-                item.removeClass('ts-icon-offline-small');
-                item.addClass('ts-icon-online-small');
+                item.removeClass('ts-icon-offline-small').addClass('fa fa-circle');
+                item.addClass('ts-icon-online-small').addClass('fa fa-circle');
             });
         }
     });
@@ -156,8 +156,8 @@ $(document).ready(function () {
         if (parent.Ts.System.User.IsSystemAdmin) {
             var item = $(this);
             parent.Ts.Services.Users.UpdateSpecificUserStatus($(this).attr('userid'), false, function (result) {
-                item.removeClass('ts-icon-online-small');
-                item.addClass('ts-icon-offline-small');
+                item.removeClass('ts-icon-online-small').addClass('fa fa-circle');
+                item.addClass('ts-icon-offline-small').addClass('fa fa-circle');
             });
         }
     });
@@ -166,8 +166,8 @@ $(document).ready(function () {
         if (parent.Ts.System.User.IsSystemAdmin) {
             var item = $(this);
             parent.Ts.Services.Users.UpdateSpecificUserStatus($(this).attr('userid'), true, function (result) {
-                item.removeClass('ts-icon-offline-small');
-                item.addClass('ts-icon-online-small');
+                item.removeClass('ts-icon-offline-small').addClass('fa fa-circle');
+                item.addClass('ts-icon-online-small').addClass('fa fa-circle');
             });
         }
     });
@@ -409,7 +409,7 @@ Handlebars.registerHelper("formatRow", function (task) {
 
     if (task.DueDate != null) {
         if (task.IsComplete != true && new Date() > new Date(task.DueDate)) {
-            cssClasses = 'danger';
+            cssClasses = 'over-due';
         }
         else {
             return null;
@@ -432,32 +432,32 @@ Handlebars.registerHelper("mapAssociation", function (association) {
     switch (association.RefType) {
         case 6:
             associationName = association.Group;
-            iconClass = "groupIcon";
+            iconClass = "fa-users";
             functionName = 'window.parent.parent.Ts.MainPage.openGroup(' + association.RefID + '); return false;';
             break;
         case 9:
             associationName = association.Company;
-            iconClass = "companyIcon";
+            iconClass = "fa-building";
             functionName = 'window.parent.parent.Ts.MainPage.openNewCustomer(' + association.RefID + '); return false;';
             break;
         case 13:
             associationName = association.Product;
-            iconClass = "productIcon";
+            iconClass = "fa-truck";
             functionName = 'window.parent.parent.Ts.MainPage.openNewProduct(' + association.RefID + '); return false;';
             break;
         case 17:
             associationName = association.TicketName;
-            iconClass = "ticketIcon";
+            iconClass = "fa-ticket";
             functionName = 'window.parent.parent.Ts.MainPage.openTicketByID(' + association.RefID + '); return false;'
             break;
         case 22:
             associationName = association.User;
-            iconClass = "userIcon";
+            iconClass = "fa-user-circle-o";
             functionName = 'window.parent.parent.Ts.MainPage.openUser(' + association.RefID + '); return false;'
             break;
         case 32:
             associationName = association.Contact;
-            iconClass = "contactIcon";
+            iconClass = "fa-user";
             functionName = 'window.parent.parent.Ts.MainPage.openNewContact(' + association.RefID + '); return false;'
             break;
         default:
@@ -465,7 +465,7 @@ Handlebars.registerHelper("mapAssociation", function (association) {
     }
 
     if (functionName != null) {
-        result = '<span><a target="_blank" class="ui-state-default ts-link ' + iconClass + '" href="#" onclick="' + functionName + '" title="' + associationName + '"></a></span>'
+        result = '<span class="associations"><i target="_blank" class="ts-link fa ' + iconClass + '" href="#" onclick="' + functionName + '" title="' + associationName + '"></i></span>'
     }
 
     return new Handlebars.SafeString(result);

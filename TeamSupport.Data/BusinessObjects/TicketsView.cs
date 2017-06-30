@@ -2439,6 +2439,44 @@ WHERE tgv.OrganizationID = @OrganizationID"
             }
         }
 
+        //Changes to this method needs to be applied to TicketLinkToTFS.LoadToPushToTFS also.
+        public void LoadToPushToTFS(CRMLinkTableItem item)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+                SELECT
+				    t.*
+			    FROM
+				    TicketsView t
+			        JOIN TicketLinkToTFS tfs
+				        ON t.TicketID = tfs.TicketID
+			    WHERE
+				    tfs.SyncWithTFS = 1
+				    AND t.OrganizationID = @OrgID
+				    AND tfs.CrmLinkID = @CrmLinkId
+				    AND
+				    (
+					    tfs.DateModifiedByTFSSync IS NULL
+					    OR
+					    (
+						    t.DateModified > DATEADD(s, 2, tfs.DateModifiedByTFSSync)
+						    AND t.DateModified > @DateModified
+					    )
+				    )
+				    ORDER BY
+				    t.DateCreated DESC
+			    ";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrgID", item.OrganizationID);
+                command.Parameters.AddWithValue("@DateModified", item.LastLink == null ? new DateTime(1753, 1, 1) : item.LastLinkUtc.Value.AddHours(-1));
+                command.Parameters.AddWithValue("@CrmLinkId", item.CRMLinkID);
+                command.CommandTimeout = 90;
+
+                Fill(command);
+            }
+        }
+
         public void LoadForGridPointSalesOrders(CRMLinkTableItem item, string query)
         {
             using (SqlCommand command = new SqlCommand())

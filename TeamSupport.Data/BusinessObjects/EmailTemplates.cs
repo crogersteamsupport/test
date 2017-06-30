@@ -984,6 +984,7 @@ namespace TeamSupport.Data
             // EmailTemplate template = EmailTemplates.GetEmailTemplate(loginUser, 40);
             // Organization organization = Organizations.GetOrganization(loginUser, sender.OrganizationID);
 
+            template.ReplaceCommonParameters();
             template.ReplaceParameter("sender.name", sender.FirstLastName);
             template.ReplaceParameter("ticketid", ticketID.ToString());
             template.ReplaceParameter("hostname", hostName);

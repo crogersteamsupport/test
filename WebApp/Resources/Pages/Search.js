@@ -31,7 +31,7 @@ $(document).ready(function () {
         }
     });
 
-    // The include-all is also a checkbox. When clicked first will handle the IncludeAllClickEvent and afterwards the StandardFilter click event. 
+    // The include-all is also a checkbox. When clicked first will handle the IncludeAllClickEvent and afterwards the StandardFilter click event.
     $('#include-all').click(function () { HandleIncludeAllClickEvent(); });
     $('.checkbox').click(function () { HandleStandardFilterClickEvent(); });
     $('#search-options-add-filter').click(function () { HandleAddFilterClickEvent(); });
@@ -102,14 +102,14 @@ function LoadAdvancedOptions() {
 
 function LoadStandardFilters() {
     if (parent.Ts.System.Organization.ProductType > 0) {
-        $('#search-standard-filters').append($('<input id="include-notes" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()"/> Customer Notes<br />'));
+        $('#search-standard-filters').append($('<p style="margin-bottom:5px;"><input id="include-notes" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()" style="margin-right:5px;"> Customer Notes</p>'));
 
         if (parent.Ts.System.Organization.ProductType > 1) {
-            $('#search-standard-filters').append($('<input id="include-product-versions" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()" /> Product Versions<br />'));
-            $('#search-standard-filters').append($('<input id="include-tasks" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()" /> Tasks<br />'));
+            $('#search-standard-filters').append($('<p style="margin-bottom:5px;"><input id="include-product-versions" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()" style="margin-right:5px;"> Product Versions</p>'));
+            $('#search-standard-filters').append($('<p style="margin-bottom:5px;"><input id="include-tasks" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()" style="margin-right:5px;"> Tasks</p>'));
         }
 
-        $('#search-standard-filters').append($('<input id="include-water-cooler" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()"/> Water Cooler<br />'));
+        $('#search-standard-filters').append($('<p style="margin-bottom:5px;"><input id="include-water-cooler" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()" style="margin-right:5px;"> Water Cooler</p>'));
     }
     else {
         $('#include-wikis-span').hide();
@@ -197,7 +197,7 @@ function AddCustomFilter(customFilterID, reportTableFieldID, measure, testValue)
         displayFieldSet.addClass('filter-' + customFilterID);
     }
 
-    var fields = $('<select>').addClass('condition-field').appendTo(div).width('180px');
+    var fields = $('<select>').addClass('condition-field').addClass('form-control').appendTo(div).width('180px');
     loadComboFields(fields, true).combobox({
         selected: function (e, ui) {
             createConditionValue(div, fields.find('option:selected').data('field'));
@@ -209,7 +209,7 @@ function AddCustomFilter(customFilterID, reportTableFieldID, measure, testValue)
         fieldText.html(fields.find('option:selected').text());
     }
 
-    var measures = $('<select>').addClass('condition-measure').appendTo(div).width('150px');
+    var measures = $('<select>').addClass('condition-measure').addClass('form-control').appendTo(div).width('150px');
     loadComboMeasures(measures).combobox({
         selected: function (e, ui) {
         }
@@ -260,7 +260,7 @@ function AddCustomFilter(customFilterID, reportTableFieldID, measure, testValue)
     iconsDiv.css('margin-top', '3px');
 
     var saveIcon = $('<span>')
-      .addClass('ts-icon ts-icon-save')
+      .addClass('fa fa-check-square')
       .click(function (e) {
           parent.Ts.System.logAction('Search - Filter Added');
           var fieldID = $(this).parent().parent().find('.condition-field').val();
@@ -302,7 +302,7 @@ function AddCustomFilter(customFilterID, reportTableFieldID, measure, testValue)
     saveIcon.appendTo(iconsDiv);
 
     var cancelIcon = $('<span>')
-      .addClass('ts-icon ts-icon-cancel')
+      .addClass('fa fa-window-close')
       .click(function (e) {
           if (Ts.Utils.getIdFromElement('filter', $(this).parent().parent()) == null) {
               $(this).parent().parent().remove();
@@ -403,7 +403,7 @@ function AddCustomSorter(sorterID, fieldID, descending) {
     var iconsDiv = $('<div>').addClass('condition-sorter-icons');
 
     var saveIcon = $('<span>')
-          .addClass('ts-icon ts-icon-save')
+          .addClass('fa fa-check-square')
           .click(function (e) {
               parent.Ts.System.logAction('Search - Sort Condition Added');
               var fieldID = $(this).parent().parent().find('.condition-field').val();
@@ -449,7 +449,7 @@ function AddCustomSorter(sorterID, fieldID, descending) {
     saveIcon.appendTo(iconsDiv);
 
     var cancelIcon = $('<span>')
-          .addClass('ts-icon ts-icon-cancel')
+          .addClass('fa fa-window-close')
           .click(function (e) {
               if (Ts.Utils.getIdFromElement('sorter', $(this).parent().parent()) == null) {
                   $(this).parent().parent().remove();
@@ -532,8 +532,9 @@ function createConditionValue(condition, field, value) {
         var input = $('<input>')
           .addClass('text ui-corner-all ui-widget-content condition-value')
           .attr('type', 'text')
-          .width('200px')
-          .height('14px')
+          .width('150px')
+          .height('20px')
+          .css('padding','5px')
           .keydown(function () { isModified(true, condition); })
           .appendTo(container);
         return;
@@ -549,7 +550,7 @@ function createConditionValue(condition, field, value) {
         var select = $('<select>')
             .addClass('condition-value')
             .width('125px')
-            .height('14px')
+            .height('20px')
             .appendTo(container);
         $('<option>').attr('value', 'true').text('True').appendTo(select);
         $('<option>').attr('value', 'false').text('False').appendTo(select);
@@ -560,7 +561,7 @@ function createConditionValue(condition, field, value) {
     else if (field.DataType == 'list') {
         var select = $('<select>')
             .addClass('condition-value')
-            .height('14px')
+            .height('20px')
             .appendTo(container);
         for (var i = 0; i < field.ListValues.length; i++) {
             $('<option>').attr('value', field.ListValues[i]).text(field.ListValues[i]).appendTo(select);
@@ -573,8 +574,9 @@ function createConditionValue(condition, field, value) {
         var input = $('<input>')
             .addClass('text ui-corner-all ui-widget-content condition-value')
             .attr('type', 'text')
-            .width('200px')
-            .height('14px')
+            .width('150px')
+            .height('20px')
+            .css('padding','5px')
             .keydown(function () { isModified(true, condition); })
             .appendTo(container)
             .val((value ? value : ""));

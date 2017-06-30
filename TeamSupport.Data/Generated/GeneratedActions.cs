@@ -76,11 +76,6 @@ namespace TeamSupport.Data
       set { Row["ImportFileID"] = CheckValue("ImportFileID", value); }
     }
     
-    public bool TicketClean
-    {
-        get;set;
-    }
-    
     public bool IsClean
     {
       get { return (bool)Row["IsClean"]; }
@@ -656,7 +651,6 @@ namespace TeamSupport.Data
 			  }
 			  if (updateCommand.Parameters.Contains("ModifierID")) updateCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
 			  if (updateCommand.Parameters.Contains("DateModified")) updateCommand.Parameters["DateModified"].Value = DateTime.UtcNow;
-
 			  updateCommand.ExecuteNonQuery();
 			  AfterRowEdit(action);
 			}

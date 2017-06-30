@@ -27,7 +27,8 @@
 .attachrow{
     border-top:1px solid #ddd;
     background-color: #F7F7F7;
-    padding: .5em;}
+    padding: 1em;
+}
 
 .boxsizingBorder {
 box-sizing: border-box;
@@ -84,12 +85,12 @@ resize:none;}
 .attfilename{margin-right: 5px; line-height: 16px;}
 .ts-icon-attachment{float:left; margin-right: 10px}
 
-.addatt{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/icons/attachment.png');cursor:pointer}
+/*.addatt{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/icons/attachment.png');cursor:pointer}
 .addticket{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Tickets.png');cursor:pointer}
 .addgroup{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Groups.png');cursor:pointer}
 .addcustomer{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Customers.png');cursor:pointer}
 .addproduct{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Products.png');cursor:pointer}
-.adduser{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Users.png');cursor:pointer}
+.adduser{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Users.png');cursor:pointer}*/
 
 .postcontainer{/*padding:10px 0 10px 0*/}
 
@@ -180,12 +181,6 @@ input, select
     max-height: 500px;
 }
 
-.slim
-{
-    padding-top: .5em !important;
-    padding-bottom: .5em !important;
-}
-
 .chatavatar
 {
     width: 20px;
@@ -250,9 +245,13 @@ input, select
 }
 
 .fa-info-circle{
-color: #3d6da7  !important;cursor:pointer;
+color: #2A3F54  !important;cursor:pointer;
 }
 
 .close{
 margin-top: -4px;
+}
+
+i {
+    font-size:1.6em !important;
 }

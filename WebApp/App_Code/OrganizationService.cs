@@ -475,7 +475,8 @@ namespace TSWebServices
             bool includeIssueNonRequired,
             string restrictedToTicketTypes,
             string excludedTicketStatuses,
-            string jiraInstanceName
+            string jiraInstanceName,
+            bool useNetworkCredentials
             )
         {
             if (!TSAuthentication.IsSystemAdmin) return null;
@@ -526,9 +527,26 @@ namespace TSWebServices
             item.IncludeIssueNonRequired = includeIssueNonRequired;
             item.RestrictedToTicketTypes = restrictedToTicketTypes;
             item.ExcludedTicketStatusUpdate = excludedTicketStatuses;
+            item.UseNetworkCredentials = useNetworkCredentials;
 
             item.Collection.Save();
+
+            if (item.CRMType == "TFS" && item.Active == true)
+            {
+                AddTFSInTicketPageOrder(item.OrganizationID);
+            }
+
             return item.GetProxy();
+        }
+
+        private void AddTFSInTicketPageOrder(int organizationID)
+        {
+            string customPageOrder = Settings.OrganizationDB.ReadString("TicketFieldsOrder", string.Empty);
+            if (customPageOrder != string.Empty && customPageOrder.IndexOf("TFS") < 0)
+            {
+                Settings.OrganizationDB.WriteString("TicketFieldsOrder", customPageOrder.Replace("]", ",{\"CatID\":\"TFS\",\"CatName\":\"TFS\",\"Disabled\":\"false\"}]"));
+            }
+
         }
 
         [WebMethod]

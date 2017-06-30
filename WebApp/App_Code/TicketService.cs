@@ -1303,6 +1303,14 @@ namespace TSWebServices
         {
             TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
             if (!CanDeleteAction(action)) return;
+
+            ActionLinkToJiraItem actionlink = ActionLinkToJira.GetActionLinkToJiraItemByActionID(TSAuthentication.GetLoginUser(), actionID);
+            if (actionlink != null)
+            {
+                actionlink.Delete();
+                actionlink.Collection.Save();
+            }
+
             action.Delete();
             action.Collection.Save();
         }
@@ -1978,6 +1986,138 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public string SetTFSWorkItemID(int ticketID, string tfsWorkItemID)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            string result = SetSyncWithTFS(loginUser, ticketID, tfsWorkItemID);
+
+            return result;
+        }
+
+        [WebMethod]
+        public string SetSyncWithTFS(int ticketID)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            string result = SetSyncWithTFS(loginUser, ticketID, null);
+
+            return result;
+        }
+
+        [WebMethod]
+        public bool UnSetSyncWithTFS(int ticketID)
+        {
+            bool result = false;
+
+            try
+            {
+                CRMLinkTable crmlink = new CRMLinkTable(TSAuthentication.GetLoginUser());
+                crmlink.LoadByOrganizationIDAndCRMType(TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).OrganizationID, "TFS");
+
+                foreach (DataRow crmRow in crmlink.Table.Rows)
+                {
+                    TicketLinkToTFS linkToTFS = new TicketLinkToTFS(TSAuthentication.GetLoginUser());
+                    linkToTFS.LoadByTicketID(ticketID);
+
+                    TicketLinkToTFSItemProxy ticketLinktoTFSProxy = GetLinkToTFS(ticketID);
+                    int crmLinkId = int.Parse(crmRow["CRMLinkID"].ToString());
+
+                    if (ticketLinktoTFSProxy != null
+                        && linkToTFS.Count > 0
+                        && ticketLinktoTFSProxy.CrmLinkID == linkToTFS[0].CrmLinkID
+                        && crmLinkId == ticketLinktoTFSProxy.CrmLinkID)
+                    {
+                        if (ticketLinktoTFSProxy.TFSID != null && !String.IsNullOrEmpty(ticketLinktoTFSProxy.TFSTitle))
+                        {
+                            bool useNetworkCredentials = (bool)crmRow["UseNetworkCredentials"];
+                            string hostName = crmRow["HostName"].ToString();
+                            string username = crmRow["Username"].ToString();
+                            string password = crmRow["Password"].ToString();
+                            string securityToken = crmRow["SecurityToken"].ToString();
+                            NetworkCredential netCred = new NetworkCredential(username, password);
+                            string authorization = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", "", securityToken)));
+                            string url = string.Format("{0}/_apis/wit/workitems/{1}?api-version=2.2&$expand=relations", hostName, ticketLinktoTFSProxy.TFSID);
+                            string contentType = "application/json";
+                            string getResult = string.Empty;
+
+                            try
+                            {
+                                using (var client = new WebClient { UseDefaultCredentials = false })
+                                {
+                                    client.Headers.Add(HttpRequestHeader.ContentType, contentType);
+
+                                    if (useNetworkCredentials)
+                                    {
+                                        client.Credentials = netCred;
+                                    }
+                                    else
+                                    {
+                                        client.Headers.Add(HttpRequestHeader.Authorization, "Basic " + authorization);
+                                    }
+
+                                    Stream stream = client.OpenRead(url);
+                                    StreamReader sr = new StreamReader(stream);
+                                    getResult = sr.ReadToEnd();
+                                }
+
+                                WorkItemRelations workItemRelations = JsonConvert.DeserializeObject<WorkItemRelations>(getResult);
+
+                                //Find the position of the TeamSupport hyperlink
+                                for (int i = 0; i < workItemRelations.relations.Count(); i++)
+                                {
+                                    if (string.Compare(workItemRelations.relations[i].rel, "Hyperlink", ignoreCase: true) == 0
+                                        && workItemRelations.relations[i].url.Contains("teamsupport.com")
+                                        && workItemRelations.relations[i].url.Contains(string.Format("ticketid={0}", ticketID.ToString())))
+                                    {
+
+                                        //Now we can try to delete the hyperlink
+                                        using (var client = new WebClient { UseDefaultCredentials = false })
+                                        {
+                                            contentType = "application/json-patch+json";
+                                            client.Headers.Add(HttpRequestHeader.ContentType, contentType);
+
+                                            if (useNetworkCredentials)
+                                            {
+                                                client.Credentials = netCred;
+                                            }
+                                            else
+                                            {
+                                                client.Headers.Add(HttpRequestHeader.Authorization, "Basic " + authorization);
+                                            }
+
+                                            Object[] patchDocument = new Object[1];
+                                            patchDocument[0] = new
+                                            {
+                                                op = "remove",
+                                                path = string.Format("/relations/{0}", i.ToString())
+                                            };
+
+                                            var patchValue = JsonConvert.SerializeObject(patchDocument);
+                                            string postResult = client.UploadString(url, "PATCH", patchValue);
+                                        }
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                //Check if the exception is that the URI is invalid, maybe the workitem id does not longer exist. if so we should go ahead and delete the link in the TS db.
+                            }
+						}
+
+                        linkToTFS.DeleteFromDB(ticketLinktoTFSProxy.id);
+                        result = true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "UnSetSyncWithTFS");
+            }
+
+            return result;
+        }
+
+        [WebMethod]
         public bool Subscribe(int ticketID)
         {
             Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
@@ -2553,9 +2693,8 @@ WHERE t.TicketID = @TicketID
             foreach (TeamSupport.Data.Action action in actions)
             {
                 action.Description = HtmlUtility.RemoveInvalidHtmlTags(action.Description);
-                actions.isAdminClean = true;
             }
-            
+            actions.isAdminClean = true;
             actions.Save();
         }
 
@@ -2892,13 +3031,21 @@ WHERE t.TicketID = @TicketID
                         {
                             log.CreatorName = IntegrationType.Jira.ToString() + " Integration";
                         }
+						else if(log.OrganizationID == null && log.Description.ToLower().StartsWith("updated ticket with tfs work item title:"))
+						{
+							log.CreatorName = IntegrationType.TFS.ToString() + " Integration";
+						}
                         break;
                 }
             }
 
             //TODO: vv. Right now we are only pulling and displaying in the Ticket history the Jira Integration changes. Later we'll have to add the others, here and for the Company/Contact pages.
             CRMLinkErrors integrationErrors = new CRMLinkErrors(ticket.Collection.LoginUser);
-            integrationErrors.LoadByTicketID(ticketID, IntegrationType.Jira.ToString(), isCleared: false);
+			List<IntegrationType> crmType = new List<IntegrationType>();
+			crmType.Add(IntegrationType.Jira);
+			crmType.Add(IntegrationType.TFS);
+
+			integrationErrors.LoadByTicketID(ticketID, IntegrationType.Jira.ToString(), isCleared: false);
 
             if (integrationErrors != null && integrationErrors.Any() && integrationErrors.Count > 0)
             {
@@ -2962,6 +3109,7 @@ WHERE t.TicketID = @TicketID
 
             info.Actions = actionInfos.ToArray();
             info.LinkToJira = GetLinkToJira(ticket.TicketID);
+            info.LinkToTFS = GetLinkToTFS(ticket.TicketID);
 
             return info;
         }
@@ -3988,6 +4136,18 @@ WHERE t.TicketID = @TicketID
             return result;
         }
 
+        private TicketLinkToTFSItemProxy GetLinkToTFS(int ticketID)
+        {
+            TicketLinkToTFSItemProxy result = null;
+            TicketLinkToTFS linkToTFS = new TicketLinkToTFS(TSAuthentication.GetLoginUser());
+            linkToTFS.LoadByTicketID(ticketID);
+            if (linkToTFS.Count > 0)
+            {
+                result = linkToTFS[0].GetProxy();
+            }
+            return result;
+        }
+
         [WebMethod]
         public CustomValueProxy[] GetParentValues(int ticketID)
         {
@@ -4159,6 +4319,74 @@ WHERE t.TicketID = @TicketID
                     result.IsSuccessful = false;
                     result.Error = ex.Message;
                     ExceptionLogs.LogException(loginUser, ex, "SetJiraIssueKey");
+                }
+            }
+
+            return JsonConvert.SerializeObject(result);
+        }
+
+        private string SetSyncWithTFS(LoginUser loginUser, int ticketId, string TFSWorkItemID)
+        {
+            dynamic result = new ExpandoObject();
+
+            TicketLinkToTFS ticketLinkToTFS = new TicketLinkToTFS(loginUser);
+            ticketLinkToTFS.LoadByTicketID(ticketId);
+
+            if (ticketLinkToTFS.Count == 0)
+            {
+                try
+                {
+                    int tfsWorkItemID;
+                    bool idIsNumeric = int.TryParse(TFSWorkItemID, out tfsWorkItemID);
+
+                    //If it's numeric then we are linking to an existing workitem, it is null then we are creating a new one
+                    if (idIsNumeric || string.IsNullOrEmpty(TFSWorkItemID))
+                    {
+                        TicketLinkToTFSItem ticketLinkToTFSItem = ticketLinkToTFS.AddNewTicketLinkToTFSItem(ticketId);
+                        ticketLinkToTFSItem.TFSID = (idIsNumeric ? tfsWorkItemID : (int?)null);
+                        ticketLinkToTFSItem.TFSTitle = TFSWorkItemID;
+                        ticketLinkToTFSItem.SyncWithTFS = true;
+                        ticketLinkToTFSItem.CreatorID = loginUser.UserID;
+
+                        //Jira uses this to support multiple instances.
+                        //TicketsViewItem ticket = TicketsView.GetTicketsViewItem(loginUser, ticketId);
+                        //ticketLinkToJiraItem.CrmLinkID = CRMLinkTable.GetIdBy(ticket.OrganizationID, IntegrationType.Jira.ToString().ToLower(), ticket.ProductID, loginUser);
+                        ticketLinkToTFSItem.CrmLinkID = CRMLinkTable.GetIdBy(loginUser.OrganizationID, IntegrationType.TFS.ToString().ToLower(), loginUser);
+
+                        ////If product is not associated to an instance then get the 'default' instance
+                        //if (ticketLinkToJiraItem.CrmLinkID == null || ticketLinkToJiraItem.CrmLinkID <= 0)
+                        //{
+                        //    CRMLinkTable crmlink = new CRMLinkTable(loginUser);
+                        //    crmlink.LoadByOrganizationID(TSAuthentication.OrganizationID);
+
+                        //    ticketLinkToJiraItem.CrmLinkID = crmlink.Where(p => p.InstanceName == "Default"
+                        //                                                        && p.CRMType.ToLower() == IntegrationType.Jira.ToString().ToLower())
+                        //                                                        .Select(p => p.CRMLinkID).FirstOrDefault();
+                        //}
+
+                        if (ticketLinkToTFSItem.CrmLinkID != null && ticketLinkToTFSItem.CrmLinkID > 0)
+                        {
+                            ticketLinkToTFSItem.Collection.Save();
+                            result.IsSuccessful = true;
+                            result.Error = null;
+                        }
+                        else
+                        {
+                            result.IsSuccessful = false;
+                            result.Error = "A TFS Instance associated to this ticket's product or a Default TFS Instance was not found.";
+                        }
+                    }
+                    else
+                    {
+                        result.IsSuccessful = false;
+                        result.Error = "Entered TFS Work Item ID is not numeric.";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    result.IsSuccessful = false;
+                    result.Error = ex.Message;
+                    ExceptionLogs.LogException(loginUser, ex, "SetTFSWorkItemID");
                 }
             }
 
@@ -4396,6 +4624,8 @@ WHERE t.TicketID = @TicketID
         public AssetProxy[] Assets { get; set; }
         [DataMember]
         public TicketLinkToJiraItemProxy LinkToJira { get; set; }
+        [DataMember]
+        public TicketLinkToTFSItemProxy LinkToTFS { get; set; }
     }
 
     [DataContract(Namespace = "http://teamsupport.com/")]

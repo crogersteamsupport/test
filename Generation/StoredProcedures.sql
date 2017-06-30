@@ -1,1660 +1,1215 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTask
+CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 
 (
-  @TaskID int
+  @CRMLinkID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
+    [CRMLinkID],
     [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [ReminderID],
-    [NeedsIndexing],
-    [CompletionComment]
-  FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID],
+    [PullCasesAsTickets],
+    [PushTicketsAsCases],
+    [PullCustomerProducts],
+    [UpdateStatus],
+    [ActionTypeIDToPush],
+    [HostName],
+    [DefaultProject],
+    [MatchAccountsByName],
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey],
+    [RestrictedToTicketTypes],
+    [UpdateTicketType],
+    [InstanceName],
+    [ExcludedTicketStatusUpdate],
+    [IncludeIssueNonRequired],
+    [UseNetworkCredentials]
+  FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTask
+CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
 
 (
   @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000),
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @PullCasesAsTickets bit,
+  @PushTicketsAsCases bit,
+  @PullCustomerProducts bit,
+  @UpdateStatus bit,
+  @ActionTypeIDToPush int,
+  @HostName varchar(8000),
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
+  @RestrictedToTicketTypes varchar(500),
+  @UpdateTicketType bit,
+  @InstanceName varchar(255),
+  @ExcludedTicketStatusUpdate varchar(500),
+  @IncludeIssueNonRequired bit,
+  @UseNetworkCredentials bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tasks]
+  INSERT INTO [dbo].[CRMLinkTable]
   (
     [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [ReminderID],
-    [NeedsIndexing],
-    [CompletionComment])
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID],
+    [PullCasesAsTickets],
+    [PushTicketsAsCases],
+    [PullCustomerProducts],
+    [UpdateStatus],
+    [ActionTypeIDToPush],
+    [HostName],
+    [DefaultProject],
+    [MatchAccountsByName],
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey],
+    [RestrictedToTicketTypes],
+    [UpdateTicketType],
+    [InstanceName],
+    [ExcludedTicketStatusUpdate],
+    [IncludeIssueNonRequired],
+    [UseNetworkCredentials])
   VALUES (
     @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @ParentID,
-    @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @ReminderID,
-    @NeedsIndexing,
-    @CompletionComment)
+    @Active,
+    @CRMType,
+    @Username,
+    @Password,
+    @SecurityToken,
+    @TypeFieldMatch,
+    @LastLink,
+    @SendBackTicketData,
+    @LastProcessed,
+    @LastTicketID,
+    @AllowPortalAccess,
+    @SendWelcomeEmail,
+    @DefaultSlaLevelID,
+    @PullCasesAsTickets,
+    @PushTicketsAsCases,
+    @PullCustomerProducts,
+    @UpdateStatus,
+    @ActionTypeIDToPush,
+    @HostName,
+    @DefaultProject,
+    @MatchAccountsByName,
+    @UseSandBoxServer,
+    @AlwaysUseDefaultProjectKey,
+    @RestrictedToTicketTypes,
+    @UpdateTicketType,
+    @InstanceName,
+    @ExcludedTicketStatusUpdate,
+    @IncludeIssueNonRequired,
+    @UseNetworkCredentials)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTask
+CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
 
 (
-  @TaskID int,
+  @CRMLinkID int,
   @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000)
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @PullCasesAsTickets bit,
+  @PushTicketsAsCases bit,
+  @PullCustomerProducts bit,
+  @UpdateStatus bit,
+  @ActionTypeIDToPush int,
+  @HostName varchar(8000),
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
+  @RestrictedToTicketTypes varchar(500),
+  @UpdateTicketType bit,
+  @InstanceName varchar(255),
+  @ExcludedTicketStatusUpdate varchar(500),
+  @IncludeIssueNonRequired bit,
+  @UseNetworkCredentials bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Tasks]
+  UPDATE [dbo].[CRMLinkTable]
   SET
     [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [ParentID] = @ParentID,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [ReminderID] = @ReminderID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [CompletionComment] = @CompletionComment
-  WHERE ([TaskID] = @TaskID)
+    [Active] = @Active,
+    [CRMType] = @CRMType,
+    [Username] = @Username,
+    [Password] = @Password,
+    [SecurityToken] = @SecurityToken,
+    [TypeFieldMatch] = @TypeFieldMatch,
+    [LastLink] = @LastLink,
+    [SendBackTicketData] = @SendBackTicketData,
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID,
+    [AllowPortalAccess] = @AllowPortalAccess,
+    [SendWelcomeEmail] = @SendWelcomeEmail,
+    [DefaultSlaLevelID] = @DefaultSlaLevelID,
+    [PullCasesAsTickets] = @PullCasesAsTickets,
+    [PushTicketsAsCases] = @PushTicketsAsCases,
+    [PullCustomerProducts] = @PullCustomerProducts,
+    [UpdateStatus] = @UpdateStatus,
+    [ActionTypeIDToPush] = @ActionTypeIDToPush,
+    [HostName] = @HostName,
+    [DefaultProject] = @DefaultProject,
+    [MatchAccountsByName] = @MatchAccountsByName,
+    [UseSandBoxServer] = @UseSandBoxServer,
+    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,
+    [RestrictedToTicketTypes] = @RestrictedToTicketTypes,
+    [UpdateTicketType] = @UpdateTicketType,
+    [InstanceName] = @InstanceName,
+    [ExcludedTicketStatusUpdate] = @ExcludedTicketStatusUpdate,
+    [IncludeIssueNonRequired] = @IncludeIssueNonRequired,
+    [UseNetworkCredentials] = @UseNetworkCredentials
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTask
+CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
 
 (
-  @TaskID int
+  @CRMLinkID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
+  DELETE FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 
 (
-
+  @CRMLinkID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
+    [CRMLinkID],
     [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing]
-  FROM [dbo].[TasksView]
-  WH)
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID],
+    [PullCasesAsTickets],
+    [PushTicketsAsCases],
+    [PullCustomerProducts],
+    [UpdateStatus],
+    [ActionTypeIDToPush],
+    [HostName],
+    [DefaultProject],
+    [MatchAccountsByName],
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey],
+    [RestrictedToTicketTypes],
+    [UpdateTicketType],
+    [InstanceName],
+    [ExcludedTicketStatusUpdate],
+    [IncludeIssueNonRequired],
+    [UseNetworkCredentials]
+  FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
 
 (
-  @TaskID int,
   @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @PullCasesAsTickets bit,
+  @PushTicketsAsCases bit,
+  @PullCustomerProducts bit,
+  @UpdateStatus bit,
+  @ActionTypeIDToPush int,
+  @HostName varchar(8000),
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
+  @RestrictedToTicketTypes varchar(500),
+  @UpdateTicketType bit,
+  @InstanceName varchar(255),
+  @ExcludedTicketStatusUpdate varchar(500),
+  @IncludeIssueNonRequired bit,
+  @UseNetworkCredentials bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TasksView]
+  INSERT INTO [dbo].[CRMLinkTable]
   (
-    [TaskID],
     [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing])
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID],
+    [PullCasesAsTickets],
+    [PushTicketsAsCases],
+    [PullCustomerProducts],
+    [UpdateStatus],
+    [ActionTypeIDToPush],
+    [HostName],
+    [DefaultProject],
+    [MatchAccountsByName],
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey],
+    [RestrictedToTicketTypes],
+    [UpdateTicketType],
+    [InstanceName],
+    [ExcludedTicketStatusUpdate],
+    [IncludeIssueNonRequired],
+    [UseNetworkCredentials])
   VALUES (
-    @TaskID,
     @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @CompletionComment,
-    @ParentID,
-    @IsDismissed,
-    @HasEmailSent,
-    @ReminderDueDate,
-    @TaskParentName,
-    @UserName,
-    @Creator,
-    @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @NeedsIndexing)
+    @Active,
+    @CRMType,
+    @Username,
+    @Password,
+    @SecurityToken,
+    @TypeFieldMatch,
+    @LastLink,
+    @SendBackTicketData,
+    @LastProcessed,
+    @LastTicketID,
+    @AllowPortalAccess,
+    @SendWelcomeEmail,
+    @DefaultSlaLevelID,
+    @PullCasesAsTickets,
+    @PushTicketsAsCases,
+    @PullCustomerProducts,
+    @UpdateStatus,
+    @ActionTypeIDToPush,
+    @HostName,
+    @DefaultProject,
+    @MatchAccountsByName,
+    @UseSandBoxServer,
+    @AlwaysUseDefaultProjectKey,
+    @RestrictedToTicketTypes,
+    @UpdateTicketType,
+    @InstanceName,
+    @ExcludedTicketStatusUpdate,
+    @IncludeIssueNonRequired,
+    @UseNetworkCredentials)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
 
 (
-  @TaskID int,
+  @CRMLinkID int,
   @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @PullCasesAsTickets bit,
+  @PushTicketsAsCases bit,
+  @PullCustomerProducts bit,
+  @UpdateStatus bit,
+  @ActionTypeIDToPush int,
+  @HostName varchar(8000),
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
+  @RestrictedToTicketTypes varchar(500),
+  @UpdateTicketType bit,
+  @InstanceName varchar(255),
+  @ExcludedTicketStatusUpdate varchar(500),
+  @IncludeIssueNonRequired bit,
+  @UseNetworkCredentials bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TasksView]
+  UPDATE [dbo].[CRMLinkTable]
   SET
-    [TaskID] = @TaskID,
     [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [CompletionComment] = @CompletionComment,
-    [ParentID] = @ParentID,
-    [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent,
-    [ReminderDueDate] = @ReminderDueDate,
-    [TaskParentName] = @TaskParentName,
-    [UserName] = @UserName,
-    [Creator] = @Creator,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [NeedsIndexing] = @NeedsIndexing
-  WH)
+    [Active] = @Active,
+    [CRMType] = @CRMType,
+    [Username] = @Username,
+    [Password] = @Password,
+    [SecurityToken] = @SecurityToken,
+    [TypeFieldMatch] = @TypeFieldMatch,
+    [LastLink] = @LastLink,
+    [SendBackTicketData] = @SendBackTicketData,
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID,
+    [AllowPortalAccess] = @AllowPortalAccess,
+    [SendWelcomeEmail] = @SendWelcomeEmail,
+    [DefaultSlaLevelID] = @DefaultSlaLevelID,
+    [PullCasesAsTickets] = @PullCasesAsTickets,
+    [PushTicketsAsCases] = @PushTicketsAsCases,
+    [PullCustomerProducts] = @PullCustomerProducts,
+    [UpdateStatus] = @UpdateStatus,
+    [ActionTypeIDToPush] = @ActionTypeIDToPush,
+    [HostName] = @HostName,
+    [DefaultProject] = @DefaultProject,
+    [MatchAccountsByName] = @MatchAccountsByName,
+    [UseSandBoxServer] = @UseSandBoxServer,
+    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,
+    [RestrictedToTicketTypes] = @RestrictedToTicketTypes,
+    [UpdateTicketType] = @UpdateTicketType,
+    [InstanceName] = @InstanceName,
+    [ExcludedTicketStatusUpdate] = @ExcludedTicketStatusUpdate,
+    [IncludeIssueNonRequired] = @IncludeIssueNonRequired,
+    [UseNetworkCredentials] = @UseNetworkCredentials
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
 
 (
-
+  @CRMLinkID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TasksView]
-  WH)
+  DELETE FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTask
+CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 
 (
-  @TaskID int
+  @CRMLinkID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
+    [CRMLinkID],
     [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [ReminderID],
-    [NeedsIndexing],
-    [CompletionComment]
-  FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID],
+    [PullCasesAsTickets],
+    [PushTicketsAsCases],
+    [PullCustomerProducts],
+    [UpdateStatus],
+    [ActionTypeIDToPush],
+    [HostName],
+    [DefaultProject],
+    [MatchAccountsByName],
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey],
+    [RestrictedToTicketTypes],
+    [UpdateTicketType],
+    [InstanceName],
+    [ExcludedTicketStatusUpdate],
+    [IncludeIssueNonRequired],
+    [UseNetworkCredentials]
+  FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTask
+CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
 
 (
   @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000),
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @PullCasesAsTickets bit,
+  @PushTicketsAsCases bit,
+  @PullCustomerProducts bit,
+  @UpdateStatus bit,
+  @ActionTypeIDToPush int,
+  @HostName varchar(8000),
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
+  @RestrictedToTicketTypes varchar(500),
+  @UpdateTicketType bit,
+  @InstanceName varchar(255),
+  @ExcludedTicketStatusUpdate varchar(500),
+  @IncludeIssueNonRequired bit,
+  @UseNetworkCredentials bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tasks]
+  INSERT INTO [dbo].[CRMLinkTable]
   (
     [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [ReminderID],
-    [NeedsIndexing],
-    [CompletionComment])
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID],
+    [PullCasesAsTickets],
+    [PushTicketsAsCases],
+    [PullCustomerProducts],
+    [UpdateStatus],
+    [ActionTypeIDToPush],
+    [HostName],
+    [DefaultProject],
+    [MatchAccountsByName],
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey],
+    [RestrictedToTicketTypes],
+    [UpdateTicketType],
+    [InstanceName],
+    [ExcludedTicketStatusUpdate],
+    [IncludeIssueNonRequired],
+    [UseNetworkCredentials])
   VALUES (
     @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @ParentID,
-    @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @ReminderID,
-    @NeedsIndexing,
-    @CompletionComment)
+    @Active,
+    @CRMType,
+    @Username,
+    @Password,
+    @SecurityToken,
+    @TypeFieldMatch,
+    @LastLink,
+    @SendBackTicketData,
+    @LastProcessed,
+    @LastTicketID,
+    @AllowPortalAccess,
+    @SendWelcomeEmail,
+    @DefaultSlaLevelID,
+    @PullCasesAsTickets,
+    @PushTicketsAsCases,
+    @PullCustomerProducts,
+    @UpdateStatus,
+    @ActionTypeIDToPush,
+    @HostName,
+    @DefaultProject,
+    @MatchAccountsByName,
+    @UseSandBoxServer,
+    @AlwaysUseDefaultProjectKey,
+    @RestrictedToTicketTypes,
+    @UpdateTicketType,
+    @InstanceName,
+    @ExcludedTicketStatusUpdate,
+    @IncludeIssueNonRequired,
+    @UseNetworkCredentials)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTask
+CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
 
 (
-  @TaskID int,
+  @CRMLinkID int,
   @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000)
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @PullCasesAsTickets bit,
+  @PushTicketsAsCases bit,
+  @PullCustomerProducts bit,
+  @UpdateStatus bit,
+  @ActionTypeIDToPush int,
+  @HostName varchar(8000),
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
+  @RestrictedToTicketTypes varchar(500),
+  @UpdateTicketType bit,
+  @InstanceName varchar(255),
+  @ExcludedTicketStatusUpdate varchar(500),
+  @IncludeIssueNonRequired bit,
+  @UseNetworkCredentials bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Tasks]
+  UPDATE [dbo].[CRMLinkTable]
   SET
     [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [ParentID] = @ParentID,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [ReminderID] = @ReminderID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [CompletionComment] = @CompletionComment
-  WHERE ([TaskID] = @TaskID)
+    [Active] = @Active,
+    [CRMType] = @CRMType,
+    [Username] = @Username,
+    [Password] = @Password,
+    [SecurityToken] = @SecurityToken,
+    [TypeFieldMatch] = @TypeFieldMatch,
+    [LastLink] = @LastLink,
+    [SendBackTicketData] = @SendBackTicketData,
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID,
+    [AllowPortalAccess] = @AllowPortalAccess,
+    [SendWelcomeEmail] = @SendWelcomeEmail,
+    [DefaultSlaLevelID] = @DefaultSlaLevelID,
+    [PullCasesAsTickets] = @PullCasesAsTickets,
+    [PushTicketsAsCases] = @PushTicketsAsCases,
+    [PullCustomerProducts] = @PullCustomerProducts,
+    [UpdateStatus] = @UpdateStatus,
+    [ActionTypeIDToPush] = @ActionTypeIDToPush,
+    [HostName] = @HostName,
+    [DefaultProject] = @DefaultProject,
+    [MatchAccountsByName] = @MatchAccountsByName,
+    [UseSandBoxServer] = @UseSandBoxServer,
+    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,
+    [RestrictedToTicketTypes] = @RestrictedToTicketTypes,
+    [UpdateTicketType] = @UpdateTicketType,
+    [InstanceName] = @InstanceName,
+    [ExcludedTicketStatusUpdate] = @ExcludedTicketStatusUpdate,
+    [IncludeIssueNonRequired] = @IncludeIssueNonRequired,
+    [UseNetworkCredentials] = @UseNetworkCredentials
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTask
+CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
 
 (
-  @TaskID int
+  @CRMLinkID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
+  DELETE FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 
 (
-
+  @CRMLinkID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
+    [CRMLinkID],
     [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing]
-  FROM [dbo].[TasksView]
-  WH)
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID],
+    [PullCasesAsTickets],
+    [PushTicketsAsCases],
+    [PullCustomerProducts],
+    [UpdateStatus],
+    [ActionTypeIDToPush],
+    [HostName],
+    [DefaultProject],
+    [MatchAccountsByName],
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey],
+    [RestrictedToTicketTypes],
+    [UpdateTicketType],
+    [InstanceName],
+    [ExcludedTicketStatusUpdate],
+    [IncludeIssueNonRequired],
+    [UseNetworkCredentials]
+  FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
 
 (
-  @TaskID int,
   @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @PullCasesAsTickets bit,
+  @PushTicketsAsCases bit,
+  @PullCustomerProducts bit,
+  @UpdateStatus bit,
+  @ActionTypeIDToPush int,
+  @HostName varchar(8000),
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
+  @RestrictedToTicketTypes varchar(500),
+  @UpdateTicketType bit,
+  @InstanceName varchar(255),
+  @ExcludedTicketStatusUpdate varchar(500),
+  @IncludeIssueNonRequired bit,
+  @UseNetworkCredentials bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TasksView]
+  INSERT INTO [dbo].[CRMLinkTable]
   (
-    [TaskID],
     [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing])
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID],
+    [PullCasesAsTickets],
+    [PushTicketsAsCases],
+    [PullCustomerProducts],
+    [UpdateStatus],
+    [ActionTypeIDToPush],
+    [HostName],
+    [DefaultProject],
+    [MatchAccountsByName],
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey],
+    [RestrictedToTicketTypes],
+    [UpdateTicketType],
+    [InstanceName],
+    [ExcludedTicketStatusUpdate],
+    [IncludeIssueNonRequired],
+    [UseNetworkCredentials])
   VALUES (
-    @TaskID,
     @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @CompletionComment,
-    @ParentID,
-    @IsDismissed,
-    @HasEmailSent,
-    @ReminderDueDate,
-    @TaskParentName,
-    @UserName,
-    @Creator,
-    @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @NeedsIndexing)
+    @Active,
+    @CRMType,
+    @Username,
+    @Password,
+    @SecurityToken,
+    @TypeFieldMatch,
+    @LastLink,
+    @SendBackTicketData,
+    @LastProcessed,
+    @LastTicketID,
+    @AllowPortalAccess,
+    @SendWelcomeEmail,
+    @DefaultSlaLevelID,
+    @PullCasesAsTickets,
+    @PushTicketsAsCases,
+    @PullCustomerProducts,
+    @UpdateStatus,
+    @ActionTypeIDToPush,
+    @HostName,
+    @DefaultProject,
+    @MatchAccountsByName,
+    @UseSandBoxServer,
+    @AlwaysUseDefaultProjectKey,
+    @RestrictedToTicketTypes,
+    @UpdateTicketType,
+    @InstanceName,
+    @ExcludedTicketStatusUpdate,
+    @IncludeIssueNonRequired,
+    @UseNetworkCredentials)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
 
 (
-  @TaskID int,
+  @CRMLinkID int,
   @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @PullCasesAsTickets bit,
+  @PushTicketsAsCases bit,
+  @PullCustomerProducts bit,
+  @UpdateStatus bit,
+  @ActionTypeIDToPush int,
+  @HostName varchar(8000),
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
+  @RestrictedToTicketTypes varchar(500),
+  @UpdateTicketType bit,
+  @InstanceName varchar(255),
+  @ExcludedTicketStatusUpdate varchar(500),
+  @IncludeIssueNonRequired bit,
+  @UseNetworkCredentials bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[TasksView]
+  UPDATE [dbo].[CRMLinkTable]
   SET
-    [TaskID] = @TaskID,
     [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [CompletionComment] = @CompletionComment,
-    [ParentID] = @ParentID,
-    [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent,
-    [ReminderDueDate] = @ReminderDueDate,
-    [TaskParentName] = @TaskParentName,
-    [UserName] = @UserName,
-    [Creator] = @Creator,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [NeedsIndexing] = @NeedsIndexing
-  WH)
+    [Active] = @Active,
+    [CRMType] = @CRMType,
+    [Username] = @Username,
+    [Password] = @Password,
+    [SecurityToken] = @SecurityToken,
+    [TypeFieldMatch] = @TypeFieldMatch,
+    [LastLink] = @LastLink,
+    [SendBackTicketData] = @SendBackTicketData,
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID,
+    [AllowPortalAccess] = @AllowPortalAccess,
+    [SendWelcomeEmail] = @SendWelcomeEmail,
+    [DefaultSlaLevelID] = @DefaultSlaLevelID,
+    [PullCasesAsTickets] = @PullCasesAsTickets,
+    [PushTicketsAsCases] = @PushTicketsAsCases,
+    [PullCustomerProducts] = @PullCustomerProducts,
+    [UpdateStatus] = @UpdateStatus,
+    [ActionTypeIDToPush] = @ActionTypeIDToPush,
+    [HostName] = @HostName,
+    [DefaultProject] = @DefaultProject,
+    [MatchAccountsByName] = @MatchAccountsByName,
+    [UseSandBoxServer] = @UseSandBoxServer,
+    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,
+    [RestrictedToTicketTypes] = @RestrictedToTicketTypes,
+    [UpdateTicketType] = @UpdateTicketType,
+    [InstanceName] = @InstanceName,
+    [ExcludedTicketStatusUpdate] = @ExcludedTicketStatusUpdate,
+    [IncludeIssueNonRequired] = @IncludeIssueNonRequired,
+    [UseNetworkCredentials] = @UseNetworkCredentials
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
 
 (
-
+  @CRMLinkID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TasksView]
-  WH)
+  DELETE FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectTask
+CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 
 (
-  @TaskID int
+  @CRMLinkID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [TaskID],
+    [CRMLinkID],
     [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [ReminderID],
-    [NeedsIndexing],
-    [CompletionComment]
-  FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID],
+    [PullCasesAsTickets],
+    [PushTicketsAsCases],
+    [PullCustomerProducts],
+    [UpdateStatus],
+    [ActionTypeIDToPush],
+    [HostName],
+    [DefaultProject],
+    [MatchAccountsByName],
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey],
+    [RestrictedToTicketTypes],
+    [UpdateTicketType],
+    [InstanceName],
+    [ExcludedTicketStatusUpdate],
+    [IncludeIssueNonRequired],
+    [UseNetworkCredentials]
+  FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertTask
+CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
 
 (
   @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000),
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @PullCasesAsTickets bit,
+  @PushTicketsAsCases bit,
+  @PullCustomerProducts bit,
+  @UpdateStatus bit,
+  @ActionTypeIDToPush int,
+  @HostName varchar(8000),
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
+  @RestrictedToTicketTypes varchar(500),
+  @UpdateTicketType bit,
+  @InstanceName varchar(255),
+  @ExcludedTicketStatusUpdate varchar(500),
+  @IncludeIssueNonRequired bit,
+  @UseNetworkCredentials bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tasks]
+  INSERT INTO [dbo].[CRMLinkTable]
   (
     [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [ReminderID],
-    [NeedsIndexing],
-    [CompletionComment])
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID],
+    [PullCasesAsTickets],
+    [PushTicketsAsCases],
+    [PullCustomerProducts],
+    [UpdateStatus],
+    [ActionTypeIDToPush],
+    [HostName],
+    [DefaultProject],
+    [MatchAccountsByName],
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey],
+    [RestrictedToTicketTypes],
+    [UpdateTicketType],
+    [InstanceName],
+    [ExcludedTicketStatusUpdate],
+    [IncludeIssueNonRequired],
+    [UseNetworkCredentials])
   VALUES (
     @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @ParentID,
-    @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @ReminderID,
-    @NeedsIndexing,
-    @CompletionComment)
+    @Active,
+    @CRMType,
+    @Username,
+    @Password,
+    @SecurityToken,
+    @TypeFieldMatch,
+    @LastLink,
+    @SendBackTicketData,
+    @LastProcessed,
+    @LastTicketID,
+    @AllowPortalAccess,
+    @SendWelcomeEmail,
+    @DefaultSlaLevelID,
+    @PullCasesAsTickets,
+    @PushTicketsAsCases,
+    @PullCustomerProducts,
+    @UpdateStatus,
+    @ActionTypeIDToPush,
+    @HostName,
+    @DefaultProject,
+    @MatchAccountsByName,
+    @UseSandBoxServer,
+    @AlwaysUseDefaultProjectKey,
+    @RestrictedToTicketTypes,
+    @UpdateTicketType,
+    @InstanceName,
+    @ExcludedTicketStatusUpdate,
+    @IncludeIssueNonRequired,
+    @UseNetworkCredentials)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateTask
+CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
 
 (
-  @TaskID int,
+  @CRMLinkID int,
   @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000)
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @PullCasesAsTickets bit,
+  @PushTicketsAsCases bit,
+  @PullCustomerProducts bit,
+  @UpdateStatus bit,
+  @ActionTypeIDToPush int,
+  @HostName varchar(8000),
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
+  @RestrictedToTicketTypes varchar(500),
+  @UpdateTicketType bit,
+  @InstanceName varchar(255),
+  @ExcludedTicketStatusUpdate varchar(500),
+  @IncludeIssueNonRequired bit,
+  @UseNetworkCredentials bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Tasks]
+  UPDATE [dbo].[CRMLinkTable]
   SET
     [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [ParentID] = @ParentID,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [ReminderID] = @ReminderID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [CompletionComment] = @CompletionComment
-  WHERE ([TaskID] = @TaskID)
+    [Active] = @Active,
+    [CRMType] = @CRMType,
+    [Username] = @Username,
+    [Password] = @Password,
+    [SecurityToken] = @SecurityToken,
+    [TypeFieldMatch] = @TypeFieldMatch,
+    [LastLink] = @LastLink,
+    [SendBackTicketData] = @SendBackTicketData,
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID,
+    [AllowPortalAccess] = @AllowPortalAccess,
+    [SendWelcomeEmail] = @SendWelcomeEmail,
+    [DefaultSlaLevelID] = @DefaultSlaLevelID,
+    [PullCasesAsTickets] = @PullCasesAsTickets,
+    [PushTicketsAsCases] = @PushTicketsAsCases,
+    [PullCustomerProducts] = @PullCustomerProducts,
+    [UpdateStatus] = @UpdateStatus,
+    [ActionTypeIDToPush] = @ActionTypeIDToPush,
+    [HostName] = @HostName,
+    [DefaultProject] = @DefaultProject,
+    [MatchAccountsByName] = @MatchAccountsByName,
+    [UseSandBoxServer] = @UseSandBoxServer,
+    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,
+    [RestrictedToTicketTypes] = @RestrictedToTicketTypes,
+    [UpdateTicketType] = @UpdateTicketType,
+    [InstanceName] = @InstanceName,
+    [ExcludedTicketStatusUpdate] = @ExcludedTicketStatusUpdate,
+    [IncludeIssueNonRequired] = @IncludeIssueNonRequired,
+    [UseNetworkCredentials] = @UseNetworkCredentials
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTask
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteTask
+CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
 
 (
-  @TaskID int
+  @CRMLinkID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
-
-(
-
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing]
-  FROM [dbo].[TasksView]
-  WH)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
-
-(
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TasksView]
-  (
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing])
-  VALUES (
-    @TaskID,
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @CompletionComment,
-    @ParentID,
-    @IsDismissed,
-    @HasEmailSent,
-    @ReminderDueDate,
-    @TaskParentName,
-    @UserName,
-    @Creator,
-    @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @NeedsIndexing)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
-
-(
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[TasksView]
-  SET
-    [TaskID] = @TaskID,
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [CompletionComment] = @CompletionComment,
-    [ParentID] = @ParentID,
-    [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent,
-    [ReminderDueDate] = @ReminderDueDate,
-    [TaskParentName] = @TaskParentName,
-    [UserName] = @UserName,
-    [Creator] = @Creator,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [NeedsIndexing] = @NeedsIndexing
-  WH)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
-
-(
-
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TasksView]
-  WH)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTask
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTask
-
-(
-  @TaskID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [ReminderID],
-    [NeedsIndexing],
-    [CompletionComment]
-  FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTask
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTask
-
-(
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tasks]
-  (
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [ReminderID],
-    [NeedsIndexing],
-    [CompletionComment])
-  VALUES (
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @ParentID,
-    @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @ReminderID,
-    @NeedsIndexing,
-    @CompletionComment)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTask
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTask
-
-(
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Tasks]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [ParentID] = @ParentID,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [ReminderID] = @ReminderID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [CompletionComment] = @CompletionComment
-  WHERE ([TaskID] = @TaskID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTask
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTask
-
-(
-  @TaskID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
-
-(
-
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing]
-  FROM [dbo].[TasksView]
-  WH)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
-
-(
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TasksView]
-  (
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing])
-  VALUES (
-    @TaskID,
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @CompletionComment,
-    @ParentID,
-    @IsDismissed,
-    @HasEmailSent,
-    @ReminderDueDate,
-    @TaskParentName,
-    @UserName,
-    @Creator,
-    @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @NeedsIndexing)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
-
-(
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[TasksView]
-  SET
-    [TaskID] = @TaskID,
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [CompletionComment] = @CompletionComment,
-    [ParentID] = @ParentID,
-    [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent,
-    [ReminderDueDate] = @ReminderDueDate,
-    [TaskParentName] = @TaskParentName,
-    [UserName] = @UserName,
-    [Creator] = @Creator,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [NeedsIndexing] = @NeedsIndexing
-  WH)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
-
-(
-
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TasksView]
-  WH)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTask
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTask
-
-(
-  @TaskID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [ReminderID],
-    [NeedsIndexing],
-    [CompletionComment]
-  FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTask
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTask
-
-(
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tasks]
-  (
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [ParentID],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [ReminderID],
-    [NeedsIndexing],
-    [CompletionComment])
-  VALUES (
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @ParentID,
-    @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @ReminderID,
-    @NeedsIndexing,
-    @CompletionComment)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTask
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTask
-
-(
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @ParentID int,
-  @ModifierID int,
-  @DateModified datetime,
-  @ReminderID int,
-  @NeedsIndexing bit,
-  @CompletionComment nvarchar(4000)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Tasks]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [ParentID] = @ParentID,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [ReminderID] = @ReminderID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [CompletionComment] = @CompletionComment
-  WHERE ([TaskID] = @TaskID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTask' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTask
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTask
-
-(
-  @TaskID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tasks]
-  WHERE ([TaskID] = @TaskID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTasksViewItem
-
-(
-
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing]
-  FROM [dbo].[TasksView]
-  WH)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTasksViewItem
-
-(
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @CreatorID int,
-  @DateCreated datetime,
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TasksView]
-  (
-    [TaskID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [DateCompleted],
-    [CompletionComment],
-    [ParentID],
-    [IsDismissed],
-    [HasEmailSent],
-    [ReminderDueDate],
-    [TaskParentName],
-    [UserName],
-    [Creator],
-    [CreatorID],
-    [DateCreated],
-    [ModifierID],
-    [DateModified],
-    [NeedsIndexing])
-  VALUES (
-    @TaskID,
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @DateCompleted,
-    @CompletionComment,
-    @ParentID,
-    @IsDismissed,
-    @HasEmailSent,
-    @ReminderDueDate,
-    @TaskParentName,
-    @UserName,
-    @Creator,
-    @CreatorID,
-    @DateCreated,
-    @ModifierID,
-    @DateModified,
-    @NeedsIndexing)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTasksViewItem
-
-(
-  @TaskID int,
-  @OrganizationID int,
-  @Name nvarchar(1000),
-  @Description nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @DateCompleted datetime,
-  @CompletionComment nvarchar(4000),
-  @ParentID int,
-  @IsDismissed bit,
-  @HasEmailSent bit,
-  @ReminderDueDate datetime,
-  @TaskParentName nvarchar(1000),
-  @UserName nvarchar(201),
-  @Creator nvarchar(201),
-  @ModifierID int,
-  @DateModified datetime,
-  @NeedsIndexing bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[TasksView]
-  SET
-    [TaskID] = @TaskID,
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete,
-    [DateCompleted] = @DateCompleted,
-    [CompletionComment] = @CompletionComment,
-    [ParentID] = @ParentID,
-    [IsDismissed] = @IsDismissed,
-    [HasEmailSent] = @HasEmailSent,
-    [ReminderDueDate] = @ReminderDueDate,
-    [TaskParentName] = @TaskParentName,
-    [UserName] = @UserName,
-    [Creator] = @Creator,
-    [ModifierID] = @ModifierID,
-    [DateModified] = @DateModified,
-    [NeedsIndexing] = @NeedsIndexing
-  WH)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTasksViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTasksViewItem
-
-(
-
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TasksView]
-  WH)
+  DELETE FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
 

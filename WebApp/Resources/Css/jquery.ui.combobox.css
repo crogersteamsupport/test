@@ -14,9 +14,21 @@
 		*height: 1.7em;
 		*top: 0.1em;
 	}
-	.ui-combobox-input {
-		margin: 0;
-    padding: 0 .2em;
-	}
 
-  .ui-combobox .ui-button-icon-only { width:1.75em; } 
+
+.ui-combobox-input {
+    margin: 0;
+    padding: 5px !important;
+		height: 20px !important;
+}
+
+  .ui-combobox .ui-button-icon-only { width:1.75em; }
+
+
+.condition-field {
+    padding:5px;
+}
+
+.ui-button {
+    border:1px solid #dddddd;
+}

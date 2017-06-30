@@ -2,9 +2,13 @@
 <html>
   <head>
     <meta http-equiv="Pragma" content="no-cache" />
+    <link href="../Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Css/standards.css" rel="stylesheet" type="text/css" />
+
+
 
     <!--Uncomment bootstrap3.min.css to add notes when completing tasks-->
-    <!--<link href="../Css/bootstrap3.min.css"                rel="stylesheet" type="text/css" />-->
+    <link href="../Css/bootstrap3.min.css"                rel="stylesheet" type="text/css" />
     <link href="../Css/frame.css"                         rel="stylesheet" type="text/css" />
     <link href="../Css/jquery-ui-latest.custom.css"       rel="stylesheet" type="text/css" />
     <link href="../Css/jquery.ui.combobox.css"            rel="stylesheet" type="text/css" />
@@ -18,7 +22,7 @@
     <link href="Search.css" rel ="stylesheet" type="text/css" />
     <script src="../Js/Ts/ts.pendo.js"                  type="text/javascript"></script>
     <script src="../Js/jquery-latest.min.js"            type="text/javascript"></script>
-    <!--<script src="../Js/bootstrap3.min.js"               type="text/javascript"></script>-->
+    <script src="../Js/bootstrap3.min.js"               type="text/javascript"></script>
     <script src="../Js/jquery-ui-latest.custom.min.js"  type="text/javascript"></script>
     <script src="../Js/jquery.layout.min.js"            type="text/javascript"></script>
     <script src="../Js/jquery.ui.combobox.js"           type="text/javascript"></script>
@@ -34,33 +38,18 @@
 
       <!--This container is added because the left and right properties in an input element are ignored in ie and ff-->
       <div id="search-input-container">
-        <input
-          id          ="search-input"
-          type        ="search"
-          placeholder ="Search"
-          autofocus   ="autofocus" />
+        <input id="search-input" type="search" placeholder="What would you like to search for?" autofocus="autofocus" class="form-control"/>
       </div>
 
-      <button
-        id    ="search-button"
-        type  ="button" >
-        <img
-          id  = "eyeglass"
-          src = "/vcr/153/images/nav/16/search2.png" 
-          alt = "Search" />
-      </button>
-  
+      <button id="search-button" type="button">SEARCH</button>
+
       <p id="search-results-summary">
         &nbsp;
       </p>
 
-      <div 
-        id    ="search-results-pane" 
-        class ="ui-layout-content">
+      <div id="search-results-pane" class ="ui-layout-content">
         <div id="search-results-loading">
-          <img 
-            alt="loading..." 
-            src="../images/loading/loading2.gif"/>
+          <img alt="loading..." src="../images/loading/loading2.gif"/>
         </div>
         <div id="search-results" >
 
@@ -71,56 +60,31 @@
 
     <div class="ui-layout-east">
 
-      <fieldset id="search-standard-filters" class = "search-options-fieldset">
+      <fieldset id="search-standard-filters" class="search-options-fieldset">
         <legend></legend>
 
-        <input id="include-all"             class="checkbox" type="checkbox" /> All           <br />
-        <input id="include-tickets"         class="checkbox" type="checkbox" /> Tickets       <br />
-        <input id="include-knowledge-base"  class="checkbox" type="checkbox" /> Knowledge Base<br />
-        <span id="include-wikis-span">
-          <input id="include-wikis"           class="checkbox" type="checkbox" /> Wikis         <br />
-        </span>
+          <p style="margin-bottom:5px;"><input id="include-all" class="checkbox" type="checkbox" style="margin-right:5px;"/> All</p>
+          <p style="margin-bottom:5px;"><input id="include-tickets" class="checkbox" type="checkbox" style="margin-right:5px;" /> Tickets</p>
+          <p style="margin-bottom:5px;"><input id="include-knowledge-base" class="checkbox" type="checkbox" style="margin-right:5px;" /> Knowledge Base</p>
+          <p style="margin-bottom:5px;"><span id="include-wikis-span"><input id="include-wikis" class="checkbox" type="checkbox" style="margin-right:5px;" /> Wikis</span></p>
 
       </fieldset>
 
       <fieldset class = "search-options-fieldset">
-        <p class="search-options-subtitle">Advanced Filter Options</p>
-
-        <a 
-          id    = "search-options-add-filter"
-          class = "search-options-add"
-          href  = "#" >
-          Add
-        </a>
-
-        <div id="search-options-new-filter">
-        </div>
-
+        <p class="search-options-subtitle" style="margin-bottom:10px;font-weight:bold;">Advanced Filter Options</p>
+        <a id="search-options-add-filter" class="search-options-add" href="#">Add</a>
+        <div id="search-options-new-filter"></div>
         <hr class="ts-separator ui-widget-content search-options-hr"/>
-
-        <div id="search-options-filters">
-        </div>
+        <div id="search-options-filters"></div>
 
       </fieldset>
 
       <fieldset class = "search-options-fieldset">
         <p class="search-options-subtitle">Advanced Sort Options</p>
-
-        <a 
-          id    = "search-options-add-sorter"
-          class = "search-options-add"
-          href  = "#" >
-          Add
-        </a>
-
-        <div id="search-options-new-sorter">
-        </div>
-
+        <a id="search-options-add-sorter"class ="search-options-add" href="#">Add</a>
+        <div id="search-options-new-sorter"></div>
         <hr class="ts-separator ui-widget-content search-options-hr"/>
-
-        <div id="search-options-sorters">
-        </div>
-
+        <div id="search-options-sorters"></div>
       </fieldset>
 
     </div>

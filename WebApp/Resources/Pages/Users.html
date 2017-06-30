@@ -4,6 +4,8 @@
     <title></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../Css/standards.css" rel="stylesheet" type="text/css" />
+    <link href="Tasks.css" rel="stylesheet" type="text/css" />
     <link href="../Css/jquery-ui-bs3.min.css" rel="stylesheet" type="text/css" />
     <link href="../Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
     <link href="../Css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css" />
@@ -43,11 +45,11 @@
 
     </div>
 
-    <div class="ui-layout-center p0">
+    <div class="ui-layout-center p0 bg-bluewood">
         <div class="maincontainer">
             <div class="main-nav">
                 <div>
-                    <span class="userName" id="userName"></span>
+                    <span class="userName" id="userName" style="display:none;"></span>
                     <div class="pull-right">
                         <div role="toolbar" class="btn-toolbar">
                             <div class="btn-group">
@@ -57,7 +59,7 @@
                         </div>
                     </div>
                 </div>
-                <ul class="nav nav-tabs" id="userTabs">
+                <ul class="nav nav-pills nav-curiousblue" id="userTabs" style="margin-bottom:30px;padding:10px;">
                     <li class="active"><a href="#user-information" data-toggle="tab">User Information</a></li>
                     <li><a href="#user-open" data-toggle="tab">Open</a></li>
                     <li><a href="#user-closed" data-toggle="tab">Closed</a></li>
@@ -155,7 +157,7 @@
                                 </div>
                                 <div class="box-content">
                                     <div class="row">
-                                        <table class="table">
+                                        <table class="table table-striped">
                                             <thead>
                                                 <tr>
                                                     <td></td>
