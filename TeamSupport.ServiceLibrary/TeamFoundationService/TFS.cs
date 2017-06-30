@@ -343,15 +343,15 @@ namespace TeamSupport.ServiceLibrary
             return comments;
 		}
 
-		public WorkItemComment GetCommentBy(int workItemId, int revisionId)
-		{
-			WorkItemComment comments = new WorkItemComment();
+        public WorkItemComment GetCommentBy(int workItemId, int revisionId)
+        {
+            WorkItemComment comments = new WorkItemComment();
 
-			try
-			{
+            try
+            {
                 string response = MakeRequest(string.Format("{0}/_apis/wit/workItems/{1}/comments/{2}", HostName, workItemId, revisionId), ApiMethod.Get);
                 comments = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemComment>(response);
-			}
+            }
             catch (WebException webEx)
             {
                 string exceptionResponse;
@@ -373,9 +373,73 @@ namespace TeamSupport.ServiceLibrary
             }
 
             return comments;
-		}
+        }
 
-		public WorkItem CreateWorkItem(List<WorkItemField> fields, string project, string type)
+        public WorkItemHistoryList GetHistoryBy(int workItemId)
+        {
+            WorkItemHistoryList history = new WorkItemHistoryList();
+
+            try
+            {
+                string response = MakeRequest(string.Format("{0}/_apis/wit/workItems/{1}/history", HostName, workItemId), ApiMethod.Get);
+                history = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemHistoryList>(response);
+            }
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
+
+                if (responseStream != null)
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                        throw new TFSClientException(tfsError);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            return history;
+        }
+
+        public WorkItemHistory GetHistoryBy(int workItemId, int revisionId)
+        {
+            WorkItemHistory history = new WorkItemHistory();
+
+            try
+            {
+                string response = MakeRequest(string.Format("{0}/_apis/wit/workItems/{1}/history/{2}", HostName, workItemId, revisionId), ApiMethod.Get);
+                history = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemHistory>(response);
+            }
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
+
+                if (responseStream != null)
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                        throw new TFSClientException(tfsError);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            return history;
+        }
+
+        public WorkItem CreateWorkItem(List<WorkItemField> fields, string project, string type)
         {
             WorkItem workItem = new WorkItem();
 			Object[] patchDocument = GetPatchDocument(fields);
@@ -562,8 +626,26 @@ namespace TeamSupport.ServiceLibrary
 		public bool UploadAttachment(int workItemId, string filePath, string fileName)
 		{
 			bool result = false;
-			string URI = HostName + "/DefaultCollection/_apis/wit/attachments?fileName=" + fileName + "&api-version=2.2"; //Use correct values here
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URI);
+			string URI = HostName + "/_apis/wit/attachments?fileName=" + fileName + "&api-version=2.2"; //Use correct values here
+
+            using (var client = new WebClient { UseDefaultCredentials = false })
+            {
+                client.Headers.Add(HttpRequestHeader.ContentType, "application/octet-stream;");
+                if (_useNetworkCredentials)
+                {
+                    NetworkCredential netCred = new NetworkCredential(UserName, Password);
+                    client.Credentials = netCred;
+                }
+                else
+                {
+                    client.Headers.Add(HttpRequestHeader.Authorization, "Basic " + EncodedCredentials);
+                }
+
+                client.UploadFile(URI, filePath);
+            }
+
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URI);
 			string boundary = "---------------------------" + DateTime.Now.Ticks.ToString("x");
 			request.Headers.Add("Authorization", "Basic " + EncodedCredentials);
 			request.Method = "POST";
@@ -796,6 +878,17 @@ namespace TeamSupport.ServiceLibrary
             public int FromRevisionCount { get; set; }
             [DataMember]
             public int TotalCount { get; set; }
+        }
+
+        [DataContract]
+        public class WorkItemHistoryList
+        {
+            public WorkItemHistoryList() { }
+
+            [DataMember]
+            public IEnumerable<WorkItemHistory> value { get; set; }
+            [DataMember]
+            public int count { get; set; }
         }
 
         private class AttachmentInfo
