@@ -4098,10 +4098,7 @@ SELECT
 
             try
             {
-                Organization loser = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), losingOrganizationID);
-                loser.ParentID = -1;
-                loser.Collection.Save();
-                //company.Collection.DeleteFromDB(losingOrganizationID);
+                company.Collection.DeleteFromDB(losingOrganizationID);
             }
             catch (Exception e)
             {
