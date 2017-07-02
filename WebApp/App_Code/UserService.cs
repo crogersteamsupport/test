@@ -93,20 +93,20 @@ namespace TSWebServices
 				  //byte[] imgbytes = Convert.FromBase64String(image);
 				  //File.WriteAllBytes(temppath + "temp_" + filename + ".png", imgbytes);
 
-				  var lst = new List<result> 
+				  var lst = new List<result>
                           {
                              new result { location =  "dc/" + TSAuthentication.OrganizationID + "/images/" + filename + ".png"}
                           };
 								  JavaScriptSerializer serialize = new JavaScriptSerializer();
 								  this.Context.Response.ContentType = "application/json; charset=utf-8";
 								  this.Context.Response.Write("{\"location\": \"" + filepath + "\"}");
-				 
+
 				  //if (image != "")
 				  //{
 				  //	ImageBuilder.Current.Build(temppath + "temp_" + filename + ".png", path + '\\' + filename + ".png", new ResizeSettings(image));
 				  //	File.Delete(temppath + "temp_" + filename + ".png");
 
-				  //	var lst = new List<result> 
+				  //	var lst = new List<result>
 				  //				{
 				  //					new result { location = TSAuthentication.OrganizationID + "/images/" + filename + ".png"}
 				  //				};
@@ -178,7 +178,7 @@ namespace TSWebServices
 
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
 
-				path = String.Format("/dc/{0}/UserAvatar/{1}/120/{2}", user.OrganizationID, userID, Guid.NewGuid()); 
+				path = String.Format("/dc/{0}/UserAvatar/{1}/120/{2}", user.OrganizationID, userID, Guid.NewGuid());
             return path;
         }
 
@@ -650,7 +650,7 @@ namespace TSWebServices
             user.Collection.Save();
             return user.OnlyEmailAfterHours;
         }
-      
+
 
         [WebMethod]
         public bool SetSysAdmin(int userID, bool value)
@@ -890,7 +890,7 @@ namespace TSWebServices
             user.Collection.Save();
             return user.AllowAnyTicketCustomer;
         }
-        
+
 
         [WebMethod]
         public string SetChatUser(int userID, bool value)
@@ -907,7 +907,7 @@ namespace TSWebServices
             user.IsChatUser = value;
             user.Collection.Save();
             return user.IsChatUser.ToString();
-        
+
         }
 
         [WebMethod]
@@ -1011,7 +1011,7 @@ namespace TSWebServices
             Users users = new Users(TSAuthentication.GetLoginUser());
 
             OrganizationService orgService = new OrganizationService();
-            
+
             Organization organization;
             Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
 
@@ -1129,14 +1129,14 @@ namespace TSWebServices
                 user.ActivatedOn = DateTime.UtcNow;
                 user.IsPortalUser = false;
                 user.EnforceSingleSession = true;
-                
+
                 user.Collection.Save();
 
                 PhoneTypes phoneTypes = new PhoneTypes(TSAuthentication.GetLoginUser());
                 phoneTypes.LoadByOrganizationID(TSAuthentication.OrganizationID);
-                
+
 					 if (phone != "")
-					 { 
+					 {
 						 PhoneNumber p = new PhoneNumbers(TSAuthentication.GetLoginUser()).AddNewPhoneNumber();
 						 p.PhoneTypeID = phoneTypes[0].PhoneTypeID;
 						 p.Number = phone;
@@ -1156,7 +1156,7 @@ namespace TSWebServices
 
             return resultStr;
         }
-        
+
         [WebMethod]
         public OrganizationProxy[] GetUserCustomers(int userID)
         {
@@ -1389,7 +1389,7 @@ namespace TSWebServices
 
                 Users tempUser = new Users(TSAuthentication.GetLoginUser());
                 int total = tempUser.GetUserTicketCount(u.UserID, false);
-                
+
 
                 if (setting != null)
                 {
@@ -1397,9 +1397,9 @@ namespace TSWebServices
                 }
 
                 if (!u.InOffice)
-                    officesetting = string.Format("<span class='ts-icon ts-icon-offline-small user-tooltip' title='{0}' userid='{1}'></span>", u.InOfficeComment, u.UserID);
+                    officesetting = string.Format("<span class='ts-icon ts-icon-offline-small fa fa-circle user-tooltip' title='{0}' userid='{1}'></span>", u.InOfficeComment, u.UserID);
                 else
-                    officesetting = string.Format("<span class='ts-icon ts-icon-online-small user-tooltip' title='{0}' userid='{1}'></span>", u.InOfficeComment, u.UserID);
+                    officesetting = string.Format("<span class='ts-icon ts-icon-online-small fa fa-circle user-tooltip' title='{0}' userid='{1}'></span>", u.InOfficeComment, u.UserID);
 
 
                 html.AppendFormat(@"<li>
@@ -1512,7 +1512,7 @@ namespace TSWebServices
                 cal.end = null;
                 cal.displayend = null;
                 cal.allday = false;
-                    
+
                 cal.creatorID = -1;
 
                 Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
@@ -1599,7 +1599,7 @@ namespace TSWebServices
                         }
                         else
                             continue;
-                        
+
                     case ReferenceType.Organizations:
                         Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), r.RefID);
                         if (o != null)
@@ -1696,7 +1696,7 @@ namespace TSWebServices
                 cal.creatorID = c.CreatorID;
 
                 User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
-                
+
                 CalendarRef calRef = new CalendarRef(TSAuthentication.GetLoginUser());
                 calRef.LoadByCalendarID(c.CalendarID);
                 if (calRef.Count > 0)
@@ -1728,7 +1728,7 @@ namespace TSWebServices
                 else
                     cal.references = null;
 
-                events.Add(cal);                
+                events.Add(cal);
             }
 
             Tasks tasks = new Tasks(TSAuthentication.GetLoginUser());
@@ -1800,8 +1800,8 @@ namespace TSWebServices
         {
             SqlCommand command = new SqlCommand();
             command.CommandText = @"
-            SELECT COUNT(*) 
-            FROM UserRightsOrganizations 
+            SELECT COUNT(*)
+            FROM UserRightsOrganizations
             WHERE UserID = @UserID
             AND OrganizationID = @OrganizationID
             ";
@@ -1920,7 +1920,7 @@ namespace TSWebServices
 
                 CalendarRef calRef = new CalendarRef(TSAuthentication.GetLoginUser());
                 calRef.LoadByCalendarID(cal.CalendarID);
-                
+
                 //Delete ticket associations that no longer exist
                 foreach (CalendarRefItem item in calRef.Where(a => a.RefType == (int)CalendarAttachmentType.Ticket))
                 {
@@ -1938,7 +1938,7 @@ namespace TSWebServices
                         item.Delete();
                         item.Collection.Save();
                     }
-                }   
+                }
                 //Delete product associations that no longer exist
                 foreach (CalendarRefItem item in calRef.Where(a => a.RefType == (int)CalendarAttachmentType.Product).ToArray())
                 {
@@ -2057,7 +2057,7 @@ namespace TSWebServices
                 cal.StartDateUTC = startDate;
 
                 if (info.end != null)
-                { 
+                {
                     var endDate = (new DateTime(1970, 1, 1)).AddMilliseconds(double.Parse(info.end));
 
                     if (info.allDay)
@@ -2132,7 +2132,7 @@ namespace TSWebServices
                     ticket.LoadByTicketNumber(TSAuthentication.GetLoginUser().OrganizationID, eventID);
                     ticket[0].DueDate = TimeZoneInfo.ConvertTimeToUtc(newTime);
                     ticket[0].Collection.Save();
-                    
+
                     break;
                 case "cal":
                     CalendarEvents events = new CalendarEvents(TSAuthentication.GetLoginUser());

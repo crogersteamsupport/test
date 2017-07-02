@@ -102,11 +102,11 @@ AdminAuto = function () {
     $('.admin-auto-no-trigger').show();
   }
   function addToolbarButton(id, icon, caption, callback) {
-    var html = '<a href="#" id="' + id + '" class="ts-toolbar-button ui-corner-all"><span class="ts-toolbar-icon ts-icon ' + icon + '"></span><span class="ts-toolbar-caption">' + caption + '</span></a>';
+      var html = '<i href="#" id="' + id + '" class="automation-button ui-corner-all fa ' + icon + '"><span style="margin-left:6px;">' + caption + '</span></i>';
     $('.admin-auto-north').append(html).find('#' + id).click(callback).hover(function () { $(this).addClass('ui-state-hover'); }, function () { $(this).removeClass('ui-state-hover'); });
   }
 
-  addToolbarButton('btnNew', 'ts-icon-new', 'New Trigger', newTrigger);
+  addToolbarButton('btnNew', 'fa-plus', 'New Trigger', newTrigger);
   $('.trigger-new').click(newTrigger);
 
   function newTrigger(e) {
@@ -118,7 +118,7 @@ AdminAuto = function () {
     parent.parent.Ts.System.logAction('Admin Automation - Started New Trigger');
   }
 
-  addToolbarButton('btnDuplicate', 'ts-icon-add', 'Duplicate Trigger', duplicateTrigger);
+  addToolbarButton('btnDuplicate', 'fa-files-o', 'Duplicate Trigger', duplicateTrigger);
   $('.trigger-duplicate').click(duplicateTrigger);
 
   function duplicateTrigger(e) {
@@ -133,7 +133,7 @@ AdminAuto = function () {
   	parent.parent.Ts.System.logAction('Admin Automation - Trigger Duplicated');
   }
 
-  addToolbarButton('btnDelete', 'ts-icon-delete', 'Delete Trigger', function (e) {
+  addToolbarButton('btnDelete', 'fa-trash', 'Delete Trigger', function (e) {
     e.preventDefault();
     e.stopPropagation();
     if (!confirm('Are you sure you would like to delete this trigger?')) return;
@@ -155,7 +155,7 @@ AdminAuto = function () {
 
   });
 
-  addToolbarButton('btnRefresh', 'ts-icon-refresh', 'Refresh', function (e) {
+  addToolbarButton('btnRefresh', 'fa-refresh', 'Refresh', function (e) {
     e.preventDefault();
     e.stopPropagation();
     window.location = window.location;
@@ -503,7 +503,7 @@ AdminAuto = function () {
     }
     else {
       var input = $('<input>')
-        .addClass('text ui-corner-all ui-widget-content condition-value')
+        .addClass('ui-corner-all ui-widget-content condition-value form-control')
         .attr('type', 'text')
         .width('200px')
         .keydown(function () { isModified(true); })
@@ -676,7 +676,7 @@ AdminAuto = function () {
       case 'ContactList':
       case 'TextBox':
         var input = $('<input type="text">')
-          .addClass('action-value ui-widget-content ui-corner-all text')
+          .addClass('action-value ui-widget-content ui-corner-all form-control')
           .width('250px')
           .insertAfter(select);
         select.remove();
@@ -723,7 +723,7 @@ AdminAuto = function () {
       case 'CustomFieldList':
         loadComboCustomFields(select).combobox('update');
         var input = $('<input type="text">')
-          .addClass('action-value2 ui-widget-content ui-corner-all text')
+          .addClass('action-value2 ui-widget-content ui-corner-all form-control')
           .width('250px')
           .val(value2)
           .insertAfter(select.next());

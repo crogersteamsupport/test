@@ -56,6 +56,7 @@ namespace TSWebServices
             payload.AppUrl = SystemSettings.GetAppUrl();
             payload.PortalUrl = SystemSettings.GetPortalUrl();
             payload.DomainName = SystemSettings.GetDomain();
+            payload.EmailDomain = SystemSettings.GetEmailDomain();
             return JsonConvert.SerializeObject(payload);
         }
 

@@ -98,11 +98,10 @@ UserPage = function () {
 
     $('.user-displayname').html(user.FirstName + ' ' + user.LastName);
     $('#userEmail').html('<a class=fleft href="mailto:' + user.Email + '">' + user.Email + '</a>');
-    var email = $('#userEmail').parent()
-        .hover(function () {
-          $(this).find('.ts-icon-edit').show();
+    var email = $('#userEmail').parent().hover(function (e) {
+            $('#editEmail').show();
         }, function () {
-          $(this).find('.ts-icon-edit').hide();
+            $('#editEmail').hide();
         });
 
     $('#userTitle').html(user.Title == '' || user.Title == null ? 'None' : user.Title);
@@ -166,12 +165,14 @@ UserPage = function () {
       appendCustomValues(customValues);
     });
 
-    $('#userWebsite').parent().parent()
-    .hover(function () {
-      $(this).find('.ts-icon-edit').show();
+
+    $('#userWebsite').parent().parent().hover(function (e) {
+        $('#editWebsite').show();
     }, function () {
-      $(this).find('.ts-icon-edit').hide();
+        $('#editWebsite').hide();
     });
+
+
 
     if (user.MenuItems == null) {
       $('#divMenuItems input').each(function () {
@@ -433,7 +434,7 @@ UserPage = function () {
         .focus();
 
       $('<span>')
-        .addClass('ts-icon ts-icon-save')
+        .addClass('fa fa-check-square')
         .click(function (e) {
           $(this).closest('div').remove();
           header.show().find('img').show();
@@ -463,7 +464,7 @@ UserPage = function () {
         .appendTo(container)
 
       $('<span>')
-        .addClass('ts-icon ts-icon-cancel')
+        .addClass('fa fa-window-close')
         .click(function (e) {
           $(this).closest('div').remove();
           header.show();
@@ -488,7 +489,7 @@ UserPage = function () {
         .focus();
 
       $('<span>')
-        .addClass('ts-icon ts-icon-save')
+        .addClass('fa fa-check-square')
         .click(function (e) {
           $(this).closest('div').remove();
           header.show().find('img').show();
@@ -509,7 +510,7 @@ UserPage = function () {
         .appendTo(container)
 
       $('<span>')
-        .addClass('ts-icon ts-icon-cancel')
+        .addClass('fa fa-window-close')
         .click(function (e) {
           $(this).closest('div').remove();
           header.show();
@@ -533,7 +534,7 @@ UserPage = function () {
         .focus();
 
       $('<span>')
-        .addClass('ts-icon ts-icon-save')
+        .addClass('fa fa-check-square')
         .click(function (e) {
           $(this).closest('div').remove();
           header.show().find('img').show();
@@ -550,7 +551,7 @@ UserPage = function () {
         .appendTo(container)
 
       $('<span>')
-        .addClass('ts-icon ts-icon-cancel')
+        .addClass('fa fa-window-close')
         .click(function (e) {
           $(this).closest('div').remove();
           header.show();
@@ -575,7 +576,7 @@ UserPage = function () {
         .focus();
 
       $('<span>')
-        .addClass('ts-icon ts-icon-save')
+        .addClass('fa fa-check-square')
         .click(function (e) {
           $(this).closest('div').remove();
           header.show().find('img').show();
@@ -597,7 +598,7 @@ UserPage = function () {
         .appendTo(container)
 
       $('<span>')
-        .addClass('ts-icon ts-icon-cancel')
+        .addClass('fa fa-window-close')
         .click(function (e) {
           $(this).closest('div').remove();
           header.show();
@@ -622,7 +623,7 @@ UserPage = function () {
           .focus();
 
       $('<span>')
-          .addClass('ts-icon ts-icon-save')
+          .addClass('fa fa-check-square')
           .click(function (e) {
             $(this).closest('div').remove();
             header.show().find('img').show();
@@ -652,7 +653,7 @@ UserPage = function () {
           .appendTo(container)
 
       $('<span>')
-          .addClass('ts-icon ts-icon-cancel')
+          .addClass('fa fa-window-close')
           .click(function (e) {
             $(this).closest('div').remove();
             header.show();
@@ -1562,7 +1563,7 @@ UserPage = function () {
     			$('#userSignature').empty();
     		});
     	}
-    	
+
 
     });
 
@@ -1663,7 +1664,7 @@ UserPage = function () {
 
 
           $('<span>')
-                .addClass('fleft ts-icon ts-icon-delete')
+                .addClass('fleft ts-icon ts-icon-delete fa fa-trash')
                 .click(function (e) {
                   if (confirm('Are you sure you would like to remove this address?')) {
                     var item = $(this).parent();
@@ -1734,7 +1735,7 @@ UserPage = function () {
                 .appendTo(header);
 
           $('<span>')
-                .addClass('fleft ts-icon ts-icon-delete')
+                .addClass('fleft ts-icon ts-icon-delete fa fa-trash')
                 .click(function (e) {
                   if (confirm('Are you sure you would like to remove this phone number?')) {
                     var item = $(this).parent();
@@ -1776,7 +1777,7 @@ UserPage = function () {
                                 .appendTo(header);
         if (isSysAdmin) {
           $('<span>')
-                .addClass('fleft ts-icon ts-icon-delete')
+                .addClass('fleft ts-icon ts-icon-delete fa fa-trash')
                 .click(function (e) {
                   if (confirm('Are you sure you would like to remove this group?')) {
                     var item = $(this).parent();
@@ -2036,7 +2037,7 @@ UserPage = function () {
 
       var field = fields[i];
 
-      var div = $('<div>').addClass('user-name-value').data('field', field);
+      var div = $('<div>').addClass('user-name-value').css('height','20px').data('field', field);
       $('<span>')
             .addClass('property')
             .text(field.Name + ': ')
@@ -2146,7 +2147,7 @@ UserPage = function () {
                   .focus();
 
             $('<span>')
-                .addClass('ts-icon ts-icon-save')
+                .addClass('fa fa-check-square')
                 .click(function (e) {
                   parent.show().find('img').show();
                   var value = input.val();
@@ -2169,7 +2170,7 @@ UserPage = function () {
                 .appendTo(container);
 
             $('<span>')
-                .addClass('ts-icon ts-icon-cancel')
+                .addClass('fa fa-window-close')
                 .click(function (e) {
                   parent.show();
                   parent.find('a').show();
@@ -2242,7 +2243,7 @@ UserPage = function () {
             }
 
             $('<span>')
-                .addClass('ts-icon ts-icon-save')
+                .addClass('fa fa-check-square')
                 .click(function (e) {
                   parent.show().find('img').show();
                   var value = input.val();
@@ -2264,7 +2265,7 @@ UserPage = function () {
                 .appendTo(container);
 
             $('<span>')
-                .addClass('ts-icon ts-icon-cancel')
+                .addClass('fa fa-window-close')
                 .click(function (e) {
                   parent.show();
                   parent.find('a').show();
@@ -2308,7 +2309,7 @@ UserPage = function () {
                   .focus();
 
             $('<span>')
-                .addClass('ts-icon ts-icon-save')
+                .addClass('fa fa-check-square')
                 .click(function (e) {
                   parent.show().find('img').show();
                   var value = window.parent.parent.Ts.Utils.getMsDate(input.datepicker('getDate'));
@@ -2332,7 +2333,7 @@ UserPage = function () {
                 .appendTo(container);
 
             $('<span>')
-                .addClass('ts-icon ts-icon-cancel')
+                .addClass('fa fa-window-close')
                 .click(function (e) {
                   parent.show();
                   parent.find('a').show();
@@ -2376,7 +2377,7 @@ UserPage = function () {
                   .focus();
 
             $('<span>')
-                .addClass('ts-icon ts-icon-save')
+                .addClass('fa fa-check-square')
                 .click(function (e) {
                   parent.show().find('img').show();
                   var time = new Date("January 1, 1970 00:00:00");
@@ -2403,7 +2404,7 @@ UserPage = function () {
                 .appendTo(container);
 
             $('<span>')
-                .addClass('ts-icon ts-icon-cancel')
+                .addClass('fa fa-window-close')
                 .click(function (e) {
                   parent.show();
                   parent.find('a').show();
@@ -2447,7 +2448,7 @@ UserPage = function () {
                   .focus();
 
             $('<span>')
-                .addClass('ts-icon ts-icon-save')
+                .addClass('fa fa-check-square')
                 .click(function (e) {
                   parent.show().find('img').show();
                   var value = window.parent.parent.Ts.Utils.getMsDate(input.datetimepicker('getDate'));
@@ -2471,7 +2472,7 @@ UserPage = function () {
                 .appendTo(container);
 
             $('<span>')
-                .addClass('ts-icon ts-icon-cancel')
+                .addClass('fa fa-window-close')
                 .click(function (e) {
                   parent.show();
                   parent.find('a').show();

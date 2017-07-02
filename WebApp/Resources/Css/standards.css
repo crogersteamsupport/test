@@ -415,3 +415,39 @@ div.main-footer {
     font-size: 12px;
     background-color: #445c75 !important;
 }
+
+/*Icons*/
+.associations > i {
+    color:#2A3F54;
+    margin:0px 8px 0px 0px;
+    font-size:1.3em;
+}
+
+.associations > i:hover {
+    cursor: pointer;
+}
+
+.add-associations > i {
+    color:#95A0AB;
+    margin:0px 12px 0px 0px;
+    font-size:1.5em !important;
+}
+
+.add-associations > i:hover {
+    color:#2A3F54;
+    cursor: pointer;
+}
+
+
+
+
+
+
+
+
+.fa-check-square, .fa-window-close {
+    margin:0px 0px 0px 5px;
+    padding:0px;
+    font-size: 20px !important;
+    color:black;
+}

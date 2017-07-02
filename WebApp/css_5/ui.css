@@ -1,6 +1,6 @@
 ﻿@import url('https://fonts.googleapis.com/css?family=Roboto');
 
-body { font-family: 'Roboto'; font-size: 12px; color: #15428B; background-color: #DBE6F4; }
+body { font-family: 'Roboto'; font-size: 12px; color: #15428B; background-color: #EEEEEE; }
 a:focus { outline: 0; }
 :focus { -moz-outline-style: none; }
 
@@ -169,3 +169,7 @@ a.buttonLink span.buttonSpan { background: none; display: block; height: 27px; l
 .chat-message-user .chat-name { color:#329938;}
 .chat-message-client .chat-name  { color:#333399; }
 .chat-message-self .chat-name { color:#696969;}
+
+.rtsUL {
+    min-width:1200px !important;
+}

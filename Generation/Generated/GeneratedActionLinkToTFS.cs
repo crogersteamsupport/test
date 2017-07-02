@@ -34,12 +34,6 @@ namespace TeamSupport.Data
     
 
     
-    public int? ActionID
-    {
-      get { return Row["ActionID"] != DBNull.Value ? (int?)Row["ActionID"] : null; }
-      set { Row["ActionID"] = CheckValue("ActionID", value); }
-    }
-    
     public int? TFSID
     {
       get { return Row["TFSID"] != DBNull.Value ? (int?)Row["TFSID"] : null; }
@@ -47,6 +41,12 @@ namespace TeamSupport.Data
     }
     
 
+    
+    public int ActionID
+    {
+      get { return (int)Row["ActionID"]; }
+      set { Row["ActionID"] = CheckValue("ActionID", value); }
+    }
     
 
     /* DateTime */

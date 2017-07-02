@@ -1,850 +1,1215 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 
 (
-  @ProductVersionID int
+  @CRMLinkID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ProductVersionID],
-    [ProductID],
-    [ProductVersionStatusID],
-    [VersionNumber],
-    [ReleaseDate],
-    [IsReleased],
-    [Description],
-    [ImportID],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [NeedsIndexing],
-    [VersionStatus],
-    [ProductName],
+    [CRMLinkID],
     [OrganizationID],
-    [ProductFamilyID],
-    [JiraProjectKey],
-    [TFSProjectName]
-  FROM [dbo].[ProductVersionsView]
-  WHERE ([ProductVersionID] = @ProductVersionID)
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID],
+    [PullCasesAsTickets],
+    [PushTicketsAsCases],
+    [PullCustomerProducts],
+    [UpdateStatus],
+    [ActionTypeIDToPush],
+    [HostName],
+    [DefaultProject],
+    [MatchAccountsByName],
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey],
+    [RestrictedToTicketTypes],
+    [UpdateTicketType],
+    [InstanceName],
+    [ExcludedTicketStatusUpdate],
+    [IncludeIssueNonRequired],
+    [UseNetworkCredentials]
+  FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
 
 (
-  @ProductVersionID int,
-  @ProductID int,
-  @ProductVersionStatusID int,
-  @VersionNumber varchar(50),
-  @ReleaseDate datetime,
-  @IsReleased bit,
-  @Description varchar(MAX),
-  @ImportID varchar(50),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @NeedsIndexing bit,
-  @VersionStatus varchar(255),
-  @ProductName varchar(255),
   @OrganizationID int,
-  @ProductFamilyID int,
-  @JiraProjectKey varchar(250),
-  @TFSProjectName nvarchar(MAX),
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @PullCasesAsTickets bit,
+  @PushTicketsAsCases bit,
+  @PullCustomerProducts bit,
+  @UpdateStatus bit,
+  @ActionTypeIDToPush int,
+  @HostName varchar(8000),
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
+  @RestrictedToTicketTypes varchar(500),
+  @UpdateTicketType bit,
+  @InstanceName varchar(255),
+  @ExcludedTicketStatusUpdate varchar(500),
+  @IncludeIssueNonRequired bit,
+  @UseNetworkCredentials bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ProductVersionsView]
+  INSERT INTO [dbo].[CRMLinkTable]
   (
-    [ProductVersionID],
-    [ProductID],
-    [ProductVersionStatusID],
-    [VersionNumber],
-    [ReleaseDate],
-    [IsReleased],
-    [Description],
-    [ImportID],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [NeedsIndexing],
-    [VersionStatus],
-    [ProductName],
     [OrganizationID],
-    [ProductFamilyID],
-    [JiraProjectKey],
-    [TFSProjectName])
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID],
+    [PullCasesAsTickets],
+    [PushTicketsAsCases],
+    [PullCustomerProducts],
+    [UpdateStatus],
+    [ActionTypeIDToPush],
+    [HostName],
+    [DefaultProject],
+    [MatchAccountsByName],
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey],
+    [RestrictedToTicketTypes],
+    [UpdateTicketType],
+    [InstanceName],
+    [ExcludedTicketStatusUpdate],
+    [IncludeIssueNonRequired],
+    [UseNetworkCredentials])
   VALUES (
-    @ProductVersionID,
-    @ProductID,
-    @ProductVersionStatusID,
-    @VersionNumber,
-    @ReleaseDate,
-    @IsReleased,
-    @Description,
-    @ImportID,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @NeedsIndexing,
-    @VersionStatus,
-    @ProductName,
     @OrganizationID,
-    @ProductFamilyID,
-    @JiraProjectKey,
-    @TFSProjectName)
+    @Active,
+    @CRMType,
+    @Username,
+    @Password,
+    @SecurityToken,
+    @TypeFieldMatch,
+    @LastLink,
+    @SendBackTicketData,
+    @LastProcessed,
+    @LastTicketID,
+    @AllowPortalAccess,
+    @SendWelcomeEmail,
+    @DefaultSlaLevelID,
+    @PullCasesAsTickets,
+    @PushTicketsAsCases,
+    @PullCustomerProducts,
+    @UpdateStatus,
+    @ActionTypeIDToPush,
+    @HostName,
+    @DefaultProject,
+    @MatchAccountsByName,
+    @UseSandBoxServer,
+    @AlwaysUseDefaultProjectKey,
+    @RestrictedToTicketTypes,
+    @UpdateTicketType,
+    @InstanceName,
+    @ExcludedTicketStatusUpdate,
+    @IncludeIssueNonRequired,
+    @UseNetworkCredentials)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
 
 (
-  @ProductVersionID int,
-  @ProductID int,
-  @ProductVersionStatusID int,
-  @VersionNumber varchar(50),
-  @ReleaseDate datetime,
-  @IsReleased bit,
-  @Description varchar(MAX),
-  @ImportID varchar(50),
-  @DateModified datetime,
-  @ModifierID int,
-  @NeedsIndexing bit,
-  @VersionStatus varchar(255),
-  @ProductName varchar(255),
+  @CRMLinkID int,
   @OrganizationID int,
-  @ProductFamilyID int,
-  @JiraProjectKey varchar(250),
-  @TFSProjectName nvarchar(MAX)
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @PullCasesAsTickets bit,
+  @PushTicketsAsCases bit,
+  @PullCustomerProducts bit,
+  @UpdateStatus bit,
+  @ActionTypeIDToPush int,
+  @HostName varchar(8000),
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
+  @RestrictedToTicketTypes varchar(500),
+  @UpdateTicketType bit,
+  @InstanceName varchar(255),
+  @ExcludedTicketStatusUpdate varchar(500),
+  @IncludeIssueNonRequired bit,
+  @UseNetworkCredentials bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[ProductVersionsView]
+  UPDATE [dbo].[CRMLinkTable]
   SET
-    [ProductID] = @ProductID,
-    [ProductVersionStatusID] = @ProductVersionStatusID,
-    [VersionNumber] = @VersionNumber,
-    [ReleaseDate] = @ReleaseDate,
-    [IsReleased] = @IsReleased,
-    [Description] = @Description,
-    [ImportID] = @ImportID,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [VersionStatus] = @VersionStatus,
-    [ProductName] = @ProductName,
     [OrganizationID] = @OrganizationID,
-    [ProductFamilyID] = @ProductFamilyID,
-    [JiraProjectKey] = @JiraProjectKey,
-    [TFSProjectName] = @TFSProjectName
-  WHERE ([ProductVersionID] = @ProductVersionID)
+    [Active] = @Active,
+    [CRMType] = @CRMType,
+    [Username] = @Username,
+    [Password] = @Password,
+    [SecurityToken] = @SecurityToken,
+    [TypeFieldMatch] = @TypeFieldMatch,
+    [LastLink] = @LastLink,
+    [SendBackTicketData] = @SendBackTicketData,
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID,
+    [AllowPortalAccess] = @AllowPortalAccess,
+    [SendWelcomeEmail] = @SendWelcomeEmail,
+    [DefaultSlaLevelID] = @DefaultSlaLevelID,
+    [PullCasesAsTickets] = @PullCasesAsTickets,
+    [PushTicketsAsCases] = @PushTicketsAsCases,
+    [PullCustomerProducts] = @PullCustomerProducts,
+    [UpdateStatus] = @UpdateStatus,
+    [ActionTypeIDToPush] = @ActionTypeIDToPush,
+    [HostName] = @HostName,
+    [DefaultProject] = @DefaultProject,
+    [MatchAccountsByName] = @MatchAccountsByName,
+    [UseSandBoxServer] = @UseSandBoxServer,
+    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,
+    [RestrictedToTicketTypes] = @RestrictedToTicketTypes,
+    [UpdateTicketType] = @UpdateTicketType,
+    [InstanceName] = @InstanceName,
+    [ExcludedTicketStatusUpdate] = @ExcludedTicketStatusUpdate,
+    [IncludeIssueNonRequired] = @IncludeIssueNonRequired,
+    [UseNetworkCredentials] = @UseNetworkCredentials
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
 
 (
-  @ProductVersionID int
+  @CRMLinkID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ProductVersionsView]
-  WHERE ([ProductVersionID] = @ProductVersionID)
+  DELETE FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 
 (
-  @ProductVersionID int
+  @CRMLinkID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ProductVersionID],
-    [ProductID],
-    [ProductVersionStatusID],
-    [VersionNumber],
-    [ReleaseDate],
-    [IsReleased],
-    [Description],
-    [ImportID],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [NeedsIndexing],
-    [VersionStatus],
-    [ProductName],
+    [CRMLinkID],
     [OrganizationID],
-    [ProductFamilyID],
-    [JiraProjectKey],
-    [TFSProjectName]
-  FROM [dbo].[ProductVersionsView]
-  WHERE ([ProductVersionID] = @ProductVersionID)
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID],
+    [PullCasesAsTickets],
+    [PushTicketsAsCases],
+    [PullCustomerProducts],
+    [UpdateStatus],
+    [ActionTypeIDToPush],
+    [HostName],
+    [DefaultProject],
+    [MatchAccountsByName],
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey],
+    [RestrictedToTicketTypes],
+    [UpdateTicketType],
+    [InstanceName],
+    [ExcludedTicketStatusUpdate],
+    [IncludeIssueNonRequired],
+    [UseNetworkCredentials]
+  FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
 
 (
-  @ProductVersionID int,
-  @ProductID int,
-  @ProductVersionStatusID int,
-  @VersionNumber varchar(50),
-  @ReleaseDate datetime,
-  @IsReleased bit,
-  @Description varchar(MAX),
-  @ImportID varchar(50),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @NeedsIndexing bit,
-  @VersionStatus varchar(255),
-  @ProductName varchar(255),
   @OrganizationID int,
-  @ProductFamilyID int,
-  @JiraProjectKey varchar(250),
-  @TFSProjectName nvarchar(MAX),
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @PullCasesAsTickets bit,
+  @PushTicketsAsCases bit,
+  @PullCustomerProducts bit,
+  @UpdateStatus bit,
+  @ActionTypeIDToPush int,
+  @HostName varchar(8000),
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
+  @RestrictedToTicketTypes varchar(500),
+  @UpdateTicketType bit,
+  @InstanceName varchar(255),
+  @ExcludedTicketStatusUpdate varchar(500),
+  @IncludeIssueNonRequired bit,
+  @UseNetworkCredentials bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ProductVersionsView]
+  INSERT INTO [dbo].[CRMLinkTable]
   (
-    [ProductVersionID],
-    [ProductID],
-    [ProductVersionStatusID],
-    [VersionNumber],
-    [ReleaseDate],
-    [IsReleased],
-    [Description],
-    [ImportID],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [NeedsIndexing],
-    [VersionStatus],
-    [ProductName],
     [OrganizationID],
-    [ProductFamilyID],
-    [JiraProjectKey],
-    [TFSProjectName])
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID],
+    [PullCasesAsTickets],
+    [PushTicketsAsCases],
+    [PullCustomerProducts],
+    [UpdateStatus],
+    [ActionTypeIDToPush],
+    [HostName],
+    [DefaultProject],
+    [MatchAccountsByName],
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey],
+    [RestrictedToTicketTypes],
+    [UpdateTicketType],
+    [InstanceName],
+    [ExcludedTicketStatusUpdate],
+    [IncludeIssueNonRequired],
+    [UseNetworkCredentials])
   VALUES (
-    @ProductVersionID,
-    @ProductID,
-    @ProductVersionStatusID,
-    @VersionNumber,
-    @ReleaseDate,
-    @IsReleased,
-    @Description,
-    @ImportID,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @NeedsIndexing,
-    @VersionStatus,
-    @ProductName,
     @OrganizationID,
-    @ProductFamilyID,
-    @JiraProjectKey,
-    @TFSProjectName)
+    @Active,
+    @CRMType,
+    @Username,
+    @Password,
+    @SecurityToken,
+    @TypeFieldMatch,
+    @LastLink,
+    @SendBackTicketData,
+    @LastProcessed,
+    @LastTicketID,
+    @AllowPortalAccess,
+    @SendWelcomeEmail,
+    @DefaultSlaLevelID,
+    @PullCasesAsTickets,
+    @PushTicketsAsCases,
+    @PullCustomerProducts,
+    @UpdateStatus,
+    @ActionTypeIDToPush,
+    @HostName,
+    @DefaultProject,
+    @MatchAccountsByName,
+    @UseSandBoxServer,
+    @AlwaysUseDefaultProjectKey,
+    @RestrictedToTicketTypes,
+    @UpdateTicketType,
+    @InstanceName,
+    @ExcludedTicketStatusUpdate,
+    @IncludeIssueNonRequired,
+    @UseNetworkCredentials)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
 
 (
-  @ProductVersionID int,
-  @ProductID int,
-  @ProductVersionStatusID int,
-  @VersionNumber varchar(50),
-  @ReleaseDate datetime,
-  @IsReleased bit,
-  @Description varchar(MAX),
-  @ImportID varchar(50),
-  @DateModified datetime,
-  @ModifierID int,
-  @NeedsIndexing bit,
-  @VersionStatus varchar(255),
-  @ProductName varchar(255),
+  @CRMLinkID int,
   @OrganizationID int,
-  @ProductFamilyID int,
-  @JiraProjectKey varchar(250),
-  @TFSProjectName nvarchar(MAX)
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @PullCasesAsTickets bit,
+  @PushTicketsAsCases bit,
+  @PullCustomerProducts bit,
+  @UpdateStatus bit,
+  @ActionTypeIDToPush int,
+  @HostName varchar(8000),
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
+  @RestrictedToTicketTypes varchar(500),
+  @UpdateTicketType bit,
+  @InstanceName varchar(255),
+  @ExcludedTicketStatusUpdate varchar(500),
+  @IncludeIssueNonRequired bit,
+  @UseNetworkCredentials bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[ProductVersionsView]
+  UPDATE [dbo].[CRMLinkTable]
   SET
-    [ProductID] = @ProductID,
-    [ProductVersionStatusID] = @ProductVersionStatusID,
-    [VersionNumber] = @VersionNumber,
-    [ReleaseDate] = @ReleaseDate,
-    [IsReleased] = @IsReleased,
-    [Description] = @Description,
-    [ImportID] = @ImportID,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [VersionStatus] = @VersionStatus,
-    [ProductName] = @ProductName,
     [OrganizationID] = @OrganizationID,
-    [ProductFamilyID] = @ProductFamilyID,
-    [JiraProjectKey] = @JiraProjectKey,
-    [TFSProjectName] = @TFSProjectName
-  WHERE ([ProductVersionID] = @ProductVersionID)
+    [Active] = @Active,
+    [CRMType] = @CRMType,
+    [Username] = @Username,
+    [Password] = @Password,
+    [SecurityToken] = @SecurityToken,
+    [TypeFieldMatch] = @TypeFieldMatch,
+    [LastLink] = @LastLink,
+    [SendBackTicketData] = @SendBackTicketData,
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID,
+    [AllowPortalAccess] = @AllowPortalAccess,
+    [SendWelcomeEmail] = @SendWelcomeEmail,
+    [DefaultSlaLevelID] = @DefaultSlaLevelID,
+    [PullCasesAsTickets] = @PullCasesAsTickets,
+    [PushTicketsAsCases] = @PushTicketsAsCases,
+    [PullCustomerProducts] = @PullCustomerProducts,
+    [UpdateStatus] = @UpdateStatus,
+    [ActionTypeIDToPush] = @ActionTypeIDToPush,
+    [HostName] = @HostName,
+    [DefaultProject] = @DefaultProject,
+    [MatchAccountsByName] = @MatchAccountsByName,
+    [UseSandBoxServer] = @UseSandBoxServer,
+    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,
+    [RestrictedToTicketTypes] = @RestrictedToTicketTypes,
+    [UpdateTicketType] = @UpdateTicketType,
+    [InstanceName] = @InstanceName,
+    [ExcludedTicketStatusUpdate] = @ExcludedTicketStatusUpdate,
+    [IncludeIssueNonRequired] = @IncludeIssueNonRequired,
+    [UseNetworkCredentials] = @UseNetworkCredentials
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
 
 (
-  @ProductVersionID int
+  @CRMLinkID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ProductVersionsView]
-  WHERE ([ProductVersionID] = @ProductVersionID)
+  DELETE FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 
 (
-  @ProductVersionID int
+  @CRMLinkID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ProductVersionID],
-    [ProductID],
-    [ProductVersionStatusID],
-    [VersionNumber],
-    [ReleaseDate],
-    [IsReleased],
-    [Description],
-    [ImportID],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [NeedsIndexing],
-    [VersionStatus],
-    [ProductName],
+    [CRMLinkID],
     [OrganizationID],
-    [ProductFamilyID],
-    [JiraProjectKey],
-    [TFSProjectName]
-  FROM [dbo].[ProductVersionsView]
-  WHERE ([ProductVersionID] = @ProductVersionID)
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID],
+    [PullCasesAsTickets],
+    [PushTicketsAsCases],
+    [PullCustomerProducts],
+    [UpdateStatus],
+    [ActionTypeIDToPush],
+    [HostName],
+    [DefaultProject],
+    [MatchAccountsByName],
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey],
+    [RestrictedToTicketTypes],
+    [UpdateTicketType],
+    [InstanceName],
+    [ExcludedTicketStatusUpdate],
+    [IncludeIssueNonRequired],
+    [UseNetworkCredentials]
+  FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
 
 (
-  @ProductVersionID int,
-  @ProductID int,
-  @ProductVersionStatusID int,
-  @VersionNumber varchar(50),
-  @ReleaseDate datetime,
-  @IsReleased bit,
-  @Description varchar(MAX),
-  @ImportID varchar(50),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @NeedsIndexing bit,
-  @VersionStatus varchar(255),
-  @ProductName varchar(255),
   @OrganizationID int,
-  @ProductFamilyID int,
-  @JiraProjectKey varchar(250),
-  @TFSProjectName nvarchar(MAX),
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @PullCasesAsTickets bit,
+  @PushTicketsAsCases bit,
+  @PullCustomerProducts bit,
+  @UpdateStatus bit,
+  @ActionTypeIDToPush int,
+  @HostName varchar(8000),
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
+  @RestrictedToTicketTypes varchar(500),
+  @UpdateTicketType bit,
+  @InstanceName varchar(255),
+  @ExcludedTicketStatusUpdate varchar(500),
+  @IncludeIssueNonRequired bit,
+  @UseNetworkCredentials bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ProductVersionsView]
+  INSERT INTO [dbo].[CRMLinkTable]
   (
-    [ProductVersionID],
-    [ProductID],
-    [ProductVersionStatusID],
-    [VersionNumber],
-    [ReleaseDate],
-    [IsReleased],
-    [Description],
-    [ImportID],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [NeedsIndexing],
-    [VersionStatus],
-    [ProductName],
     [OrganizationID],
-    [ProductFamilyID],
-    [JiraProjectKey],
-    [TFSProjectName])
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID],
+    [PullCasesAsTickets],
+    [PushTicketsAsCases],
+    [PullCustomerProducts],
+    [UpdateStatus],
+    [ActionTypeIDToPush],
+    [HostName],
+    [DefaultProject],
+    [MatchAccountsByName],
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey],
+    [RestrictedToTicketTypes],
+    [UpdateTicketType],
+    [InstanceName],
+    [ExcludedTicketStatusUpdate],
+    [IncludeIssueNonRequired],
+    [UseNetworkCredentials])
   VALUES (
-    @ProductVersionID,
-    @ProductID,
-    @ProductVersionStatusID,
-    @VersionNumber,
-    @ReleaseDate,
-    @IsReleased,
-    @Description,
-    @ImportID,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @NeedsIndexing,
-    @VersionStatus,
-    @ProductName,
     @OrganizationID,
-    @ProductFamilyID,
-    @JiraProjectKey,
-    @TFSProjectName)
+    @Active,
+    @CRMType,
+    @Username,
+    @Password,
+    @SecurityToken,
+    @TypeFieldMatch,
+    @LastLink,
+    @SendBackTicketData,
+    @LastProcessed,
+    @LastTicketID,
+    @AllowPortalAccess,
+    @SendWelcomeEmail,
+    @DefaultSlaLevelID,
+    @PullCasesAsTickets,
+    @PushTicketsAsCases,
+    @PullCustomerProducts,
+    @UpdateStatus,
+    @ActionTypeIDToPush,
+    @HostName,
+    @DefaultProject,
+    @MatchAccountsByName,
+    @UseSandBoxServer,
+    @AlwaysUseDefaultProjectKey,
+    @RestrictedToTicketTypes,
+    @UpdateTicketType,
+    @InstanceName,
+    @ExcludedTicketStatusUpdate,
+    @IncludeIssueNonRequired,
+    @UseNetworkCredentials)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
 
 (
-  @ProductVersionID int,
-  @ProductID int,
-  @ProductVersionStatusID int,
-  @VersionNumber varchar(50),
-  @ReleaseDate datetime,
-  @IsReleased bit,
-  @Description varchar(MAX),
-  @ImportID varchar(50),
-  @DateModified datetime,
-  @ModifierID int,
-  @NeedsIndexing bit,
-  @VersionStatus varchar(255),
-  @ProductName varchar(255),
+  @CRMLinkID int,
   @OrganizationID int,
-  @ProductFamilyID int,
-  @JiraProjectKey varchar(250),
-  @TFSProjectName nvarchar(MAX)
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @PullCasesAsTickets bit,
+  @PushTicketsAsCases bit,
+  @PullCustomerProducts bit,
+  @UpdateStatus bit,
+  @ActionTypeIDToPush int,
+  @HostName varchar(8000),
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
+  @RestrictedToTicketTypes varchar(500),
+  @UpdateTicketType bit,
+  @InstanceName varchar(255),
+  @ExcludedTicketStatusUpdate varchar(500),
+  @IncludeIssueNonRequired bit,
+  @UseNetworkCredentials bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[ProductVersionsView]
+  UPDATE [dbo].[CRMLinkTable]
   SET
-    [ProductID] = @ProductID,
-    [ProductVersionStatusID] = @ProductVersionStatusID,
-    [VersionNumber] = @VersionNumber,
-    [ReleaseDate] = @ReleaseDate,
-    [IsReleased] = @IsReleased,
-    [Description] = @Description,
-    [ImportID] = @ImportID,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [VersionStatus] = @VersionStatus,
-    [ProductName] = @ProductName,
     [OrganizationID] = @OrganizationID,
-    [ProductFamilyID] = @ProductFamilyID,
-    [JiraProjectKey] = @JiraProjectKey,
-    [TFSProjectName] = @TFSProjectName
-  WHERE ([ProductVersionID] = @ProductVersionID)
+    [Active] = @Active,
+    [CRMType] = @CRMType,
+    [Username] = @Username,
+    [Password] = @Password,
+    [SecurityToken] = @SecurityToken,
+    [TypeFieldMatch] = @TypeFieldMatch,
+    [LastLink] = @LastLink,
+    [SendBackTicketData] = @SendBackTicketData,
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID,
+    [AllowPortalAccess] = @AllowPortalAccess,
+    [SendWelcomeEmail] = @SendWelcomeEmail,
+    [DefaultSlaLevelID] = @DefaultSlaLevelID,
+    [PullCasesAsTickets] = @PullCasesAsTickets,
+    [PushTicketsAsCases] = @PushTicketsAsCases,
+    [PullCustomerProducts] = @PullCustomerProducts,
+    [UpdateStatus] = @UpdateStatus,
+    [ActionTypeIDToPush] = @ActionTypeIDToPush,
+    [HostName] = @HostName,
+    [DefaultProject] = @DefaultProject,
+    [MatchAccountsByName] = @MatchAccountsByName,
+    [UseSandBoxServer] = @UseSandBoxServer,
+    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,
+    [RestrictedToTicketTypes] = @RestrictedToTicketTypes,
+    [UpdateTicketType] = @UpdateTicketType,
+    [InstanceName] = @InstanceName,
+    [ExcludedTicketStatusUpdate] = @ExcludedTicketStatusUpdate,
+    [IncludeIssueNonRequired] = @IncludeIssueNonRequired,
+    [UseNetworkCredentials] = @UseNetworkCredentials
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
 
 (
-  @ProductVersionID int
+  @CRMLinkID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ProductVersionsView]
-  WHERE ([ProductVersionID] = @ProductVersionID)
+  DELETE FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 
 (
-  @ProductVersionID int
+  @CRMLinkID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ProductVersionID],
-    [ProductID],
-    [ProductVersionStatusID],
-    [VersionNumber],
-    [ReleaseDate],
-    [IsReleased],
-    [Description],
-    [ImportID],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [NeedsIndexing],
-    [VersionStatus],
-    [ProductName],
+    [CRMLinkID],
     [OrganizationID],
-    [ProductFamilyID],
-    [JiraProjectKey],
-    [TFSProjectName]
-  FROM [dbo].[ProductVersionsView]
-  WHERE ([ProductVersionID] = @ProductVersionID)
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID],
+    [PullCasesAsTickets],
+    [PushTicketsAsCases],
+    [PullCustomerProducts],
+    [UpdateStatus],
+    [ActionTypeIDToPush],
+    [HostName],
+    [DefaultProject],
+    [MatchAccountsByName],
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey],
+    [RestrictedToTicketTypes],
+    [UpdateTicketType],
+    [InstanceName],
+    [ExcludedTicketStatusUpdate],
+    [IncludeIssueNonRequired],
+    [UseNetworkCredentials]
+  FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
 
 (
-  @ProductVersionID int,
-  @ProductID int,
-  @ProductVersionStatusID int,
-  @VersionNumber varchar(50),
-  @ReleaseDate datetime,
-  @IsReleased bit,
-  @Description varchar(MAX),
-  @ImportID varchar(50),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @NeedsIndexing bit,
-  @VersionStatus varchar(255),
-  @ProductName varchar(255),
   @OrganizationID int,
-  @ProductFamilyID int,
-  @JiraProjectKey varchar(250),
-  @TFSProjectName nvarchar(MAX),
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @PullCasesAsTickets bit,
+  @PushTicketsAsCases bit,
+  @PullCustomerProducts bit,
+  @UpdateStatus bit,
+  @ActionTypeIDToPush int,
+  @HostName varchar(8000),
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
+  @RestrictedToTicketTypes varchar(500),
+  @UpdateTicketType bit,
+  @InstanceName varchar(255),
+  @ExcludedTicketStatusUpdate varchar(500),
+  @IncludeIssueNonRequired bit,
+  @UseNetworkCredentials bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ProductVersionsView]
+  INSERT INTO [dbo].[CRMLinkTable]
   (
-    [ProductVersionID],
-    [ProductID],
-    [ProductVersionStatusID],
-    [VersionNumber],
-    [ReleaseDate],
-    [IsReleased],
-    [Description],
-    [ImportID],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [NeedsIndexing],
-    [VersionStatus],
-    [ProductName],
     [OrganizationID],
-    [ProductFamilyID],
-    [JiraProjectKey],
-    [TFSProjectName])
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID],
+    [PullCasesAsTickets],
+    [PushTicketsAsCases],
+    [PullCustomerProducts],
+    [UpdateStatus],
+    [ActionTypeIDToPush],
+    [HostName],
+    [DefaultProject],
+    [MatchAccountsByName],
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey],
+    [RestrictedToTicketTypes],
+    [UpdateTicketType],
+    [InstanceName],
+    [ExcludedTicketStatusUpdate],
+    [IncludeIssueNonRequired],
+    [UseNetworkCredentials])
   VALUES (
-    @ProductVersionID,
-    @ProductID,
-    @ProductVersionStatusID,
-    @VersionNumber,
-    @ReleaseDate,
-    @IsReleased,
-    @Description,
-    @ImportID,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @NeedsIndexing,
-    @VersionStatus,
-    @ProductName,
     @OrganizationID,
-    @ProductFamilyID,
-    @JiraProjectKey,
-    @TFSProjectName)
+    @Active,
+    @CRMType,
+    @Username,
+    @Password,
+    @SecurityToken,
+    @TypeFieldMatch,
+    @LastLink,
+    @SendBackTicketData,
+    @LastProcessed,
+    @LastTicketID,
+    @AllowPortalAccess,
+    @SendWelcomeEmail,
+    @DefaultSlaLevelID,
+    @PullCasesAsTickets,
+    @PushTicketsAsCases,
+    @PullCustomerProducts,
+    @UpdateStatus,
+    @ActionTypeIDToPush,
+    @HostName,
+    @DefaultProject,
+    @MatchAccountsByName,
+    @UseSandBoxServer,
+    @AlwaysUseDefaultProjectKey,
+    @RestrictedToTicketTypes,
+    @UpdateTicketType,
+    @InstanceName,
+    @ExcludedTicketStatusUpdate,
+    @IncludeIssueNonRequired,
+    @UseNetworkCredentials)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
 
 (
-  @ProductVersionID int,
-  @ProductID int,
-  @ProductVersionStatusID int,
-  @VersionNumber varchar(50),
-  @ReleaseDate datetime,
-  @IsReleased bit,
-  @Description varchar(MAX),
-  @ImportID varchar(50),
-  @DateModified datetime,
-  @ModifierID int,
-  @NeedsIndexing bit,
-  @VersionStatus varchar(255),
-  @ProductName varchar(255),
+  @CRMLinkID int,
   @OrganizationID int,
-  @ProductFamilyID int,
-  @JiraProjectKey varchar(250),
-  @TFSProjectName nvarchar(MAX)
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @PullCasesAsTickets bit,
+  @PushTicketsAsCases bit,
+  @PullCustomerProducts bit,
+  @UpdateStatus bit,
+  @ActionTypeIDToPush int,
+  @HostName varchar(8000),
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
+  @RestrictedToTicketTypes varchar(500),
+  @UpdateTicketType bit,
+  @InstanceName varchar(255),
+  @ExcludedTicketStatusUpdate varchar(500),
+  @IncludeIssueNonRequired bit,
+  @UseNetworkCredentials bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[ProductVersionsView]
+  UPDATE [dbo].[CRMLinkTable]
   SET
-    [ProductID] = @ProductID,
-    [ProductVersionStatusID] = @ProductVersionStatusID,
-    [VersionNumber] = @VersionNumber,
-    [ReleaseDate] = @ReleaseDate,
-    [IsReleased] = @IsReleased,
-    [Description] = @Description,
-    [ImportID] = @ImportID,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [VersionStatus] = @VersionStatus,
-    [ProductName] = @ProductName,
     [OrganizationID] = @OrganizationID,
-    [ProductFamilyID] = @ProductFamilyID,
-    [JiraProjectKey] = @JiraProjectKey,
-    [TFSProjectName] = @TFSProjectName
-  WHERE ([ProductVersionID] = @ProductVersionID)
+    [Active] = @Active,
+    [CRMType] = @CRMType,
+    [Username] = @Username,
+    [Password] = @Password,
+    [SecurityToken] = @SecurityToken,
+    [TypeFieldMatch] = @TypeFieldMatch,
+    [LastLink] = @LastLink,
+    [SendBackTicketData] = @SendBackTicketData,
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID,
+    [AllowPortalAccess] = @AllowPortalAccess,
+    [SendWelcomeEmail] = @SendWelcomeEmail,
+    [DefaultSlaLevelID] = @DefaultSlaLevelID,
+    [PullCasesAsTickets] = @PullCasesAsTickets,
+    [PushTicketsAsCases] = @PushTicketsAsCases,
+    [PullCustomerProducts] = @PullCustomerProducts,
+    [UpdateStatus] = @UpdateStatus,
+    [ActionTypeIDToPush] = @ActionTypeIDToPush,
+    [HostName] = @HostName,
+    [DefaultProject] = @DefaultProject,
+    [MatchAccountsByName] = @MatchAccountsByName,
+    [UseSandBoxServer] = @UseSandBoxServer,
+    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,
+    [RestrictedToTicketTypes] = @RestrictedToTicketTypes,
+    [UpdateTicketType] = @UpdateTicketType,
+    [InstanceName] = @InstanceName,
+    [ExcludedTicketStatusUpdate] = @ExcludedTicketStatusUpdate,
+    [IncludeIssueNonRequired] = @IncludeIssueNonRequired,
+    [UseNetworkCredentials] = @UseNetworkCredentials
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
 
 (
-  @ProductVersionID int
+  @CRMLinkID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ProductVersionsView]
-  WHERE ([ProductVersionID] = @ProductVersionID)
+  DELETE FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectProductVersionsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 
 (
-  @ProductVersionID int
+  @CRMLinkID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ProductVersionID],
-    [ProductID],
-    [ProductVersionStatusID],
-    [VersionNumber],
-    [ReleaseDate],
-    [IsReleased],
-    [Description],
-    [ImportID],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [NeedsIndexing],
-    [VersionStatus],
-    [ProductName],
+    [CRMLinkID],
     [OrganizationID],
-    [ProductFamilyID],
-    [JiraProjectKey],
-    [TFSProjectName]
-  FROM [dbo].[ProductVersionsView]
-  WHERE ([ProductVersionID] = @ProductVersionID)
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID],
+    [PullCasesAsTickets],
+    [PushTicketsAsCases],
+    [PullCustomerProducts],
+    [UpdateStatus],
+    [ActionTypeIDToPush],
+    [HostName],
+    [DefaultProject],
+    [MatchAccountsByName],
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey],
+    [RestrictedToTicketTypes],
+    [UpdateTicketType],
+    [InstanceName],
+    [ExcludedTicketStatusUpdate],
+    [IncludeIssueNonRequired],
+    [UseNetworkCredentials]
+  FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertProductVersionsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
 
 (
-  @ProductVersionID int,
-  @ProductID int,
-  @ProductVersionStatusID int,
-  @VersionNumber varchar(50),
-  @ReleaseDate datetime,
-  @IsReleased bit,
-  @Description varchar(MAX),
-  @ImportID varchar(50),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @NeedsIndexing bit,
-  @VersionStatus varchar(255),
-  @ProductName varchar(255),
   @OrganizationID int,
-  @ProductFamilyID int,
-  @JiraProjectKey varchar(250),
-  @TFSProjectName nvarchar(MAX),
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @PullCasesAsTickets bit,
+  @PushTicketsAsCases bit,
+  @PullCustomerProducts bit,
+  @UpdateStatus bit,
+  @ActionTypeIDToPush int,
+  @HostName varchar(8000),
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
+  @RestrictedToTicketTypes varchar(500),
+  @UpdateTicketType bit,
+  @InstanceName varchar(255),
+  @ExcludedTicketStatusUpdate varchar(500),
+  @IncludeIssueNonRequired bit,
+  @UseNetworkCredentials bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ProductVersionsView]
+  INSERT INTO [dbo].[CRMLinkTable]
   (
-    [ProductVersionID],
-    [ProductID],
-    [ProductVersionStatusID],
-    [VersionNumber],
-    [ReleaseDate],
-    [IsReleased],
-    [Description],
-    [ImportID],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [NeedsIndexing],
-    [VersionStatus],
-    [ProductName],
     [OrganizationID],
-    [ProductFamilyID],
-    [JiraProjectKey],
-    [TFSProjectName])
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID],
+    [PullCasesAsTickets],
+    [PushTicketsAsCases],
+    [PullCustomerProducts],
+    [UpdateStatus],
+    [ActionTypeIDToPush],
+    [HostName],
+    [DefaultProject],
+    [MatchAccountsByName],
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey],
+    [RestrictedToTicketTypes],
+    [UpdateTicketType],
+    [InstanceName],
+    [ExcludedTicketStatusUpdate],
+    [IncludeIssueNonRequired],
+    [UseNetworkCredentials])
   VALUES (
-    @ProductVersionID,
-    @ProductID,
-    @ProductVersionStatusID,
-    @VersionNumber,
-    @ReleaseDate,
-    @IsReleased,
-    @Description,
-    @ImportID,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @NeedsIndexing,
-    @VersionStatus,
-    @ProductName,
     @OrganizationID,
-    @ProductFamilyID,
-    @JiraProjectKey,
-    @TFSProjectName)
+    @Active,
+    @CRMType,
+    @Username,
+    @Password,
+    @SecurityToken,
+    @TypeFieldMatch,
+    @LastLink,
+    @SendBackTicketData,
+    @LastProcessed,
+    @LastTicketID,
+    @AllowPortalAccess,
+    @SendWelcomeEmail,
+    @DefaultSlaLevelID,
+    @PullCasesAsTickets,
+    @PushTicketsAsCases,
+    @PullCustomerProducts,
+    @UpdateStatus,
+    @ActionTypeIDToPush,
+    @HostName,
+    @DefaultProject,
+    @MatchAccountsByName,
+    @UseSandBoxServer,
+    @AlwaysUseDefaultProjectKey,
+    @RestrictedToTicketTypes,
+    @UpdateTicketType,
+    @InstanceName,
+    @ExcludedTicketStatusUpdate,
+    @IncludeIssueNonRequired,
+    @UseNetworkCredentials)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateProductVersionsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
 
 (
-  @ProductVersionID int,
-  @ProductID int,
-  @ProductVersionStatusID int,
-  @VersionNumber varchar(50),
-  @ReleaseDate datetime,
-  @IsReleased bit,
-  @Description varchar(MAX),
-  @ImportID varchar(50),
-  @DateModified datetime,
-  @ModifierID int,
-  @NeedsIndexing bit,
-  @VersionStatus varchar(255),
-  @ProductName varchar(255),
+  @CRMLinkID int,
   @OrganizationID int,
-  @ProductFamilyID int,
-  @JiraProjectKey varchar(250),
-  @TFSProjectName nvarchar(MAX)
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @PullCasesAsTickets bit,
+  @PushTicketsAsCases bit,
+  @PullCustomerProducts bit,
+  @UpdateStatus bit,
+  @ActionTypeIDToPush int,
+  @HostName varchar(8000),
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
+  @RestrictedToTicketTypes varchar(500),
+  @UpdateTicketType bit,
+  @InstanceName varchar(255),
+  @ExcludedTicketStatusUpdate varchar(500),
+  @IncludeIssueNonRequired bit,
+  @UseNetworkCredentials bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[ProductVersionsView]
+  UPDATE [dbo].[CRMLinkTable]
   SET
-    [ProductID] = @ProductID,
-    [ProductVersionStatusID] = @ProductVersionStatusID,
-    [VersionNumber] = @VersionNumber,
-    [ReleaseDate] = @ReleaseDate,
-    [IsReleased] = @IsReleased,
-    [Description] = @Description,
-    [ImportID] = @ImportID,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [VersionStatus] = @VersionStatus,
-    [ProductName] = @ProductName,
     [OrganizationID] = @OrganizationID,
-    [ProductFamilyID] = @ProductFamilyID,
-    [JiraProjectKey] = @JiraProjectKey,
-    [TFSProjectName] = @TFSProjectName
-  WHERE ([ProductVersionID] = @ProductVersionID)
+    [Active] = @Active,
+    [CRMType] = @CRMType,
+    [Username] = @Username,
+    [Password] = @Password,
+    [SecurityToken] = @SecurityToken,
+    [TypeFieldMatch] = @TypeFieldMatch,
+    [LastLink] = @LastLink,
+    [SendBackTicketData] = @SendBackTicketData,
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID,
+    [AllowPortalAccess] = @AllowPortalAccess,
+    [SendWelcomeEmail] = @SendWelcomeEmail,
+    [DefaultSlaLevelID] = @DefaultSlaLevelID,
+    [PullCasesAsTickets] = @PullCasesAsTickets,
+    [PushTicketsAsCases] = @PushTicketsAsCases,
+    [PullCustomerProducts] = @PullCustomerProducts,
+    [UpdateStatus] = @UpdateStatus,
+    [ActionTypeIDToPush] = @ActionTypeIDToPush,
+    [HostName] = @HostName,
+    [DefaultProject] = @DefaultProject,
+    [MatchAccountsByName] = @MatchAccountsByName,
+    [UseSandBoxServer] = @UseSandBoxServer,
+    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,
+    [RestrictedToTicketTypes] = @RestrictedToTicketTypes,
+    [UpdateTicketType] = @UpdateTicketType,
+    [InstanceName] = @InstanceName,
+    [ExcludedTicketStatusUpdate] = @ExcludedTicketStatusUpdate,
+    [IncludeIssueNonRequired] = @IncludeIssueNonRequired,
+    [UseNetworkCredentials] = @UseNetworkCredentials
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductVersionsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteProductVersionsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
 
 (
-  @ProductVersionID int
+  @CRMLinkID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ProductVersionsView]
-  WHERE ([ProductVersionID] = @ProductVersionID)
+  DELETE FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
 

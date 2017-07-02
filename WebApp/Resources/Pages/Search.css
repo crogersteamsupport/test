@@ -148,7 +148,7 @@ h2 {
 
 /*East Pane Elements*/
 .search-options-fieldset {
-    width: 240px;
+    width: 100%;
     border: 0;
     border-radius: 0px;
     background: White;

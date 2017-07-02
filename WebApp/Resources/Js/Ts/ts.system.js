@@ -195,6 +195,7 @@ var _startDate = new Date();
                   self.AppDomain = domains.AppUrl;
                   self.PortalDomain = domains.PortalUrl;
                   self.Domain = domains.DomainName;
+                  self.EmailDomain = domains.EmailDomain;
                   if (callback) { callback(self.User); }
               });
             });

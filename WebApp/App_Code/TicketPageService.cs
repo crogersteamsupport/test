@@ -1542,12 +1542,21 @@ namespace TSWebServices
         private TicketLinkToTFSItemProxy GetLinkToTFS(int ticketID)
         {
             TicketLinkToTFSItemProxy result = null;
-            TicketLinkToTFS linkToTFS = new TicketLinkToTFS(TSAuthentication.GetLoginUser());
-            linkToTFS.LoadByTicketID(ticketID);
-            if (linkToTFS.Count > 0)
+
+            try
             {
-                result = linkToTFS[0].GetProxy();
+                TicketLinkToTFS linkToTFS = new TicketLinkToTFS(TSAuthentication.GetLoginUser());
+                linkToTFS.LoadByTicketID(ticketID);
+                if (linkToTFS.Count > 0)
+                {
+                    result = linkToTFS[0].GetProxy();
+                }
             }
+            catch (Exception ex)
+            {
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "TFS getting data", "TicketPageService.GetLinkToTFS");
+            }
+
             return result;
         }
 

@@ -15,63 +15,63 @@ Namespace TeamSupport
 			Inherits Integration
 
 			Private _baseURI As String
-			Private _encodedCredentials As String
-			Private _tfs As TFSLibrary = New TFSLibrary()
-			Private _tfsExceptionMessageFormat As String = "TFS Error Message: {0}"
-			Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
-				MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.Jira)
-			End Sub
+            'Private _encodedCredentials As String
+            Private _tfs As TFSLibrary = New TFSLibrary()
+            Private _tfsExceptionMessageFormat As String = "TFS Error Message: {0}"
+            Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
+                MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.Jira)
+            End Sub
 
-			Public Overrides Function PerformSync() As Boolean
-				Dim Success As Boolean = True
+            Public Overrides Function PerformSync() As Boolean
+                Dim Success As Boolean = True
 
-				If ValidateSyncData() Then
-					Success = SyncTickets()
-				Else
-					Success = False
-				End If
+                If ValidateSyncData() Then
+                    Success = SyncTickets()
+                Else
+                    Success = False
+                End If
 
-				Return Success
-			End Function
+                Return Success
+            End Function
 
-			Private Function ValidateSyncData() As Boolean
-				Dim result As Boolean = True
+            Private Function ValidateSyncData() As Boolean
+                Dim result As Boolean = True
 
-				If CRMLinkRow.HostName Is Nothing Then
-					result = False
-					AddLog("HostName is missing and it is required to sync.")
-				Else
-					Dim protocol As String = String.Empty
-					If CRMLinkRow.HostName.Length > 4 AndAlso CRMLinkRow.HostName.Substring(0, 4).ToLower() <> "http" Then
-						protocol = "https://"
-					End If
-					_baseURI = protocol + CRMLinkRow.HostName
-				End If
+                If CRMLinkRow.HostName Is Nothing Then
+                    result = False
+                    AddLog("HostName is missing and it is required to sync.")
+                Else
+                    Dim protocol As String = String.Empty
+                    If CRMLinkRow.HostName.Length > 4 AndAlso CRMLinkRow.HostName.Substring(0, 4).ToLower() <> "http" Then
+                        protocol = "https://"
+                    End If
+                    _baseURI = protocol + CRMLinkRow.HostName
+                End If
 
-				If CRMLinkRow.SecurityToken1 Is Nothing Then
-					result = False
-					AddLog("Security Token is missing and it is required to sync.")
-				End If
+                If CRMLinkRow.SecurityToken1 Is Nothing Then
+                    If CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password Is Nothing Then
+                        result = False
+                        AddLog("The API Token and the Username and or Password are missing and they are required to sync.")
+                    End If
+                End If
 
-				'//vv The following is not needed AS OF RIGHT NOW, if I end up using that library that needs the username and pasword then we'll also need to check for those credentials.
-				'If CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password Is Nothing Then
-				'    result = False
-				'    AddLog("Username and or Password are missing and they are required to sync.")
-				'Else
-				'    _encodedCredentials = DataUtils.GetEncodedCredentials(CRMLinkRow.Username, CRMLinkRow.Password)
-				'End If
+                'Make sure credentials are good
+                If (result) Then
+                    Try
+                        If (Not String.IsNullOrEmpty(CRMLinkRow.SecurityToken1)) Then
+                            _tfs = New TFSLibrary(_baseURI, CRMLinkRow.SecurityToken1)
+                        Else
+                            _tfs = New TFSLibrary(_baseURI, CRMLinkRow.Username, CRMLinkRow.Password, CRMLinkRow.UseNetworkCredentials)
+                        End If
 
-				'Make sure credentials are good
-				If (result) Then
-					Try
-						_tfs = New TFSLibrary(_baseURI, CRMLinkRow.SecurityToken1)
-						If (Not String.IsNullOrEmpty(_tfs.GetProjects())) Then
-							AddLog("Tfs credentials ok.")
-						Else
-							AddLog("Tfs credentials didn't work.")
-						End If
-					Catch ex As Exception
-						result = False
+                        Dim errorMessage As String = _tfs.CheckCredentialsAndHost()
+                        If (String.IsNullOrEmpty(errorMessage)) Then
+                            AddLog("Tfs credentials ok.")
+                        Else
+                            AddLog("Tfs credentials didn't work. " + errorMessage)
+                        End If
+                    Catch ex As Exception
+                        result = False
 						_exception = New IntegrationException(ex.InnerException.Message, ex)
 					End Try
 				End If
@@ -291,8 +291,8 @@ Namespace TeamSupport
 						TFSProjectName = GetProjectName(ticket, crmLinkErrors)
 						workItemFields = GetWorkItemFields(ticket, TFSProjectName, crmLinkError, Orientation.OutToTFS)
 					Catch tfsEx As TFSLibrary.TFSClientException
-						AddLog(tfsEx.ErrorResponse.message + " " + tfsEx.StackTrace)
-						Continue For
+                        AddLog(tfsEx.ErrorResponse.ErrorMessage + " " + tfsEx.StackTrace)
+                        Continue For
 					Catch ex As Exception
 						AddLog(String.Format("Exception in PushTicketsAndActionsAsWorkItemsAndComments: {0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace))
 						Continue For
@@ -334,11 +334,11 @@ Namespace TeamSupport
                             ClearCrmLinkError(crmLinkError)
                         Catch tfsEx As TFSLibrary.TFSClientException
                             Dim errorMessage As String = tfsEx.ErrorResponse.typeKey
-                            AddLog(String.Format(_tfsExceptionMessageFormat, tfsEx.ErrorResponse.message))
+                            AddLog(String.Format(_tfsExceptionMessageFormat, tfsEx.ErrorResponse.ErrorMessage))
                             AddLog(tfsEx.Message,
                                     LogType.Report,
                                     crmLinkError,
-                                    String.Format("WorkItem was not created due to:{0}{1}", Environment.NewLine, tfsEx.ErrorResponse.message),
+                                    String.Format("WorkItem was not created due to:{0}{1}", Environment.NewLine, tfsEx.ErrorResponse.ErrorMessage),
                                     Orientation.OutToJira,
                                     ObjectType.Ticket,
                                     ticket.TicketID,
@@ -357,7 +357,7 @@ Namespace TeamSupport
                                     'Case "project mismatch" 'ToDo pending
                                     '	errorMessage = "Error: Specify valid Type and/or Project (Product)."
                                 Case Else
-                                    errorMessage = tfsEx.ErrorResponse.message
+                                    errorMessage = tfsEx.ErrorResponse.ErrorMessage
                                     updateLinkToTFS = False
                             End Select
 
@@ -403,7 +403,7 @@ Namespace TeamSupport
                             'End If
 
                             'If (String.IsNullOrEmpty(invalidTFSTitle)) Then
-                            Dim TFSErrors As String = tfsEx.ErrorResponse.message
+                            Dim TFSErrors As String = tfsEx.ErrorResponse.ErrorMessage
                             '        If (jiraErrors IsNot Nothing AndAlso jiraErrors.HasErrors) Then
                             If (Not String.IsNullOrEmpty(TFSErrors)) Then
                                 AddLog(String.Format(_tfsExceptionMessageFormat,
@@ -519,9 +519,9 @@ Namespace TeamSupport
 								newAction.Save()
 
 								Dim newActionLinkToTFS As ActionLinkToTFS = New ActionLinkToTFS(User)
-								newActionLinkToTFS.AddNewActionLinkToTFSItem()
-								newActionLinkToTFS(0).ActionID = newAction(0).ActionID
-								newActionLinkToTFS(0).TFSID = -1
+                                newActionLinkToTFS.AddNewActionLinkToTFSItem(newAction(0).ActionID)
+                                'newActionLinkToTFS(0).ActionID = newAction(0).ActionID
+                                newActionLinkToTFS(0).TFSID = -1
 								newActionLinkToTFS(0).DateModifiedByTFSSync = ticketLinkToTFS.DateModifiedByTFSSync
 								newActionLinkToTFS.Save()
 
@@ -546,7 +546,7 @@ Namespace TeamSupport
 						End Try
 					End If
 
-					PushActionsAsComments(ticket.TicketID, ticket.TicketNumber, workItem, attachmentEnabled, attachmentFileSizeLimit)
+                    PushActionsAsComments(ticket.TicketID, ticket.TicketNumber, workItem, ticketLinkToTFS.TFSID, attachmentEnabled, attachmentFileSizeLimit)
 
 					'If sendCustomMappingFields Then
 					'We are now updating the custom mapping fields. We do a call per field to minimize the impact of invalid values attempted to be assigned.
@@ -1073,6 +1073,7 @@ Namespace TeamSupport
 				ByVal ticketID As Integer,
 				ByVal ticketNumber As Integer,
 				ByVal workItem As WorkItem,
+                ByVal workItemID As Integer,
 				ByVal attachmentEnabled As Boolean,
 				ByVal attachmentFileSizeLimit As Integer)
 
@@ -1100,13 +1101,17 @@ Namespace TeamSupport
 
 					If actionLinkToTFSItem Is Nothing Then
 						Try
+                            If workItem.Id Is Nothing Then
+                                workItem = _tfs.GetWorkItemBy(workItemID)
+                            End If
+
 							Dim TFSComment As String = BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition, actionToPushAsComment.CreatorID)
 							Dim commentId As Integer = _tfs.CreateComment(workItem.Id, TFSComment)
 							Dim newActionLinkToTFS As ActionLinkToTFS = New ActionLinkToTFS(User)
-							Dim newActionLinkToTFSItem As ActionLinkToTFSItem = newActionLinkToTFS.AddNewActionLinkToTFSItem()
+                            Dim newActionLinkToTFSItem As ActionLinkToTFSItem = newActionLinkToTFS.AddNewActionLinkToTFSItem(actionToPushAsComment.ActionID)
 
-							newActionLinkToTFSItem.ActionID = actionToPushAsComment.ActionID
-							newActionLinkToTFSItem.TFSID = commentId
+                            'newActionLinkToTFSItem.ActionID = actionToPushAsComment.ActionID
+                            newActionLinkToTFSItem.TFSID = commentId
 							newActionLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow
 							newActionLinkToTFS.Save()
 							Log.Write("Created comment for action")
@@ -1537,12 +1542,12 @@ Namespace TeamSupport
                                             newAction(0).Description = "TFS' Work Item " + workItem.Fields("System.Title").ToString() + "'s state changed" + fromStatement + " to """ + value + """."
 
                                             Dim actionLinkToTFS As ActionLinkToTFS = New ActionLinkToTFS(User)
-                                            Dim actionLinkToTFSItem As ActionLinkToTFSItem = actionLinkToTFS.AddNewActionLinkToTFSItem()
+                                            Dim actionLinkToTFSItem As ActionLinkToTFSItem = actionLinkToTFS.AddNewActionLinkToTFSItem(newAction(0).ActionID)
 
                                             actionLinkToTFSItem.TFSID = -1
                                             actionLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow()
                                             newAction.Save()
-                                            actionLinkToTFSItem.ActionID = newAction(0).ActionID
+                                            'actionLinkToTFSItem.ActionID = newAction(0).ActionID
                                             actionLinkToTFS.Save()
                                             ticketValuesChanged = True
                                         End If
@@ -1892,12 +1897,12 @@ Namespace TeamSupport
 						updateActions(0).Description = commentDescription
 						updateActions.ActionLogInstantMessage = "TFS Comment ID: " + TFSCommentId.ToString() + " Created In TeamSupport Action "
 						Dim actionLinkToTFS As ActionLinkToTFS = New ActionLinkToTFS(User)
-						Dim actionLinkToTFSItem As ActionLinkToTFSItem = actionLinkToTFS.AddNewActionLinkToTFSItem()
-						actionLinkToTFSItem.TFSID = TFSCommentId
+                        Dim actionLinkToTFSItem As ActionLinkToTFSItem = actionLinkToTFS.AddNewActionLinkToTFSItem(updateActions(0).ActionID)
+                        actionLinkToTFSItem.TFSID = TFSCommentId
 						actionLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow
 						updateActions.Save()
-						actionLinkToTFSItem.ActionID = updateActions(0).ActionID
-						actionLinkToTFS.Save()
+                        'actionLinkToTFSItem.ActionID = updateActions(0).ActionID
+                        actionLinkToTFS.Save()
 
 						ClearCrmLinkError(crmLinkError)
 					Catch ex As Exception

@@ -472,7 +472,18 @@
                         <input id="InstanceName" type="text" class="text ui-widget-content ui-corner-all int-crm-instancename" />
 
                         <label>TFS Host Name</label>
-                <input type="text" class="text ui-widget-content ui-corner-all int-crm-host" />
+                        <input type="text" class="text ui-widget-content ui-corner-all int-crm-host" />
+                        <label>TFS User Name</label>
+                        <input type="text" class="text ui-widget-content ui-corner-all int-crm-user" />
+                        <label>TFS Password</label>
+                        <input type="password" class="text ui-widget-content ui-corner-all int-crm-password" />
+                        <label>Confirm Password</label>
+                        <input type="password" class="text ui-widget-content ui-corner-all int-crm-password-confirm" />
+                        <div class="checkboxes">
+                            <input id="cb-tfs-use-network-credentials" type="checkbox" class="checkbox int-crm-use-network-credentials" />
+                            <label for="cb-tfs-use-network-credentials" class="checkbox">Use Network Credentials</label>
+                            <div class="clearfix"></div>
+                        </div>
                         <label>TFS API Token</label>
                         <input type="password" class="text ui-widget-content ui-corner-all int-crm-token" />
                         <label>Confirm TFS API Token</label>
@@ -483,7 +494,7 @@
                         <span class="label">Actions type to push to TFS as comments</span>
                         <select class="int-actionTypeToPush"></select>
                         <div>&nbsp</div>
-                <div class="checkboxes">
+                        <div class="checkboxes">
                             <input id="cb-tfs-update-status" type="checkbox" class="checkbox int-tfs-update-status" />
                             <label for="cb-tfs-update-status" class="checkbox">Update TeamSupport Tickets Statuses</label>
 
