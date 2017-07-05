@@ -4,6 +4,7 @@ var _intervalUpdateActiveChats = null;
 var isTOKEnabledForBrowser;
 var _isChatWindowActive = true;
 var _isChatWindowPotentiallyHidden = false;
+var isSubmittingAlready = false;
 
 $(document).ready(function () {
     //apiKey = "45228242";
@@ -373,7 +374,8 @@ $(document).ready(function () {
         var messageString = $('#message').val();
         messageString = messageString.trim();
 
-        if (messageString !== '') {
+        if (messageString !== '' && !isSubmittingAlready) {
+            isSubmittingAlready = true;
             messageString = replaceURLs(messageString);
             $('#new-message').prop("disabled", true);
             doneTyping();
