@@ -26,7 +26,7 @@ namespace TeamSupport.Data
 
             if (string.IsNullOrEmpty(OrganizationReplyToAddress))
             {
-                return SystemEmailID.ToString() + "@" + SystemSettings.GetDomain();
+                return SystemEmailID.ToString() + "@" + SystemSettings.GetEmailDomain();
             }
 
             return OrganizationReplyToAddress;
@@ -42,7 +42,7 @@ namespace TeamSupport.Data
             }
             catch (Exception)
             {
-                return new MailAddress(SystemEmailID.ToString() + "@" + SystemSettings.GetDomain());
+                return new MailAddress(SystemEmailID.ToString() + "@" + SystemSettings.GetEmailDomain());
             }
         }
 

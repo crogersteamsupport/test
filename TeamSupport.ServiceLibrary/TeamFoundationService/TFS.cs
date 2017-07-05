@@ -73,7 +73,7 @@ namespace TeamSupport.ServiceLibrary
                 }
                 else
                 {
-                    byte[] response = client.UploadData(uri, Encoding.UTF8.GetBytes(patchDocument));
+                    byte[] response = client.UploadData(uri, method.ToString(), Encoding.UTF8.GetBytes(patchDocument));
                     result = client.Encoding.GetString(response);
                 }
             }
@@ -266,8 +266,15 @@ namespace TeamSupport.ServiceLibrary
                     using (var reader = new StreamReader(responseStream))
                     {
                         exceptionResponse = reader.ReadToEnd();
-                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                        throw new TFSClientException(tfsError);
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
                     }
                 }
             }
@@ -298,8 +305,15 @@ namespace TeamSupport.ServiceLibrary
                     using (var reader = new StreamReader(responseStream))
                     {
                         exceptionResponse = reader.ReadToEnd();
-                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                        throw new TFSClientException(tfsError);
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
                     }
                 }
             }
@@ -330,8 +344,15 @@ namespace TeamSupport.ServiceLibrary
                     using (var reader = new StreamReader(responseStream))
                     {
                         exceptionResponse = reader.ReadToEnd();
-                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                        throw new TFSClientException(tfsError);
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
                     }
                 }
             }
@@ -343,15 +364,15 @@ namespace TeamSupport.ServiceLibrary
             return comments;
 		}
 
-		public WorkItemComment GetCommentBy(int workItemId, int revisionId)
-		{
-			WorkItemComment comments = new WorkItemComment();
+        public WorkItemComment GetCommentBy(int workItemId, int revisionId)
+        {
+            WorkItemComment comments = new WorkItemComment();
 
-			try
-			{
+            try
+            {
                 string response = MakeRequest(string.Format("{0}/_apis/wit/workItems/{1}/comments/{2}", HostName, workItemId, revisionId), ApiMethod.Get);
                 comments = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemComment>(response);
-			}
+            }
             catch (WebException webEx)
             {
                 string exceptionResponse;
@@ -362,8 +383,15 @@ namespace TeamSupport.ServiceLibrary
                     using (var reader = new StreamReader(responseStream))
                     {
                         exceptionResponse = reader.ReadToEnd();
-                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                        throw new TFSClientException(tfsError);
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
                     }
                 }
             }
@@ -373,9 +401,87 @@ namespace TeamSupport.ServiceLibrary
             }
 
             return comments;
-		}
+        }
 
-		public WorkItem CreateWorkItem(List<WorkItemField> fields, string project, string type)
+        public WorkItemHistoryList GetHistoryBy(int workItemId)
+        {
+            WorkItemHistoryList history = new WorkItemHistoryList();
+
+            try
+            {
+                string response = MakeRequest(string.Format("{0}/_apis/wit/workItems/{1}/history", HostName, workItemId), ApiMethod.Get);
+                history = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemHistoryList>(response);
+            }
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
+
+                if (responseStream != null)
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            return history;
+        }
+
+        public WorkItemHistory GetHistoryBy(int workItemId, int revisionId)
+        {
+            WorkItemHistory history = new WorkItemHistory();
+
+            try
+            {
+                string response = MakeRequest(string.Format("{0}/_apis/wit/workItems/{1}/history/{2}", HostName, workItemId, revisionId), ApiMethod.Get);
+                history = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemHistory>(response);
+            }
+            catch (WebException webEx)
+            {
+                string exceptionResponse;
+                var responseStream = webEx.Response?.GetResponseStream();
+
+                if (responseStream != null)
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        exceptionResponse = reader.ReadToEnd();
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            return history;
+        }
+
+        public WorkItem CreateWorkItem(List<WorkItemField> fields, string project, string type)
         {
             WorkItem workItem = new WorkItem();
 			Object[] patchDocument = GetPatchDocument(fields);
@@ -396,8 +502,15 @@ namespace TeamSupport.ServiceLibrary
                     using (var reader = new StreamReader(responseStream))
                     {
                         exceptionResponse = reader.ReadToEnd();
-                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                        throw new TFSClientException(tfsError);
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
                     }
                 }
             }
@@ -437,8 +550,15 @@ namespace TeamSupport.ServiceLibrary
                     using (var reader = new StreamReader(responseStream))
                     {
                         exceptionResponse = reader.ReadToEnd();
-                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                        throw new TFSClientException(tfsError);
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
                     }
                 }
             }
@@ -470,8 +590,15 @@ namespace TeamSupport.ServiceLibrary
                     using (var reader = new StreamReader(responseStream))
                     {
                         exceptionResponse = reader.ReadToEnd();
-                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                        throw new TFSClientException(tfsError);
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
                     }
                 }
             }
@@ -503,8 +630,15 @@ namespace TeamSupport.ServiceLibrary
                     using (var reader = new StreamReader(responseStream))
                     {
                         exceptionResponse = reader.ReadToEnd();
-                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                        throw new TFSClientException(tfsError);
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
                     }
                 }
             }
@@ -546,8 +680,15 @@ namespace TeamSupport.ServiceLibrary
                             using (var reader = new StreamReader(responseStream))
                             {
                                 exceptionResponse = reader.ReadToEnd();
-                                TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                                throw new TFSClientException(tfsError);
+                                try
+                                {
+                                    TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                                    throw new TFSClientException(tfsError);
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new Exception(exceptionResponse);
+                                }
                             }
                         }
                     }
@@ -562,10 +703,24 @@ namespace TeamSupport.ServiceLibrary
 		public bool UploadAttachment(int workItemId, string filePath, string fileName)
 		{
 			bool result = false;
-			string URI = HostName + "/DefaultCollection/_apis/wit/attachments?fileName=" + fileName + "&api-version=2.2"; //Use correct values here
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URI);
+			string URI = HostName + "/_apis/wit/attachments?fileName=" + fileName + "&api-version=2.2";
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URI);
 			string boundary = "---------------------------" + DateTime.Now.Ticks.ToString("x");
-			request.Headers.Add("Authorization", "Basic " + EncodedCredentials);
+
+            if (_useNetworkCredentials)
+            {
+                NetworkCredential nc = new NetworkCredential(UserName, Password);
+                CredentialCache cache = new CredentialCache();
+                Uri uriObject = new Uri(URI);
+                cache.Add(uriObject, "NTLM", nc);
+                request.Credentials = cache;
+            }
+            else
+            {
+                request.Headers.Add("Authorization", "Basic " + EncodedCredentials);
+            }
+
 			request.Method = "POST";
 			request.ContentType = "application/octet-stream;";
 			request.Accept = "text/html, application/xhtml+xml, */*";
@@ -613,8 +768,15 @@ namespace TeamSupport.ServiceLibrary
                         using (var reader = new StreamReader(responseStream))
                         {
                             exceptionResponse = reader.ReadToEnd();
-                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                            throw new TFSClientException(tfsError);
+                            try
+                            {
+                                TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                                throw new TFSClientException(tfsError);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(exceptionResponse);
+                            }
                         }
                     }
                 }
@@ -647,8 +809,15 @@ namespace TeamSupport.ServiceLibrary
                     using (var reader = new StreamReader(responseStream))
                     {
                         exceptionResponse = reader.ReadToEnd();
-                        TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
-                        throw new TFSClientException(tfsError);
+                        try
+                        {
+                            TFSErrorsResponse tfsError = Newtonsoft.Json.JsonConvert.DeserializeObject<TFSErrorsResponse>(exceptionResponse);
+                            throw new TFSClientException(tfsError);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(exceptionResponse);
+                        }
                     }
                 }
             }
@@ -798,6 +967,17 @@ namespace TeamSupport.ServiceLibrary
             public int TotalCount { get; set; }
         }
 
+        [DataContract]
+        public class WorkItemHistoryList
+        {
+            public WorkItemHistoryList() { }
+
+            [DataMember]
+            public IEnumerable<WorkItemHistory> value { get; set; }
+            [DataMember]
+            public int count { get; set; }
+        }
+
         private class AttachmentInfo
 		{
 			public string id { get; set; }
@@ -822,7 +1002,6 @@ namespace TeamSupport.ServiceLibrary
 
 		public class TFSErrorsResponse
 		{
-			[Newtonsoft.Json.JsonProperty(PropertyName = "$id")]
 			public string id { get; set; }
 			public object innerException { get; set; }
 			public string message { get; set; }
@@ -830,11 +1009,32 @@ namespace TeamSupport.ServiceLibrary
 			public string typeKey { get; set; }
 			public int errorCode { get; set; }
 			public int eventId { get; set; }
-		}
+            public int count { get; set; }
+            public Value value { get; set; }
+            public string ErrorMessage
+            {
+                get
+                {
+                    if (value != null)
+                    {
+                        return value.Message;
+                    }
+                    else
+                    {
+                        return message;
+                    }
+                }
+            }
+        }
 
-	//To get the other relation types do a GET to: https://{url}/DefaultCollection/_apis/wit/workitemrelationtypes?api-version=2.2
-	//For now we are only using these two.
-	    private enum RelationsType : byte
+        public class Value
+        {
+            public string Message { get; set; }
+        }
+
+        //To get the other relation types do a GET to: https://{url}/DefaultCollection/_apis/wit/workitemrelationtypes?api-version=2.2
+        //For now we are only using these two.
+        private enum RelationsType : byte
 		{
 			Unknown = 0,
 			Hyperlink = 1,

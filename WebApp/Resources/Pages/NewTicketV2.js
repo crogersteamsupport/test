@@ -928,7 +928,7 @@ function SetupDescriptionEditor() {
                 $('#unmuteTokScreen').hide();
                 $('#muteTokScreen').hide();
                 tokurl = result;
-                videoURL = '<video width="100%" controls poster="' + parent.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
+                videoURL = '<video width="100%" controls poster="' + parent.Ts.System.AppDomain + '/dc/1078/images/static/player.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
                 if (parent.Ts.System.User.OrganizationID !== 13679) {
                     tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
                 }

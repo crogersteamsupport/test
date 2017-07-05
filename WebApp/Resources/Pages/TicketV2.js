@@ -775,7 +775,7 @@ function CreateNewActionLI() {
                     }
                     else {
                         EnableCreateBtns();
-                        alert("There was a error creating your action.  Please try again.")
+                        alert("There was a error creating your action.  Please try again.");
                     }
                 });
             }
@@ -786,7 +786,7 @@ function CreateNewActionLI() {
             }
         });
 
-        $(this).parent().dropdown('toggle');
+        //$(this).parent().dropdown('toggle');
     });
 
     $('#action-timeline').on('click', '.remove-attachment', function (e) {
@@ -822,7 +822,7 @@ function CreateNewActionLI() {
                     $('#action-new-editor').summernote('insertNode', result);
                 }
             }
-            elem.parent().fadeIn('normal');
+            //elem.parent().fadeIn('normal');
         });
     });
 
@@ -1057,7 +1057,7 @@ function SetupActionEditor(elem, action) {
             element.find('#unmuteTokScreen').hide();
             element.find('#muteTokScreen').hide();
             tokurl = result;
-            videoURL = '<video width="100%" controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/screenview.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
+            videoURL = '<video width="100%" controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/player.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
             if (window.parent.Ts.System.User.OrganizationID !== 13679) {
                 tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
             }
