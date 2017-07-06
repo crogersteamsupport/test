@@ -209,7 +209,7 @@ AdminCustomFields = function () {
           .appendTo(header).hide();
 
     $('<span>')
-          .addClass('ts-icon ts-icon-delete')
+          .addClass('ts-icon ts-icon-delete fa fa-trash')
           .click(function (e) {
             if (confirm('Are you sure you would like to delete this category?  Your existing custom fields will not removed.')) {
               window.parent.parent.Ts.Services.CustomFields.DeleteCategory($(this).closest('.admin-cf-cat').data('Category').CustomFieldCategoryID, function () {
@@ -315,7 +315,7 @@ AdminCustomFields = function () {
         })
         .appendTo(fieldDiv).hide();
       $('<span>')
-        .addClass('ts-icon ts-icon-delete')
+        .addClass('ts-icon ts-icon-delete fa fa-trash')
         .click(function (e) {
           e.preventDefault();
           var parent = $(this).closest('.admin-cf-field');
