@@ -342,7 +342,6 @@ WHERE
     ORDER BY NextRun
     )
 ";
-				command.CommandText = "SELECT * FROM ScheduledReports WHERE Id = 35";
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@ProcessID", processID);
                 scheduledReports.Fill(command);
