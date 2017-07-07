@@ -211,13 +211,16 @@ namespace TeamSupport.Data
 					Debug(string.Format("CreatorId: {0} TimeZoneID: {1} tz.DisplayName: {2}", CreatorId.ToString(), creator.TimeZoneID.ToString(), tz.DisplayName));
                 }
 
-                DateTime StartDateLocal = TimeZoneInfo.ConvertTimeFromUtc(StartDateUtc, tz);
-				Debug(string.Format("StartDateLocal = TimeZoneInfo.ConvertTimeFromUtc(StartDateUtc, tz): {0}", StartDateLocal.ToString("MM/dd/yyyy HH:mm")));
+                DateTime StartDateToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(StartDateUtc, tz);
+                DateTime nextRunToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(NextRunUtc.Value, tz);
 
-                if (TimeSpan.Compare(StartDateLocal.TimeOfDay, NextRun.Value.TimeOfDay) != 0)
+                Debug(string.Format("StartDateToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(StartDateUtc, tz): {0}", StartDateToCreatorTimeZone.ToString("MM/dd/yyyy HH:mm")));
+                Debug(string.Format("nextRunToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(NextRunUtc.Value, tz): {0}", nextRunToCreatorTimeZone.ToString("MM/dd/yyyy HH:mm")));
+
+                if (TimeSpan.Compare(StartDateToCreatorTimeZone.TimeOfDay, nextRunToCreatorTimeZone.TimeOfDay) != 0)
                 {
-                    DateTime fixedDateForDLS = TimeZoneInfo.ConvertTimeToUtc(new DateTime(NextRun.Value.Year, NextRun.Value.Month, NextRun.Value.Day, StartDateLocal.Hour, StartDateLocal.Minute, 0), tz);
-					Debug(string.Format("fixedDateForDLS = TimeZoneInfo.ConvertTimeToUtc(new DateTime(NextRun.Value.Year, NextRun.Value.Month, NextRun.Value.Day, StartDateLocal.Hour, StartDateLocal.Minute, 0), tz): {0}", fixedDateForDLS.ToString("MM/dd/yyyy HH:mm")));
+                    DateTime fixedDateForDLS = TimeZoneInfo.ConvertTimeToUtc(new DateTime(NextRun.Value.Year, NextRun.Value.Month, NextRun.Value.Day, StartDateToCreatorTimeZone.Hour, StartDateToCreatorTimeZone.Minute, 0), tz);
+					Debug(string.Format("fixedDateForDLS = TimeZoneInfo.ConvertTimeToUtc(new DateTime(NextRun.Value.Year, NextRun.Value.Month, NextRun.Value.Day, StartDateToCreatorTimeZone.Hour, StartDateToCreatorTimeZone.Minute, 0), tz): {0}", fixedDateForDLS.ToString("MM/dd/yyyy HH:mm")));
 
 					NextRun = fixedDateForDLS;
 					Debug(string.Format("NextRun: {0}", NextRun.Value.ToString("MM/dd/yyyy HH:mm")));
