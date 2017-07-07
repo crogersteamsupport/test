@@ -7,7 +7,9 @@
 var mainFrame = getMainFrame();
 
 $(document).ready(function () {
-    
+    var pusher = null;
+    var channel = null;
+
     var pageType = mainFrame.Ts.Utils.getQueryValue("pagetype", window);
     var pageID = mainFrame.Ts.Utils.getQueryValue("pageid", window);
     var singleMsgID = mainFrame.Ts.Utils.getQueryValue("wcinstanceid", window);
@@ -57,8 +59,7 @@ $(document).ready(function () {
         mainFrame.Ts.Services.WaterCooler.DeleteMessage(message.MessageID, function (result) {
             if (result == true)
                 mainFrame.remove();
-            window.mainFrame.chatHubClient.server.deleteMessage(message.MessageID);
-            
+            mainFrame.Ts.Services.Dispatch.Del(message.MessageID);
         });
 
     });
@@ -331,26 +332,26 @@ $(document).ready(function () {
     .click(function () { $(this).val('').removeClass('product-search-blur'); })
     .val('Search for a product...');
 
-    mainFrame.Ts.Services.WaterCooler.GetOnlineChatUsers(mainFrame.Ts.System.User.OrganizationID, function (users) {
-        var name;
-        var chatID;
-        for (var i = 0; i < users.length; i++) {
-            name = users[i].Name;
-            chatID = users[i].UserID;
-            var onlineuser = $('<li>')
-        .data('ChatID', chatID)
-        .data('Name', name)
-        .addClass('onlineUser ts-vcard')
-        .click(function () {
-          window.mainFrame.openChat($(this).data('Name'), $(this).data('ChatID'));
-          mainFrame.Ts.System.logAction('Water Cooler - Chat Opened');
-        })
-        .attr('rel', '../../../Tips/User.aspx?UserID=' + chatID)
-        .cluetip(clueTipOptions)
-        .html('<a class="ui-state-default ts-link" href="#" onclick="return false;"><img class="chatavatar" src="' + users[i].Avatar + '">' + users[i].Name + '</a>')
-        .appendTo($('.sidebarusers'));
-        }
-    });
+    //mainFrame.Ts.Services.WaterCooler.GetOnlinupdateUserseChatUsers(mainFrame.Ts.System.User.OrganizationID, function (users) {
+    //    var name;
+    //    var chatID;
+    //    for (var i = 0; i < users.length; i++) {
+    //        name = users[i].Name;
+    //        chatID = users[i].UserID;
+    //        var onlineuser = $('<li>')
+    //    .data('ChatID', chatID)
+    //    .data('Name', name)
+    //    .addClass('onlineUser ts-vcard')
+    //    .click(function () {
+    //      window.mainFrame.openChat($(this).data('Name'), $(this).data('ChatID'));
+    //      mainFrame.Ts.System.logAction('Water Cooler - Chat Opened');
+    //    })
+    //    .attr('rel', '../../../Tips/User.aspx?UserID=' + chatID)
+    //    .cluetip(clueTipOptions)
+    //    .html('<a class="ui-state-default ts-link" href="#" onclick="return false;"><img class="chatavatar" src="' + users[i].Avatar + '">' + users[i].Name + '</a>')
+    //    .appendTo($('.sidebarusers'));
+    //    }
+    //});
 
     mainFrame.Ts.Services.Users.GetUserPhoto(-99, function (att) {
         $('.mainavatarlrg').attr("src", att);
@@ -460,11 +461,12 @@ $(document).ready(function () {
                     });
                 }
                 else {
-                  window.mainFrame.chatHubClient.server.newThread(Message.MessageID, mainFrame.Ts.System.User.OrganizationID);
-                    $('.commentcontainer').hide();
-                    $('.faketextcontainer').show();
-                    $('#messagecontents').val('');
-                    resetDisplay();
+                    mainFrame.Ts.Services.Dispatch.NewThread(Message.MessageID, mainFrame.Ts.System.User.OrganizationID,function () {
+                        $('.commentcontainer').hide();
+                        $('.faketextcontainer').show();
+                        $('#messagecontents').val('');
+                        resetDisplay();
+                    });
                 }
 
 
@@ -637,7 +639,7 @@ $(document).ready(function () {
         stop: function (e, data) {
           $(this).parent().parent().find('.progress').progressbar('value', 100);
           mainFrame.Ts.System.logAction('Water Cooler - Attachment Added');
-          window.mainFrame.chatHubClient.server.newThread(newMessageID, mainFrame.Ts.System.User.OrganizationID);
+          mainFrame.Ts.Services.Dispatch.NewThread(newMessageID, mainFrame.Ts.System.User.OrganizationID);
           $('.commentcontainer').hide();
           $('.faketextcontainer').show();
           $('#messagecontents').val('');
@@ -787,6 +789,7 @@ else
 
 if (pageID == null)
     pageID = -1;
+
 
 
 
@@ -1052,48 +1055,66 @@ function disconnect (windowid) {
         //chatAddMsg(windowid, "User is currently offline", "system");
     };
 
-function updateStatusReconnecting()
-{
-    $('#signalrStatus').removeClass('color-green');
-    $('#signalrStatus').addClass('color-red');
-}
+function updateUsers (members) {
+    if (pageType == -1) {
+        var name;
+        var chatID;
 
-function updateStatusReconnected() {
-    $('#signalrStatus').removeClass('color-red');
-    $('#signalrStatus').addClass('color-green');
-}
+        members.each(function (member) {
+            name = member.info.name
+            chatID = member.info.userid; //users[i].AppChatID;
+
+            var user = $('.sidebarusers').find('.onlineUser:data(ChatID=' + chatID + ')');
+
+            if (user.length > 0) {
+                user.data('ChatID', chatID);
+            }
+            else {
+                var onlineuser = $('<li>')
+            .data('ChatID', chatID)
+            .data('Name', name)
+            .addClass('onlineUser ts-vcard')
+            .click(function () {
+                window.mainFrame.openChat($(this).data('Name'), $(this).data('ChatID'));
+            })
+            .attr('rel', '../../../Tips/User.aspx?UserID=' + chatID)
+            .cluetip(clueTipOptions)
+            .html('<a class="ui-state-default ts-link" href="#"><img class="chatavatar" src="' + member.info.avatar + '">' + name + '</a>')
+            .appendTo($('.sidebarusers'));
+            }
+        });
 
 
-function updateUsers () {
-        if (pageType == -1) {
-            mainFrame.Ts.Services.WaterCooler.GetOnlineChatUsers(mainFrame.Ts.System.User.OrganizationID, function (users) {
-                var name;
-                var chatID;
-                for (var i = 0; i < users.length; i++) {
-                    name = users[i].Name;
-                    chatID = users[i].UserID; //users[i].AppChatID;
+    }
+    };
 
-                    var user = $('.sidebarusers').find('.onlineUser:data(ChatID=' + chatID + ')');
+function updateUser (member) {
+    if (pageType == -1) {
+        var name;
+        var chatID;
 
-                    if (user.length > 0) {
-                        user.data('ChatID', chatID);
-                    }
-                    else {
-                        var onlineuser = $('<li>')
-                    .data('ChatID', chatID)
-                    .data('Name', name)
-                    .addClass('onlineUser ts-vcard')
-                    .click(function () {
-                        window.mainFrame.openChat($(this).data('Name'), $(this).data('ChatID'));
-                    })
-                    .attr('rel', '../../../Tips/User.aspx?UserID=' + chatID)
-                    .cluetip(clueTipOptions)
-                    .html('<a class="ui-state-default ts-link" href="#"><img class="chatavatar" src="' + users[i].Avatar + '">' + users[i].Name + '</a>')
-                    .appendTo($('.sidebarusers'));
-                    }
-                }
-            });
+        name = member.info.name
+        chatID = member.info.userid; //users[i].AppChatID;
+
+        var user = $('.sidebarusers').find('.onlineUser:data(ChatID=' + chatID + ')');
+
+        if (user.length > 0) {
+            user.data('ChatID', chatID);
         }
+        else {
+            var onlineuser = $('<li>')
+        .data('ChatID', chatID)
+        .data('Name', name)
+        .addClass('onlineUser ts-vcard')
+        .click(function () {
+            window.mainFrame.openChat($(this).data('Name'), $(this).data('ChatID'));
+        })
+        .attr('rel', '../../../Tips/User.aspx?UserID=' + chatID)
+        .cluetip(clueTipOptions)
+        .html('<a class="ui-state-default ts-link" href="#"><img class="chatavatar" src="' + member.info.avatar + '">' + name + '</a>')
+        .appendTo($('.sidebarusers'));
+        }
+    }
     };
 
 function resetDisplay() {
@@ -1206,7 +1227,7 @@ function createThread(thread) {
                 $(this).hide();
                 mainFrame.Ts.System.logAction('Water Cooler - Message Liked');
                 mainFrame.Ts.Services.WaterCooler.AddCommentLike(thread.Message.MessageID, function (likes) {
-                    window.mainFrame.chatHubClient.server.addLike(likes, thread.Message.MessageID, thread.Message.MessageParent, _orgID);
+                    mainFrame.Ts.Services.Dispatch.AddLike(likes, thread.Message.MessageID, thread.Message.MessageParent, _orgID);
                 });
 
             })
@@ -1286,7 +1307,7 @@ function createThread(thread) {
                   mainFrame.Ts.Services.WaterCooler.DeleteMessage(thread.Message.MessageID, function () {
                     mainFrame.Ts.System.logAction('Water Cooler - Post Deleted');
                     });
-                    window.mainFrame.chatHubClient.server.del(thread.Message.MessageID);
+                  mainFrame.Ts.Services.Dispatch.Del(thread.Message.MessageID);
                 }
             }).hide()
             .text('x')
@@ -1461,7 +1482,7 @@ function createReply(thread) {
                 //mainFrame.find('#likeCounter').remove();
                 $(this).hide();
                 mainFrame.Ts.Services.WaterCooler.AddCommentLike(thread.MessageID, function (likes) {
-                    window.mainFrame.chatHubClient.server.addLike(likes, thread.MessageID, thread.MessageParent, _orgID);
+                    mainFrame.Ts.Services.Dispatch.AddLike(likes, thread.MessageID, thread.MessageParent, _orgID);
                 });
 
             })
@@ -1479,7 +1500,7 @@ function createReply(thread) {
                   mainFrame.Ts.Services.WaterCooler.DeleteMessage(thread.MessageID, function () {
                     mainFrame.Ts.System.logAction('Water Cooler - Reply Deleted');
                     });
-                    window.mainFrame.chatHubClient.server.del(thread.MessageID);
+                    mainFrame.Ts.Services.Dispatch.Del(thread.MessageID);
                 }
             }).hide()
             .text('x')
@@ -1736,7 +1757,7 @@ function createCommentContainer(messageid) {
                         });
                     }
                     else {
-                      window.mainFrame.chatHubClient.server.newThread(Message.MessageID, mainFrame.Ts.System.User.OrganizationID);
+                        mainFrame.Ts.Services.Dispatch.NewThread(Message.MessageID, mainFrame.Ts.System.User.OrganizationID);
 
                         cc.hide();
                         ftc.show();
@@ -1857,7 +1878,7 @@ function createCommentContainer(messageid) {
             },
             stop: function (e, data) {
                 $(this).parent().parent().find('.progress').progressbar('value', 100);
-                window.mainFrame.chatHubClient.server.newThread(newMessageID, mainFrame.Ts.System.User.OrganizationID);
+                mainFrame.Ts.Services.Dispatch.NewThread(newMessageID, mainFrame.Ts.System.User.OrganizationID);
 
                 cc.hide();
                 ftc.show();
@@ -2362,8 +2383,6 @@ $('.product-search').autocomplete({
 function ellipseString(text, max) {
     return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; 
  };
-
-
 
 
 

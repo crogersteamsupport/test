@@ -127,22 +127,7 @@ namespace TSWebServices
         //    }
         //}
 
-        //public void SendChat(string message, int userID, string name)
-        //{
-        //    LoginUser loginUser = new LoginUser(connString, -1, -1, null);
-        //    try
-        //    {
-        //        loginUser = new LoginUser(connString, int.Parse(Context.QueryString["userID"]), int.Parse(Context.QueryString["organizationID"]), null);
-        //        User u = Users.GetUser(loginUser, userID);
-        //        Console.WriteLine("message from " + loginUser.UserID + " to " + u.FirstLastName);
-        //        Clients.All.addMessage("message from " + Context.ConnectionId + " to " + u.FirstLastName);
-        //        Clients.Client(u.AppChatID).chatMessage(HtmlToText.ConvertHtml(message), loginUser.UserID, name);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ExceptionLogs.LogException(loginUser, ex, "Socket.SendChat");
-        //    }
-        //}
+
 
         //public void login()
         //{
@@ -228,13 +213,13 @@ namespace TSWebServices
                 //If this is a new thread
                 if (thread.Message.MessageParent == -1)
                 {
-                    var result = pusher.Trigger("watercooler-dispatch-" + organizationID, "addThread", thread);
+                    var result = pusher.Trigger("ticket-dispatch-" + organizationID, "addThread", thread);
                     //return JsonConvert.SerializeObject(true);
                     //Clients.Group().addThread(thread);
                 }
                 else
                 {
-                    var result = pusher.Trigger("watercooler-dispatch-" + organizationID, "addComment", thread);
+                    var result = pusher.Trigger("ticket-dispatch-" + organizationID, "addComment", thread);
                     //Clients.Group(organizationID).addComment(thread);
                     int parentThreadID = (int)thread.Message.MessageParent;
 
@@ -264,7 +249,7 @@ namespace TSWebServices
                     parentThread.Company = parentThreadwccompany.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Company);
                     parentThread.User = parentThreadwcuseratt.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.User);
 
-                    result = pusher.Trigger("watercooler-dispatch-" + organizationID, "updateattachments", parentThread);
+                    result = pusher.Trigger("ticket-dispatch-" + organizationID, "updateattachments", parentThread);
                     //Clients.Group(organizationID).updateattachments(parentThread);
                 }
             }
@@ -285,7 +270,7 @@ namespace TSWebServices
                 WaterCoolerView wcv = new WaterCoolerView(loginUser);
                 wcv.LoadByMessageID(messageID);
 
-                var result = pusher.Trigger("watercooler-dispatch-" + TSAuthentication.GetLoginUser().OrganizationID, "deleteMessage", new { msgID = messageID, parentID = wcv[0].MessageParent });
+                var result = pusher.Trigger("ticket-dispatch-" + TSAuthentication.GetLoginUser().OrganizationID, "deleteMessage", new { msgID = messageID, parentID = wcv[0].MessageParent });
                 //Clients.All.deleteMessage(messageID, wcv[0].MessageParent);
             }
             catch (Exception ex)
@@ -302,7 +287,7 @@ namespace TSWebServices
             try
             {
                 loginUser = new LoginUser(connString, TSAuthentication.GetLoginUser().UserID, TSAuthentication.GetLoginUser().OrganizationID, null);
-                var result = pusher.Trigger("watercooler-dispatch-" + TSAuthentication.GetLoginUser().OrganizationID, "updateLikes", new { like = likes, message = messageID, messageParent =  messageParentID });
+                var result = pusher.Trigger("ticket-dispatch-" + TSAuthentication.GetLoginUser().OrganizationID, "updateLikes", new { like = likes, message = messageID, messageParent =  messageParentID });
                 //Clients.Group(orgID).updateLikes(likes, messageID, messageParentID);
             }
             catch (Exception ex)
@@ -477,6 +462,48 @@ namespace TSWebServices
             var auth = pusher.Authenticate(channel_name, socket_id, channelData);
             var json = auth.ToJson();
             Context.Response.Write(json);
+        }
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public void SendChat(string message, int userID, string name)
+        {
+            LoginUser loginUser = new LoginUser(connString, -1, -1, null);
+            try
+            {
+                loginUser = new LoginUser(connString, TSAuthentication.GetLoginUser().UserID, TSAuthentication.GetLoginUser().OrganizationID, null);
+                User u = Users.GetUser(loginUser, userID);
+                //Console.WriteLine("message from " + loginUser.UserID + " to " + u.FirstLastName);
+                //Clients.All.addMessage("message from " + Context.ConnectionId + " to " + u.FirstLastName);
+                var result = pusher.Trigger("ticket-dispatch-" + TSAuthentication.GetLoginUser().OrganizationID, "chatMessage", new { message = HtmlToText.ConvertHtml(message), chatID = loginUser.UserID, chatname = name, reciever = userID });
+                //Clients.Client(u.AppChatID).chatMessage(HtmlToText.ConvertHtml(message), loginUser.UserID, name);
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogs.LogException(loginUser, ex, "Socket.SendChat");
+            }
+        }
+
+        [WebMethod]
+        public void UpdateTokTransCoderAlive()
+        {
+            Services services = new Services(LoginUser.Anonymous);
+            services.LoadByName("TokTranscoder");
+
+            if(services.Count == 0)
+            {
+                //add new service and update it
+                Service service = (new Services(loginUser)).AddNewService();
+                service.Name = "TokTranscoder";
+                service.Collection.Save();
+            }
+            else
+            {
+                services[0].HealthTime = DateTime.Now;
+                services[0].Collection.Save();
+            }
+            
+
         }
 
     }

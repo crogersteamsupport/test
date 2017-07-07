@@ -377,8 +377,9 @@ var loadTicket = function (ticketNumber, refresh) {
         LoadGroups();
         LoadPlugins(info);
         if (typeof refresh === "undefined") {
-            window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
+            window.parent.Ts.Services.Dispatch.getTicketViewing(_ticketNumber);
         }
+        
        
 
     });
@@ -523,7 +524,7 @@ function SetupTicketProperties(order) {
                     window.parent.Ts.System.logAction('Ticket - Deleted');
                     window.parent.Ts.Services.Tickets.DeleteTicket(_ticketID, function () {
                         window.parent.Ts.MainPage.closeTicketTab(_ticketNumber);
-                        window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "delete", userFullName);
+                        window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "delete", userFullName);
                     }, function () {
                         alert('There was an error deleting this ticket.');
                     });
@@ -575,11 +576,9 @@ function SetupTicketProperties(order) {
         isFormValid();
         LoadPlugins(info);
         if (typeof refresh === "undefined") {
-
-            if (typeof window.parent.ticketSocket != "undefined") {
-                window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
-            }
+            window.parent.Ts.Services.Dispatch.getTicketViewing(_ticketNumber);
         }
+        
         
 
   });
@@ -1545,7 +1544,7 @@ function SaveAction(_oldActionID, isPrivate, callback) {
     });
 
     window.parent.Ts.System.logAction('Action Saved');
-    window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "addaction", userFullName);
+    window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "addaction", userFullName);
 
 }
 
@@ -1667,7 +1666,7 @@ function LoadTicketControls() {
           if (value == '-1') value = null;
           if (value !== ((_ticketCurrUser !== null) ? _ticketCurrUser.toString() : _ticketCurrUser)) {
             window.parent.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
-              window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
+                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changeassigned", userFullName);
               LoadGroups();
             },
             function (error) {
@@ -1951,7 +1950,7 @@ function SetupTicketPropertyEvents() {
                 window.parent.Ts.System.logAction('Ticket - Renamed');
                 self.text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name)).show();
 
-                window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changeticketname", userFullName);
+                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changeticketname", userFullName);
             },
             function (error) {
                 alert('There was an error saving the ticket name.');
@@ -1980,7 +1979,7 @@ function SetupTicketPropertyEvents() {
         if (GroupID !== ((_ticketGroupID !== null) ? _ticketGroupID.toString() : _ticketGroupID)) {
             window.parent.Ts.Services.Tickets.SetTicketGroup(_ticketID, GroupID, function (result) {
                 if (result !== null) {
-                    window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changegroup", userFullName);
+                    window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changegroup", userFullName);
                 }
                 _ticketGroupID = GroupID;
                 if (window.parent.Ts.System.Organization.UpdateTicketChildrenGroupWithParent) {
@@ -2010,7 +2009,7 @@ function SetupTicketPropertyEvents() {
                 _ticketInfo.Ticket = result[2];
                 setSLAInfo();
 
-                window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changetype", userFullName);
+                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changetype", userFullName);
             }
         },
         function (error) {
@@ -2025,7 +2024,7 @@ function SetupTicketPropertyEvents() {
             if (result !== null) {
                 resetSLAInfo();
                 slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
-                window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changeseverity", userFullName);
+                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changeseverity", userFullName);
             }
         },
         function (error) {
@@ -2040,7 +2039,7 @@ function SetupTicketPropertyEvents() {
             var value = self.is(":checked");
             window.parent.Ts.System.logAction('Ticket - Visibility Changed');
             window.parent.Ts.Services.Tickets.SetIsVisibleOnPortal(_ticketID, value, function (result) {
-                window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changeisportal", userFullName);
+                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changeisportal", userFullName);
             },
           function (error) {
               alert('There was an error saving the ticket portal visible\'s status.');
@@ -2066,7 +2065,7 @@ function SetupTicketPropertyEvents() {
                 else {
                     $('#ticket-group-KBCat').hide();
                 }
-                window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changeiskb", userFullName);
+                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changeiskb", userFullName);
             },
             function (error) {
                 alert('There was an error saving the ticket knowlegdgebase\'s status.');
@@ -2079,7 +2078,7 @@ function SetupTicketPropertyEvents() {
         var value = self.val();
         window.parent.Ts.System.logAction('Ticket - KnowledgeBase Community Changed');
         window.parent.Ts.Services.Tickets.SetTicketKnowledgeBaseCategory(_ticketID, value, function (result) {
-            window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changekbcat", userFullName);
+            window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changekbcat", userFullName);
         },
         function (error) {
             alert('There was an error setting your ticket knowledgebase category.');
@@ -2093,7 +2092,7 @@ function SetupTicketPropertyEvents() {
         var newCatName = self.text();
         window.parent.Ts.System.logAction('Ticket - Community Changed');
         window.parent.Ts.Services.Tickets.SetTicketCommunity(_ticketID, value, oldCatName == null ? 'Unassigned' : oldCatName, newCatName == null ? 'Unassigned' : newCatName, function (result) {
-            window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changecommunity", userFullName);
+            window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changecommunity", userFullName);
         },
         function (error) {
             alert('There was an error setting your ticket community.');
@@ -2145,7 +2144,7 @@ function SetupCustomerSection() {
                             });
                         }
 
-                        window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "addcustomer", userFullName);
+                        window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "addcustomer", userFullName);
                     }, function () {
                         $(this).parent().remove();
                         alert('There was an error adding the customer.');
@@ -2273,7 +2272,7 @@ function SetupCustomerSection() {
         if (data.UserID) {
             window.parent.Ts.Services.Tickets.RemoveTicketContact(_ticketID, data.UserID, function (customers) {
                 AddCustomers(customers);
-                window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "removecontact", userFullName);
+                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "removecontact", userFullName);
             }, function () {
                 alert('There was a problem removing the contact from the ticket.');
             });
@@ -2282,7 +2281,7 @@ function SetupCustomerSection() {
         else {
             window.parent.Ts.Services.Tickets.RemoveTicketCompany(_ticketID, data.OrganizationID, function (customers) {
                 AddCustomers(customers);
-                window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "removecompany", userFullName);
+                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "removecompany", userFullName);
             }, function () {
                 alert('There was a problem removing the company from the ticket.');
             });
@@ -2362,7 +2361,6 @@ function SetupTagsSection() {
                 window.parent.Ts.Services.Tickets.AddTag(_ticketID, ui.item.value, function (tags) {
                     if (tags !== null) {
                         AddTags(tags);
-                        //window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "addtag", userFullName);
                     }
 
                 }, function () {
@@ -2384,7 +2382,7 @@ function SetupTagsSection() {
 
                     //tag.parentNode.removeChild(tag);
                     $(tag).remove();
-                    window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "removetag", userFullName);
+                    window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "removetag", userFullName);
                 }, function () {
                     alert('There was a problem removing the tag from the ticket.');
                 });
@@ -2572,6 +2570,7 @@ function SetupProductSection() {
 
                 resetSLAInfo();
                 slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
+                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changeproduct", userFullName);
             },
             function (error) {
                 alert('There was an error setting the product.');
@@ -2583,7 +2582,7 @@ function SetupProductSection() {
             window.parent.Ts.System.logAction('Ticket - Reported Version Changed');
             window.parent.Ts.Services.Tickets.SetReportedVersion(_ticketID, $(this).val(), function (result) {
                 $('#ticket-Versions').closest('.form-group').removeClass('hasError');
-                window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changereported", userFullName);
+                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changereported", userFullName);
             },
             function (error) {
                 alert('There was an error setting the reported version.');
@@ -2594,7 +2593,7 @@ function SetupProductSection() {
             window.parent.Ts.System.logAction('Ticket - Resolved Version Changed');
             window.parent.Ts.Services.Tickets.SetSolvedVersion(_ticketID, $(this).val(), function (result) {
                 $('#ticket-Resolved').closest('.form-group').removeClass('hasError');
-                window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changeresolved", userFullName);
+                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changeresolved", userFullName);
             },
             function (error) {
                 alert('There was an error setting the reported version.');
@@ -2796,7 +2795,7 @@ function SetupInventorySection() {
                     window.parent.Ts.Services.Tickets.GetTicketCustomers(_ticketID, function (customers) {
                         AddCustomers(customers);
                     });
-                    window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "addasset", userFullName);
+                    window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "addasset", userFullName);
                 }, function () {
                     alert('There was an error adding the asset.');
                 });
@@ -2818,7 +2817,7 @@ function SetupInventorySection() {
             var data = self.parent().data().tag;
             window.parent.Ts.Services.Tickets.RemoveTicketAsset(_ticketID, data.AssetID, function (assets) {
                 AddInventory(assets);
-                window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "removeasset", userFullName);
+                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "removeasset", userFullName);
             }, function () {
                 alert('There was a problem removing the asset from the ticket.');
             });
@@ -2857,7 +2856,7 @@ function SetupUserQueuesSection() {
             onItemAdd: function (value, $item) {
                 window.parent.Ts.Services.Tickets.SetQueue(_ticketID, true, value, function (queues) {
                     AddQueues(queues);
-                    window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "addqueue", userFullName);
+                    window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "addqueue", userFullName);
                 }, function () {
                     alert('There was an error adding the queue.');
                 });
@@ -2881,7 +2880,7 @@ function SetupUserQueuesSection() {
 
             window.parent.Ts.Services.Tickets.SetQueue(_ticketID, false, data.UserID, function (queues) {
                 AddQueues(queues);
-                window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "removequeue", userFullName);
+                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "removequeue", userFullName);
             }, function () {
                 alert('There was a problem removing the queue from the ticket.');
             });
@@ -2922,7 +2921,7 @@ function SetupSubscribedUsersSection() {
             onItemAdd: function (value, $item) {
                 window.parent.Ts.Services.Tickets.SetSubscribed(_ticketID, true, value, function (subscribers) {
                     AddSubscribers(subscribers);
-                    window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "addsubscriber", userFullName);
+                    window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "addsubscriber", userFullName);
                 }, function () {
                     alert('There was an error adding the subscriber.');
                 });
@@ -2944,7 +2943,7 @@ function SetupSubscribedUsersSection() {
             var data = self.parent().data().tag;
             window.parent.Ts.Services.Tickets.SetSubscribed(_ticketID, false, data.UserID, function (subscribers) {
                 AddSubscribers(subscribers);
-                window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "removesubscriber", userFullName);
+                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "removesubscriber", userFullName);
             }, function () {
                 alert('There was a problem removing the subscriber from the ticket.');
             });
@@ -3004,7 +3003,7 @@ function SetupAssociatedTicketsSection() {
             var data = self.parent().data().tag;
             window.parent.Ts.Services.Tickets.RemoveRelated(_ticketID, data.TicketID, function (result) {
                 if (result !== null && result === true) self.parent().remove();
-                window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "removerelationship", userFullName);
+                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "removerelationship", userFullName);
             }, function () {
                 alert('There was an error removing the associated ticket.');
             });
@@ -3030,7 +3029,7 @@ function SetupAssociatedTicketsSection() {
             window.parent.Ts.Services.Tickets.AddRelated(_ticketID, TicketID2, IsParent, function (tickets) {
                 $('#AssociateTicketModal').modal('hide');
                 AddAssociatedTickets(tickets);
-                window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "addrelationship", userFullName);
+                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "addrelationship", userFullName);
             }, function (error) {
                 $('#associate-error').text(error.get_message()).show();
             });
@@ -3138,7 +3137,7 @@ function SetupRemindersSection() {
             if (reminder && currentUserID == window.parent.Ts.System.User.UserID) {
                 window.parent.Ts.Services.System.DismissReminder(reminder.id, function () {
                     $(reminder).remove();
-                    window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "removereminder", userFullName);
+                    window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "removereminder", userFullName);
                 }, function () {
                     alert('There was a problem removing the reminder from the ticket.');
                 });
@@ -3192,7 +3191,7 @@ function SetupTasksSection() {
         if (reminder && currentUserID == window.parent.Ts.System.User.UserID) {
             window.parent.Ts.Services.System.DismissReminder(reminder.id, function () {
                 $(reminder).remove();
-                window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "removereminder", userFullName);
+                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "removereminder", userFullName);
             }, function () {
                 alert('There was a problem removing the reminder from the ticket.');
             });
@@ -3251,25 +3250,25 @@ function AddReminders(reminders) {
 function AddTasks(tasks) {
     var tasksDiv = $("#ticket-task-span");
     tasksDiv.empty();
+    if (tasks) {
+        for (var i = 0; i < tasks.length; i++) {
+            var _TaskName = tasks[i].Name;
 
-    for (var i = 0; i < tasks.length; i++) {
-        var _TaskName = tasks[i].Name;
-
-        if (tasks[i].Name == null) {
-            if (tasks[i].Description == null || tasks[i].Description == "") {
-                _TaskName = 'No Title';
+            if (tasks[i].Name == null) {
+                if (tasks[i].Description == null || tasks[i].Description == "") {
+                    _TaskName = 'No Title';
+                }
+                else {
+                    _TaskName = tasks[i].Description;
+                }
             }
-            else {
-                _TaskName = tasks[i].Description;
-            }
-        }
 
-        if (tasks[i].AssignedTo != null)
-        {
-            _TaskName += ' for ' + tasks[i].AssignedTo;
-        }
-        var reminderElem = PrependTask(tasksDiv, tasks[i].TaskID, _TaskName, tasks[i]);
-    };
+            if (tasks[i].AssignedTo != null) {
+                _TaskName += ' for ' + tasks[i].AssignedTo;
+            }
+            var reminderElem = PrependTask(tasksDiv, tasks[i].TaskID, _TaskName, tasks[i]);
+        };
+    }
 }
 
 function SetupCustomFieldsSection() {
@@ -3419,7 +3418,7 @@ var AddCustomFieldEdit = function (field, parentContainer) {
             groupContainer.data('field', result);
             groupContainer.find('.external-link').remove();
             input.after(getUrls(result.Value));
-            window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+            window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changecustom", userFullName);
         }, function () {
             alert("There was a problem saving your ticket property.");
         });
@@ -3512,7 +3511,7 @@ var AddCustomFieldDate = function (field, parentContainer) {
               window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
                   var date = result === null ? null : window.parent.Ts.Utils.getMsDate(result);
                   dateLink.text((value === null ? 'unassigned' : value.localeFormat(window.parent.Ts.Utils.getDatePattern()))).show();
-                  window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+                  window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changecustom", userFullName);
               }, function () {
                   alert("There was a problem saving your ticket property.");
               });
@@ -3612,7 +3611,7 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
               window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
                   var date = result === null ? null : window.parent.Ts.Utils.getMsDate(result);
                   dateLink.text((value === null ? '' : value.localeFormat(window.parent.Ts.Utils.getDateTimePattern()))).show();
-                  window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+                  window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changecustom", userFullName);
               }, function () {
                   alert("There was a problem saving your ticket property.");
               });
@@ -3712,7 +3711,7 @@ var AddCustomFieldTime = function (field, parentContainer) {
               window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
                   var date = result === null ? null : window.parent.Ts.Utils.getMsDate(result);
                   dateLink.text((value === null ? '' : value.localeFormat(window.parent.Ts.Utils.getTimePattern()))).show();
-                  window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+                  window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changecustom", userFullName);
               }, function () {
                   alert("There was a problem saving your ticket property.");
               });
@@ -3755,7 +3754,7 @@ var AddCustomFieldBool = function (field, parentContainer) {
         var isChecked = input.is(':checked')
         window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, isChecked, function (result) {
             groupContainer.data('field', result);
-            window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+            window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changecustom", userFullName);
         }, function () {
             alert("There was a problem saving your ticket property.");
         });
@@ -3798,7 +3797,7 @@ var AddCustomFieldNumber = function (field, parentContainer) {
         }
         window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
             groupContainer.data('field', result);
-            window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+            window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changecustom", userFullName);
         }, function () {
             alert("There was a problem saving your ticket property.");
         });
@@ -3866,7 +3865,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
                 $('.' + field.CustomFieldID + 'children').remove();
                 var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children').insertAfter(formcontainer);
                 appendMatchingParentValueFields(childrenContainer, result);
-                window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changecustom", userFullName);
             }, function () {
                 alert("There was a problem saving your ticket property.");
             });
@@ -3959,7 +3958,7 @@ var SetupDueDateField = function (duedate) {
                   else {
                       dateLink.removeClass('nonrequired-field-error-font');
                   }
-                  window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changeduedate", userFullName);
+                  window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changeduedate", userFullName);
               }, function () {
                   alert("There was a problem saving your ticket property.");
               });
@@ -3993,7 +3992,7 @@ var SetupStatusField = function (StatusId) {
                                     _ticketInfo.IsSlaPaused = status.PauseSLA;
                                     resetSLAInfo();
                                     slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
-                                    window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "changestatus", userFullName);
+                                    window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changestatus", userFullName);
                                 }
                             },
                             function (error) {
@@ -4926,7 +4925,7 @@ function CreateTimeLineDelegates() {
             window.parent.Ts.System.logAction('Ticket - Action Deleted');
             window.parent.Ts.Services.Tickets.DeleteAction(action.RefID, function () {
                 self.closest('li').remove();
-                window.parent.ticketSocket.server.ticketUpdate(_ticketNumber, "deleteaction", userFullName);
+                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "deleteaction", userFullName);
             },
             function () { alert('There was an error deleting this action.'); });
         }
@@ -5076,7 +5075,7 @@ function CreateTimeLineDelegates() {
                 self.parent().hide();
                 self.parent().parent().find('.wc-option-replyarea').show();
                 self.closest('.wc-textarea').find('textarea').val('');
-                window.parent.chatHubClient.server.newThread(Message.MessageID, window.parent.Ts.System.User.OrganizationID);
+                window.parent.Ts.Services.Dispatch.NewThread(Message.MessageID, window.parent.Ts.System.User.OrganizationID);
             });
         }
 
@@ -5223,7 +5222,7 @@ function CreateTicketToolbarDomEvents() {
                     JSwindow.parent.Ts.MainPage.closeTicketTab(_ticketNumber);
                     JSwindow.parent.Ts.MainPage.openTicket(winningTicketNumber, true);
                     //window.location = window.location;
-                    window.parent.ticketSocket.server.ticketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
+                    window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
                 }
             });
             //window.parent.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, MergeSuccessEvent(_ticketNumber, winningTicketNumber),
@@ -5688,7 +5687,7 @@ function SetupWCArea() {
                         $(o).data('data', data);
                     });
                 }
-                window.parent.chatHubClient.server.newThread(message.item.RefID, window.parent.Ts.System.User.OrganizationID);
+                window.parent.Ts.Services.Dispatch.NewThread(message.item.RefID, window.parent.Ts.System.User.OrganizationID);
                 $('.wc-attachments').empty();
                 CreateActionElement(message, false);
                 $('.watercooler-new-area').fadeOut('normal');
@@ -5781,7 +5780,7 @@ var MergeSuccessEvent = function (_ticketNumber, winningTicketNumber) {
     window.parent.Ts.MainPage.closeTicketTab(_ticketNumber);
     window.parent.Ts.MainPage.openTicket(winningTicketNumber, true);
     window.location = window.location;
-    window.parent.ticketSocket.server.ticketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
+    window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
 };
 
 var addUserViewing = function (userID) {

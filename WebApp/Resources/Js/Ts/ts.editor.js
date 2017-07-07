@@ -91,7 +91,6 @@ var initEditor = function (element, shouldResize, init, postinit) {
                               if (_ticketID) {
                                   _mainFrame.Ts.Services.Tickets.AddRelated(_ticketID, ticketID, null, function (tickets) {
                                   appendRelated(tickets);
-                                      //window._mainFrame.ticketSocket.server.ticketUpdate(_ticketNumber, "addrelationship", userFullName);
                                 }, function (error) {
                                   //container.remove();
                                   alert(error.get_message());

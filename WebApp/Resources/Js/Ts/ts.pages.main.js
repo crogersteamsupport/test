@@ -1021,7 +1021,7 @@ Ts.Pages.Main.prototype = {
                     }
 
                     try {
-                        if (parent.ticketSocket.server.ticketViewingRemove) parent.ticketSocket.server.ticketViewingRemove(null, mainFrame.Ts.System.User.UserID);
+                        mainFrame.Ts.Services.Dispatch.ticketViewingRemove(null, mainFrame.Ts.System.User.UserID);
                     } catch (err) { }
                     $('.main-info-content').load(item.getData().PaneInfoUrl);
                     break;
@@ -1049,7 +1049,7 @@ Ts.Pages.Main.prototype = {
                         div.show();
 
                         try {
-                            if (parent.ticketSocket.server.getTicketViewing) parent.ticketSocket.server.getTicketViewing(ticketID);
+                            mainFrame.Ts.Services.Dispatch.getTicketViewing(ticketID);
                         } catch (err) { }
                     }
                     $('.main-info-content').load('vcr/1_9_0/PaneInfo/ticket.html');
@@ -1077,7 +1077,7 @@ Ts.Pages.Main.prototype = {
                         div.show();
                     }
                     try {
-                        if (parent.ticketSocket.server.ticketViewingRemove) parent.ticketSocket.server.ticketViewingRemove(mainFrame.Ts.System.User.UserID);
+                        mainFrame.Ts.Services.Dispatch.ticketViewingRemove(mainFrame.Ts.System.User.UserID);
                     } catch (err) { }
                     $('.main-info-content').load('vcr/1_9_0/PaneInfo/newticket.html');
                     break;

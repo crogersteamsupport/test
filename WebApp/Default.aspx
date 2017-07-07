@@ -35,6 +35,7 @@
   <script src="vcr/1_9_0/Js/jquery.pnotify.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/moment.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/Ts/ts.editor.js" type="text/javascript"></script>
+  <script src="vcr/1_9_0/Js/Ts/ts.wc.signalr.js" type="text/javascript"></script>
 
   <script src="../js_5/imagepaste.js" type="text/javascript"></script>
   <script src="../js_5/jquery.Jcrop.js" type="text/javascript"></script>
@@ -82,17 +83,8 @@
       g_PrivateServices = privateServices = new TeamSupport.Services.PrivateServices();
       g_PrivateServices.set_defaultSucceededCallback(function (result) { });
       g_PrivateServices.set_defaultFailedCallback(function (error, userContext, methodName) { });
-      var signalRUrl = $("#SignalRUrl").val();
-      if (BrowserDetect.browser != 'Safari' || BrowserDetect.isMobile != 1) {
-        try {
-          $.getScript(signalRUrl + "/hubs", function (data, textStatus, jqxhr) {
-            $.getScript("vcr/1_9_0/Js/ts/ts.wc.signalr.js", function (data, textStatus, jqxhr) {
-              if (loadSignalR) { loadSignalR(signalRUrl); }
+      loadPusher();
 
-            });
-          });
-        } catch (e) { }
-      }
     }
 
     var backspaceIsPressed = false;
@@ -188,6 +180,7 @@
         <asp:ServiceReference Path="~/Services/LoginService.asmx" />
         <asp:ServiceReference Path="~/Services/ChatService.asmx" />
         <asp:ServiceReference Path="~/Services/TaskService.asmx" />
+        <asp:ServiceReference Path="~/Services/DispatchService.asmx" />
       </services>
     <scripts>
 
