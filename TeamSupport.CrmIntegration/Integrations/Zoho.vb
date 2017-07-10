@@ -681,8 +681,8 @@ Namespace TeamSupport
                 Log.Write("Sending report data...")
 
                 Try
+                    CheckGrid()
                     Success = SendReportData()
-
                 Catch ex As Exception
                     Log.Write("exception: " & ex.Message & ": " & ex.StackTrace)
                     Success = False
@@ -691,6 +691,18 @@ Namespace TeamSupport
                 End Try
 
                 Return Success
+            End Function
+
+            ''' <summary>
+            ''' Check if the hostname exists, if not then set it to default to the US grid: reportsapi.zoho.com
+            ''' This way we ensure that all existing records without this entry (prior to the update to handle european grid) will be set to the US one. If it is already entered then nothing is done.
+            ''' </summary>
+            ''' <returns></returns>
+            Private Function CheckGrid()
+                If (CRMLinkRow.HostName Is Nothing OrElse String.IsNullOrEmpty(CRMLinkRow.HostName)) Then
+                    CRMLinkRow.HostName = "reportsapi.zoho.com"
+                    Log.Write("Hostname was null or empty, it has been set to: reportsapi.zoho.com")
+                End If
             End Function
 
             ''' <summary>
@@ -868,9 +880,9 @@ Namespace TeamSupport
                 Dim success As Boolean = True
 
                 Dim zohoUri As Uri = Nothing
-                
-                zohoUri = New Uri(String.Format("https://reportsapi.zoho.com/api/{0}/{2}/{3}?ZOHO_ACTION=IMPORT&ZOHO_OUTPUT_FORMAT=XML&ZOHO_ERROR_FORMAT=XML&authtoken={1}&ZOHO_API_VERSION=1.0", _
-                                  CRMLinkRow.Username, CRMLinkRow.SecurityToken1, databaseName, tableName))                
+
+                zohoUri = New Uri(String.Format("https://{4}/api/{0}/{2}/{3}?ZOHO_ACTION=IMPORT&ZOHO_OUTPUT_FORMAT=XML&ZOHO_ERROR_FORMAT=XML&authtoken={1}&ZOHO_API_VERSION=1.0",
+                                  CRMLinkRow.Username, CRMLinkRow.SecurityToken1, databaseName, tableName, CRMLinkRow.HostName.Replace("https://", "").Replace("http://", "")))
 
                 Dim postParameters As New Dictionary(Of String, Object)()
 
