@@ -52,6 +52,65 @@ $(document).ready(function () {
         mainFrame.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler");
     });
 
+    var pressenceChannel = null;
+    var pusher = null;
+    var service = '/Services/DispatchService.asmx/';
+    top.Ts.Settings.System.read('PusherKey', '1', function (key) {
+        var orgID = top.Ts.System.Organization.OrganizationID;
+        var userID = top.Ts.System.User.UserID;
+        pusher = new Pusher(key);
+
+        var presenceChannelName = 'presence-' + orgID;
+        var presence = new Pusher(key, {
+            authEndpoint: service + 'Auth',
+            auth: {
+                params: {
+                    userID: top.Ts.System.User.UserID
+                }
+            }
+        });
+
+        pressenceChannel = presence.subscribe(presenceChannelName);
+
+        pressenceChannel.bind('pusher:subscription_succeeded', function (members) {
+            var mainWC = $("#iframe-mniWC2");
+            try {
+                updateUsers(members);
+            } catch (err) { }
+        });
+
+        pressenceChannel.bind('pusher:member_added', function (member) {
+            var mainWC = $("#iframe-mniWC2");
+            try {
+                updateUser(member);
+            } catch (err) { }
+
+            //var userPage = $("#iframe-mniUsers");
+            //  try {
+            //      if (userPage[0].contentWindow.Update) { userPage[0].contentWindow.Update(); }
+            //  } catch (err) { }
+        });
+
+        pressenceChannel.bind('pusher:member_removed', function (member) {
+            disconnect(member.info.userid);
+            var windows = getChildWindows();
+            
+            for (var i = 0; i < windows.length; i++) {
+                try { if (windows[i].disconnect) windows[i].disconnect(member.info.userid); } catch (err) { }
+            }
+
+
+
+            var mainWC = $("#iframe-mniUsers");
+            try {
+                if (window.parent.mainWC[0].contentWindow.Update) { window.parent.mainWC[0].contentWindow.Update(); }
+            } catch (err) { }
+        });
+
+    });
+
+
+
     // delete link event
     $('.wc-threads').delegate('.wc-delete-link', 'click', function (e) {
         var parent = $(this).closest('.wc-message');
@@ -2379,6 +2438,25 @@ $('.product-search').autocomplete({
             .removeClass('ui-autocomplete-loading');
         }
     });
+
+function getChildWindows() {
+    var result = [];
+
+    function addWindow(element) {
+        for (var i = 0; i < element.length; i++) {
+            try {
+                if (window.parent.element[i].contentWindow && window.parent.element[i].contentWindow != null) result.push(window.parent.element[i].contentWindow);
+            } catch (e) { }
+        }
+    }
+
+    addWindow($("#iframe-mniWC2"));
+    addWindow($("#iframe-mniGroups").contents().find("#ctl00_ContentPlaceHolder1_groupContentFrame"));
+    addWindow($(".customerIframe").contents().find("#watercoolerIframe"));
+    addWindow($("#iframe-mniProducts").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations"));
+    addWindow($(".ticketIframe").contents().find("#watercoolerIframe"));
+    return result;
+}
 
 function ellipseString(text, max) {
     return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; 

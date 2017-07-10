@@ -1,5 +1,5 @@
 ﻿var notify = false;
-
+var _pressenceChannel = false;
 function loadPusher() { 
     $("#jquery_jplayer_1").jPlayer({
         ready: function () {
@@ -22,50 +22,49 @@ function loadPusher() {
         var userID = top.Ts.System.User.UserID;
         pusher = new Pusher(key);
 
-        var presenceChannelName = 'presence-' + orgID;
-        var presence = new Pusher(key, {
-            authEndpoint: service + 'Auth',
-            auth: {
-                params: {
-                    userID: top.Ts.System.User.UserID
-                }
-            }
-        });
+        //var presenceChannelName = 'presence-' + orgID;
+        //var presence = new Pusher(key, {
+        //    authEndpoint: service + 'Auth',
+        //    auth: {
+        //        params: {
+        //            userID: top.Ts.System.User.UserID
+        //        }
+        //    }
+        //});
 
-        pressenceChannel = presence.subscribe(presenceChannelName);
+        //pressenceChannel = presence.subscribe(presenceChannelName);
 
-        pressenceChannel.bind('pusher:subscription_succeeded', function (members) {
-            var mainWC = $("#iframe-mniWC2");
-            try {
-                if (mainWC[0].contentWindow.updateUsers) { mainWC[0].contentWindow.updateUsers(members); }
-            } catch (err) { }
-        });
+        //pressenceChannel.bind('pusher:subscription_succeeded', function (members) {
+        //    var mainWC = $("#iframe-mniWC2");
+        //    try {
+        //        if (mainWC[0].contentWindow.updateUsers) { mainWC[0].contentWindow.updateUsers(members); }
+        //    } catch (err) { }
+        //});
 
-        pressenceChannel.bind('pusher:member_added', function (member) {
-              var mainWC = $("#iframe-mniWC2");
-              try {
-                if (mainWC[0].contentWindow.updateUsers) { mainWC[0].contentWindow.updateUser(member); }
-              } catch (err) { }
+        //pressenceChannel.bind('pusher:member_added', function (member) {
+        //      var mainWC = $("#iframe-mniWC2");
+        //      try {
+        //        if (mainWC[0].contentWindow.updateUsers) { mainWC[0].contentWindow.updateUser(member); }
+        //      } catch (err) { }
 
-              //var userPage = $("#iframe-mniUsers");
-              //  try {
-              //      if (userPage[0].contentWindow.Update) { userPage[0].contentWindow.Update(); }
-              //  } catch (err) { }
-        });
+        //      //var userPage = $("#iframe-mniUsers");
+        //      //  try {
+        //      //      if (userPage[0].contentWindow.Update) { userPage[0].contentWindow.Update(); }
+        //      //  } catch (err) { }
+        //});
 
-        pressenceChannel.bind('pusher:member_removed', function (member) {
-              var windows = getChildWindows();
-              for (var i = 0; i < windows.length; i++) {
-                try { if (windows[i].disconnect) windows[i].disconnect(member.info.userid); } catch (err) { }
-              }
+        //pressenceChannel.bind('pusher:member_removed', function (member) {
+        //      var windows = getChildWindows();
+        //      for (var i = 0; i < windows.length; i++) {
+        //        try { if (windows[i].disconnect) windows[i].disconnect(member.info.userid); } catch (err) { }
+        //      }
 
-              var mainWC = $("#iframe-mniUsers");
-                try {
-                    if (mainWC[0].contentWindow.Update) { mainWC[0].contentWindow.Update(); }
-                } catch (err) { }
-        });
+        //      var mainWC = $("#iframe-mniUsers");
+        //        try {
+        //            if (mainWC[0].contentWindow.Update) { mainWC[0].contentWindow.Update(); }
+        //        } catch (err) { }
+        //});
 
-        //watercooler_channel = pusher.subscribe('watercooler-dispatch-' + orgID);
         ticket_channel = pusher.subscribe('ticket-dispatch-' + orgID);
 
         ticket_channel.bind('addThread', function (data) {
