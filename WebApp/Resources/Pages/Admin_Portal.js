@@ -867,7 +867,7 @@ AdminPortal = function () {
         var container = $('.sort-container');
         var sort = $('<div>').addClass("sort-item").data("fieldID", col.CustomFieldID ? "c" + col.CustomFieldID : "s" + col.StockFieldID).appendTo(container);
         var title = $('<span>').text(col.FieldText).appendTo(sort);
-        var trash = $('<span>').addClass('ts-icon ts-icon-delete').hide().click(function () {
+        var trash = $('<span>').addClass('ts-icon ts-icon-delete fa fa-trash').hide().click(function () {
             if (confirm("Do you want to delete this column?")) {
                 parent.parent.Ts.Services.Organizations.RemoveCustomPortalColumn(sort.data("fieldID"));
                 sort.remove();
@@ -887,7 +887,7 @@ AdminPortal = function () {
             var container = $('.sort-container');
             var sort = $('<div>').addClass("sort-item").data("fieldID", $('.admin-portal-columns').val()).appendTo(container);
             var title = $('<span>').text($('.admin-portal-columns option:selected').text()).appendTo(sort);
-            var trash = $('<span>').addClass('ts-icon ts-icon-delete').hide().click(function () {
+            var trash = $('<span>').addClass('ts-icon ts-icon-delete fa fa-trash').hide().click(function () {
                 if (confirm("Do you want to delete this column?")) {
                     parent.parent.Ts.Services.Organizations.RemoveCustomPortalColumn(sort.data("fieldID"));
                     savePortalColPositions();

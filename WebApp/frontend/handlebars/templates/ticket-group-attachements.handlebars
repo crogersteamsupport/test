@@ -1,0 +1,8 @@
+<div class="form-group ticket-group">
+    <div class="tagContainer">
+        <label class="col-sm-4 control-label select-label attachment-label">Attachments</label>
+        {{#each Attachments}}
+        <a target="_blank" href="../../../dc/1/attachments/{{AttachmentID}}"><i class="glyphicon glyphicon-paperclip"></i>{{FileName}}</a>
+        <br /> {{/each}}
+    </div>
+</div>
