@@ -464,19 +464,19 @@ function AddTicketProperty(item) {
         var html = '<div class="ticket-plugin" id="ticket-group-plugin-' + item.ItemID + '"></div>';
         $('#ticket-properties-area').append(html);
     } else {
-        if ($("#ticket-group-" + item.CatID).length > 0) {
-            // var compiledTemplate = Handlebars.compile($("#ticket-group-" + item.CatID).html());
-            var hbrs = "ticket-group-" + item.CatID;
-            var hbrs = hbrs.toLowerCase();
-            var compiledTemplate = Handlebars.templates[hbrs];
 
-            if (item.CatID == "Attachments") {
-                var context = { Attachments: _ticketInfo.Attachments };
-                var html = compiledTemplate(context);
-                $('#ticket-properties-area').append(html);
-            } else {
-                $('#ticket-properties-area').append(compiledTemplate);
-            }
+        var hbrs = "ticket-group-" + item.CatID;
+        var hbrs = hbrs.toLowerCase();
+        var compiledTemplate = Handlebars.templates[hbrs];
+        console.log(hbrs);
+
+        if (item.CatID == "Attachments") {
+            var context = { Attachments: _ticketInfo.Attachments };
+            var html = compiledTemplate(context);
+            $('#ticket-properties-area').append(html);
+        } else {
+            $('#ticket-properties-area').append(compiledTemplate);
+        
         }
     }
 };
