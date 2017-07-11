@@ -269,7 +269,7 @@ $(document).ready(function () {
     _ticketNumber = window.parent.Ts.Utils.getQueryValue("TicketNumber", window);
 
     apiKey = "45228242";
-    
+
     //Setup Ticket Elements
     SetupTicketPage();
 
@@ -379,7 +379,7 @@ var loadTicket = function (ticketNumber, refresh) {
         if (typeof refresh === "undefined") {
             window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
         }
-       
+
 
     });
 };
@@ -548,7 +548,7 @@ function SetupTicketProperties(order) {
         var ticketUrl = window.parent.Ts.System.AppDomain + "/?TicketNumber=" + _ticketNumber;
         $("#Ticket-URL").attr("data-clipboard-text", ticketUrl);
 
-        //set the ticket title 
+        //set the ticket title
         $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
         $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
         $('.ticket-source').css('backgroundImage', "url('../" + window.parent.Ts.Utils.getTicketSourceIcon(_ticketInfo.Ticket.TicketSource) + "')").attr('title', 'Ticket Source: ' + (_ticketInfo.Ticket.TicketSource == null ? 'Agent' : _ticketInfo.Ticket.TicketSource));
@@ -580,7 +580,7 @@ function SetupTicketProperties(order) {
                 window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
             }
         }
-        
+
 
   });
 };
@@ -994,7 +994,7 @@ function SetupActionEditor(elem, action) {
     });
 
   element.find('#recordScreenContainer').hide();
-  element.find('#ssDiv').hide(); 
+  element.find('#ssDiv').hide();
   element.find('#rcdtokScreen').click(function (e) {
       if (window.parent.Ts.System.User.OrganizationID == 0) {
           window.parent.Ts.Services.Tickets.StartArchivingScreen(sessionId, function (resultID) {
@@ -2705,7 +2705,7 @@ function SetupProductVersionsControl(product) {
     $('#ticket-Resolved').empty();
   if (product !== null && product.Versions.length > 0) {
   	var versions = product.Versions;
-  	
+
   	for (var i = 0; i < versions.length; i++) {
         try{
             AppendSelect('#ticket-Versions', versions[i], 'version', versions[i].ProductVersionID, versions[i].VersionNumber, false);
@@ -4377,6 +4377,11 @@ function openTicketWindow(ticketID) {
 function FetchTimeLineItems(start) {
     _isLoading = true;
     $('.results-loading').show();
+
+    // _compiledActionTemplate = Handlebars.templates['action'];
+    // var isFunc = typeof Handlebars.templates;
+    // console.log(isFunc);
+
     window.parent.Ts.Services.TicketPage.GetTimeLineItems(_ticketID, start, function (TimeLineItems) {
         _timeLine = TimeLineItems;
 
@@ -4385,8 +4390,9 @@ function FetchTimeLineItems(start) {
             $('.results-done').show();
         }
         else {
-            //compile action template
-            _compiledActionTemplate = Handlebars.compile($("#action-template").html());
+            // compile action template
+            // _compiledActionTemplate = Handlebars.compile($("#action-template").html());
+            _compiledActionTemplate = Handlebars.templates['action'];
 
             //create first timeline date marker if needed
             if (_currDateSpan == null) {
@@ -4520,7 +4526,7 @@ function CreateHandleBarHelpers() {
         });
         return '<span id="applause-' + actionID + '" class="pull-right" style="position:absolute;top:25px;right:100px;display:' + display + '"></span>';
     });
-    
+
     Handlebars.registerHelper('ActionData', function () {
         return JSON.stringify(this.item);
     });
