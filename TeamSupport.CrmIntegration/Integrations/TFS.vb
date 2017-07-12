@@ -485,9 +485,9 @@ Namespace TeamSupport
                                 ticketLinkToTFS.TFSState = "System.State not found in workitem" 'ToDo //vv what to do if the System.Title is not found?
 							End If
 
-							ticketLinkToTFS.TFSURL = workItem.Url
+                            ticketLinkToTFS.TFSURL = _tfs.HostName + "/" + TFSProjectName + "/_workitems/edit/" + workItem.Id.ToString()
 
-							If CRMLinkRow.UpdateStatus Then
+                            If CRMLinkRow.UpdateStatus Then
 								Dim newStatus As TicketStatus = allStatuses.FindByName(ticketLinkToTFS.TFSState, ticket.TicketTypeID)
 
 								If newStatus IsNot Nothing Then
