@@ -136,6 +136,10 @@ var _startDate = new Date();
     Ts.Services.Task.set_defaultSucceededCallback(defaultSucceededCallback);
     Ts.Services.Task.set_defaultFailedCallback(defaultFailedCallback);
 
+    Ts.Services.Dispatch = new TSWebServices.DispatchService();
+    Ts.Services.Dispatch.set_defaultSucceededCallback(defaultSucceededCallback);
+    Ts.Services.Dispatch.set_defaultFailedCallback(defaultFailedCallback);
+
     callback();
   }
 

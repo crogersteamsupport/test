@@ -549,32 +549,48 @@ namespace TSWebServices
   }
 
 
-  [DataContract]
-  public class WaterCoolerThread
-  {
-    [DataMember] public WaterCoolerViewItemProxy Message { get; set; }
-    [DataMember] public WaterCoolerViewItemProxy[] Replies { get; set; }
-    [DataMember] public WatercoolerAttachmentProxy[] Tickets { get; set; }
-    [DataMember] public WatercoolerAttachmentProxy[] Groups { get; set; }
-    [DataMember] public WatercoolerAttachmentProxy[] Products { get; set; }
-    [DataMember] public WatercoolerAttachmentProxy[] Company { get; set; }
-    [DataMember] public WatercoolerAttachmentProxy[] User { get; set; }
-  }
+    [DataContract]
+    public class WaterCoolerThread
+    {
+        [DataMember]
+        public WaterCoolerViewItemProxy Message { get; set; }
+        [DataMember]
+        public WaterCoolerViewItemProxy[] Replies { get; set; }
+        [DataMember]
+        public WatercoolerAttachmentProxy[] Tickets { get; set; }
+        [DataMember]
+        public WatercoolerAttachmentProxy[] Groups { get; set; }
+        [DataMember]
+        public WatercoolerAttachmentProxy[] Products { get; set; }
+        [DataMember]
+        public WatercoolerAttachmentProxy[] Company { get; set; }
+        [DataMember]
+        public WatercoolerAttachmentProxy[] User { get; set; }
+    }
 
-  [DataContract(Namespace = "http://teamsupport.com/")]
-  public class WatercoolerJsonInfo
-  {
-      public WatercoolerJsonInfo() { }
-      [DataMember] public string Description { get; set; }
-      [DataMember] public List<int> Tickets { get; set; }
-      [DataMember] public List<int> Groups { get; set; }
-      [DataMember] public List<int> Products { get; set; }
-      [DataMember] public List<int> Company { get; set; }
-      [DataMember] public List<int> User { get; set; }
-      [DataMember] public int ParentTicketID { get; set; }
-      [DataMember] public int PageType { get; set; }
-      [DataMember] public int PageID { get; set; }
-  }
+    [DataContract(Namespace = "http://teamsupport.com/")]
+    public class WatercoolerJsonInfo
+    {
+        public WatercoolerJsonInfo() { }
+        [DataMember]
+        public string Description { get; set; }
+        [DataMember]
+        public List<int> Tickets { get; set; }
+        [DataMember]
+        public List<int> Groups { get; set; }
+        [DataMember]
+        public List<int> Products { get; set; }
+        [DataMember]
+        public List<int> Company { get; set; }
+        [DataMember]
+        public List<int> User { get; set; }
+        [DataMember]
+        public int ParentTicketID { get; set; }
+        [DataMember]
+        public int PageType { get; set; }
+        [DataMember]
+        public int PageID { get; set; }
+    }
 
 
 }

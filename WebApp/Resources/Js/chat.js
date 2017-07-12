@@ -180,7 +180,7 @@ function checkChatBoxInputKey(event,chatboxtextarea,chatboxtitle) {
 
 
 		if (message != '') {
-		    chatHubClient.server.sendChat(message, chatboxtitle, top.Ts.System.User.FirstName + ' ' + top.Ts.System.User.LastName);
+		    mainFrame.Ts.Services.Dispatch.SendChat(message, chatboxtitle, top.Ts.System.User.FirstName + ' ' + top.Ts.System.User.LastName);
 		    message = message.replace(/\n/g, "<br>");
 		    message = message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;");
 		    $("#chatbox_" + chatboxtitle + " .chatboxcontent").append('<div class="chatboxmessage"><span class="chatboxmessageto">' + top.Ts.System.User.FirstName + ' ' + top.Ts.System.User.LastName + '</span>:<span class="chatboxmessagecontent">' + message + '</span></div>');
