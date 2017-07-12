@@ -931,7 +931,7 @@ Namespace TeamSupport
             End Function
 
             Private Function PostZohoReports(ByVal PathAndQuery As String, ByVal PostParameters As String) As HttpStatusCode
-                Dim ZohoUri As Uri = New Uri("https://reportsapi.zoho.com/api/" & PathAndQuery)                
+                Dim ZohoUri As Uri = New Uri("https://" + CRMLinkRow.HostName.Replace("https://", "").Replace("http://", "") + "/api/" & PathAndQuery)
                 Return PostQueryString(Nothing, ZohoUri, PostParameters)
             End Function
 
