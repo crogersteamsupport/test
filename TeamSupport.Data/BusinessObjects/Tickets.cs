@@ -1520,7 +1520,7 @@ AND ts.IsClosed = 0";
             }
         }
 
-        public void LoadKBByCategoryID(int categoryID, int organizationID, int customerID, int contactID, bool enforceCustomerProduct = true)
+        public void LoadKBByCategoryID(int categoryID, int organizationID, int customerID, int contactID, bool enforceCustomerProduct = true, int sortOrder = 0)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -1546,7 +1546,14 @@ AND ts.IsClosed = 0";
 
                     builder.Append(")");
                 }
-                builder.Append(@" ORDER BY t.DateModified desc");
+
+                if (sortOrder == (int)SortType.LastModified)
+                {
+                    builder.Append(@" ORDER BY t.DateModified desc");
+                }
+                else if (sortOrder == (int)SortType.Alphabetical) {
+                    builder.Append(@" ORDER BY t.Name asc");
+                }
                 command.CommandText = builder.ToString();
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
@@ -1582,7 +1589,7 @@ AND ts.IsClosed = 0";
             }
         }
 
-        public void LoadUncatogorizedKBs(int organizationID, int customerID, int contactID, bool enforceCustomerProduct = true)
+        public void LoadUncatogorizedKBs(int organizationID, int customerID, int contactID, bool enforceCustomerProduct = true, int sortOrder = 0)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -1610,7 +1617,16 @@ AND ts.IsClosed = 0";
                     }
                     builder.Append(")");
                 }
-                builder.Append(@" ORDER BY t.DateModified desc");
+
+                if (sortOrder == (int)SortType.LastModified)
+                {
+                    builder.Append(@" ORDER BY t.DateModified desc");
+                }
+                else if (sortOrder == (int)SortType.Alphabetical)
+                {
+                    builder.Append(@" ORDER BY t.Name asc");
+                }
+
                 command.CommandText = builder.ToString();
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
