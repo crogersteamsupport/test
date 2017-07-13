@@ -140,8 +140,16 @@ namespace TeamSupport.Data
 						else
 						{
 							Weekday = null;
-                            DateTime startOfThisMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
-                            dateOnly = startOfThisMonth.AddMonths((byte)Every);
+
+                            if (startOfTheMonth.AddDays((byte)Monthday - 1).Add(timeOnly.TimeOfDay) < new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 0, 0, 0).Add(timeOnly.TimeOfDay))
+                            {
+                                dateOnly = startOfTheMonth.AddMonths((byte)Every);
+                            }
+                            else
+                            {
+                                dateOnly = startOfTheMonth;
+                            }
+                            
                             int monthTemp = dateOnly.Month;
                             dateOnly = dateOnly.AddDays((byte)Monthday - 1); //Calculation starts on first of the month, so substract it.
 

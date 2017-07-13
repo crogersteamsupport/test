@@ -2153,6 +2153,18 @@ namespace TeamSupport.Data
             List<string> filterValues;
             CustomField customField = null;
 
+            DataTable tableSchema = baseCollection.Table;
+            using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+            {
+                if (connection.State == ConnectionState.Closed)
+                {
+                    connection.Open();
+                }
+
+                tableSchema = connection.GetSchema("Columns", new string[] { null, null, baseCollection.TableName });
+                connection.Close();
+            }
+
             foreach (string key in filters)
             {
                 if (!string.IsNullOrEmpty(key))
@@ -2169,49 +2181,88 @@ namespace TeamSupport.Data
 
                         if (customField == null)
                         {
-                            if (filterValues.Count > 1)
-                                result.Append("(");
+                            int size = 0;
+                            SqlDbType type = SqlDbType.BigInt;
+                            bool hasSize = false;
 
-                            if (filterValues[0] == null)
+                            if (tableSchema != null && tableSchema.Rows != null && tableSchema.Rows.Count > 0)
                             {
-                                string notEmptyOperator = filterOperator.ToString().ToLower() == "is not" ? "<>" : "=";
-                                result.Append("(");
-                                result.Append(filterFieldName + " " + filterOperator + " NULL");
-                                result.Append(" OR ");
-                                result.Append(filterFieldName + " " + notEmptyOperator + " ''");
-                                result.Append(")");
-                            }
-                            else
-                            {
-                                result.Append(filterFieldName + " " + filterOperator + " @" + filterFieldName);
-                                filterParameters.AddWithValue("@" + filterFieldName, filterValues[0]);
-                            }
+                                //ref: https://msdn.microsoft.com/en-us/library/ms254969.aspx
+                                string schemaCollectionColumnName = "column_name";
+                                string schemaCollectionColumnSize = "character_maximum_length";
+                                string schemaCollectionColumnDataType = "data_type";
 
-
-                            if (filterValues.Count > 1)
-                            {
-                                for (int j = 1; j < filterValues.Count; j++)
+                                foreach (DataRow row in tableSchema.Rows)
                                 {
+                                    if (row.Table.Columns.Contains(schemaCollectionColumnName)
+                                        && row.Table.Columns.Contains(schemaCollectionColumnSize)
+                                        && row.Table.Columns.Contains(schemaCollectionColumnDataType)
+                                        && row[schemaCollectionColumnName].ToString().ToLower() == filterFieldName.ToString().ToLower())
+                                    {
+                                        try
+                                        {
+                                            string dataType = row[schemaCollectionColumnDataType].ToString();
+                                            type = (SqlDbType)Enum.Parse(typeof(SqlDbType), dataType, true);
+
+                                            switch (type)
+                                            {
+                                                case SqlDbType.Char:
+                                                case SqlDbType.NChar:
+                                                case SqlDbType.NVarChar:
+                                                case SqlDbType.VarChar:
+                                                    hasSize = int.TryParse(row[schemaCollectionColumnSize].ToString(), out size);
+                                                    break;
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            hasSize = false;
+                                        }
+
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (filterValues.Count > 1)
+                                result.Append("(");
+
+                            for (int j = 0; j < filterValues.Count; j++)
+                            {
+                                if (j > 0)
                                     result.Append(" OR ");
 
-                                    if (filterValues[j] == null)
+                                if (filterValues[j] == null)
+                                {
+                                    string notEmptyOperator = filterOperator.ToString().ToLower() == "is not" ? "<>" : "=";
+                                    result.Append("(");
+                                    result.Append(filterFieldName + " " + filterOperator + " NULL");
+                                    result.Append(" OR ");
+                                    result.Append(filterFieldName + " " + notEmptyOperator + " ''");
+                                    result.Append(")");
+                                }
+                                else
+                                {
+                                    result.Append(filterFieldName + " " + filterOperator + " @" + filterFieldName + j.ToString());
+                                    string parameterIndex = "";
+
+                                    if (j > 0)
+                                        parameterIndex = j.ToString();
+
+                                    if (hasSize)
                                     {
-                                        string notEmptyOperator = filterOperator.ToString().ToLower() == "is not" ? "<>" : "=";
-                                        result.Append("(");
-                                        result.Append(filterFieldName + " " + filterOperator + " NULL");
-                                        result.Append(" OR ");
-                                        result.Append(filterFieldName + " " + notEmptyOperator + " ''");
-                                        result.Append(")");
+                                        filterParameters.Add("@" + filterFieldName + parameterIndex, type, size);
+                                        filterParameters["@" + filterFieldName + parameterIndex].Value = filterValues[j];
                                     }
                                     else
                                     {
-                                        result.Append(filterFieldName + " " + filterOperator + " @" + filterFieldName + j.ToString());
-                                        filterParameters.AddWithValue("@" + filterFieldName + j.ToString(), filterValues[j]);
+                                        filterParameters.AddWithValue("@" + filterFieldName + parameterIndex, filterValues[j]);
                                     }
-                                }
+								}
+							}
 
+                            if (filterValues.Count > 1)
                                 result.Append(")");
-                            }
                         }
                         else
                         {
@@ -2439,8 +2490,20 @@ namespace TeamSupport.Data
                     }
                     else if (filterFieldDataType == typeof(System.Int32))
                     {
-                        int j = int.Parse(rawValues[i]);
-                        filterValues.Add(j.ToString());
+                        try
+                        {
+                            int j = int.Parse(rawValues[i]);
+                            filterValues.Add(j.ToString());
+                        }
+                        catch (OverflowException oEx)
+                        {
+                            long l = long.Parse(rawValues[i]);
+                            filterValues.Add(l.ToString());
+                        }
+                        catch (Exception ex)
+                        {
+                            throw ex;
+                        }
 
                         if (i == 0)
                         {

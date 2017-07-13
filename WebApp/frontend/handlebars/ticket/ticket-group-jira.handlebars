@@ -1,0 +1,25 @@
+<div id="ticket-jirafields" class="form-horizontal">
+    <div id="issueKey" class="form-group form-group-sm">
+        <label for="issueKeyValue" class="col-sm-4 control-label">Jira Issue Key:</label>
+        <div id="ticket-jirakey-container" class="col-sm-8 ticket-input-container" style="padding-top: 6px;">
+            <span id="issueKeyValue"></span>
+            <i id="jiraUnlink" class="glyphicon glyphicon-remove" style="font-size:10px; cursor:pointer; position:relative; left:5px;"></i>
+        </div>
+    </div>
+
+    <div id="enterIssueKey" style="display:none;">
+        <div class="ticket-jira-issue">
+            <label>Existing Jira Issue Key:</label>
+            <input id="issueKeyInput" type="text" class="form-control" style="margin-bottom:5px;" />
+        </div>
+        <div style="text-align:right">
+            <button id="saveIssueKeyButton" class="btn btn-sm btn-default">Save</button>
+            <button id="cancelIssueyKeyButton" class="btn btn-sm btn-default">Cancel</button>
+        </div>
+    </div>
+
+    <div class="ts-jira-buttons-container">
+        <button id="newJiraIssue" class="btn btn-default btn-block">New Jira Issue</button>
+        <button id="existingJiraIssue" class="btn btn-default btn-block">Existing Jira Issue</button>
+    </div>
+</div>
