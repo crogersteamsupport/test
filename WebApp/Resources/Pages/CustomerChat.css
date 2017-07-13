@@ -166,6 +166,12 @@
     position: relative;
     padding-bottom: 1px;
 }
+.chat-body .answer.left .text.hasLeft {
+    background: #ebebeb;
+    color: #FF5733;
+    border-radius: 8px 8px 8px 0;
+    font-style: italic;
+}
 /*RIGHT*/
 .chat-body .answer.right {
     padding: 0 50px 0 0;

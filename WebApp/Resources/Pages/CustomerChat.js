@@ -174,15 +174,24 @@ function createMessageElement(messageData, direction) {
         userAvatar = '../dc/' + chatInfoObject.OrganizationID + '/InitialAvatar/' + messageData.CreatorInitials + '/48/1469829040429';
     }
 
-    $('#chat-body').append('<div class="answer ' + direction + '"> <div class="avatar"> <img src="'+ userAvatar +'" alt="User name">  </div>' +
-                        '<div class="name">' + messageData.CreatorDisplayName + '</div>  <div class="text">' + messageData.Message + '</div> <div class="time">' + moment(messageData.DateCreated).format('MM/DD/YYYY hh:mm A') + '</div></div>');
-
-    $('#typing').remove();
+    var hasLeftChatClass = "";
 
     //If the message comes from the Agent
     if (direction == 'left') {
         _agentHasJoined = true;
+
+        //did Agent left the chat?
+        if (messageData.HasLeft) {
+            hasLeftChatClass = " hasLeft";
+            $('#send-message').prop("disabled", true);
+            $('#message').prop("disabled", true);
+        }
     }
+
+    $('#chat-body').append('<div class="answer ' + direction + '"> <div class="avatar"> <img src="'+ userAvatar +'" alt="User name">  </div>' +
+                        '<div class="name">' + messageData.CreatorDisplayName + '</div>  <div class="text' + hasLeftChatClass + '">' + messageData.Message + '</div> <div class="time">' + moment(messageData.DateCreated).format('MM/DD/YYYY hh:mm A') + '</div></div>');
+
+    $('#typing').remove();
 
     //If currenty in Screenshare session then attempt to catch the attention when a new message is received by the other side of the chat
     if (direction == 'left' && (!_isChatWindowActive || _isChatWindowPotentiallyHidden)) {

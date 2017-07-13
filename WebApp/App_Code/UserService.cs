@@ -1397,9 +1397,9 @@ namespace TSWebServices
                 }
 
                 if (!u.InOffice)
-                    officesetting = string.Format("<span class='ts-icon ts-icon-offline-small fa fa-circle user-tooltip' title='{0}' userid='{1}'></span>", u.InOfficeComment, u.UserID);
+                    officesetting = string.Format("<span class='ts-icon ts-icon-offline-small fa fa-circle user-tooltip' title='Office Status {0}' userid='{1}'></span>", u.InOfficeComment, u.UserID);
                 else
-                    officesetting = string.Format("<span class='ts-icon ts-icon-online-small fa fa-circle user-tooltip' title='{0}' userid='{1}'></span>", u.InOfficeComment, u.UserID);
+                    officesetting = string.Format("<span class='ts-icon ts-icon-online-small fa fa-circle user-tooltip' title='Office Status {0}' userid='{1}'></span>", u.InOfficeComment, u.UserID);
 
 
                 html.AppendFormat(@"<li>
