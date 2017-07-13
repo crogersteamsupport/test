@@ -269,7 +269,7 @@ $(document).ready(function () {
     _ticketNumber = window.parent.Ts.Utils.getQueryValue("TicketNumber", window);
 
     apiKey = "45228242";
-    
+
     //Setup Ticket Elements
     SetupTicketPage();
 
@@ -379,7 +379,7 @@ var loadTicket = function (ticketNumber, refresh) {
         if (typeof refresh === "undefined") {
             window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
         }
-       
+
 
     });
 };
@@ -463,17 +463,20 @@ function AddTicketProperty(item) {
     if (item.ItemID) {
         var html = '<div class="ticket-plugin" id="ticket-group-plugin-' + item.ItemID + '"></div>';
         $('#ticket-properties-area').append(html);
-    }
-    else {
-        if ($("#ticket-group-" + item.CatID).length > 0) {
-            var compiledTemplate = Handlebars.compile($("#ticket-group-" + item.CatID).html());
-            if (item.CatID == "Attachments") {
-                var context = { Attachments: _ticketInfo.Attachments };
-                var html = compiledTemplate(context);
-                $('#ticket-properties-area').append(html);
-            }
-            else
-                $('#ticket-properties-area').append(compiledTemplate);
+    } else {
+
+        var hbrs = "ticket-group-" + item.CatID;
+        var hbrs = hbrs.toLowerCase();
+        var compiledTemplate = Handlebars.templates[hbrs];
+        console.log(hbrs);
+
+        if (item.CatID == "Attachments") {
+            var context = { Attachments: _ticketInfo.Attachments };
+            var html = compiledTemplate(context);
+            $('#ticket-properties-area').append(html);
+        } else {
+            $('#ticket-properties-area').append(compiledTemplate);
+        
         }
     }
 };
@@ -548,7 +551,7 @@ function SetupTicketProperties(order) {
         var ticketUrl = window.parent.Ts.System.AppDomain + "/?TicketNumber=" + _ticketNumber;
         $("#Ticket-URL").attr("data-clipboard-text", ticketUrl);
 
-        //set the ticket title 
+        //set the ticket title
         $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
         $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
         $('.ticket-source').css('backgroundImage', "url('../" + window.parent.Ts.Utils.getTicketSourceIcon(_ticketInfo.Ticket.TicketSource) + "')").attr('title', 'Ticket Source: ' + (_ticketInfo.Ticket.TicketSource == null ? 'Agent' : _ticketInfo.Ticket.TicketSource));
@@ -580,7 +583,7 @@ function SetupTicketProperties(order) {
                 window.parent.ticketSocket.server.getTicketViewing(_ticketNumber);
             }
         }
-        
+
 
   });
 };
@@ -593,7 +596,9 @@ function SetupToolTips() {
 };
 
 function CreateNewActionLI() {
-    var _compiledNewActionTemplate = Handlebars.compile($("#new-action-template").html());
+    // var _compiledNewActionTemplate = Handlebars.compile($("#new-action-template").html());
+    var _compiledNewActionTemplate = Handlebars.templates['newaction']
+
     var html = _compiledNewActionTemplate({ OrganizationID: window.parent.Ts.System.User.OrganizationID, UserID: window.parent.Ts.System.User.UserID });
     $("#action-timeline").append(html);
 
@@ -775,7 +780,7 @@ function CreateNewActionLI() {
                     }
                     else {
                         EnableCreateBtns();
-                        alert("There was a error creating your action.  Please try again.")
+                        alert("There was a error creating your action.  Please try again.");
                     }
                 });
             }
@@ -786,7 +791,7 @@ function CreateNewActionLI() {
             }
         });
 
-        $(this).parent().dropdown('toggle');
+        //$(this).parent().dropdown('toggle');
     });
 
     $('#action-timeline').on('click', '.remove-attachment', function (e) {
@@ -822,7 +827,7 @@ function CreateNewActionLI() {
                     $('#action-new-editor').summernote('insertNode', result);
                 }
             }
-            elem.parent().fadeIn('normal');
+            //elem.parent().fadeIn('normal');
         });
     });
 
@@ -994,7 +999,7 @@ function SetupActionEditor(elem, action) {
     });
 
   element.find('#recordScreenContainer').hide();
-  element.find('#ssDiv').hide(); 
+  element.find('#ssDiv').hide();
   element.find('#rcdtokScreen').click(function (e) {
       if (window.parent.Ts.System.User.OrganizationID == 0) {
           window.parent.Ts.Services.Tickets.StartArchivingScreen(sessionId, function (resultID) {
@@ -1057,7 +1062,7 @@ function SetupActionEditor(elem, action) {
             element.find('#unmuteTokScreen').hide();
             element.find('#muteTokScreen').hide();
             tokurl = result;
-            videoURL = '<video width="100%" controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/screenview.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
+            videoURL = '<video width="100%" controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/player.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
             if (window.parent.Ts.System.User.OrganizationID !== 13679) {
                 tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
             }
@@ -2398,7 +2403,8 @@ function SetupTagsSection() {
 };
 
 function PrependTask(parent, id, value, data) {
-    var _compiledTaskTemplate = Handlebars.compile($("#task-record").html());
+    // var _compiledTaskTemplate = Handlebars.compile($("#task-record").html());
+    var _compiledTaskTemplate = Handlebars.templates['taskrecord'];
     var taskHTML = _compiledTaskTemplate({ id: id, value: value, IsComplete: data.IsComplete });
     return $(taskHTML).prependTo(parent).data('task', data);
 }
@@ -2416,7 +2422,8 @@ function AddTags(tags) {
 
 function PrependTag(parent, id, value, data, cssclass) {
     if (cssclass === undefined) cssclass = 'tag-item';
-    var _compiledTagTemplate = Handlebars.compile($("#ticket-tag").html());
+    // var _compiledTagTemplate = Handlebars.compile($("#ticket-tag").html());
+    var _compiledTagTemplate = Handlebars.templates["ticket-tag"];
     var tagHTML = _compiledTagTemplate({ id: id, value: value, data: data, css: cssclass });
     return $(tagHTML).prependTo(parent).data('tag', data);
 }
@@ -2705,7 +2712,7 @@ function SetupProductVersionsControl(product) {
     $('#ticket-Resolved').empty();
   if (product !== null && product.Versions.length > 0) {
   	var versions = product.Versions;
-  	
+
   	for (var i = 0; i < versions.length; i++) {
         try{
             AppendSelect('#ticket-Versions', versions[i], 'version', versions[i].ProductVersionID, versions[i].VersionNumber, false);
@@ -4377,6 +4384,7 @@ function openTicketWindow(ticketID) {
 function FetchTimeLineItems(start) {
     _isLoading = true;
     $('.results-loading').show();
+
     window.parent.Ts.Services.TicketPage.GetTimeLineItems(_ticketID, start, function (TimeLineItems) {
         _timeLine = TimeLineItems;
 
@@ -4385,8 +4393,9 @@ function FetchTimeLineItems(start) {
             $('.results-done').show();
         }
         else {
-            //compile action template
-            _compiledActionTemplate = Handlebars.compile($("#action-template").html());
+            // compile action template
+            // _compiledActionTemplate = Handlebars.compile($("#action-template").html());
+            _compiledActionTemplate = Handlebars.templates['action'];
 
             //create first timeline date marker if needed
             if (_currDateSpan == null) {
@@ -4520,7 +4529,7 @@ function CreateHandleBarHelpers() {
         });
         return '<span id="applause-' + actionID + '" class="pull-right" style="position:absolute;top:25px;right:100px;display:' + display + '"></span>';
     });
-    
+
     Handlebars.registerHelper('ActionData', function () {
         return JSON.stringify(this.item);
     });
@@ -5069,7 +5078,8 @@ function CreateTimeLineDelegates() {
             if (commentinfo.User.length > 0) window.parent.Ts.System.logAction('Water Cooler - User Inserted');
 
             window.parent.Ts.Services.WaterCooler.NewComment(parent.JSON.stringify(commentinfo), function (Message) {
-                var _compiledWCReplyTemplate = Handlebars.compile($("#wc-new-reply-template").html());
+                // var _compiledWCReplyTemplate = Handlebars.compile($("#wc-new-reply-template").html());
+                var _compiledWCReplyTemplate = Handlebars.templates['wc-new-reply'];
                 Message.Message = Message.Message.replace(/\n\r?/g, '<br />');
                 var html = _compiledWCReplyTemplate(Message);
                 self.closest('li').find('.timeline-wc-responses').append(html);
