@@ -55,6 +55,15 @@
     border-radius:0px;
 }
 
+.selectize-input > * {
+  vertical-align: middle;
+  display: -moz-inline-stack;
+  display: inline-block;
+  zoom: 1;
+}
+
+
+
 
 
 
@@ -963,7 +972,7 @@ span.action-option-items {
 }
 
 .form-group-sm .selectize-input {
-    font-size:12px;
+    font-size:11px;
     padding-top:3px;
     padding-bottom:3px;
     min-height:30px;
@@ -993,7 +1002,7 @@ span.action-option-items {
 .ticket-group > label,
 .customFieldCategoryHeader {
     color:#808080;
-    font-size:12px;
+    font-size:11px;
     font-weight:300;
     padding-left:5px;
     padding-right:5px;
