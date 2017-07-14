@@ -697,11 +697,24 @@ Namespace TeamSupport
                         'We are now updating the custom mapping fields. We do a call per field to minimize the impact of invalid values attempted to be assigned.
                         If issueFields IsNot Nothing Then
                             For Each field As KeyValuePair(Of String, JToken) In issueFields
-                                If (field.Value("name").ToString().ToLower() = "time tracking") Then
-                                    UpdateIssueTimeTrackingFields(issue("id"), customMappingFields, ticket, field, crmLinkErrors, URI)
-                                Else
-                                    UpdateIssueField(issue("id"), customMappingFields, ticket, field, crmLinkErrors, URI)
-                                End If
+                                Try
+                                    If (field.Value("name").ToString().ToLower() = "time tracking") Then
+                                        UpdateIssueTimeTrackingFields(issue("id"), customMappingFields, ticket, field, crmLinkErrors, URI)
+                                    Else
+                                        UpdateIssueField(issue("id"), customMappingFields, ticket, field, crmLinkErrors, URI)
+                                    End If
+                                Catch ex As Exception
+                                    AddLog(ex.ToString() + ex.StackTrace,
+                                    LogType.Report,
+                                    crmLinkError,
+                                    "Error updating the field " + field.Value("name").ToString() + " in the Issue. " + ex.Message,
+                                    Orientation.OutToJira,
+                                    ObjectType.Ticket,
+                                    ticket.TicketID.ToString(),
+                                    "update",
+                                    Nothing,
+                                    OperationType.Update)
+                                End Try
                             Next
                         End If
                     ElseIf isNew Then
@@ -775,10 +788,10 @@ Namespace TeamSupport
                             End If
                         End If
                     ElseIf cRMLinkField.TSFieldName IsNot Nothing Then
-                        If ticket.Row(cRMLinkField.TSFieldName) IsNot Nothing Then
+                        If ticket.Row(cRMLinkField.TSFieldName) IsNot Nothing AndAlso Not IsDBNull(ticket.Row(cRMLinkField.TSFieldName)) Then
                             value = GetDataLineValue(fieldKey, field.Value("schema")("custom"), ticket.Row(cRMLinkField.TSFieldName))
                         Else
-                            notIncludedMessage = GetFieldNotIncludedMessage(ticket.TicketID, fieldName, ticket.Row(cRMLinkField.TSFieldName) Is Nothing)
+                            notIncludedMessage = GetFieldNotIncludedMessage(ticket.TicketID, fieldName, ticket.Row(cRMLinkField.TSFieldName) Is Nothing OrElse IsDBNull(ticket.Row(cRMLinkField.TSFieldName)))
                         End If
                     Else
                         AddLog("Field '" + fieldName + "' was not included because custom field " +

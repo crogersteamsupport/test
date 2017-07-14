@@ -887,6 +887,8 @@ namespace TeamSupport.ServiceLibrary
             }
 
             DataTable dataTable = GetReportTableAll(scheduledReportCreator, report, sortField, isDesc, useUserFilter, false);
+            dataTable = DataUtils.DecodeDataTable(dataTable);
+            dataTable = DataUtils.StripHtmlDataTable(dataTable);
 
             if (logs != null)
             {

@@ -568,7 +568,7 @@ TicketGrid = function (options) {
 			else {
 				layout.hide("south");
 			}
-			
+
 		});
 		mainFrame.Ts.System.logAction('Ticket Grid - Hid View Pane');
 	});
@@ -1267,6 +1267,8 @@ TicketGrid = function (options) {
 				if (timLoading) clearTimeout(timLoading);
 				html = html + '<div class="ticket-preview-actions ui-widget-content">';
 				for (var i = 0; i < actions.length; i++) {
+          if (actions[i].ActionType === null) { actions[i].ActionType = ''; }
+
 					html = html + '<div class="ticket-preview-action">';
 					html = html + '<h1 class="ui-widget-header ui-corner-all">' + actions[i].ActionType + '</h1>';
 					html = html + '<p>' + actions[i].Description + '</p>';

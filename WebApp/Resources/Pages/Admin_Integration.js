@@ -229,6 +229,19 @@ AdminInt = function () {
             }
         }
 
+        //ZohoReports
+        var zohoGrids = element.find('.int-zohoreports-grid');
+        zohoGrids.empty();
+        var selected = '" selected="selected">';
+
+        if (item.HostName != '' || item.HostName.indexOf('reportsapi.zoho.com') >= 0) {
+            zohoGrids.append('<option value="US"' + selected + 'US</option>');
+            zohoGrids.append('<option value="EU">EU</option>');
+        } else {
+            zohoGrids.append('<option value="US">US</option>');
+            zohoGrids.append('<option value="EU"'+ selected +'EU</option>');
+        }        
+
         $("#AddingInstanceLabel").hide();
         $("#JiraInstacesListWrapper").show();
         $("#NewInstance").show();
@@ -790,6 +803,7 @@ AdminInt = function () {
         else if (type.hasClass('zohocrm')) crmType = 'ZohoCrm';
         else if (type.hasClass('zohoreports')) crmType = 'ZohoReports';
         else if (type.hasClass('hubspot')) crmType = 'HubSpot';
+        else if (type.hasClass('slackwebhook')) crmType = 'SlackWebHook';
         else if (type.hasClass('tfs')) crmType = 'TFS';
 
         var crmToken = parent.find('.int-crm-token').val();
@@ -839,6 +853,15 @@ AdminInt = function () {
 
         if (typeof hostName == 'undefined') {
             hostName = null;
+        }
+
+        if (crmType == 'ZohoReports') {
+            var grid = parent.find('.int-zohoreports-grid').val();
+            if (grid == 'US') {
+                hostName = 'reportsapi.zoho.com';
+            } else {
+                hostName = 'reportsapi.zoho.eu';
+            }
         }
 
         var defaultProject = parent.find('.int-crm-project').val();
@@ -1057,6 +1080,8 @@ AdminInt = function () {
 
     $('.int-panel input').change(onChange).keydown(onChange);
     $('.int-defaultSla').change(onChange);
+    $('.int-zohoreports-grid').change(onChange);
+    $('.int-crm-ticketStatusToExclude').change(onChange);
     $('.int-actionTypeToPush').change(onChange);
     $('.int-content-center input').unbind('change').unbind('keydown');
     $('.int-ticketTypeToPush').change(onChange);
