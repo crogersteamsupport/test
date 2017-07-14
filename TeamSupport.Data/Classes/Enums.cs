@@ -364,4 +364,10 @@ namespace TeamSupport.Data
         Complete = 2,
         OldUser = 3
     }
+
+    public enum SortType
+    {
+        LastModified = 0,
+        Alphabetical
+    }
 }
