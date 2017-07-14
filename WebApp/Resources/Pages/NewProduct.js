@@ -187,13 +187,13 @@ $(document).ready(function () {
           case "checkbox":
             field.Value = $(this).prop('checked');
             break;
-          case "date":
+          case "_date":
             field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
             break;
-          case "time":
+          case "_time":
             field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
             break;
-          case "datetime":
+          case "_datetime":
             field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
             break;
           default:
@@ -248,13 +248,13 @@ $(document).ready(function () {
           case "checkbox":
             field.Value = $(this).prop('checked');
             break;
-          case "date":
+          case "_date":
             field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
             break;
-          case "time":
+          case "_time":
             field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
             break;
-          case "datetime":
+          case "_datetime":
             field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
             break;
           default:
