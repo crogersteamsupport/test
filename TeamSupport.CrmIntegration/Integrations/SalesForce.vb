@@ -104,10 +104,12 @@ Namespace TeamSupport
                     Dim numberOfCompaniesInQueriesResults As Integer = 0
                     Dim TempTime As New DateTime(1900, 1, 1)
                     Binding.QueryOptionsValue = New QueryOptions()
+                    Binding.QueryOptionsValue.batchSize = 2000
+                    Binding.QueryOptionsValue.batchSizeSpecified = True
 
                     If CRMLinkRow.LastLink IsNot Nothing Then
                         'push last update time back 1 hour to make sure we catch every change
-                        TempTime = CRMLinkRow.LastLink.Value.AddHours(-1)
+                        TempTime = CRMLinkRow.LastLinkUtc.Value.AddHours(-1)
                     End If
 
                     'format for SF query for time is 2011-01-26T16:57:00.000Z  ('yyyy'-'MM'-'dd'T'HH': 'mm': 'ss.fffffff'Z' )
@@ -759,7 +761,7 @@ Namespace TeamSupport
                 Dim qr As QueryResult = Nothing
                 Dim LastModifiedDateTime As DateTime
                 Binding.QueryOptionsValue = New QueryOptions()
-                Binding.QueryOptionsValue.batchSize = 250
+                Binding.QueryOptionsValue.batchSize = 2000
                 Binding.QueryOptionsValue.batchSizeSpecified = True
 
                 Try
