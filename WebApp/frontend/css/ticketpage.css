@@ -13,12 +13,8 @@
 }
 
 #ticket-title-label {
-    margin-bottom:0px;
-    padding: 5px 20px;
-    font-weight:100;
-
+    margin-bottom:5px;
 }
-
 
 #action-add-public {
     padding:3px 5px;
@@ -850,10 +846,10 @@ span.action-option-items {
     float:left;
     width:300px;
     margin-left:-300px;
-    padding-top:5px;
+    padding-top:50px;
     padding-right:15px;
     padding-left:15px;
-    background-color:white;
+    background-color:none;
     margin-bottom:10px;
 }
 
