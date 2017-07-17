@@ -92,6 +92,11 @@
     vertical-align:middle;
 }
 
+div.form-horizontal {
+    background-color:rgba(255,255,255,0.5) !important;
+    border-bottom:1px solid rgba(0,0,0,0.1);
+}
+
 
 
 
