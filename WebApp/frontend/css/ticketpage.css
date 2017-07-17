@@ -43,6 +43,11 @@
     text-align:right;
     vertical-align:middle;
 }
+#ticket-jirafields {
+    background-color:transparent !important;
+    padding:0px 10px !important;
+}
+
 
 
 .ticket-input-container {
