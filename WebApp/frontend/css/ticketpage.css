@@ -44,6 +44,22 @@
     background-color:rgba(255,255,255,0.5);
 }
 
+
+
+.form-group {
+    margin:0px;
+    text-align:right;
+    vertical-align:middle;
+}
+
+.form-horizontal .control-label {
+    text-align:right;
+    vertical-align:middle;
+}
+
+
+
+
 .selectize-input, .selectize-control.single .selectize-input.input-active {
     background-color:rgba(255,255,255,0.5);
     cursor: text;
@@ -98,12 +114,6 @@ div.form-horizontal {
 }
 
 
-
-
-
-.form-horizontal .control-label {
-    text-align:left;
-}
 
 
 
