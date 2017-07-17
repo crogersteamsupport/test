@@ -45,8 +45,8 @@
 }
 
 
-
-.form-group {
+#ticket-properties-area .form-group {
+    padding-top:0px;
     margin:0px;
     text-align:right;
     vertical-align:middle;
@@ -903,10 +903,6 @@ span.action-option-items {
     border-top:1px solid #D9D9D9;
 }
 
-#ticket-properties-area .form-group {
-    margin-bottom:4px;
-    padding-top:0px;
-}
 
 #ticket-properties-area > .form-horizontal > .form-group > div > select.hidden-select {
     font-size:12px;
