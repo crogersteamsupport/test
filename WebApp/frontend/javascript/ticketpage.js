@@ -476,7 +476,7 @@ function AddTicketProperty(item) {
             $('#ticket-properties-area').append(html);
         } else {
             $('#ticket-properties-area').append(compiledTemplate);
-        
+
         }
     }
 };
@@ -3324,7 +3324,7 @@ var appendCategorizedCustomValues = function (fields) {
                     if (isFirstFieldAdded) {
                         isFirstFieldAdded = false;
                         var header = $('<label>').text(categories[j].Category).addClass('customFieldCategoryHeader');
-                        container.append($('<hr>')).append(header);
+                        // container.append($('<hr>')).append(header);
                     }
 
                     switch (field.FieldType) {
