@@ -26,22 +26,22 @@ textarea {
     padding:3px 5px;
     font-size:11px;
     color:white;
-    border-color:#d9515d;
-    background-color:#d9515d;
+    border-color:#4caf50;
+    background-color:#4caf50;
 }
 #action-add-private {
     padding:3px 5px;
     font-size:11px;
     color:white;
-    border-color:#fcc113;
-    background-color:#fcc113;
+    border-color:#ff9800;
+    background-color:#ff9800;
 }
 #action-add-wc {
     padding:3px 5px;
     font-size:11px;
     color:white;
-    border-color:#2c9ecf;
-    background-color:#2c9ecf;
+    border-color:#3276b1;
+    background-color:#3276b1;
 }
 #ticket-assigned {
     background-color:rgba(255,255,255,0.5);
@@ -58,6 +58,11 @@ textarea {
     border:none;
 }
 
+div.form-horizontal .form-group-sm,
+div.form-group.ticket-group {
+    background-color:rgba(255,255,255,0.5) !important;
+    border-bottom:1px solid rgba(0,0,0,0.1);
+}
 
 .form-group-sm .selectize-input {
     font-size:12px;
@@ -75,6 +80,7 @@ textarea {
 .form-group-sm .select-label {
     font-size:11px;
     text-align:left;
+    text-transform: capitalize;
 }
 
 .form-horizontal .form-label {
@@ -125,6 +131,10 @@ textarea {
     padding:0px 5px 2px 9px;
 }
 
+.ticket-group {
+
+    padding-top:5px;
+}
 
 
 
@@ -151,11 +161,6 @@ textarea {
     padding:0px;
     margin:0px;
     vertical-align:middle;
-}
-
-div.form-horizontal {
-    background-color:rgba(255,255,255,0.5) !important;
-    border-bottom:1px solid rgba(0,0,0,0.1);
 }
 
 
@@ -369,7 +374,7 @@ button.ticket-option {
     position:absolute;
     content:" ";
     width:3px;
-    background-color:#eeeeee;
+    background-color:#dddddd;
     left:50%;
 }
 .timeline-done {display:none;
@@ -1203,10 +1208,7 @@ div.tag-item {
     font-size:14px !important;
 }
 
-.ticket-group {
-    /*border-top:3px solid #eee;*/
-    padding-top:5px;
-}
+
 
 .tagInput {
     border:none;
