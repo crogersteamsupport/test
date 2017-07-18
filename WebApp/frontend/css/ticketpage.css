@@ -40,7 +40,7 @@
 #ticket-properties-area .form-group {
     padding-top:0px;
     margin:0px;
-    text-align:right;
+    text-align:left;
     vertical-align:middle;
 }
 #ticket-jirafields {
@@ -51,53 +51,56 @@
 
 
 .form-group-sm .selectize-input {
-    font-size:11px;
-    padding-top:3px;
-    padding-bottom:3px;
+    font-size:12px;
+    padding-top:0px;
+    padding-bottom:0px;
+    padding-left:5px;
+    min-height:30px;
     overflow:inherit;
 }
+.form-group-sm .selectize-input .item,
+.form-group-sm .selectize-input .option,
 .form-group-sm .selectize-input input {
-    font-size:12px;
+    padding:5px !important;
 }
+
 .form-group-sm .select-label {
     font-size:11px;
     text-align:right;
 }
-.ticket-input-container {
-    padding-left:0px;
-    padding-right:0px;
-}
+
 .form-horizontal .form-label {
-    padding:0px 5px 0px 0px;
-    text-align:right;
+    padding:0px 5px 0px 5px;
+    text-align:left;
     vertical-align:middle;
 }
 .form-horizontal .control-label {
     padding:0px;
-    text-align:right;
-    vertical-align:middle;
+}
+.form-horizontal .form-input, .ticket-input-container {
+    background-color:rgba(255,255,255,0.5);
+    padding-left:0px;
+    padding-right:0px;
+    height:40px;
 }
 .selectize-input, .selectize-control.single .selectize-input.input-active {
-    background-color:rgba(255,255,255,0.5);
     cursor: text;
     display: inline-block;
     border-radius:0px;
     text-align:left;
 }
 .selectize-input.full {
-    background-color:rgba(255,255,255,0.5);
     border-radius:0px;
     text-align:left;
 }
-
-.selectize-input > * {
-  vertical-align: middle;
-  display: -moz-inline-stack;
-  display: inline-block;
-  zoom: 1;
+.selectize-control {
+    font-size:12px;
+    font-weight:normal;
+    height:30px;
 }
 
-.tagContainer,.taskContainer {
+
+.tagContainer, .taskContainer {
     background-color:none;
     /*border:1px solid #CCC;
     box-shadow:0px 1px 1px rgba(0, 0, 0, 0.075) inset;*/
@@ -968,18 +971,14 @@ span.action-option-items {
     -moz-appearance:menulist;
 }
 
-.selectize-input {
-    padding-left:5px;
-    min-height:inherit;
-}
+
 .hidden-select > .selectize-input {
     border:none;
 }
 
-.selectize-control {
-    font-size:12px;
-    font-weight:normal;
-}
+
+
+
 
 .selectize-control.single .selectize-input:after {
     display:none;
