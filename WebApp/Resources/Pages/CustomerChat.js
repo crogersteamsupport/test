@@ -183,7 +183,7 @@ function createMessageElement(messageData, direction) {
         //did Agent left the chat?
         if (messageData.HasLeft) {
             hasLeftChatClass = " hasLeft";
-            $('#send-message').prop("disabled", true);
+            $('#send-message').addClass("disabled");
             $('#message').prop("disabled", true);
         }
     }
