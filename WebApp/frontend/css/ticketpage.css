@@ -121,6 +121,7 @@ div.form-group input {
 .selectize-control {
     font-size:12px;
     font-weight:normal;
+    height:20px;
 }
 
 
@@ -140,6 +141,12 @@ div.form-group input {
     cursor:text;
     padding:10px;
 }
+
+div.form-group .taskContainer .new-task {
+    padding:0px;
+    text-align:left;
+}
+
 
 .ticket-group {
 
