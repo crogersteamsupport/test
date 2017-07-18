@@ -52,21 +52,20 @@
 
 .form-group-sm .selectize-input {
     font-size:12px;
-    padding-top:0px;
-    padding-bottom:0px;
-    padding-left:5px;
+    padding:0px;
     min-height:30px;
     overflow:inherit;
 }
 .form-group-sm .selectize-input .item,
 .form-group-sm .selectize-input .option,
-.form-group-sm .selectize-input input {
+.form-group-sm .selectize-input input,
+.form-group-sm .control-label {
     padding:5px !important;
 }
 
 .form-group-sm .select-label {
     font-size:11px;
-    text-align:right;
+    text-align:left;
 }
 
 .form-horizontal .form-label {
@@ -75,12 +74,10 @@
     vertical-align:top;
     font-size: 11px;
 }
-.form-horizontal .control-label {
-    padding:0px;
-}
+
 .form-horizontal .form-input, .ticket-input-container {
     background-color:rgba(255,255,255,0.5);
-    padding-left:0px;
+    padding-left:5px;
     padding-right:0px;
     height:40px;
 }

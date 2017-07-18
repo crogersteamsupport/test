@@ -3382,7 +3382,7 @@ var AddCustomFieldEdit = function (field, parentContainer) {
     var groupContainer = $('<div>').addClass('form-group form-group-sm')
                             .data('field', field)
                             .appendTo(formcontainer)
-                            .append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+                            .append($('<label>').addClass('select-label').text(field.Name));
     var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
     var inputGroupContainer = $('<div>').addClass('input-group').appendTo(inputContainer);
     var input = $('<textarea rows="1">')
@@ -3449,7 +3449,7 @@ var AddCustomFieldEdit = function (field, parentContainer) {
 var AddCustomFieldDate = function (field, parentContainer) {
     var date = field.Value == null ? null : window.parent.Ts.Utils.getMsDate(field.Value);
     var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('select-label').text(field.Name));
     var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
     var dateLink = $('<a>')
                       .attr('href', '#')
@@ -3548,7 +3548,7 @@ var AddCustomFieldDate = function (field, parentContainer) {
 var AddCustomFieldDateTime = function (field, parentContainer) {
     var date = field.Value == null ? null : window.parent.Ts.Utils.getMsDate(field.Value);
     var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('select-label').text(field.Name));
     var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
     var dateLink = $('<a>')
                       .attr('href', '#')
@@ -3648,7 +3648,7 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
 var AddCustomFieldTime = function (field, parentContainer) {
     var date = field.Value == null ? null : window.parent.Ts.Utils.getMsDate(field.Value);
     var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('select-label').text(field.Name));
     var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
     var dateLink = $('<a>')
                       .attr('href', '#')
@@ -3751,7 +3751,7 @@ var AddCustomFieldBool = function (field, parentContainer) {
                             .addClass('form-group form-group-sm')
                             .data('field', field)
                             .appendTo(formcontainer)
-                            .append($('<label>').addClass('col-sm-4 control-label').text(field.Name));
+                            .append($('<label>').addClass('').text(field.Name));
     var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
     var inputDiv = $('<div>').addClass('checkbox ticket-checkbox').appendTo(inputContainer);
     var input = $('<input type="checkbox">').appendTo(inputDiv);
@@ -3771,7 +3771,7 @@ var AddCustomFieldBool = function (field, parentContainer) {
 
 var AddCustomFieldNumber = function (field, parentContainer) {
     var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('select-label').text(field.Name));
     var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
     var input = $('<input type="text">')
                     .addClass('form-control ticket-simple-input muted-placeholder')
@@ -3827,7 +3827,7 @@ var AddCustomFieldNumber = function (field, parentContainer) {
 
 var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFields) {
     var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('select-label').text(field.Name));
     var selectContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
     var select = $('<select>').addClass('hidden-select muted-placeholder').attr("placeholder", "Select Value").appendTo(selectContainer);
     var options = field.ListValues.split('|');
