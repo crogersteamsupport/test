@@ -2,6 +2,9 @@
 body {
     background-color:#eeeeee;
 }
+textarea {
+    background-color:transparent !important;
+}
 
 
 #ticket-title-panel {
