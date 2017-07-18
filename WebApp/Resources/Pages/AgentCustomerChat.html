@@ -281,6 +281,8 @@
                     <div class="media-body">
                         {{message}} <a onClick="subscribeToVideoStream()">Do you Accept?</a>
                         <br>
+                        <label class="tokWarning">(If you accept the customer will see you via your camera)</label>
+                        <br>
                         <small class="text-muted">{{UserName}} | {{Date}}</small>
                         <hr>
                     </div>
@@ -296,6 +298,8 @@
                     <div class="media-body">
                         {{message}} <a onClick="subscribeToAudioStream()">Do you Accept?</a>
                         <br>
+                        <label class="tokWarning">(If you accept the customer will hear what you say in your microphone)</label>
+                        <br>
                         <small class="text-muted">{{UserName}} | {{Date}}</small>
                         <hr>
                     </div>
@@ -310,6 +314,8 @@
                     <img class="pull-left media-object img-circle user-avatar" src="../images/blank_avatar.png">
                     <div class="media-body">
                         {{message}} <a onClick="subscribeToScreenStream()">Do you Accept?</a>
+                        <br>
+                        <label class="tokWarning">(If you accept you will be seeing the customer's screen)</label>
                         <br>
                         <small class="text-muted">{{UserName}} | {{Date}}</small>
                         <hr>

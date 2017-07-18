@@ -204,13 +204,23 @@ function publishTOKScreen() {
                 //// Screen sharing is available. Publish the screen.
                 //// Create an element, but do not display it in the HTML DOM:
                 var screenContainerElement = document.createElement('div');
+                var publishOptions = {};
+                publishOptions.videoSource = 'screen';
+                publishOptions.maxResolution = { width: 1920, height: 1080 };
+                publishOptions.mirror = false;
+                publishOptions.width = 1920;
+                publishOptions.height = 1080;
+
                 screenSharingPublisher = OT.initPublisher(
                       'screenOne',
-                      { videoSource: 'screen' },
+                      publishOptions,
                       function (error) {
                           if (error) {
                               console.log(error);
                           } else {
+                              screenSharingPublisher.element.style.width = screenSharingPublisher.videoWidth() + 'px';
+                              screenSharingPublisher.element.style.height = screenSharingPublisher.videoHeight() + 'px';
+
                               session.publish(
                                 screenSharingPublisher,
                                 function (error) {

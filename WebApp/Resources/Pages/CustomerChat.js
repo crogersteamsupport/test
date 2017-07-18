@@ -239,7 +239,7 @@ function setupChat(chatID, participantID, pusherKey, callback) {
 
     pressenceChannel.bind('client-tok-screen', function (data) {
         $('#chat-body').append('<div id="screenRequest" class="answer left"> <div class="avatar"> <img src="../vcr/1_9_0/images/blank_avatar.png" alt="User name">  </div>' +
-                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share a screen with you. <a onClick="subscribeToScreenStream()">Do you Accept?</a></div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
+                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share a screen with you. <a onClick="subscribeToScreenStream()">Do you Accept?</a><label class="tokWarning">(If you accept you will be seeing the agent\'s screen)</label></div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
 
         sharedApiKey = data.apiKey;
         sharedToken = data.token;
@@ -249,7 +249,7 @@ function setupChat(chatID, participantID, pusherKey, callback) {
 
     pressenceChannel.bind('client-tok-video', function (data) {
         $('#chat-body').append('<div id="videoRequest" class="answer left"> <div class="avatar"> <img src="../vcr/1_9_0/images/blank_avatar.png" alt="User name">  </div>' +
-                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share video with you. <a onClick="subscribeToVideoStream()">Do you Accept?</a></div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
+                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share video with you. <a onClick="subscribeToVideoStream()">Do you Accept?</a><label class="tokWarning">(If you accept the agent will see you via your camera)</label></div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
 
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
         sharedApiKey = data.apiKey;
@@ -260,7 +260,7 @@ function setupChat(chatID, participantID, pusherKey, callback) {
 
     pressenceChannel.bind('client-tok-audio', function (data) {
         $('#chat-body').append('<div id="audioRequest" class="answer left"> <div class="avatar"> <img src="../vcr/1_9_0/images/blank_avatar.png" alt="User name">  </div>' +
-                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to have an audio call with you. <a onClick="subscribeToAudioStream(false)">Do you Accept?</a></div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
+                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to have an audio call with you. <a onClick="subscribeToAudioStream(false)">Do you Accept?</a><label class="tokWarning">(If you accept the agent will hear what you say in your microphone)</label></div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
 
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
         sharedApiKey = data.apiKey;
