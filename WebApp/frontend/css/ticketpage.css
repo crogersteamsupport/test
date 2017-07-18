@@ -6,6 +6,10 @@ textarea {
     background-color:transparent !important;
 }
 
+button.btn {
+    font-size:11px;
+    font-family: 'Roboto';
+}
 
 #ticket-title-panel {
     position: relative;
