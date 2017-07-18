@@ -64,6 +64,11 @@ div.form-group.ticket-group {
     border-bottom:1px solid rgba(0,0,0,0.1);
 }
 
+div.form-horizontal input,
+div.form-group input {
+    background-color:transparent;
+}
+
 .form-group-sm .selectize-input {
     font-size:12px;
     padding:0px;
@@ -1239,8 +1244,9 @@ div.tag-item {
     -moz-box-shadow:none;
     box-shadow:none;
     position:relative;
-    top:-4px;
+    top:0px;
     resize:none;
+    background-color: transparent;
 }
 
 .ticket-simple-textarea {
@@ -1253,6 +1259,7 @@ div.tag-item {
     -moz-box-shadow:none;
     box-shadow:none;
     resize:none;
+    background-color: transparent;
     /*height:32px !important;*/
 }
 
