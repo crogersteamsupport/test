@@ -1,3 +1,9 @@
+
+body {
+    background-color:#eeeeee;
+}
+
+
 #ticket-title-panel {
     position: relative;
     z-index: 1;
