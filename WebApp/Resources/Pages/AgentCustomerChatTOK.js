@@ -11,6 +11,7 @@ var sharedToken;
 var tokpopup;
 var movingAvg = null;
 var siteUrl;
+var streamType;
 
 function SetupTOK() {
     var windowUrl = window.location.href;
@@ -372,27 +373,39 @@ function subscribeToScreenStream() {
 function startVideoStreaming() {
     //Send a signal over Pusher to any parties to notify of screen sharing stream.
     channel.trigger('client-tok-video', { userName: channel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    streamType = 'video';
 };
 
 function startAudioStreaming() {
     //Send a signal over Pusher to any parties to notify of agent audio sharing stream.
     channel.trigger('client-tok-audio', { userName: channel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    streamType = 'audio';
 };
 
 function startScreenStreaming() {
     //Send a signal over Pusher to any parties to notify of screen sharing stream.
     channel.trigger('client-tok-screen', { userName: channel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    streamType = 'screen';
 };
 
 function stopTOKStream(e) {
     $('#tokStatusText').text('Ending live session...');
 
-    if (session !== undefined || publisher !== undefined) {
-        session.unpublish(publisher);
+    if (session !== undefined) {
+        if (publisher !== undefined) {
+            session.unpublish(publisher);
+            publisher.destroy();
+            publisher = undefined;
+        }
+
+        if (publisher !== undefined) {
+            session.unpublish(screenSharingPublisher);
+            screenSharingPublisher.destroy();
+            screenSharingPublisher = undefined;
+        }
+
         session.disconnect();
-        publisher.destroy();
         session = undefined;
-        publisher = undefined;
     }
 
     $('#tokStreamControls').hide();
@@ -400,10 +413,34 @@ function stopTOKStream(e) {
     $('#subscriberMeter').hide();
 
     $('.current-chat-area').height('height: calc(100vh - 155px);');
-    EnableTOKButtons(isTOKEnabled);
+
+    var enableAudio = true;
+    var enableVideo = true;
+    var enableScreen = true;
+
+    if (!isTOKEnabledForBrowser) {
+        enableAudio = false;
+        enableVideo = false;
+        enableScreen = false;
+        EnableTOKButtons(enableAudio, enableVideo, enableScreen, false);
+    } else {
+        top.Ts.Services.Chat.GetAgentChatProperties(function (data) {
+            if (!data.TOKScreenEnabled)
+                enableScreen = false;
+            if (!data.TOKVideoEnabled)
+                enableVideo = false;
+            if (!data.TOKVoiceEnabled)
+                enableAudio = false;
+
+            EnableTOKButtons(enableAudio, enableVideo, enableScreen, isInit);
+        });
+    }
 
     if(tokpopup)
         tokpopup.close();
+
+    //vv
+    channel.trigger('client-agent-tok-ended', { streamType: streamType });
 };
 
 function muteTOKStream() {

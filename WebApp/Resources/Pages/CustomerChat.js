@@ -315,6 +315,12 @@ function setupChat(chatID, participantID, pusherKey, callback) {
         }, 25);
     });
 
+    pressenceChannel.bind('client-agent-tok-ended', function (data) {
+        if (data !== undefined) {
+            $('#' + data.streamType + 'Request').remove();
+        }
+    });
+
     pressenceChannel.bind('client-agent-stop-typing', function (data) {
         $('#typing').remove();
     });
@@ -324,11 +330,6 @@ function setupChat(chatID, participantID, pusherKey, callback) {
                     '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' is typing...</div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
     });
-
-    //pressenceChannel.bind('client-tok-ended', function (data) {
-    //    stopTOKStream();
-    //    channel.trigger('client-tok-ended', { userName: channel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
-    //});
 
     var doneTypingInterval = 5000;  //time in ms, 5 second for example
     var $input = $('#message');

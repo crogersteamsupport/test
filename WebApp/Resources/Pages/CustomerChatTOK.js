@@ -16,6 +16,7 @@ var isEdge = !isIE && !!window.StyleMedia;
 var isScreenShareDisabled = false;
 var movingAvg = null;
 var siteUrl;
+var streamType;
 
 function SetupTOK() {
     var windowUrl = window.location.href;
@@ -361,35 +362,40 @@ function subscribeToScreenStream() {
 function startVideoStreaming() {
     //Send a signal over Pusher to any parties to notify of screen sharing stream.
     pressenceChannel.trigger('client-tok-video-user', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    streamType = 'video';
 };
 
 function startAudioStreaming() {
     //Send a signal over Pusher to any parties to notify of customer audio sharing stream.
     pressenceChannel.trigger('client-tok-audio-user', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    streamType = 'audio';
 };
 
 function startScreenStreaming() {
     //Send a signal over Pusher to any parties to notify of screen sharing stream.
     pressenceChannel.trigger('client-tok-screen-user', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    streamType = 'screen';
 };
-
-function stopVideoAudioStreaming() {
-    session.unpublish(publisher);
-}
-
-function stopScreenStreaming() {
-    session.unpublish(screenSharingPublisher);
-}
 
 function stopTOKStream(e) {
     $('#tokStatusText').text('Ending live session...');
 
-    if (session !== undefined || publisher !== undefined) {
-        session.unpublish(publisher);
+    if (session !== undefined) {
+
+        if (publisher !== undefined) {
+            session.unpublish(publisher);
+            publisher.destroy();
+            publisher = undefined;
+        }
+
+        if (screenSharingPublisher !== undefined) {
+            session.unpublish(screenSharingPublisher);
+            screenSharingPublisher.destroy();
+            screenSharingPublisher = undefined;
+        }
+        
         session.disconnect();
-        publisher.destroy();
         session = undefined;
-        publisher = undefined;
     }
     
     $('#tokStreamControls').hide();
@@ -400,6 +406,9 @@ function stopTOKStream(e) {
 
     if (tokpopup)
         tokpopup.close();
+
+    //vv
+    pressenceChannel.trigger('client-tok-ended', { streamType: streamType });
 };
 
 function muteTOKStream(e) {
