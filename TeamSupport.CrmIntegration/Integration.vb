@@ -1196,6 +1196,11 @@ Namespace TeamSupport
             Private _fax As String
             Private _accountId As String
             Private _accountName As String
+            Private _billingCity As String
+            Private _billingCountry As String
+            Private _billingState As String
+            Private _billingStreet As String
+            Private _billingZip As String
 
             <XmlElement("ShippingCity")>
             Property City As String
@@ -1352,6 +1357,87 @@ Namespace TeamSupport
                             _accountName = value.Substring(0, 255)
                         Else
                             _accountName = value
+                        End If
+                    End If
+                End Set
+            End Property
+
+            <XmlElement("BillingCity")>
+            Property BillingCity As String
+                Get
+                    Return _billingCity
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 1024 Then
+                            _city = value.Substring(0, 1024)
+                        Else
+                            _city = value
+                        End If
+                    End If
+                End Set
+            End Property
+
+            <XmlElement("BillingCountry")>
+            Property BillingCountry As String
+                Get
+                    Return _billingCountry
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 250 Then
+                            _billingCountry = value.Substring(0, 250)
+                        Else
+                            _billingCountry = value
+                        End If
+                    End If
+                End Set
+            End Property
+
+            <XmlElement("BillingState")>
+            Property BillingState As String
+                Get
+                    Return _billingState
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 50 Then
+                            _billingState = value.Substring(0, 50)
+                        Else
+                            _billingState = value
+                        End If
+                    End If
+                End Set
+            End Property
+
+            <XmlElement("BillingStreet")>
+            Property BillingStreet As String
+                Get
+                    Return _billingStreet
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 1024 Then
+                            _billingStreet = value.Substring(0, 1024)
+                        Else
+                            _billingStreet = value
+                        End If
+
+                    End If
+                End Set
+            End Property
+
+            <XmlElement("BillingPostalCode")>
+            Property BillingZip As String
+                Get
+                    Return _billingZip
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 30 Then
+                            _billingZip = value.Substring(0, 30)
+                        Else
+                            _billingZip = value
                         End If
                     End If
                 End Set
