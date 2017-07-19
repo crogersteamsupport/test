@@ -11,6 +11,15 @@ button.btn {
     font-family: 'Roboto';
 }
 
+div.frame-container {
+    padding-top:0px;
+}
+
+#ticket-number {
+    font-size:13px;
+    opacity:0.8;
+}
+
 #ticket-title-panel {
     position: relative;
     z-index: 1;
@@ -50,6 +59,11 @@ button.btn {
 #ticket-assigned {
     background-color:rgba(255,255,255,0.5);
 }
+#ticket-properties-area {
+    padding-top:60px;
+    background-color:rgba(255,255,255,0.7);
+}
+
 #ticket-properties-area .form-group {
     padding-top:0px;
     margin:0px;
@@ -87,7 +101,7 @@ div.form-group input {
 }
 
 .form-group-sm .select-label {
-    font-size:11px;
+    font-size:10px;
     text-align:left;
     text-transform:capitalize;
     color:rgba(0,0,0,0.6);
@@ -168,7 +182,7 @@ div.form-group .taskContainer .new-task {
 
 .timeline > li.action-new > div.panel {
     background-color:white;
-    padding:10px;
+    padding:0px;
     position:relative;
     margin-bottom:20px;
     box-shadow: none;
@@ -950,6 +964,7 @@ span.action-option-items {
 
 .ticket-timeline {
     margin-right:310px;
+    padding-top:60px;
 }
 
 .ticket-property-section {
@@ -1345,9 +1360,7 @@ div.tag-item {
     min-height:50px;
 }
 
-#ticket-number {
-    font-size:16px;
-}
+
 
 .attachment-label {
     color:#808080 !important;
