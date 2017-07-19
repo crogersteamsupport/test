@@ -5808,8 +5808,8 @@ var MergeSuccessEvent = function (_ticketNumber, winningTicketNumber) {
 var addUserViewing = function (userID) {
     $('#ticket-now-viewing').show();
     if ($('.ticket-viewer:data(ChatID=' + userID + ')').length < 1) {
-        $('.ticket-viewer:data(ChatID=' + userID + ')').remove();
         window.parent.Ts.Services.Users.GetUser(userID, function (user) {
+            $('.ticket-viewer:data(ChatID=' + user.UserID + ')').remove();
             var fullName = user.FirstName + " " + user.LastName;
             var viewuser = $('<a>')
                     .data('ChatID', user.UserID)
@@ -5823,22 +5823,7 @@ var addUserViewing = function (userID) {
                     .appendTo($('#ticket-viewing-users'));
         });
     }
-    else if ($('.ticket-viewer:data(ChatID=' + userID + ')').length >= 1) {
-        $('.ticket-viewer:data(ChatID=' + userID + ')').remove();
-        window.parent.Ts.Services.Users.GetUser(userID, function (user) {
-            var fullName = user.FirstName + " " + user.LastName;
-            var viewuser = $('<a>')
-                    .data('ChatID', user.UserID)
-                    .data('Name', fullName)
-                    .addClass('ticket-viewer')
-                    .click(function () {
-                        window.parent.openChat($(this).data('Name'), $(this).data('ChatID'));
-                        window.parent.Ts.System.logAction('Now Viewing - Chat Opened');
-                    })
-                    .html('<img class="user-avatar ticket-viewer-avatar" src="../../../dc/' + user.OrganizationID + '/useravatar/' + user.UserID + '/48">' + fullName + '</a>')
-                    .appendTo($('#ticket-viewing-users'));
-        });
-    }
+
 }
 
 var removeUserViewing = function (ticketNum, userID) {
