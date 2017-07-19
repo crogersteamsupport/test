@@ -130,6 +130,7 @@ div.form-group input {
     text-align:left;
     background-color:transparent;
     padding:0px;
+    min-height:initial;
 }
 .selectize-input.full {
     border-radius:0px;
