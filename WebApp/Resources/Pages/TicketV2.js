@@ -337,9 +337,11 @@ var loadTicket = function (ticketNumber, refresh) {
 
         $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
         $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
-        window.parent.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
-            LoadTicketNotes(note);
-        });
+        if (refresh != 0) {
+            window.parent.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
+                LoadTicketNotes(note);
+            });
+        }
 
 
         $('#ticket-status-label').toggleClass('ticket-closed', _ticketInfo.Ticket.IsClosed);
@@ -5805,9 +5807,9 @@ var MergeSuccessEvent = function (_ticketNumber, winningTicketNumber) {
 
 var addUserViewing = function (userID) {
     $('#ticket-now-viewing').show();
-
     if ($('.ticket-viewer:data(ChatID=' + userID + ')').length < 1) {
         window.parent.Ts.Services.Users.GetUser(userID, function (user) {
+            $('.ticket-viewer:data(ChatID=' + user.UserID + ')').remove();
             var fullName = user.FirstName + " " + user.LastName;
             var viewuser = $('<a>')
                     .data('ChatID', user.UserID)
@@ -5821,6 +5823,7 @@ var addUserViewing = function (userID) {
                     .appendTo($('#ticket-viewing-users'));
         });
     }
+
 }
 
 var removeUserViewing = function (ticketNum, userID) {
