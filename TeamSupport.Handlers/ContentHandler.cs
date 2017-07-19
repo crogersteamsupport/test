@@ -291,17 +291,10 @@ namespace TeamSupport.Handlers
 
             if (u.Count > 0)
             {
-                if (u[0].TimeZoneID != null)
-                {
-                    System.TimeZoneInfo timezoneinfo = System.TimeZoneInfo.FindSystemTimeZoneById(u[0].TimeZoneID);
+                    System.TimeZoneInfo timezoneinfo = System.TimeZoneInfo.FindSystemTimeZoneById("UTC");
                     iCalTimeZone timezone = iCalTimeZone.FromSystemTimeZone(timezoneinfo);
                     iCal.AddTimeZone(timezone);
                     iCal.AddChild(timezone);
-                }
-                else
-                {
-                    iCal.AddLocalTimeZone();
-                }
 
 
 
