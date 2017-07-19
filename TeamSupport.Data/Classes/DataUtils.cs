@@ -2243,11 +2243,12 @@ namespace TeamSupport.Data
                                 }
                                 else
                                 {
-                                    result.Append(filterFieldName + " " + filterOperator + " @" + filterFieldName + j.ToString());
                                     string parameterIndex = "";
 
                                     if (j > 0)
                                         parameterIndex = j.ToString();
+
+                                    result.Append(filterFieldName + " " + filterOperator + " @" + filterFieldName + parameterIndex);
 
                                     if (hasSize)
                                     {

@@ -56,7 +56,7 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
     });
 
     channel.bind('client-tok-enabled', function (data) {
-        EnableTOKButtons(data.isCustomerTOKEnabled && isTOKEnabled);
+        EnableTOKButtons(data.isCustomerTOKEnabled && isTOKEnabledForBrowser);
     });
 
     channel.bind('client-tok-screen-user', function (data) {
@@ -148,6 +148,12 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
 
             }
         }, 25);
+    });
+
+    channel.bind('client-tok-ended', function (data) {
+        if (data !== undefined) {
+            $('#' + data.streamType + 'Request').remove();
+        }
     });
 
     //Used for the accepted invitations to the current chat.

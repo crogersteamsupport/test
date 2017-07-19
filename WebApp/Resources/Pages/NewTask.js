@@ -50,7 +50,7 @@ $(document).ready(function () {
         });
     };
 
-    debugger;
+    // debugger;
     _taskParentID = window.parent.parent.Ts.Utils.getQueryValue("taskparentid", window);
     _parentTaskName = decodeURI(escape(window.parent.parent.Ts.Utils.getQueryValue("parenttaskname", window)));
 

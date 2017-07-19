@@ -16,6 +16,7 @@ var isEdge = !isIE && !!window.StyleMedia;
 var isScreenShareDisabled = false;
 var movingAvg = null;
 var siteUrl;
+var streamType;
 
 function SetupTOK() {
     var windowUrl = window.location.href;
@@ -190,13 +191,23 @@ function publishTOKScreen() {
                 // Screen sharing is available. Publish the screen.
                 // Create an element, but do not display it in the HTML DOM:
                 var screenContainerElement = document.createElement('div');
+                var publishOptions = {};
+                publishOptions.videoSource = 'screen';
+                publishOptions.maxResolution = { width: 1920, height: 1080 };
+                publishOptions.mirror = false;
+                publishOptions.width = 1920;
+                publishOptions.height = 1080;
+
                 screenSharingPublisher = OT.initPublisher(
                       'screenOne',
-                      { videoSource: 'screen' },
+                      publishOptions,
                       function (error) {
                           if (error) {
                               console.log(error);
                           } else {
+                              screenSharingPublisher.element.style.width = screenSharingPublisher.videoWidth() + 'px';
+                              screenSharingPublisher.element.style.height = screenSharingPublisher.videoHeight() + 'px';
+
                               session.publish(
                                 screenSharingPublisher,
                                 function (error) {
@@ -351,35 +362,40 @@ function subscribeToScreenStream() {
 function startVideoStreaming() {
     //Send a signal over Pusher to any parties to notify of screen sharing stream.
     pressenceChannel.trigger('client-tok-video-user', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    streamType = 'video';
 };
 
 function startAudioStreaming() {
     //Send a signal over Pusher to any parties to notify of customer audio sharing stream.
     pressenceChannel.trigger('client-tok-audio-user', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    streamType = 'audio';
 };
 
 function startScreenStreaming() {
     //Send a signal over Pusher to any parties to notify of screen sharing stream.
     pressenceChannel.trigger('client-tok-screen-user', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    streamType = 'screen';
 };
-
-function stopVideoAudioStreaming() {
-    session.unpublish(publisher);
-}
-
-function stopScreenStreaming() {
-    session.unpublish(screenSharingPublisher);
-}
 
 function stopTOKStream(e) {
     $('#tokStatusText').text('Ending live session...');
 
-    if (session !== undefined || publisher !== undefined) {
-        session.unpublish(publisher);
+    if (session !== undefined) {
+
+        if (publisher !== undefined) {
+            session.unpublish(publisher);
+            publisher.destroy();
+            publisher = undefined;
+        }
+
+        if (screenSharingPublisher !== undefined) {
+            session.unpublish(screenSharingPublisher);
+            screenSharingPublisher.destroy();
+            screenSharingPublisher = undefined;
+        }
+        
         session.disconnect();
-        publisher.destroy();
         session = undefined;
-        publisher = undefined;
     }
     
     $('#tokStreamControls').hide();
@@ -390,6 +406,9 @@ function stopTOKStream(e) {
 
     if (tokpopup)
         tokpopup.close();
+
+    //vv
+    pressenceChannel.trigger('client-tok-ended', { streamType: streamType });
 };
 
 function muteTOKStream(e) {
