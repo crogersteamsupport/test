@@ -112,17 +112,17 @@ namespace TeamSupport.ServiceLibrary
                         _csv = new CsvReader(new StreamReader(csvFile), true);
                         ImportCustomFields(import.RefType, import.ImportID);
                         _csv = new CsvReader(new StreamReader(csvFile), true);
-                        ImportAddresses(import, ReferenceType.Organizations);
+                        ImportAddresses(import, ReferenceType.Organizations, false);
                         _csv = new CsvReader(new StreamReader(csvFile), true);
-                        ImportPhoneNumbers(import, ReferenceType.Organizations);
+                        ImportPhoneNumbers(import, ReferenceType.Organizations, false);
                         _csv = new CsvReader(new StreamReader(csvFile), true);
                         ImportParentCompanies(import);
                         break;
                     case ReferenceType.CompanyAddresses:
-                        ImportAddresses(import, ReferenceType.Organizations);
+                        ImportAddresses(import, ReferenceType.Organizations, true);
                         break;
                     case ReferenceType.CompanyPhoneNumbers:
-                        ImportPhoneNumbers(import, ReferenceType.Organizations);
+                        ImportPhoneNumbers(import, ReferenceType.Organizations, true);
                         break;
                     case ReferenceType.Contacts:
                         //ImportCompanies(import);
@@ -131,15 +131,15 @@ namespace TeamSupport.ServiceLibrary
                         _csv = new CsvReader(new StreamReader(csvFile), true);
                         ImportCustomFields(import.RefType, import.ImportID);
                         _csv = new CsvReader(new StreamReader(csvFile), true);
-                        ImportAddresses(import, ReferenceType.Users);
+                        ImportAddresses(import, ReferenceType.Users, false);
                         _csv = new CsvReader(new StreamReader(csvFile), true);
-                        ImportPhoneNumbers(import, ReferenceType.Contacts);
+                        ImportPhoneNumbers(import, ReferenceType.Contacts, false);
                         break;
                     case ReferenceType.ContactAddresses:
-                        ImportAddresses(import, ReferenceType.Users);
+                        ImportAddresses(import, ReferenceType.Users, true);
                         break;
                     case ReferenceType.ContactPhoneNumbers:
-                        ImportPhoneNumbers(import, ReferenceType.Contacts);
+                        ImportPhoneNumbers(import, ReferenceType.Contacts, true);
                         break;
                     case ReferenceType.Tickets:
                         ImportTickets(import);
@@ -186,9 +186,9 @@ namespace TeamSupport.ServiceLibrary
                         _csv = new CsvReader(new StreamReader(csvFile), true);
                         ImportCustomFields(import.RefType, import.ImportID);
                         _csv = new CsvReader(new StreamReader(csvFile), true);
-                        ImportAddresses(import, ReferenceType.Users, true);
+                        ImportAddresses(import, ReferenceType.Users, false, true);
                         _csv = new CsvReader(new StreamReader(csvFile), true);
-                        ImportPhoneNumbers(import, ReferenceType.Users);
+                        ImportPhoneNumbers(import, ReferenceType.Users, false);
                         break;
                     case ReferenceType.OrganizationProducts:
                         ImportOrganizationProducts(import);
@@ -2020,7 +2020,7 @@ namespace TeamSupport.ServiceLibrary
             _importLog.Write(count.ToString() + " contacts imported.");
         }
 
-        private void ImportAddresses(Import import, ReferenceType addressReferenceType, bool isUser = false)
+        private void ImportAddresses(Import import, ReferenceType addressReferenceType, bool updateStatus, bool isUser = false)
         {
             SortedList<string, int> userList = GetUserList();
             SortedList<string, int> contactList = null;
@@ -2327,16 +2327,22 @@ namespace TeamSupport.ServiceLibrary
                 {
                     addresses.BulkSave();
                     addresses = new Addresses(_importUser);
-                    UpdateImportCount(import, count);
+                    if (updateStatus)
+                    {
+                        UpdateImportCount(import, count);
+                    }
                     _importLog.Write("Import set with " + count.ToString() + " addresses inserted in database.");
                 }
             }
             addresses.BulkSave();
-            UpdateImportCount(import, count);
+            if (updateStatus)
+            {
+                UpdateImportCount(import, count);
+            }
             _importLog.Write("Import set with " + count.ToString() + " addresses inserted in database.");
         }
 
-        private void ImportPhoneNumbers(Import import, ReferenceType phoneNumberReferenceType)
+        private void ImportPhoneNumbers(Import import, ReferenceType phoneNumberReferenceType, bool updateStatus)
         {
             SortedList<string, int> userList = GetUserList();
             SortedList<string, int> contactList = null;
@@ -2845,12 +2851,18 @@ namespace TeamSupport.ServiceLibrary
                 {
                     phoneNumbers.BulkSave();
                     phoneNumbers = new PhoneNumbers(_importUser);
-                    UpdateImportCount(import, count);
+                    if (updateStatus)
+                    {
+                        UpdateImportCount(import, count);
+                    }
                     _importLog.Write("Import set with " + count.ToString() + " phone numbers inserted in database.");
                 }
             }
             phoneNumbers.BulkSave();
-            UpdateImportCount(import, count);
+            if (updateStatus)
+            {
+                UpdateImportCount(import, count);
+            }
             _importLog.Write("Import set with " + count.ToString() + " phone numbers inserted in database.");
         }
 
@@ -3067,13 +3079,13 @@ namespace TeamSupport.ServiceLibrary
                 {
                     customerRelationships.BulkSave();
                     customerRelationships = new CustomerRelationships(_importUser);
-                    UpdateImportCount(import, count);
+                    //UpdateImportCount(import, count);
                     _importLog.Write("Import set with " + count.ToString() + " children companies inserted in database.");
                 }
             }
 
             customerRelationships.BulkSave();
-            UpdateImportCount(import, count);
+            //UpdateImportCount(import, count);
             _importLog.Write("Import set with " + count.ToString() + " children companies inserted in database.");
         }
 

@@ -268,7 +268,7 @@
           <asp:CheckBox ID="cbRequireKnown" runat="server" CssClass="checkBox" Text="Require a known email address for emails" />
           <p>This setting will only allow emails into the system if we know who the sender is - be it a internal TeamSupport user or anyone else.  As above, the majority of our customers leave this OFF.</p>
           <asp:CheckBox ID="cbChangeStatus" runat="server" CssClass="checkBox" Text="Auto Change Status of a Closed Ticket" />
-          <p>When a Ticket is Closed and your Customer updates the ticket via an email, the status of the ticket will change to what you have set as the "email response" status (see <a target="_blank" href="http://help.teamsupport.com/tickets-1/ticket-status">here</a> for more about ticket status).  If you do not want the status of the ticket to change under this scenario, uncheck this setting.</p>
+          <p>When a Ticket is Closed and your Customer updates the ticket via an email, the status of the ticket will change to what you have set as the "email response" status (see <a target="_blank" href="https://help.teamsupport.com/1/en/topic/ticket-statuses">here</a> for more about ticket status).  If you do not want the status of the ticket to change under this scenario, uncheck this setting.</p>
           <asp:CheckBox ID="cbAssociatePeople" runat="server" CssClass="checkBox" Text="Associate additional people to ticket" />
           <p>Automatically associate additional people who are on the To and CC lines of an email to the ticket.</p>
           <asp:CheckBox ID="cbMatchSubject" runat="server" CssClass="checkBox" Text="Match subject to existing tickets." />
