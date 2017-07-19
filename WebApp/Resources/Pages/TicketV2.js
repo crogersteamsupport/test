@@ -337,9 +337,11 @@ var loadTicket = function (ticketNumber, refresh) {
 
         $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
         $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
-        window.parent.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
-            LoadTicketNotes(note);
-        });
+        if (refresh != 0) {
+            window.parent.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
+                LoadTicketNotes(note);
+            });
+        }
 
 
         $('#ticket-status-label').toggleClass('ticket-closed', _ticketInfo.Ticket.IsClosed);
@@ -5805,8 +5807,24 @@ var MergeSuccessEvent = function (_ticketNumber, winningTicketNumber) {
 
 var addUserViewing = function (userID) {
     $('#ticket-now-viewing').show();
-
     if ($('.ticket-viewer:data(ChatID=' + userID + ')').length < 1) {
+        $('.ticket-viewer:data(ChatID=' + userID + ')').remove();
+        window.parent.Ts.Services.Users.GetUser(userID, function (user) {
+            var fullName = user.FirstName + " " + user.LastName;
+            var viewuser = $('<a>')
+                    .data('ChatID', user.UserID)
+                    .data('Name', fullName)
+                    .addClass('ticket-viewer')
+                    .click(function () {
+                        window.parent.openChat($(this).data('Name'), $(this).data('ChatID'));
+                        window.parent.Ts.System.logAction('Now Viewing - Chat Opened');
+                    })
+                    .html('<img class="user-avatar ticket-viewer-avatar" src="../../../dc/' + user.OrganizationID + '/useravatar/' + user.UserID + '/48">' + fullName + '</a>')
+                    .appendTo($('#ticket-viewing-users'));
+        });
+    }
+    else if ($('.ticket-viewer:data(ChatID=' + userID + ')').length >= 1) {
+        $('.ticket-viewer:data(ChatID=' + userID + ')').remove();
         window.parent.Ts.Services.Users.GetUser(userID, function (user) {
             var fullName = user.FirstName + " " + user.LastName;
             var viewuser = $('<a>')
