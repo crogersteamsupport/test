@@ -80,9 +80,7 @@ div.frame-container {
 }
 
 
-.dropdown-menu > li > a:hover, .dropdown-menu > li > a {
-    color:white;
-}
+
 .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
     background-color:inherit;
 }
