@@ -190,6 +190,13 @@ div.form-group .taskContainer .new-task {
 
 /* TIMELINE */
 
+-.timeline > li.action-new {
+    padding-top:0px;
+    background-color:transparent;
+    margin-bottom:0px;
+}
+
+
 .timeline > li.action-new > div.panel {
     background-color:white;
     padding:0px;
@@ -468,6 +475,7 @@ button.ticket-option {
 }
 
 .timeline > li > .timeline-panel {
+    margin-bottom:10px;
     width:100%;
     float:left;
     border:1px solid white;
@@ -973,7 +981,10 @@ span.action-option-items {
     padding:10px 10px 10px 20px;
 }
 
-
+.ticket-timeline {
+    margin-right:310px;
+    padding-top:0px;
+}
 
 .ticket-property-section {
     -webkit-box-shadow:none;
