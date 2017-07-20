@@ -280,10 +280,9 @@ namespace TeamSupport.Data
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ExceptionLogs] (    [URL],    [PageInfo],    [ExceptionName],    [Message],    [StackTrace],    [Browser],    [CreatorID],    [DateCreated],    [ModifierID],    [DateModified]) VALUES ( @URL, @PageInfo, @ExceptionName, @Message, @StackTrace, @Browser, @CreatorID, @DateCreated, @ModifierID, @DateModified); SET @Identity = SCOPE_IDENTITY();";
-
-		
-		tempParameter = insertCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
+        insertCommand.CommandText = "SET NOCOUNT OFF; IF NOT EXISTS (SELECT Top 1 * FROM  [dbo].[ExceptionLogs] WHERE URL = @URL AND Message = @Message ) BEGIN  INSERT INTO [dbo].[ExceptionLogs] (    [URL],    [PageInfo],    [ExceptionName],    [Message],    [StackTrace],    [Browser],    [CreatorID],    [DateCreated],    [ModifierID],    [DateModified]) VALUES ( @URL, @PageInfo, @ExceptionName, @Message, @StackTrace, @Browser, @CreatorID, @DateCreated, @ModifierID, @DateModified) END ; SET @Identity = SCOPE_IDENTITY();";
+            
+        tempParameter = insertCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 23;
