@@ -16,7 +16,7 @@ div.frame-container {
 }
 
 #ticket-number {
-    font-size:16px;
+    font-size:20px;
     opacity:0.8;
 }
 #ticket-number-strip {
@@ -188,6 +188,7 @@ div.form-group .taskContainer .new-task {
 /* TIMELINE */
 
 .timeline > li.action-new {
+    padding-top:60px;
     background-color:transparent;
     margin-bottom:0px;
 }
@@ -977,7 +978,7 @@ span.action-option-items {
 
 .ticket-timeline {
     margin-right:310px;
-    padding-top:60px;
+    padding-top:0px;
 }
 
 .ticket-property-section {
