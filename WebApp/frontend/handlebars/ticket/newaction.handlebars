@@ -1,25 +1,11 @@
 
-<div id="ticket-title-input-panel" class="panel panel-default" style="position:relative; z-index: 1; margin-bottom:10px; display:none; ">
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="input-group">
-                <input id="ticket-title-input" type="text" class="form-control" placeholder="Enter name for ticket...">
-                <span class="input-group-btn">
-                    <button id="ticket-title-save" class="btn btn-primary" type="button">Save</button>
-                    <button id="ticket-title-cancel" class="btn btn-default" type="button">Cancel</button>
-                </span>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <li class="action-new">
     <div class="panel panel-default" style="border:none;">
-        <p id="ticket-title-label" style="padding:10px 10px 5px; text-align:center !important;"></p>
-        <div class="flexbox" style="padding:10px 10px 5px;border-top:1px solid rgba(150,150,150,0.1); background-color:#f4f6f8;">
+        <div class="flexbox" style="padding:10px 10px 7px;border-bottom:1px solid rgba(150,150,150,0.1); background-color:#f4f6f8;">
             <div class="flex1">
-                <div class="ticket-source"></div>
-                <label id="ticket-number"></label>
+                <label id="ticket-number-strip"></label>
             </div>
             <div class="flex1" style="text-align:right !important;">
                 <button id="action-add-public" class="btn btn-default">PUBLIC ACTION</button>
@@ -27,6 +13,22 @@
                 <button id="action-add-wc" class="btn btn-default">WATERCOOLER POST</button>
             </div>
         </div>
+        <p id="ticket-title-label" style="padding:10px 10px 10px; text-align:center !important;"></p>
+
+        <div id="ticket-title-input-panel" class="panel panel-default" style="position:relative; z-index: 1; margin-bottom:10px; display:none; ">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="input-group">
+                        <input id="ticket-title-input" type="text" class="form-control" placeholder="Enter name for ticket...">
+                        <span class="input-group-btn">
+                            <button id="ticket-title-save" class="btn btn-primary" type="button">Save</button>
+                            <button id="ticket-title-cancel" class="btn btn-default" type="button">Cancel</button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div class="action-new-area" style="display:none;">

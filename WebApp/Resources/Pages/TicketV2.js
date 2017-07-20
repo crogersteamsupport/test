@@ -337,6 +337,7 @@ var loadTicket = function (ticketNumber, refresh) {
 
         $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
         $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
+        $('#ticket-number-strip').text('#' + _ticketInfo.Ticket.TicketNumber);
         if (refresh != 0) {
             window.parent.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
                 LoadTicketNotes(note);
@@ -555,6 +556,7 @@ function SetupTicketProperties(order) {
         //set the ticket title
         $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
         $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
+        $('#ticket-number-strip').text('#' + _ticketInfo.Ticket.TicketNumber);
         $('.ticket-source').css('backgroundImage', "url('../" + window.parent.Ts.Utils.getTicketSourceIcon(_ticketInfo.Ticket.TicketSource) + "')").attr('title', 'Ticket Source: ' + (_ticketInfo.Ticket.TicketSource == null ? 'Agent' : _ticketInfo.Ticket.TicketSource));
         //get total number of actions so we can use it to number each action
         GetActionCount(function () {
