@@ -245,7 +245,7 @@ function subscribeToVideoStream() {
             alert("Popup Blocker is enabled! Please add this site to your exception list.");
         } else {
             publishTOKVideo(function () {
-                pressenceChannel.trigger('client-tok-video-user-accept', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+                presenceChannel.trigger('client-tok-video-user-accept', { userName: presenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId, agentRequesting: _agentName });
                 $('#tokStatusText').text(_agentName + ' has joined live session.');
             });
         }
@@ -265,7 +265,7 @@ function subscribeToAudioStream() {
                 alert("Popup Blocker is enabled! Please add this site to your exception list.");
             } else {
                 publishTOKAudio(function () {
-                    pressenceChannel.trigger('client-tok-audio-user-accept', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+                    presenceChannel.trigger('client-tok-audio-user-accept', { userName: presenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
                     $('#tokStatusText').text(_agentName + ' has joined live session.');
                 });
             }
@@ -275,7 +275,7 @@ function subscribeToAudioStream() {
         $('#audioRequest').remove();
 
         publishTOKAudio(function () {
-            pressenceChannel.trigger('client-tok-audio-user-accept', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+            presenceChannel.trigger('client-tok-audio-user-accept', { userName: presenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId, agentRequesting: _agentName });
             $('#tokStatusText').text(_agentName + ' has joined live session.');
         });
     }
@@ -352,7 +352,7 @@ function subscribeToScreenStream() {
             alert("Popup Blocker is enabled! Please add this site to your exception list.");
         } else {
             publishTOKAudio(function () {
-                pressenceChannel.trigger('client-tok-audio-user-accept', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+                presenceChannel.trigger('client-tok-audio-user-accept', { userName: presenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
                 $('#tokStatusText').text(_agentName + ' has joined live session.');
             });
         }
@@ -361,19 +361,19 @@ function subscribeToScreenStream() {
 
 function startVideoStreaming() {
     //Send a signal over Pusher to any parties to notify of screen sharing stream.
-    pressenceChannel.trigger('client-tok-video-user', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    presenceChannel.trigger('client-tok-video-user', { userName: presenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
     streamType = 'video';
 };
 
 function startAudioStreaming() {
     //Send a signal over Pusher to any parties to notify of customer audio sharing stream.
-    pressenceChannel.trigger('client-tok-audio-user', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    presenceChannel.trigger('client-tok-audio-user', { userName: presenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
     streamType = 'audio';
 };
 
 function startScreenStreaming() {
     //Send a signal over Pusher to any parties to notify of screen sharing stream.
-    pressenceChannel.trigger('client-tok-screen-user', { userName: pressenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
+    presenceChannel.trigger('client-tok-screen-user', { userName: presenceChannel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
     streamType = 'screen';
 };
 
@@ -407,8 +407,7 @@ function stopTOKStream(e) {
     if (tokpopup)
         tokpopup.close();
 
-    //vv
-    pressenceChannel.trigger('client-tok-ended', { streamType: streamType });
+    presenceChannel.trigger('client-tok-ended', { streamType: streamType });
 };
 
 function muteTOKStream(e) {
