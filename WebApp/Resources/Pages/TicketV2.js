@@ -337,9 +337,12 @@ var loadTicket = function (ticketNumber, refresh) {
 
         $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
         $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
-        window.parent.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
-            LoadTicketNotes(note);
-        });
+        $('#ticket-number-strip').text('#' + _ticketInfo.Ticket.TicketNumber);
+        if (refresh != 0) {
+            window.parent.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
+                LoadTicketNotes(note);
+            });
+        }
 
 
         $('#ticket-status-label').toggleClass('ticket-closed', _ticketInfo.Ticket.IsClosed);
@@ -553,6 +556,7 @@ function SetupTicketProperties(order) {
         //set the ticket title
         $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
         $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
+        $('#ticket-number-strip').text('#' + _ticketInfo.Ticket.TicketNumber);
         $('.ticket-source').css('backgroundImage', "url('../" + window.parent.Ts.Utils.getTicketSourceIcon(_ticketInfo.Ticket.TicketSource) + "')").attr('title', 'Ticket Source: ' + (_ticketInfo.Ticket.TicketSource == null ? 'Agent' : _ticketInfo.Ticket.TicketSource));
         //get total number of actions so we can use it to number each action
         GetActionCount(function () {
@@ -4409,7 +4413,7 @@ function FetchTimeLineItems(start) {
             //create first timeline date marker if needed
             if (_currDateSpan == null) {
                 _currDateSpan = _timeLine[0].item.DateCreated;
-                var dateSpan = '<span class="label bgcolor-bluegray daybadge">' + _currDateSpan.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span>';
+                var dateSpan = '<li style="text-align:center;"><span class="label bgcolor-bluegray daybadge">' + _currDateSpan.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><li>';
                 $("#action-timeline").append(dateSpan);
             };
             var isPublicFiltered = $('.filter-public').hasClass('bgcolor-darkgray');
@@ -4443,7 +4447,7 @@ function FetchTimeLineItems(start) {
 
 function CreateActionElement(val, ShouldAppend) {
     if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
-        var dateSpan = '<span class="label bgcolor-bluegray daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span>';
+        var dateSpan = '<li style="text-align:center;"><span class="label bgcolor-bluegray daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><li>';
         $("#action-timeline").append(dateSpan);
         _currDateSpan = val.item.DateCreated;
     }
@@ -4478,7 +4482,7 @@ function CreateActionElement(val, ShouldAppend) {
 
 function UpdateActionElement(val) {
     if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
-        var dateSpan = '<span class="label bgcolor-bluegray daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span>';
+        var dateSpan = '<li style="text-align:center;"><span class="label bgcolor-bluegray daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span></li>';
         $("#action-timeline").append(dateSpan);
         _currDateSpan = val.item.DateCreated;
     }
@@ -5805,9 +5809,9 @@ var MergeSuccessEvent = function (_ticketNumber, winningTicketNumber) {
 
 var addUserViewing = function (userID) {
     $('#ticket-now-viewing').show();
-
     if ($('.ticket-viewer:data(ChatID=' + userID + ')').length < 1) {
         window.parent.Ts.Services.Users.GetUser(userID, function (user) {
+            $('.ticket-viewer:data(ChatID=' + user.UserID + ')').remove();
             var fullName = user.FirstName + " " + user.LastName;
             var viewuser = $('<a>')
                     .data('ChatID', user.UserID)
@@ -5821,6 +5825,7 @@ var addUserViewing = function (userID) {
                     .appendTo($('#ticket-viewing-users'));
         });
     }
+
 }
 
 var removeUserViewing = function (ticketNum, userID) {

@@ -1904,17 +1904,18 @@ namespace TSWebServices
         public bool UnSetSyncWithJira(int ticketID)
         {
             bool result = false;
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
 
             try
             {
-                CRMLinkTable crmlink = new CRMLinkTable(TSAuthentication.GetLoginUser());
-                crmlink.LoadByOrganizationID(TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).OrganizationID);
+                CRMLinkTable crmlink = new CRMLinkTable(loginUser);
+                crmlink.LoadByOrganizationID(TSAuthentication.GetOrganization(loginUser).OrganizationID);
 
                 foreach (DataRow crmRow in crmlink.Table.Rows)
                 {
                     if (crmRow["CRMType"].ToString() == "Jira")
                     {
-                        TicketLinkToJira linkToJira = new TicketLinkToJira(TSAuthentication.GetLoginUser());
+                        TicketLinkToJira linkToJira = new TicketLinkToJira(loginUser);
                         linkToJira.LoadByTicketID(ticketID);
 
                         TicketLinkToJiraItemProxy ticketLinktoJiraProxy = GetLinkToJira(ticketID);
@@ -1971,6 +1972,12 @@ namespace TSWebServices
                             }
 
                             linkToJira.DeleteFromDB(ticketLinktoJiraProxy.id);
+
+                            ActionLinkToJira actionLinkToJira = new ActionLinkToJira(loginUser);
+                            actionLinkToJira.LoadByTicketID(ticketID);
+                            actionLinkToJira.DeleteAll();
+                            actionLinkToJira.Save();
+
                             result = true;
                         }
                     }
@@ -1979,7 +1986,7 @@ namespace TSWebServices
             catch (Exception ex)
             {
                 result = false;
-                ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "UnSetSyncWithJira");
+                ExceptionLogs.LogException(loginUser, ex, "UnSetSyncWithJira");
             }
 
             return result;

@@ -52,6 +52,11 @@ body.white, div.white {
     background-color: #33485e !important;
 }
 
+.text-white {
+    color:white !important;
+}
+
+
 
 
 div.flexbox       { display:flex;display:-webkit-flex; }

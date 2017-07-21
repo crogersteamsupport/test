@@ -1,36 +1,26 @@
 
-<div id="ticket-title-input-panel" class="panel panel-default" style="position:relative; z-index: 1; margin-bottom:10px; display:none; ">
 
-    <div class="row">
-
-        <div class="col-sm-12">
-
-            <div class="input-group">
-
-                <input id="ticket-title-input" type="text" class="form-control" placeholder="Enter name for ticket...">
-
-                <span class="input-group-btn">
-
-                        <button id="ticket-title-save" class="btn btn-primary" type="button">Save</button>
-                        <button id="ticket-title-cancel" class="btn btn-default" type="button">Cancel</button>
-
-                </span>
-
-            </div>
-        </div>
-    </div>
-</div>
 
 <li class="action-new">
 
-    <div class="panel panel-default">
-        <p id="ticket-title-label" style="text-align:left !important;"></p>
+    <div class="flexbox" style="padding:10px 10px 7px;">
+        <div class="flex3" style="text-align:right !important;">
+            <button id="action-add-public" class="btn btn-default text-white">+ PUBLIC ACTION</button>
+            <button id="action-add-private" class="btn btn-default text-white">+ PRIVATE ACTION</button>
+            <button id="action-add-wc" class="btn btn-default text-white">+ WATERCOOLER POST</button>
+        </div>
+    </div>
 
-        <p style="text-align:right !important;">
-            <button id="action-add-public" class="btn btn-default">NEW PUBLIC</button>
-            <button id="action-add-private" class="btn btn-default">NEW PRIVATE</button>
-            <button id="action-add-wc" class="btn btn-default">NEW WATERCOOLER</button>
-        </p>
+    <div class="panel panel-default" style="border:none;">
+
+        <p id="ticket-title-label" style="padding:10px 10px 10px; text-align:center !important;"></p>
+
+        <div id="ticket-title-input-panel" style="padding:5px;position:relative;z-index:1;margin-bottom:10px;display:none;text-align:center;">
+            <input id="ticket-title-input" type="text" class="form-control" placeholder="Enter name for ticket..." style="margin-bottom:5px;">
+            <button id="ticket-title-save" class="btn btn-primary" type="button">Save</button>
+            <button id="ticket-title-cancel" class="btn btn-default" type="button">Cancel</button>
+        </div>
+
     </div>
 
     <div class="action-new-area" style="display:none;">
@@ -40,11 +30,9 @@
             <p>Finally, the first run of the screen recorder takes about 40 seconds to load on a 2 Mbps internet connection.</p>
         </div>
 
-
         <div id="public-badge" class="ticket-badge">
             <div class="bgcolor-green"><span class="bgcolor-green">&nbsp;</span><a href="#" class="new-action-option-visible">Public</a></div>
         </div>
-
 
         <div id="private-badge" class="ticket-badge">
             <div class="bgcolor-orange"><span class="bgcolor-orange">&nbsp;</span><a href="#" class="new-action-option-visible">Private</a></div>
@@ -53,12 +41,10 @@
         <!--<textarea id="action-new-editor"></textarea>-->
         <div id="action-new-editor"></div>
 
-
         <div id="screenRecordDiv">
             <div id="ourPubTest" style="position: absolute !important; z-index: -99;"></div>
             <div id="ourPubTest2" style="position: absolute; left: -9999px;"></div>
         </div>
-
 
         <div style="text-align:center;display:none;" id="recordScreenContainer" class="action-new-toolbar">
             <div id="statusTextScreen"></div>
@@ -69,7 +55,6 @@
             <button id="stoptokScreen" class="btn btn-danger" title="Stop Screen Recording"><i class="fa fa-stop"></i></button>
             <button id="canceltokScreen" title="Cancel Screen Recording" class="btn btn-danger"><i class="fa fa-eject"></i></button>
         </div>
-
 
         <div style="text-align:center;display:none;" id="recordVideoContainer" class="action-new-toolbar">
             <div id="statusText"></div>

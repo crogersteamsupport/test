@@ -11,6 +11,18 @@ button.btn {
     font-family: 'Roboto';
 }
 
+div.frame-container {
+    padding-top:0px;
+}
+
+#ticket-number {
+    font-size:20px;
+    opacity:0.8;
+}
+#ticket-number-strip {
+    font-size:12px;
+    opacity:0.8;
+}
 #ticket-title-panel {
     position: relative;
     z-index: 1;
@@ -24,6 +36,7 @@ button.btn {
     box-shadow:1px 1px 0px rgba(0, 0, 0, 0.1);
 }
 #ticket-title-label {
+    font-size:16px;
     margin-bottom:5px;
 }
 #action-add-public {
@@ -50,6 +63,10 @@ button.btn {
 #ticket-assigned {
     background-color:rgba(255,255,255,0.5);
 }
+#ticket-properties-area {
+    padding-top:60px;
+    background-color:rgba(255,255,255,0.7);
+}
 #ticket-properties-area .form-group {
     padding-top:0px;
     margin:0px;
@@ -61,11 +78,22 @@ button.btn {
     padding:0px 10px !important;
     border:none;
 }
+#ticket-timeline {
+    margin-right:310px;
+    padding-top:60px;
+}
+
+
+.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
+    background-color:inherit;
+}
+
+
 
 div.form-horizontal .form-group-sm,
 div.form-group.ticket-group {
-    background-color:rgba(255,255,255,0.5) !important;
-    border-bottom:1px solid rgba(0,0,0,0.1);
+    background-color:rgba(255,255,255,0) !important;
+    border-bottom:1px solid rgba(150,150,150,0.1);
 }
 
 div.form-horizontal input,
@@ -87,7 +115,7 @@ div.form-group input {
 }
 
 .form-group-sm .select-label {
-    font-size:11px;
+    font-size:12px;
     text-align:left;
     text-transform:capitalize;
     color:rgba(0,0,0,0.6);
@@ -116,6 +144,7 @@ div.form-group input {
     text-align:left;
     background-color:transparent;
     padding:0px;
+    min-height:initial;
 }
 .selectize-input.full {
     border-radius:0px;
@@ -161,14 +190,16 @@ div.form-group .taskContainer .new-task {
 
 /* TIMELINE */
 
-.timeline > li.action-new {
+-.timeline > li.action-new {
+    padding-top:0px;
     background-color:transparent;
     margin-bottom:0px;
 }
 
+
 .timeline > li.action-new > div.panel {
     background-color:white;
-    padding:10px;
+    padding:0px;
     position:relative;
     margin-bottom:20px;
     box-shadow: none;
@@ -385,7 +416,8 @@ button.ticket-option {
 
 .timeline {
     list-style:none;
-    padding:10px 0px 20px;
+    margin-bottom:40px;
+    padding:0px 0px 0px;
     position:relative;
 }
 
@@ -393,7 +425,7 @@ button.ticket-option {
     top:0;
     bottom:0;
     position:absolute;
-    content:" ";
+    /* content:""; */
     width:3px;
     background-color:#dddddd;
     left:50%;
@@ -420,12 +452,11 @@ button.ticket-option {
 .timeline > li {
     margin-bottom:10px;
     position:relative;
-    background-color:white;
 }
 
 .timeline > li:before,
 .timeline > li:after {
-    content:" ";
+    /* content:""; */
     display:table;
 }
 
@@ -435,7 +466,7 @@ button.ticket-option {
 
 .timeline > li:before,
 .timeline > li:after {
-    content:" ";
+    /* content:""; */
     display:table;
 }
 
@@ -444,6 +475,7 @@ button.ticket-option {
 }
 
 .timeline > li > .timeline-panel {
+    margin-bottom:10px;
     width:100%;
     float:left;
     border:1px solid white;
@@ -454,6 +486,7 @@ button.ticket-option {
     -webkit-box-shadow:1px 1px 0px rgba(0, 0, 0, 0.1);
     box-shadow:1px 1px 0px rgba(0, 0, 0, 0.1);
     z-index:2;
+    background-color:white;
 }
 
 .timeline > li > div.timeline-panel > label.ticket-action-number {
@@ -554,7 +587,7 @@ div.ticket-badge > div > a:focus {
 }
 
 .timeline-attachments > a:first-child:before {
-    content:"";
+    /* content:""; */
     display:block;
     height:1px;
     margin-bottom:10px;
@@ -950,6 +983,7 @@ span.action-option-items {
 
 .ticket-timeline {
     margin-right:310px;
+    padding-top:0px;
 }
 
 .ticket-property-section {
@@ -959,10 +993,10 @@ span.action-option-items {
     width:300px;
     margin-left:-300px;
     padding-top:50px;
-    padding-right:15px;
-    padding-left:15px;
+    padding-right:10px;
+    padding-left:10px;
     background-color:none;
-    margin-bottom:10px;
+    margin-bottom:20px;
 }
 
 #ticket-properties-area > hr {
@@ -1345,9 +1379,7 @@ div.tag-item {
     min-height:50px;
 }
 
-#ticket-number {
-    font-size:16px;
-}
+
 
 .attachment-label {
     color:#808080 !important;

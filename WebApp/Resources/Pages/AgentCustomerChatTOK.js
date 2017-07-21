@@ -439,7 +439,6 @@ function stopTOKStream(e) {
     if(tokpopup)
         tokpopup.close();
 
-    //vv
     channel.trigger('client-agent-tok-ended', { streamType: streamType });
 };
 
