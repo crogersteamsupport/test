@@ -16,7 +16,7 @@ div.frame-container {
 }
 
 #ticket-number {
-    font-size:16px;
+    font-size:20px;
     opacity:0.8;
 }
 #ticket-number-strip {
@@ -78,11 +78,12 @@ div.frame-container {
     padding:0px 10px !important;
     border:none;
 }
-
-
-.dropdown-menu > li > a:hover, .dropdown-menu > li > a {
-    color:white;
+#ticket-timeline {
+    margin-right:310px;
+    padding-top:60px;
 }
+
+
 .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
     background-color:inherit;
 }
@@ -189,10 +190,12 @@ div.form-group .taskContainer .new-task {
 
 /* TIMELINE */
 
-.timeline > li.action-new {
+-.timeline > li.action-new {
+    padding-top:0px;
     background-color:transparent;
     margin-bottom:0px;
 }
+
 
 .timeline > li.action-new > div.panel {
     background-color:white;
@@ -422,7 +425,7 @@ button.ticket-option {
     top:0;
     bottom:0;
     position:absolute;
-    content:" ";
+    /* content:""; */
     width:3px;
     background-color:#dddddd;
     left:50%;
@@ -449,12 +452,11 @@ button.ticket-option {
 .timeline > li {
     margin-bottom:10px;
     position:relative;
-    background-color:white;
 }
 
 .timeline > li:before,
 .timeline > li:after {
-    content:" ";
+    /* content:""; */
     display:table;
 }
 
@@ -464,7 +466,7 @@ button.ticket-option {
 
 .timeline > li:before,
 .timeline > li:after {
-    content:" ";
+    /* content:""; */
     display:table;
 }
 
@@ -473,6 +475,7 @@ button.ticket-option {
 }
 
 .timeline > li > .timeline-panel {
+    margin-bottom:10px;
     width:100%;
     float:left;
     border:1px solid white;
@@ -483,6 +486,7 @@ button.ticket-option {
     -webkit-box-shadow:1px 1px 0px rgba(0, 0, 0, 0.1);
     box-shadow:1px 1px 0px rgba(0, 0, 0, 0.1);
     z-index:2;
+    background-color:white;
 }
 
 .timeline > li > div.timeline-panel > label.ticket-action-number {
@@ -583,7 +587,7 @@ div.ticket-badge > div > a:focus {
 }
 
 .timeline-attachments > a:first-child:before {
-    content:"";
+    /* content:""; */
     display:block;
     height:1px;
     margin-bottom:10px;
@@ -979,7 +983,7 @@ span.action-option-items {
 
 .ticket-timeline {
     margin-right:310px;
-    padding-top:60px;
+    padding-top:0px;
 }
 
 .ticket-property-section {
