@@ -4402,9 +4402,9 @@ function FetchTimeLineItems(start) {
         _timeLine = TimeLineItems;
 
         console.log("here");
-        console.log(TimeLineItems);
+        console.log(_timeLine);
 
-        if (TimeLineItems.length < 1) {
+        if (_timeLine.length < 1) {
             $('.results-loading').hide();
             $('.results-done').show();
         } else {
