@@ -4401,11 +4401,12 @@ function FetchTimeLineItems(start) {
     window.parent.Ts.Services.TicketPage.GetTimeLineItems(_ticketID, start, function (TimeLineItems) {
         _timeLine = TimeLineItems;
 
+        console.log(TimeLineItems);
+
         if (TimeLineItems.length < 1) {
             $('.results-loading').hide();
             $('.results-done').show();
-        }
-        else {
+        } else {
             //compile action template
             // _compiledActionTemplate = Handlebars.compile($("#action-template").html());
             _compiledActionTemplate = Handlebars.templates['action'];
