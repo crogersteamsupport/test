@@ -61,7 +61,6 @@ function SetupTOK() {
     });
 }
 
-
 function publishTOKVideo(callback) {
     //if (session !== undefined || publisher !== undefined)
     //    stopTOKStream();
