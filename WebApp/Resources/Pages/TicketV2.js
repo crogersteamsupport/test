@@ -4398,7 +4398,7 @@ function openTicketWindow(ticketID) {
 function FetchTimeLineItems(start) {
 
     console.log("start");
-    console.log(TimeLineItems);
+    console.log(start);
 
     _isLoading = true;
     $('.results-loading').show();
