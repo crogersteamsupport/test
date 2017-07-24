@@ -773,7 +773,7 @@ namespace TeamSupport.ServiceLibrary
                 }
                 else
                 {
-                    scheduledReport.SetNextRun();
+                    scheduledReport.SetNextRun(true);
                 }
 
                 scheduledReport.RunCount = scheduledReport.RunCount != null ? (short)(scheduledReport.RunCount + 1) : (short)1;
