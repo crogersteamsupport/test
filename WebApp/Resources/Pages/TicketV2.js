@@ -4401,6 +4401,7 @@ function FetchTimeLineItems(start) {
     window.parent.Ts.Services.TicketPage.GetTimeLineItems(_ticketID, start, function (TimeLineItems) {
         _timeLine = TimeLineItems;
 
+        console.log("here");
         console.log(TimeLineItems);
 
         if (TimeLineItems.length < 1) {
