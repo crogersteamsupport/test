@@ -1630,6 +1630,7 @@ function LoadTicketNotes(note) {
 
 function GetActionCount(callback) {
     window.parent.Ts.Services.TicketPage.GetActionCount(_ticketID, function (total) {
+        console.log(total);
         _actionTotal = total;
         _workingActionNumer = total;
         callback();
@@ -4396,6 +4397,7 @@ function openTicketWindow(ticketID) {
 }
 
 function FetchTimeLineItems(start) {
+    console.log('START: ' + start);
     _isLoading = true;
     $('.results-loading').show();
     window.parent.Ts.Services.TicketPage.GetTimeLineItems(_ticketID, start, function (TimeLineItems) {
@@ -4964,7 +4966,7 @@ function CreateTimeLineDelegates() {
             // console.log('COUNT:' + $('#action-timeline > [data-id]').length + ' / ' +  count);
             // FetchTimeLineItems($('#action-timeline > li').length - 1);
             var count = $('#action-timeline > [data-id]').length;
-            FetchTimeLineItems(count - 1);
+            FetchTimeLineItems($('#action-timeline > [data-id]').length + 1);
         }
     });
 
