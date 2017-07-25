@@ -4546,9 +4546,9 @@ function CreateHandleBarHelpers() {
 
     Handlebars.registerHelper('ActionNumber', function () {
         if (!_isCreatingAction) {
-            // _workingActionNumer = _workingActionNumer - 1;
-            // return _workingActionNumer + 1;
-            return _workingActionNumer;
+            _workingActionNumer = _workingActionNumer - 1;
+            return _workingActionNumer + 1;
+            // return _workingActionNumer;
         }
     });
 
