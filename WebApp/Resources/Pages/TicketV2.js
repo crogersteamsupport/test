@@ -4396,7 +4396,6 @@ function openTicketWindow(ticketID) {
 }
 
 function FetchTimeLineItems(start) {
-
     console.log("start");
     console.log(start);
 
@@ -4972,8 +4971,11 @@ function CreateTimeLineDelegates() {
         if ($('.results-done').is(':visible')) return;
 
         if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
-            var count = $('#action-timeline > li').length;
-            FetchTimeLineItems($('#action-timeline > li').length - 1);
+            // var count = $('#action-timeline > li').length;
+            //console.log('COUNT:' + $('#action-timeline > [data-id]').length + ' / ' +  count);
+            // FetchTimeLineItems($('#action-timeline > li').length - 1);
+            var count = $('#action-timeline > [data-id]').length;
+            FetchTimeLineItems(count - 1);
         }
     });
 
