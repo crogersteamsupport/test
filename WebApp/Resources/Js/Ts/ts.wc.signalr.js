@@ -134,7 +134,7 @@ function loadPusher() {
 
         ticket_channel.bind('DisplayTicketUpdate', function (data) {
             var mergeticket;
-
+            
             if (data.ticket.indexOf(',') != -1) {
                 var mergeTickets = data.ticket.split(',');
                 var losingTicket = mergeTickets[0];
@@ -168,6 +168,7 @@ function loadPusher() {
                         top.Ts.MainPage.AppNotify("Ticket " + data.ticket, data.update, "error");
                     }
                 }
+                if (data.update.indexOf(top.Ts.System.User.FirstName + " " + top.Ts.System.User.LastName) < 0)
                 $('.main-ticket-' + data.ticket).find('iframe')[0].contentWindow.loadTicket(data.ticket, 0);
             }
         });
