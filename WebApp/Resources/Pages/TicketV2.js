@@ -4403,12 +4403,10 @@ function FetchTimeLineItems(start) {
     $('.results-loading').show();
     window.parent.Ts.Services.TicketPage.GetTimeLineItems(_ticketID, start, function (TimeLineItems) {
         _timeLine = TimeLineItems;
-
         if (TimeLineItems.length < 1) {
             $('.results-loading').hide();
             $('.results-done').show();
-        }
-        else {
+        } else {
             //compile action template
             // _compiledActionTemplate = Handlebars.compile($("#action-template").html());
             _compiledActionTemplate = Handlebars.templates['action'];
@@ -4426,20 +4424,15 @@ function FetchTimeLineItems(start) {
             for (i = 0; i < _timeLine.length; i++) {
                 var timeLineItem = _timeLine[i];
                 var actionElem = CreateActionElement(timeLineItem, !timeLineItem.item.IsPinned);
-
                 if (isPublicFiltered && timeLineItem.item.IsVisibleOnPortal) {
                     actionElem.hide();
                 }
-
                 if (isPrivateFiltered && !timeLineItem.item.IsVisibleOnPortal) {
                     actionElem.hide();
                 }
-
                 if (isWCFiltered && timeLineItem.item.IsWC) {
                     actionElem.hide();
                 }
-
-
             }
             _isLoading = false;
             $('.results-loading').hide();
@@ -4558,6 +4551,7 @@ function CreateHandleBarHelpers() {
         if (!_isCreatingAction) {
             _workingActionNumer = _workingActionNumer - 1;
             return _workingActionNumer + 1;
+            // return _workingActionNumer;
         }
     });
 
@@ -4969,8 +4963,11 @@ function CreateTimeLineDelegates() {
         if ($('.results-done').is(':visible')) return;
 
         if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
-            var count = $('#action-timeline > li').length;
-            FetchTimeLineItems($('#action-timeline > li').length - 1);
+            // var count = $('#action-timeline > li').length;
+            // console.log('COUNT:' + $('#action-timeline > [data-id]').length + ' / ' +  count);
+            // FetchTimeLineItems($('#action-timeline > li').length - 1);
+            var count = $('#action-timeline > [data-id]').length;
+            FetchTimeLineItems(count - 1);
         }
     });
 
