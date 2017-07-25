@@ -143,12 +143,18 @@ function GetChatSettings(chatID) {
     
     IssueAjaxRequest("GetClientChatPropertiesByChatID", chatObject,
     function (result) {
-        if (!result.TOKScreenEnabled)
-            $('.dropdown-menu li:contains(Screen)').hide();
-        if (!result.TOKVideoEnabled)
-            $('.dropdown-menu li:contains(Video)').hide();
-        if (!result.TOKVoiceEnabled)
-            $('.dropdown-menu li:contains(Audio)').hide();
+		if (!result.TOKScreenEnabled) {
+			$('.dropdown-menu li:contains(Screen)').hide();
+			$('#chat-tok-screen-Icon').hide();
+		}
+		if (!result.TOKVideoEnabled) {
+			$('.dropdown-menu li:contains(Video)').hide();
+			$('#chat-tok-video-Icon').hide();
+		}
+		if (!result.TOKVoiceEnabled) {
+			$('.dropdown-menu li:contains(Audio)').hide();
+			$('#chat-tok-audio-Icon').hide();
+		}
 
         showAvatars = result.ChatAvatarsEnabled
         $('.panel-heading').text(result.ChatIntro);
@@ -449,16 +455,25 @@ function SetupChatUploads(chatID, participantID) {
 function DisplayTOKButtons(display) {
     var audio = $('.dropdown-menu li:contains(Audio)');
     var video = $('.dropdown-menu li:contains(Video)');
-    var screen = $('.dropdown-menu li:contains(Screen)');
+	var screen = $('.dropdown-menu li:contains(Screen)');
+	var audioIcon = $('#chat-tok-audio-Icon');
+	var videoIcon = $('#chat-tok-video-Icon');
+	var screenIcon = $('#chat-tok-screen-Icon');
 
     if (display) {
         audio.show();
         video.show();
-        screen.show();
+		screen.show();
+		audioIcon.show();
+		videoIcon.show();
+		screenIcon.show();
     } else {
         audio.hide();
         video.hide();
-        screen.hide();
+		screen.hide();
+		audioIcon.hide();
+		videoIcon.hide();
+		screenIcon.hide();
     }
 }
 

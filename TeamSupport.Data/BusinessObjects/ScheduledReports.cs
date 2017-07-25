@@ -44,7 +44,7 @@ namespace TeamSupport.Data
 			}
 		}
 
-		public void SetNextRun()
+		public void SetNextRun(bool isServiceCall = false)
 		{
 			DateTime dateOnly = StartDateUtc.Date;
 			DateTime timeOnly = default(DateTime).Add(StartDateUtc.TimeOfDay);
@@ -191,7 +191,7 @@ namespace TeamSupport.Data
 						Debug("dateOnly = now.Date : " + dateOnly.ToString("MM/dd/yyyy HH:mm"));
 					}
 
-                    if (dateOnly.Add(timeOnly.TimeOfDay) < now)
+                    if (dateOnly.Add(timeOnly.TimeOfDay) < now || isServiceCall)
                     {
                         NextRun = dateOnly.AddDays(1).Add(timeOnly.TimeOfDay);
 						Debug(string.Format("NextRun = dateOnly.AddDays(1).Add(timeOnly.TimeOfDay) : {0}", NextRun.Value.ToString("MM/dd/yyyy HH:mm")));
