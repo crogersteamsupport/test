@@ -349,7 +349,8 @@ var loadTicket = function (ticketNumber, refresh) {
         $('#ticket-visible').prop("checked", _ticketInfo.Ticket.IsVisibleOnPortal);
         $('#ticket-isKB').prop("checked", _ticketInfo.Ticket.IsKnowledgeBase);
         $('#ticket-KB-Category-RO').text(_ticketInfo.Ticket.KnowledgeBaseCategoryName);
-        SetKBCategory(_ticketInfo.Ticket.KnowledgeBaseCategoryID);
+        if (_ticketInfo.Ticket.KnowledgeBaseCategoryID != null)
+            SetKBCategory(_ticketInfo.Ticket.KnowledgeBaseCategoryID);
         SetCommunityCategory(_ticketInfo.Ticket.ForumCategory);
         SetDueDate(_ticketInfo.Ticket.DueDate);
 
@@ -580,7 +581,9 @@ function SetupTicketProperties(order) {
 
         isFormValid();
         LoadPlugins(info);
+        console.log("_before calling getTicketViewing");
         if (typeof refresh === "undefined") {
+            console.log("_calling getTicketViewing");
             window.parent.Ts.Services.Dispatch.getTicketViewing(_ticketNumber);
         }
 
