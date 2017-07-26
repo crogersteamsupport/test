@@ -84,9 +84,20 @@ div.frame-container {
 }
 
 
+
+
+
 .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
-    background-color:inherit;
+    background-color:rgba(150,150,150,0.2);
 }
+
+.no-hover {
+    background-color: inherit !important;
+}
+
+
+
+
 
 
 
