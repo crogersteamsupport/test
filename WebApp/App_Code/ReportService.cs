@@ -831,7 +831,9 @@ namespace TSWebServices
                         scheduledReports[0].EmailBody = emailBody;
                         scheduledReports[0].EmailRecipients = emailAddresses;
                         scheduledReports[0].IsActive = true;
-                        scheduledReports[0].StartDate = (DateTime)startOn;
+                        try
+                        { scheduledReports[0].StartDate = (DateTime)startOn; }
+                        catch (Exception ex) { }
                         scheduledReports[0].RecurrencyId = (byte)frequency;
                         scheduledReports[0].Every = (byte)every;
                         scheduledReports[0].Weekday = (byte)weekday;
