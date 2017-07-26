@@ -312,8 +312,11 @@ namespace TeamSupport.Handlers
                     if (calevent.AllDay)
                     {
                         evt.Start = (iCalDateTime)calevent.StartDateUtc.Date;
-                        DateTime dt = (DateTime)calevent.EndDateUtc;
-                        evt.End = (iCalDateTime)dt.Date;
+                        if (calevent.EndDateUtc != null)
+                        {
+                            DateTime dt = (DateTime)calevent.EndDateUtc;
+                            evt.End = (iCalDateTime)dt.Date;
+                        }
                     }
                     else
                     {
