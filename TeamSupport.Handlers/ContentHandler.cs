@@ -391,10 +391,10 @@ namespace TeamSupport.Handlers
 
 
             var res = new DDay.iCal.Serialization.iCalendar.iCalendarSerializer().SerializeToString(iCal);
-            using (var file = new System.IO.StreamWriter(Path.GetTempPath() + "out.ics"))
-            {
-                file.Write(res);
-            }
+            //using (var file = new System.IO.StreamWriter(Path.GetTempPath() + "out.ics"))
+            //{
+            //    file.Write(res);
+            //}
 
             context.Response.Write(res);
             return;
