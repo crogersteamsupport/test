@@ -56,7 +56,9 @@ body.white, div.white {
     color:white !important;
 }
 
-
+.hover:hover {
+    cursor: pointer;
+}
 
 
 div.flexbox       { display:flex;display:-webkit-flex; }
