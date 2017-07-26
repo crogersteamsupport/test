@@ -571,12 +571,10 @@ div.ticket-badge > div > a:focus {
 }
 
 .timeline-body {
-    width:auto;
     margin-bottom:5px;
     margin-top:5px;
     overflow-y:hidden;
     overflow-x:auto;
-    white-space: nowrap;
 }
 
 .timeline-body > p {
