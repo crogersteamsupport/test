@@ -82,7 +82,10 @@ div.frame-container {
     margin-right:310px;
     padding-top:60px;
 }
-
+#ticket-duedate {
+    height:30px;
+    line-height:20px;
+}
 
 
 
