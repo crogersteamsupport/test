@@ -89,7 +89,8 @@ div.frame-container {
 
 div.timeline-body img {
     display: block;
-    width:100% !important;
+    max-width:100% !important;
+    height:auto;
 }
 
 
