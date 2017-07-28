@@ -4629,7 +4629,7 @@ function BuildWaterCoolerAssociationToolTip(references)
         }
     }
 
-    return "<span class='fa fa-info-circle fa-lg wcTooltip' title='' data-info='" + tixattstr + tixgrpstr + tixprodstr + tixcompanystr + tixuserstr + "'></span>";
+    return '<span class="fa fa-info-circle fa-lg wcTooltip" title="" data-info="' + tixattstr + tixgrpstr + tixprodstr + tixcompanystr + tixuserstr + '"></span>';
 }
 
 function CreateTimeLineDelegates() {
