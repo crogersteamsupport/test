@@ -87,7 +87,7 @@ div.frame-container {
     line-height:20px;
 }
 
-#timeline-body img {
+div.timeline-body img {
     display: block;
     width:100% !important;
 }
