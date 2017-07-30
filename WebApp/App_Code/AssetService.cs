@@ -709,7 +709,7 @@ namespace TSWebServices
                                     </div>", field.CustomFieldID, field.Name, value.Value);
       }
       else
-        html.AppendFormat("<div class='col-xs-8'><input class='form-control datepicker col-xs-10 customField {1}' id='{0}' type='date' name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
+        html.AppendFormat("<div class='col-xs-8'><input class='form-control datepicker col-xs-10 customField {1}' id='{0}' type='_date' name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
 
       return html.ToString();
     }
@@ -728,7 +728,7 @@ namespace TSWebServices
                                     </div>", field.CustomFieldID, field.Name, value.Value);
       }
       else
-        html.AppendFormat("<div class='col-xs-8'><input class='form-control timepicker col-xs-10 customField {1}' id='{0}' type='time'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
+        html.AppendFormat("<div class='col-xs-8'><input class='form-control timepicker col-xs-10 customField {1}' id='{0}' type='_time'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
 
       return html.ToString();
     }
@@ -747,7 +747,7 @@ namespace TSWebServices
                                     </div>", field.CustomFieldID, field.Name, value.Value);
       }
       else
-        html.AppendFormat("<div class='col-xs-8'><input class='form-control datetimepicker col-xs-10 customField {1}' id='{0}' type='datetime'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
+        html.AppendFormat("<div class='col-xs-8'><input class='form-control datetimepicker col-xs-10 customField {1}' id='{0}' type='_datetime'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
 
       return html.ToString();
     }

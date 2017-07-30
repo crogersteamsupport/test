@@ -349,7 +349,8 @@ var loadTicket = function (ticketNumber, refresh) {
         $('#ticket-visible').prop("checked", _ticketInfo.Ticket.IsVisibleOnPortal);
         $('#ticket-isKB').prop("checked", _ticketInfo.Ticket.IsKnowledgeBase);
         $('#ticket-KB-Category-RO').text(_ticketInfo.Ticket.KnowledgeBaseCategoryName);
-        SetKBCategory(_ticketInfo.Ticket.KnowledgeBaseCategoryID);
+        if (_ticketInfo.Ticket.KnowledgeBaseCategoryID != null)
+            SetKBCategory(_ticketInfo.Ticket.KnowledgeBaseCategoryID);
         SetCommunityCategory(_ticketInfo.Ticket.ForumCategory);
         SetDueDate(_ticketInfo.Ticket.DueDate);
 
@@ -580,7 +581,9 @@ function SetupTicketProperties(order) {
 
         isFormValid();
         LoadPlugins(info);
+        console.log("_before calling getTicketViewing");
         if (typeof refresh === "undefined") {
+            console.log("_calling getTicketViewing");
             window.parent.Ts.Services.Dispatch.getTicketViewing(_ticketNumber);
         }
 
@@ -3454,44 +3457,22 @@ var AddCustomFieldDate = function (field, parentContainer) {
     var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
 
     var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
-    var dateLink = $('<a>')
-                      .attr('href', '#')
-                      .addClass('ticket-anchor ticket-nullable-link ticket-duedate-anchor')
-                      .text((date === null ? 'unassigned' : date.localeFormat(window.parent.Ts.Utils.getDatePattern())))
-                      .appendTo(dateContainer);
+    var dateLink = $('<a>').attr('href', '#').addClass('ticket-anchor ticket-nullable-link ticket-duedate-anchor').text((date === null ? 'unassigned' : date.localeFormat(window.parent.Ts.Utils.getDatePattern()))).appendTo(dateContainer);
 
     dateLink.click(function (e) {
         e.preventDefault();
         e.stopPropagation();
         var header = $(this).hide();
-        var container = $('<div>')
-              .addClass('row')
-              .insertAfter(header);
+        var container = $('<div>').addClass('row').insertAfter(header);
+        var container1 = $('<div style="padding-right:0px;">').addClass('col-xs-10').appendTo(container);
+        var theinput = $('<input type="text">').addClass('form-control').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getDatePattern())).datetimepicker({ pickTime: false }).appendTo(container1).focus();
 
-        var container1 = $('<div style="padding-right:0px;">')
-            .addClass('col-xs-10')
-            .appendTo(container);
-
-        var theinput = $('<input type="text">')
-          .addClass('form-control')
-          .val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getDatePattern()))
-          .datetimepicker({ pickTime: false })
-          .appendTo(container1)
-          .focus();
-
-
-        $('<i>')
-          .addClass('col-xs-1 fa fa-times')
-          .click(function (e) {
+        $('<i>').addClass('col-xs-1 fa fa-times').click(function (e) {
               $(this).closest('div').remove();
               header.show();
-          })
-          .insertAfter(container1);
+        }).insertAfter(container1);
 
-
-        $('<i>')
-          .addClass('col-xs-1 fa fa-check')
-          .click(function (e) {
+        $('<i>').addClass('col-xs-1 fa fa-check').click(function (e) {
               var currDate = $(this).prev().find('input').val();
               var value = null;
               if (currDate !== '') {
@@ -3919,10 +3900,8 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
 
 var SetupDueDateField = function (duedate) {
     var dateContainer = $('#ticket-duedate-container');
-    var dateLink = $('<a>')
-                        .attr('href', '#')
-                        .addClass('control-label ticket-anchor ticket-nullable-link ticket-duedate-anchor')
-                        .appendTo(dateContainer);
+    var dateLink = $('<a>').attr('href', '#').attr('id','ticket-duedate').addClass('control-label ticket-anchor ticket-nullable-link ticket-duedate-anchor').appendTo(dateContainer);
+
     if (duedate !== null) {
         dateLink.text(duedate.localeFormat(window.parent.Ts.Utils.getDateTimePattern()));
 
@@ -4400,12 +4379,10 @@ function FetchTimeLineItems(start) {
     $('.results-loading').show();
     window.parent.Ts.Services.TicketPage.GetTimeLineItems(_ticketID, start, function (TimeLineItems) {
         _timeLine = TimeLineItems;
-
         if (TimeLineItems.length < 1) {
             $('.results-loading').hide();
             $('.results-done').show();
-        }
-        else {
+        } else {
             //compile action template
             // _compiledActionTemplate = Handlebars.compile($("#action-template").html());
             _compiledActionTemplate = Handlebars.templates['action'];
@@ -4423,20 +4400,15 @@ function FetchTimeLineItems(start) {
             for (i = 0; i < _timeLine.length; i++) {
                 var timeLineItem = _timeLine[i];
                 var actionElem = CreateActionElement(timeLineItem, !timeLineItem.item.IsPinned);
-
                 if (isPublicFiltered && timeLineItem.item.IsVisibleOnPortal) {
                     actionElem.hide();
                 }
-
                 if (isPrivateFiltered && !timeLineItem.item.IsVisibleOnPortal) {
                     actionElem.hide();
                 }
-
                 if (isWCFiltered && timeLineItem.item.IsWC) {
                     actionElem.hide();
                 }
-
-
             }
             _isLoading = false;
             $('.results-loading').hide();
@@ -4555,6 +4527,7 @@ function CreateHandleBarHelpers() {
         if (!_isCreatingAction) {
             _workingActionNumer = _workingActionNumer - 1;
             return _workingActionNumer + 1;
+            // return _workingActionNumer;
         }
     });
 
@@ -4966,8 +4939,10 @@ function CreateTimeLineDelegates() {
         if ($('.results-done').is(':visible')) return;
 
         if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
-            var count = $('#action-timeline > li').length;
-            FetchTimeLineItems($('#action-timeline > li').length - 1);
+            // var count = $('#action-timeline > li').length;
+            // FetchTimeLineItems($('#action-timeline > li').length - 1);
+            var count = $('#action-timeline > [data-id]').length;
+            FetchTimeLineItems($('#action-timeline > [data-id]').length + 1);
         }
     });
 

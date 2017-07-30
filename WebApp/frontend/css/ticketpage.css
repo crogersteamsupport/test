@@ -82,11 +82,30 @@ div.frame-container {
     margin-right:310px;
     padding-top:60px;
 }
+#ticket-duedate {
+    height:30px;
+    line-height:20px;
+}
+
+div.timeline-body img {
+    display: block;
+    max-width:100% !important;
+    height:auto;
+}
+
 
 
 .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
-    background-color:inherit;
+    background-color:rgba(150,150,150,0.2);
 }
+
+.no-hover {
+    background-color: inherit !important;
+}
+
+
+
+
 
 
 
@@ -487,6 +506,7 @@ button.ticket-option {
     box-shadow:1px 1px 0px rgba(0, 0, 0, 0.1);
     z-index:2;
     background-color:white;
+
 }
 
 .timeline > li > div.timeline-panel > label.ticket-action-number {

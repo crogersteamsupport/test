@@ -21,6 +21,7 @@ namespace TeamSupport.JIRA
 		private readonly JsonDeserializer deserializer;
 		public JiraClient(string baseUrl, string username, string password)
 		{
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 			this.username = username;
 			this.password = password;
 			deserializer = new JsonDeserializer();
@@ -29,7 +30,8 @@ namespace TeamSupport.JIRA
 
 		public JiraClient(string baseUrl, string username, string password, string apiPath)
 		{
-			this.username = username;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+            this.username = username;
 			this.password = password;
 			deserializer = new JsonDeserializer();
 			client = new RestClient { BaseUrl = new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/") + "rest/" + apiPath + "/1.0/") };

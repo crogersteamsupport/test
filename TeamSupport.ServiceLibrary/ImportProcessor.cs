@@ -1937,7 +1937,8 @@ namespace TeamSupport.ServiceLibrary
                 user.MiddleName = ReadString("MiddleName", user.MiddleName);
                 user.LastName = lastName;
                 user.Title = ReadString("Title", user.Title);
-                user.Email = ReadString("ContactEmail", user.Email);
+                //user.Email = ReadString("ContactEmail", user.Email);
+                user.Email = email;
                 user.BlockInboundEmail = ReadBool("PreventEmailFromCreatingAndUpdatingTickets", user.BlockInboundEmail.ToString());
                 user.BlockEmailFromCreatingOnly = ReadBool("PreventEmailFromCreatingButAllowUpdatingTickets", user.BlockEmailFromCreatingOnly.ToString());
                 user.IsPortalUser = ReadBool("PortalUser", user.IsPortalUser.ToString());

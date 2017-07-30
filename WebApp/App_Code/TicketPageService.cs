@@ -225,15 +225,21 @@ namespace TSWebServices
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<TimeLineItem> timeLineItems = new List<TimeLineItem>();
-
             TicketTimeLineView TimeLineView = new TicketTimeLineView(loginUser);
-            TimeLineView.LoadByRange(ticketID, from, from + 9);
+
+            try
+            {
+                TimeLineView.LoadByRange(ticketID, from, from + 9);
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogs.LogException(loginUser, ex, "GetTimeLineItems", "TicketPageService.GetTimeLineItems");
+            }
 
             foreach (TicketTimeLineViewItem viewItem in TimeLineView)
             {
                 if (!viewItem.IsWC)
                 {
-
                     Attachments attachments = new Attachments(loginUser);
                     attachments.LoadByActionID(viewItem.RefID);
 
@@ -296,6 +302,7 @@ namespace TSWebServices
                     }
                 }
             }
+
             return timeLineItems.ToArray();
         }
 
