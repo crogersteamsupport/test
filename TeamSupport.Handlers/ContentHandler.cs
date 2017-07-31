@@ -312,8 +312,11 @@ namespace TeamSupport.Handlers
                     if (calevent.AllDay)
                     {
                         evt.Start = (iCalDateTime)calevent.StartDateUtc.Date;
-                        DateTime dt = (DateTime)calevent.EndDateUtc;
-                        evt.End = (iCalDateTime)dt.Date;
+                        if (calevent.EndDateUtc != null)
+                        {
+                            DateTime dt = (DateTime)calevent.EndDateUtc;
+                            evt.End = (iCalDateTime)dt.Date;
+                        }
                     }
                     else
                     {
@@ -391,10 +394,10 @@ namespace TeamSupport.Handlers
 
 
             var res = new DDay.iCal.Serialization.iCalendar.iCalendarSerializer().SerializeToString(iCal);
-            using (var file = new System.IO.StreamWriter(Path.GetTempPath() + "out.ics"))
-            {
-                file.Write(res);
-            }
+            //using (var file = new System.IO.StreamWriter(Path.GetTempPath() + "out.ics"))
+            //{
+            //    file.Write(res);
+            //}
 
             context.Response.Write(res);
             return;

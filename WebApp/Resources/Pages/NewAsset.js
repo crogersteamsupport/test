@@ -72,17 +72,17 @@
           case "checkbox":
             field.Value = $(this).prop('checked');
             break;
-          case "date":
+          case "_date":
             //    var dt = $(this).find('input').datepicker('getDate');
             field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
             break;
-          case "time":
+          case "_time":
             //    var time = new Date("January 1, 1970 00:00:00");
             //    time.setHours($(this).find('input').timepicker('getDate')[0].value.substring(0, 2));
             //    time.setMinutes($(this).find('input').timepicker('getDate')[0].value.substring(3, 5));
             field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
             break;
-          case "datetime":
+          case "_datetime":
             //    //field.Value = parent.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
             //    var dt = $(this).find('input').datetimepicker('getDate');
             //    field.Value = dt == null ? null : dt.toUTCString();
@@ -121,21 +121,12 @@
           $(this).mask(maskValue);
         }
       });
+      parent.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
+          $('.datepicker').attr("data-format", dateformat);
+          $('.datepicker').datetimepicker({ pickTime: false });
+          $('.timepicker').datetimepicker({ pickDate: false });
+          $('.datetimepicker').datetimepicker({});
+      });
     });
   }
-
-  parent.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
-    //$('.datepicker').datepicker({ format: dateformat });
-    //$('.datepicker').datetimepicker({ pickTime: false });
-    //The line below breaks the page when the format is different than us
-    //    $('.datepicker').attr("data-format", dateformat);
-    //    $('.datepicker').attr("data-format", "M/d/yyyy");
-    //    $('.datepicker').datepicker("option", "dateFormat", dateformat);
-    //    $('.datepicker').datepicker({ dateFormat: dateformatValue });
-    //    $('.datepicker').datepicker("option", "altFormat", dateformat);
-
-    $('.datepicker').datetimepicker({ pickTime: false });
-    $('.timepicker').datetimepicker({ pickDate: false });
-    $('.datetimepicker').datetimepicker({});
-  });
 });
