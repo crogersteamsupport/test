@@ -58,7 +58,7 @@ $(document).ready(function () {
     top.Ts.Settings.System.read('PusherKey', '1', function (key) {
         var orgID = top.Ts.System.Organization.OrganizationID;
         var userID = top.Ts.System.User.UserID;
-        pusher = new Pusher(key);
+        //pusher = new Pusher(key);
 
         var presenceChannelName = 'presence-' + orgID;
         var presence = new Pusher(key, {
