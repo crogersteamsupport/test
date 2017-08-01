@@ -273,17 +273,17 @@ $(document).ready(function () {
                     case "picklist":
                         field.Value = $(this).val();
                         break;
-                    case "date":
+                    case "_date":
                     //    var dt = $(this).find('input').datepicker('getDate');
                         field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
                         break;
-                    case "time":
+                    case "_time":
                     //    var time = new Date("January 1, 1970 00:00:00");
                     //    time.setHours($(this).find('input').timepicker('getDate')[0].value.substring(0, 2));
                     //    time.setMinutes($(this).find('input').timepicker('getDate')[0].value.substring(3, 5));
                         field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
                         break;
-                    case "datetime":
+                    case "_datetime":
                     //    //field.Value = parent.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
                     //    var dt = $(this).find('input').datetimepicker('getDate');
                     //    field.Value = dt == null ? null : dt.toUTCString();
@@ -353,6 +353,15 @@ $(document).ready(function () {
     function LoadCustomControls(refType) {
         parent.Ts.Services.Customers.LoadCustomControls(refType,function (html) {
             $('#customerCustomInfo').append(html);
+            parent.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
+                //$('.datepicker').datepicker({ format: dateformat });
+                //$('.datepicker').datetimepicker({ pickTime: false });
+                $('.datepicker').attr("data-format", dateformat);
+
+                $('.datepicker').datetimepicker({ pickTime: false });
+                $('.timepicker').datetimepicker({ pickDate: false });
+                $('.datetimepicker').datetimepicker({});
+            });
         });
     }
 
@@ -365,18 +374,19 @@ $(document).ready(function () {
             else{
                 $('#contactCustomInfo').append(html);
             }
+            parent.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
+                //$('.datepicker').datepicker({ format: dateformat });
+                //$('.datepicker').datetimepicker({ pickTime: false });
+                $('.datepicker').attr("data-format", dateformat);
+
+                $('.datepicker').datetimepicker({ pickTime: false });
+                $('.timepicker').datetimepicker({ pickDate: false });
+                $('.datetimepicker').datetimepicker({});
+            });
         });
     }
 
-    parent.Ts.Services.Customers.GetDateFormat(false,function (dateformat) {
-        //$('.datepicker').datepicker({ format: dateformat });
-        //$('.datepicker').datetimepicker({ pickTime: false });
-        $('.datepicker').attr("data-format", dateformat);
 
-        $('.datepicker').datetimepicker({ pickTime: false });
-        $('.timepicker').datetimepicker({ pickDate: false });
-        $('.datetimepicker').datetimepicker({});
-    });
 
     $('.number').on('keydown', function (event) {
         // Allow only backspace and delete

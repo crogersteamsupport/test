@@ -495,7 +495,7 @@ function SetupTicketProperties() {
     //Inventory Section
     SetupInventorySection();
 
-    //Tags 
+    //Tags
     SetupTagsSection();
 
     //Queues Section
@@ -533,7 +533,7 @@ function SaveTicket() {
                     var statuses = parent.Ts.Cache.getTicketStatuses();
                     info.TicketStatusID = statuses[0].TicketStatusID;
                 }
-                info.TicketSeverityID = ($('#ticket-severity').length) ? $('#ticket-severity').val() : '-1';//$('#ticket-severity').val(); 
+                info.TicketSeverityID = ($('#ticket-severity').length) ? $('#ticket-severity').val() : '-1';//$('#ticket-severity').val();
                 info.UserID = ($('#ticket-assigned').length && $('#ticket-assigned').val() !== '') ? $('#ticket-assigned').val() : '-1';//($('#ticket-assigned').val() == '') ? '-1' : $('#ticket-assigned').val();
                 info.GroupID = ($('#ticket-group').length && $('#ticket-group').val() !== '') ? $('#ticket-group').val() : '-1';//($('#ticket-group').val() == '') ? '-1' : $('#ticket-group').val();
                 var dueDate = $('.ticket-action-form-dueDate').datetimepicker('getDate');
@@ -2816,4 +2816,3 @@ function CreateHandleBarHelpers() {
         if (parent.Ts.System.User.ChangeTicketVisibility || parent.Ts.System.User.IsSystemAdmin) { return options.fn(this); }
     });
 };
-

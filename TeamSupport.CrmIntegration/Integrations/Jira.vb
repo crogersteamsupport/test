@@ -23,9 +23,10 @@ Namespace TeamSupport
 		End Sub
 
 		Public Overrides Function PerformSync() As Boolean
-			Dim Success As Boolean = True
+                Dim Success As Boolean = True
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 Or SecurityProtocolType.Tls11 Or SecurityProtocolType.Tls
 
-			If ValidateSyncData() Then
+                If ValidateSyncData() Then
 				Success = SyncTickets()
 			Else
 				Success = False

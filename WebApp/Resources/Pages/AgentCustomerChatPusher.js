@@ -33,6 +33,10 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
     channel.bind('new-comment', function (data) {
         newCommentCallback(data, true, false);
         isSubmittingAlready = false;
+
+        if (data.HasLeft && data.CreatorID == top.Ts.System.User.UserID) {
+            pusher.unsubscribe(channelName);
+        }
     });
 
     var typeTemplate;
@@ -56,7 +60,7 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
     });
 
     channel.bind('client-tok-enabled', function (data) {
-        EnableTOKButtons(data.isCustomerTOKEnabled && isTOKEnabled);
+        EnableTOKButtons(data.isCustomerTOKEnabled && isTOKEnabledForBrowser);
     });
 
     channel.bind('client-tok-screen-user', function (data) {
@@ -104,18 +108,44 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
     });
 
     channel.bind('client-tok-audio-user-accept', function (data) {
-        $('#tokStatusText').text(data.userName + ' has joined live session.');
-        sharedApiKey = data.apiKey;
-        sharedToken = data.token;
-        sharedSessionID = data.sessionId;
+        if (data.agentRequesting == channel.members.me.info.name) {
+            $('#tokStatusText').text(data.userName + ' has joined live session.');
+            sharedApiKey = data.apiKey;
+            sharedToken = data.token;
+            sharedSessionID = data.sessionId;
 
-        var isIE = /*@cc_on!@*/false || !!document.documentMode;
-        var isEdge = !isIE && !!window.StyleMedia;
+            var isIE = /*@cc_on!@*/false || !!document.documentMode;
+            var isEdge = !isIE && !!window.StyleMedia;
 
-        if (isIE || isEdge) {
+            if (isIE || isEdge) {
+                var tokenURI = encodeURIComponent(sharedToken);
+                tokpopup = window.open(siteUrl + '/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=250,height=100');
+
+
+                setTimeout(function () {
+                    if (!tokpopup || tokpopup.outerHeight === 0) {
+                        //First Checking Condition Works For IE & Firefox
+                        //Second Checking Condition Works For Chrome
+                        alert("Popup Blocker is enabled! Please add this site to your exception list.");
+                    } else {
+
+                    }
+                }, 500);
+            } else {
+                ReceiveAudioStream(sharedSessionID, sharedToken);
+            }
+        }
+        
+    });
+
+    channel.bind('client-tok-video-user-accept', function (data) {
+        if (data.agentRequesting == channel.members.me.info.name) {
+            $('#tokStatusText').text(data.userName + ' has joined live session.');
+            sharedApiKey = data.apiKey;
+            sharedToken = data.token;
+            sharedSessionID = data.sessionId;
             var tokenURI = encodeURIComponent(sharedToken);
-            tokpopup = window.open(siteUrl + '/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=250,height=100');
-
+            tokpopup = window.open(siteUrl + '/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
 
             setTimeout(function () {
                 if (!tokpopup || tokpopup.outerHeight === 0) {
@@ -123,31 +153,16 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
                     //Second Checking Condition Works For Chrome
                     alert("Popup Blocker is enabled! Please add this site to your exception list.");
                 } else {
-    
+
                 }
-            }, 500);
-        } else {
-            ReceiveAudioStream(sharedSessionID, sharedToken);
+            }, 25);
         }
     });
 
-    channel.bind('client-tok-video-user-accept', function (data) {
-        $('#tokStatusText').text(data.userName + ' has joined live session.');
-        sharedApiKey = data.apiKey;
-        sharedToken = data.token;
-        sharedSessionID = data.sessionId;
-        var tokenURI = encodeURIComponent(sharedToken);
-        tokpopup = window.open(siteUrl + '/screenshare/TOKSharedSession.html?sessionid=' + sharedSessionID + '&token=' + tokenURI, 'TSTOKSession', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=1250,height=1000');
-
-        setTimeout(function () {
-            if (!tokpopup || tokpopup.outerHeight === 0) {
-                //First Checking Condition Works For IE & Firefox
-                //Second Checking Condition Works For Chrome
-                alert("Popup Blocker is enabled! Please add this site to your exception list.");
-            } else {
-
-            }
-        }, 25);
+    channel.bind('client-tok-ended', function (data) {
+        if (data !== undefined) {
+            $('#' + data.streamType + 'Request').remove();
+        }
     });
 
     //Used for the accepted invitations to the current chat.

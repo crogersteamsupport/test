@@ -87,21 +87,21 @@
                             <div id="audioTOKContainer"></div>
                             <div class="btn-group btn-group-justified tok-controls" role="group" aria-label="...">
                                 <div id="chat-tok-audio" class="btn-group" role="group">
-                                    <button type="button" class="btn btn-primary" title="Public Beta">
+                                    <button type="button" class="btn btn-primary">
                                         <span class="fa fa-phone"></span>
-                                        <span>Go to Audio (Public Beta)</span>
+                                        <span>Go to Audio</span>
                                     </button>
                                 </div>
                                 <div id="chat-tok-video" class="btn-group" role="group" title="">
-                                    <button type="button" class="btn btn-primary" title="Public Beta">
+                                    <button type="button" class="btn btn-primary">
                                         <span class="fa fa-video-camera"></span>
-                                        <span>Go to Video (Public Beta)</span>
+                                        <span>Go to Video</span>
                                     </button>
                                 </div>
                                 <div id="chat-tok-screen" class="btn-group" role="group">
-                                    <button type="button" class="btn btn-primary" title="Public Beta">
+                                    <button type="button" class="btn btn-primary">
                                         <span class="fa fa-desktop"></span>
-                                        <span>Share Screen (Public Beta)</span>
+                                        <span>Share Screen</span>
                                     </button>
                                 </div>
                             </div>
@@ -281,6 +281,8 @@
                     <div class="media-body">
                         {{message}} <a onClick="subscribeToVideoStream()">Do you Accept?</a>
                         <br>
+                        <label class="tokWarning">(If you accept the customer will see you via your camera)</label>
+                        <br>
                         <small class="text-muted">{{UserName}} | {{Date}}</small>
                         <hr>
                     </div>
@@ -296,6 +298,8 @@
                     <div class="media-body">
                         {{message}} <a onClick="subscribeToAudioStream()">Do you Accept?</a>
                         <br>
+                        <label class="tokWarning">(If you accept the customer will hear what you say in your microphone)</label>
+                        <br>
                         <small class="text-muted">{{UserName}} | {{Date}}</small>
                         <hr>
                     </div>
@@ -310,6 +314,8 @@
                     <img class="pull-left media-object img-circle user-avatar" src="../images/blank_avatar.png">
                     <div class="media-body">
                         {{message}} <a onClick="subscribeToScreenStream()">Do you Accept?</a>
+                        <br>
+                        <label class="tokWarning">(If you accept you will be seeing the customer's screen)</label>
                         <br>
                         <small class="text-muted">{{UserName}} | {{Date}}</small>
                         <hr>

@@ -121,21 +121,12 @@
           $(this).mask(maskValue);
         }
       });
+      parent.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
+          $('.datepicker').attr("data-format", dateformat);
+          $('.datepicker').datetimepicker({ pickTime: false });
+          $('.timepicker').datetimepicker({ pickDate: false });
+          $('.datetimepicker').datetimepicker({});
+      });
     });
   }
-
-  parent.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
-    //$('.datepicker').datepicker({ format: dateformat });
-    //$('.datepicker').datetimepicker({ pickTime: false });
-    //The line below breaks the page when the format is different than us
-    //    $('.datepicker').attr("data-format", dateformat);
-    //    $('.datepicker').attr("data-format", "M/d/yyyy");
-    //    $('.datepicker').datepicker("option", "dateFormat", dateformat);
-    //    $('.datepicker').datepicker({ dateFormat: dateformatValue });
-    //    $('.datepicker').datepicker("option", "altFormat", dateformat);
-
-    $('.datepicker').datetimepicker({ pickTime: false });
-    $('.timepicker').datetimepicker({ pickDate: false });
-    $('.datetimepicker').datetimepicker({});
-  });
 });

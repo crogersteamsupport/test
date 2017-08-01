@@ -269,7 +269,7 @@ $(document).ready(function () {
     _ticketNumber = window.parent.Ts.Utils.getQueryValue("TicketNumber", window);
 
     apiKey = "45228242";
-    
+
     //Setup Ticket Elements
     SetupTicketPage();
 
@@ -337,16 +337,20 @@ var loadTicket = function (ticketNumber, refresh) {
 
         $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
         $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
-        window.parent.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
-            LoadTicketNotes(note);
-        });
+        $('#ticket-number-strip').text('#' + _ticketInfo.Ticket.TicketNumber);
+        if (refresh != 0) {
+            window.parent.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
+                LoadTicketNotes(note);
+            });
+        }
 
 
         $('#ticket-status-label').toggleClass('ticket-closed', _ticketInfo.Ticket.IsClosed);
         $('#ticket-visible').prop("checked", _ticketInfo.Ticket.IsVisibleOnPortal);
         $('#ticket-isKB').prop("checked", _ticketInfo.Ticket.IsKnowledgeBase);
         $('#ticket-KB-Category-RO').text(_ticketInfo.Ticket.KnowledgeBaseCategoryName);
-        SetKBCategory(_ticketInfo.Ticket.KnowledgeBaseCategoryID);
+        if (_ticketInfo.Ticket.KnowledgeBaseCategoryID != null)
+            SetKBCategory(_ticketInfo.Ticket.KnowledgeBaseCategoryID);
         SetCommunityCategory(_ticketInfo.Ticket.ForumCategory);
         SetDueDate(_ticketInfo.Ticket.DueDate);
 
@@ -379,8 +383,8 @@ var loadTicket = function (ticketNumber, refresh) {
         if (typeof refresh === "undefined") {
             window.parent.Ts.Services.Dispatch.getTicketViewing(_ticketNumber);
         }
-        
-       
+
+
 
     });
 };
@@ -466,15 +470,16 @@ function AddTicketProperty(item) {
         $('#ticket-properties-area').append(html);
     }
     else {
-        if ($("#ticket-group-" + item.CatID).length > 0) {
-            var compiledTemplate = Handlebars.compile($("#ticket-group-" + item.CatID).html());
-            if (item.CatID == "Attachments") {
-                var context = { Attachments: _ticketInfo.Attachments };
-                var html = compiledTemplate(context);
-                $('#ticket-properties-area').append(html);
-            }
-            else
-                $('#ticket-properties-area').append(compiledTemplate);
+        var hbrs = "ticket-group-" + item.CatID;
+        var hbrs = hbrs.toLowerCase();
+        var compiledTemplate = Handlebars.templates[hbrs];
+
+        if (item.CatID == "Attachments") {
+            var context = { Attachments: _ticketInfo.Attachments };
+            var html = compiledTemplate(context);
+            $('#ticket-properties-area').append(html);
+        } else {
+            $('#ticket-properties-area').append(compiledTemplate);
         }
     }
 };
@@ -549,9 +554,10 @@ function SetupTicketProperties(order) {
         var ticketUrl = window.parent.Ts.System.AppDomain + "/?TicketNumber=" + _ticketNumber;
         $("#Ticket-URL").attr("data-clipboard-text", ticketUrl);
 
-        //set the ticket title 
+        //set the ticket title
         $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
         $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
+        $('#ticket-number-strip').text('#' + _ticketInfo.Ticket.TicketNumber);
         $('.ticket-source').css('backgroundImage', "url('../" + window.parent.Ts.Utils.getTicketSourceIcon(_ticketInfo.Ticket.TicketSource) + "')").attr('title', 'Ticket Source: ' + (_ticketInfo.Ticket.TicketSource == null ? 'Agent' : _ticketInfo.Ticket.TicketSource));
         //get total number of actions so we can use it to number each action
         GetActionCount(function () {
@@ -575,11 +581,13 @@ function SetupTicketProperties(order) {
 
         isFormValid();
         LoadPlugins(info);
+        console.log("_before calling getTicketViewing");
         if (typeof refresh === "undefined") {
+            console.log("_calling getTicketViewing");
             window.parent.Ts.Services.Dispatch.getTicketViewing(_ticketNumber);
         }
-        
-        
+
+
 
   });
 };
@@ -592,7 +600,8 @@ function SetupToolTips() {
 };
 
 function CreateNewActionLI() {
-    var _compiledNewActionTemplate = Handlebars.compile($("#new-action-template").html());
+    // var _compiledNewActionTemplate = Handlebars.compile($("#new-action-template").html());
+    var _compiledNewActionTemplate = Handlebars.templates['newaction'];
     var html = _compiledNewActionTemplate({ OrganizationID: window.parent.Ts.System.User.OrganizationID, UserID: window.parent.Ts.System.User.UserID });
     $("#action-timeline").append(html);
 
@@ -993,7 +1002,7 @@ function SetupActionEditor(elem, action) {
     });
 
   element.find('#recordScreenContainer').hide();
-  element.find('#ssDiv').hide(); 
+  element.find('#ssDiv').hide();
   element.find('#rcdtokScreen').click(function (e) {
       if (window.parent.Ts.System.User.OrganizationID == 0) {
           window.parent.Ts.Services.Tickets.StartArchivingScreen(sessionId, function (resultID) {
@@ -2396,7 +2405,8 @@ function SetupTagsSection() {
 };
 
 function PrependTask(parent, id, value, data) {
-    var _compiledTaskTemplate = Handlebars.compile($("#task-record").html());
+    // var _compiledTaskTemplate = Handlebars.compile($("#task-record").html());
+    var _compiledTaskTemplate = Handlebars.templates['taskrecord'];
     var taskHTML = _compiledTaskTemplate({ id: id, value: value, IsComplete: data.IsComplete });
     return $(taskHTML).prependTo(parent).data('task', data);
 }
@@ -2414,7 +2424,8 @@ function AddTags(tags) {
 
 function PrependTag(parent, id, value, data, cssclass) {
     if (cssclass === undefined) cssclass = 'tag-item';
-    var _compiledTagTemplate = Handlebars.compile($("#ticket-tag").html());
+    // var _compiledTagTemplate = Handlebars.compile($("#ticket-tag").html());
+    var _compiledTagTemplate = Handlebars.templates["ticket-tag"];
     var tagHTML = _compiledTagTemplate({ id: id, value: value, data: data, css: cssclass });
     return $(tagHTML).prependTo(parent).data('tag', data);
 }
@@ -2704,7 +2715,7 @@ function SetupProductVersionsControl(product) {
     $('#ticket-Resolved').empty();
   if (product !== null && product.Versions.length > 0) {
   	var versions = product.Versions;
-  	
+
   	for (var i = 0; i < versions.length; i++) {
         try{
             AppendSelect('#ticket-Versions', versions[i], 'version', versions[i].ProductVersionID, versions[i].VersionNumber, false);
@@ -3370,11 +3381,11 @@ var appendMatchingParentValueFields = function (container, parentField) {
 }
 
 var AddCustomFieldEdit = function (field, parentContainer) {
-    var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm')
-                            .data('field', field)
-                            .appendTo(formcontainer)
-                            .append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
+    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
+    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+
     var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
     var inputGroupContainer = $('<div>').addClass('input-group').appendTo(inputContainer);
     var input = $('<textarea rows="1">')
@@ -3440,47 +3451,28 @@ var AddCustomFieldEdit = function (field, parentContainer) {
 
 var AddCustomFieldDate = function (field, parentContainer) {
     var date = field.Value == null ? null : window.parent.Ts.Utils.getMsDate(field.Value);
-    var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
+    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
+    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+
     var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
-    var dateLink = $('<a>')
-                      .attr('href', '#')
-                      .addClass('ticket-anchor ticket-nullable-link ticket-duedate-anchor')
-                      .text((date === null ? 'unassigned' : date.localeFormat(window.parent.Ts.Utils.getDatePattern())))
-                      .appendTo(dateContainer);
+    var dateLink = $('<a>').attr('href', '#').addClass('ticket-anchor ticket-nullable-link ticket-duedate-anchor').text((date === null ? 'unassigned' : date.localeFormat(window.parent.Ts.Utils.getDatePattern()))).appendTo(dateContainer);
 
     dateLink.click(function (e) {
         e.preventDefault();
         e.stopPropagation();
         var header = $(this).hide();
-        var container = $('<div>')
-              .addClass('row')
-              .insertAfter(header);
+        var container = $('<div>').addClass('row').insertAfter(header);
+        var container1 = $('<div style="padding-right:0px;">').addClass('col-xs-10').appendTo(container);
+        var theinput = $('<input type="text">').addClass('form-control').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getDatePattern())).datetimepicker({ pickTime: false }).appendTo(container1).focus();
 
-        var container1 = $('<div style="padding-right:0px;">')
-            .addClass('col-xs-10')
-            .appendTo(container);
-
-        var theinput = $('<input type="text">')
-          .addClass('form-control')
-          .val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getDatePattern()))
-          .datetimepicker({ pickTime: false })
-          .appendTo(container1)
-          .focus();
-
-
-        $('<i>')
-          .addClass('col-xs-1 fa fa-times')
-          .click(function (e) {
+        $('<i>').addClass('col-xs-1 fa fa-times').click(function (e) {
               $(this).closest('div').remove();
               header.show();
-          })
-          .insertAfter(container1);
+        }).insertAfter(container1);
 
-
-        $('<i>')
-          .addClass('col-xs-1 fa fa-check')
-          .click(function (e) {
+        $('<i>').addClass('col-xs-1 fa fa-check').click(function (e) {
               var currDate = $(this).prev().find('input').val();
               var value = null;
               if (currDate !== '') {
@@ -3539,8 +3531,11 @@ var AddCustomFieldDate = function (field, parentContainer) {
 
 var AddCustomFieldDateTime = function (field, parentContainer) {
     var date = field.Value == null ? null : window.parent.Ts.Utils.getMsDate(field.Value);
-    var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
+    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
+    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+
     var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
     var dateLink = $('<a>')
                       .attr('href', '#')
@@ -3639,8 +3634,11 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
 
 var AddCustomFieldTime = function (field, parentContainer) {
     var date = field.Value == null ? null : window.parent.Ts.Utils.getMsDate(field.Value);
-    var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
+    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
+    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+
     var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
     var dateLink = $('<a>')
                       .attr('href', '#')
@@ -3738,12 +3736,11 @@ var AddCustomFieldTime = function (field, parentContainer) {
 }
 
 var AddCustomFieldBool = function (field, parentContainer) {
-    var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-    var groupContainer = $('<div>')
-                            .addClass('form-group form-group-sm')
-                            .data('field', field)
-                            .appendTo(formcontainer)
-                            .append($('<label>').addClass('col-sm-4 control-label').text(field.Name));
+    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
+    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
+    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+
     var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
     var inputDiv = $('<div>').addClass('checkbox ticket-checkbox').appendTo(inputContainer);
     var input = $('<input type="checkbox">').appendTo(inputDiv);
@@ -3762,8 +3759,11 @@ var AddCustomFieldBool = function (field, parentContainer) {
 }
 
 var AddCustomFieldNumber = function (field, parentContainer) {
-    var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
+    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
+    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+
     var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
     var input = $('<input type="text">')
                     .addClass('form-control ticket-simple-input muted-placeholder')
@@ -3818,8 +3818,11 @@ var AddCustomFieldNumber = function (field, parentContainer) {
 }
 
 var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFields) {
-    var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer).append($('<label>').addClass('col-sm-4 control-label select-label').text(field.Name));
+    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
+    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
+    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+
     var selectContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
     var select = $('<select>').addClass('hidden-select muted-placeholder').attr("placeholder", "Select Value").appendTo(selectContainer);
     var options = field.ListValues.split('|');
@@ -3897,10 +3900,8 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
 
 var SetupDueDateField = function (duedate) {
     var dateContainer = $('#ticket-duedate-container');
-    var dateLink = $('<a>')
-                        .attr('href', '#')
-                        .addClass('control-label ticket-anchor ticket-nullable-link ticket-duedate-anchor')
-                        .appendTo(dateContainer);
+    var dateLink = $('<a>').attr('href', '#').attr('id','ticket-duedate').addClass('control-label ticket-anchor ticket-nullable-link ticket-duedate-anchor').appendTo(dateContainer);
+
     if (duedate !== null) {
         dateLink.text(duedate.localeFormat(window.parent.Ts.Utils.getDateTimePattern()));
 
@@ -4378,19 +4379,18 @@ function FetchTimeLineItems(start) {
     $('.results-loading').show();
     window.parent.Ts.Services.TicketPage.GetTimeLineItems(_ticketID, start, function (TimeLineItems) {
         _timeLine = TimeLineItems;
-
         if (TimeLineItems.length < 1) {
             $('.results-loading').hide();
             $('.results-done').show();
-        }
-        else {
+        } else {
             //compile action template
-            _compiledActionTemplate = Handlebars.compile($("#action-template").html());
+            // _compiledActionTemplate = Handlebars.compile($("#action-template").html());
+            _compiledActionTemplate = Handlebars.templates['action'];
 
             //create first timeline date marker if needed
             if (_currDateSpan == null) {
                 _currDateSpan = _timeLine[0].item.DateCreated;
-                var dateSpan = '<span class="label bgcolor-bluegray daybadge">' + _currDateSpan.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span>';
+                var dateSpan = '<li style="text-align:center;"><span class="label bgcolor-bluegray daybadge">' + _currDateSpan.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><li>';
                 $("#action-timeline").append(dateSpan);
             };
             var isPublicFiltered = $('.filter-public').hasClass('bgcolor-darkgray');
@@ -4400,20 +4400,15 @@ function FetchTimeLineItems(start) {
             for (i = 0; i < _timeLine.length; i++) {
                 var timeLineItem = _timeLine[i];
                 var actionElem = CreateActionElement(timeLineItem, !timeLineItem.item.IsPinned);
-
                 if (isPublicFiltered && timeLineItem.item.IsVisibleOnPortal) {
                     actionElem.hide();
                 }
-
                 if (isPrivateFiltered && !timeLineItem.item.IsVisibleOnPortal) {
                     actionElem.hide();
                 }
-
                 if (isWCFiltered && timeLineItem.item.IsWC) {
                     actionElem.hide();
                 }
-
-
             }
             _isLoading = false;
             $('.results-loading').hide();
@@ -4424,7 +4419,7 @@ function FetchTimeLineItems(start) {
 
 function CreateActionElement(val, ShouldAppend) {
     if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
-        var dateSpan = '<span class="label bgcolor-bluegray daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span>';
+        var dateSpan = '<li style="text-align:center;"><span class="label bgcolor-bluegray daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><li>';
         $("#action-timeline").append(dateSpan);
         _currDateSpan = val.item.DateCreated;
     }
@@ -4459,7 +4454,7 @@ function CreateActionElement(val, ShouldAppend) {
 
 function UpdateActionElement(val) {
     if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
-        var dateSpan = '<span class="label bgcolor-bluegray daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span>';
+        var dateSpan = '<li style="text-align:center;"><span class="label bgcolor-bluegray daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span></li>';
         $("#action-timeline").append(dateSpan);
         _currDateSpan = val.item.DateCreated;
     }
@@ -4519,7 +4514,7 @@ function CreateHandleBarHelpers() {
         });
         return '<span id="applause-' + actionID + '" class="pull-right" style="position:absolute;top:25px;right:100px;display:' + display + '"></span>';
     });
-    
+
     Handlebars.registerHelper('ActionData', function () {
         return JSON.stringify(this.item);
     });
@@ -4532,6 +4527,7 @@ function CreateHandleBarHelpers() {
         if (!_isCreatingAction) {
             _workingActionNumer = _workingActionNumer - 1;
             return _workingActionNumer + 1;
+            // return _workingActionNumer;
         }
     });
 
@@ -4943,8 +4939,10 @@ function CreateTimeLineDelegates() {
         if ($('.results-done').is(':visible')) return;
 
         if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
-            var count = $('#action-timeline > li').length;
-            FetchTimeLineItems($('#action-timeline > li').length - 1);
+            // var count = $('#action-timeline > li').length;
+            // FetchTimeLineItems($('#action-timeline > li').length - 1);
+            var count = $('#action-timeline > [data-id]').length;
+            FetchTimeLineItems($('#action-timeline > [data-id]').length + 1);
         }
     });
 
@@ -5068,7 +5066,8 @@ function CreateTimeLineDelegates() {
             if (commentinfo.User.length > 0) window.parent.Ts.System.logAction('Water Cooler - User Inserted');
 
             window.parent.Ts.Services.WaterCooler.NewComment(parent.JSON.stringify(commentinfo), function (Message) {
-                var _compiledWCReplyTemplate = Handlebars.compile($("#wc-new-reply-template").html());
+                // var _compiledWCReplyTemplate = Handlebars.compile($("#wc-new-reply-template").html());
+                var _compiledWCReplyTemplate = Handlebars.templates['wc-new-reply'];
                 Message.Message = Message.Message.replace(/\n\r?/g, '<br />');
                 var html = _compiledWCReplyTemplate(Message);
                 self.closest('li').find('.timeline-wc-responses').append(html);
@@ -5785,9 +5784,9 @@ var MergeSuccessEvent = function (_ticketNumber, winningTicketNumber) {
 
 var addUserViewing = function (userID) {
     $('#ticket-now-viewing').show();
-
     if ($('.ticket-viewer:data(ChatID=' + userID + ')').length < 1) {
         window.parent.Ts.Services.Users.GetUser(userID, function (user) {
+            $('.ticket-viewer:data(ChatID=' + user.UserID + ')').remove();
             var fullName = user.FirstName + " " + user.LastName;
             var viewuser = $('<a>')
                     .data('ChatID', user.UserID)
@@ -5801,6 +5800,7 @@ var addUserViewing = function (userID) {
                     .appendTo($('#ticket-viewing-users'));
         });
     }
+
 }
 
 var removeUserViewing = function (ticketNum, userID) {

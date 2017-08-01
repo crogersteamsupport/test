@@ -303,7 +303,7 @@ namespace TeamSupport.Data
         }
         // end old stuff
 
-        public void GetCommand(SqlCommand command, bool inlcudeHiddenFields = true, bool isSchemaOnly = false, bool useUserFilter = true)
+        public void GetCommand(SqlCommand command, bool inlcudeHiddenFields = true, bool isSchemaOnly = false, bool useUserFilter = true, string sortField = null, string sortDir = null)
         {
             MigrateToNewReport();
 
@@ -312,7 +312,7 @@ namespace TeamSupport.Data
             switch (ReportDefType)
             {
                 case ReportType.Table:
-                    GetTabularSql(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID, useUserFilter);
+                    GetTabularSql(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID, useUserFilter, sortField, sortDir);
                     break;
                 case ReportType.Chart:
                     GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, null, false, true);
@@ -324,7 +324,7 @@ namespace TeamSupport.Data
                     GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, ReportID, useUserFilter, false);
                     break;
                 case ReportType.TicketView:
-                    GetTabularSql(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID, useUserFilter);
+                    GetTabularSql(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID, useUserFilter, sortField, sortDir);
                     break;
                 default:
                     break;
@@ -437,10 +437,10 @@ namespace TeamSupport.Data
 
         }
 
-        private static void GetTabularSql(LoginUser loginUser, SqlCommand command, TabularReport tabularReport, bool inlcudeHiddenFields, bool isSchemaOnly, int? reportID, bool useUserFilter)
+        private static void GetTabularSql(LoginUser loginUser, SqlCommand command, TabularReport tabularReport, bool inlcudeHiddenFields, bool isSchemaOnly, int? reportID, bool useUserFilter, string sortField = null, string sortDir = null)
         {
             StringBuilder builder = new StringBuilder();
-            GetTabluarSelectClause(loginUser, command, builder, tabularReport, inlcudeHiddenFields, isSchemaOnly);
+            GetTabluarSelectClause(loginUser, command, builder, tabularReport, inlcudeHiddenFields, isSchemaOnly, sortField, sortDir);
             if (isSchemaOnly)
             {
                 command.CommandText = builder.ToString();
@@ -505,7 +505,7 @@ namespace TeamSupport.Data
             }
         }
 
-        private static void GetTabluarSelectClause(LoginUser loginUser, SqlCommand command, StringBuilder builder, TabularReport tabularReport, bool includeHiddenFields, bool isSchemaOnly)
+        private static void GetTabluarSelectClause(LoginUser loginUser, SqlCommand command, StringBuilder builder, TabularReport tabularReport, bool includeHiddenFields, bool isSchemaOnly, string sortField = null, string sortDir = null)
         {
             ReportSubcategory sub = ReportSubcategories.GetReportSubcategory(loginUser, tabularReport.Subcategory);
 
@@ -517,6 +517,9 @@ namespace TeamSupport.Data
             TimeSpan offset = loginUser.Offset;
             TicketTypes ticketTypes = new TicketTypes(loginUser);
             ticketTypes.LoadByOrganizationID(loginUser.OrganizationID);
+
+            string sortClause = "";
+            
 
             foreach (ReportSelectedField field in tabularReport.Fields)
             {
@@ -537,6 +540,7 @@ namespace TeamSupport.Data
 
 
                         fieldName = DataUtils.GetCustomFieldColumn(loginUser, customField, fieldName, true, false);
+                        string colName = fieldName;
 
                         if (customField.FieldType == CustomFieldType.DateTime)
                         {
@@ -551,24 +555,27 @@ namespace TeamSupport.Data
                             fieldName = string.Format("(SELECT ISNULL(({0}),0))", fieldName);
                         }
 
-                        builder.Append(builder.Length < 1 ? "SELECT " : ", ");
+                        if (!string.IsNullOrWhiteSpace(sortField) && colName == sortField) {
+                            sortClause = fieldName;
+                        }
 
+                        builder.Append(builder.Length < 1 ? "SELECT " : ", ");
+                        string displayName = customField.Name;
                         if (customField.AuxID > 0 && customField.RefType == ReferenceType.Tickets)
                         {
                             TicketType ticketType = ticketTypes.FindByTicketTypeID(customField.AuxID);
                             if (ticketType != null && ticketType.OrganizationID == customField.OrganizationID)
                             {
-                                builder.Append(string.Format("{0} AS [{1} ({2})]", fieldName, customField.Name, ticketType.Name));
-                            }
-                            else
-                            {
-                                builder.Append(string.Format("{0} AS [{1}]", fieldName, customField.Name));
+                                displayName = $"{customField.Name} ({ticketType.Name})";
                             }
                         }
-                        else
+                        builder.Append($"{fieldName} AS [{displayName}]");
+
+                        if (!string.IsNullOrWhiteSpace(sortField) && displayName == sortField)
                         {
-                            builder.Append(string.Format("{0} AS [{1}]", fieldName, customField.Name));
+                            sortClause = fieldName;
                         }
+
                     }
 
                 }
@@ -587,6 +594,12 @@ namespace TeamSupport.Data
                           Math.Abs(offset.Minutes));
 
                     }
+
+                    if (!string.IsNullOrWhiteSpace(sortField) && tableField.Alias == sortField)
+                    {
+                        sortClause = fieldName;
+                    }
+
                     if (builder.Length < 1)
                     {
                         builder.Append("SELECT " + fieldName + " AS [" + tableField.Alias + "]");
@@ -597,6 +610,11 @@ namespace TeamSupport.Data
                     }
 
                 }
+            }
+            if (!string.IsNullOrWhiteSpace(sortClause))
+            {
+                builder.Append($", ROW_NUMBER() OVER (ORDER BY {sortClause} {sortDir}) AS [RowNum]");
+                builder.Append($", COUNT(*) OVER () AS [TotalRows]");
             }
 
             if (includeHiddenFields)
@@ -2110,12 +2128,15 @@ namespace TeamSupport.Data
 
             SqlCommand command = new SqlCommand();
             string totalRows = includeHiddenFields ? ", (SELECT COUNT(RowNum) FROM r) AS 'TotalRows'" : "";
-            string query = @"
-WITH 
-q AS ({0}),
-r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY [{1}] {2}) AS 'RowNum' FROM q)
-SELECT  *{3} FROM r
-WHERE RowNum BETWEEN @From AND @To";
+
+            string query = @"WITH  q AS({0}) SELECT * FROM q WHERE RowNum BETWEEN @From AND @To ORDER BY RowNum ASC";
+            
+            /*WITH 
+            q AS ({0}),
+            r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY [{1}] {2}) AS 'RowNum' FROM q)
+            SELECT  *{3} FROM r
+            WHERE RowNum BETWEEN @From AND @To";
+            */
 
             if (report.ReportDefType == ReportType.Custom)
             {
@@ -2149,8 +2170,17 @@ WHERE RowNum BETWEEN @From AND @To";
 
             command.Parameters.AddWithValue("@From", from);
             command.Parameters.AddWithValue("@To", to);
-            report.GetCommand(command, includeHiddenFields, false, useUserFilter);
-            command.CommandText = string.Format(query, command.CommandText, sortField, isDesc ? "DESC" : "ASC", totalRows);
+
+            if (report.ReportDefType != ReportType.Custom)
+            {
+                report.GetCommand(command, includeHiddenFields, false, useUserFilter, sortField, isDesc ? "DESC" : "ASC");
+                command.CommandText = string.Format(query, command.CommandText);
+            }
+            else
+            {
+                report.GetCommand(command, includeHiddenFields, false, useUserFilter);
+                command.CommandText = string.Format(query, command.CommandText, sortField, isDesc ? "DESC" : "ASC", totalRows);
+            }
 
             report.LastSqlExecuted = DataUtils.GetCommandTextSql(command);
             report.Collection.Save();

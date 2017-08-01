@@ -166,7 +166,7 @@ Namespace TeamSupport
                             Dim accountDescribeSObjectResult As DescribeSObjectResult = New DescribeSObjectResult()
 
                             Try
-                                fieldsList = New List(Of String)(New String() {"Id", "Name", "type", "ShippingStreet", "ShippingCity", "ShippingState", "ShippingPostalCode", "ShippingCountry", "Phone", "LastModifiedDate", "SystemModStamp", "Fax"})
+                                fieldsList = New List(Of String)(New String() {"Id", "Name", "type", "ShippingStreet", "ShippingCity", "ShippingState", "ShippingPostalCode", "ShippingCountry", "Phone", "LastModifiedDate", "SystemModStamp", "Fax", "BillingStreet", "BillingCity", "BillingState", "BillingPostalCode", "BillingCountry"})
                                 selectFields = GetAvailableFieldsForQuerySelect(fieldsList, "Account", accountDescribeSObjectResult)
                                 queriesResults = GetSalesForceQueryResults(selectFields, hasAddress, hasFax, queriedShippingAddress, numberOfCompaniesInQueriesResults, bindingRanOK, TypeString)
 #Region "Old. Moved to its own function"
@@ -285,20 +285,28 @@ Namespace TeamSupport
                                                 thisCompany = SerializeXmlToCompanyDataObject(records(i).Any, LastModifiedDateTime)
 
                                                 If (String.IsNullOrEmpty(thisCompany.Street) AndAlso queriedShippingAddress) Then
-                                                    Dim billingAddressWithFax As Boolean = False
-                                                    Dim billingAddress As sObject() = GetBillingAddress(thisCompany.AccountID, billingAddressWithFax, accountDescribeSObjectResult)
+                                                    'We are now pulling billing address from all accounts query
+                                                    'Dim billingAddressWithFax As Boolean = False
+                                                    'Dim billingAddress As sObject() = GetBillingAddress(thisCompany.AccountID, billingAddressWithFax, accountDescribeSObjectResult)
 
-                                                    If billingAddress IsNot Nothing Then
-                                                        thisCompany.Street = billingAddress(0).Any(0).InnerText
-                                                        thisCompany.City = billingAddress(0).Any(1).InnerText
-                                                        thisCompany.State = billingAddress(0).Any(2).InnerText
-                                                        thisCompany.Zip = billingAddress(0).Any(3).InnerText
-                                                        thisCompany.Country = billingAddress(0).Any(4).InnerText
-                                                        thisCompany.Phone = billingAddress(0).Any(5).InnerText
+                                                    'If billingAddress IsNot Nothing Then
+                                                    '    thisCompany.Street = billingAddress(0).Any(0).InnerText
+                                                    '    thisCompany.City = billingAddress(0).Any(1).InnerText
+                                                    '    thisCompany.State = billingAddress(0).Any(2).InnerText
+                                                    '    thisCompany.Zip = billingAddress(0).Any(3).InnerText
+                                                    '    thisCompany.Country = billingAddress(0).Any(4).InnerText
+                                                    '    thisCompany.Phone = billingAddress(0).Any(5).InnerText
 
-                                                        If billingAddressWithFax Then
-                                                            thisCompany.Fax = billingAddress(0).Any(6).InnerText
-                                                        End If
+                                                    '    If billingAddressWithFax Then
+                                                    '        thisCompany.Fax = billingAddress(0).Any(6).InnerText
+                                                    '    End If
+                                                    'End If
+                                                    If (Not String.IsNullOrEmpty(thisCompany.BillingStreet)) Then
+                                                        thisCompany.Street = thisCompany.BillingStreet
+                                                        thisCompany.City = thisCompany.BillingCity
+                                                        thisCompany.State = thisCompany.BillingState
+                                                        thisCompany.Zip = thisCompany.BillingZip
+                                                        thisCompany.Country = thisCompany.BillingCountry
                                                     End If
                                                 End If
                                             Catch ex As Exception

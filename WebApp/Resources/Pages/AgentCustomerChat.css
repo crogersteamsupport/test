@@ -149,3 +149,10 @@ meter#subscriberMeter {
   transform: rotate(270deg);
   width: 35px;
 }
+
+.tokWarning
+{
+    color: orangered;
+    font-style: italic;
+    font-weight: bold;
+}

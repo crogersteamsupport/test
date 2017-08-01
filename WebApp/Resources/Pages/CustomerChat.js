@@ -63,7 +63,7 @@ $(document).ready(function () {
 
                     if (data.isAgentTOKEnabled && !isCustomerTOKEnabled) {
                         _toktimer = setTimeout(function () {
-                            var triggered = pressenceChannel.trigger('client-tok-enabled', { isCustomerTOKEnabled: isCustomerTOKEnabled });
+                            var triggered = presenceChannel.trigger('client-tok-enabled', { isCustomerTOKEnabled: isCustomerTOKEnabled });
                             clearTimeout(_toktimer);
                         }, 1000);
                     }
@@ -143,12 +143,18 @@ function GetChatSettings(chatID) {
     
     IssueAjaxRequest("GetClientChatPropertiesByChatID", chatObject,
     function (result) {
-        if (!result.TOKScreenEnabled)
-            $('.dropdown-menu li:contains(Screen)').hide();
-        if (!result.TOKVideoEnabled)
-            $('.dropdown-menu li:contains(Video)').hide();
-        if (!result.TOKVoiceEnabled)
-            $('.dropdown-menu li:contains(Audio)').hide();
+		if (!result.TOKScreenEnabled) {
+			$('.dropdown-menu li:contains(Screen)').hide();
+			$('#chat-tok-screen-Icon').hide();
+		}
+		if (!result.TOKVideoEnabled) {
+			$('.dropdown-menu li:contains(Video)').hide();
+			$('#chat-tok-video-Icon').hide();
+		}
+		if (!result.TOKVoiceEnabled) {
+			$('.dropdown-menu li:contains(Audio)').hide();
+			$('#chat-tok-audio-Icon').hide();
+		}
 
         showAvatars = result.ChatAvatarsEnabled
         $('.panel-heading').text(result.ChatIntro);
@@ -180,11 +186,9 @@ function createMessageElement(messageData, direction) {
     if (direction == 'left') {
         _agentHasJoined = true;
 
-        //did Agent left the chat?
+        //did Agent left the chat?. Also if memberCount is 2 then it means that there is only the customer in the chat now (the agent member is removed off the channel after, if there were more than 2 members then there are still agent(s) on the other side chatting.
         if (messageData.HasLeft) {
             hasLeftChatClass = " hasLeft";
-            $('#send-message').prop("disabled", true);
-            $('#message').prop("disabled", true);
         }
     }
 
@@ -202,7 +206,7 @@ function createMessageElement(messageData, direction) {
     }
 }
 
-var pressenceChannel;
+var presenceChannel;
 function setupChat(chatID, participantID, pusherKey, callback) {
     var channelName = 'presence-' + chatID;
     var pusher = new Pusher(pusherKey, {
@@ -214,22 +218,29 @@ function setupChat(chatID, participantID, pusherKey, callback) {
             }
         }
     });
-    pressenceChannel = pusher.subscribe(channelName);
+    presenceChannel = pusher.subscribe(channelName);
 
-    //pressenceChannel.bind('pusher:subscription_succeeded', function () {
+    //presenceChannel.bind('pusher:subscription_succeeded', function () {
     //    //console.log(channel.members);
     //});
 
-    pressenceChannel.bind('pusher:member_added', function (member) {
+    presenceChannel.bind('pusher:member_added', function (member) {
         $('#operator-message').remove();
         createMessage(member.info.name + ' joined the chat.', member.id);
     });
 
-    //pressenceChannel.bind('pusher:subscription_error', function (status) {
+    presenceChannel.bind('pusher:member_removed', function (member) {
+        if (presenceChannel.members.count == 1) {
+            $('#send-message').addClass("disabled");
+            $('#message').prop("disabled", true);
+        }
+    });
+
+    //presenceChannel.bind('pusher:subscription_error', function (status) {
     //    console.log(status);
     //});
 
-    pressenceChannel.bind('new-comment', function (data) {
+    presenceChannel.bind('new-comment', function (data) {
         $('#typing').remove();
         createMessageElement(data, (data.CreatorType == 0) ? 'left' : 'right');
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
@@ -237,9 +248,9 @@ function setupChat(chatID, participantID, pusherKey, callback) {
         isSubmittingAlready = false;
     });
 
-    pressenceChannel.bind('client-tok-screen', function (data) {
+    presenceChannel.bind('client-tok-screen', function (data) {
         $('#chat-body').append('<div id="screenRequest" class="answer left"> <div class="avatar"> <img src="../vcr/1_9_0/images/blank_avatar.png" alt="User name">  </div>' +
-                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share a screen with you. <a onClick="subscribeToScreenStream()">Do you Accept?</a></div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
+                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share a screen with you. <a onClick="subscribeToScreenStream()">Do you Accept?</a><label class="tokWarning">(If you accept you will be seeing the agent\'s screen)</label></div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
 
         sharedApiKey = data.apiKey;
         sharedToken = data.token;
@@ -247,9 +258,9 @@ function setupChat(chatID, participantID, pusherKey, callback) {
         _agentName = data.userName;
     });
 
-    pressenceChannel.bind('client-tok-video', function (data) {
+    presenceChannel.bind('client-tok-video', function (data) {
         $('#chat-body').append('<div id="videoRequest" class="answer left"> <div class="avatar"> <img src="../vcr/1_9_0/images/blank_avatar.png" alt="User name">  </div>' +
-                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share video with you. <a onClick="subscribeToVideoStream()">Do you Accept?</a></div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
+                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to share video with you. <a onClick="subscribeToVideoStream()">Do you Accept?</a><label class="tokWarning">(If you accept the agent will see you via your camera)</label></div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
 
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
         sharedApiKey = data.apiKey;
@@ -258,9 +269,9 @@ function setupChat(chatID, participantID, pusherKey, callback) {
         _agentName = data.userName;
     });
 
-    pressenceChannel.bind('client-tok-audio', function (data) {
+    presenceChannel.bind('client-tok-audio', function (data) {
         $('#chat-body').append('<div id="audioRequest" class="answer left"> <div class="avatar"> <img src="../vcr/1_9_0/images/blank_avatar.png" alt="User name">  </div>' +
-                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to have an audio call with you. <a onClick="subscribeToAudioStream(false)">Do you Accept?</a></div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
+                    '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' wants to have an audio call with you. <a onClick="subscribeToAudioStream(false)">Do you Accept?</a><label class="tokWarning">(If you accept the agent will hear what you say in your microphone)</label></div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
 
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
         sharedApiKey = data.apiKey;
@@ -269,7 +280,7 @@ function setupChat(chatID, participantID, pusherKey, callback) {
         _agentName = data.userName;
     });
 
-    pressenceChannel.bind('client-tok-audio-accept', function (data) {
+    presenceChannel.bind('client-tok-audio-accept', function (data) {
         $('#tokStatusText').text(data.userName + ' has joined live session.');
         sharedApiKey = data.apiKey;
         sharedToken = data.token;
@@ -296,7 +307,7 @@ function setupChat(chatID, participantID, pusherKey, callback) {
         }
     });
 
-    pressenceChannel.bind('client-tok-video-accept', function (data) {
+    presenceChannel.bind('client-tok-video-accept', function (data) {
         $('#tokStatusText').text(data.userName + ' has joined live session.');
         sharedApiKey = data.apiKey;
         sharedToken = data.token;
@@ -315,20 +326,21 @@ function setupChat(chatID, participantID, pusherKey, callback) {
         }, 25);
     });
 
-    pressenceChannel.bind('client-agent-stop-typing', function (data) {
+    presenceChannel.bind('client-agent-tok-ended', function (data) {
+        if (data !== undefined) {
+            $('#' + data.streamType + 'Request').remove();
+        }
+    });
+
+    presenceChannel.bind('client-agent-stop-typing', function (data) {
         $('#typing').remove();
     });
 
-    pressenceChannel.bind('client-agent-typing', function (data) {
+    presenceChannel.bind('client-agent-typing', function (data) {
         $('#chat-body').append('<div id="typing" class="answer left"> <div class="avatar"><img src="../vcr/1_9_0/images/blank_avatar.png" alt="User name"></div>' +
                     '<div class="name">' + data.userName + '</div>  <div class="text">' + data.userName + ' is typing...</div> <div class="time">' + moment().format('MM/DD/YYYY hh:mm A') + '</div></div>');
         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
     });
-
-    //pressenceChannel.bind('client-tok-ended', function (data) {
-    //    stopTOKStream();
-    //    channel.trigger('client-tok-ended', { userName: channel.members.me.info.name, apiKey: apiKey, token: token, sessionId: sessionId });
-    //});
 
     var doneTypingInterval = 5000;  //time in ms, 5 second for example
     var $input = $('#message');
@@ -347,7 +359,7 @@ function setupChat(chatID, participantID, pusherKey, callback) {
         if (!isTyping) {
             isTyping = true;
             clearTimeout(_typingTimer);
-            var triggered = pressenceChannel.trigger('client-user-typing', { userName: pressenceChannel.members.me.info.name, chatID: _activeChatID });
+            var triggered = presenceChannel.trigger('client-user-typing', { userName: presenceChannel.members.me.info.name, chatID: _activeChatID });
         }
 
         if (e.which == 13) {
@@ -362,11 +374,11 @@ function setupChat(chatID, participantID, pusherKey, callback) {
         }
     });
 
-    callback(pressenceChannel);
+    callback(presenceChannel);
 }
 
 function doneTyping() {
-    var triggered = pressenceChannel.trigger('client-user-stop-typing', pressenceChannel.members.me.info.name + ' is typing...');
+    var triggered = presenceChannel.trigger('client-user-stop-typing', presenceChannel.members.me.info.name + ' is typing...');
     isTyping = false;
 }
 
@@ -443,16 +455,25 @@ function SetupChatUploads(chatID, participantID) {
 function DisplayTOKButtons(display) {
     var audio = $('.dropdown-menu li:contains(Audio)');
     var video = $('.dropdown-menu li:contains(Video)');
-    var screen = $('.dropdown-menu li:contains(Screen)');
+	var screen = $('.dropdown-menu li:contains(Screen)');
+	var audioIcon = $('#chat-tok-audio-Icon');
+	var videoIcon = $('#chat-tok-video-Icon');
+	var screenIcon = $('#chat-tok-screen-Icon');
 
     if (display) {
         audio.show();
         video.show();
-        screen.show();
+		screen.show();
+		audioIcon.show();
+		videoIcon.show();
+		screenIcon.show();
     } else {
         audio.hide();
         video.hide();
-        screen.hide();
+		screen.hide();
+		audioIcon.hide();
+		videoIcon.hide();
+		screenIcon.hide();
     }
 }
 

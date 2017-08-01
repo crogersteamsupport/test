@@ -38,12 +38,17 @@
             <form id="message-form" action="">
                <div class="input-group">
                    <div class="input-group-btn dropup">
-                       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-plus"></span></button>
+                       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<span id="chat-attachment-Icon" class="fa fa-paperclip"></span>
+							<span id="chat-tok-audio-Icon" class="fa fa-microphone"></span>
+							<span id="chat-tok-video-Icon" class="fa fa-video-camera"></span>
+							<span id="chat-tok-screen-Icon" class="fa fa-desktop"></span>
+                       </button>
                        <ul class="dropdown-menu">
                            <li><a href="#" id="chat-attachment"><span class="fa fa-paperclip"></span> Attach Documents</a></li>
-                           <li><a href="#" id="chat-tok-audio"><span class="fa fa-microphone"></span> Audio Call (Public Beta)</a></li>
-                           <li><a href="#" id="chat-tok-video"><span class="fa fa-video-camera"></span> Video Call (Public Beta)</a></li>
-                           <li><a href="#" id="chat-tok-screen"><span class="fa fa-desktop"></span> Share Screen (Public Beta)</a></li>
+                           <li><a href="#" id="chat-tok-audio"><span class="fa fa-microphone"></span> Audio Call</a></li>
+                           <li><a href="#" id="chat-tok-video"><span class="fa fa-video-camera"></span> Video Call</a></li>
+                           <li><a href="#" id="chat-tok-screen"><span class="fa fa-desktop"></span> Share Screen</a></li>
                        </ul>
                    </div>
                    <input id="message" type="text" class="form-control" autocomplete="off">
