@@ -497,16 +497,19 @@ namespace TSWebServices
                 service.Name = "TokTranscoder";
                 service.Enabled = true;
                 service.Interval = -1;
-                service.LastResult = "";
+                service.LastResult = "Success";
                 service.LastError = "";
                 service.ErrorCount = 0;
                 service.RunCount = 0;
                 service.RunTimeAvg = 0;
                 service.RunTimeMax = 0;
                 service.AssemblyName = "";
-                service.AutoStart = false;
+                service.AutoStart = true;
                 service.Name = "";
                 service.HealthMaxMinutes = 20;
+                service.LastStartTime = DateTime.Now;
+                service.LastEndTime = DateTime.Now;
+                service.HealthTime = DateTime.Now;
                 service.Collection.Save();
             }
             else
