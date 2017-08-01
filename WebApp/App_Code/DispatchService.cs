@@ -484,43 +484,7 @@ namespace TSWebServices
             }
         }
 
-        [WebMethod]
-        public void UpdateTokTransCoderAlive()
-        {
-            Services services = new Services(LoginUser.Anonymous);
-            services.LoadByName("TokTranscoder");
-
-            if(services.Count == 0)
-            {
-                //add new service and update it
-                Service service = (new Services(loginUser)).AddNewService();
-                service.Name = "TokTranscoder";
-                service.Enabled = true;
-                service.Interval = -1;
-                service.LastResult = "Success";
-                service.LastError = "";
-                service.ErrorCount = 0;
-                service.RunCount = 0;
-                service.RunTimeAvg = 0;
-                service.RunTimeMax = 0;
-                service.AssemblyName = "";
-                service.AutoStart = true;
-                service.Name = "";
-                service.HealthMaxMinutes = 20;
-                service.LastStartTime = DateTime.Now;
-                service.LastEndTime = DateTime.Now;
-                service.HealthTime = DateTime.Now;
-                service.Collection.Save();
-            }
-            else
-            {
-                services[0].HealthTime = DateTime.Now;
-                services[0].Collection.Save();
-            }
-            
-
-        }
-
+     
     }
 
     //public class TicketSocket : Hub
