@@ -1,8 +1,8 @@
 
 {{#if item.IsPinned}}
-<li data-id="{{item.RefID}}" data-isWC="{{item.IsWC}}" data-action="" class="ticket-action pinned">
+<li data-id="{{item.RefID}}" data-isWC="{{item.IsWC}}" data-action="{{ActionData}}" class="ticket-action pinned">
 {{else}}
-<li data-id="{{item.RefID}}" data-iswc="{{item.IsWC}}" data-action="" class="ticket-action">
+<li data-id="{{item.RefID}}" data-iswc="{{item.IsWC}}" data-action="{{ActionData}}" class="ticket-action">
 {{/if}}
 
     <div class="timeline-panel">
