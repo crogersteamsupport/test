@@ -326,7 +326,6 @@ div.form-group .taskContainer .new-task {
     max-width:420px;
     min-width:400px;
 }
-
 .ui-widget-content.ts-separator {
     height:1px;
     border-bottom:none;
@@ -335,7 +334,6 @@ div.form-group .taskContainer .new-task {
     margin-bottom:.5em;
     clear:both;
 }
-
 .ticket-plugin {
     font-size:12px;
     color:#333
