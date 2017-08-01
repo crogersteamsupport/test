@@ -263,7 +263,7 @@ $.fn.autoGrow = function () {
     });
 };
 
-$("input[type=text], textarea").autoGrow();
+// $("input[type=text], textarea").autoGrow();
 
 $(document).ready(function () {
     _ticketNumber = window.parent.Ts.Utils.getQueryValue("TicketNumber", window);
@@ -424,7 +424,7 @@ function SetupTicketPage() {
     //Create the new action LI element
     CreateNewActionLI();
 
-    $("input[type=text], textarea").autoGrow();
+    // $("input[type=text], textarea").autoGrow();
 
     window.parent.Ts.Services.TicketPage.GetTicketPageOrder("TicketFieldsOrder", function (order) {
         SetupTicketProperties(order);
@@ -3392,7 +3392,7 @@ var AddCustomFieldEdit = function (field, parentContainer) {
                     .addClass('form-control ticket-simple-textarea muted-placeholder')
                     .attr("placeholder", "Enter Value")
                     .val(field.Value)
-                          .autoGrow()
+                    // .autoGrow()
                     .appendTo(inputGroupContainer)
                     .after(getUrls(field.Value));
 
