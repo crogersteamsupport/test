@@ -98,7 +98,7 @@ Dashboard.prototype = {
             $('.dashboard-container .item').each(function () {
             });
 
-            //ReportID Rows  Columns 
+            //ReportID Rows  Columns
             parent.Ts.Utils.webMethod("ReportService", "SaveDashboard", { data: JSON.stringify(items) });
         }
 
@@ -246,7 +246,7 @@ Dashboard.prototype = {
             $('<iframe>')
                 .attr('height', '100%')
                 .attr('width', '100%')
-                .attr('scrolling', 'no')
+                .attr('scrolling', 'yes')
                 .attr('frameborder', '0')
                 .attr('src', report.ReportDef)
                 .appendTo(content);
@@ -287,14 +287,14 @@ Dashboard.prototype = {
 
 
 Grid = function (element, report) {
-    
+
     this.report = report;
     this.element = $(element);
     if (!this.report.Def) { this.report.Def = JSON.parse(this.report.ReportDef); }
     this.report.Settings = this.report.UserSettings == '' ? new Object() : JSON.parse(this.report.UserSettings);
     this.datamodel = new TeamSupport.DataModel(getReportData);
     var reportID = this.report.ReportID;
-    
+
     function getReportData(from, to, sortcol, isdesc, callback) {
         var params = { "reportID": reportID,
             "from": from,
@@ -578,4 +578,3 @@ Grid.prototype = {
 
     }
 }
-
