@@ -445,8 +445,11 @@ namespace TSWebServices
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public void AgentAuth(string channel_name, string socket_id, int chatId)
-        {
+		public void AgentAuth(string channel_name, string socket_id)
+		{
+			int chatId = 0;
+			bool gotChatId = int.TryParse(channel_name.ToLower().Trim().Replace("presence-", ""), out chatId);
+
             var channelData = new PresenceChannelData()
             {
                 user_id = loginUser.UserID.ToString(),

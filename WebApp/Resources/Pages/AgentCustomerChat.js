@@ -55,8 +55,11 @@ $(document).ready(function () {
                     }
                 });
             } else {
-                var chatGUID = top.Ts.System.Organization.ChatID;
-                pusherRequestChannel_AgentPage.disconnect();
+            	var chatGUID = top.Ts.System.Organization.ChatID;
+
+            	if (pusherRequestChannel_AgentPage != null) {
+            		pusherRequestChannel_AgentPage.disconnect();
+            	}
             }
 
             $('.page-loading').hide().next().show();
