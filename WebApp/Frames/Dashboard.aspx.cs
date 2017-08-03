@@ -324,7 +324,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
       StringBuilder builder = new StringBuilder();
       builder.Append("<div class=\"portlet\" id=\"{0}\">");
       builder.Append("<div class=\"portlet-header {4}\">{1}<span class=\"portlet-close portlet-icon ts-icon ts-icon-close-small\"></span><span class=\"portlet-state portlet-icon ts-icon ts-icon-triangle-{3}\"></span></div>");
-      builder.Append("<div class=\"portlet-body ui-corner-bottom externalReport\"><div class=\"portlet-content ui-corner-bottom\"><iframe height=\"250px\" width=\"100%\" scrolling=\"no\" frameborder=\"0\" src=\"{2}\"></iframe></div></div></div>");
+      builder.Append("<div class=\"portlet-body ui-corner-bottom externalReport\"><div class=\"portlet-content ui-corner-bottom\"><iframe height=\"250px\" width=\"100%\" scrolling=\"yes\" frameborder=\"0\" src=\"{2}\"></iframe></div></div></div>");
       return string.Format(builder.ToString(), portlet.ID, caption, report.ExternalURL, portlet.IsOpen ? "s" : "w", portlet.IsOpen ? "ui-corner-top" : "ui-corner-all");
     }
   }
