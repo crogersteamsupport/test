@@ -243,7 +243,7 @@ Dashboard.prototype = {
         var content = el.find('.box-content');
         if (report.ReportType == 2) {
             content.empty();
-            $('<iframe>').attr('height', '100%').attr('width', '100%').attr('scrolling', 'yes').attr('frameborder', '0').attr('src', report.ReportDef).css('overflow-x','hidden').appendTo(content);
+            $('<iframe>').attr('height', '100%').attr('width', '100%').attr('frameborder', '0').attr('src', report.ReportDef).css('overflow-x','hidden').css('overflow-y','hidden').appendTo(content);
         }
         else if (report.ReportType == 1) {
             report.Def = JSON.parse(report.ReportDef);
