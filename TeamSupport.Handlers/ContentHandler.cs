@@ -1540,8 +1540,6 @@ namespace TeamSupport.Handlers
             context.Response.WriteFile(attachmentPath);
         }
 
-
-        http://localhost/dc/updateservicehealth/TokTranscoder
         private void ProcessUpdateServiceHealth(HttpContext context, string serviceName)
         {
             Services services = new Services(LoginUser.Anonymous);
