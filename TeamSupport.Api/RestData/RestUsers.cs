@@ -51,6 +51,18 @@ namespace TeamSupport.Api
             Users users = new Users(command.LoginUser);
             User user = users.AddNewUser();
             user.FullReadFromXml(command.Data, true, ref phoneNumber, ref address);
+            if (String.IsNullOrWhiteSpace(user.FirstName))
+            {
+                throw new RestException(HttpStatusCode.BadRequest, "FirstName is required.");
+            };
+            if (String.IsNullOrWhiteSpace(user.LastName))
+            {
+                throw new RestException(HttpStatusCode.BadRequest, "LastName is required.");
+            };
+            if (String.IsNullOrWhiteSpace(user.Email) || user.Email.IndexOf('@') < 0 || user.Email.IndexOf('.') < 0 || !users.IsEmailValid(user.Email, -1, command.LoginUser.OrganizationID))
+            {
+                throw new RestException(HttpStatusCode.BadRequest, "Email is invalid.");
+            };
             user.OrganizationID = command.LoginUser.OrganizationID;
             user.ActivatedOn = DateTime.UtcNow;
             user.LastLogin = DateTime.UtcNow.AddHours(-1);
