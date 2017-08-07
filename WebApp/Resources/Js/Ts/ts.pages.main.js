@@ -22,6 +22,7 @@ function getMainFrame(wnd) {
 }
 
 var mainFrame = getMainFrame();
+var pusherChatRequests = null;
 
 Ts.Pages.Main = function () {
     this.MainLayout = null;
