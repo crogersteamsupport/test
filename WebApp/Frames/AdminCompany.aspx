@@ -110,8 +110,8 @@
                 <ItemTemplate>
                   <div style="margin: 5px 5px 5px 15px;">
                     <div class="repeaterItem">
-                      <img src="../images/icons/Edit.png" alt="Edit" onclick="ShowDialog(parent.GetPhoneDialog(<%# DataBinder.Eval(Container.DataItem, "PhoneID")%>));" />
-                      <img src="../images/icons/Trash.png" alt="Trash" onclick="if (confirm('Are you sure you would like to remove this phone number?')){parent.privateServices.DeletePhone(<%# DataBinder.Eval(Container.DataItem, "PhoneID")%>); RefreshContent();}" />
+                      <img src="../images/icons/Edit.png" alt="Edit" onclick="ShowDialog(top.GetPhoneDialog(<%# DataBinder.Eval(Container.DataItem, "PhoneID")%>));" />
+                      <img src="../images/icons/Trash.png" alt="Trash" onclick="if (confirm('Are you sure you would like to remove this phone number?')){top.privateServices.DeletePhone(<%# DataBinder.Eval(Container.DataItem, "PhoneID")%>); RefreshContent();}" />
                       <span style="font-weight: bold;">
                         <%# DataBinder.Eval(Container.DataItem, "Type")%>: </span>
                       <span>
@@ -147,8 +147,8 @@
                 <ItemTemplate>
                   <div style="margin: 5px 5px 15px 15px;">
                     <div class="repeaterItem" style="font-weight: bold;">
-                      <img src="../images/icons/Edit.png" alt="Edit" onclick="ShowDialog(parent.GetAddressDialog(<%# DataBinder.Eval(Container.DataItem, "AddressID")%>));" />
-                      <img src="../images/icons/Trash.png" alt="Trash" onclick="if (confirm('Are you sure you would like to remove this address?')){parent.privateServices.DeleteAddress(<%# DataBinder.Eval(Container.DataItem, "AddressID")%>); RefreshContent();}" />
+                      <img src="../images/icons/Edit.png" alt="Edit" onclick="ShowDialog(top.GetAddressDialog(<%# DataBinder.Eval(Container.DataItem, "AddressID")%>));" />
+                      <img src="../images/icons/Trash.png" alt="Trash" onclick="if (confirm('Are you sure you would like to remove this address?')){top.privateServices.DeleteAddress(<%# DataBinder.Eval(Container.DataItem, "AddressID")%>); RefreshContent();}" />
                       <span>
                         <%# DataBinder.Eval(Container.DataItem, "Description")%></span>
                     </div>
