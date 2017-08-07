@@ -1513,7 +1513,7 @@ namespace TeamSupport.Handlers
             context.Response.WriteFile(logPath);
         }
 
-        //http://localhost/dc/1078/chatattachments/54782/2164854
+        // -- localhost/dc/1078/chatattachments/54782/2164854
         private void ProcessChatAttachments(HttpContext context, int organizationID, int chatID, int attachmentID)
         {
             HttpBrowserCapabilities browser = context.Request.Browser;
