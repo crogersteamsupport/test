@@ -65,20 +65,16 @@
 
         <div class="ts-loading page-loading"></div>
 
+        <div class="frame-container" style="display:none;padding-bottom:54px;">
 
-
-
-
-
-    <div class="frame-container" style="display:none;padding-bottom:54px;">
-        <div class="container">
-            <div class="row ticket-toolbar-row" style="top:0;">
+            <div class="container ticket-toolbar-row" style="top:0;">
                 <div class="col-sm-12">
                     <div class="btn-group ticket-toolbar" role="group" aria-label="...">
                         <button id="Ticket-Owner" class="btn btn-default ticket-option" type="button" data-toggle="tooltip" title="Take Ownership"><i class="fa fa-anchor"></i></button>
                         <button id="Ticket-GetUpdate" class="btn btn-default ticket-option" type="button" data-toggle="tooltip" title="Request Update"><i class="fa fa-bullhorn"></i></button>
                         <button id="Ticket-Merge" class="btn btn-default ticket-option" title="Merge" type="button" data-toggle="modal" data-target="#MergeModal"><i class="fa fa-exchange" data-toggle="tooltip" title="Merge"></i></button>
                     </div>
+
                     <div class="btn-group ticket-toolbar" role="group" aria-label="...">
                         <button id="Ticket-Refresh" class="btn btn-default ticket-option" title="" type="button" data-toggle="tooltip" data-original-title="Refresh Ticket Page"><i class="fa fa-refresh"></i></button>
                         <button id="Ticket-Read" class="btn btn-default ticket-option" type="button" data-toggle="tooltip" data-original-title="Mark Ticket as UnRead"><i class="fa fa-circle"></i></button>
@@ -117,30 +113,31 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="ticket-content-wrapper" style="padding-top: 5px; ">
-                    <div id="ticket-timeline" class="ticket-timeline">
-                        <div id="ticket-now-viewing" class="panel panel-default" style="display:none; margin-bottom:5px;">
-                            <p class="text-muted" style="margin:5px;">Chat With Others Viewing: <span id="ticket-viewing-users"></span></p>
-                        </div>
-                        <ul id="action-timeline" class="timeline"></ul>
-                        <div class="timeline-done"></div>
-                        <div class="results-loading"><i class="fa fa-spinner fa-spin"></i></div>
+
+            <div class="ticket-content-wrapper" style="padding-top: 5px; ">
+                <div id="ticket-timeline" class="ticket-timeline">
+                    <div id="ticket-now-viewing" class="panel panel-default" style="display:none; margin-bottom:5px;">
+                        <p class="text-muted" style="margin:5px;">Chat With Others Viewing: <span id="ticket-viewing-users"></span></p>
                     </div>
+                    <ul id="action-timeline" class="timeline"></ul>
+                    <div class="timeline-done"></div>
+                    <div class="results-loading"><i class="fa fa-spinner fa-spin"></i></div>
                 </div>
-                <div id="ticket-properties-area" class="ticket-property-section"></div>
             </div>
+
+            <div id="ticket-properties-area" class="ticket-property-section"></div>
+
         </div>
+
         <div class="maincontainerx">
             <a href="#" class="scrollup">Scroll</a>
             <div class="row">
                 <div>
-                    <div class="row">
-                    </div>
+                    <div class="row"></div>
                 </div>
             </div>
         </div>
-    </div>
+
 
 
 
