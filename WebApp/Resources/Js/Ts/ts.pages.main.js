@@ -22,7 +22,6 @@ function getMainFrame(wnd) {
 }
 
 var mainFrame = getMainFrame();
-var pusherChatRequests = null;
 
 Ts.Pages.Main = function () {
     this.MainLayout = null;
@@ -765,16 +764,13 @@ Ts.Pages.Main.prototype = {
             }
         }
 
+        var pusher = null;
         var request_channel = null;
         function setupChatRequestUpdates() {
             top.Ts.Settings.System.read('PusherKey', '1', function (key) {
-				var chatGUID = top.Ts.System.Organization.ChatID;
-
-				if (pusherChatRequests == null || (pusherChatRequests != null && pusherChatRequests.connection.state == "disconnected")) {
-					pusherChatRequests = new Pusher(key);
-				}
-                
-				request_channel = pusherChatRequests.subscribe('chat-requests-' + chatGUID);
+                var chatGUID = top.Ts.System.Organization.ChatID;
+                pusher = new Pusher(key);
+                request_channel = pusher.subscribe('chat-requests-' + chatGUID);
 
                 request_channel.bind('new-chat-request', function (data) {
 
@@ -836,7 +832,7 @@ Ts.Pages.Main.prototype = {
         function turnOffChatRequestUpdates() {
             top.Ts.Settings.System.read('PusherKey', '1', function (key) {
                 var chatGUID = top.Ts.System.Organization.ChatID;
-				pusherChatRequests.disconnect();
+				pusher.disconnect();
             });
         }
 

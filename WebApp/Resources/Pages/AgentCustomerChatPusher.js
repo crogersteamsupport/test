@@ -4,7 +4,6 @@ var customerName;
 var siteUrl;
 var _typingTimer;
 var pusherRequestChannel_AgentPage = null;
-var pusher = null;
 
 function setupChat(pusherKey, chatID, newCommentCallback, callback) {
     var windowUrl = window.location.href;
@@ -12,14 +11,14 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
     siteUrl = arr[0] + "//" + arr[2];
 
     var channelName = 'presence-' + chatID;
-	var service = '/Services/ChatService.asmx/';
-
-	if (pusher == null) {
-		pusher = new Pusher(pusherKey, {
-			authEndpoint: service + 'AgentAuth'
-		});
-	}
-
+    var service = '/Services/ChatService.asmx/';
+    var pusher = new Pusher(pusherKey, {
+        authEndpoint: service + 'AgentAuth', auth: {
+            params: {
+                chatID: chatID
+            }
+        }
+    });
     channel = pusher.subscribe(channelName);
 
     channel.bind('pusher:member_removed', function (member) {
@@ -215,14 +214,8 @@ function doneTyping() {
 }
 
 function subscribeToNewChatRequest(pusherKey, newRequestCallback) {
-	var chatGUID = top.Ts.System.Organization.ChatID;
-
-	if (parent.pusherChatRequests == null || parent.pusherChatRequests.connection.state == 'disconnected') {
-		pusherRequestChannel_AgentPage = new Pusher(pusherKey);
-	} else {
-		pusherRequestChannel_AgentPage = parent.pusherChatRequests;
-	}
-    
+    var chatGUID = top.Ts.System.Organization.ChatID;
+    pusherRequestChannel_AgentPage = new Pusher(pusherKey);
     var request_channel = pusherRequestChannel_AgentPage.subscribe('chat-requests-' + chatGUID);
 
     request_channel.bind('new-chat-request', function (data) {
