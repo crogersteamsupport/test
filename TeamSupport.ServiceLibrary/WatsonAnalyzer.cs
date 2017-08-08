@@ -29,6 +29,7 @@ public class WatsonAnalyzer
     static public void GetAction()
     {
 
+        //EventLog.WriteEntry(EVENT_SOURCE, "GetAction");
 
         try
         {
@@ -62,6 +63,7 @@ public class WatsonAnalyzer
                         //Calls the Watson Post function
                         String Username = ConfigurationManager.AppSettings.Get("WatsonUsername");
                         String Password = ConfigurationManager.AppSettings.Get("WatsonPassword");
+                        //EventLog.WriteEntry(EVENT_SOURCE, "Posting to Watson");
                         if (reader["ActionDescription"].ToString().Length >= 500)
                         {
 
@@ -93,7 +95,7 @@ public class WatsonAnalyzer
 
     }
 
-    static void MakeSqlRequest(String CommandText1, String CommandText2, String AverageText1, String AverageText2, String AverageText3, String AverageText4, String ActionID, String SentimentID, String SentimentScore, Action<String> callback)
+    static void MakeSqlRequest(String CommandText1, String CommandText2, String AverageText1, String AverageText2, String AverageText3, String ActionID, String SentimentID, String SentimentScore, Action<String> callback)
     {
         try
         {
@@ -116,7 +118,6 @@ public class WatsonAnalyzer
                         {
                             CommandText2 += result.ToString() + "," + SentimentID + "," + SentimentScore + ")";
                             cmd.CommandText = CommandText2;
-//EventLog.WriteEntry("Application", "SQL:" + cmd.CommandText);
                             cmd.ExecuteNonQuery();
                         }
                     }
@@ -127,10 +128,7 @@ public class WatsonAnalyzer
                         cmd.CommandText = AverageText2;
                         cmd.ExecuteNonQuery();
                         cmd.CommandText = AverageText3;
-                        cmd.ExecuteNonQuery();
-                        cmd.CommandText = AverageText4;
-                        cmd.ExecuteNonQuery();
-
+                        cmd.ExecuteNonQuery(); 
                     }
                     sqlConnection2.Close();
                 }
@@ -139,8 +137,8 @@ public class WatsonAnalyzer
         }
         catch (Exception Y)
         {
-            EventLog.WriteEntry("Application", "Error while making a SQL Request:" + Y.ToString() + " ----- STACK: " + Y.StackTrace.ToString());
-            Console.WriteLine("Error while making a SQL Request:" + Y.ToString());
+            EventLog.WriteEntry("Application", String.Format("SQL : {0}  :  {1}  : {2}  : {3}", AverageText1, AverageText2, AverageText3));
+            EventLog.WriteEntry("Application", "Error while making a SQL Request:" + Y.ToString() + " ----- STACK: " + Y.StackTrace.ToString()); 
         }
 
     }
@@ -166,7 +164,7 @@ public class WatsonAnalyzer
         }
         catch (Exception Y)
         {
-            EventLog.WriteEntry("Application", "Error while making a SQL Delete:" + Y.ToString() + " ----- STACK: " + Y.StackTrace.ToString());
+            EventLog.WriteEntry("Application", "Error while making a SQL call :" + Y.ToString() + " ----- STACK: " + Y.StackTrace.ToString());
         }
 
     }
@@ -207,22 +205,50 @@ public class WatsonAnalyzer
                         if (!ToneList.Any())
                         {
 
-                            StringBuilder SB1 = new StringBuilder();
-                            SB1.Append(" IF NOT EXISTS (SELECT TOP 1 [TicketID] FROM [ActionSentiments] WHERE [ActionID] =" + result.ActionID + " AND [TicketID] =" + TicketID + " AND [OrganizationID]=" + OrganizationID + "  AND [UserID]=" + UserID + " ) BEGIN ");
-                            SB1.Append("INSERT INTO[dbo].[ActionSentiments]([ActionID],[TicketID],[UserID],[OrganizationID],[IsAgent],[DateCreated]) VALUES(" + result.ActionID + "," + TicketID + "," + UserID + "," + OrganizationID + "," + IsAgent + ",GETDATE() )");
-                            SB1.Append(" END ");
-
-                            String CommandText1 = SB1.ToString();
-                           // Console.WriteLine(CommandText1.ToString());
+                            String CommandText1 = "INSERT INTO[dbo].[ActionSentiments]([ActionID],[TicketID],[UserID],[OrganizationID],[IsAgent],[DateCreated]) VALUES(" + result.ActionID + "," + TicketID + "," + UserID + "," + OrganizationID + "," + IsAgent + ",GETDATE() )";
+                            Console.WriteLine(CommandText1.ToString());
                             String CommandText2 = "INSERT INTO [dbo].[ActionSentimentScores]([ActionSentimentID], [SentimentID], [SentimentScore] ) VALUES(";
                             String DeleteText = "DELETE  FROM [dbo].[ActionToAnalyze] WHERE ActionID =";
-                            String AverageCommandText1 = null;
-                            String AverageCommandText2 = null;
-                            String AverageCommandText3 = null;
-                            String AverageCommandText4 = null;
+                            String SentimentID = "0";
+                            String Score = "0";
+                            StringBuilder SB1 = new StringBuilder();
 
+                            SB1.Append(" IF EXISTS (SELECT[TicketID] FROM [TicketAverageSentiment] WHERE[TicketID] =" + TicketID + " AND [SentimentID]=" + SentimentID + " ) BEGIN ");
+                            SB1.Append("UPDATE [TicketAverageSentiment] SET [RecordCount] = [RecordCount] +1, [SentimentScore] = (SELECT((([SentimentScore] * [RecordCount]) +" + Score + ") / ([RecordCount] + 1))  AS Total FROM[TicketAverageSentiment] WHERE[TicketID] =" + TicketID + "AND [SentimentID] =" + SentimentID + ") WHERE [TicketID] =" + TicketID);
+                            SB1.Append(" END ELSE BEGIN INSERT INTO[dbo].[TicketAverageSentiment]  ([TicketID], [SentimentID], [SentimentScore], [RecordCount]) VALUES(" + TicketID + "," + SentimentID + "," + Score + ",1) END");
 
-                            MakeSqlRequest(CommandText1, CommandText2, AverageCommandText1, AverageCommandText2, AverageCommandText3, AverageCommandText4, result.ActionID, "0", "0", (action) => MakeSqlDelete(DeleteText + action));
+                            String AverageCommandText1 = SB1.ToString();
+                            SB1.Clear();
+
+                            String AverageCommandText2 = string.Empty;
+                            if (IsAgent == "0")
+                            {
+                                SB1.Append("IF EXISTS (SELECT[UserID] FROM [CustomerAverageSentiment] WHERE[UserID] =" + UserID + " AND [SentimentID]=" + SentimentID + " ) BEGIN ");
+                                SB1.Append("UPDATE [CustomerAverageSentiment] SET [RecordCount] = [RecordCount] +1, [SentimentScore] = (SELECT((([SentimentScore] * [RecordCount]) +" + Score + ") / ([RecordCount] + 1))  AS Total FROM[CustomerAverageSentiment] WHERE[UserID] =" + UserID + "AND [SentimentID] =" + SentimentID + ") WHERE [UserID] =" + UserID);
+                                SB1.Append(" END ELSE BEGIN INSERT INTO[dbo].[CustomerAverageSentiment]  ([UserID], [SentimentID], [SentimentScore], [RecordCount]) VALUES(" + UserID + "," + SentimentID + "," + Score + ",1) END");
+
+                                AverageCommandText2 = SB1.ToString();
+                                SB1.Clear();
+                            }
+                            else
+                            {
+                                SB1.Append("IF EXISTS (SELECT[UserID] FROM [AgentAverageSentiment] WHERE[UserID] =" + UserID + " AND [SentimentID]=" + SentimentID + " ) BEGIN ");
+                                SB1.Append("UPDATE [AgentAverageSentiment] SET [RecordCount] = [RecordCount] +1, [SentimentScore] = (SELECT((([SentimentScore] * [RecordCount]) +" + Score + ") / ([RecordCount] + 1))  AS Total FROM[AgentAverageSentiment] WHERE[UserID] =" + UserID + "AND [SentimentID] =" + SentimentID + ") WHERE [UserID] =" + UserID);
+                                SB1.Append(" END ELSE BEGIN INSERT INTO[dbo].[AgentAverageSentiment]  ([UserID], [SentimentID], [SentimentScore], [RecordCount]) VALUES(" + UserID + "," + SentimentID + "," + Score + ",1) END");
+
+                                AverageCommandText2 = SB1.ToString();
+                                SB1.Clear();
+                            }
+
+                            SB1.Append("IF EXISTS (SELECT[OrganizationID] FROM [OrganizationsAverageSentiment] WHERE[OrganizationID] =" + OrganizationID + " AND [SentimentID]=" + SentimentID + " ) BEGIN ");
+                            SB1.Append("UPDATE [OrganizationsAverageSentiment] SET [RecordCount] = [RecordCount] +1, [SentimentScore] = (SELECT((([SentimentScore] * [RecordCount]) +" + Score + ") / ([RecordCount] + 1))  AS Total FROM[OrganizationsAverageSentiment] WHERE[OrganizationID] =" + OrganizationID + "AND [SentimentID] =" + SentimentID + ") WHERE [OrganizationID] =" + OrganizationID);
+                            SB1.Append(" END ELSE BEGIN INSERT INTO[dbo].[OrganizationsAverageSentiment]  ([OrganizationID], [SentimentID], [SentimentScore], [RecordCount]) VALUES(" + OrganizationID + "," + SentimentID + "," + Score + ",1) END");
+
+                            String AverageCommandText3 = SB1.ToString();
+                            SB1.Clear();
+
+                            MakeSqlRequest(CommandText1, CommandText2, AverageCommandText1, AverageCommandText2, AverageCommandText3, result.ActionID, SentimentID.ToString(), Score, (action) => MakeSqlDelete(DeleteText + action));
+
                         }
                         else
                         {
@@ -251,28 +277,34 @@ public class WatsonAnalyzer
                                 String AverageCommandText1 = SB1.ToString();
                                 SB1.Clear();
 
-                                SB1.Append("IF EXISTS (SELECT TOP 1 [UserID] FROM [CustomerAverageSentiment] WHERE[UserID] =" + UserID + " AND [SentimentID]=" + SentimentID + " ) BEGIN ");
-                                SB1.Append("UPDATE [CustomerAverageSentiment] SET [RecordCount] = [RecordCount] +1, [SentimentScore] = (SELECT((([SentimentScore] * [RecordCount]) +" + item.score + ") / ([RecordCount] + 1))  AS Total FROM[CustomerAverageSentiment] WHERE   [UserID] =" + UserID + "AND [SentimentID] =" + SentimentID + ") WHERE [UserID] =" + UserID + "AND [SentimentID] =" + SentimentID);
-                                SB1.Append(" END ELSE BEGIN INSERT INTO[dbo].[CustomerAverageSentiment]  ([UserID], [SentimentID], [SentimentScore], [RecordCount]) VALUES(" + UserID + "," + SentimentID + "," + item.score + ",1) END");
+                                String AverageCommandText2 = string.Empty;
+                                if (IsAgent == "0")
+                                {
+                                    SB1.Append("IF EXISTS (SELECT TOP 1 [UserID] FROM [CustomerAverageSentiment] WHERE[UserID] =" + UserID + " AND [SentimentID]=" + SentimentID + " ) BEGIN ");
+                                    SB1.Append("UPDATE [CustomerAverageSentiment] SET [RecordCount] = [RecordCount] +1, [SentimentScore] = (SELECT((([SentimentScore] * [RecordCount]) +" + item.score + ") / ([RecordCount] + 1))  AS Total FROM[CustomerAverageSentiment] WHERE   [UserID] =" + UserID + "AND [SentimentID] =" + SentimentID + ") WHERE [UserID] =" + UserID + "AND [SentimentID] =" + SentimentID);
+                                    SB1.Append(" END ELSE BEGIN INSERT INTO[dbo].[CustomerAverageSentiment]  ([UserID], [SentimentID], [SentimentScore], [RecordCount]) VALUES(" + UserID + "," + SentimentID + "," + item.score + ",1) END");
 
-                                String AverageCommandText2 = SB1.ToString();
-                                SB1.Clear();
+                                    AverageCommandText2 = SB1.ToString();
+                                    SB1.Clear();
+                                }
+                                else
+                                {
+                                    SB1.Append("IF EXISTS (SELECT TOP 1 [UserID] FROM [AgentAverageSentiment] WHERE[UserID] =" + UserID + " AND [SentimentID]=" + SentimentID + " ) BEGIN ");
+                                    SB1.Append("UPDATE [AgentAverageSentiment] SET [RecordCount] = [RecordCount] +1, [SentimentScore] = (SELECT((([SentimentScore] * [RecordCount]) +" + item.score + ") / ([RecordCount] + 1))  AS Total FROM[AgentAverageSentiment] WHERE   [UserID] =" + UserID + "AND [SentimentID] =" + SentimentID + ") WHERE [UserID] =" + UserID + "AND [SentimentID] =" + SentimentID);
+                                    SB1.Append(" END ELSE BEGIN INSERT INTO[dbo].[AgentAverageSentiment]  ([UserID], [SentimentID], [SentimentScore], [RecordCount]) VALUES(" + UserID + "," + SentimentID + "," + item.score + ",1) END");
 
-                                SB1.Append("IF EXISTS (SELECT TOP 1 [UserID] FROM [AgentAverageSentiment] WHERE[UserID] =" + UserID + " AND [SentimentID]=" + SentimentID + " ) BEGIN ");
-                                SB1.Append("UPDATE [AgentAverageSentiment] SET [RecordCount] = [RecordCount] +1, [SentimentScore] = (SELECT((([SentimentScore] * [RecordCount]) +" + item.score + ") / ([RecordCount] + 1))  AS Total FROM[AgentAverageSentiment] WHERE   [UserID] =" + UserID + "AND [SentimentID] =" + SentimentID + ") WHERE [UserID] =" + UserID + "AND [SentimentID] =" + SentimentID);
-                                SB1.Append(" END ELSE BEGIN INSERT INTO[dbo].[AgentAverageSentiment]  ([UserID], [SentimentID], [SentimentScore], [RecordCount]) VALUES(" + UserID + "," + SentimentID + "," + item.score + ",1) END");
-
-                                String AverageCommandText3 = SB1.ToString();
-                                SB1.Clear();
+                                    AverageCommandText2 = SB1.ToString();
+                                    SB1.Clear();
+                                }
 
                                 SB1.Append("IF EXISTS (SELECT TOP 1 [OrganizationID] FROM [OrganizationsAverageSentiment] WHERE[OrganizationID] =" + OrganizationID + " AND [SentimentID]=" + SentimentID + " ) BEGIN ");
                                 SB1.Append("UPDATE [OrganizationsAverageSentiment] SET [RecordCount] = [RecordCount] +1, [SentimentScore] = (SELECT((([SentimentScore] * [RecordCount]) +" + item.score + ") / ([RecordCount] + 1))  AS Total FROM[OrganizationsAverageSentiment] WHERE  [OrganizationID] =" + OrganizationID + "AND [SentimentID] =" + SentimentID + ") WHERE [OrganizationID] =" + OrganizationID + "AND [SentimentID] =" + SentimentID );
                                 SB1.Append(" END ELSE BEGIN INSERT INTO[dbo].[OrganizationsAverageSentiment]  ([OrganizationID], [SentimentID], [SentimentScore], [RecordCount]) VALUES(" + OrganizationID + "," + SentimentID + "," + item.score + ",1) END");
 
-                                String AverageCommandText4 = SB1.ToString();
+                                String AverageCommandText3 = SB1.ToString();
                                 SB1.Clear();
 
-                                MakeSqlRequest(CommandText1, CommandText2, AverageCommandText1, AverageCommandText2, AverageCommandText3, AverageCommandText4, result.ActionID, SentimentID.ToString(), item.score.ToString(), (action) => MakeSqlDelete(DeleteText + action));
+                                MakeSqlRequest(CommandText1, CommandText2, AverageCommandText1, AverageCommandText2, AverageCommandText3, result.ActionID, SentimentID.ToString(), item.score.ToString(), (action) => MakeSqlDelete(DeleteText + action));
                             }
                         }
                     }
