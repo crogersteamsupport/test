@@ -411,7 +411,7 @@ button.ticket-option {
     right:100px;
     display:none;
     text-indent:-9999px;
-    background:url('../Images/icons/icon_top.png') no-repeat;
+    background:url('/Resources/Images/icons/icon_top.png') no-repeat;
     border-color:#EEEEEE;
     outline-style:none !important;
     z-index:100;
@@ -667,7 +667,7 @@ div.ticket-badge > div > a:focus {
     width:16px;
     height:16px;
     float:left;
-    background-image:url('../Images/icons/attachment.png');
+    background-image:url('/Resources/Images/icons/attachment.png');
     cursor:pointer;
 }
 .addticket {
@@ -675,7 +675,7 @@ div.ticket-badge > div > a:focus {
     width:16px;
     height:16px;
     float:left;
-    background-image:url('../Images/nav/16/Tickets.png');
+    background-image:url('/Resources/Images/nav/16/Tickets.png');
     cursor:pointer;
 }
 .addgroup {
@@ -683,7 +683,7 @@ div.ticket-badge > div > a:focus {
     width:16px;
     height:16px;
     float:left;
-    background-image:url('../Images/nav/16/Groups.png');
+    background-image:url('/Resources/Images/nav/16/Groups.png');
     cursor:pointer;
 }
 .addcustomer {
@@ -691,7 +691,7 @@ div.ticket-badge > div > a:focus {
     width:16px;
     height:16px;
     float:left;
-    background-image:url('../Images/nav/16/Customers.png');
+    background-image:url('/Resources/Images/nav/16/Customers.png');
     cursor:pointer;
 }
 .addproduct {
@@ -699,7 +699,7 @@ div.ticket-badge > div > a:focus {
     width:16px;
     height:16px;
     float:left;
-    background-image:url('../Images/nav/16/Products.png');
+    background-image:url('/Resources/Images/nav/16/Products.png');
     cursor:pointer;
 }
 .adduser {
@@ -707,7 +707,7 @@ div.ticket-badge > div > a:focus {
     width:16px;
     height:16px;
     float:left;
-    background-image:url('../Images/nav/16/Users.png');
+    background-image:url('/Resources/Images/nav/16/Users.png');
     cursor:pointer;
 }
 

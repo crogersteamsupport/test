@@ -59,10 +59,19 @@ Namespace TeamSupport
 					Dim maxCount As Integer = 100
 					Dim hubspotCompanies As Objects.Companies.RootObject = New Objects.Companies.RootObject()
 					Dim companySyncData As New List(Of CompanyData)()
+					Dim processCount As Integer = 0
 
 					Log.Write(String.Format("Get and process only Companies in the lifecycle ""Customer"""))
 
 					Do
+						processCount = processCount + 1
+
+						'Wait 1 sec. Found out that Hubspot allows only 10 calls per second. Error thrown before: "You have reached your secondly limit". So if we have made 10 calls wait 1 sec.
+						If (processCount > 10) Then
+							Threading.Thread.Sleep(1000)
+							processCount = 1
+						End If
+
 						hubspotCompanies = hubspotApi.GetAllRecentlyModified(count:=maxCount, offset:=offset)
 						offset = hubspotCompanies.offset
 
@@ -162,10 +171,19 @@ Namespace TeamSupport
 				Do
 					hubspotContacts = hubSpotApi.GetAllRecentlyModified(count:=maxCount, contactOffset:=contactOffset)
 					contactOffset = hubspotContacts.offset
+					Dim processCount As Integer = 0
 
 					If hubspotContacts.contacts IsNot Nothing AndAlso hubspotContacts.contacts.Count > 0 Then
 						For Each companyContact As Objects.Contacts.Contact In hubspotContacts.contacts
 							Try
+								processCount = processCount + 1
+
+								'Wait 1 sec. Found out that Hubspot allows only 10 calls per second. Error thrown before: "You have reached your secondly limit". So if we have made 10 calls wait 1 sec.
+								If (processCount > 10) Then
+									Threading.Thread.Sleep(1000)
+									processCount = 1
+								End If
+
 								Dim modifiedValue As Long = companyContact.properties.lastmodifieddate.value
 								Dim beginTicks As Long = New Date(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks
 								Dim modifiedDate As Date = New Date(beginTicks + modifiedValue * 10000)

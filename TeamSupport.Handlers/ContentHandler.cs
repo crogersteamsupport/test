@@ -96,6 +96,7 @@ namespace TeamSupport.Handlers
                         case "reports": ProcessReport(context, int.Parse(segments[1]), (context.Request["Type"] == null ? "old" : context.Request["Type"])); break;
                         case "ticketexport": ProcessTicketExport(context); break;
                         case "attachments": ProcessAttachment(context, segments[1]); break;
+                        case "updateservicehealth": ProcessUpdateServiceHealth(context, segments[1]); break;
                         default: context.Response.End(); break;
                     }
                 }
@@ -1537,6 +1538,16 @@ namespace TeamSupport.Handlers
             context.Response.AddHeader("Content-Disposition", openType + "; filename=\"" + attachment.FileName + "\"");
             context.Response.ContentType = fileType;
             context.Response.WriteFile(attachmentPath);
+        }
+
+
+        http://localhost/dc/updateservicehealth/TokTranscoder
+        private void ProcessUpdateServiceHealth(HttpContext context, string serviceName)
+        {
+            Services services = new Services(LoginUser.Anonymous);
+            Service service = Services.GetService(LoginUser.Anonymous, serviceName, false);
+            service.HealthTime = DateTime.Now;
+            service.Collection.Save();
         }
     }
 }

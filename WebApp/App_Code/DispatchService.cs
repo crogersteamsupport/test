@@ -484,28 +484,7 @@ namespace TSWebServices
             }
         }
 
-        [WebMethod]
-        public void UpdateTokTransCoderAlive()
-        {
-            Services services = new Services(LoginUser.Anonymous);
-            services.LoadByName("TokTranscoder");
-
-            if(services.Count == 0)
-            {
-                //add new service and update it
-                Service service = (new Services(loginUser)).AddNewService();
-                service.Name = "TokTranscoder";
-                service.Collection.Save();
-            }
-            else
-            {
-                services[0].HealthTime = DateTime.Now;
-                services[0].Collection.Save();
-            }
-            
-
-        }
-
+     
     }
 
     //public class TicketSocket : Hub
