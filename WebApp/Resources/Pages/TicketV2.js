@@ -894,7 +894,7 @@ function SetupActionEditor(elem, action) {
             }
             elem.parent().fadeIn('normal');
 
-            $('.frame-container').animate({
+            $('.ticketpage').animate({
                 scrollTop: 0
             }, 600);
         });
@@ -1206,7 +1206,7 @@ function SetupNewAction(elem, action) {
     }
     elem.parent().fadeIn('normal');
 
-    $('.frame-container').animate({
+    $('.ticketpage').animate({
         scrollTop: 0
     }, 600);
 }
@@ -4438,7 +4438,9 @@ function CreateActionElement(val, ShouldAppend) {
         try {
             $("#action-timeline").append(actionElement);
         }
-        catch (e) { }
+        catch (e) {
+            console.log('Unable to append action.');
+        }
     }
     else {
         if ($('.ticket-action.pinned').length) {
@@ -4928,7 +4930,7 @@ function CreateTimeLineDelegates() {
 
     });
 
-    $('.frame-container').bind('scroll', function () {
+    $('.ticketpage').bind('scroll', function () {
         if ($(this).scrollTop() > 100) {
             $('.scrollup').fadeIn();
         } else {
@@ -4947,7 +4949,7 @@ function CreateTimeLineDelegates() {
     });
 
     $('.scrollup').click(function () {
-        $('.frame-container').animate({
+        $('.ticketpage').animate({
             scrollTop: 0
         }, 600);
         return false;
