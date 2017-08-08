@@ -62,11 +62,24 @@ public class ActionsToAnalyzer
                                 {
                                     PostEntry(Description1, reader["ActionID"].ToString(), reader["TicketID"].ToString(), reader["CreatorID"].ToString(), reader["OrganizationID"].ToString(), reader["IsAgent"].ToString()); //posts entry to the actiontoanalyze table
                                 }
-                                //else
-                               // {
-                                //    EventLog.WriteEntry("Application", "Action Skipped - description too short: " + Description1);
-                               // }
-                                    //Console.WriteLine("After");
+                                else
+                                {
+
+                                    using (SqlConnection sqlConnection2 = new SqlConnection(ConnectionString))
+                                    {
+                                        using (SqlCommand cmd2 = new SqlCommand())
+                                        {
+                                            String CommandText1 = "INSERT INTO[dbo].[ActionSentiments]([ActionID],[TicketID],[UserID],[OrganizationID],[IsAgent],[DateCreated]) VALUES(" + reader["ActionID"].ToString() + ",0,0,0,0,GETDATE() )";
+
+                                            cmd2.CommandText = CommandText1;
+                                            cmd2.CommandType = CommandType.Text;
+                                            cmd2.Connection = sqlConnection2;
+                                            sqlConnection2.Open();
+                                            cmd2.ExecuteNonQuery();
+                                        }
+                                    }
+                                }
+
                             }
                             else
                             {
