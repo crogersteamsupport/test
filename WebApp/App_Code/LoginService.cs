@@ -148,7 +148,11 @@ namespace TSWebServices
 			if (logins.Count > 0 && logins[0].DateIssuedUtc.AddMinutes(10) > DateTime.UtcNow)
 			{
 				User user = Users.GetUser(LoginUser.Anonymous, logins[0].ContactID);
-				AuthenticateUser(user.UserID, user.OrganizationID, false, true);
+                Organization org = Organizations.GetOrganization(LoginUser.Anonymous, user.OrganizationID);
+                if (org.DisableSupportLogin == false)
+                {
+                    AuthenticateUser(user.UserID, user.OrganizationID, false, true);
+                }
 			}
 			return JsonConvert.SerializeObject("");
 			

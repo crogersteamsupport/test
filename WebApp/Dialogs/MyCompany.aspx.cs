@@ -186,6 +186,7 @@ public partial class Dialogs_Organization : BaseDialogPage
 	cbNoAttachmentsInOutboundEmail.Checked = organization.NoAttachmentsInOutboundEmail;
     cbRequireGroupAssignmentOnTickets.Checked = organization.RequireGroupAssignmentOnTickets;
     cbAlertContactNoEmail.Checked = organization.AlertContactNoEmail;
+        cbDisableSupport.Checked = !organization.DisableSupportLogin;
     textPWExpire.Value = organization.DaysBeforePasswordExpire;
 
     if (string.IsNullOrEmpty(organization.TimeZoneID))
@@ -284,6 +285,11 @@ public partial class Dialogs_Organization : BaseDialogPage
 	organization.NoAttachmentsInOutboundEmail = cbNoAttachmentsInOutboundEmail.Checked;
     organization.RequireGroupAssignmentOnTickets = cbRequireGroupAssignmentOnTickets.Checked;
     organization.AlertContactNoEmail = cbAlertContactNoEmail.Checked;
+        if (organization.DisableSupportLogin != !cbDisableSupport.Checked)
+        {
+            ActionLogs.AddActionLog(organization.Collection.LoginUser, ActionLogType.Update, ReferenceType.SystemSettings, organization.Collection.LoginUser.UserID, "Changed the 'Allow TeamSupport to log into your account for technical support' to: " + (cbDisableSupport.Checked).ToString());
+        }
+        organization.DisableSupportLogin = !cbDisableSupport.Checked;
     organization.DaysBeforePasswordExpire = (int)textPWExpire.Value;
 
     try

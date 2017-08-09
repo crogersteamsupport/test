@@ -155,6 +155,9 @@
 		<tr>
             <td class="labelColTD" colspan="4"><asp:CheckBox ID="cbAlertContactNoEmail" runat="server" Text="Warn if contact has no email address"/></td>
         </tr>
+		<tr>
+            <td class="labelColTD" colspan="4"><asp:CheckBox ID="cbDisableSupport" runat="server" Text="Allow TeamSupport to log into your account for technical support"/></td>
+        </tr>
           
 
           

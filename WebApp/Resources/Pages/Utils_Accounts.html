@@ -28,7 +28,7 @@
   <script language="javascript" type="text/javascript">
     $(document).ready(function () {
       $('.action-refresh').click(function (e) { e.preventDefault(); window.location = window.location; });
-
+      var supportLoginDisabled = false;
       var organizationID = -1;
       $('#inputOrg')
         .typeahead({ remote: { url: '/Services/OrganizationService.asmx/AdminQueryOrganizations?parentID=1&query=%QUERY'} })
@@ -57,6 +57,8 @@
           $('.org-props').empty();
           appendProperty('Organization ID', org.OrganizationID);
           appendProperty('Is Active', org.IsActive.toString());
+          supportLoginDisabled = org.DisableSupportLogin;
+          appendProperty('Is Support Login Disabled', org.DisableSupportLogin.toString());
           appendProperty('Date Created', org.DateCreated.toString());
           appendProperty('Inventory Enabled', '<a href="#" class="action-toggle-inventory">' + org.IsInventoryEnabled.toString() + '</a>');
           appendProperty('API Request Limit', org.APIRequestLimit);
@@ -64,6 +66,7 @@
           appendProperty('Engagement Score', '<span class="evergage-prop eng-score"><i class="fa fa-spinner fa-spin"></i></span>');
           appendProperty('Total Actions', '<span class="evergage-prop total-actions"><i class="fa fa-spinner fa-spin"></i></span>');
           appendProperty('Index Last Rebuilt', org.LastIndexRebuilt.toString());
+          
           top.Ts.Services.Organizations.AdminGetUserCount(orgID, function (count) {
             appendProperty('Active Users', count);
           });
@@ -157,18 +160,20 @@
             if (user.EnforceSingleSession == true) checkSession.prop('checked', true);
             row.append($('<td>').append(checkSession));
 
-            var div = $('<div>');
-            var link = $("<a>").attr("href", "#").addClass("getlink").text("Get Login").click(function (e) {
-            	e.preventDefault();
+            if (supportLoginDisabled === false) {
+                var div = $('<div>');
+                var link = $("<a>").attr("href", "#").addClass("getlink").text("Get Login").click(function (e) {
+                    e.preventDefault();
 
-            	top.Ts.Services.Users.AdminGetUserLogin(user.UserID, function (token) {
-            		link.parent().empty().text(top.Ts.System.AppDomain + "/Login.html?SupportToken=" + token);
-            	});
-            	
+                    top.Ts.Services.Users.AdminGetUserLogin(user.UserID, function (token) {
+                        link.parent().empty().text(top.Ts.System.AppDomain + "/Login.html?SupportToken=" + token);
+                    });
 
-            });
-            div.append(link);
-            row.append(div);
+
+                });
+                div.append(link);
+                row.append(div);
+            }
 
             row.data('o', user);
 
