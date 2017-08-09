@@ -76,9 +76,9 @@ div.flexbox       { display:flex;display:-webkit-flex; }
 div.flexrow       { flex-direction:row; }
 div.flexcolumn    { flex-direction:column; }
 div.flexwrap      { flex-wrap:wrap;-webkit-flex-wrap:wrap; }
-div.flexalign     { justify-content:center; align-items:center; }
+div.flexalign     { align-items:center; }
 div.flexbox .flex { flex:auto;-webkit-flex:auto; }
-div.flexcell      { flex:1;-webkit-flex:1;flex-basis: auto;flex-grow: 0; }
+div.flexcell      { flex:1;-webkit-flex:1;flex-basis:auto;flex-grow: 0; }
 div.flex1         { flex:1;-webkit-flex:1; }
 div.flex2         { flex:2;-webkit-flex:2; }
 div.flex3         { flex:3;-webkit-flex:3; }
