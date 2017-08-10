@@ -27,7 +27,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
         	toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect styleselect | bold italic underline strikethrough blockquote codesample | code | table",
             statusbar: true,
             gecko_spellcheck: true,
-            extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type],table[class=table|border:1],iframe[src|width|height|frameborder|webkitallowfullscreen|mozallowfullscreen|allowfullscreen]",
+            extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type],table[class=table],iframe[src|width|height|frameborder|webkitallowfullscreen|mozallowfullscreen|allowfullscreen]",
             content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
             //table_default_styles: {
             //    border: '1px solid black'
@@ -511,14 +511,14 @@ The following steps will refresh your browser<br><br> \
 
 var initScheduledReportEditor = function (element, init, postinit) {
     var editorOptions = {
-        plugins: "autoresize paste link code textcolor table codesample lists",
+        plugins: "paste link code textcolor image imagetools moxiemanager table lists codesample autoresize",
         toolbar1: "insertPasteImage insertTicket image insertDropBox insertUser | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
         toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect | bold italic underline strikethrough blockquote codesample | code | table",
         statusbar: false,
         gecko_spellcheck: true,
         extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type]",
-        content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css,Reports_Schedule.css",
-        body_class: "ui-widget ui-widget-content",
+        content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
+        //content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css,Reports_Schedule.css",
         convert_urls: true,
         autoresize_bottom_margin: 0,
         remove_script_host: false,

@@ -53,6 +53,18 @@ namespace TSWebServices
             if (info.Ticket.Name.ToLower() == "<no subject>")
                 info.Ticket.Name = "";
 
+            TicketTypes types = new TicketTypes(ticket.Collection.LoginUser);
+            types.LoadAllPositions(TSAuthentication.OrganizationID);
+
+            if (!types.Any(a => a.TicketTypeID == info.Ticket.TicketTypeID))
+            {
+                info.Ticket.TicketTypeID = types[0].TicketTypeID;
+                ticket.TicketTypeID = info.Ticket.TicketTypeID;
+                Ticket newticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
+                newticket.TicketTypeID = ticket.TicketTypeID;
+                newticket.Collection.Save();
+            }
+
             //check if outside resource change ticket type and to modify the status
             TicketStatuses statuses = new TicketStatuses(ticket.Collection.LoginUser);
             statuses.LoadAvailableTicketStatuses(info.Ticket.TicketTypeID, null);
@@ -60,9 +72,9 @@ namespace TSWebServices
             if (!statuses.Any(a => a.TicketStatusID == info.Ticket.TicketStatusID))
             {
                 info.Ticket.TicketStatusID = statuses[0].TicketStatusID;
+                ticket.TicketStatusID = info.Ticket.TicketStatusID;
                 Ticket newticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
                 newticket.TicketStatusID = ticket.TicketStatusID;
-                ticket.TicketStatusID = info.Ticket.TicketStatusID;
                 newticket.Collection.Save();
             }
 

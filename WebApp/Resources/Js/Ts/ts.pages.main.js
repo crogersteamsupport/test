@@ -765,15 +765,15 @@ Ts.Pages.Main.prototype = {
             }
         }
 
-        var pusher = null;
         var request_channel = null;
         function setupChatRequestUpdates() {
             top.Ts.Settings.System.read('PusherKey', '1', function (key) {
 				var chatGUID = top.Ts.System.Organization.ChatID;
+
 				if (pusherChatRequests == null || (pusherChatRequests != null && pusherChatRequests.connection.state == "disconnected")) {
 					pusherChatRequests = new Pusher(key);
 				}
-
+                
 				request_channel = pusherChatRequests.subscribe('chat-requests-' + chatGUID);
 
                 request_channel.bind('new-chat-request', function (data) {
