@@ -271,7 +271,12 @@ $(window).resize(function() {
 
 $(document).on('click','#toggleside', function() {
     // $('#ticket-properties-area').slideToggle();
-    $('#ticket-properties-area').hide("slide", { direction: "right" }, 1000);
+    if ($('#ticket-properties-area').is(':hidden')) {
+        $('#ticket-properties-area').show("slide", { direction: "right" }, 1000);
+    } else {
+        $('#ticket-properties-area').hide("slide", { direction: "right" }, 1000);
+    }
+
 });
 
 
