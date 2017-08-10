@@ -269,6 +269,10 @@ $(window).resize(function() {
   $("#screensize").text($(window).width());
 });
 
+$(document).on('click','#toggleside', function() {
+    // $('#ticket-properties-area').slideToggle();
+    $('#ticket-properties-area').hide("slide", { direction: "right" }, 1000);
+});
 
 
 $(document).ready(function () {
