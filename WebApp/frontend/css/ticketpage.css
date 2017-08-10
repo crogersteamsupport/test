@@ -6,9 +6,11 @@ textarea {
     background-color:transparent !important;
 }
 
-button.btn {
-    font-size:11px;
-    font-family: 'Roboto';
+.btn {
+    padding:5px 15px;
+    font-size:12px;
+    outline: none !important;
+    font-family:'Roboto';
 }
 
 div.frame-container {
@@ -49,26 +51,33 @@ div.frame-container {
     font-size:16px;
     margin-bottom:5px;
 }
+
+
+
+
+
+
 #action-add-public {
-    padding:3px 5px;
+    padding:5px 15px;
     font-size:11px;
     color:white;
     border-color:#4caf50;
     background-color:#4caf50;
 }
 #action-add-private {
-    padding:3px 5px;
+    padding:5px 15px;
     font-size:11px;
     color:white;
     border-color:#ff9800;
     background-color:#ff9800;
 }
 #action-add-wc {
-    padding:3px 5px;
+    padding:5px 15px;
     font-size:11px;
     color:white;
     border-color:#2c9ecf;
     background-color:#2c9ecf;
+    outline: none;
 }
 #ticket-assigned {
     background-color:rgba(255,255,255,0.5);
@@ -105,7 +114,6 @@ div.timeline-body img {
 .no-hover {
     background-color: inherit !important;
 }
-
 
 
 
