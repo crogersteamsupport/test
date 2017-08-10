@@ -184,14 +184,15 @@ public partial class Frames_AdminCompany : BaseFramePage
 	table.Rows.Add(new string[] { "How many days before user passwords expire:", organization.DaysBeforePasswordExpire.ToString() });
 	table.Rows.Add(new string[] { "Do not include attachments on outbound emails:", organization.NoAttachmentsInOutboundEmail.ToString() });
     table.Rows.Add(new string[] { "Warn if contact has no email address:", organization.AlertContactNoEmail.ToString() });
-        
+        table.Rows.Add(new string[] { "Allow TeamSupport to log into your account for technical support:", (!organization.DisableSupportLogin).ToString() });
 
 
 
 
 
 
-    rptProperties.DataSource = table;
+
+        rptProperties.DataSource = table;
     rptProperties.DataBind();
   }
 

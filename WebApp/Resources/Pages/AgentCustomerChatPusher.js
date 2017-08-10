@@ -12,7 +12,7 @@ function setupChat(pusherKey, chatID, newCommentCallback, callback) {
     siteUrl = arr[0] + "//" + arr[2];
 
     var channelName = 'presence-' + chatID;
-    var service = '/Services/ChatService.asmx/';
+	var service = '/Services/ChatService.asmx/';
 
 	if (pusher == null) {
 		pusher = new Pusher(pusherKey, {
@@ -215,7 +215,7 @@ function doneTyping() {
 }
 
 function subscribeToNewChatRequest(pusherKey, newRequestCallback) {
-    var chatGUID = top.Ts.System.Organization.ChatID;
+	var chatGUID = top.Ts.System.Organization.ChatID;
 
 	if (parent.pusherChatRequests == null || parent.pusherChatRequests.connection.state == 'disconnected') {
 		pusherRequestChannel_AgentPage = new Pusher(pusherKey);
