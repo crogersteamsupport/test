@@ -74,7 +74,7 @@ div.frame-container {
     background-color:rgba(255,255,255,0.5);
 }
 #ticket-properties-area {
-    padding-top:20px;
+    padding-top:10px;
     background-color:rgba(255,255,255,0.7);
 }
 #ticket-properties-area .form-group {
@@ -383,7 +383,7 @@ blockquote {
     width:16px;
     margin-right:5px;
     position:relative;
-    top:8px;
+    top:6px;
 }
 
 

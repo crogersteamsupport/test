@@ -265,6 +265,12 @@ $.fn.autoGrow = function () {
 
 // $("input[type=text], textarea").autoGrow();
 
+$(window).resize(function() {
+  $("#screensize").text($(window).width());
+});
+
+
+
 $(document).ready(function () {
     _ticketNumber = window.parent.Ts.Utils.getQueryValue("TicketNumber", window);
 
