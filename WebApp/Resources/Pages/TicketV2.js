@@ -286,7 +286,7 @@ $(document).ready(function () {
         if (distance > 20) {
             $('#ticketmenu-container').css('background-color','#f4f6f8').css('box-shadow','0px 2px 0px rgba(0,0,0,0.1)').css('position','fixed').css('top','0px').css('z-index','1000').css('width',$('#ticketpane').width());
         } else {
-            $('#ticketmenu-container').css('background-color','').css('box-shadow','').css('position','static').css('top','');
+            $('#ticketmenu-container').css('background-color','').css('box-shadow','').css('position','static').css('top','').css('z-index','');
         }
     });
 
