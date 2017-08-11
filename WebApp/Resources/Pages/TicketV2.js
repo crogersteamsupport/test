@@ -266,21 +266,34 @@ $.fn.autoGrow = function () {
 // $("input[type=text], textarea").autoGrow();
 
 $(window).resize(function() {
-  $("#screensize").text($(window).width());
+      $("#position").text($('#ticketpane').width());
 });
 
 $(document).on('click','#toggleside', function() {
-    // $('#ticket-properties-area').slideToggle();
     if ($('#ticket-properties-area').is(':hidden')) {
         $('#ticket-properties-area').show("slide", { direction: "right" }, 1000);
     } else {
         $('#ticket-properties-area').hide("slide", { direction: "right" }, 1000);
     }
-
 });
 
 
 $(document).ready(function () {
+
+    $('#ticketpage').on('scroll', function(e) {
+        var distance = $('#ticketpage').scrollTop();
+        $("#position").text(distance);
+        if (distance > 20) {
+            $('#ticketmenu-container').css('background-color','#f4f6f8').css('box-shadow','0px 2px 0px rgba(0,0,0,0.1)').css('position','fixed').css('top','0px').css('z-index','1000').css('width',$('#ticketpane').width());
+        } else {
+            $('#ticketmenu-container').css('background-color','').css('box-shadow','').css('position','static').css('top','');
+        }
+    });
+
+
+
+
+
     _ticketNumber = window.parent.Ts.Utils.getQueryValue("TicketNumber", window);
 
     apiKey = "45228242";
