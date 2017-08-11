@@ -272,8 +272,10 @@ $(window).resize(function() {
 $(document).on('click','#toggleside', function() {
     if ($('#ticket-properties-area').is(':hidden')) {
         $('#ticket-properties-area').show("slide", { direction: "right" }, 1000);
+        $('#ticketinfo').css('position','absolute');
     } else {
         $('#ticket-properties-area').hide("slide", { direction: "right" }, 1000);
+        $('#ticketinfo').css('position','fixed');
     }
 });
 
