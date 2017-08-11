@@ -272,10 +272,10 @@ $(window).resize(function() {
 $(document).on('click','#toggleside', function() {
     if ($('#ticket-properties-area').is(':hidden')) {
         $('#ticket-properties-area').show("slide", { direction: "right" }, 1000);
-        $('#ticketinfo').css('position','absolute');
+        $('#ticketinfo').css('position','absolute').css('right','15px');
     } else {
         $('#ticket-properties-area').hide("slide", { direction: "right" }, 1000);
-        $('#ticketinfo').css('position','fixed');
+        $('#ticketinfo').css('position','fixed').css('right','30px');
     }
 });
 
@@ -286,9 +286,9 @@ $(document).ready(function () {
         var distance = $('#ticketpage').scrollTop();
         $("#position").text(distance);
         if (distance > 20) {
-            $('#ticketmenu-container').fadeTo(2000).css('background-color','#f4f6f8').css('box-shadow','0px 2px 0px rgba(0,0,0,0.1)').css('position','fixed').css('top','0px').css('z-index','1000').css('width',$('#ticketpane').width());
+            $('#ticketmenu-container').css('background-color','#f4f6f8').css('box-shadow','0px 2px 0px rgba(0,0,0,0.1)').css('position','fixed').css('top','0px').css('z-index','1000').css('width',$('#ticketpane').width());
         } else {
-            $('#ticketmenu-container').fadeTo(2000).css('background-color','').css('box-shadow','').css('position','static').css('top','').css('z-index','').css('width','');
+            $('#ticketmenu-container').css('background-color','').css('box-shadow','').css('position','static').css('top','').css('z-index','').css('width','');
         }
     });
 
