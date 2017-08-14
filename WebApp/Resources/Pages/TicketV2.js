@@ -291,10 +291,6 @@ $(document).ready(function () {
         }
     });
 
-
-
-
-
     _ticketNumber = window.parent.Ts.Utils.getQueryValue("TicketNumber", window);
 
     apiKey = "45228242";
@@ -342,6 +338,9 @@ $(document).ready(function () {
           });
       }
   });
+
+    watson(_ticketNumber);
+
 });
 
 var loadTicket = function (ticketNumber, refresh) {
@@ -409,11 +408,10 @@ var loadTicket = function (ticketNumber, refresh) {
         SetupTFSFieldValues();
         LoadGroups();
         LoadPlugins(info);
+
         if (typeof refresh === "undefined") {
             window.parent.Ts.Services.Dispatch.getTicketViewing(_ticketNumber);
         }
-
-
 
     });
 };
@@ -629,7 +627,7 @@ function SetupToolTips() {
 };
 
 function CreateNewActionLI() {
-    // var _compiledNewActionTemplate = Handlebars.compile($("#new-action-template").html());
+
     var _compiledNewActionTemplate = Handlebars.templates['newaction'];
     var html = _compiledNewActionTemplate({ OrganizationID: window.parent.Ts.System.User.OrganizationID, UserID: window.parent.Ts.System.User.UserID });
     $("#action-timeline").append(html);
@@ -4412,8 +4410,6 @@ function FetchTimeLineItems(start) {
             $('.results-loading').hide();
             $('.results-done').show();
         } else {
-            //compile action template
-            // _compiledActionTemplate = Handlebars.compile($("#action-template").html());
             _compiledActionTemplate = Handlebars.templates['action'];
 
             //create first timeline date marker if needed
@@ -4497,6 +4493,7 @@ function UpdateActionElement(val) {
 };
 
 function CreateHandleBarHelpers() {
+
     Handlebars.registerHelper('WaterCoolerRelationships', function () {
         if (this.WatercoolerReferences)
             return BuildWaterCoolerAssociationToolTip(this.WatercoolerReferences);
@@ -4504,12 +4501,12 @@ function CreateHandleBarHelpers() {
             return "";
     });
 
-  Handlebars.registerHelper('UserImageTag', function () {
-  	if (this.item.CreatorID > 0) {
-  		return '<img class="user-avatar pull-left" src="/dc/' + this.item.OrganizationID + '/UserAvatar/' + this.item.CreatorID + '/120/' + new Date().getTime() + '" />';
-  	}
-  	else return "";
-  });
+    Handlebars.registerHelper('UserImageTag', function () {
+      	if (this.item.CreatorID > 0) {
+  	    	return '<img class="user-avatar pull-left" src="/dc/' + this.item.OrganizationID + '/UserAvatar/' + this.item.CreatorID + '/120/' + new Date().getTime() + '" />';
+  	    }
+  	    else return "";
+    });
 
     Handlebars.registerHelper('FormatDateTime', function (Date) {
         return Date.localeFormat(window.parent.Ts.Utils.getDateTimePattern())
@@ -4527,12 +4524,16 @@ function CreateHandleBarHelpers() {
         }
     });
 
+
+
+
+
     Handlebars.registerHelper('Applause', function () {
         if (this.item.IsWC) { return; }
         var ticketID = this.item.TicketID;
         var actionID = this.item.RefID;
-        var display = (this.item.OrganizationID === window.parent.Ts.System.User.OrganizationID && !this.item.IsWC) ? 'inline' : 'none';
-        var output = window.parent.Ts.Services.TicketPage.PullReactions(ticketID, actionID, function (result) {
+        var display  = (this.item.OrganizationID === window.parent.Ts.System.User.OrganizationID && !this.item.IsWC) ? 'inline' : 'none';
+        var output   = window.parent.Ts.Services.TicketPage.PullReactions(ticketID, actionID, function (result) {
             if (result != 'negative' && result != 'nothing' && result != 'hidden') {
                 var data = jQuery.parseJSON(result);
                 var tally = data[0].reactions[0].tally;
@@ -6023,3 +6024,15 @@ var SetSolved = function (ResolvedID) {
         else selectize.clear(true);
     }
 };
+
+
+
+
+
+function watson (ticketid) {
+    console.log('Watson: ' + ticketid);
+    var output = window.parent.Ts.Services.TicketPage.Watson(ticketid, function (result) {
+        console.log(result);
+        $('#watson').text(result);
+    });
+}

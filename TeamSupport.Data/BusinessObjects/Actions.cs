@@ -812,5 +812,47 @@ WHERE a.SalesForceID = @SalesForceID";
                 return "negative";
             }
         }
+
+        public static string WatsonPullTicket (LoginUser loginUser, int ticketID)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+                {
+                    using (SqlCommand command = new SqlCommand())
+                    {
+                        command.Connection = connection;
+                        command.CommandType = CommandType.Text;
+                        command.CommandText = "SELECT * FROM dbo.TicketAverageSentiment WHERE TicketID = @TicketID FOR JSON PATH, ROOT('watson')";
+                        command.Parameters.AddWithValue("@TicketID", ticketID);
+                        connection.Open();
+                        SqlDataReader reader = command.ExecuteReader();
+                        if (reader.HasRows && reader.Read())
+                        {
+                            return reader.GetValue(0).ToString();
+                        }
+                        else
+                        {
+                            return "nothing 1.1:" + ticketID;
+                        }
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                return "negative 1.2";
+            }
+            catch (Exception e)
+            {
+                return "negative 1.3";
+            }
+        }
+
+
+
+
     }
 }
+
+
+
