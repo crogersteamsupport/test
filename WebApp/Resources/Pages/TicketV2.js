@@ -6036,12 +6036,16 @@ var SetSolved = function (ResolvedID) {
 function watson (ticketnumber) {
     console.log('Pull Watson for ticket number: ' + ticketnumber);
 
-    var sentiments = ['1':'Sad', '2':'Frustrated', '3':'Satisfied', '4':'Excited', ]
+    var sentiments = ['1':'Sad', '2':'Frustrated', '3':'Satisfied', '4':'Excited', '5':'polite', '6':'impolite', '7': 'sympathetic']
 
     window.parent.Ts.Services.Tickets.GetTicketInfo(ticketnumber, function (info) {
         var ticketid = info.Ticket.TicketID;
 
         window.parent.Ts.Services.TicketPage.Watson(ticketid, function (result) {
+            if (result != 'negative' && result != 'nothing' && result != 'hidden') {
+                var data = jQuery.parseJSON(result);
+            }
+
             console.log(result);
             $('#watson').text(result);
         });
