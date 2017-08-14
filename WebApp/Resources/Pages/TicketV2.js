@@ -820,8 +820,6 @@ function CreateNewActionLI() {
                 return;
             }
         });
-
-        //$(this).parent().dropdown('toggle');
     });
 
     $('#action-timeline').on('click', '.remove-attachment', function (e) {
@@ -862,6 +860,12 @@ function CreateNewActionLI() {
     });
 
     $('#new-action-avatar').attr("src", $('#new-action-avatar').attr("src") + "/" + (new Date().getTime()).toString());
+
+
+
+
+
+
 };
 
 function DisableCreateBtns() {
@@ -6029,10 +6033,17 @@ var SetSolved = function (ResolvedID) {
 
 
 
-function watson (ticketid) {
-    console.log('Watson: ' + ticketid);
-    var output = window.parent.Ts.Services.TicketPage.Watson(ticketid, function (result) {
-        console.log(result);
-        $('#watson').text(result);
+function watson (ticketnumber) {
+    console.log('Pull Watson for ticket number: ' + ticketnumber);
+
+    var sentiments = ['1':'Sad', '2':'Frustrated', '3':'Satisfied', '4':'Excited', ]
+
+    window.parent.Ts.Services.Tickets.GetTicketInfo(ticketnumber, function (info) {
+        var ticketid = info.Ticket.TicketID;
+
+        window.parent.Ts.Services.TicketPage.Watson(ticketid, function (result) {
+            console.log(result);
+            $('#watson').text(result);
+        });
     });
 }
