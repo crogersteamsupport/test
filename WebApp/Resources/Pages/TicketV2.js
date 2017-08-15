@@ -266,7 +266,7 @@ $.fn.autoGrow = function () {
 // $("input[type=text], textarea").autoGrow();
 
 $(window).resize(function() {
-      $('#ticketmenu-container').css('width',$('#ticketpage').scrollWidth);
+      $('#ticketmenu-container').css('width',$('#ticketpage').width());
 });
 
 $(document).on('click','#toggleside', function() {
