@@ -3772,8 +3772,8 @@ var AddCustomFieldBool = function (field, parentContainer) {
     var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
 
     var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
-    var inputDiv = $('<div>').addClass('checkbox ticket-checkbox').appendTo(inputContainer);
-    var input = $('<input type="checkbox">').appendTo(inputDiv);
+    // var inputDiv = $('<div>').addClass('checkbox ticket-checkbox').appendTo(inputContainer);
+    var input = $('<input type="checkbox">').css('margin','5px').appendTo(inputContainer);
     var value = (field.Value === null || $.trim(field.Value) === '' || field.Value.toLowerCase() === 'false' || field.Value.toLowerCase() === '0' ? false : true);
     input.prop("checked", value);
 
