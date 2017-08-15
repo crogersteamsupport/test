@@ -4521,6 +4521,20 @@ function CreateHandleBarHelpers() {
     });
 
 
+    Handlebars.registerHelper('Watson', function () {
+        if (this.item.IsWC) { return; }
+        var ticketID = this.item.TicketID;
+        var actionID = this.item.RefID;
+
+        var output = window.parent.Ts.Services.TicketPage.WatsonAction(ticketID, actionID, function (result) {
+            console.log(result);
+            if (result != 'negative' && result != 'nothing' && result != 'hidden') {
+                var data = jQuery.parseJSON(result);
+            }
+        });
+
+        return 'test';
+    });
 
 
 
