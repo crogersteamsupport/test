@@ -6060,7 +6060,7 @@ function watson (ticketnumber) {
 function ticketmenu () {
     var width = $('#ticketpage').width();
     $('#ticketmenu-container').css('width',width);
-    if (width > 1100) {
+    if (width > 900) {
         $('#ticketmenu-actions-lg').show();
         $('#ticketmenu-actions-sm').hide();
     } else {

@@ -7,7 +7,7 @@ textarea {
 }
 
 .btn {
-    padding:5px 15px;
+    padding:5px 10px;
     font-size:12px;
     outline: none !important;
     font-family:'Roboto';
@@ -69,21 +69,21 @@ div.frame-container {
 
 
 #action-add-public {
-    padding:5px 15px;
+    padding:5px 10px;
     font-size:11px;
     color:white;
     border-color:#4caf50;
     background-color:#4caf50;
 }
 #action-add-private {
-    padding:5px 15px;
+    padding:5px 10px;
     font-size:11px;
     color:white;
     border-color:#ff9800;
     background-color:#ff9800;
 }
 #action-add-wc {
-    padding:5px 15px;
+    padding:5px 10px;
     font-size:11px;
     color:white;
     border-color:#2c9ecf;
