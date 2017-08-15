@@ -266,21 +266,21 @@ $.fn.autoGrow = function () {
 // $("input[type=text], textarea").autoGrow();
 
 $(window).resize(function() {
-      $('#ticketmenu-container').css('width',$('#ticketpage').width());
+    ticketmenu();
 });
 
 $(document).on('click','#toggleside', function() {
     if ($('#ticket-properties-area').is(':hidden')) {
         $('#ticket-properties-area').show("slide", { direction: "right" }, 1000);
-        // $('#ticketinfo').css('position','absolute').css('right','15px');
     } else {
         $('#ticket-properties-area').hide("slide", { direction: "right" }, 1000);
-        // $('#ticketinfo').css('position','fixed').css('right','30px');
     }
 });
 
 
 $(document).ready(function () {
+
+    ticketmenu();
 
     $('#ticketpage').on('scroll', function(e) {
         var distance = $('#ticketpage').scrollTop();
@@ -469,9 +469,6 @@ function SetupTicketPage() {
         }
     })
 
-    //if (window.parent.Ts.System.Organization.SetNewActionsVisibleToCustomers == false) {
-    //	$('#action-add-private').insertBefore('#action-add-public');
-    //}
 
     window.parent.Ts.Services.Customers.GetDateFormat(false, function (format) {
         dateFormat = format.replace("yyyy", "yy");
@@ -632,7 +629,8 @@ function CreateNewActionLI() {
     var html = _compiledNewActionTemplate({ OrganizationID: window.parent.Ts.System.User.OrganizationID, UserID: window.parent.Ts.System.User.UserID });
     $("#action-timeline").append(html);
 
-    $('#action-add-public').click(function (e) {
+    $('#action-add-public, #action-add-public-sm').click(function (e) {
+        console.log('here');
         e.preventDefault();
         e.stopPropagation();
         if ($(this).hasClass('click-disabled')) {
@@ -666,7 +664,7 @@ function CreateNewActionLI() {
         }
     });
 
-    $('#action-add-private').click(function (e) {
+    $('#action-add-private, #action-add-private-sm').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
         if ($(this).hasClass('click-disabled')) {
@@ -683,7 +681,7 @@ function CreateNewActionLI() {
         $('#action-save-alert').text('').hide();
     });
 
-    $('#action-add-wc').click(function (e) {
+    $('#action-add-wc, #action-add-wc-sm').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
         $('#newcomment').prop('disabled', false);
@@ -6055,4 +6053,17 @@ function watson (ticketnumber) {
             }
         });
     });
+}
+
+
+function ticketmenu () {
+    var width = $('#ticketpage').width();
+    $('#ticketmenu-container').css('width',width);
+    if (width > 1100) {
+        $('#ticketmenu-actions-lg').show();
+        $('#ticketmenu-actions-sm').hide();
+    } else {
+        $('#ticketmenu-actions-lg').hide();
+        $('#ticketmenu-actions-sm').show();
+    }
 }
