@@ -621,6 +621,7 @@ function SetupToolTips() {
     $('#Ticket-Queue').attr('data-original-title', (_ticketInfo.Ticket.IsEnqueued) ? 'Remove from your Ticket Queue' : 'Add to your Ticket Queue');
     $('#Ticket-Flag').attr('data-original-title', (_ticketInfo.Ticket.IsFlagged) ? 'UnFlag Ticket' : 'Flag Ticket');
     $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: '.ticket-toolbar-row', animation: false });
+    $('.btn-tooltip').tooltip({ placement: 'bottom', animation: false });
 };
 
 function CreateNewActionLI() {
