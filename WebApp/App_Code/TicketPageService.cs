@@ -947,7 +947,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string Watson (int ticketID) {
+        public string WatsonTicket (int ticketID) {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
 
             string json = Actions.WatsonPullTicket(loginUser, ticketID);
@@ -959,6 +959,22 @@ namespace TSWebServices
             }
         }
 
+        [WebMethod]
+        public string WatsonAction (int ticketID, int actionID)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+            string json = Actions.WatsonPullAction(loginUser, ticketID, actionID);
+
+            if (json != "nothing" && json != "negative")
+            {
+                return json;
+            }
+            else
+            {
+                return "negative 2.1";
+            }
+        }
 
         [WebMethod]
         public string PullReactions(int ticketID, int actionID)
