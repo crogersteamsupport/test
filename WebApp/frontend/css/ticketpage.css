@@ -61,7 +61,7 @@ div.frame-container {
 
 
 #ticketmenu-container {
-    background-color:#e4e6e8;
+    background-color:rgba(255,255,255,0.8);
     box-shadow: 0px 2px 0px rgba(0,0,0,0.1);
 }
 
@@ -116,6 +116,7 @@ div.frame-container {
 }
 
 div.timeline-body img {
+    width:100%;
     max-width:100% !important;
     height:auto;
 }

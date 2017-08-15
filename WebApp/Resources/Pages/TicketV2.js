@@ -282,14 +282,7 @@ $(document).ready(function () {
 
     ticketmenu();
 
-    $('#ticketpage').on('scroll', function(e) {
-        var distance = $('#ticketpage').scrollTop();
-        if (distance > 20) {
-            $('#ticketmenu-container').css('background-color','#f4f6f8').css('box-shadow','0px 2px 0px rgba(0,0,0,0.1)').css('width',$('#ticketpage').width());
-        } else {
-            $('#ticketmenu-container').css('background-color','').css('box-shadow','').css('width',$('#ticketpage').width());
-        }
-    });
+
 
     _ticketNumber = window.parent.Ts.Utils.getQueryValue("TicketNumber", window);
 
