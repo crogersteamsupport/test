@@ -4529,10 +4529,19 @@ function CreateHandleBarHelpers() {
             console.log(result);
             if (result != 'negative' && result != 'nothing' && result != 'hidden') {
                 var data = jQuery.parseJSON(result);
+                var sentiments = { 1:'Sad', 2:'Frustrated', 3:'Satisfied', 4:'Excited', 5:'Polite', 6:'Impolite', 7: 'Sympathetic' }
+                var display = [];
+                $.each(data.watson, function(key,sentiment) {
+                    if (sentiment.SentimentID > 0) {
+                        var emotion = sentiments[sentiment.SentimentID];
+                        var percent = Math.round(sentiment.SentimentScore * 100);
+                        display.push(emotion + ': ' + percent + '%');
+                    }
+                });
+                console.log(display.join());
+                return display.join(', ');
             }
         });
-
-        return '';
     });
 
     Handlebars.registerHelper('Applause', function () {
