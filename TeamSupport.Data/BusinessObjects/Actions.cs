@@ -874,18 +874,18 @@ WHERE a.SalesForceID = @SalesForceID";
                         }
                         else
                         {
-                            return "nothing 1.1:" + ticketID;
+                            return "nothing";
                         }
                     }
                 }
             }
             catch (SqlException e)
             {
-                return "negative 1.2" + e.Message;
+                return "negative";
             }
             catch (Exception e)
             {
-                return "negative 1.3";
+                return "negative";
             }
         }
 
