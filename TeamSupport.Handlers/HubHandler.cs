@@ -12,6 +12,7 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 using System.Net;
 using dtSearch.Engine;
+using System.Diagnostics;
 
 namespace TeamSupport.Handlers
 {
@@ -43,8 +44,18 @@ namespace TeamSupport.Handlers
             {
                 if (parentFlag)
                 {
-                    parentID = int.Parse(context.Request.Url.Segments[i].TrimEnd('/'));
+                    string parentSegment = context.Request.Url.Segments[i].TrimEnd('/').ToLower();
+                    if (parentSegment == "admin")
+                    {
+                        routeBuilder.Append(context.Request.Url.Segments[i]);
+                        parentID = -1;
+                    }
+                    else
+                    {
+                        parentID = int.Parse(parentSegment);
+                    }
                     routeFlag = true;
+
                 }
                 else if (routeFlag)
                 {
@@ -54,61 +65,79 @@ namespace TeamSupport.Handlers
             }
             string route = routeBuilder.ToString().ToLower().TrimEnd('/');
 
-            dynamic data = JObject.Parse(ReadJsonData(context));
-            Organization org = Organizations.GetOrganization(LoginUser.Anonymous, parentID);
+            string json = ReadJsonData(context);
+            dynamic data = string.IsNullOrWhiteSpace(json) ? null : JObject.Parse(json);
 
-            if (data["Token"].ToString() != org.WebServiceID.ToString())
+            if (parentID > -1)
             {
-                context.Response.ContentType = "text/plain";
-                context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                context.Response.ClearContent();
-                context.Response.End();
-                return;
+                Organization org = Organizations.GetOrganization(LoginUser.Anonymous, parentID);
+
+                if (data["Token"].ToString() != org.WebServiceID.ToString())
+                {
+                    context.Response.ContentType = "text/plain";
+                    context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                    context.Response.ClearContent();
+                    context.Response.End();
+                    return;
+                }
+
+                if (data["UserID"] != null)
+                {
+                    userID = (int)data["UserID"];
+                    if (userID == 0) userID = -1;
+                }
+                else userID = -1;
+
+                string searchTerm = data["q"];
+
+                //Route to the proper method, passing ParentID and UserID (if unauthenticated -1)
+                try
+                {
+                    ProcessSearch(context, route, parentID, userID, searchTerm);
+                }
+                catch (Exception ex)
+                {
+                    context.Response.ContentType = "text/html";
+                    context.Response.Write(ex.Message + "<br />" + ex.StackTrace);
+                }
+
             }
-
-            //if (data["UserID"] != null)
-            //{
-            //	userID = (int)data["UserID"];
-            //	User user = Users.GetUser(LoginUser.Anonymous, userID);
-            //	Organization customer = Organizations.GetOrganization(LoginUser.Anonymous, user.OrganizationID);
-            //	if (customer.ParentID != parentID)
-            //	{
-            //		context.Response.ContentType = "text/plain";
-            //		context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-            //		context.Response.ClearContent();
-            //		context.Response.End();
-            //	}
-            //}
-
-            if (data["UserID"] != null)
+            else
             {
-                userID = (int)data["UserID"];
-                if (userID == 0) userID = -1;
+                
+                try
+                {
+                    ProcessRoute(context, route, data);
+                }
+                catch (Exception ex)
+                {
+                    context.Response.ContentType = "text/html";
+                    context.Response.Write(ex.Message + "<br />" + ex.StackTrace);
+                }
             }
-            else userID = -1;
+            
 
-            string searchTerm = data["q"];
 
-            //Route to the proper method, passing ParentID and UserID (if unauthenticated -1)
-            try
-            {
-                ProcessRoute(context, route, parentID, userID, searchTerm);
-            }
-            catch (Exception ex)
-            {
-                context.Response.ContentType = "text/html";
-                context.Response.Write(ex.Message + "<br />" + ex.StackTrace);
-            }
             context.Response.End();
         }
 
-        private void ProcessRoute(HttpContext context, string route, int parentID, int userID, string searchTerm)
+        private void ProcessSearch(HttpContext context, string route, int parentID, int userID, string searchTerm)
         {
             switch (route)
             {
                 case "search/kb": ProcessKBSearch(context, parentID, userID, searchTerm); break;
                 case "search/wiki": ProcessWikiSearch(context, parentID, userID, searchTerm); break;
                 case "search/ticket": ProcessTicketSearch(context, parentID, userID, searchTerm); break;
+                default:
+                    break;
+            }
+        }
+
+        private void ProcessRoute(HttpContext context, string route, object data)
+        {
+            switch (route)
+            {
+                case "admin/gencsr": ProcessCSR(context); break;
                 default:
                     break;
             }
@@ -289,6 +318,35 @@ namespace TeamSupport.Handlers
             }
 
             return items;
+        }
+
+
+
+        private void ProcessCSR(HttpContext context)
+        {
+          
+            string args = @"pkcs12 -export -out test2.pfx -inkey key.cer -in cert.cer -certfile int.cer -passout pass:Muroc2008!";
+            context.Response.Write(args);
+
+            // Start the child process.
+            Process p = new Process();
+            // Redirect the output stream of the child process.
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.RedirectStandardInput = true;
+            p.StartInfo.Arguments = args;
+            p.StartInfo.FileName = Path.Combine(context.Request.MapPath("~/openssl"), "openssl.exe");
+            p.StartInfo.WorkingDirectory = context.Request.MapPath("~/openssl");
+            p.Start();
+       
+            string output = p.StandardOutput.ReadToEnd();
+            p.WaitForExit();
+            context.Response.ContentType = "text/html";
+
+            context.Response.Write(output);
+
+
         }
 
         #region classes
