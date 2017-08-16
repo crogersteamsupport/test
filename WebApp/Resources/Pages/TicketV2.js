@@ -4538,8 +4538,8 @@ function CreateHandleBarHelpers() {
                         display.push(emotion + ': ' + percent + '%');
                     }
                 });
-                console.log(display);
-                $('#watson-' + actionID).text(display.join(', '));
+                console.log('Watson Action:' + sentiment.ActiontID + ' / ' + display.join(', '));
+                $('#watson-' + sentiment.ActiontID).text(display.join(', '));
             }
         });
         // return '<span id="watson-' + actionID + '"></span>';
@@ -6063,7 +6063,7 @@ function watson (ticketnumber) {
                         display.push(emotion + ': ' + percent + '%');
                     }
                 });
-                console.log(display.join());
+                console.log(display.join(', '));
                 $('#watson').text(display.join(', '));
             }
         });
