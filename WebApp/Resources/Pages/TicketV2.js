@@ -6051,7 +6051,7 @@ function watson (ticketnumber) {
         console.log(info);
         if (info.Ticket.OrganizationID != '1078') { return; }
         var ticketid = info.Ticket.TicketID;
-        window.parent.Ts.Services.TicketPage.Watson(ticketid, function (result) {
+        window.parent.Ts.Services.TicketPage.WatsonTicket(ticketid, function (result) {
             if (result != 'negative' && result != 'nothing' && result != 'hidden') {
                 var data = jQuery.parseJSON(result);
                 var sentiments = { 1:'Sad', 2:'Frustrated', 3:'Satisfied', 4:'Excited', 5:'Polite', 6:'Impolite', 7: 'Sympathetic' }
