@@ -4538,7 +4538,7 @@ function CreateHandleBarHelpers() {
                         display.push(emotion + ': ' + percent + '%');
                     }
                 });
-                console.log(display.join());
+                console.log(display);
                 $('#watson-' + actionID).text(display.join());
             }
         });
