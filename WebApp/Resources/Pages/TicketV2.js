@@ -4532,7 +4532,7 @@ function CreateHandleBarHelpers() {
             }
         });
 
-        return 'test';
+        return 'Watson';
     });
 
     Handlebars.registerHelper('Applause', function () {

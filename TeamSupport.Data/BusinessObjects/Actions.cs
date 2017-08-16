@@ -881,7 +881,7 @@ WHERE a.SalesForceID = @SalesForceID";
             }
             catch (SqlException e)
             {
-                return "negative 1.2";
+                return "negative 1.2" + e.Message;
             }
             catch (Exception e)
             {
