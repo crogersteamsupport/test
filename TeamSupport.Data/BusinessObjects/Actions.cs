@@ -858,8 +858,14 @@ WHERE a.SalesForceID = @SalesForceID";
                     {
                         command.Connection = connection;
                         command.CommandType = CommandType.Text;
-                        command.CommandText = "SELECT * FROM dbo.TicketAverageSentiment WHERE TicketID = @TicketID FOR JSON PATH, ROOT('watson')";
+
+                        command.CommandText = "SELECT ActionSentiments.*, ActionSentimentScores.SentimentID, ActionSentimentScores.SentimentScore FROM dbo.ActionSentiments ";
+                        command.CommandText += "INNER JOIN dbo.ActionSentimentScores ON ActionSentiments.ActionSentimentID = ActionSentimentScores.ActionSentimentID ";
+                        command.CommandText += "WHERE ActionSentiments.TicketID = @TicketID AND ActionSentiments.ActionID = @ActionID";
+                        command.CommandText += "FOR JSON PATH, ROOT('watson')";
+
                         command.Parameters.AddWithValue("@TicketID", ticketID);
+                        command.Parameters.AddWithValue("@ActionID", actionID);
                         connection.Open();
                         SqlDataReader reader = command.ExecuteReader();
                         if (reader.HasRows && reader.Read())

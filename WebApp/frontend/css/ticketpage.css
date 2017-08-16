@@ -116,10 +116,8 @@ div.frame-container {
 }
 
 div.timeline-body img {
-    width:100%;
     max-width:100% !important;
-    height:auto;
-    object-fit: contain;
+    object-fit:contain;
 }
 .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
     background-color:rgba(150,150,150,0.2);

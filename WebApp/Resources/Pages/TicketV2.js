@@ -4520,7 +4520,6 @@ function CreateHandleBarHelpers() {
         }
     });
 
-
     Handlebars.registerHelper('Watson', function () {
         if (this.item.IsWC) { return; }
         var ticketID = this.item.TicketID;
@@ -4535,8 +4534,6 @@ function CreateHandleBarHelpers() {
 
         return 'test';
     });
-
-
 
     Handlebars.registerHelper('Applause', function () {
         if (this.item.IsWC) { return; }
