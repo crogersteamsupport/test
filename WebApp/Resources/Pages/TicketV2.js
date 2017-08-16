@@ -4526,7 +4526,7 @@ function CreateHandleBarHelpers() {
         var actionID = this.item.RefID;
 
         var output = window.parent.Ts.Services.TicketPage.WatsonAction(ticketID, actionID, function (result) {
-            console.log(result);
+            // console.log(result);
             if (result != 'negative' && result != 'nothing' && result != 'hidden') {
                 var data = jQuery.parseJSON(result);
                 var sentiments = { 1:'Sad', 2:'Frustrated', 3:'Satisfied', 4:'Excited', 5:'Polite', 6:'Impolite', 7: 'Sympathetic' }
@@ -4538,7 +4538,7 @@ function CreateHandleBarHelpers() {
                         display.push(emotion + ': ' + percent + '%');
                     }
                 });
-                console.log('Watson Action:' + actionID + ' / ' + display.join(', '));
+                // console.log('Watson Action:' + actionID + ' / ' + display.join(', '));
                 $('#watson-' + actionID).text(display.join(', '));
             }
         });
@@ -6048,7 +6048,7 @@ var SetSolved = function (ResolvedID) {
 
 function watson (ticketnumber) {
     window.parent.Ts.Services.Tickets.GetTicketInfo(ticketnumber, function (info) {
-        console.log(info);
+        // console.log(info);
         if (info.Ticket.OrganizationID != '1078') { return; }
         var ticketid = info.Ticket.TicketID;
         window.parent.Ts.Services.TicketPage.WatsonTicket(ticketid, function (result) {
@@ -6063,7 +6063,7 @@ function watson (ticketnumber) {
                         display.push(emotion + ': ' + percent + '%');
                     }
                 });
-                console.log(display.join(', '));
+                // console.log(display.join(', '));
                 $('#watson').text(display.join(', '));
             }
         });
