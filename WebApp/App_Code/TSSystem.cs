@@ -282,22 +282,15 @@ namespace TSWebServices
         
         if (TSAuthentication.OrganizationID == 1078)
         {
-          TsMenuItem utils = new TsMenuItem("utils", "mniUtils", "Utilities", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Pages/Utils.html", "vcr/1_9_0/PaneInfo/Admin.html"));
-          items.Add(utils);
-          utils.AddItem(new TsMenuItem("utils", "utils-accounts", "Accounts", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Pages/Utils_Accounts.html", "vcr/1_9_0/PaneInfo/Admin.html")));
-          utils.AddItem(new TsMenuItem("utils", "utils-tickets", "Tickets", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Pages/Utils_Tickets.html", "vcr/1_9_0/PaneInfo/Admin.html")));
-          utils.AddItem(new TsMenuItem("utils", "utils-organizations", "Organizations", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Pages/Utils_Organizations.html", "vcr/1_9_0/PaneInfo/Admin.html")));
-          //utils.AddItem(new TsMenuItem("utils", "utils-users", "Users", "vcr/1_9_0/images/nav/20/User.png", string.Format(data, "vcr/1_9_0/Pages/Utils_Users.html", "vcr/1_9_0/PaneInfo/Admin.html")));
-          utils.AddItem(new TsMenuItem("utils", "utils-exceptions", "Exceptions", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Pages/Utils_Exceptions.html", "vcr/1_9_0/PaneInfo/Admin.html")));
-          utils.AddItem(new TsMenuItem("utils", "utils-services", "Services", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Pages/Utils_Services.html", "vcr/1_9_0/PaneInfo/Admin.html")));
-          utils.AddItem(new TsMenuItem("utils", "utils-sanitizer", "Sanitizer", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Pages/Utils_Sanitizer.html", "vcr/1_9_0/PaneInfo/Admin.html")));
-          utils.AddItem(new TsMenuItem("utils", "utils-ticketsearch", "Ticket Search", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Pages/Utils_TicketSearch.html", "vcr/1_9_0/PaneInfo/Admin.html")));
-          utils.AddItem(new TsMenuItem("utils", "utils-customersearch", "Customer Search", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Pages/Utils_CustomerSearch.html", "vcr/1_9_0/PaneInfo/Admin.html")));
-          utils.AddItem(new TsMenuItem("utils", "utils-portalsearch", "Portal Search", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Pages/Utils_PortalSearch.html", "vcr/1_9_0/PaneInfo/Admin.html")));
-          utils.AddItem(new TsMenuItem("utils", "utils-emailsearch", "Email Search", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Pages/Utils_EmailsSearch.html", "vcr/1_9_0/PaneInfo/Admin.html")));
-          if (user.UserID == 34 || user.UserID == 47 || user.UserID == 1839999)
-
-                        utils.AddItem(new TsMenuItem("utils", "utils-reporttest", "Custom Reports", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Pages/Utils_ReportTest.html", "vcr/1_9_0/PaneInfo/Admin.html")));
+                    TsMenuItem utils = new TsMenuItem("utils", "mniUtils", "Utilities", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Utils/Utils.html", "vcr/1_9_0/PaneInfo/Admin.html"));
+                    items.Add(utils);
+                    utils.AddItem(new TsMenuItem("utils", "utils-accounts", "Accounts", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Utils/Accounts.html", "vcr/1_9_0/PaneInfo/Admin.html")));
+                    utils.AddItem(new TsMenuItem("utils", "utils-tickets", "Tickets", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Utils/Tickets.html", "vcr/1_9_0/PaneInfo/Admin.html")));
+                    utils.AddItem(new TsMenuItem("utils", "utils-organizations", "Organizations", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Utils/Organizations.html", "vcr/1_9_0/PaneInfo/Admin.html")));
+                    if (user.UserID == 34 || user.UserID == 47)
+                        utils.AddItem(new TsMenuItem("utils", "utils-reporttest", "Custom Reports", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Utils/ReportTest.html", "vcr/1_9_0/PaneInfo/Admin.html")));
+                    if (user.UserID == 34)
+                        utils.AddItem(new TsMenuItem("utils", "utils-ticketboard", "Ticket Board", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Utils/TicketBoard.html", "vcr/1_9_0/PaneInfo/Admin.html")));
 
                 }
 

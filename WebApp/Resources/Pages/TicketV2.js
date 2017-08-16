@@ -263,9 +263,27 @@ $.fn.autoGrow = function () {
     });
 };
 
-$("input[type=text], textarea").autoGrow();
+// $("input[type=text], textarea").autoGrow();
+
+$(window).resize(function() {
+    ticketmenu();
+});
+
+$(document).on('click','#toggleside', function() {
+    if ($('#ticket-properties-area').is(':hidden')) {
+        $('#ticket-properties-area').show("slide", { direction: "right" }, 1000);
+    } else {
+        $('#ticket-properties-area').hide("slide", { direction: "right" }, 1000);
+    }
+});
+
 
 $(document).ready(function () {
+
+    ticketmenu();
+
+
+
     _ticketNumber = window.parent.Ts.Utils.getQueryValue("TicketNumber", window);
 
     apiKey = "45228242";
@@ -313,6 +331,9 @@ $(document).ready(function () {
           });
       }
   });
+
+    watson(_ticketNumber);
+
 });
 
 var loadTicket = function (ticketNumber, refresh) {
@@ -380,11 +401,10 @@ var loadTicket = function (ticketNumber, refresh) {
         SetupTFSFieldValues();
         LoadGroups();
         LoadPlugins(info);
+
         if (typeof refresh === "undefined") {
             window.parent.Ts.Services.Dispatch.getTicketViewing(_ticketNumber);
         }
-
-
 
     });
 };
@@ -424,7 +444,7 @@ function SetupTicketPage() {
     //Create the new action LI element
     CreateNewActionLI();
 
-    $("input[type=text], textarea").autoGrow();
+    // $("input[type=text], textarea").autoGrow();
 
     window.parent.Ts.Services.TicketPage.GetTicketPageOrder("TicketFieldsOrder", function (order) {
         SetupTicketProperties(order);
@@ -442,9 +462,6 @@ function SetupTicketPage() {
         }
     })
 
-    //if (window.parent.Ts.System.Organization.SetNewActionsVisibleToCustomers == false) {
-    //	$('#action-add-private').insertBefore('#action-add-public');
-    //}
 
     window.parent.Ts.Services.Customers.GetDateFormat(false, function (format) {
         dateFormat = format.replace("yyyy", "yy");
@@ -597,15 +614,17 @@ function SetupToolTips() {
     $('#Ticket-Queue').attr('data-original-title', (_ticketInfo.Ticket.IsEnqueued) ? 'Remove from your Ticket Queue' : 'Add to your Ticket Queue');
     $('#Ticket-Flag').attr('data-original-title', (_ticketInfo.Ticket.IsFlagged) ? 'UnFlag Ticket' : 'Flag Ticket');
     $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: '.ticket-toolbar-row', animation: false });
+    $('.btn-tooltip').tooltip({ placement: 'bottom', animation: false });
 };
 
 function CreateNewActionLI() {
-    // var _compiledNewActionTemplate = Handlebars.compile($("#new-action-template").html());
+
     var _compiledNewActionTemplate = Handlebars.templates['newaction'];
     var html = _compiledNewActionTemplate({ OrganizationID: window.parent.Ts.System.User.OrganizationID, UserID: window.parent.Ts.System.User.UserID });
     $("#action-timeline").append(html);
 
-    $('#action-add-public').click(function (e) {
+    $('#action-add-public, #action-add-public-sm').click(function (e) {
+        console.log('here');
         e.preventDefault();
         e.stopPropagation();
         if ($(this).hasClass('click-disabled')) {
@@ -639,7 +658,7 @@ function CreateNewActionLI() {
         }
     });
 
-    $('#action-add-private').click(function (e) {
+    $('#action-add-private, #action-add-private-sm').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
         if ($(this).hasClass('click-disabled')) {
@@ -656,7 +675,7 @@ function CreateNewActionLI() {
         $('#action-save-alert').text('').hide();
     });
 
-    $('#action-add-wc').click(function (e) {
+    $('#action-add-wc, #action-add-wc-sm').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
         $('#newcomment').prop('disabled', false);
@@ -793,8 +812,6 @@ function CreateNewActionLI() {
                 return;
             }
         });
-
-        //$(this).parent().dropdown('toggle');
     });
 
     $('#action-timeline').on('click', '.remove-attachment', function (e) {
@@ -835,6 +852,12 @@ function CreateNewActionLI() {
     });
 
     $('#new-action-avatar').attr("src", $('#new-action-avatar').attr("src") + "/" + (new Date().getTime()).toString());
+
+
+
+
+
+
 };
 
 function DisableCreateBtns() {
@@ -894,7 +917,7 @@ function SetupActionEditor(elem, action) {
             }
             elem.parent().fadeIn('normal');
 
-            $('.frame-container').animate({
+            $('.ticketpage').animate({
                 scrollTop: 0
             }, 600);
         });
@@ -1206,7 +1229,7 @@ function SetupNewAction(elem, action) {
     }
     elem.parent().fadeIn('normal');
 
-    $('.frame-container').animate({
+    $('.ticketpage').animate({
         scrollTop: 0
     }, 600);
 }
@@ -3392,7 +3415,7 @@ var AddCustomFieldEdit = function (field, parentContainer) {
                     .addClass('form-control ticket-simple-textarea muted-placeholder')
                     .attr("placeholder", "Enter Value")
                     .val(field.Value)
-                          .autoGrow()
+                    // .autoGrow()
                     .appendTo(inputGroupContainer)
                     .after(getUrls(field.Value));
 
@@ -3742,8 +3765,8 @@ var AddCustomFieldBool = function (field, parentContainer) {
     var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
 
     var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
-    var inputDiv = $('<div>').addClass('checkbox ticket-checkbox').appendTo(inputContainer);
-    var input = $('<input type="checkbox">').appendTo(inputDiv);
+    // var inputDiv = $('<div>').addClass('checkbox ticket-checkbox').appendTo(inputContainer);
+    var input = $('<input type="checkbox">').css('margin','5px').appendTo(inputContainer);
     var value = (field.Value === null || $.trim(field.Value) === '' || field.Value.toLowerCase() === 'false' || field.Value.toLowerCase() === '0' ? false : true);
     input.prop("checked", value);
 
@@ -4383,8 +4406,6 @@ function FetchTimeLineItems(start) {
             $('.results-loading').hide();
             $('.results-done').show();
         } else {
-            //compile action template
-            // _compiledActionTemplate = Handlebars.compile($("#action-template").html());
             _compiledActionTemplate = Handlebars.templates['action'];
 
             //create first timeline date marker if needed
@@ -4438,7 +4459,9 @@ function CreateActionElement(val, ShouldAppend) {
         try {
             $("#action-timeline").append(actionElement);
         }
-        catch (e) { }
+        catch (e) {
+            console.log('Unable to append action.');
+        }
     }
     else {
         if ($('.ticket-action.pinned').length) {
@@ -4466,6 +4489,7 @@ function UpdateActionElement(val) {
 };
 
 function CreateHandleBarHelpers() {
+
     Handlebars.registerHelper('WaterCoolerRelationships', function () {
         if (this.WatercoolerReferences)
             return BuildWaterCoolerAssociationToolTip(this.WatercoolerReferences);
@@ -4473,12 +4497,12 @@ function CreateHandleBarHelpers() {
             return "";
     });
 
-  Handlebars.registerHelper('UserImageTag', function () {
-  	if (this.item.CreatorID > 0) {
-  		return '<img class="user-avatar pull-left" src="/dc/' + this.item.OrganizationID + '/UserAvatar/' + this.item.CreatorID + '/120/' + new Date().getTime() + '" />';
-  	}
-  	else return "";
-  });
+    Handlebars.registerHelper('UserImageTag', function () {
+      	if (this.item.CreatorID > 0) {
+  	    	return '<img class="user-avatar pull-left" src="/dc/' + this.item.OrganizationID + '/UserAvatar/' + this.item.CreatorID + '/120/' + new Date().getTime() + '" />';
+  	    }
+  	    else return "";
+    });
 
     Handlebars.registerHelper('FormatDateTime', function (Date) {
         return Date.localeFormat(window.parent.Ts.Utils.getDateTimePattern())
@@ -4496,12 +4520,27 @@ function CreateHandleBarHelpers() {
         }
     });
 
+    Handlebars.registerHelper('Watson', function () {
+        if (this.item.IsWC) { return; }
+        var ticketID = this.item.TicketID;
+        var actionID = this.item.RefID;
+
+        var output = window.parent.Ts.Services.TicketPage.WatsonAction(ticketID, actionID, function (result) {
+            console.log(result);
+            if (result != 'negative' && result != 'nothing' && result != 'hidden') {
+                var data = jQuery.parseJSON(result);
+            }
+        });
+
+        return '';
+    });
+
     Handlebars.registerHelper('Applause', function () {
         if (this.item.IsWC) { return; }
         var ticketID = this.item.TicketID;
         var actionID = this.item.RefID;
-        var display = (this.item.OrganizationID === window.parent.Ts.System.User.OrganizationID && !this.item.IsWC) ? 'inline' : 'none';
-        var output = window.parent.Ts.Services.TicketPage.PullReactions(ticketID, actionID, function (result) {
+        var display  = (this.item.OrganizationID === window.parent.Ts.System.User.OrganizationID && !this.item.IsWC) ? 'inline' : 'none';
+        var output   = window.parent.Ts.Services.TicketPage.PullReactions(ticketID, actionID, function (result) {
             if (result != 'negative' && result != 'nothing' && result != 'hidden') {
                 var data = jQuery.parseJSON(result);
                 var tally = data[0].reactions[0].tally;
@@ -4928,7 +4967,7 @@ function CreateTimeLineDelegates() {
 
     });
 
-    $('.frame-container').bind('scroll', function () {
+    $('.ticketpage').bind('scroll', function () {
         if ($(this).scrollTop() > 100) {
             $('.scrollup').fadeIn();
         } else {
@@ -4947,7 +4986,7 @@ function CreateTimeLineDelegates() {
     });
 
     $('.scrollup').click(function () {
-        $('.frame-container').animate({
+        $('.ticketpage').animate({
             scrollTop: 0
         }, 600);
         return false;
@@ -5992,3 +6031,44 @@ var SetSolved = function (ResolvedID) {
         else selectize.clear(true);
     }
 };
+
+
+
+
+
+function watson (ticketnumber) {
+    window.parent.Ts.Services.Tickets.GetTicketInfo(ticketnumber, function (info) {
+        console.log(info);
+        if (info.Ticket.OrganizationID != '1078') { return; }
+        var ticketid = info.Ticket.TicketID;
+        window.parent.Ts.Services.TicketPage.Watson(ticketid, function (result) {
+            if (result != 'negative' && result != 'nothing' && result != 'hidden') {
+                var data = jQuery.parseJSON(result);
+                var sentiments = { 1:'Sad', 2:'Frustrated', 3:'Satisfied', 4:'Excited', 5:'Polite', 6:'Impolite', 7: 'Sympathetic' }
+                var display = [];
+                $.each(data.watson, function(key,sentiment) {
+                    if (sentiment.SentimentID > 0) {
+                        var emotion = sentiments[sentiment.SentimentID];
+                        var percent = Math.round(sentiment.SentimentScore * 100);
+                        display.push(emotion + ': ' + percent + '%');
+                    }
+                });
+                console.log(display.join());
+                $('#watson').text(display.join(', '));
+            }
+        });
+    });
+}
+
+
+function ticketmenu () {
+    var width = $('#ticketpage').width();
+    $('#ticketmenu-container').css('width',width);
+    if (width > 900) {
+        $('#ticketmenu-actions-lg').show();
+        $('#ticketmenu-actions-sm').hide();
+    } else {
+        $('#ticketmenu-actions-lg').hide();
+        $('#ticketmenu-actions-sm').show();
+    }
+}

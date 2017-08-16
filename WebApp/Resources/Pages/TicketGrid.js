@@ -14,7 +14,7 @@ var mainFrame = getMainFrame();
 $(document).ready(function () {
 	if (mainFrame.Ts.System.User.DisableExporting == true) { $('.tickets-export').remove(); }
 	if (!mainFrame.Ts.System.User.ChangeTicketVisibility && !mainFrame.Ts.System.User.IsSystemAdmin) { $('.ticket-action-visible').remove(); $('.ticket-action-nonvisible').remove(); }
-	console.log(mainFrame.Ts.System.User.ChangeTicketVisibility + '' + mainFrame.Ts.System.User.IsSystemAdmin)
+	console.log(mainFrame.Ts.System.User.ChangeTicketVisibility + ' / ' + mainFrame.Ts.System.User.IsSystemAdmin)
 
 	$('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: '.grid-ticket-toolbar', animation: false });
 

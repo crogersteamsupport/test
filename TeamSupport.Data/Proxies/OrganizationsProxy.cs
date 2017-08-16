@@ -117,6 +117,7 @@ namespace TeamSupport.Data
     [DataMember] public bool AutoAssociateCustomerToTicketBasedOnAssetAssignment { get; set; }
     [DataMember] public bool RequireGroupAssignmentOnTickets { get; set; }
     [DataMember] public bool AlertContactNoEmail { get; set; }
+    [DataMember] public bool DisableSupportLogin { get; set; }
     }
   
   public partial class Organization : BaseItem
@@ -220,7 +221,9 @@ namespace TeamSupport.Data
       result.Description = (this.Description);
       result.Name = (this.Name);
       result.OrganizationID = this.OrganizationID;
-       
+      result.DisableSupportLogin = this.DisableSupportLogin;
+
+
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
       result.BusinessDayStart = DateTime.SpecifyKind(this.BusinessDayStartUtc, DateTimeKind.Utc);
@@ -228,6 +231,7 @@ namespace TeamSupport.Data
       result.LastIndexRebuilt = DateTime.SpecifyKind(this.LastIndexRebuiltUtc, DateTimeKind.Utc);
        
       result.SAExpirationDate = this.SAExpirationDateUtc == null ? this.SAExpirationDateUtc : DateTime.SpecifyKind((DateTime)this.SAExpirationDateUtc, DateTimeKind.Utc); 
+           
        
       return result;
     }	

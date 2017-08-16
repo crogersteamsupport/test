@@ -43,28 +43,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.WebUtils", "Tea
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.JIRA", "TeamSupport.JIRA\TeamSupport.JIRA.csproj", "{A5E5FC71-6B6F-4E57-9BF0-8602F7A707EA}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "TeamSupport.Signalr", "http://localhost:35835", "{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}"
-	ProjectSection(WebsiteProperties) = preProject
-		UseIISExpress = "true"
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5.1"
-		ProjectReferences = "{1943ac11-1f2d-4b85-9f0f-4d67284814be}|TeamSupport.Data.dll;"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_35835"
-		Debug.AspNetCompiler.PhysicalPath = "TeamSupport.Signalr\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_35835\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_35835"
-		Release.AspNetCompiler.PhysicalPath = "TeamSupport.Signalr\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_35835\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		SlnRelativePath = "TeamSupport.Signalr\"
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.Messaging", "TeamSupport.Messaging\TeamSupport.Messaging.csproj", "{CC262E84-5002-4E7F-B078-7278E93F0C04}"
 EndProject
 Global
@@ -265,34 +243,6 @@ Global
 		{A5E5FC71-6B6F-4E57-9BF0-8602F7A707EA}.Release|x64.Build.0 = Release|Any CPU
 		{A5E5FC71-6B6F-4E57-9BF0-8602F7A707EA}.Release|x86.ActiveCfg = Release|Any CPU
 		{A5E5FC71-6B6F-4E57-9BF0-8602F7A707EA}.Release|x86.Build.0 = Release|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.Debug|.NET.ActiveCfg = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.Debug|x64.Build.0 = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.Debug|x86.Build.0 = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.dtSearch Internal Debug|.NET.ActiveCfg = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.dtSearch Internal Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.dtSearch Internal Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.dtSearch Internal Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.dtSearch Internal Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.dtSearch Internal Debug|Win32.ActiveCfg = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.dtSearch Internal Debug|x64.ActiveCfg = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.dtSearch Internal Debug|x86.ActiveCfg = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.Release|.NET.ActiveCfg = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.Release|Any CPU.Build.0 = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.Release|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.Release|Mixed Platforms.Build.0 = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.Release|Win32.ActiveCfg = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.Release|x64.ActiveCfg = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.Release|x64.Build.0 = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.Release|x86.ActiveCfg = Debug|Any CPU
-		{CD5DC70F-3D0B-45A3-8CD6-0BE6439C9D7F}.Release|x86.Build.0 = Debug|Any CPU
 		{CC262E84-5002-4E7F-B078-7278E93F0C04}.Debug|.NET.ActiveCfg = Debug|Any CPU
 		{CC262E84-5002-4E7F-B078-7278E93F0C04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CC262E84-5002-4E7F-B078-7278E93F0C04}.Debug|Any CPU.Build.0 = Debug|Any CPU
