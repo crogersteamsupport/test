@@ -4539,7 +4539,7 @@ function CreateHandleBarHelpers() {
                     }
                 });
                 console.log(display.join());
-                return display.join(', ');
+                return 'Watson: ' + display.join(', ');
             }
         });
     });

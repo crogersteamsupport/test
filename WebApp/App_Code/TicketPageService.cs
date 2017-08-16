@@ -955,7 +955,7 @@ namespace TSWebServices
             if (json != "nothing" && json != "negative") {
                 return json;
             } else { 
-                return "negative 2.1";
+                return "negative";
             }
         }
 
@@ -972,7 +972,7 @@ namespace TSWebServices
             }
             else
             {
-                return "negative 2.1";
+                return "negative";
             }
         }
 
