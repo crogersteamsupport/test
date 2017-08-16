@@ -4538,8 +4538,8 @@ function CreateHandleBarHelpers() {
                         display.push(emotion + ': ' + percent + '%');
                     }
                 });
-                console.log('Watson Action:' + sentiment.ActiontID + ' / ' + display.join(', '));
-                $('#watson-' + sentiment.ActiontID).text(display.join(', '));
+                console.log('Watson Action:' + actionID + ' / ' + display.join(', '));
+                $('#watson-' + actionID).text(display.join(', '));
             }
         });
         // return '<span id="watson-' + actionID + '"></span>';
