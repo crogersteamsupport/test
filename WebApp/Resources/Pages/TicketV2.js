@@ -4522,6 +4522,7 @@ function CreateHandleBarHelpers() {
 
     Handlebars.registerHelper('Watson', function () {
         if (this.item.IsWC) { return; }
+        if (this.item.OrganizationID != '1078') { return; }
         var ticketID = this.item.TicketID;
         var actionID = this.item.RefID;
 
