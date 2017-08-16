@@ -4542,7 +4542,7 @@ function CreateHandleBarHelpers() {
                 $('#watson-' + actionID).text(display.join());
             }
         });
-        return '<span id="watson-' + actionID + '"></span>';
+        // return '<span id="watson-' + actionID + '"></span>';
     });
 
     Handlebars.registerHelper('Applause', function () {
