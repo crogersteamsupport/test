@@ -861,7 +861,7 @@ WHERE a.SalesForceID = @SalesForceID";
 
                         command.CommandText = "SELECT ActionSentiments.*, ActionSentimentScores.SentimentID, ActionSentimentScores.SentimentScore FROM dbo.ActionSentiments ";
                         command.CommandText += "INNER JOIN dbo.ActionSentimentScores ON ActionSentiments.ActionSentimentID = ActionSentimentScores.ActionSentimentID ";
-                        command.CommandText += "WHERE ActionSentiments.TicketID = @TicketID AND ActionSentiments.ActionID = @ActionID";
+                        command.CommandText += "WHERE ActionSentiments.TicketID = @TicketID AND ActionSentiments.ActionID = @ActionID ";
                         command.CommandText += "FOR JSON PATH, ROOT('watson')";
 
                         command.Parameters.AddWithValue("@TicketID", ticketID);
