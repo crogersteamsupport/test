@@ -4539,9 +4539,10 @@ function CreateHandleBarHelpers() {
                     }
                 });
                 console.log(display.join());
-                return 'Watson: ' + display.join(', ');
+                $('#watson-' + actionID).text(display.join());
             }
         });
+        return '<span id="watson-' + actionID + '"></span>';
     });
 
     Handlebars.registerHelper('Applause', function () {
