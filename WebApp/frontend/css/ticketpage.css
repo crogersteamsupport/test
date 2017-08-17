@@ -133,11 +133,6 @@ div.timeline-body img {
     background-color: inherit !important;
 }
 
-span img {
-    display: block;
-    overflow: auto;
-}
-
 
 div.form-horizontal .form-group-sm,
 div.form-group.ticket-group {
