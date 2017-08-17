@@ -268,7 +268,7 @@ $.fn.autoGrow = function () {
 $(window).resize(function() {
     ticketmenu();
     pagewidth();
-    maxWidth();
+    maxwidth();
 });
 
 $(document).on('click','#toggleside', function() {
