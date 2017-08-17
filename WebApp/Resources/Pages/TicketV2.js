@@ -4434,6 +4434,7 @@ function FetchTimeLineItems(start) {
                 }
             }
             _isLoading = false;
+            maximage();
             $('.results-loading').hide();
         };
     });
@@ -6088,7 +6089,7 @@ function ticketmenu () {
 
 function maxwidth () {
     var width = $(window).width();
-    var limit = width - 200;
+    var limit = width - 600;
     $('img').each(function() {
         var image = $(this).width();
         if (image > limit) {
