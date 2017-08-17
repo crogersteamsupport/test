@@ -284,7 +284,7 @@ $(document).ready(function () {
 
     ticketmenu();
     pagewidth();
-    maxWidth();
+    maxwidth();
 
 
 
@@ -1650,7 +1650,7 @@ function LoadTicketNotes(note) {
             height: 'auto',
             modal: true,
             create: function () {
-                $(this).css('maxWidth', '800px');
+                $(this).css('max-width', '800px');
             },
             buttons: buttons
         });
