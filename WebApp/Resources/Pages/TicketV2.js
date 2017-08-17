@@ -263,28 +263,20 @@ $.fn.autoGrow = function () {
     });
 };
 
-// $("input[type=text], textarea").autoGrow();
+$("input[type=text], textarea").autoGrow();
 
 $(window).resize(function() {
-    ticketmenu();
-    pagewidth();
-    maxwidth();
-});
-
-$(document).on('click','#toggleside', function() {
-    if ($('#ticket-properties-area').is(':hidden')) {
-        $('#ticket-properties-area').show("slide", { direction: "right" }, 1000);
-    } else {
-        $('#ticket-properties-area').hide("slide", { direction: "right" }, 1000);
-    }
+    //ticketmenu();
+    //pagewidth();
+    //maxwidth();
 });
 
 
 $(document).ready(function () {
 
-    ticketmenu();
-    pagewidth();
-    maxwidth();
+    //ticketmenu();
+    //pagewidth();
+    //maxwidth();
 
 
 

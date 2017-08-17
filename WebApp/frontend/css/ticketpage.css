@@ -20,7 +20,9 @@ div.frame-container {
 #ticketpage {
     border:none;
     overflow:auto;
-    position:relative;
+    position:absolute;
+    left:0px;
+    right:0px;
     height:100%;
 }
 
