@@ -6087,11 +6087,11 @@ function ticketmenu () {
 }
 
 function maxwidth () {
-    var width = $('#ticketpane').width();
+    var width = $(window).width();
     var limit = width - 200;
-    $('img').each( function() {
+    $('img').each(function() {
         var image = $(this).width();
-        if(image > limit) {
+        if (image > limit) {
             $(this).css('max-width',limit);
         }
     });
