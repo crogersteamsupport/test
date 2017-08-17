@@ -118,7 +118,7 @@ div.frame-container {
 #watson {
     padding:0px 10px;
     font-size:11px;
-    
+
 }
 
 
@@ -133,9 +133,10 @@ div.timeline-body img {
     background-color: inherit !important;
 }
 
-
-
-
+span img {
+    display: block;
+    overflow: auto;
+}
 
 
 div.form-horizontal .form-group-sm,
