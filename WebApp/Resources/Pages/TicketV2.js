@@ -267,6 +267,7 @@ $.fn.autoGrow = function () {
 
 $(window).resize(function() {
     ticketmenu();
+    maxwidth();
 });
 
 $(document).on('click','#toggleside', function() {
@@ -281,6 +282,7 @@ $(document).on('click','#toggleside', function() {
 $(document).ready(function () {
 
     ticketmenu();
+    maxwidth();
 
 
 
@@ -6082,4 +6084,15 @@ function ticketmenu () {
         $('#ticketmenu-actions-lg').hide();
         $('#ticketmenu-actions-sm').show();
     }
+}
+
+function maxwidth () {
+    var width = $('#ticketpane').width();
+    var limit = width - 200;
+    $('img').each( function() {
+        var image = $(this).width();
+        if(image > limit) {
+            $(this).css('max-width',limit);
+        }
+    });
 }
