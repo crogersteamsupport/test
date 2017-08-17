@@ -94,7 +94,7 @@ div.frame-container {
     background-color:rgba(255,255,255,0.5);
 }
 #ticket-properties-area {
-    padding-top:60px;
+    padding-top:30px;
     background-color:rgba(255,255,255,0.7);
 }
 #ticket-properties-area .form-group {
@@ -114,6 +114,13 @@ div.frame-container {
     height:30px;
     line-height:20px;
 }
+
+#watson {
+    padding:0px 10px;
+    font-size:11px;
+    
+}
+
 
 div.timeline-body img {
     max-width:100% !important;
@@ -242,7 +249,7 @@ div.form-group .taskContainer .new-task {
     background-color:white;
     padding:0px;
     position:relative;
-    margin-bottom:20px;
+    margin-bottom:10px;
     box-shadow: none;
     border-radius:0px;
     border:1px solid white;
