@@ -66,6 +66,7 @@ div.frame-container {
 }
 
 #ticketpane {
+    width:100%;
     max-width:100%;
 }
 
