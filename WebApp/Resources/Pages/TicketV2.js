@@ -6097,3 +6097,10 @@ function maxwidth () {
         }
     });
 }
+
+
+
+function pagewidth () {
+    var width = $(window).width();
+    $('#ticketpage').css('max-width',width);
+}
