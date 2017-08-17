@@ -2541,10 +2541,24 @@ Namespace TeamSupport
                             Dim tickets As Tickets = New Tickets(User)
                             tickets.LoadByTicketID(action.TicketID)
 
+                            Dim userIds As List(Of Integer) = New List(Of Integer)()
+                            Dim readTickets As TicketsView = New TicketsView(User)
+
+                            readTickets.LoadUserTicketsByTicketId(action.TicketID, CRMLinkRow.OrganizationID)
+
+                            For Each readTicket As TicketsViewItem In readTickets
+                                If readTicket.IsRead Then
+                                    userIds.Add(Integer.Parse(readTicket.ViewerID))
+                                End If
+                            Next
+
                             action.Collection.UpdateSalesForceSync(action.SalesForceID, DateTime.UtcNow, action.ActionID)
 
                             tickets(0).DateModifiedBySalesForceSync = DateTime.UtcNow
                             tickets(0).UpdateSalesForceData()
+
+                            Dim userTicketStatuses As UserTicketStatuses = New UserTicketStatuses(User)
+                            userTicketStatuses.ResetToUnreadOnSalesForceUpdate(action.TicketID, userIds)
                         End If
                     Else
                         Log.Write("Action with ID: " + action.ActionID.ToString() + " was not pushed because it has no ParentID.")
