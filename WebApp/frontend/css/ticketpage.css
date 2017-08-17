@@ -65,7 +65,9 @@ div.frame-container {
     box-shadow: 0px 2px 0px rgba(0,0,0,0.1);
 }
 
-
+#ticketpane {
+    max-width:100%;
+}
 
 
 #action-add-public {
@@ -122,10 +124,19 @@ div.frame-container {
 }
 
 
+
+
 div.timeline-body img {
     max-width:100% !important;
-    object-fit:contain;
 }
+
+div.timeline-body span img {
+    display: block;
+    overflow-x: scroll;
+}
+
+
+
 .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
     background-color:rgba(150,150,150,0.2);
 }
