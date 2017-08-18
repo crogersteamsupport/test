@@ -4426,7 +4426,7 @@ function FetchTimeLineItems(start) {
                 }
             }
             _isLoading = false;
-            maximage();
+            maxwidth();
             $('.results-loading').hide();
         };
     });
