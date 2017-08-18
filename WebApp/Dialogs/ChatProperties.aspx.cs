@@ -53,9 +53,20 @@ public partial class Dialogs_ChatProperties : BaseDialogPage
         imgLogo.ImageUrl = String.Format("../dc/{0}/images/chat/chat_logo", _organizationID.ToString());
 
         textChatIntro.Text = Settings.OrganizationDB.ReadString("ChatIntroMessage", "Welcome to our live chat!");
-        cbChatTOKScreenEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTOKScreenEnabled", false);
-        cbChatTOKVoiceEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTOKVoiceEnabled", false);
-        cbChatTOKVideoEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTOKVideoEnabled", false);
+
+        if (UserSession.LoginUser.GetOrganization().ProductType != ProductType.Enterprise)
+        {
+            cbChatTOKScreenEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTOKScreenEnabled", false);
+            cbChatTOKVoiceEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTOKVoiceEnabled", false);
+            cbChatTOKVideoEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTOKVideoEnabled", false);
+        }
+        else
+        {
+            cbChatTOKScreenEnabled.Enabled = false;
+            cbChatTOKVoiceEnabled.Enabled = false;
+            cbChatTOKVideoEnabled.Enabled = false;
+        }
+
         cbChatAvatars.Checked = Settings.OrganizationDB.ReadBool("ChatAvatarsEnabled", false);
     }
 
