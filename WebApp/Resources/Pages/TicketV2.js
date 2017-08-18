@@ -268,7 +268,7 @@ $("input[type=text], textarea").autoGrow();
 $(window).resize(function() {
     //ticketmenu();
     //pagewidth();
-    //maxwidth();
+    maxwidth();
 });
 
 
@@ -276,9 +276,7 @@ $(document).ready(function () {
 
     //ticketmenu();
     //pagewidth();
-    //maxwidth();
-
-
+    maxwidth();
 
     _ticketNumber = window.parent.Ts.Utils.getQueryValue("TicketNumber", window);
 
@@ -6083,11 +6081,11 @@ function ticketmenu () {
 
 function maxwidth () {
     var width = $(window).width();
-    var limit = width - 600;
-    $('img').each(function() {
+    var limit = width - 400;
+    $('#action-timeline img').each(function() {
         var image = $(this).width();
         if (image > limit) {
-            $(this).css('max-width',limit);
+            $(this).css('max-width',limit).css('width',limit);
         }
     });
 }

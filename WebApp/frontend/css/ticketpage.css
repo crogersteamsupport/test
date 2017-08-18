@@ -130,12 +130,8 @@ div.frame-container {
 
 
 div.timeline-body img {
+    width:100%;
     max-width:100% !important;
-}
-
-div.timeline-body span img {
-    display: block;
-    overflow-x: scroll;
 }
 
 
