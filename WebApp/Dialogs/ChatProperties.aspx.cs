@@ -54,7 +54,7 @@ public partial class Dialogs_ChatProperties : BaseDialogPage
 
         textChatIntro.Text = Settings.OrganizationDB.ReadString("ChatIntroMessage", "Welcome to our live chat!");
 
-        if (UserSession.LoginUser.GetOrganization().ProductType != ProductType.Enterprise)
+        if (UserSession.LoginUser.GetOrganization().ProductType != ProductType.HelpDesk)
         {
             cbChatTOKScreenEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTOKScreenEnabled", false);
             cbChatTOKVoiceEnabled.Checked = Settings.OrganizationDB.ReadBool("ChatTOKVoiceEnabled", false);
