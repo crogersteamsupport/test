@@ -12,6 +12,25 @@
 $(document).ready(function () {
   var _organizatinID = -1;
   var _isAdmin = parent.Ts.System.User.IsSystemAdmin && (_organizatinID != parent.Ts.System.User.OrganizationID);
+  var _dateFormat;
+
+  parent.Ts.Services.Customers.GetDateFormat(false, function (format) {
+      _dateFormat = format.replace("yyyy", "yy");
+      if (_dateFormat.length < 8) {
+          var dateArr = _dateFormat.split('/');
+          if (dateArr[0].length < 2) {
+              dateArr[0] = dateArr[0] + dateArr[0];
+          }
+          if (dateArr[1].length < 2) {
+              dateArr[1] = dateArr[1] + dateArr[1];
+          }
+          if (dateArr[2].length < 2) {
+              dateArr[1] = dateArr[1] + dateArr[1];
+          }
+          _dateFormat = dateArr[0] + "/" + dateArr[1] + "/" + dateArr[2];
+      }
+      $('#inputExpectedRelease').datetimepicker({ pickTime: false, format: _dateFormat });
+  });
 
   if (parent.Ts.System.Organization.UseProductFamilies) {
       LoadProductFamilies();
@@ -120,7 +139,7 @@ $(document).ready(function () {
             $('.timepicker').datetimepicker({ pickDate: false });
             $('.datetimepicker').datetimepicker({});
             $('.datepicker').datetimepicker({ pickTime: false });
-            $('#inputExpectedRelease').datetimepicker({ pickTime: false, format: dateformat });
+            //$('#inputExpectedRelease').datetimepicker({ pickTime: false, format: dateformat });
         });
       }
     });
@@ -223,7 +242,7 @@ $(document).ready(function () {
       versionInfo.ProductID = $("#ddlProduct").val();
       versionInfo.ProductVersionStatusID = $("#ddlStatus").val();
       if ($("#inputExpectedRelease").val() != "")
-      	versionInfo.ReleaseDate = moment($("#inputExpectedRelease").val(), dateFormat).format('MM/DD/YYYY');
+      	versionInfo.ReleaseDate = moment($("#inputExpectedRelease").val(), _dateFormat).format('MM/DD/YYYY');
       else
       	versionInfo.ReleaseDate = "";
       versionInfo.IsReleased = $("#cbReleased").prop('checked');
