@@ -36,6 +36,7 @@ AdminPortal = function () {
 
     if (new Date(parent.parent.Ts.System.Organization.DateCreated) > new Date("4/21/2017")) {
         $('#tab-general').remove();
+        $('#portal-seperator').remove();
         $('#tabs-general').hide();
         $('#tab-advanced').remove();
         $('#tabs-advanced').hide();

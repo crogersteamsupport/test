@@ -18,7 +18,7 @@
 .main-header-left { padding: 4px 0 0 10px;  float:left;}
 .main-header-status { float:left; padding: 18px 0 0 0px; font-weight:normal;}
 .main-header-status span { margin-left: 5px; display:block; float:left; }
-.main-header-status input.text { margin-left: 5px; float:left; margin-top: 0px; width: 250px; padding: .1em .1em; line-height: 1.2em; height: 1.2em;} 
+.main-header-status input.text { margin-left: 5px; float:left; margin-top: 0px; width: 250px; padding: .1em .1em; line-height: 1.2em; height: 1.2em;}
 
 .main-company-logo { height: 35px; width:140px; }
 .main-header-right { float: left; width: 410px; margin-left: -410px; line-height: 50px; color: #fff; text-align:right; font-weight:bold;  }
@@ -38,12 +38,12 @@ div.main-header-logo {
 div.main-header-new-ticket {
     padding-top:10px;
     height: 25px;
-    width: 100px;
+    width: 85px;
     display: block;
 }
 
 div.main-header-search {
-    padding-top: 12px;
+    padding-top: 10px;
     margin-right: 40px;
 }
 
@@ -53,7 +53,7 @@ div.main-header-search {
 .main-header-title {
     height: 50px;
     background: #2a3f54;
-} 
+}
 
 .main-header-menu ul { padding: 0; list-style-type: none;  float:right; margin: 0 1em 0 0;}
 .main-header-menu li { height:50px; float:left; list-style-type: none; margin: 0 0 -1px 0; padding: 0 0 0 5px; border:none;}
@@ -105,7 +105,7 @@ div.main-header-search {
 .main-quick-panel .ts-icon { float:left; display:block; margin-right: 5px;  }
 .main-quick-panel div { margin: 0 auto;  text-align:center; padding: 3px 0; }
 .main-quick-panel input.text {  width: 90%; }
-.main-info { overflow:auto;} 
+.main-info { overflow:auto;}
 .main-info > div.ui-widget-header { padding: .4em .4em; text-align:right; border-left: none; border-top: none; border-right:none;}
 .main-info-content { padding: 10px 10px; line-height: 1.2m;}
 .main-info-content p { margin-top: .5em; }

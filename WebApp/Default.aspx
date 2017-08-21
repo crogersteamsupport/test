@@ -20,7 +20,7 @@
   <link href="vcr/1_9_0/Css/jquery.ui.combobox.css" rel="stylesheet" type="text/css" />
   <link href="vcr/1_9_0/Css/jquery.ui.timepicker.css" rel="stylesheet" type="text/css" />
   <!--[if IE 7]><link href="vcr/1_9_0/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="vcr/1_9_0/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
-  <link href="vcr/1_9_0/Css/ts.mainpage.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_9_0/Css/ts.mainpage.css?1502980826" rel="stylesheet" type="text/css" />
   <link href="vcr/1_9_0/Css/chat.css" rel="stylesheet" type="text/css" />
   <link href="vcr/1_9_0/Css/jquery.pnotify.default.icons.css" rel="stylesheet" />
   <link href="vcr/1_9_0/Css/jquery.pnotify.default.css" rel="stylesheet" />
@@ -227,7 +227,7 @@
           <div class="main-header-content-wrapper">
             <div class="main-header-content">
               <div class="main-header-logo" style="float:left;"><img class="main-company-logo" alt="company_logo" src="../vcr/1_9_0/Images/header_company_logo.png"/></div>
-              <div class="main-header-new-ticket main-link-newticket" style="float:left;"><img src="../vcr/1_9_0/Images/header_new_ticket.png"/></div>
+              <div class="main-header-new-ticket main-link-newticket" style="float:left;"><img src="/frontend/images/newticket.png"/></div>
               <div class="main-header-search" style="float:left;"><input class="ui-corner-all ui-widget-content main-quick-ticket" type="text" /></div>
             </div>
           </div>
