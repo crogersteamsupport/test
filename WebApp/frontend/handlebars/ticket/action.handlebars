@@ -50,7 +50,7 @@
             <span class="pull-left" style="line-height: 15px;">
                 <a data-userid="{{item.CreatorID}}" data-ticketid="{{item.TicketID}}" data-name="{{item.CreatorName}}" class="TeamSupportBlue UserAnchor">{{item.CreatorName}}</a><br>
                 <small class="text-muted">added a {{item.MessageType}} on {{FormatDateTime item.DateCreated}}</small><br />
-                <small class="text-muted">{{TimeSpent}}</small><br />
+                <small class="text-muted">{{TimeSpent}} <span id="watson-{{item.RefID}}">{{Watson}}</span></small><br />
             </span>
             {{{Applause}}}
         </div>

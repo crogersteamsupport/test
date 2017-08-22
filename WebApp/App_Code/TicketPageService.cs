@@ -239,31 +239,26 @@ namespace TSWebServices
             List<TimeLineItem> timeLineItems = new List<TimeLineItem>();
             TicketTimeLineView TimeLineView = new TicketTimeLineView(loginUser);
 
-            try
-            {
+            try {
                 TimeLineView.LoadByRange(ticketID, from, from + 9);
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 ExceptionLogs.LogException(loginUser, ex, "GetTimeLineItems", "TicketPageService.GetTimeLineItems");
             }
 
-            foreach (TicketTimeLineViewItem viewItem in TimeLineView)
-            {
-                if (!viewItem.IsWC)
-                {
+            foreach (TicketTimeLineViewItem viewItem in TimeLineView) {
+
+                if (!viewItem.IsWC) {
                     Attachments attachments = new Attachments(loginUser);
                     attachments.LoadByActionID(viewItem.RefID);
 
                     TimeLineItem timeLineItem = new TimeLineItem();
-                    timeLineItem.item = viewItem.GetProxy();
+                    timeLineItem.item         = viewItem.GetProxy();
                     timeLineItem.item.Message = SanitizeMessage(timeLineItem.item.Message, loginUser);
-                    timeLineItem.Attachments = attachments.GetAttachmentProxies();
+                    timeLineItem.Attachments  = attachments.GetAttachmentProxies();
 
                     timeLineItems.Add(timeLineItem);
-                }
-                else
-                {
+
+                } else {
                     TimeLineItem wcItem = new TimeLineItem();
                     WaterCoolerThread thread = new WaterCoolerThread();
                     wcItem.item = viewItem.GetProxy();
@@ -949,6 +944,36 @@ namespace TSWebServices
                 action.Collection.Save();
             }
             return action.IsVisibleOnPortal;
+        }
+
+        [WebMethod]
+        public string WatsonTicket (int ticketID) {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+            string json = Actions.WatsonPullTicket(loginUser, ticketID);
+
+            if (json != "nothing" && json != "negative") {
+                return json;
+            } else { 
+                return "negative";
+            }
+        }
+
+        [WebMethod]
+        public string WatsonAction (int ticketID, int actionID)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+            string json = Actions.WatsonPullAction(loginUser, ticketID, actionID);
+
+            if (json != "nothing" && json != "negative")
+            {
+                return json;
+            }
+            else
+            {
+                return "negative";
+            }
         }
 
         [WebMethod]
