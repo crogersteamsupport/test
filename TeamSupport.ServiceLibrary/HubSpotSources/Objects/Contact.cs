@@ -95,7 +95,7 @@ namespace TeamSupport.ServiceLibrary.HubSpotSources.Objects
       [DataMember(Name = "saved-at-timestamp")]
       public long savedAtTimestamp { get; set; }
       [DataMember(Name = "deleted-changed-timestamp")]
-      public int deletedChangedTimestamp { get; set; }
+      public long deletedChangedTimestamp { get; set; }
       [DataMember(Name = "identities")]
       public List<Identity> identities { get; set; }
     }
