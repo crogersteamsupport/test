@@ -189,7 +189,7 @@ div.form-group input {
     background-color:rgba(255,255,255,0.5);
     padding-left:5px;
     padding-right:0px;
-    height:40px;
+    min-height:40px;
 }
 .selectize-input,
 .selectize-control.single .selectize-input.input-active {
