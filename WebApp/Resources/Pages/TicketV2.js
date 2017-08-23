@@ -271,10 +271,7 @@ $(window).resize(function() {
 
 
 $(document).ready(function () {
-    $("input[type=text], textarea").autogrow({fixMinHeight: true});
-
     maxwidth();
-
     _ticketNumber = window.parent.Ts.Utils.getQueryValue("TicketNumber", window);
 
     apiKey = "45228242";
@@ -292,37 +289,38 @@ $(document).ready(function () {
     //Setup WC Area
     SetupWCArea();
 
-  var script = document.createElement('script');
-  script.type = 'text/javascript';
-  script.async = true;
-  script.src = ('https:' === document.location.protocol ? 'https://' : 'http://') + 'www.dropbox.com/static/api/1/dropbox.js';
-  var firstScript = document.getElementsByTagName('script')[0];
-  script.setAttribute('data-app-key', 'ebdoql1dhyy7l72');
-  script.setAttribute('id', 'dropboxjs');
-  if (window.parent.Ts.System.User.OrganizationID != 1150007)
-    firstScript.parentNode.insertBefore(script, firstScript);
-  slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
-  $('.wcTooltip').tipTip({ defaultPosition: "top", edgeOffset: 7, keepAlive: true });
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.src = ('https:' === document.location.protocol ? 'https://' : 'http://') + 'www.dropbox.com/static/api/1/dropbox.js';
+    var firstScript = document.getElementsByTagName('script')[0];
+    script.setAttribute('data-app-key', 'ebdoql1dhyy7l72');
+    script.setAttribute('id', 'dropboxjs');
+    if (window.parent.Ts.System.User.OrganizationID != 1150007)
+      firstScript.parentNode.insertBefore(script, firstScript);
+    slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
+    $('.wcTooltip').tipTip({ defaultPosition: "top", edgeOffset: 7, keepAlive: true });
 
-  $('#btnTaskCompleteComment').on('click', function (e) {
-      e.preventDefault();
-      if ($('#taskCompleteComment').val() == '') {
-          alert('Please type your comments before clicking on the Yes button.');
-      }
-      else {
-          window.parent.parent.Ts.System.logAction('Task - Add Task Complete Comment');
-          window.parent.parent.Ts.Services.Task.AddTaskCompleteComment(_completeCommentTaskID, $('#taskCompleteComment').val(), function (result) {
-              if (result.Value) {
-                  $('#taskCompleteComment').val('');
-                  $('#modalTaskComment').modal('hide');
-              }
-              else {
-                  alert('There was an error saving your comment. Please try again.')
-              }
-          });
-      }
-  });
+    $('#btnTaskCompleteComment').on('click', function (e) {
+        e.preventDefault();
+        if ($('#taskCompleteComment').val() == '') {
+            alert('Please type your comments before clicking on the Yes button.');
+        }
+        else {
+            window.parent.parent.Ts.System.logAction('Task - Add Task Complete Comment');
+            window.parent.parent.Ts.Services.Task.AddTaskCompleteComment(_completeCommentTaskID, $('#taskCompleteComment').val(), function (result) {
+                if (result.Value) {
+                    $('#taskCompleteComment').val('');
+                    $('#modalTaskComment').modal('hide');
+                }
+                else {
+                    alert('There was an error saving your comment. Please try again.')
+                }
+            });
+        }
+    });
 
+    $("input[type=text], textarea").autogrow({fixMinHeight: true});
     watson(_ticketNumber);
 
 });
