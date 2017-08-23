@@ -169,7 +169,7 @@ namespace TeamSupport.Data
 
         partial void AfterRowInsert(Action action)
         {
-            string description = "Added action ";
+            string description = string.Format("Added {0} action ",  action.IsVisibleOnPortal ? "public" : "private" );
             if (_actionLogInstantMessage != null)
             {
                 description = _actionLogInstantMessage;
