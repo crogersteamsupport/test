@@ -4973,7 +4973,7 @@ function CreateTimeLineDelegates() {
     });
 
     $('.frame-container').bind('scroll', function () {
-        console.log($(this).scrollTop() + ' / ' + $(this).innerHeight() + ' / ' + $(this)[0].scrollHeight);
+        // console.log($(this).scrollTop() + ' / ' + $(this).innerHeight() + ' / ' + $(this)[0].scrollHeight);
         if ($(this).scrollTop() > 100) {
             $('.scrollup').fadeIn();
         } else {
