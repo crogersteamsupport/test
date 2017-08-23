@@ -320,7 +320,7 @@ $(document).ready(function () {
         }
     });
 
-    $("input[type=text], textarea").autogrow({fixMinHeight: true});
+    $("input[type=text], textarea").autogrow({fixMinHeight: true, onInitialize: true});
     watson(_ticketNumber);
 
 });
