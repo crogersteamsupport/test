@@ -3408,7 +3408,7 @@ var AddCustomFieldEdit = function (field, parentContainer) {
                     .addClass('form-control ticket-simple-textarea muted-placeholder')
                     .attr("placeholder", "Enter Value")
                     .val(field.Value)
-                    // .autoGrow()
+                    .autogrow({fixMinHeight: true, onInitialize: true})
                     .appendTo(inputGroupContainer)
                     .after(getUrls(field.Value));
 
