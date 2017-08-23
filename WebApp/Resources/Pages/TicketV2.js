@@ -263,7 +263,7 @@ $.fn.autoGrow = function () {
     });
 };
 
-$("input[type=text], textarea").autoGrow();
+$("input[type=text], textarea").autogrow();
 
 $(window).resize(function() {
     maxwidth();
