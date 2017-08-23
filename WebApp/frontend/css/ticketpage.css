@@ -145,7 +145,7 @@ div.timeline-body img {
 div.form-horizontal .form-group-sm,
 div.form-group.ticket-group {
     background-color:rgba(255,255,255,0) !important;
-    border-bottom:1px solid rgba(150,150,150,0.1);
+    border-bottom:1px solid rgba(255,255,255,0.5);
 }
 
 div.form-horizontal input,
