@@ -1355,8 +1355,8 @@ div.tag-item {
     -webkit-box-shadow:none;
     -moz-box-shadow:none;
     box-shadow:none;
-    resize:none;
-    background-color: transparent;
+    resize:vertical;
+    background-color:white;
     /*height:32px !important;*/
 }
 
