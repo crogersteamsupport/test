@@ -164,6 +164,8 @@ div.form-group input {
 .form-group-sm .selectize-input input,
 .form-group-sm .control-label {
     padding:5px !important;
+    overflow:hidden;
+    height:20px;
 }
 
 .form-group-sm .select-label {

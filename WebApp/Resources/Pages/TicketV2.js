@@ -266,16 +266,12 @@ $.fn.autoGrow = function () {
 $("input[type=text], textarea").autoGrow();
 
 $(window).resize(function() {
-    //ticketmenu();
-    //pagewidth();
     maxwidth();
 });
 
 
 $(document).ready(function () {
 
-    //ticketmenu();
-    //pagewidth();
     maxwidth();
 
     _ticketNumber = window.parent.Ts.Utils.getQueryValue("TicketNumber", window);
