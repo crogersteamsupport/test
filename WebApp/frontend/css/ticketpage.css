@@ -209,7 +209,7 @@ div.form-group input {
 .selectize-control {
     font-size:12px;
     font-weight:normal;
-    height:20px;
+    min-height:20px;
 }
 
 
