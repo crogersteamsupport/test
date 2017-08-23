@@ -263,7 +263,7 @@ $.fn.autoGrow = function () {
     });
 };
 
-$("input[type=text], textarea").autogrow();
+
 
 $(window).resize(function() {
     maxwidth();
@@ -271,6 +271,7 @@ $(window).resize(function() {
 
 
 $(document).ready(function () {
+    $("input[type=text], textarea").autogrow();
 
     maxwidth();
 
