@@ -271,7 +271,7 @@ $(window).resize(function() {
 
 
 $(document).ready(function () {
-    $("input[type=text], textarea").autogrow();
+    $("input[type=text], textarea").autogrow({fixMinHeight: true});
 
     maxwidth();
 
