@@ -3404,7 +3404,7 @@ var AddCustomFieldEdit = function (field, parentContainer) {
 
     var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
     var inputGroupContainer = $('<div>').addClass('input-group').appendTo(inputContainer);
-    var input = $('<textarea rows="1">')
+    var input = $('<textarea>')
                     .addClass('form-control ticket-simple-textarea muted-placeholder')
                     .attr("placeholder", "Enter Value")
                     .val(field.Value)
