@@ -1357,6 +1357,7 @@ div.tag-item {
     box-shadow:none;
     resize:vertical;
     background-color:white;
+    overflow:auto;
     /*height:32px !important;*/
 }
 
