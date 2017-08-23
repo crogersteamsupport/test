@@ -320,10 +320,17 @@ $(document).ready(function () {
         }
     });
 
-    $("input[type=text], textarea").autogrow({fixMinHeight: true, onInitialize: true});
+
     watson(_ticketNumber);
 
 });
+
+$(window).load(function(e) {
+    $("input[type=text], textarea").autogrow({fixMinHeight: true, onInitialize: true});
+}
+
+
+
 
 var loadTicket = function (ticketNumber, refresh) {
     window.parent.Ts.Services.Tickets.GetTicketInfo(_ticketNumber, function (info) {
