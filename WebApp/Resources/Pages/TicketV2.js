@@ -327,7 +327,7 @@ $(document).ready(function () {
 
 $(window).load(function(e) {
     $("input[type=text], textarea").autogrow({fixMinHeight: true, onInitialize: true});
-}
+});
 
 
 
