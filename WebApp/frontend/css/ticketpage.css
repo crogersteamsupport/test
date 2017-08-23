@@ -1360,6 +1360,7 @@ div.tag-item {
     overflow-x: auto;
     overflow-y:hidden;
     /*height:32px !important;*/
+    border:1px solid rgba(0,0,0,0.2);
 }
 
 .ticket-checkbox {

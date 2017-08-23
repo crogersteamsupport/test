@@ -322,7 +322,7 @@ $(document).ready(function () {
 
 
     watson(_ticketNumber);
-    $("input[type=text], textarea").autogrow({fixMinHeight: true, onInitialize: true});
+    // $("input[type=text], textarea").autoGrow({fixMinHeight: true, onInitialize: true});
 });
 
 
@@ -437,7 +437,7 @@ function SetupTicketPage() {
     //Create the new action LI element
     CreateNewActionLI();
 
-    $("input[type=text], textarea").autogrow({fixMinHeight: true, onInitialize: true});
+    $("input[type=text], textarea").autoGrow();
 
     window.parent.Ts.Services.TicketPage.GetTicketPageOrder("TicketFieldsOrder", function (order) {
         SetupTicketProperties(order);
@@ -3408,7 +3408,7 @@ var AddCustomFieldEdit = function (field, parentContainer) {
                     .addClass('form-control ticket-simple-textarea muted-placeholder')
                     .attr("placeholder", "Enter Value")
                     .val(field.Value)
-                    .autogrow({fixMinHeight: true, onInitialize: true})
+                    .autoGrow()
                     .appendTo(inputGroupContainer)
                     .after(getUrls(field.Value));
 
