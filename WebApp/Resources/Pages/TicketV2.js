@@ -4972,7 +4972,7 @@ function CreateTimeLineDelegates() {
 
     });
 
-    $('#ticketpage').bind('scroll', function () {
+    $('.frame-container').bind('scroll', function () {
         console.log($(this).scrollTop() + ' / ' + $(this).innerHeight() + ' / ' + $(this)[0].scrollHeight);
         if ($(this).scrollTop() > 100) {
             $('.scrollup').fadeIn();
