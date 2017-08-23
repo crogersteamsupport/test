@@ -164,7 +164,7 @@ div.form-group input {
 .form-group-sm .selectize-input input,
 .form-group-sm .control-label {
     padding:5px !important;
-    overflow:hidden;
+    display:block;
     min-height:20px;
     line-height:15px;
 }
