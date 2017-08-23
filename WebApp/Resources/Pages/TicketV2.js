@@ -322,12 +322,9 @@ $(document).ready(function () {
 
 
     watson(_ticketNumber);
-
-});
-
-$(window).load(function(e) {
     $("input[type=text], textarea").autogrow({fixMinHeight: true, onInitialize: true});
 });
+
 
 
 
@@ -440,7 +437,7 @@ function SetupTicketPage() {
     //Create the new action LI element
     CreateNewActionLI();
 
-    // $("input[type=text], textarea").autoGrow();
+    $("input[type=text], textarea").autogrow({fixMinHeight: true, onInitialize: true});
 
     window.parent.Ts.Services.TicketPage.GetTicketPageOrder("TicketFieldsOrder", function (order) {
         SetupTicketProperties(order);
