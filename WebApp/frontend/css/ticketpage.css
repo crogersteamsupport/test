@@ -166,6 +166,7 @@ div.form-group input {
     padding:5px !important;
     overflow:hidden;
     height:15px;
+    line-height:15px;
 }
 
 .form-group-sm .select-label {
