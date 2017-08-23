@@ -1357,8 +1357,8 @@ div.tag-item {
     box-shadow:none;
     resize:vertical;
     background-color:white;
-    overflow:auto;
-    -ms-overflow-style: none;
+    overflow-x: auto;
+    overflow-y:hidden;
     /*height:32px !important;*/
 }
 
