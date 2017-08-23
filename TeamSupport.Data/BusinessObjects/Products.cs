@@ -333,6 +333,13 @@ namespace TeamSupport.Data
         command.Parameters.AddWithValue("@ProductID", productID);
         products.ExecuteNonQuery(command, "OrganizationProducts");
 
+        command.CommandText = "DELETE FROM UserProducts WHERE (ProductID = @ProductID)";
+        command.CommandType = CommandType.Text;
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@ProductID", productID);
+        products.ExecuteNonQuery(command, "UserProducts");
+
+
         command.CommandText = "UPDATE Tickets SET ProductID = null, ReportedVersionID = null, SolvedVersionID = null WHERE (ProductID = @ProductID)";
         command.CommandType = CommandType.Text;
         command.Parameters.Clear();
