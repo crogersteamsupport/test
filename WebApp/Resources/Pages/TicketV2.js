@@ -455,7 +455,6 @@ function SetupTicketPage() {
         }
     })
 
-
     window.parent.Ts.Services.Customers.GetDateFormat(false, function (format) {
         dateFormat = format.replace("yyyy", "yy");
         if (dateFormat.length < 8) {
@@ -472,6 +471,7 @@ function SetupTicketPage() {
             dateFormat = dateArr[0] + "/" + dateArr[1] + "/" + dateArr[2];
         }
     });
+
 };
 
 function AddTicketProperty(item) {
@@ -587,7 +587,9 @@ function SetupTicketProperties(order) {
             LoadTicketNotes(note);
         });
 
+        $('#frame-container').show();
         $('.page-loading').hide().next().show();
+
 
         isFormValid();
         LoadPlugins(info);
