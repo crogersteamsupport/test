@@ -254,7 +254,7 @@ $.fn.autoGrow = function () {
         // Manipulations
         //this.style.width = "auto";
         this.style.height = "auto";
-        this.style.overflow = "hidden";
+        // this.style.overflow = "hidden";
         //this.style.width = ((characterWidth(this) * this.cols) + 6) + "px";
         this.onkeyup = grow;
         this.onfocus = grow;
