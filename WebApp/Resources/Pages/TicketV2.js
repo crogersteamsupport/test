@@ -212,6 +212,7 @@ Selectize.define('no_results', function (options) {
 
 $.fn.autoGrow = function () {
     return this.each(function () {
+
         // Variables
         var colsDefault = this.cols;
         var rowsDefault = this.rows;
@@ -256,7 +257,7 @@ $.fn.autoGrow = function () {
         this.style.height = "auto";
         this.style.width = "100%";
         // this.style.overflow = "hidden";
-        //this.style.width = ((characterWidth(this) * this.cols) + 6) + "px";
+        // this.style.width = ((characterWidth(this) * this.cols) + 6) + "px";
         this.onkeyup = grow;
         this.onfocus = grow;
         this.onblur = grow;
