@@ -13,7 +13,10 @@ textarea {
     font-family:'Roboto';
 }
 
-div.frame-container {
+#frame-container {
+    position:absolute !important;
+    top:50px;
+    bottom:0px;
     padding-top:0px;
 }
 
