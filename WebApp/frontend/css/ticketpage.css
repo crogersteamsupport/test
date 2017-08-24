@@ -147,6 +147,12 @@ div.timeline-body img {
 }
 
 
+
+.input-group {
+    width:100%;
+}
+
+
 div.form-horizontal .form-group-sm,
 div.form-group.ticket-group {
     background-color:rgba(255,255,255,0) !important;
