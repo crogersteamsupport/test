@@ -1356,7 +1356,6 @@ div.tag-item {
     box-shadow:none;
     position:relative;
     top:0px;
-    resize:none;
     background-color: transparent;
 }
 
@@ -1374,6 +1373,7 @@ div.tag-item {
     overflow-y:hidden;
     /*height:32px !important;*/
     border:1px solid rgba(0,0,0,0.1);
+    resize:none;
 }
 
 .ticket-checkbox {
