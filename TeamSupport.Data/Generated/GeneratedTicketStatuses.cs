@@ -34,7 +34,19 @@ namespace TeamSupport.Data
     
 
     
+    public string Description
+    {
+      get { return Row["Description"] != DBNull.Value ? (string)Row["Description"] : null; }
+      set { Row["Description"] = CheckValue("Description", value); }
+    }
+    
 
+    
+    public bool ExcludeFromCDI
+    {
+      get { return (bool)Row["ExcludeFromCDI"]; }
+      set { Row["ExcludeFromCDI"] = CheckValue("ExcludeFromCDI", value); }
+    }
     
     public bool PauseSLA
     {
@@ -88,12 +100,6 @@ namespace TeamSupport.Data
     {
       get { return (int)Row["Position"]; }
       set { Row["Position"] = CheckValue("Position", value); }
-    }
-    
-    public string Description
-    {
-      get { return (string)Row["Description"]; }
-      set { Row["Description"] = CheckValue("Description", value); }
     }
     
     public string Name
@@ -197,28 +203,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int ticketStatusID)
     {
-      BeforeDBDelete(ticketStatusID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TicketStatuses] WHERE ([TicketStatusID] = @TicketStatusID);";
         deleteCommand.Parameters.Add("TicketStatusID", SqlDbType.Int);
         deleteCommand.Parameters["TicketStatusID"].Value = ticketStatusID;
 
+        BeforeDBDelete(ticketStatusID);
         BeforeRowDelete(ticketStatusID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(ticketStatusID);
-      }
-      AfterDBDelete(ticketStatusID);
-      
-    }
+        AfterDBDelete(ticketStatusID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("TicketStatusesSave");
@@ -227,7 +223,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketStatuses] SET     [Name] = @Name,    [Description] = @Description,    [Position] = @Position,    [TicketTypeID] = @TicketTypeID,    [IsClosed] = @IsClosed,    [IsClosedEmail] = @IsClosedEmail,    [IsEmailResponse] = @IsEmailResponse,    [OrganizationID] = @OrganizationID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [PauseSLA] = @PauseSLA  WHERE ([TicketStatusID] = @TicketStatusID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketStatuses] SET     [Name] = @Name,    [Description] = @Description,    [Position] = @Position,    [TicketTypeID] = @TicketTypeID,    [IsClosed] = @IsClosed,    [IsClosedEmail] = @IsClosedEmail,    [IsEmailResponse] = @IsEmailResponse,    [OrganizationID] = @OrganizationID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [PauseSLA] = @PauseSLA,    [ExcludeFromCDI] = @ExcludeFromCDI  WHERE ([TicketStatusID] = @TicketStatusID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("TicketStatusID", SqlDbType.Int, 4);
@@ -314,13 +310,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ExcludeFromCDI", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketStatuses] (    [Name],    [Description],    [Position],    [TicketTypeID],    [IsClosed],    [IsClosedEmail],    [IsEmailResponse],    [OrganizationID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [PauseSLA]) VALUES ( @Name, @Description, @Position, @TicketTypeID, @IsClosed, @IsClosedEmail, @IsEmailResponse, @OrganizationID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @PauseSLA); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketStatuses] (    [Name],    [Description],    [Position],    [TicketTypeID],    [IsClosed],    [IsClosedEmail],    [IsEmailResponse],    [OrganizationID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [PauseSLA],    [ExcludeFromCDI]) VALUES ( @Name, @Description, @Position, @TicketTypeID, @IsClosed, @IsClosedEmail, @IsEmailResponse, @OrganizationID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @PauseSLA, @ExcludeFromCDI); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ExcludeFromCDI", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("PauseSLA", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -525,7 +535,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketStatusID], [Name], [Description], [Position], [TicketTypeID], [IsClosed], [IsClosedEmail], [IsEmailResponse], [OrganizationID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [PauseSLA] FROM [dbo].[TicketStatuses] WHERE ([TicketStatusID] = @TicketStatusID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketStatusID], [Name], [Description], [Position], [TicketTypeID], [IsClosed], [IsClosedEmail], [IsEmailResponse], [OrganizationID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [PauseSLA], [ExcludeFromCDI] FROM [dbo].[TicketStatuses] WHERE ([TicketStatusID] = @TicketStatusID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("TicketStatusID", ticketStatusID);
         Fill(command);

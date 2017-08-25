@@ -175,28 +175,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int importFieldID)
     {
-      BeforeDBDelete(importFieldID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ImportFields] WHERE ([ImportFieldID] = @ImportFieldID);";
         deleteCommand.Parameters.Add("ImportFieldID", SqlDbType.Int);
         deleteCommand.Parameters["ImportFieldID"].Value = importFieldID;
 
+        BeforeDBDelete(importFieldID);
         BeforeRowDelete(importFieldID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(importFieldID);
-      }
-      AfterDBDelete(importFieldID);
-      
-    }
+        AfterDBDelete(importFieldID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("ImportFieldsSave");
