@@ -106,8 +106,12 @@ input {
     background-color:rgba(255,255,255,0.5);
 }
 #ticket-properties-area {
-    padding-top:30px;
+    padding-top:10px;
     background-color:rgba(255,255,255,0.7);
+    width:300px;
+    padding-right:10px;
+    padding-left:10px;
+    margin-bottom:20px;
 }
 #ticket-properties-area .form-group {
     padding-top:0px;
@@ -1052,13 +1056,7 @@ span.action-option-items {
 
 
 
-.ticket-property-section {
-    width:300px;
-    padding-top:50px;
-    padding-right:10px;
-    padding-left:10px;
-    margin-bottom:20px;
-}
+
 
 #ticket-properties-area > hr {
     margin:4px -15px 4px -15px;
