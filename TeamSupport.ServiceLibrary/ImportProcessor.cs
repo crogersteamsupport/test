@@ -63,6 +63,7 @@ namespace TeamSupport.ServiceLibrary
         {
             import.CompletedRows = count;
             import.Collection.Save();
+            UpdateHealth();
         }
 
         private void ProcessImport(Import import)
