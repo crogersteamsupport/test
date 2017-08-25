@@ -9,9 +9,21 @@ var _viewingCustomers = false;
 var _viewingInventory = false;
 var _customersSortColumn = 'Date Created';
 var _customersSortDirection = 'DESC';
+var _dateFormat;
 
 $(document).ready(function () {
   _productID = window.parent.Ts.Utils.getQueryValue("productid", window);
+  
+
+  parent.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
+      $('.datepicker').attr("data-format", dateformat);
+      $('.datetimepicker').attr("data-format", dateformat + " hh:mm a");
+      _dateFormat = dateformat;
+      $('.timepicker').datetimepicker({ pickDate: false });
+      $('.datetimepicker').datetimepicker({});
+      $('.datepicker').datetimepicker({ pickTime: false });
+      //$('#inputExpectedRelease').datetimepicker({ pickTime: false, format: dateformat });
+  });
 
   $('body').layout({
       defaults: {
@@ -340,7 +352,8 @@ $(document).ready(function () {
           $('#fieldSlaLevel').text(result.SlaAssigned);
           $('#fieldSlaLevel').data('field', result.prodproxy.SlaLevelID);
       });
-  }
+
+ }
 
   function LoadJiraProjectKey() {
     window.parent.Ts.Services.Admin.GetIsJiraLinkActiveForOrganization(function (isActive) {
@@ -1107,13 +1120,7 @@ $(document).ready(function () {
       });
   }
 
-  window.parent.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
-      $('.datepicker').attr("data-format", dateformat);
-      $('.datepicker').datetimepicker({ pickTime: false });
 
-      $('#productExpiration').attr("data-format", dateformat);
-      $('.datetimepicker').datetimepicker({ });
-  });
 
   LoadCustomControls(window.parent.Ts.ReferenceTypes.OrganizationProducts);
   function LoadCustomControls(refType) {
@@ -1360,6 +1367,67 @@ $(document).ready(function () {
         window.parent.Ts.MainPage.openNewAsset(this.id);
     });
 });
+
+
+function convertToValidDate(val) {
+    var value = '';
+    if (val == "")
+        return value;
+
+    if (_dateFormat.indexOf("M") != 0) {
+        var dateArr = val.replace(/\./g, '/').replace(/-/g, '/').split('/');
+        if (_dateFormat.indexOf("D") == 0)
+            var day = dateArr[0];
+        if (_dateFormat.indexOf("Y") == 0)
+            var year = dateArr[0];
+        if (_dateFormat.indexOf("M") == 3 || _dateFormat.indexOf("M") == 5)
+            var month = dateArr[1];
+
+        var timeSplit = dateArr[2].split(' ');
+        if (_dateFormat.indexOf("Y") == 6)
+            var year = timeSplit[0];
+        else
+            var day = timeSplit[0];
+
+        var theTime = timeSplit[1];
+
+        var formattedDate = month + "/" + day + "/" + year;
+        value = parent.Ts.Utils.getMsDate(formattedDate);
+        return formattedDate;
+    }
+    else
+        return val;
+}
+
+function convertToValidDateTime(val) {
+    var value = '';
+    if (val == "")
+        return value;
+
+    if (_dateFormat.indexOf("M") != 0) {
+        var dateArr = val.replace(/\./g, '/').replace(/-/g, '/').split('/');
+        if (_dateFormat.indexOf("D") == 0)
+            var day = dateArr[0];
+        if (_dateFormat.indexOf("Y") == 0)
+            var year = dateArr[0];
+        if (_dateFormat.indexOf("M") == 3 || _dateFormat.indexOf("M") == 5)
+            var month = dateArr[1];
+
+        var timeSplit = dateArr[2].split(' ');
+        if (_dateFormat.indexOf("Y") == 6)
+            var year = timeSplit[0];
+        else
+            var day = timeSplit[0];
+
+        var theTime = timeSplit[1];
+
+        var formattedDate = month + "/" + day + "/" + year + " " + theTime;
+        //value = parent.Ts.Utils.getMsDate(formattedDate) + " " + theTime;
+        return formattedDate;
+    }
+    else
+        return val;
+}
 
 var getUrls = function (input) {
   var source = (input || '').toString();
@@ -1778,7 +1846,7 @@ var appendCustomEditDate = function (field, element) {
         var input = $('<input type="text">')
             .addClass('col-xs-10 form-control')
             .val(fieldValue === null ? '' : fieldValue.localeFormat(window.parent.Ts.Utils.getDatePattern()))
-            .datetimepicker({ pickTime: false })
+            .datetimepicker({ pickTime: false, format: _dateFormat })
             .appendTo(container1)
             .focus();
 
@@ -1793,7 +1861,7 @@ var appendCustomEditDate = function (field, element) {
         $('<i>')
             .addClass('col-xs-1 fa fa-check')
             .click(function (e) {
-              var value = window.parent.Ts.Utils.getMsDate(input.val());
+                var value = window.parent.Ts.Utils.getMsDate(convertToValidDate(input.val()));
               container.remove();
               if (field.IsRequired && (value === null || $.trim(value) === '')) {
                 // Currently there is no way to clear a Date.
@@ -1861,7 +1929,7 @@ var appendCustomEditDateTime = function (field, element) {
         var input = $('<input type="text">')
             .addClass('col-xs-10 form-control')
             .val(fieldValue === null ? '' : fieldValue.localeFormat(window.parent.Ts.Utils.getDateTimePattern()))
-            .datetimepicker({
+            .datetimepicker({ format: _dateFormat + " hh:mm a"
             })
 
             .appendTo(container1)
@@ -1878,7 +1946,7 @@ var appendCustomEditDateTime = function (field, element) {
         $('<i>')
             .addClass('col-xs-1 fa fa-check')
             .click(function (e) {
-              var value = window.parent.Ts.Utils.getMsDate(input.val());
+                var value = window.parent.Ts.Utils.getMsDate(convertToValidDateTime(input.val()));
               container.remove();
               if (field.IsRequired && (value === null || $.trim(value) === '')) {
                 // Currently there is no way to clear a Date.

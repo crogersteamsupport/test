@@ -12,6 +12,7 @@
 $(document).ready(function () {
     var _organizatinID = -1;
     var _isAdmin = parent.Ts.System.User.IsSystemAdmin && (_organizatinID != parent.Ts.System.User.OrganizationID);
+    var _dateFormat;
 
     $('body').layout({
         defaults: {
@@ -180,7 +181,7 @@ $(document).ready(function () {
                 customerInfo.DefaultSupportUserID = $("#ddlSUser").val();
                 customerInfo.DefaultSupportGroupID = $("#ddlSGroup").val();
                 customerInfo.TimeZoneID = $("#ddlTz").val();
-                customerInfo.SAExpirationDate = $("#inputSAE").val();
+                customerInfo.SAExpirationDate = convertToValidDate($("#inputSAE").val());
                 customerInfo.SlaLevelID = $("#ddSla").val();
                 customerInfo.SupportHoursMonth = $("#inputSupportHours").val();
                 customerInfo.Active = $("#cbActive").prop('checked');
@@ -199,7 +200,7 @@ $(document).ready(function () {
                             break;
                         case "_date":
                             //    var dt = $(this).find('input').datepicker('getDate');
-                            field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
+                            field.Value = $(this).val() == "" ? null : convertToValidDate($(this).val());
                             break;
                         case "_time":
                             //    var time = new Date("January 1, 1970 00:00:00");
@@ -211,7 +212,7 @@ $(document).ready(function () {
                             //    //field.Value = parent.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
                             //    var dt = $(this).find('input').datetimepicker('getDate');
                             //    field.Value = dt == null ? null : dt.toUTCString();
-                            field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
+                            field.Value = $(this).val() == "" ? null : convertToValidDateTime($(this).val());
                             break;
                         default:
                             field.Value = $(this).val();
@@ -275,7 +276,7 @@ $(document).ready(function () {
                         break;
                     case "_date":
                     //    var dt = $(this).find('input').datepicker('getDate');
-                        field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
+                        field.Value = $(this).val() == "" ? null : convertToValidDate($(this).val());
                         break;
                     case "_time":
                     //    var time = new Date("January 1, 1970 00:00:00");
@@ -287,7 +288,7 @@ $(document).ready(function () {
                     //    //field.Value = parent.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
                     //    var dt = $(this).find('input').datetimepicker('getDate');
                     //    field.Value = dt == null ? null : dt.toUTCString();
-                        field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
+                        field.Value = $(this).val() == "" ? null : convertToValidDateTime($(this).val());
                         break;
 
                     //case "date":
@@ -317,6 +318,66 @@ $(document).ready(function () {
         }
 
     });
+
+    function convertToValidDate(val) {
+        var value = '';
+        if (val == "")
+            return value;
+
+        if (_dateFormat.indexOf("M") != 0) {
+            var dateArr = val.replace(/\./g, '/').replace(/-/g, '/').split('/');
+            if (_dateFormat.indexOf("D") == 0)
+                var day = dateArr[0];
+            if (_dateFormat.indexOf("Y") == 0)
+                var year = dateArr[0];
+            if (_dateFormat.indexOf("M") == 3 || _dateFormat.indexOf("M") == 5)
+                var month = dateArr[1];
+
+            var timeSplit = dateArr[2].split(' ');
+            if (_dateFormat.indexOf("Y") == 6)
+                var year = timeSplit[0];
+            else
+                var day = timeSplit[0];
+
+            var theTime = timeSplit[1];
+
+            var formattedDate = month + "/" + day + "/" + year;
+            value = parent.Ts.Utils.getMsDate(formattedDate);
+            return formattedDate;
+        }
+        else
+            return val;
+    }
+
+    function convertToValidDateTime(val) {
+        var value = '';
+        if (val == "")
+            return value;
+
+        if (_dateFormat.indexOf("M") != 0) {
+            var dateArr = val.replace(/\./g, '/').replace(/-/g, '/').split('/');
+            if (_dateFormat.indexOf("D") == 0)
+                var day = dateArr[0];
+            if (_dateFormat.indexOf("Y") == 0)
+                var year = dateArr[0];
+            if (_dateFormat.indexOf("M") == 3 || _dateFormat.indexOf("M") == 5)
+                var month = dateArr[1];
+
+            var timeSplit = dateArr[2].split(' ');
+            if (_dateFormat.indexOf("Y") == 6)
+                var year = timeSplit[0];
+            else
+                var day = timeSplit[0];
+
+            var theTime = timeSplit[1] + " " + timeSplit[2];
+
+            var formattedDate = month + "/" + day + "/" + year + " " + theTime;
+            //value = parent.Ts.Utils.getMsDate(formattedDate) + " " + theTime;
+            return formattedDate;
+        }
+        else
+            return val;
+    }
 
     function LoadSlas() {
         parent.Ts.Services.Customers.LoadSlas(function (sla) {
@@ -356,7 +417,9 @@ $(document).ready(function () {
             parent.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
                 //$('.datepicker').datepicker({ format: dateformat });
                 //$('.datepicker').datetimepicker({ pickTime: false });
+                _dateFormat = dateformat;
                 $('.datepicker').attr("data-format", dateformat);
+                $('.datetimepicker').attr("data-format", dateformat + " hh:mm a");
 
                 $('.datepicker').datetimepicker({ pickTime: false });
                 $('.timepicker').datetimepicker({ pickDate: false });
@@ -378,6 +441,7 @@ $(document).ready(function () {
                 //$('.datepicker').datepicker({ format: dateformat });
                 //$('.datepicker').datetimepicker({ pickTime: false });
                 $('.datepicker').attr("data-format", dateformat);
+                $('.datetimepicker').attr("data-format", dateformat + " hh:mm a");
 
                 $('.datepicker').datetimepicker({ pickTime: false });
                 $('.timepicker').datetimepicker({ pickDate: false });
