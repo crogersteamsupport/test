@@ -18,7 +18,7 @@ textarea {
     top:50px;
     bottom:0px;
     padding-top:0px;
-    height: auto !important;
+    height:100% !important;
 }
 
 #ticketpage {
@@ -27,6 +27,7 @@ textarea {
     position:absolute;
     left:0px;
     right:0px;
+    height:100%;
 }
 
 
