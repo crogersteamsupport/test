@@ -156,28 +156,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int apiLogID)
     {
-      BeforeDBDelete(apiLogID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ApiLogs] WHERE ([ApiLogID] = @ApiLogID);";
         deleteCommand.Parameters.Add("ApiLogID", SqlDbType.Int);
         deleteCommand.Parameters["ApiLogID"].Value = apiLogID;
 
+        BeforeDBDelete(apiLogID);
         BeforeRowDelete(apiLogID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(apiLogID);
-      }
-      AfterDBDelete(apiLogID);
-      
-    }
+        AfterDBDelete(apiLogID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("ApiLogsSave");

@@ -132,28 +132,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int cRMResultsID)
     {
-      BeforeDBDelete(cRMResultsID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[CRMLinkResults] WHERE ([CRMResultsID] = @CRMResultsID);";
         deleteCommand.Parameters.Add("CRMResultsID", SqlDbType.Int);
         deleteCommand.Parameters["CRMResultsID"].Value = cRMResultsID;
 
+        BeforeDBDelete(cRMResultsID);
         BeforeRowDelete(cRMResultsID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(cRMResultsID);
-      }
-      AfterDBDelete(cRMResultsID);
-      
-    }
+        AfterDBDelete(cRMResultsID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("CRMLinkResultsSave");
