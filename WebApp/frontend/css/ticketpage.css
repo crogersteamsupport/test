@@ -5,6 +5,9 @@ body {
 textarea {
     background-color:transparent !important;
 }
+input {
+    word-break: break-word;
+}
 
 .btn {
     padding:5px 10px;
