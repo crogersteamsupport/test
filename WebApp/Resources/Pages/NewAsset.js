@@ -76,7 +76,7 @@
             break;
           case "_date":
             //    var dt = $(this).find('input').datepicker('getDate');
-              field.Value = $(this).val() == "" ? null : convertToValidDate($(this).val());
+              field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate(convertToValidDate($(this).val()));
             break;
           case "_time":
             //    var time = new Date("January 1, 1970 00:00:00");
@@ -88,7 +88,7 @@
             //    //field.Value = parent.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
             //    var dt = $(this).find('input').datetimepicker('getDate');
             //    field.Value = dt == null ? null : dt.toUTCString();
-              field.Value = $(this).val() == "" ? null : convertToValidDateTime($(this).val());
+              field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate(convertToValidDateTime($(this).val()));
             break;
           default:
             field.Value = $(this).val();

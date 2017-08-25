@@ -258,13 +258,13 @@ $(document).ready(function () {
             field.Value = $(this).prop('checked');
             break;
           case "_date":
-            field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
+              field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate(convertToValidDate($(this).val()));
             break;
           case "_time":
             field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
             break;
           case "_datetime":
-            field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
+              field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate(convertToValidDateTime($(this).val()));
             break;
           default:
             field.Value = $(this).val();
