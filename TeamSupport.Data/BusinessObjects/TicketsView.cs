@@ -1072,7 +1072,7 @@ ORDER BY TicketNumber DESC";
                 command.CommandText = string.Format(text, max.ToString());
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
-                Fill(command);
+                Fill(command, "", false);
             }
         }
 
