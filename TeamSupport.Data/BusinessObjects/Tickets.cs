@@ -1151,7 +1151,14 @@ AND ts.IsClosed = 0";
             string description = "Deleted Ticket Number " + ticket.TicketNumber.ToString();
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Tickets, ticket.TicketID, description);
 
-
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "UPDATE Tickets SET ModifierID = @ModifierID WHERE (TicketID = @TicketID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@TicketID", ticketID);
+                command.Parameters.AddWithValue("@ModifierID", LoginUser.UserID);
+                ticket.Collection.ExecuteNonQuery(command, "TicketRelationships");
+            }
         }
 
         public static string GetTicketLink(Ticket ticket)

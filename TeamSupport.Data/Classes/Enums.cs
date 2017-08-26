@@ -76,7 +76,8 @@ namespace TeamSupport.Data
         ContactNotes = 58,
         Sla = 59,
         ChatAttachments = 60,
-        Tasks = 61
+        Tasks = 61,
+        DeletedTickets = 62
     };
 
     public enum SlaViolationType
