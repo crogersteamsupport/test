@@ -1066,7 +1066,7 @@ ORDER BY TicketNumber DESC";
                 {
                     text = @"
         SELECT TicketID
-        FROM TicketsView tv WITH(NOLOCK)
+        FROM Tickets tv WITH(NOLOCK)
         WHERE tv.OrganizationID= @OrganizationID
         ORDER BY DateModified DESC";
                 }
