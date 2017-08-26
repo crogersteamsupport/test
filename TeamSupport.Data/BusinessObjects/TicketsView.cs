@@ -1057,18 +1057,16 @@ ORDER BY TicketNumber DESC";
             {
                 string text = @"
         SELECT TOP {0} TicketID
-        FROM TicketsView tv WITH(NOLOCK)
+        FROM Tickets tv WITH(NOLOCK)
         WHERE tv.NeedsIndexing = 1
-        AND tv.OrganizationID= @OrganizationID
-        ORDER BY DateModified DESC";
+        AND tv.OrganizationID= @OrganizationID";
 
                 if (isRebuilding)
                 {
                     text = @"
         SELECT TicketID
         FROM Tickets tv WITH(NOLOCK)
-        WHERE tv.OrganizationID= @OrganizationID
-        ORDER BY DateModified DESC";
+        WHERE tv.OrganizationID= @OrganizationID";
                 }
 
                 command.CommandText = string.Format(text, max.ToString());
