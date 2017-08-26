@@ -60,42 +60,13 @@ namespace TeamSupport.ServiceLibrary
             try
             {
                 GetNextRecord();
-                try
-                {
-                    LogDoc(_table, _itemIDList[_rowIndex], _isRebuilding, _organizationID);
-                }
-                catch (Exception)
-                {
-                }
             }
             catch (Exception ex)
             {
+                _logs.WriteEvent($"Table:{_table}, ID:{_itemIDList[_rowIndex]}, IsRebuilding:{_isRebuilding}, OrgID: {_organizationID}");
                 _logs.WriteException(ex);
-                ExceptionLogs.LogException(_loginUser, ex, "Indexer - GetNextDoc - " + _table);
-                return false;
             }
             return true;
-        }
-
-        private void LogDoc(string table, int itemID, bool isRebuilding, int organizationID)
-        {
-            try
-            {
-                SqlCommand command = new SqlCommand(@"
-                    INSERT INTO [dbo].[IndexedItems]
-                        ([TableName],[ItemID],[IsRebuilding],[OrganizationID])
-                    VALUES
-                        (@table, @itemID, @isRebuilding, @organizationID)
-                    ");
-                command.Parameters.AddWithValue("@table", table);
-                command.Parameters.AddWithValue("@itemID", itemID);
-                command.Parameters.AddWithValue("@isRebuilding", isRebuilding);
-                command.Parameters.AddWithValue("@organizationID", organizationID);
-                SqlExecutor.ExecuteNonQuery(_loginUser, command);
-            }
-            catch (Exception)
-            {
-            }
         }
 
         public override bool Rewind()
