@@ -268,11 +268,13 @@ $.fn.autoGrow = function () {
 
 $(window).resize(function(e) {
     pagewidth();
+    ticketmenu();
 });
 
 
 $(document).ready(function () {
     pagewidth();
+
     _ticketNumber = window.parent.Ts.Utils.getQueryValue("TicketNumber", window);
 
     apiKey = "45228242";
