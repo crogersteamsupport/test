@@ -143,6 +143,18 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
-  }
+
+        public virtual string GetSlaveLevelName(int slaTriggerID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SET NOCOUNT OFF; select SlaLevels.Name from SlaLevels left join SlaTriggers on SlaTriggers.SlaLevelID=SlaLevels.SlaLevelID WHERE ([SlaTriggerID] = @SlaTriggerID);";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("SlaTriggerID", slaTriggerID);
+                object o = ExecuteScalar(command);
+                return (string)o;
+            }
+        }
+    }
   
 }
