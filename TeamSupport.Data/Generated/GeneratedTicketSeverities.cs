@@ -39,13 +39,15 @@ namespace TeamSupport.Data
       get { return Row["Description"] != DBNull.Value ? (string)Row["Description"] : null; }
       set { Row["Description"] = CheckValue("Description", value); }
     }
+    
 
+    
     public bool VisibleOnPortal
     {
-        get { return (bool)Row["VisibleOnPortal"]; }
-        set { Row["VisibleOnPortal"] = CheckValue("VisibleOnPortal", value); }
+      get { return (bool)Row["VisibleOnPortal"]; }
+      set { Row["VisibleOnPortal"] = CheckValue("VisibleOnPortal", value); }
     }
-
+    
     public int ModifierID
     {
       get { return (int)Row["ModifierID"]; }
@@ -171,28 +173,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int ticketSeverityID)
     {
-      BeforeDBDelete(ticketSeverityID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TicketSeverities] WHERE ([TicketSeverityID] = @TicketSeverityID);";
         deleteCommand.Parameters.Add("TicketSeverityID", SqlDbType.Int);
         deleteCommand.Parameters["TicketSeverityID"].Value = ticketSeverityID;
 
+        BeforeDBDelete(ticketSeverityID);
         BeforeRowDelete(ticketSeverityID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(ticketSeverityID);
-      }
-      AfterDBDelete(ticketSeverityID);
-      
-    }
+        AfterDBDelete(ticketSeverityID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("TicketSeveritiesSave");
@@ -201,7 +193,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketSeverities] SET     [Name] = @Name,    [Description] = @Description,    [Position] = @Position,    [OrganizationID] = @OrganizationID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID , [VisibleOnPortal] = @VisibleOnPortal WHERE ([TicketSeverityID] = @TicketSeverityID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketSeverities] SET     [Name] = @Name,    [Description] = @Description,    [Position] = @Position,    [OrganizationID] = @OrganizationID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [VisibleOnPortal] = @VisibleOnPortal  WHERE ([TicketSeverityID] = @TicketSeverityID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("TicketSeverityID", SqlDbType.Int, 4);
@@ -259,22 +251,23 @@ namespace TeamSupport.Data
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketSeverities] (    [Name],    [Description],    [Position],    [OrganizationID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID], [VisibleOnPortal]) VALUES ( @Name, @Description, @Position, @OrganizationID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @VisibleOnPortal); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketSeverities] (    [Name],    [Description],    [Position],    [OrganizationID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [VisibleOnPortal]) VALUES ( @Name, @Description, @Position, @OrganizationID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @VisibleOnPortal); SET @Identity = SCOPE_IDENTITY();";
 
 		
-        tempParameter = insertCommand.Parameters.Add("VisibleOnPortal", SqlDbType.Bit, 1);
-        if (tempParameter.SqlDbType == SqlDbType.Float)
-        {
-            tempParameter.Precision = 255;
-            tempParameter.Scale = 255;
-        }
-
-        tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
+		tempParameter = insertCommand.Parameters.Add("VisibleOnPortal", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 10;

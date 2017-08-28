@@ -174,28 +174,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int commitID)
     {
-      BeforeDBDelete(commitID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[SourceCommitLog] WHERE ([CommitID] = @CommitID);";
         deleteCommand.Parameters.Add("CommitID", SqlDbType.Int);
         deleteCommand.Parameters["CommitID"].Value = commitID;
 
+        BeforeDBDelete(commitID);
         BeforeRowDelete(commitID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(commitID);
-      }
-      AfterDBDelete(commitID);
-      
-    }
+        AfterDBDelete(commitID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("SourceCommitLogsSave");

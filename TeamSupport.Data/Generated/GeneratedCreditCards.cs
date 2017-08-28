@@ -190,28 +190,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int creditCardID)
     {
-      BeforeDBDelete(creditCardID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[CreditCards] WHERE ([CreditCardID] = @CreditCardID);";
         deleteCommand.Parameters.Add("CreditCardID", SqlDbType.Int);
         deleteCommand.Parameters["CreditCardID"].Value = creditCardID;
 
+        BeforeDBDelete(creditCardID);
         BeforeRowDelete(creditCardID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(creditCardID);
-      }
-      AfterDBDelete(creditCardID);
-      
-    }
+        AfterDBDelete(creditCardID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("CreditCardsSave");

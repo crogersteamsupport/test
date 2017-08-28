@@ -76,6 +76,8 @@ namespace TeamSupport.Data
       set { Row["ImportFileID"] = CheckValue("ImportFileID", value); }
     }
     
+
+    
     public bool IsClean
     {
       get { return (bool)Row["IsClean"]; }
@@ -264,28 +266,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int actionID)
     {
-      BeforeDBDelete(actionID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Actions] WHERE ([ActionID] = @ActionID);";
         deleteCommand.Parameters.Add("ActionID", SqlDbType.Int);
         deleteCommand.Parameters["ActionID"].Value = actionID;
 
+        BeforeDBDelete(actionID);
         BeforeRowDelete(actionID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(actionID);
-      }
-      AfterDBDelete(actionID);
-      
-    }
+        AfterDBDelete(actionID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("ActionsSave");
@@ -395,7 +387,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("SalesForceID", SqlDbType.VarChar, 8000);
+		tempParameter = updateCommand.Parameters.Add("SalesForceID", SqlDbType.VarChar, 100);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -494,7 +486,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("SalesForceID", SqlDbType.VarChar, 8000);
+		tempParameter = insertCommand.Parameters.Add("SalesForceID", SqlDbType.VarChar, 100);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -651,6 +643,7 @@ namespace TeamSupport.Data
 			  }
 			  if (updateCommand.Parameters.Contains("ModifierID")) updateCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
 			  if (updateCommand.Parameters.Contains("DateModified")) updateCommand.Parameters["DateModified"].Value = DateTime.UtcNow;
+
 			  updateCommand.ExecuteNonQuery();
 			  AfterRowEdit(action);
 			}
@@ -663,7 +656,6 @@ namespace TeamSupport.Data
 			  AfterRowDelete(id);
 			}
 		  }
-          this.isAdminClean = false;
 		  //transaction.Commit();
 		}
 		catch (Exception)

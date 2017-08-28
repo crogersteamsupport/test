@@ -1,1215 +1,525 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedTicket
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedSelectDeletedTicket
 
 (
-  @CRMLinkID int
+  @ID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [CRMLinkID],
+    [ID],
+    [TicketID],
+    [TicketNumber],
     [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail],
-    [DefaultSlaLevelID],
-    [PullCasesAsTickets],
-    [PushTicketsAsCases],
-    [PullCustomerProducts],
-    [UpdateStatus],
-    [ActionTypeIDToPush],
-    [HostName],
-    [DefaultProject],
-    [MatchAccountsByName],
-    [UseSandBoxServer],
-    [AlwaysUseDefaultProjectKey],
-    [RestrictedToTicketTypes],
-    [UpdateTicketType],
-    [InstanceName],
-    [ExcludedTicketStatusUpdate],
-    [IncludeIssueNonRequired],
-    [UseNetworkCredentials]
-  FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
+    [Name],
+    [DateDeleted],
+    [DeleterID],
+    [DeleterEmail]
+  FROM [dbo].[DeletedTickets]
+  WHERE ([ID] = @ID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedTicket
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedInsertDeletedTicket
 
 (
+  @TicketID int,
+  @TicketNumber int,
   @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(1000),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit,
-  @DefaultSlaLevelID int,
-  @PullCasesAsTickets bit,
-  @PushTicketsAsCases bit,
-  @PullCustomerProducts bit,
-  @UpdateStatus bit,
-  @ActionTypeIDToPush int,
-  @HostName varchar(8000),
-  @DefaultProject varchar(8000),
-  @MatchAccountsByName bit,
-  @UseSandBoxServer bit,
-  @AlwaysUseDefaultProjectKey bit,
-  @RestrictedToTicketTypes varchar(500),
-  @UpdateTicketType bit,
-  @InstanceName varchar(255),
-  @ExcludedTicketStatusUpdate varchar(500),
-  @IncludeIssueNonRequired bit,
-  @UseNetworkCredentials bit,
+  @Name nvarchar(255),
+  @DateDeleted datetime,
+  @DeleterID int,
+  @DeleterEmail nvarchar(1024),
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CRMLinkTable]
+  INSERT INTO [dbo].[DeletedTickets]
   (
+    [TicketID],
+    [TicketNumber],
     [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail],
-    [DefaultSlaLevelID],
-    [PullCasesAsTickets],
-    [PushTicketsAsCases],
-    [PullCustomerProducts],
-    [UpdateStatus],
-    [ActionTypeIDToPush],
-    [HostName],
-    [DefaultProject],
-    [MatchAccountsByName],
-    [UseSandBoxServer],
-    [AlwaysUseDefaultProjectKey],
-    [RestrictedToTicketTypes],
-    [UpdateTicketType],
-    [InstanceName],
-    [ExcludedTicketStatusUpdate],
-    [IncludeIssueNonRequired],
-    [UseNetworkCredentials])
+    [Name],
+    [DateDeleted],
+    [DeleterID],
+    [DeleterEmail])
   VALUES (
+    @TicketID,
+    @TicketNumber,
     @OrganizationID,
-    @Active,
-    @CRMType,
-    @Username,
-    @Password,
-    @SecurityToken,
-    @TypeFieldMatch,
-    @LastLink,
-    @SendBackTicketData,
-    @LastProcessed,
-    @LastTicketID,
-    @AllowPortalAccess,
-    @SendWelcomeEmail,
-    @DefaultSlaLevelID,
-    @PullCasesAsTickets,
-    @PushTicketsAsCases,
-    @PullCustomerProducts,
-    @UpdateStatus,
-    @ActionTypeIDToPush,
-    @HostName,
-    @DefaultProject,
-    @MatchAccountsByName,
-    @UseSandBoxServer,
-    @AlwaysUseDefaultProjectKey,
-    @RestrictedToTicketTypes,
-    @UpdateTicketType,
-    @InstanceName,
-    @ExcludedTicketStatusUpdate,
-    @IncludeIssueNonRequired,
-    @UseNetworkCredentials)
+    @Name,
+    @DateDeleted,
+    @DeleterID,
+    @DeleterEmail)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
 
 (
-  @CRMLinkID int,
+  @ID int,
+  @TicketID int,
+  @TicketNumber int,
   @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(1000),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit,
-  @DefaultSlaLevelID int,
-  @PullCasesAsTickets bit,
-  @PushTicketsAsCases bit,
-  @PullCustomerProducts bit,
-  @UpdateStatus bit,
-  @ActionTypeIDToPush int,
-  @HostName varchar(8000),
-  @DefaultProject varchar(8000),
-  @MatchAccountsByName bit,
-  @UseSandBoxServer bit,
-  @AlwaysUseDefaultProjectKey bit,
-  @RestrictedToTicketTypes varchar(500),
-  @UpdateTicketType bit,
-  @InstanceName varchar(255),
-  @ExcludedTicketStatusUpdate varchar(500),
-  @IncludeIssueNonRequired bit,
-  @UseNetworkCredentials bit
+  @Name nvarchar(255),
+  @DateDeleted datetime,
+  @DeleterID int,
+  @DeleterEmail nvarchar(1024)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CRMLinkTable]
+  UPDATE [dbo].[DeletedTickets]
   SET
+    [TicketID] = @TicketID,
+    [TicketNumber] = @TicketNumber,
     [OrganizationID] = @OrganizationID,
-    [Active] = @Active,
-    [CRMType] = @CRMType,
-    [Username] = @Username,
-    [Password] = @Password,
-    [SecurityToken] = @SecurityToken,
-    [TypeFieldMatch] = @TypeFieldMatch,
-    [LastLink] = @LastLink,
-    [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed,
-    [LastTicketID] = @LastTicketID,
-    [AllowPortalAccess] = @AllowPortalAccess,
-    [SendWelcomeEmail] = @SendWelcomeEmail,
-    [DefaultSlaLevelID] = @DefaultSlaLevelID,
-    [PullCasesAsTickets] = @PullCasesAsTickets,
-    [PushTicketsAsCases] = @PushTicketsAsCases,
-    [PullCustomerProducts] = @PullCustomerProducts,
-    [UpdateStatus] = @UpdateStatus,
-    [ActionTypeIDToPush] = @ActionTypeIDToPush,
-    [HostName] = @HostName,
-    [DefaultProject] = @DefaultProject,
-    [MatchAccountsByName] = @MatchAccountsByName,
-    [UseSandBoxServer] = @UseSandBoxServer,
-    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,
-    [RestrictedToTicketTypes] = @RestrictedToTicketTypes,
-    [UpdateTicketType] = @UpdateTicketType,
-    [InstanceName] = @InstanceName,
-    [ExcludedTicketStatusUpdate] = @ExcludedTicketStatusUpdate,
-    [IncludeIssueNonRequired] = @IncludeIssueNonRequired,
-    [UseNetworkCredentials] = @UseNetworkCredentials
-  WHERE ([CRMLinkID] = @CRMLinkID)
+    [Name] = @Name,
+    [DateDeleted] = @DateDeleted,
+    [DeleterID] = @DeleterID,
+    [DeleterEmail] = @DeleterEmail
+  WHERE ([ID] = @ID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedTicket
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedTicket
 
 (
-  @CRMLinkID int
+  @ID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
+  DELETE FROM [dbo].[DeletedTickets]
+  WHERE ([ID] = @ID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedTicket
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedSelectDeletedTicket
 
 (
-  @CRMLinkID int
+  @ID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [CRMLinkID],
+    [ID],
+    [TicketID],
+    [TicketNumber],
     [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail],
-    [DefaultSlaLevelID],
-    [PullCasesAsTickets],
-    [PushTicketsAsCases],
-    [PullCustomerProducts],
-    [UpdateStatus],
-    [ActionTypeIDToPush],
-    [HostName],
-    [DefaultProject],
-    [MatchAccountsByName],
-    [UseSandBoxServer],
-    [AlwaysUseDefaultProjectKey],
-    [RestrictedToTicketTypes],
-    [UpdateTicketType],
-    [InstanceName],
-    [ExcludedTicketStatusUpdate],
-    [IncludeIssueNonRequired],
-    [UseNetworkCredentials]
-  FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
+    [Name],
+    [DateDeleted],
+    [DeleterID],
+    [DeleterEmail]
+  FROM [dbo].[DeletedTickets]
+  WHERE ([ID] = @ID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedTicket
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedInsertDeletedTicket
 
 (
+  @TicketID int,
+  @TicketNumber int,
   @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(1000),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit,
-  @DefaultSlaLevelID int,
-  @PullCasesAsTickets bit,
-  @PushTicketsAsCases bit,
-  @PullCustomerProducts bit,
-  @UpdateStatus bit,
-  @ActionTypeIDToPush int,
-  @HostName varchar(8000),
-  @DefaultProject varchar(8000),
-  @MatchAccountsByName bit,
-  @UseSandBoxServer bit,
-  @AlwaysUseDefaultProjectKey bit,
-  @RestrictedToTicketTypes varchar(500),
-  @UpdateTicketType bit,
-  @InstanceName varchar(255),
-  @ExcludedTicketStatusUpdate varchar(500),
-  @IncludeIssueNonRequired bit,
-  @UseNetworkCredentials bit,
+  @Name nvarchar(255),
+  @DateDeleted datetime,
+  @DeleterID int,
+  @DeleterEmail nvarchar(1024),
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CRMLinkTable]
+  INSERT INTO [dbo].[DeletedTickets]
   (
+    [TicketID],
+    [TicketNumber],
     [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail],
-    [DefaultSlaLevelID],
-    [PullCasesAsTickets],
-    [PushTicketsAsCases],
-    [PullCustomerProducts],
-    [UpdateStatus],
-    [ActionTypeIDToPush],
-    [HostName],
-    [DefaultProject],
-    [MatchAccountsByName],
-    [UseSandBoxServer],
-    [AlwaysUseDefaultProjectKey],
-    [RestrictedToTicketTypes],
-    [UpdateTicketType],
-    [InstanceName],
-    [ExcludedTicketStatusUpdate],
-    [IncludeIssueNonRequired],
-    [UseNetworkCredentials])
+    [Name],
+    [DateDeleted],
+    [DeleterID],
+    [DeleterEmail])
   VALUES (
+    @TicketID,
+    @TicketNumber,
     @OrganizationID,
-    @Active,
-    @CRMType,
-    @Username,
-    @Password,
-    @SecurityToken,
-    @TypeFieldMatch,
-    @LastLink,
-    @SendBackTicketData,
-    @LastProcessed,
-    @LastTicketID,
-    @AllowPortalAccess,
-    @SendWelcomeEmail,
-    @DefaultSlaLevelID,
-    @PullCasesAsTickets,
-    @PushTicketsAsCases,
-    @PullCustomerProducts,
-    @UpdateStatus,
-    @ActionTypeIDToPush,
-    @HostName,
-    @DefaultProject,
-    @MatchAccountsByName,
-    @UseSandBoxServer,
-    @AlwaysUseDefaultProjectKey,
-    @RestrictedToTicketTypes,
-    @UpdateTicketType,
-    @InstanceName,
-    @ExcludedTicketStatusUpdate,
-    @IncludeIssueNonRequired,
-    @UseNetworkCredentials)
+    @Name,
+    @DateDeleted,
+    @DeleterID,
+    @DeleterEmail)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
 
 (
-  @CRMLinkID int,
+  @ID int,
+  @TicketID int,
+  @TicketNumber int,
   @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(1000),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit,
-  @DefaultSlaLevelID int,
-  @PullCasesAsTickets bit,
-  @PushTicketsAsCases bit,
-  @PullCustomerProducts bit,
-  @UpdateStatus bit,
-  @ActionTypeIDToPush int,
-  @HostName varchar(8000),
-  @DefaultProject varchar(8000),
-  @MatchAccountsByName bit,
-  @UseSandBoxServer bit,
-  @AlwaysUseDefaultProjectKey bit,
-  @RestrictedToTicketTypes varchar(500),
-  @UpdateTicketType bit,
-  @InstanceName varchar(255),
-  @ExcludedTicketStatusUpdate varchar(500),
-  @IncludeIssueNonRequired bit,
-  @UseNetworkCredentials bit
+  @Name nvarchar(255),
+  @DateDeleted datetime,
+  @DeleterID int,
+  @DeleterEmail nvarchar(1024)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CRMLinkTable]
+  UPDATE [dbo].[DeletedTickets]
   SET
+    [TicketID] = @TicketID,
+    [TicketNumber] = @TicketNumber,
     [OrganizationID] = @OrganizationID,
-    [Active] = @Active,
-    [CRMType] = @CRMType,
-    [Username] = @Username,
-    [Password] = @Password,
-    [SecurityToken] = @SecurityToken,
-    [TypeFieldMatch] = @TypeFieldMatch,
-    [LastLink] = @LastLink,
-    [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed,
-    [LastTicketID] = @LastTicketID,
-    [AllowPortalAccess] = @AllowPortalAccess,
-    [SendWelcomeEmail] = @SendWelcomeEmail,
-    [DefaultSlaLevelID] = @DefaultSlaLevelID,
-    [PullCasesAsTickets] = @PullCasesAsTickets,
-    [PushTicketsAsCases] = @PushTicketsAsCases,
-    [PullCustomerProducts] = @PullCustomerProducts,
-    [UpdateStatus] = @UpdateStatus,
-    [ActionTypeIDToPush] = @ActionTypeIDToPush,
-    [HostName] = @HostName,
-    [DefaultProject] = @DefaultProject,
-    [MatchAccountsByName] = @MatchAccountsByName,
-    [UseSandBoxServer] = @UseSandBoxServer,
-    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,
-    [RestrictedToTicketTypes] = @RestrictedToTicketTypes,
-    [UpdateTicketType] = @UpdateTicketType,
-    [InstanceName] = @InstanceName,
-    [ExcludedTicketStatusUpdate] = @ExcludedTicketStatusUpdate,
-    [IncludeIssueNonRequired] = @IncludeIssueNonRequired,
-    [UseNetworkCredentials] = @UseNetworkCredentials
-  WHERE ([CRMLinkID] = @CRMLinkID)
+    [Name] = @Name,
+    [DateDeleted] = @DateDeleted,
+    [DeleterID] = @DeleterID,
+    [DeleterEmail] = @DeleterEmail
+  WHERE ([ID] = @ID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedTicket
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedTicket
 
 (
-  @CRMLinkID int
+  @ID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
+  DELETE FROM [dbo].[DeletedTickets]
+  WHERE ([ID] = @ID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedTicket
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedSelectDeletedTicket
 
 (
-  @CRMLinkID int
+  @ID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [CRMLinkID],
+    [ID],
+    [TicketID],
+    [TicketNumber],
     [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail],
-    [DefaultSlaLevelID],
-    [PullCasesAsTickets],
-    [PushTicketsAsCases],
-    [PullCustomerProducts],
-    [UpdateStatus],
-    [ActionTypeIDToPush],
-    [HostName],
-    [DefaultProject],
-    [MatchAccountsByName],
-    [UseSandBoxServer],
-    [AlwaysUseDefaultProjectKey],
-    [RestrictedToTicketTypes],
-    [UpdateTicketType],
-    [InstanceName],
-    [ExcludedTicketStatusUpdate],
-    [IncludeIssueNonRequired],
-    [UseNetworkCredentials]
-  FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
+    [Name],
+    [DateDeleted],
+    [DeleterID],
+    [DeleterEmail]
+  FROM [dbo].[DeletedTickets]
+  WHERE ([ID] = @ID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedTicket
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedInsertDeletedTicket
 
 (
+  @TicketID int,
+  @TicketNumber int,
   @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(1000),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit,
-  @DefaultSlaLevelID int,
-  @PullCasesAsTickets bit,
-  @PushTicketsAsCases bit,
-  @PullCustomerProducts bit,
-  @UpdateStatus bit,
-  @ActionTypeIDToPush int,
-  @HostName varchar(8000),
-  @DefaultProject varchar(8000),
-  @MatchAccountsByName bit,
-  @UseSandBoxServer bit,
-  @AlwaysUseDefaultProjectKey bit,
-  @RestrictedToTicketTypes varchar(500),
-  @UpdateTicketType bit,
-  @InstanceName varchar(255),
-  @ExcludedTicketStatusUpdate varchar(500),
-  @IncludeIssueNonRequired bit,
-  @UseNetworkCredentials bit,
+  @Name nvarchar(255),
+  @DateDeleted datetime,
+  @DeleterID int,
+  @DeleterEmail nvarchar(1024),
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CRMLinkTable]
+  INSERT INTO [dbo].[DeletedTickets]
   (
+    [TicketID],
+    [TicketNumber],
     [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail],
-    [DefaultSlaLevelID],
-    [PullCasesAsTickets],
-    [PushTicketsAsCases],
-    [PullCustomerProducts],
-    [UpdateStatus],
-    [ActionTypeIDToPush],
-    [HostName],
-    [DefaultProject],
-    [MatchAccountsByName],
-    [UseSandBoxServer],
-    [AlwaysUseDefaultProjectKey],
-    [RestrictedToTicketTypes],
-    [UpdateTicketType],
-    [InstanceName],
-    [ExcludedTicketStatusUpdate],
-    [IncludeIssueNonRequired],
-    [UseNetworkCredentials])
+    [Name],
+    [DateDeleted],
+    [DeleterID],
+    [DeleterEmail])
   VALUES (
+    @TicketID,
+    @TicketNumber,
     @OrganizationID,
-    @Active,
-    @CRMType,
-    @Username,
-    @Password,
-    @SecurityToken,
-    @TypeFieldMatch,
-    @LastLink,
-    @SendBackTicketData,
-    @LastProcessed,
-    @LastTicketID,
-    @AllowPortalAccess,
-    @SendWelcomeEmail,
-    @DefaultSlaLevelID,
-    @PullCasesAsTickets,
-    @PushTicketsAsCases,
-    @PullCustomerProducts,
-    @UpdateStatus,
-    @ActionTypeIDToPush,
-    @HostName,
-    @DefaultProject,
-    @MatchAccountsByName,
-    @UseSandBoxServer,
-    @AlwaysUseDefaultProjectKey,
-    @RestrictedToTicketTypes,
-    @UpdateTicketType,
-    @InstanceName,
-    @ExcludedTicketStatusUpdate,
-    @IncludeIssueNonRequired,
-    @UseNetworkCredentials)
+    @Name,
+    @DateDeleted,
+    @DeleterID,
+    @DeleterEmail)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
 
 (
-  @CRMLinkID int,
+  @ID int,
+  @TicketID int,
+  @TicketNumber int,
   @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(1000),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit,
-  @DefaultSlaLevelID int,
-  @PullCasesAsTickets bit,
-  @PushTicketsAsCases bit,
-  @PullCustomerProducts bit,
-  @UpdateStatus bit,
-  @ActionTypeIDToPush int,
-  @HostName varchar(8000),
-  @DefaultProject varchar(8000),
-  @MatchAccountsByName bit,
-  @UseSandBoxServer bit,
-  @AlwaysUseDefaultProjectKey bit,
-  @RestrictedToTicketTypes varchar(500),
-  @UpdateTicketType bit,
-  @InstanceName varchar(255),
-  @ExcludedTicketStatusUpdate varchar(500),
-  @IncludeIssueNonRequired bit,
-  @UseNetworkCredentials bit
+  @Name nvarchar(255),
+  @DateDeleted datetime,
+  @DeleterID int,
+  @DeleterEmail nvarchar(1024)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CRMLinkTable]
+  UPDATE [dbo].[DeletedTickets]
   SET
+    [TicketID] = @TicketID,
+    [TicketNumber] = @TicketNumber,
     [OrganizationID] = @OrganizationID,
-    [Active] = @Active,
-    [CRMType] = @CRMType,
-    [Username] = @Username,
-    [Password] = @Password,
-    [SecurityToken] = @SecurityToken,
-    [TypeFieldMatch] = @TypeFieldMatch,
-    [LastLink] = @LastLink,
-    [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed,
-    [LastTicketID] = @LastTicketID,
-    [AllowPortalAccess] = @AllowPortalAccess,
-    [SendWelcomeEmail] = @SendWelcomeEmail,
-    [DefaultSlaLevelID] = @DefaultSlaLevelID,
-    [PullCasesAsTickets] = @PullCasesAsTickets,
-    [PushTicketsAsCases] = @PushTicketsAsCases,
-    [PullCustomerProducts] = @PullCustomerProducts,
-    [UpdateStatus] = @UpdateStatus,
-    [ActionTypeIDToPush] = @ActionTypeIDToPush,
-    [HostName] = @HostName,
-    [DefaultProject] = @DefaultProject,
-    [MatchAccountsByName] = @MatchAccountsByName,
-    [UseSandBoxServer] = @UseSandBoxServer,
-    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,
-    [RestrictedToTicketTypes] = @RestrictedToTicketTypes,
-    [UpdateTicketType] = @UpdateTicketType,
-    [InstanceName] = @InstanceName,
-    [ExcludedTicketStatusUpdate] = @ExcludedTicketStatusUpdate,
-    [IncludeIssueNonRequired] = @IncludeIssueNonRequired,
-    [UseNetworkCredentials] = @UseNetworkCredentials
-  WHERE ([CRMLinkID] = @CRMLinkID)
+    [Name] = @Name,
+    [DateDeleted] = @DateDeleted,
+    [DeleterID] = @DeleterID,
+    [DeleterEmail] = @DeleterEmail
+  WHERE ([ID] = @ID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedTicket
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedTicket
 
 (
-  @CRMLinkID int
+  @ID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
+  DELETE FROM [dbo].[DeletedTickets]
+  WHERE ([ID] = @ID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedTicket
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedSelectDeletedTicket
 
 (
-  @CRMLinkID int
+  @ID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [CRMLinkID],
+    [ID],
+    [TicketID],
+    [TicketNumber],
     [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail],
-    [DefaultSlaLevelID],
-    [PullCasesAsTickets],
-    [PushTicketsAsCases],
-    [PullCustomerProducts],
-    [UpdateStatus],
-    [ActionTypeIDToPush],
-    [HostName],
-    [DefaultProject],
-    [MatchAccountsByName],
-    [UseSandBoxServer],
-    [AlwaysUseDefaultProjectKey],
-    [RestrictedToTicketTypes],
-    [UpdateTicketType],
-    [InstanceName],
-    [ExcludedTicketStatusUpdate],
-    [IncludeIssueNonRequired],
-    [UseNetworkCredentials]
-  FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
+    [Name],
+    [DateDeleted],
+    [DeleterID],
+    [DeleterEmail]
+  FROM [dbo].[DeletedTickets]
+  WHERE ([ID] = @ID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedTicket
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedInsertDeletedTicket
 
 (
+  @TicketID int,
+  @TicketNumber int,
   @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(1000),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit,
-  @DefaultSlaLevelID int,
-  @PullCasesAsTickets bit,
-  @PushTicketsAsCases bit,
-  @PullCustomerProducts bit,
-  @UpdateStatus bit,
-  @ActionTypeIDToPush int,
-  @HostName varchar(8000),
-  @DefaultProject varchar(8000),
-  @MatchAccountsByName bit,
-  @UseSandBoxServer bit,
-  @AlwaysUseDefaultProjectKey bit,
-  @RestrictedToTicketTypes varchar(500),
-  @UpdateTicketType bit,
-  @InstanceName varchar(255),
-  @ExcludedTicketStatusUpdate varchar(500),
-  @IncludeIssueNonRequired bit,
-  @UseNetworkCredentials bit,
+  @Name nvarchar(255),
+  @DateDeleted datetime,
+  @DeleterID int,
+  @DeleterEmail nvarchar(1024),
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CRMLinkTable]
+  INSERT INTO [dbo].[DeletedTickets]
   (
+    [TicketID],
+    [TicketNumber],
     [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail],
-    [DefaultSlaLevelID],
-    [PullCasesAsTickets],
-    [PushTicketsAsCases],
-    [PullCustomerProducts],
-    [UpdateStatus],
-    [ActionTypeIDToPush],
-    [HostName],
-    [DefaultProject],
-    [MatchAccountsByName],
-    [UseSandBoxServer],
-    [AlwaysUseDefaultProjectKey],
-    [RestrictedToTicketTypes],
-    [UpdateTicketType],
-    [InstanceName],
-    [ExcludedTicketStatusUpdate],
-    [IncludeIssueNonRequired],
-    [UseNetworkCredentials])
+    [Name],
+    [DateDeleted],
+    [DeleterID],
+    [DeleterEmail])
   VALUES (
+    @TicketID,
+    @TicketNumber,
     @OrganizationID,
-    @Active,
-    @CRMType,
-    @Username,
-    @Password,
-    @SecurityToken,
-    @TypeFieldMatch,
-    @LastLink,
-    @SendBackTicketData,
-    @LastProcessed,
-    @LastTicketID,
-    @AllowPortalAccess,
-    @SendWelcomeEmail,
-    @DefaultSlaLevelID,
-    @PullCasesAsTickets,
-    @PushTicketsAsCases,
-    @PullCustomerProducts,
-    @UpdateStatus,
-    @ActionTypeIDToPush,
-    @HostName,
-    @DefaultProject,
-    @MatchAccountsByName,
-    @UseSandBoxServer,
-    @AlwaysUseDefaultProjectKey,
-    @RestrictedToTicketTypes,
-    @UpdateTicketType,
-    @InstanceName,
-    @ExcludedTicketStatusUpdate,
-    @IncludeIssueNonRequired,
-    @UseNetworkCredentials)
+    @Name,
+    @DateDeleted,
+    @DeleterID,
+    @DeleterEmail)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
 
 (
-  @CRMLinkID int,
+  @ID int,
+  @TicketID int,
+  @TicketNumber int,
   @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(1000),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit,
-  @DefaultSlaLevelID int,
-  @PullCasesAsTickets bit,
-  @PushTicketsAsCases bit,
-  @PullCustomerProducts bit,
-  @UpdateStatus bit,
-  @ActionTypeIDToPush int,
-  @HostName varchar(8000),
-  @DefaultProject varchar(8000),
-  @MatchAccountsByName bit,
-  @UseSandBoxServer bit,
-  @AlwaysUseDefaultProjectKey bit,
-  @RestrictedToTicketTypes varchar(500),
-  @UpdateTicketType bit,
-  @InstanceName varchar(255),
-  @ExcludedTicketStatusUpdate varchar(500),
-  @IncludeIssueNonRequired bit,
-  @UseNetworkCredentials bit
+  @Name nvarchar(255),
+  @DateDeleted datetime,
+  @DeleterID int,
+  @DeleterEmail nvarchar(1024)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CRMLinkTable]
+  UPDATE [dbo].[DeletedTickets]
   SET
+    [TicketID] = @TicketID,
+    [TicketNumber] = @TicketNumber,
     [OrganizationID] = @OrganizationID,
-    [Active] = @Active,
-    [CRMType] = @CRMType,
-    [Username] = @Username,
-    [Password] = @Password,
-    [SecurityToken] = @SecurityToken,
-    [TypeFieldMatch] = @TypeFieldMatch,
-    [LastLink] = @LastLink,
-    [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed,
-    [LastTicketID] = @LastTicketID,
-    [AllowPortalAccess] = @AllowPortalAccess,
-    [SendWelcomeEmail] = @SendWelcomeEmail,
-    [DefaultSlaLevelID] = @DefaultSlaLevelID,
-    [PullCasesAsTickets] = @PullCasesAsTickets,
-    [PushTicketsAsCases] = @PushTicketsAsCases,
-    [PullCustomerProducts] = @PullCustomerProducts,
-    [UpdateStatus] = @UpdateStatus,
-    [ActionTypeIDToPush] = @ActionTypeIDToPush,
-    [HostName] = @HostName,
-    [DefaultProject] = @DefaultProject,
-    [MatchAccountsByName] = @MatchAccountsByName,
-    [UseSandBoxServer] = @UseSandBoxServer,
-    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,
-    [RestrictedToTicketTypes] = @RestrictedToTicketTypes,
-    [UpdateTicketType] = @UpdateTicketType,
-    [InstanceName] = @InstanceName,
-    [ExcludedTicketStatusUpdate] = @ExcludedTicketStatusUpdate,
-    [IncludeIssueNonRequired] = @IncludeIssueNonRequired,
-    [UseNetworkCredentials] = @UseNetworkCredentials
-  WHERE ([CRMLinkID] = @CRMLinkID)
+    [Name] = @Name,
+    [DateDeleted] = @DateDeleted,
+    [DeleterID] = @DeleterID,
+    [DeleterEmail] = @DeleterEmail
+  WHERE ([ID] = @ID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedTicket
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedTicket
 
 (
-  @CRMLinkID int
+  @ID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
+  DELETE FROM [dbo].[DeletedTickets]
+  WHERE ([ID] = @ID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedTicket
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedSelectDeletedTicket
 
 (
-  @CRMLinkID int
+  @ID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [CRMLinkID],
+    [ID],
+    [TicketID],
+    [TicketNumber],
     [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail],
-    [DefaultSlaLevelID],
-    [PullCasesAsTickets],
-    [PushTicketsAsCases],
-    [PullCustomerProducts],
-    [UpdateStatus],
-    [ActionTypeIDToPush],
-    [HostName],
-    [DefaultProject],
-    [MatchAccountsByName],
-    [UseSandBoxServer],
-    [AlwaysUseDefaultProjectKey],
-    [RestrictedToTicketTypes],
-    [UpdateTicketType],
-    [InstanceName],
-    [ExcludedTicketStatusUpdate],
-    [IncludeIssueNonRequired],
-    [UseNetworkCredentials]
-  FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
+    [Name],
+    [DateDeleted],
+    [DeleterID],
+    [DeleterEmail]
+  FROM [dbo].[DeletedTickets]
+  WHERE ([ID] = @ID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedTicket
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedInsertDeletedTicket
 
 (
+  @TicketID int,
+  @TicketNumber int,
   @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(1000),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit,
-  @DefaultSlaLevelID int,
-  @PullCasesAsTickets bit,
-  @PushTicketsAsCases bit,
-  @PullCustomerProducts bit,
-  @UpdateStatus bit,
-  @ActionTypeIDToPush int,
-  @HostName varchar(8000),
-  @DefaultProject varchar(8000),
-  @MatchAccountsByName bit,
-  @UseSandBoxServer bit,
-  @AlwaysUseDefaultProjectKey bit,
-  @RestrictedToTicketTypes varchar(500),
-  @UpdateTicketType bit,
-  @InstanceName varchar(255),
-  @ExcludedTicketStatusUpdate varchar(500),
-  @IncludeIssueNonRequired bit,
-  @UseNetworkCredentials bit,
+  @Name nvarchar(255),
+  @DateDeleted datetime,
+  @DeleterID int,
+  @DeleterEmail nvarchar(1024),
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CRMLinkTable]
+  INSERT INTO [dbo].[DeletedTickets]
   (
+    [TicketID],
+    [TicketNumber],
     [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail],
-    [DefaultSlaLevelID],
-    [PullCasesAsTickets],
-    [PushTicketsAsCases],
-    [PullCustomerProducts],
-    [UpdateStatus],
-    [ActionTypeIDToPush],
-    [HostName],
-    [DefaultProject],
-    [MatchAccountsByName],
-    [UseSandBoxServer],
-    [AlwaysUseDefaultProjectKey],
-    [RestrictedToTicketTypes],
-    [UpdateTicketType],
-    [InstanceName],
-    [ExcludedTicketStatusUpdate],
-    [IncludeIssueNonRequired],
-    [UseNetworkCredentials])
+    [Name],
+    [DateDeleted],
+    [DeleterID],
+    [DeleterEmail])
   VALUES (
+    @TicketID,
+    @TicketNumber,
     @OrganizationID,
-    @Active,
-    @CRMType,
-    @Username,
-    @Password,
-    @SecurityToken,
-    @TypeFieldMatch,
-    @LastLink,
-    @SendBackTicketData,
-    @LastProcessed,
-    @LastTicketID,
-    @AllowPortalAccess,
-    @SendWelcomeEmail,
-    @DefaultSlaLevelID,
-    @PullCasesAsTickets,
-    @PushTicketsAsCases,
-    @PullCustomerProducts,
-    @UpdateStatus,
-    @ActionTypeIDToPush,
-    @HostName,
-    @DefaultProject,
-    @MatchAccountsByName,
-    @UseSandBoxServer,
-    @AlwaysUseDefaultProjectKey,
-    @RestrictedToTicketTypes,
-    @UpdateTicketType,
-    @InstanceName,
-    @ExcludedTicketStatusUpdate,
-    @IncludeIssueNonRequired,
-    @UseNetworkCredentials)
+    @Name,
+    @DateDeleted,
+    @DeleterID,
+    @DeleterEmail)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
 
 (
-  @CRMLinkID int,
+  @ID int,
+  @TicketID int,
+  @TicketNumber int,
   @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(1000),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit,
-  @DefaultSlaLevelID int,
-  @PullCasesAsTickets bit,
-  @PushTicketsAsCases bit,
-  @PullCustomerProducts bit,
-  @UpdateStatus bit,
-  @ActionTypeIDToPush int,
-  @HostName varchar(8000),
-  @DefaultProject varchar(8000),
-  @MatchAccountsByName bit,
-  @UseSandBoxServer bit,
-  @AlwaysUseDefaultProjectKey bit,
-  @RestrictedToTicketTypes varchar(500),
-  @UpdateTicketType bit,
-  @InstanceName varchar(255),
-  @ExcludedTicketStatusUpdate varchar(500),
-  @IncludeIssueNonRequired bit,
-  @UseNetworkCredentials bit
+  @Name nvarchar(255),
+  @DateDeleted datetime,
+  @DeleterID int,
+  @DeleterEmail nvarchar(1024)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CRMLinkTable]
+  UPDATE [dbo].[DeletedTickets]
   SET
+    [TicketID] = @TicketID,
+    [TicketNumber] = @TicketNumber,
     [OrganizationID] = @OrganizationID,
-    [Active] = @Active,
-    [CRMType] = @CRMType,
-    [Username] = @Username,
-    [Password] = @Password,
-    [SecurityToken] = @SecurityToken,
-    [TypeFieldMatch] = @TypeFieldMatch,
-    [LastLink] = @LastLink,
-    [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed,
-    [LastTicketID] = @LastTicketID,
-    [AllowPortalAccess] = @AllowPortalAccess,
-    [SendWelcomeEmail] = @SendWelcomeEmail,
-    [DefaultSlaLevelID] = @DefaultSlaLevelID,
-    [PullCasesAsTickets] = @PullCasesAsTickets,
-    [PushTicketsAsCases] = @PushTicketsAsCases,
-    [PullCustomerProducts] = @PullCustomerProducts,
-    [UpdateStatus] = @UpdateStatus,
-    [ActionTypeIDToPush] = @ActionTypeIDToPush,
-    [HostName] = @HostName,
-    [DefaultProject] = @DefaultProject,
-    [MatchAccountsByName] = @MatchAccountsByName,
-    [UseSandBoxServer] = @UseSandBoxServer,
-    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey,
-    [RestrictedToTicketTypes] = @RestrictedToTicketTypes,
-    [UpdateTicketType] = @UpdateTicketType,
-    [InstanceName] = @InstanceName,
-    [ExcludedTicketStatusUpdate] = @ExcludedTicketStatusUpdate,
-    [IncludeIssueNonRequired] = @IncludeIssueNonRequired,
-    [UseNetworkCredentials] = @UseNetworkCredentials
-  WHERE ([CRMLinkID] = @CRMLinkID)
+    [Name] = @Name,
+    [DateDeleted] = @DateDeleted,
+    [DeleterID] = @DeleterID,
+    [DeleterEmail] = @DeleterEmail
+  WHERE ([ID] = @ID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedTicket
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedTicket
 
 (
-  @CRMLinkID int
+  @ID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
+  DELETE FROM [dbo].[DeletedTickets]
+  WHERE ([ID] = @ID)
 GO
 
 

@@ -4350,6 +4350,11 @@ var SetupTFSFieldValues = function () {
     });
 };
 
+function validateEmail(email) {
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
+
 var getUrls = function (input) {
     var source = (input || '').toString();
     var parentDiv = $('<div>').addClass('input-group-addon external-link')
@@ -4366,6 +4371,12 @@ var getUrls = function (input) {
         if (url.length > 2 && url.substring(0, 3) == 'www') {
             url = 'http://' + url;
         }
+
+        if (validateEmail(url))
+        {
+            url = "mailto:" + url;
+        }
+
         result = result + '<a target="_blank" class="valueLink" href="' + url + '" title="' + matchArray[0] + '"><i class="fa fa-external-link fa-lg custom-field-link"></i></a>';
     }
 
