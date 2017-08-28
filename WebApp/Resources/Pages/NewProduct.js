@@ -135,7 +135,8 @@ $(document).ready(function () {
         });
         parent.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
             $('.datepicker').attr("data-format", dateformat);
-            
+            $('.datetimepicker').attr("data-format", dateformat + " hh:mm a");
+            _dateFormat = dateformat;
             $('.timepicker').datetimepicker({ pickDate: false });
             $('.datetimepicker').datetimepicker({});
             $('.datepicker').datetimepicker({ pickTime: false });
@@ -163,6 +164,66 @@ $(document).ready(function () {
         $('.datetimepicker').datetimepicker({});
       }
     });
+  }
+
+  function convertToValidDate(val) {
+      var value = '';
+      if (val == "")
+          return value;
+
+      if (_dateFormat.indexOf("M") != 0) {
+          var dateArr = val.replace(/\./g, '/').replace(/-/g, '/').split('/');
+          if (_dateFormat.indexOf("D") == 0)
+              var day = dateArr[0];
+          if (_dateFormat.indexOf("Y") == 0)
+              var year = dateArr[0];
+          if (_dateFormat.indexOf("M") == 3 || _dateFormat.indexOf("M") == 5)
+              var month = dateArr[1];
+
+          var timeSplit = dateArr[2].split(' ');
+          if (_dateFormat.indexOf("Y") == 6)
+              var year = timeSplit[0];
+          else
+              var day = timeSplit[0];
+
+          var theTime = timeSplit[1];
+
+          var formattedDate = month + "/" + day + "/" + year;
+          value = parent.Ts.Utils.getMsDate(formattedDate);
+          return formattedDate;
+      }
+      else
+          return val;
+  }
+
+  function convertToValidDateTime(val) {
+      var value = '';
+      if (val == "")
+          return value;
+
+      if (_dateFormat.indexOf("M") != 0) {
+          var dateArr = val.replace(/\./g, '/').replace(/-/g, '/').split('/');
+          if (_dateFormat.indexOf("D") == 0)
+              var day = dateArr[0];
+          if (_dateFormat.indexOf("Y") == 0)
+              var year = dateArr[0];
+          if (_dateFormat.indexOf("M") == 3 || _dateFormat.indexOf("M") == 5)
+              var month = dateArr[1];
+
+          var timeSplit = dateArr[2].split(' ');
+          if (_dateFormat.indexOf("Y") == 6)
+              var year = timeSplit[0];
+          else
+              var day = timeSplit[0];
+
+          var theTime = timeSplit[1];
+
+          var formattedDate = month + "/" + day + "/" + year + " " + theTime;
+          //value = parent.Ts.Utils.getMsDate(formattedDate) + " " + theTime;
+          return formattedDate;
+      }
+      else
+          return val;
   }
 
   $('#productSaveBtn').click(function (e) {
@@ -197,13 +258,13 @@ $(document).ready(function () {
             field.Value = $(this).prop('checked');
             break;
           case "_date":
-            field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
+              field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate(convertToValidDate($(this).val()));
             break;
           case "_time":
             field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
             break;
           case "_datetime":
-            field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate($(this).val());
+              field.Value = $(this).val() == "" ? null : parent.Ts.Utils.getMsDate(convertToValidDateTime($(this).val()));
             break;
           default:
             field.Value = $(this).val();
