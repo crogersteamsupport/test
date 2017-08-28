@@ -6115,5 +6115,5 @@ function pagewidth () {
     var width = $(window).width();
     $('#frame-container, #ticketpage').css('max-width',width);
     $('#ticketpage').css('max-width',width);
-    $('#ticketpane').css('max-width',width - 300);
+    $('#ticketpane').css('max-width',width - 310);
 }
