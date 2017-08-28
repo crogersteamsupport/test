@@ -328,7 +328,6 @@ $(document).ready(function () {
 });
 
 $('#Ticket-URL').on('click', function (e) {
-    console.log('test');
     var copyText = $('#Ticket-URL').data('clipboard-text');
     copyText.select();
     document.execCommand("Copy");
