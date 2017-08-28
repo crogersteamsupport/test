@@ -266,14 +266,13 @@ $.fn.autoGrow = function () {
 };
 
 
-
-$(window).resize(function() {
-    maxwidth();
+$(window).resize(function(e) {
+    pagewidth();
 });
 
 
 $(document).ready(function () {
-    maxwidth();
+    pagewidth();
     _ticketNumber = window.parent.Ts.Utils.getQueryValue("TicketNumber", window);
 
     apiKey = "45228242";
@@ -322,9 +321,16 @@ $(document).ready(function () {
         }
     });
 
-
     watson(_ticketNumber);
-    // $("input[type=text], textarea").autoGrow({fixMinHeight: true, onInitialize: true});
+
+});
+
+$('#Ticket-URL').on('click', function (e) {
+    console.log('test');
+    var copyText = $('#Ticket-URL').data('clipboard-text');
+    copyText.select();
+    document.execCommand("Copy");
+    alert("Copied URL to clipboard: " + copyText);
 });
 
 
@@ -559,10 +565,6 @@ function SetupTicketProperties(order) {
 
         //set the url for the copy paste button
         //var ticketURLLink = ""
-        var ticketURLLink = new ZeroClipboard(document.getElementById("Ticket-URL"));
-        ticketURLLink.on("aftercopy", function (event) {
-            alert("Copied URL to clipboard: " + event.data["text/plain"]);
-        });
         var ticketUrl = window.parent.Ts.System.AppDomain + "/?TicketNumber=" + _ticketNumber;
         $("#Ticket-URL").attr("data-clipboard-text", ticketUrl);
 
@@ -1869,10 +1871,12 @@ function LoadTicketControls() {
     $('#ticket-TimeSpent').text(window.parent.Ts.Utils.getTimeSpentText(_ticketInfo.Ticket.HoursSpent));
 
     if (_ticketInfo.Ticket.IsClosed == true) {
-        $('#ticket-DaysOpened').text(_ticketInfo.Ticket.DaysClosed).parent().prev().html('Days Closed');
+        $('#ticket-DaysOpened').text(_ticketInfo.Ticket.DaysClosed);
+        $('#label-days').text('Days Closed');
     }
     else {
-        $('#ticket-DaysOpened').text(_ticketInfo.Ticket.DaysOpened).parent().prev().html('Days Opened');
+        $('#ticket-DaysOpened').text(_ticketInfo.Ticket.DaysOpened);
+        $('#label-days').text('Days Opened');
     }
 
     var dueDate = _ticketInfo.Ticket.DueDate;
@@ -4348,6 +4352,11 @@ var SetupTFSFieldValues = function () {
     });
 };
 
+function validateEmail(email) {
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
+
 var getUrls = function (input) {
     var source = (input || '').toString();
     var parentDiv = $('<div>').addClass('input-group-addon external-link')
@@ -4364,6 +4373,12 @@ var getUrls = function (input) {
         if (url.length > 2 && url.substring(0, 3) == 'www') {
             url = 'http://' + url;
         }
+
+        if (validateEmail(url))
+        {
+            url = "mailto:" + url;
+        }
+
         result = result + '<a target="_blank" class="valueLink" href="' + url + '" title="' + matchArray[0] + '"><i class="fa fa-external-link fa-lg custom-field-link"></i></a>';
     }
 
@@ -6098,5 +6113,7 @@ function maxwidth () {
 
 function pagewidth () {
     var width = $(window).width();
+    $('#frame-container, #ticketpage').css('max-width',width);
     $('#ticketpage').css('max-width',width);
+    $('#ticketpane').css('max-width',width - 300);
 }
