@@ -6089,7 +6089,7 @@ function watson (ticketnumber) {
 
 function ticketmenu () {
     var width = $('#ticketpage').width();
-    $('#ticketmenu-container').css('width',width);
+    // $('#ticketmenu-container').css('width',width);
     if (width > 900) {
         $('#ticketmenu-actions-lg').show();
         $('#ticketmenu-actions-sm').hide();
