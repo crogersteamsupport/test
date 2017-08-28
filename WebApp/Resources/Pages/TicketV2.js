@@ -1869,10 +1869,12 @@ function LoadTicketControls() {
     $('#ticket-TimeSpent').text(window.parent.Ts.Utils.getTimeSpentText(_ticketInfo.Ticket.HoursSpent));
 
     if (_ticketInfo.Ticket.IsClosed == true) {
-        $('#ticket-DaysOpened').text(_ticketInfo.Ticket.DaysClosed).parent().prev().html('Days Closed');
+        $('#ticket-DaysOpened').text(_ticketInfo.Ticket.DaysClosed);
+        $('#label-days').text('Days Closed');
     }
     else {
-        $('#ticket-DaysOpened').text(_ticketInfo.Ticket.DaysOpened).parent().prev().html('Days Opened');
+        $('#ticket-DaysOpened').text(_ticketInfo.Ticket.DaysOpened);
+        $('#label-days').text('Days Open');
     }
 
     var dueDate = _ticketInfo.Ticket.DueDate;
