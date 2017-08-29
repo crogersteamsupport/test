@@ -441,6 +441,8 @@ function SetupTicketPage() {
     //Create the new action LI element
     CreateNewActionLI();
 
+    $('textarea.autogrow').autogrow();
+
     window.parent.Ts.Services.TicketPage.GetTicketPageOrder("TicketFieldsOrder", function (order) {
         SetupTicketProperties(order);
     });
