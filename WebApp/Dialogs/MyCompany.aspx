@@ -72,7 +72,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="labelColTD">Default Portal Group:
+                    <td class="labelColTD">Default Customer Submission Group:
                     </td>
                     <td class="inputColTD">
                         <telerik:RadComboBox ID="cmbDefaultGroup" runat="server" Width="200px"></telerik:RadComboBox>

@@ -141,6 +141,7 @@ public partial class Dialogs_Organization : BaseDialogPage
 
     private void LoadGroupTypes(int organizationID)
     {
+
         cmbDefaultGroup.Items.Clear();
 
         Groups groups = new Groups(UserSession.LoginUser);

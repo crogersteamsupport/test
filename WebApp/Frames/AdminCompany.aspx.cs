@@ -138,7 +138,7 @@ public partial class Frames_AdminCompany : BaseFramePage
     table.Rows.Add(new string[] { "Business Days:", organization.BusinessDaysText == "" ? "[None Assigned]" : organization.BusinessDaysText });
     table.Rows.Add(new string[] { "Business Day Start:", organization.BusinessDayStart == null ? "[None Assigned]" : ((DateTime)organization.BusinessDayStart).ToString("t", UserSession.LoginUser.CultureInfo) });
     table.Rows.Add(new string[] { "Business Day End:", organization.BusinessDayEnd == null ? "[None Assigned]" : ((DateTime)organization.BusinessDayEnd).ToString("t", UserSession.LoginUser.CultureInfo) });
-    table.Rows.Add(new string[] { "Default Portal Group:", defaultGroup });
+    table.Rows.Add(new string[] { "Default Customer Submission Group:", defaultGroup });
 
     table.Rows.Add(new string[] { "Product Required on Ticket:", organization.ProductRequired.ToString() });
     table.Rows.Add(new string[] { "Product Version Required on ticket:", organization.ProductVersionRequired.ToString() });
