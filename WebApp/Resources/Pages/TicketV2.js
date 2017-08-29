@@ -210,48 +210,39 @@ Selectize.define('no_results', function (options) {
     })();
 });
 
-$.fn.autoGrow = function () {
+$.fn.autoGr33ow = function () {
     return this.each(function () {
-
         // Variables
         var colsDefault = this.cols;
         var rowsDefault = this.rows;
-
         //Functions
         var grow = function () {
             growByRef(this);
         }
-
         var growByRef = function (obj) {
             var linesCount = 0;
             var lines = obj.value.split('\n');
-
             for (var i = lines.length - 1; i >= 0; --i) {
                 linesCount += Math.floor((lines[i].length / colsDefault) + 1);
             }
-
             if (linesCount > rowsDefault)
                 obj.rows = linesCount + 1;
             else
                 obj.rows = rowsDefault;
         }
-
         var characterWidth = function (obj) {
             var characterWidth = 0;
             var temp1 = 0;
             var temp2 = 0;
             var tempCols = obj.cols;
-
             obj.cols = 1;
             temp1 = obj.offsetWidth;
             obj.cols = 2;
             temp2 = obj.offsetWidth;
             characterWidth = temp2 - temp1;
             obj.cols = tempCols;
-
             return characterWidth;
         }
-
         // Manipulations
         //this.style.width = "auto";
         this.style.height = "auto";
@@ -266,11 +257,14 @@ $.fn.autoGrow = function () {
 };
 
 
+
+
+
+
 $(window).resize(function(e) {
     pagewidth();
     ticketmenu();
 });
-
 
 $(document).ready(function () {
     pagewidth();
@@ -446,7 +440,7 @@ function SetupTicketPage() {
     //Create the new action LI element
     CreateNewActionLI();
 
-    $("input[type=text], textarea").autoGrow();
+    $("input[type=text], textarea").autogrow();
 
     window.parent.Ts.Services.TicketPage.GetTicketPageOrder("TicketFieldsOrder", function (order) {
         SetupTicketProperties(order);
@@ -3417,7 +3411,7 @@ var AddCustomFieldEdit = function (field, parentContainer) {
                     .addClass('form-control ticket-simple-textarea muted-placeholder')
                     .attr("placeholder", "Enter Value")
                     .val(field.Value)
-                    .autoGrow()
+                    .autogrow()
                     .appendTo(inputGroupContainer)
                     .after(getUrls(field.Value));
 
