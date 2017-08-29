@@ -259,12 +259,17 @@ $.fn.autoGr33ow = function () {
 
 
 
-
+$(window).load(function(e) {
+    $('textarea').autogrow();
+});
 
 $(window).resize(function(e) {
     pagewidth();
     ticketmenu();
 });
+
+
+
 
 $(document).ready(function () {
     pagewidth();
@@ -318,7 +323,6 @@ $(document).ready(function () {
     });
 
     watson(_ticketNumber);
-
 });
 
 $('#Ticket-URL').on('click', function (e) {
@@ -327,9 +331,6 @@ $('#Ticket-URL').on('click', function (e) {
     document.execCommand("Copy");
     alert("Copied URL to clipboard: " + copyText);
 });
-
-
-
 
 
 var loadTicket = function (ticketNumber, refresh) {
@@ -442,7 +443,6 @@ function SetupTicketPage() {
 
     window.parent.Ts.Services.TicketPage.GetTicketPageOrder("TicketFieldsOrder", function (order) {
         SetupTicketProperties(order);
-        $("input[type=text], textarea").autogrow({onInitialize:true});
     });
 
     $('#NewCustomerModal').on('shown.bs.modal', function () {
@@ -3406,14 +3406,7 @@ var AddCustomFieldEdit = function (field, parentContainer) {
 
     var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
     var inputGroupContainer = $('<div>').addClass('input-group').appendTo(inputContainer);
-    var input = $('<textarea>')
-                    .addClass('form-control ticket-simple-textarea muted-placeholder')
-                    .attr("placeholder", "Enter Value")
-                    .val(field.Value)
-                    .autogrow()
-                    .appendTo(inputGroupContainer)
-                    .after(getUrls(field.Value));
-
+    var input = $('<textarea>').addClass('form-control ticket-simple-textarea muted-placeholder autogrow').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputGroupContainer).after(getUrls(field.Value)).autogrow();
 
     if (field.Mask) {
         input.mask(field.Mask);
