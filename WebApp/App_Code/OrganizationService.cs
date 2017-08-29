@@ -230,7 +230,7 @@ namespace TSWebServices
 
 
         [WebMethod]
-        public string SetPortalOption(PortalOptionProxy proxy, string externalLink, bool isPublicArticles, int? groupID)
+        public string SetPortalOption(PortalOptionProxy proxy, string externalLink, bool isPublicArticles)
         {
             Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), proxy.OrganizationID);
             if (organization.OrganizationID != TSAuthentication.OrganizationID || !TSAuthentication.IsSystemAdmin) return null;
@@ -320,7 +320,6 @@ namespace TSWebServices
 
             //organization.AgentRating = agentRatingEnabled;
             organization.IsPublicArticles = isPublicArticles;
-            organization.DefaultPortalGroupID = groupID;
             organization.UseForums = proxy.DisplayForum == null ? false : (bool)proxy.DisplayForum;
             organization.Collection.Save();
 
