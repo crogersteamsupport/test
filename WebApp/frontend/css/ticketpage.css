@@ -877,7 +877,7 @@ form.file-upload input {
     padding:0;
     cursor:pointer;
     margin-left:.25em;
-    background-image:url("../css/images/ui-icons_373737_256x240.png");
+    background-image:url("/resources/css/images/ui-icons_373737_256x240.png");
     background-position:-80px -128px;
     width:16px;
     height:16px;
