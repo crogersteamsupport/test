@@ -440,10 +440,9 @@ function SetupTicketPage() {
     //Create the new action LI element
     CreateNewActionLI();
 
-    $("input[type=text], textarea").autogrow();
-
     window.parent.Ts.Services.TicketPage.GetTicketPageOrder("TicketFieldsOrder", function (order) {
         SetupTicketProperties(order);
+        $("input[type=text], textarea").autogrow({onInitialize:true});
     });
 
     $('#NewCustomerModal').on('shown.bs.modal', function () {
