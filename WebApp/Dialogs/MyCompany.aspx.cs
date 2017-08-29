@@ -39,7 +39,6 @@ public partial class Dialogs_Organization : BaseDialogPage
             LoadWikiArticles();
             LoadSlas();
             LoadUsers(_organizationID);
-            LoadGroupTypes(_organizationID);
             LoadOrganization(_organizationID);
         }
     }
@@ -139,21 +138,6 @@ public partial class Dialogs_Organization : BaseDialogPage
         users.LoadByOrganizationID(UserSession.LoginUser.OrganizationID, true);
     }
 
-    private void LoadGroupTypes(int organizationID)
-    {
-
-        cmbDefaultGroup.Items.Clear();
-
-        Groups groups = new Groups(UserSession.LoginUser);
-        groups.LoadByOrganizationID(organizationID);
-        cmbDefaultGroup.Items.Add(new RadComboBoxItem("Unassigned", "-1"));
-        foreach (Group group in groups) { 
-            cmbDefaultGroup.Items.Add(new RadComboBoxItem(group.Name, group.GroupID.ToString()));
-        }
-
-        cmbDefaultGroup.SelectedIndex = 0;
-    }
-
     private void LoadOrganization(int organizationID)
     {
         Organization organization = Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
@@ -182,7 +166,6 @@ public partial class Dialogs_Organization : BaseDialogPage
         cbTimeRequired.Checked = organization.TimedActionsRequired;
         cbAdminReports.Checked = organization.AdminOnlyReports;
         cmbUsers.SelectedValue = organization.PrimaryUserID.ToString();
-        cmbDefaultGroup.SelectedValue = organization.DefaultPortalGroupID.ToString();
         cmbWikiArticle.SelectedValue = organization.DefaultWikiArticleID == null ? "" : organization.DefaultWikiArticleID.ToString();
 
         if ((organization.ProductType == ProductType.Enterprise || organization.ProductType == ProductType.BugTracking))
@@ -241,9 +224,6 @@ public partial class Dialogs_Organization : BaseDialogPage
 
         int? id = int.Parse(cmbUsers.SelectedValue);
         organization.PrimaryUserID = id < 0 ? null : id;
-
-        int? defaultPortalGroupID = int.Parse(cmbDefaultGroup.SelectedValue);
-        organization.DefaultPortalGroupID = defaultPortalGroupID < 0 ? null : defaultPortalGroupID;
 
         organization.TimeZoneID = cmbTimeZones.SelectedValue;
         UserSession.LoginUser.TimeZoneInfo = null;
