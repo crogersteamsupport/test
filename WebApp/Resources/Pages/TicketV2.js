@@ -260,7 +260,7 @@ $.fn.autoGr33ow = function () {
 
 
 $(window).load(function(e) {
-    $('textarea').autogrow();
+    $('textarea.autogrow').autogrow();
 });
 
 $(window).resize(function(e) {
@@ -323,6 +323,7 @@ $(document).ready(function () {
     });
 
     watson(_ticketNumber);
+    $('textarea.autogrow').autogrow();
 });
 
 $('#Ticket-URL').on('click', function (e) {
