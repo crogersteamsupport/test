@@ -3401,7 +3401,9 @@ var AddCustomFieldEdit = function (field, parentContainer) {
 
     var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
     var inputGroupContainer = $('<div>').addClass('input-group').appendTo(inputContainer);
-    var input = $('<textarea>').addClass('form-control ticket-simple-textarea muted-placeholder autogrow').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputGroupContainer).after(getUrls(field.Value)).autogrow();
+    var input = $('<textarea>').addClass('form-control ticket-simple-textarea muted-placeholder autogrow fart').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputGroupContainer).after(getUrls(field.Value)).autogrow();
+
+    $('textarea.autogrow').autogrow();
 
     if (field.Mask) {
         input.mask(field.Mask);
