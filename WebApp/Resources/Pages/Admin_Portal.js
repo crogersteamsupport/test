@@ -175,12 +175,7 @@ AdminPortal = function () {
 
     function loadCombos() {
         var groups = parent.parent.Ts.Cache.getGroups();
-        $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#portal_def_group');
-        for (var i = 0; i < groups.length; i++) {
-            $('<option>').attr('value', groups[i].GroupID).text(groups[i].Name).data('o', groups[i]).appendTo('#portal_def_group');
-        }
-        $('#portal_def_group').combobox({ selected: function (e, ui) { $('.portal-save-panel').show(); } });
-
+ 
         $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#portal_req_group');
         for (var i = 0; i < groups.length; i++) {
             $('<option>').attr('value', groups[i].GroupID).text(groups[i].Name).data('o', groups[i]).appendTo('#portal_req_group');
@@ -258,7 +253,6 @@ AdminPortal = function () {
     function loadValues(organization, portalOption, externalLink) {
         $('#portal_name').val(portalOption.PortalName);
         $('#portal_deflection').prop('checked', portalOption.DeflectionEnabled == null ? false : portalOption.DeflectionEnabled);
-        $('#portal_def_group').combobox('setValue', organization.DefaultPortalGroupID);
         $('#portal_req_group').combobox('setValue', portalOption.RequestGroup);
         $('#portal_req_tickettype').combobox('setValue', portalOption.RequestType);
         $('#portal_show_grouplist').prop('checked', portalOption.DisplayGroups == null ? false : portalOption.DisplayGroups);
@@ -327,7 +321,6 @@ AdminPortal = function () {
     function saveValues(portalOption) {
         portalOption.PortalNameEditing = $('#portal_name_editing').val();
         portalOption.DeflectionEnabled = $('#portal_deflection').prop('checked');
-        //organization.DefaultPortalGroupID = $('#portal_def_group').val();
         portalOption.DisplayGroups = $('#portal_show_grouplist').prop('checked');
         portalOption.DisplayProducts = $('#portal_show_product').prop('checked');
         portalOption.DisplayProductVersion = $('#portal_show_version').prop('checked');
@@ -388,7 +381,7 @@ AdminPortal = function () {
         //_agentratingOption.RedirectURL = $('#agentrating-redirecturl').val();
         //_agentratingOption.ExternalPageLink = $('#agentrating-externalurl').val();
 
-        parent.parent.Ts.Services.Organizations.SetPortalOption(portalOption, $('#portal_external_link').val(), $('#portal_allow_wiki').prop('checked'), $('#portal_def_group').val() == -1 ? null : $('#portal_def_group').val(), function (result) {
+        parent.parent.Ts.Services.Organizations.SetPortalOption(portalOption, $('#portal_external_link').val(), $('#portal_allow_wiki').prop('checked'), function (result) {
             if (result != null) {
                 alert(result);
             }

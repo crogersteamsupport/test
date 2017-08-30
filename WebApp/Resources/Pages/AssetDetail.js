@@ -12,6 +12,7 @@ var _assetDetailPage = null;
 var _assetID = null;
 var _execGetCustomer = null;
 var _assetAssignments = null;
+var _dateFormat;
 
 $(document).ready(function () {
   _assetDetailPage = new AssetDetailPage();
@@ -19,6 +20,16 @@ $(document).ready(function () {
   $('.asset-tooltip').tooltip({ placement: 'bottom', container: 'body' });
 
   var _isAdmin = window.parent.parent.Ts.System.User.IsSystemAdmin;
+
+  parent.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
+      $('.datepicker').attr("data-format", dateformat);
+      $('.datetimepicker').attr("data-format", dateformat + " hh:mm a");
+      _dateFormat = dateformat;
+      $('.timepicker').datetimepicker({ pickDate: false });
+      $('.datetimepicker').datetimepicker({});
+      $('.datepicker').datetimepicker({ pickTime: false });
+      //$('#inputExpectedRelease').datetimepicker({ pickTime: false, format: dateformat });
+  });
 
   $('body').layout({
     defaults: {
@@ -904,6 +915,66 @@ $(document).ready(function () {
   $('.assetProperties p').toggleClass("editable");
 });
 
+function convertToValidDate(val) {
+    var value = '';
+    if (val == "")
+        return value;
+
+    if (_dateFormat.indexOf("M") != 0) {
+        var dateArr = val.replace(/\./g, '/').replace(/-/g, '/').split('/');
+        if (_dateFormat.indexOf("D") == 0)
+            var day = dateArr[0];
+        if (_dateFormat.indexOf("Y") == 0)
+            var year = dateArr[0];
+        if (_dateFormat.indexOf("M") == 3 || _dateFormat.indexOf("M") == 5)
+            var month = dateArr[1];
+
+        var timeSplit = dateArr[2].split(' ');
+        if (_dateFormat.indexOf("Y") == 6)
+            var year = timeSplit[0];
+        else
+            var day = timeSplit[0];
+
+        var theTime = timeSplit[1];
+
+        var formattedDate = month + "/" + day + "/" + year;
+        value = parent.Ts.Utils.getMsDate(formattedDate);
+        return formattedDate;
+    }
+    else
+        return val;
+}
+
+function convertToValidDateTime(val) {
+    var value = '';
+    if (val == "")
+        return value;
+
+    if (_dateFormat.indexOf("M") != 0) {
+        var dateArr = val.replace(/\./g, '/').replace(/-/g, '/').split('/');
+        if (_dateFormat.indexOf("D") == 0)
+            var day = dateArr[0];
+        if (_dateFormat.indexOf("Y") == 0)
+            var year = dateArr[0];
+        if (_dateFormat.indexOf("M") == 3 || _dateFormat.indexOf("M") == 5)
+            var month = dateArr[1];
+
+        var timeSplit = dateArr[2].split(' ');
+        if (_dateFormat.indexOf("Y") == 6)
+            var year = timeSplit[0];
+        else
+            var day = timeSplit[0];
+
+        var theTime = timeSplit[1];
+
+        var formattedDate = month + "/" + day + "/" + year + " " + theTime;
+        //value = parent.Ts.Utils.getMsDate(formattedDate) + " " + theTime;
+        return formattedDate;
+    }
+    else
+        return val;
+}
+
 var getUrls = function (input) {
   var source = (input || '').toString();
   var url;
@@ -1266,7 +1337,7 @@ var appendCustomEditDate = function (field, element) {
         var input = $('<input type="text">')
             .addClass('col-xs-10 form-control')
             .val(fieldValue === null ? '' : fieldValue.localeFormat(window.parent.parent.Ts.Utils.getDatePattern()))
-            .datetimepicker({ pickTime: false })
+            .datetimepicker({ pickTime: false, format: _dateFormat })
             .appendTo(container1)
             .focus();
 
@@ -1281,7 +1352,7 @@ var appendCustomEditDate = function (field, element) {
         $('<i>')
             .addClass('col-xs-1 fa fa-check')
             .click(function (e) {
-              var value = window.parent.parent.Ts.Utils.getMsDate(input.val());
+                var value = window.parent.parent.Ts.Utils.getMsDate(convertToValidDate(input.val()));
               container.remove();
               if (field.IsRequired && (value === null || $.trim(value) === '')) {
                 // Currently there is no way to clear a Date.
@@ -1350,6 +1421,7 @@ var appendCustomEditDateTime = function (field, element) {
             .addClass('col-xs-10 form-control')
             .val(fieldValue === null ? '' : fieldValue.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()))
             .datetimepicker({
+                format: _dateFormat + " hh:mm a"
             })
 
             .appendTo(container1)
@@ -1366,7 +1438,7 @@ var appendCustomEditDateTime = function (field, element) {
         $('<i>')
             .addClass('col-xs-1 fa fa-check')
             .click(function (e) {
-              var value = window.parent.parent.Ts.Utils.getMsDate(input.val());
+                var value = window.parent.parent.Ts.Utils.getMsDate(convertToValidDateTime(input.val()));
               container.remove();
               if (field.IsRequired && (value === null || $.trim(value) === '')) {
                 // Currently there is no way to clear a Date.
