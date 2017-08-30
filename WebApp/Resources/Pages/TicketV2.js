@@ -326,14 +326,6 @@ $(document).ready(function () {
     $('textarea.autogrow').autogrow();
 });
 
-$('#Ticket-URL').on('click', function (e) {
-    var copyText = $('#Ticket-URL').data('clipboard-text');
-    copyText.select();
-    document.execCommand("Copy");
-    alert("Copied URL to clipboard: " + copyText);
-});
-
-
 var loadTicket = function (ticketNumber, refresh) {
     window.parent.Ts.Services.Tickets.GetTicketInfo(_ticketNumber, function (info) {
         _ticketInfo = info;
@@ -563,7 +555,7 @@ function SetupTicketProperties(order) {
         //set the url for the copy paste button
         //var ticketURLLink = ""
         var ticketUrl = window.parent.Ts.System.AppDomain + "/?TicketNumber=" + _ticketNumber;
-        $("#Ticket-URL").attr("data-clipboard-text", ticketUrl);
+        $("#clipboard").attr("data-copy", ticketUrl);
 
         //set the ticket title
         $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
