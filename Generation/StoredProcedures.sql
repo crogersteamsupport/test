@@ -15,8 +15,7 @@ AS
     [OrganizationID],
     [Name],
     [DateDeleted],
-    [DeleterID],
-    [DeleterEmail]
+    [DeleterID]
   FROM [dbo].[DeletedTickets]
   WHERE ([ID] = @ID)
 GO
@@ -33,7 +32,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertDeletedTicket
   @Name nvarchar(255),
   @DateDeleted datetime,
   @DeleterID int,
-  @DeleterEmail nvarchar(1024),
   @Identity int OUT
 )
 AS
@@ -45,16 +43,14 @@ AS
     [OrganizationID],
     [Name],
     [DateDeleted],
-    [DeleterID],
-    [DeleterEmail])
+    [DeleterID])
   VALUES (
     @TicketID,
     @TicketNumber,
     @OrganizationID,
     @Name,
     @DateDeleted,
-    @DeleterID,
-    @DeleterEmail)
+    @DeleterID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -71,8 +67,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
   @OrganizationID int,
   @Name nvarchar(255),
   @DateDeleted datetime,
-  @DeleterID int,
-  @DeleterEmail nvarchar(1024)
+  @DeleterID int
 )
 AS
   SET NOCOUNT OFF;
@@ -83,8 +78,7 @@ AS
     [OrganizationID] = @OrganizationID,
     [Name] = @Name,
     [DateDeleted] = @DateDeleted,
-    [DeleterID] = @DeleterID,
-    [DeleterEmail] = @DeleterEmail
+    [DeleterID] = @DeleterID
   WHERE ([ID] = @ID)
 GO
 
@@ -120,8 +114,7 @@ AS
     [OrganizationID],
     [Name],
     [DateDeleted],
-    [DeleterID],
-    [DeleterEmail]
+    [DeleterID]
   FROM [dbo].[DeletedTickets]
   WHERE ([ID] = @ID)
 GO
@@ -138,7 +131,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertDeletedTicket
   @Name nvarchar(255),
   @DateDeleted datetime,
   @DeleterID int,
-  @DeleterEmail nvarchar(1024),
   @Identity int OUT
 )
 AS
@@ -150,16 +142,14 @@ AS
     [OrganizationID],
     [Name],
     [DateDeleted],
-    [DeleterID],
-    [DeleterEmail])
+    [DeleterID])
   VALUES (
     @TicketID,
     @TicketNumber,
     @OrganizationID,
     @Name,
     @DateDeleted,
-    @DeleterID,
-    @DeleterEmail)
+    @DeleterID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -176,8 +166,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
   @OrganizationID int,
   @Name nvarchar(255),
   @DateDeleted datetime,
-  @DeleterID int,
-  @DeleterEmail nvarchar(1024)
+  @DeleterID int
 )
 AS
   SET NOCOUNT OFF;
@@ -188,8 +177,7 @@ AS
     [OrganizationID] = @OrganizationID,
     [Name] = @Name,
     [DateDeleted] = @DateDeleted,
-    [DeleterID] = @DeleterID,
-    [DeleterEmail] = @DeleterEmail
+    [DeleterID] = @DeleterID
   WHERE ([ID] = @ID)
 GO
 
@@ -225,8 +213,7 @@ AS
     [OrganizationID],
     [Name],
     [DateDeleted],
-    [DeleterID],
-    [DeleterEmail]
+    [DeleterID]
   FROM [dbo].[DeletedTickets]
   WHERE ([ID] = @ID)
 GO
@@ -243,7 +230,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertDeletedTicket
   @Name nvarchar(255),
   @DateDeleted datetime,
   @DeleterID int,
-  @DeleterEmail nvarchar(1024),
   @Identity int OUT
 )
 AS
@@ -255,16 +241,14 @@ AS
     [OrganizationID],
     [Name],
     [DateDeleted],
-    [DeleterID],
-    [DeleterEmail])
+    [DeleterID])
   VALUES (
     @TicketID,
     @TicketNumber,
     @OrganizationID,
     @Name,
     @DateDeleted,
-    @DeleterID,
-    @DeleterEmail)
+    @DeleterID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -281,8 +265,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
   @OrganizationID int,
   @Name nvarchar(255),
   @DateDeleted datetime,
-  @DeleterID int,
-  @DeleterEmail nvarchar(1024)
+  @DeleterID int
 )
 AS
   SET NOCOUNT OFF;
@@ -293,8 +276,7 @@ AS
     [OrganizationID] = @OrganizationID,
     [Name] = @Name,
     [DateDeleted] = @DateDeleted,
-    [DeleterID] = @DeleterID,
-    [DeleterEmail] = @DeleterEmail
+    [DeleterID] = @DeleterID
   WHERE ([ID] = @ID)
 GO
 
@@ -330,8 +312,7 @@ AS
     [OrganizationID],
     [Name],
     [DateDeleted],
-    [DeleterID],
-    [DeleterEmail]
+    [DeleterID]
   FROM [dbo].[DeletedTickets]
   WHERE ([ID] = @ID)
 GO
@@ -348,7 +329,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertDeletedTicket
   @Name nvarchar(255),
   @DateDeleted datetime,
   @DeleterID int,
-  @DeleterEmail nvarchar(1024),
   @Identity int OUT
 )
 AS
@@ -360,16 +340,14 @@ AS
     [OrganizationID],
     [Name],
     [DateDeleted],
-    [DeleterID],
-    [DeleterEmail])
+    [DeleterID])
   VALUES (
     @TicketID,
     @TicketNumber,
     @OrganizationID,
     @Name,
     @DateDeleted,
-    @DeleterID,
-    @DeleterEmail)
+    @DeleterID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -386,8 +364,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
   @OrganizationID int,
   @Name nvarchar(255),
   @DateDeleted datetime,
-  @DeleterID int,
-  @DeleterEmail nvarchar(1024)
+  @DeleterID int
 )
 AS
   SET NOCOUNT OFF;
@@ -398,8 +375,7 @@ AS
     [OrganizationID] = @OrganizationID,
     [Name] = @Name,
     [DateDeleted] = @DateDeleted,
-    [DeleterID] = @DeleterID,
-    [DeleterEmail] = @DeleterEmail
+    [DeleterID] = @DeleterID
   WHERE ([ID] = @ID)
 GO
 
@@ -435,8 +411,7 @@ AS
     [OrganizationID],
     [Name],
     [DateDeleted],
-    [DeleterID],
-    [DeleterEmail]
+    [DeleterID]
   FROM [dbo].[DeletedTickets]
   WHERE ([ID] = @ID)
 GO
@@ -453,7 +428,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertDeletedTicket
   @Name nvarchar(255),
   @DateDeleted datetime,
   @DeleterID int,
-  @DeleterEmail nvarchar(1024),
   @Identity int OUT
 )
 AS
@@ -465,16 +439,14 @@ AS
     [OrganizationID],
     [Name],
     [DateDeleted],
-    [DeleterID],
-    [DeleterEmail])
+    [DeleterID])
   VALUES (
     @TicketID,
     @TicketNumber,
     @OrganizationID,
     @Name,
     @DateDeleted,
-    @DeleterID,
-    @DeleterEmail)
+    @DeleterID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -491,8 +463,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
   @OrganizationID int,
   @Name nvarchar(255),
   @DateDeleted datetime,
-  @DeleterID int,
-  @DeleterEmail nvarchar(1024)
+  @DeleterID int
 )
 AS
   SET NOCOUNT OFF;
@@ -503,8 +474,7 @@ AS
     [OrganizationID] = @OrganizationID,
     [Name] = @Name,
     [DateDeleted] = @DateDeleted,
-    [DeleterID] = @DeleterID,
-    [DeleterEmail] = @DeleterEmail
+    [DeleterID] = @DeleterID
   WHERE ([ID] = @ID)
 GO
 

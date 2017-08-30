@@ -71,7 +71,7 @@ namespace TeamSupport.Api
                 {
                     deletedTickets.LoadByOrganizationID(command.Organization.OrganizationID, command.Filters);
                     xml = deletedTickets.GetXml("DeletedTickets", "DeletedTicket", true, command.Filters);
-                    xml = AddTagsToDeletedTickets(xml, command);
+                    //xml = AddTagsToDeletedTickets(xml, command);
                 }
                 catch (Exception ex)
                 {

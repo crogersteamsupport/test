@@ -20,7 +20,6 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("Name", "Name", false, false, true);
       _fieldMap.AddMap("DateDeleted", "DateDeleted", false, false, true);
       _fieldMap.AddMap("DeleterID", "DeleterID", false, false, true);
-      _fieldMap.AddMap("DeleterEmail", "DeleterEmail", false, false, true);
             
     }
   }

@@ -42,12 +42,6 @@ namespace TeamSupport.Data
     
 
     
-    public string DeleterEmail
-    {
-      get { return (string)Row["DeleterEmail"]; }
-      set { Row["DeleterEmail"] = CheckValue("DeleterEmail", value); }
-    }
-    
     public int DeleterID
     {
       get { return (int)Row["DeleterID"]; }
@@ -176,7 +170,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[DeletedTickets] SET     [TicketID] = @TicketID,    [TicketNumber] = @TicketNumber,    [OrganizationID] = @OrganizationID,    [Name] = @Name,    [DateDeleted] = @DateDeleted,    [DeleterID] = @DeleterID,    [DeleterEmail] = @DeleterEmail  WHERE ([ID] = @ID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[DeletedTickets] SET     [TicketID] = @TicketID,    [TicketNumber] = @TicketNumber,    [OrganizationID] = @OrganizationID,    [Name] = @Name,    [DateDeleted] = @DateDeleted,    [DeleterID] = @DeleterID  WHERE ([ID] = @ID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ID", SqlDbType.Int, 4);
@@ -228,27 +222,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("DeleterEmail", SqlDbType.NVarChar, 1024);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
-		}
-		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[DeletedTickets] (    [TicketID],    [TicketNumber],    [OrganizationID],    [Name],    [DateDeleted],    [DeleterID],    [DeleterEmail]) VALUES ( @TicketID, @TicketNumber, @OrganizationID, @Name, @DateDeleted, @DeleterID, @DeleterEmail); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[DeletedTickets] (    [TicketID],    [TicketNumber],    [OrganizationID],    [Name],    [DateDeleted],    [DeleterID]) VALUES ( @TicketID, @TicketNumber, @OrganizationID, @Name, @DateDeleted, @DeleterID); SET @Identity = SCOPE_IDENTITY();";
 
-		
-		tempParameter = insertCommand.Parameters.Add("DeleterEmail", SqlDbType.NVarChar, 1024);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
-		}
 		
 		tempParameter = insertCommand.Parameters.Add("DeleterID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -404,7 +384,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ID], [TicketID], [TicketNumber], [OrganizationID], [Name], [DateDeleted], [DeleterID], [DeleterEmail] FROM [dbo].[DeletedTickets] WHERE ([ID] = @ID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ID], [TicketID], [TicketNumber], [OrganizationID], [Name], [DateDeleted], [DeleterID] FROM [dbo].[DeletedTickets] WHERE ([ID] = @ID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ID", iD);
         Fill(command);

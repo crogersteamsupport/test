@@ -20,7 +20,6 @@ namespace TeamSupport.Data
     [DataMember] public string Name { get; set; }
     [DataMember] public DateTime DateDeleted { get; set; }
     [DataMember] public int DeleterID { get; set; }
-    [DataMember] public string DeleterEmail { get; set; }
           
   }
   
@@ -29,7 +28,6 @@ namespace TeamSupport.Data
     public DeletedTicketProxy GetProxy()
     {
       DeletedTicketProxy result = new DeletedTicketProxy();
-      result.DeleterEmail = this.DeleterEmail;
       result.DeleterID = this.DeleterID;
       result.Name = this.Name;
       result.OrganizationID = this.OrganizationID;
