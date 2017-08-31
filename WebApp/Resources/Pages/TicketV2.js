@@ -210,48 +210,39 @@ Selectize.define('no_results', function (options) {
     })();
 });
 
-$.fn.autoGrow = function () {
+$.fn.autoGr33ow = function () {
     return this.each(function () {
-
         // Variables
         var colsDefault = this.cols;
         var rowsDefault = this.rows;
-
         //Functions
         var grow = function () {
             growByRef(this);
         }
-
         var growByRef = function (obj) {
             var linesCount = 0;
             var lines = obj.value.split('\n');
-
             for (var i = lines.length - 1; i >= 0; --i) {
                 linesCount += Math.floor((lines[i].length / colsDefault) + 1);
             }
-
             if (linesCount > rowsDefault)
                 obj.rows = linesCount + 1;
             else
                 obj.rows = rowsDefault;
         }
-
         var characterWidth = function (obj) {
             var characterWidth = 0;
             var temp1 = 0;
             var temp2 = 0;
             var tempCols = obj.cols;
-
             obj.cols = 1;
             temp1 = obj.offsetWidth;
             obj.cols = 2;
             temp2 = obj.offsetWidth;
             characterWidth = temp2 - temp1;
             obj.cols = tempCols;
-
             return characterWidth;
         }
-
         // Manipulations
         //this.style.width = "auto";
         this.style.height = "auto";
@@ -267,13 +258,22 @@ $.fn.autoGrow = function () {
 
 
 
-$(window).resize(function() {
-    maxwidth();
+
+$(window).load(function(e) {
+    $('textarea.autogrow').autogrow();
+});
+
+$(window).resize(function(e) {
+    pagewidth();
+    ticketmenu();
 });
 
 
+
+
 $(document).ready(function () {
-    maxwidth();
+    pagewidth();
+
     _ticketNumber = window.parent.Ts.Utils.getQueryValue("TicketNumber", window);
 
     apiKey = "45228242";
@@ -322,14 +322,9 @@ $(document).ready(function () {
         }
     });
 
-
     watson(_ticketNumber);
-    // $("input[type=text], textarea").autoGrow({fixMinHeight: true, onInitialize: true});
+    $('textarea.autogrow').autogrow();
 });
-
-
-
-
 
 var loadTicket = function (ticketNumber, refresh) {
     window.parent.Ts.Services.Tickets.GetTicketInfo(_ticketNumber, function (info) {
@@ -439,7 +434,7 @@ function SetupTicketPage() {
     //Create the new action LI element
     CreateNewActionLI();
 
-    $("input[type=text], textarea").autoGrow();
+    $('textarea.autogrow').autogrow();
 
     window.parent.Ts.Services.TicketPage.GetTicketPageOrder("TicketFieldsOrder", function (order) {
         SetupTicketProperties(order);
@@ -559,12 +554,8 @@ function SetupTicketProperties(order) {
 
         //set the url for the copy paste button
         //var ticketURLLink = ""
-        var ticketURLLink = new ZeroClipboard(document.getElementById("Ticket-URL"));
-        ticketURLLink.on("aftercopy", function (event) {
-            alert("Copied URL to clipboard: " + event.data["text/plain"]);
-        });
         var ticketUrl = window.parent.Ts.System.AppDomain + "/?TicketNumber=" + _ticketNumber;
-        $("#Ticket-URL").attr("data-clipboard-text", ticketUrl);
+        $("#clipboard").attr("data-copy", ticketUrl);
 
         //set the ticket title
         $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
@@ -1874,7 +1865,7 @@ function LoadTicketControls() {
     }
     else {
         $('#ticket-DaysOpened').text(_ticketInfo.Ticket.DaysOpened);
-        $('#label-days').text('Days Open');
+        $('#label-days').text('Days Opened');
     }
 
     var dueDate = _ticketInfo.Ticket.DueDate;
@@ -3410,14 +3401,9 @@ var AddCustomFieldEdit = function (field, parentContainer) {
 
     var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
     var inputGroupContainer = $('<div>').addClass('input-group').appendTo(inputContainer);
-    var input = $('<textarea>')
-                    .addClass('form-control ticket-simple-textarea muted-placeholder')
-                    .attr("placeholder", "Enter Value")
-                    .val(field.Value)
-                    .autoGrow()
-                    .appendTo(inputGroupContainer)
-                    .after(getUrls(field.Value));
+    var input = $('<textarea>').addClass('form-control ticket-simple-textarea muted-placeholder autogrow fart').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputGroupContainer).after(getUrls(field.Value)).autogrow();
 
+    $('textarea.autogrow').autogrow();
 
     if (field.Mask) {
         input.mask(field.Mask);
@@ -6086,7 +6072,7 @@ function watson (ticketnumber) {
 
 function ticketmenu () {
     var width = $('#ticketpage').width();
-    $('#ticketmenu-container').css('width',width);
+    // $('#ticketmenu-container').css('width',width);
     if (width > 900) {
         $('#ticketmenu-actions-lg').show();
         $('#ticketmenu-actions-sm').hide();
@@ -6111,5 +6097,7 @@ function maxwidth () {
 
 function pagewidth () {
     var width = $(window).width();
+    $('#frame-container, #ticketpage').css('max-width',width);
     $('#ticketpage').css('max-width',width);
+    $('#ticketpane').css('max-width',width - 310);
 }

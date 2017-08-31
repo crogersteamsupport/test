@@ -289,8 +289,6 @@ namespace TSWebServices
                     utils.AddItem(new TsMenuItem("utils", "utils-organizations", "Organizations", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Utils/Organizations.html", "vcr/1_9_0/PaneInfo/Admin.html")));
                     if (user.UserID == 34 || user.UserID == 47)
                         utils.AddItem(new TsMenuItem("utils", "utils-reporttest", "Custom Reports", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Utils/ReportTest.html", "vcr/1_9_0/PaneInfo/Admin.html")));
-                    if (user.UserID == 34)
-                        utils.AddItem(new TsMenuItem("utils", "utils-ticketboard", "Ticket Board", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Utils/TicketBoard.html", "vcr/1_9_0/PaneInfo/Admin.html")));
 
                 }
 
