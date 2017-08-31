@@ -5464,17 +5464,23 @@ function SetupWCArea() {
             }
         }
     });
+    
     //handle the event association
-    $('.addticket').click(function ()
-    { itemAssociation("0"); });
-    $('.adduser').click(function ()
-    { itemAssociation("1"); });
-    $('.addcustomer').click(function ()
-    { itemAssociation("2"); });
-    $('.addgroup').click(function ()
-    { itemAssociation("3"); });
-    $('.addproduct').click(function ()
-    { itemAssociation("4"); });
+    $('.addticket').click(function (e) {
+        itemAssociation("0");
+    });
+    $('.adduser').click(function (e) {
+        itemAssociation("1");
+    });
+    $('.addcustomer').click(function (e) {
+        itemAssociation("2");
+    });
+    $('.addgroup').click(function (e) {
+        itemAssociation("3");
+    });
+    $('.addproduct').click(function (e) {
+        itemAssociation("4");
+    });
 
     function itemAssociation(associationType) {
         var searchbox = $('#associationSearch');

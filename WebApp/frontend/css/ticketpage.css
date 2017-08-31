@@ -728,46 +728,6 @@ div.ticket-badge > div > a:focus {
     background-image:url('/Resources/Images/icons/attachment.png');
     cursor:pointer;
 }
-.addticket {
-    margin:2px 4px;
-    width:16px;
-    height:16px;
-    float:left;
-    background-image:url('/Resources/Images/nav/16/Tickets.png');
-    cursor:pointer;
-}
-.addgroup {
-    margin:2px 4px;
-    width:16px;
-    height:16px;
-    float:left;
-    background-image:url('/Resources/Images/nav/16/Groups.png');
-    cursor:pointer;
-}
-.addcustomer {
-    margin:2px 4px;
-    width:16px;
-    height:16px;
-    float:left;
-    background-image:url('/Resources/Images/nav/16/Customers.png');
-    cursor:pointer;
-}
-.addproduct {
-    margin:2px 4px;
-    width:16px;
-    height:16px;
-    float:left;
-    background-image:url('/Resources/Images/nav/16/Products.png');
-    cursor:pointer;
-}
-.adduser {
-    margin:2px 4px;
-    width:16px;
-    height:16px;
-    float:left;
-    background-image:url('/Resources/Images/nav/16/Users.png');
-    cursor:pointer;
-}
 
 
 .arrow-up {
