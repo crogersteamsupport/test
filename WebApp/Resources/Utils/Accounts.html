@@ -111,6 +111,7 @@
                     function appendUser(user) {
                         var row = $('<tr>');
                         row.append($('<td>').text(user.UserID));
+                        row.append($('<td>').html(user.FirstName + ' ' + user.LastName));
                         row.append($('<td>').html('<a href="mailto:' + user.Email + '">' + user.Email + '</a>'));
                         row.append($('<td>').text(user.LastLogin));
 
