@@ -143,24 +143,26 @@ namespace TeamSupport.Data
 						{
 							Weekday = null;
 
-                            if (startOfTheMonth.AddDays((byte)Monthday - 1).Add(timeOnly.TimeOfDay) < new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 0, 0, 0).Add(timeOnly.TimeOfDay))
+                            if (startOfTheMonth.AddDays((byte)Monthday - 1).Add(timeOnly.TimeOfDay) < new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 0, 0, 0).Add(timeOnly.TimeOfDay) || isServiceCall)
                             {
                                 dateOnly = startOfTheMonth.AddMonths((byte)Every);
-                            }
+							}
                             else
                             {
                                 dateOnly = startOfTheMonth;
-                            }
+							}
 
                             int monthTemp = dateOnly.Month;
                             dateOnly = dateOnly.AddDays((byte)Monthday - 1); //Calculation starts on first of the month, so substract it.
 
-                            if (dateOnly.Month > monthTemp)
+							if (dateOnly.Month > monthTemp)
                             {
                                 dateOnly = dateOnly.AddDays(-dateOnly.Day);
-                            }
+							}
                         }
 					}
+
+					Debug("Exited while. Monthly Next Run calculation. DateOnly: " + dateOnly.ToString());
 
 					NextRun = dateOnly.Add(timeOnly.TimeOfDay);
 
