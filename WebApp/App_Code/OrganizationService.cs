@@ -660,7 +660,7 @@ namespace TSWebServices
 
         private void VerifyAccountAdmin()
         {
-            bool result = TSAuthentication.OrganizationID == 1078);
+            bool result = (TSAuthentication.OrganizationID == 1078);
             Groups groups = new Groups(TSAuthentication.GetLoginUser());
             groups.LoadByGroupName(TSAuthentication.OrganizationID, "Account Admin");
             result = result && !groups.IsEmpty;
