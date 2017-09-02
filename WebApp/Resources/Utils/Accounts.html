@@ -28,7 +28,13 @@
 
     <script language="javascript" type="text/javascript">
         $(document).ready(function () {
-            $('.action-refresh').click(function (e) { e.preventDefault(); window.location = window.location; });
+            $('.action-refresh').click(function (e) {
+                e.preventDefault(); 
+
+                var org = $('.org-info').data('o');
+                showOrgInfo(org.OrganizationID);
+
+            });
             var supportLoginDisabled = false;
             var organizationID = -1;
             $('#inputOrg')
@@ -64,9 +70,7 @@
                     appendProperty('Inventory Enabled', '<a href="#" class="action-toggle-inventory">' + org.IsInventoryEnabled.toString() + '</a>');
                     appendProperty('API Request Limit', org.APIRequestLimit);
                     appendProperty('User Seats', org.UserSeats);
-                    appendProperty('Engagement Score', '<span class="evergage-prop eng-score"><i class="fa fa-spinner fa-spin"></i></span>');
-                    appendProperty('Total Actions', '<span class="evergage-prop total-actions"><i class="fa fa-spinner fa-spin"></i></span>');
-                    appendProperty('Index Last Rebuilt', org.LastIndexRebuilt.toString());
+                    appendProperty('Index Last Rebuilt', org.LastIndexRebuilt.toString() + ' <a href="#" class="action-index">Rebuild Indexes</a>');
 
                     top.Ts.Services.Organizations.AdminGetUserCount(orgID, function (count) {
                         appendProperty('Active Users', count);
@@ -75,29 +79,11 @@
                         appendProperty('Storage Used', size + ' MB');
                     });
 
-                    $('.evergage-company').attr('href', getEGCompanyLink());
                     showUsers(org);
-                    getEngagementScore(org.Name);
 
                 });
             }
 
-            function getEngagementScore(orgName) {
-
-                top.Ts.Services.Organizations.GetEvergageData(orgName, function (data) {
-                    $('.evergage-prop').html('');
-                    var o = JSON.parse(data);
-                    if (o) {
-                        $('.eng-score').html(o.engagementScore);
-                        $('.total-actions').html(o.totalActions);
-                    }
-                    else {
-                        $('.evergage-prop').html('Error Retrieving');
-                    }
-
-
-                });
-            }
 
             $('.org-props').on('click', '.action-toggle-inventory', function (e) {
                 e.preventDefault();
@@ -110,6 +96,14 @@
 
             });
 
+            $('.org-props').on('click', '.action-index', function (e) {
+                e.preventDefault();
+                var org = $('.org-info').data('o');
+                top.Ts.Services.Organizations.AdminRebuildIndexes(org.OrganizationID, function () {
+                    alert("Indexes are rebuilding.");
+                });
+            });
+
             function showUsers(org) {
                 top.Ts.Services.Users.AdminGetUsers(org.OrganizationID, function (users) {
 
@@ -117,7 +111,7 @@
                     function appendUser(user) {
                         var row = $('<tr>');
                         row.append($('<td>').text(user.UserID));
-                        row.append($('<td>').html('<a href="' + getEGUserLink(user.Email) + '" target="EverGage">' + user.FirstName + ' ' + user.LastName + '&nbsp;<i class="fa fa-external-link"></i>'));
+                        row.append($('<td>').html(user.FirstName + ' ' + user.LastName));
                         row.append($('<td>').html('<a href="mailto:' + user.Email + '">' + user.Email + '</a>'));
                         row.append($('<td>').text(user.LastLogin));
 
@@ -196,8 +190,16 @@
 
             $('.action-toggle-active').click(function (e) {
                 e.preventDefault();
-                if (!confirm("Are you really sure you would like to toggle active on this account?")) return;
                 var org = $('.org-info').data('o');
+
+                if (org.IsActive)
+                {
+                    if (!confirm("Are you really sure you would like to DISABLE " + org.Name + "?")) return;
+                }
+                else {
+                    if (!confirm("Are you really sure you would like to ENABLE " + org.Name + "?")) return;
+                }
+                        
                 top.Ts.Services.Organizations.AdminEnable(org.OrganizationID, !org.IsActive, function () {
                     showOrgInfo(org.OrganizationID);
                 });
@@ -281,14 +283,7 @@
             });
 
 
-            $('.action-index').click(function (e) {
-                e.preventDefault();
-                var org = $('.org-info').data('o');
-                top.Ts.Services.Organizations.AdminRebuildIndexes(org.OrganizationID, function () {
-                    alert("Indexes are rebuilding.");
-                });
-            });
-
+     
             $('#selectProduct').change(function (e) {
                 e.preventDefault();
                 top.Ts.Services.Organizations.AdminUpdateProductType(organizationID, $('#selectProduct').val(), function () {
@@ -296,17 +291,6 @@
                 });
 
             });
-
-            function getEGUserLink(email) {
-                var org = $('.org-info').data('o');
-                return 'https://teamsupport.evergage.com/#dataset;dataset-id=MainApp/customer/c-overview;customer-type=user;user-id=' + encodeURIComponent(email.toLowerCase()) + ';account-id=' + encodeURIComponent(org.Name.toLowerCase());
-            }
-
-            function getEGCompanyLink() {
-                var org = $('.org-info').data('o');
-                return 'https://teamsupport.evergage.com/#dataset;dataset-id=MainApp/customer/c-overview;customer-type=account;account-id=' + encodeURIComponent(org.Name.toLowerCase());
-            }
-
 
 
         });
@@ -334,11 +318,11 @@
                             </div>
                         </form>
                         <div class="org-info" style="display: none;">
+                            <h3>Account Admin Only Tools</h3>
                             <div class="btn-group org-tools">
                                 <button class="btn btn-warning action-toggle-active">Disable</button>
                                 <button class="btn btn-danger action-delete">Delete</button>
                                 <button class="btn btn-default action-rename">Rename</button>
-                                <button class="btn btn-default action-index">Rebuild Indexes</button>
                                 <button class="btn btn-default action-seats">Change Seat Count</button>
                                 <button class="btn btn-default action-api">Change API Request Count</button>
                                 <button class="btn btn-default action-portal">Turn all portal users on</button>
@@ -362,11 +346,6 @@
                             </div>
                             <div class="clearfix">
                             </div>
-                            <p>
-                                <a href="#" class="evergage-company" target="EverGage">
-                                    View in Evergage&nbsp;<i class="fa fa-external-link"></i>
-                                </a>
-                            </p>
                         </div>
                     </div>
                 </div>
