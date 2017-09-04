@@ -597,10 +597,15 @@ namespace TSWebServices
                 CustomField custom = CustomFields.GetCustomField(link.Collection.LoginUser, tsFieldID);
                 field.TSFieldName = custom.Name;
             }
-            else
+            else if (refType != ReferenceType.TicketTypes)
             {
                 ReportTableField rtf = ReportTableFields.GetReportTableField(link.Collection.LoginUser, tsFieldID);
                 field.TSFieldName = rtf.FieldName;
+            }
+            else
+            {
+                TicketType ticketType = TicketTypes.GetTicketType(link.Collection.LoginUser, tsFieldID);
+                field.TSFieldName = ticketType.Name;
             }
 
             switch (refType)
@@ -613,6 +618,9 @@ namespace TSWebServices
                     break;
                 case ReferenceType.Tickets:
                     field.CRMObjectName = "Ticket";
+                    break;
+                case ReferenceType.TicketTypes:
+                    field.CRMObjectName = "TicketType";
                     break;
                 default:
                     break;

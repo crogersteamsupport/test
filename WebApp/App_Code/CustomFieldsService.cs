@@ -57,35 +57,46 @@ namespace TSWebServices
                     //reference: Integration.vb UpdateContactInfo()
                     excludedFields = new List<string>() { "name", "title", "email" };
                     break;
+                case ReferenceType.TicketTypes: tableID = 16; break;
                 default: return null;
             }
 
             TicketTypes ticketTypes = new TicketTypes(TSAuthentication.GetLoginUser());
             ticketTypes.LoadByOrganizationID(TSAuthentication.OrganizationID);
 
-            ReportTableFields fields = new ReportTableFields(TSAuthentication.GetLoginUser());
-            fields.LoadByReportTableID(tableID, isReadOnly);
-
-            CustomFields customs = new CustomFields(fields.LoginUser);
-            customs.LoadByReferenceType(TSAuthentication.OrganizationID, refType, auxID);
-
-            foreach (ReportTableField field in fields)
+            if (refType == ReferenceType.TicketTypes)
             {
-                if (excludedFields.Count == 0
-                    || (tableID == 12
-                        && !excludedFields.Contains(field.FieldName.ToLower())))
+                foreach (TicketType ticketType in ticketTypes)
                 {
-                    items.Add(new FieldItem(field.ReportTableFieldID, false, field.FieldName));
+                    items.Add(new FieldItem(ticketType.TicketTypeID, false, ticketType.Name));
                 }
             }
-
-            foreach (CustomField custom in customs)
+            else
             {
-                string ticketTypeName = ticketTypes.Where(p => p.TicketTypeID == custom.AuxID).Select(t => t.Name).SingleOrDefault();
-                items.Add(new FieldItem(custom.CustomFieldID,
-                                        true,
-                                        string.Format("{0}{1}", custom.Name,
-                                        string.IsNullOrEmpty(ticketTypeName) ? "" : " (" + ticketTypeName + ")")));
+                ReportTableFields fields = new ReportTableFields(TSAuthentication.GetLoginUser());
+                fields.LoadByReportTableID(tableID, isReadOnly);
+
+                CustomFields customs = new CustomFields(fields.LoginUser);
+                customs.LoadByReferenceType(TSAuthentication.OrganizationID, refType, auxID);
+
+                foreach (ReportTableField field in fields)
+                {
+                    if (excludedFields.Count == 0
+                        || (tableID == 12
+                            && !excludedFields.Contains(field.FieldName.ToLower())))
+                    {
+                        items.Add(new FieldItem(field.ReportTableFieldID, false, field.FieldName));
+                    }
+                }
+
+                foreach (CustomField custom in customs)
+                {
+                    string ticketTypeName = ticketTypes.Where(p => p.TicketTypeID == custom.AuxID).Select(t => t.Name).SingleOrDefault();
+                    items.Add(new FieldItem(custom.CustomFieldID,
+                                            true,
+                                            string.Format("{0}{1}", custom.Name,
+                                            string.IsNullOrEmpty(ticketTypeName) ? "" : " (" + ticketTypeName + ")")));
+                }
             }
 
             return items.ToArray();

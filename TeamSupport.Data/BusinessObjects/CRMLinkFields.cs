@@ -73,7 +73,19 @@ namespace TeamSupport.Data
           return null;
       }
 
-		public static int? FindIdByCustomFieldId(int customFieldId, LoginUser login)
+        public CRMLinkField FindByTSFieldName(string name)
+        {
+            foreach (CRMLinkField field in this)
+            {
+                if (field.TSFieldName.Trim().ToLower() == name.Trim().ToLower())
+                {
+                    return field;
+                }
+            }
+            return null;
+        }
+
+        public static int? FindIdByCustomFieldId(int customFieldId, LoginUser login)
 		{
 			int? crmLinkFieldId = null;
 
