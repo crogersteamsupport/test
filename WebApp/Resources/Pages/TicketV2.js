@@ -729,6 +729,7 @@ function CreateNewActionLI() {
                                         actionElement.find('.ticket-action-number').text(_actionTotal);
                                     }
                                     else {
+                                        console.log('#action-new-save:updateactionelement');
                                         UpdateActionElement(result, false);
                                     }
                                     clearTicketEditor();
@@ -778,6 +779,7 @@ function CreateNewActionLI() {
                                 actionElement.find('.ticket-action-number').text(_actionTotal);
                             }
                             else {
+                                console.log('#action-timeline:updateactionelement');
                                 UpdateActionElement(result, false);
                             }
                             clearTicketEditor();
@@ -931,48 +933,30 @@ function SetupActionEditor(elem, action) {
         dropZone: element,
         add: function (e, data) {
             for (var i = 0; i < data.files.length; i++) {
-                var item = $('<li>')
-                .appendTo(element.find('.upload-queue'));
+                var item = $('<li>').appendTo(element.find('.upload-queue'));
 
                 data.context = item;
                 item.data('data', data);
 
-                var bg = $('<div>')
-                .appendTo(item);
+                var bg = $('<div>').appendTo(item);
 
-                $('<div>')
-                .text(data.files[i].name + '  (' + window.parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
-                .addClass('filename')
-                .appendTo(bg);
+                $('<div>').text(data.files[i].name + '  (' + window.parent.Ts.Utils.getSizeString(data.files[i].size) + ')').addClass('filename').appendTo(bg);
 
-                $('<div>')
-                .addClass('progress')
-                .hide()
-                .appendTo(bg);
+                $('<div>').addClass('progress').hide().appendTo(bg);
 
-                $('<span>')
-                .addClass('ui-icon ui-icon-close')
-                .click(function (e) {
+                $('<span>').addClass('ui-icon ui-icon-close').click(function (e) {
                     e.preventDefault();
                     $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
-                })
-                .appendTo(bg);
-
+                }).appendTo(bg);
                 //<span class="tagRemove" aria-hidden="true">×</span>
-
-                $('<span>')
-                .addClass('ui-icon ui-icon-cancel')
-                .hide()
-                .click(function (e) {
+                $('<span>').addClass('ui-icon ui-icon-cancel').hide().click(function (e) {
                     e.preventDefault();
                     var data = $(this).closest('li').data('data');
                     data.jqXHR.abort();
                 })
                 .appendTo(bg);
-
                 if ((data.files[i].size / 1000000) > 25)
                     alert("Warning " + data.files[i].name + " is over 25MB");
-
             }
 
         },
@@ -997,14 +981,15 @@ function SetupActionEditor(elem, action) {
         stop: function (e, data) {
             window.parent.Ts.Services.TicketPage.GetActionAttachments(_newAction.item.RefID, function (attachments) {
                 _newAction.Attachments = attachments;
+                clearTicketEditor();
                 if (_oldActionID === -1) {
-                    clearTicketEditor();
                     _actionTotal = _actionTotal + 1;
+                    console.log('#action-file-upload:createactionelement');
                     var actionElement = CreateActionElement(_newAction, false);
                     actionElement.find('.ticket-action-number').text(_actionTotal);
                 }
                 else {
-                    clearTicketEditor();
+                    console.log('#action-file-upload:updateactionelement');
                     UpdateActionElement(_newAction, false);
                 }
                 _newAction = null;
@@ -4402,6 +4387,7 @@ function FetchTimeLineItems(start) {
             $('.results-loading').hide();
             $('.results-done').show();
         } else {
+            console.log('handlebars:action.handlebars');
             _compiledActionTemplate = Handlebars.templates['action'];
 
             //create first timeline date marker if needed
@@ -4449,6 +4435,7 @@ function CreateActionElement(val, ShouldAppend) {
             val.WaterCoolerReplies[wc].WaterCoolerReplyProxy.Message = wcmsgtext.replace(/\n\r?/g, '<br />');
         }
     }
+    console.log('createactionelecment:recycle:handlebars:action.handlebars');
     var html = _compiledActionTemplate(val);
     var actionElement = $(html);
     actionElement.find('a').attr('target', '_blank');
@@ -4478,10 +4465,18 @@ function UpdateActionElement(val) {
         $("#action-timeline").append(dateSpan);
         _currDateSpan = val.item.DateCreated;
     }
+    console.log('updateactionelement:recycle:handlebars:action.handlebars');
     var html = _compiledActionTemplate(val);
+    var actionElement = $(html);
     var li = $("#action-timeline li[data-id=" + val.item.RefID + "]");
     var actionNumber = li.find('.ticket-action-number').text();
-    li.replaceWith(html);
+    try {
+        $('.action-placeholder').after(actionElement);
+        // li.replaceWith(html);
+        console.log('Acion appended.');
+    } catch (e) {
+        console.log('Unable to append action.');
+    }
     $("#action-timeline li[data-id=" + val.item.RefID + "]").find('.ticket-action-number').text(actionNumber);
 };
 
@@ -5464,7 +5459,7 @@ function SetupWCArea() {
             }
         }
     });
-    
+
     //handle the event association
     $('.addticket').click(function (e) {
         itemAssociation("0");
