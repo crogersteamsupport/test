@@ -55,6 +55,11 @@ namespace TeamSupport.Data
       get { return Row["SupportHoursRemaining"] != DBNull.Value ? (int?)Row["SupportHoursRemaining"] : null; }
     }
     
+    public string PhoneNumbers
+    {
+      get { return Row["PhoneNumbers"] != DBNull.Value ? (string)Row["PhoneNumbers"] : null; }
+    }
+    
     
     
 
@@ -317,28 +322,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int organizationID)
     {
-      BeforeDBDelete(organizationID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[OrganizationsView] WHERE ([OrganizationID] = @OrganizationID);";
         deleteCommand.Parameters.Add("OrganizationID", SqlDbType.Int);
         deleteCommand.Parameters["OrganizationID"].Value = organizationID;
 
+        BeforeDBDelete(organizationID);
         BeforeRowDelete(organizationID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(organizationID);
-      }
-      AfterDBDelete(organizationID);
-      
-    }
+        AfterDBDelete(organizationID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("OrganizationsViewSave");
@@ -347,7 +342,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[OrganizationsView] SET     [Name] = @Name,    [Description] = @Description,    [Website] = @Website,    [IsActive] = @IsActive,    [InActiveReason] = @InActiveReason,    [PrimaryUserID] = @PrimaryUserID,    [PrimaryContactEmail] = @PrimaryContactEmail,    [PrimaryContact] = @PrimaryContact,    [ParentID] = @ParentID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [HasPortalAccess] = @HasPortalAccess,    [CreatedBy] = @CreatedBy,    [LastModifiedBy] = @LastModifiedBy,    [SAExpirationDate] = @SAExpirationDate,    [SlaName] = @SlaName,    [CRMLinkID] = @CRMLinkID,    [PortalGuid] = @PortalGuid,    [SlaLevelID] = @SlaLevelID,    [DefaultWikiArticleID] = @DefaultWikiArticleID,    [DefaultSupportGroupID] = @DefaultSupportGroupID,    [DefaultSupportUserID] = @DefaultSupportUserID,    [DefaultSupportUser] = @DefaultSupportUser,    [DefaultSupportGroup] = @DefaultSupportGroup,    [CompanyDomains] = @CompanyDomains,    [SupportHoursMonth] = @SupportHoursMonth,    [SupportHoursUsed] = @SupportHoursUsed,    [SupportHoursRemaining] = @SupportHoursRemaining,    [NeedsIndexing] = @NeedsIndexing,    [CustDisIndex] = @CustDisIndex,    [CustDistIndexTrend] = @CustDistIndexTrend  WHERE ([OrganizationID] = @OrganizationID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[OrganizationsView] SET     [Name] = @Name,    [Description] = @Description,    [Website] = @Website,    [IsActive] = @IsActive,    [InActiveReason] = @InActiveReason,    [PrimaryUserID] = @PrimaryUserID,    [PrimaryContactEmail] = @PrimaryContactEmail,    [PrimaryContact] = @PrimaryContact,    [ParentID] = @ParentID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [HasPortalAccess] = @HasPortalAccess,    [CreatedBy] = @CreatedBy,    [LastModifiedBy] = @LastModifiedBy,    [SAExpirationDate] = @SAExpirationDate,    [SlaName] = @SlaName,    [CRMLinkID] = @CRMLinkID,    [PortalGuid] = @PortalGuid,    [SlaLevelID] = @SlaLevelID,    [DefaultWikiArticleID] = @DefaultWikiArticleID,    [DefaultSupportGroupID] = @DefaultSupportGroupID,    [DefaultSupportUserID] = @DefaultSupportUserID,    [DefaultSupportUser] = @DefaultSupportUser,    [DefaultSupportGroup] = @DefaultSupportGroup,    [CompanyDomains] = @CompanyDomains,    [SupportHoursMonth] = @SupportHoursMonth,    [SupportHoursUsed] = @SupportHoursUsed,    [SupportHoursRemaining] = @SupportHoursRemaining,    [NeedsIndexing] = @NeedsIndexing,    [CustDisIndex] = @CustDisIndex,    [CustDistIndexTrend] = @CustDistIndexTrend,    [PhoneNumbers] = @PhoneNumbers  WHERE ([OrganizationID] = @OrganizationID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
@@ -357,7 +352,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Name", SqlDbType.VarChar, 255);
+		tempParameter = updateCommand.Parameters.Add("Name", SqlDbType.NVarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -399,14 +394,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("PrimaryContactEmail", SqlDbType.VarChar, 1024);
+		tempParameter = updateCommand.Parameters.Add("PrimaryContactEmail", SqlDbType.NVarChar, 256);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("PrimaryContact", SqlDbType.VarChar, 202);
+		tempParameter = updateCommand.Parameters.Add("PrimaryContact", SqlDbType.NVarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -441,14 +436,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("CreatedBy", SqlDbType.VarChar, 202);
+		tempParameter = updateCommand.Parameters.Add("CreatedBy", SqlDbType.NVarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("LastModifiedBy", SqlDbType.VarChar, 202);
+		tempParameter = updateCommand.Parameters.Add("LastModifiedBy", SqlDbType.NVarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -511,7 +506,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("DefaultSupportUser", SqlDbType.VarChar, 202);
+		tempParameter = updateCommand.Parameters.Add("DefaultSupportUser", SqlDbType.NVarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -574,13 +569,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("PhoneNumbers", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[OrganizationsView] (    [OrganizationID],    [Name],    [Description],    [Website],    [IsActive],    [InActiveReason],    [PrimaryUserID],    [PrimaryContactEmail],    [PrimaryContact],    [ParentID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [HasPortalAccess],    [CreatedBy],    [LastModifiedBy],    [SAExpirationDate],    [SlaName],    [CRMLinkID],    [PortalGuid],    [SlaLevelID],    [DefaultWikiArticleID],    [DefaultSupportGroupID],    [DefaultSupportUserID],    [DefaultSupportUser],    [DefaultSupportGroup],    [CompanyDomains],    [SupportHoursMonth],    [SupportHoursUsed],    [SupportHoursRemaining],    [NeedsIndexing],    [CustDisIndex],    [CustDistIndexTrend]) VALUES ( @OrganizationID, @Name, @Description, @Website, @IsActive, @InActiveReason, @PrimaryUserID, @PrimaryContactEmail, @PrimaryContact, @ParentID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @HasPortalAccess, @CreatedBy, @LastModifiedBy, @SAExpirationDate, @SlaName, @CRMLinkID, @PortalGuid, @SlaLevelID, @DefaultWikiArticleID, @DefaultSupportGroupID, @DefaultSupportUserID, @DefaultSupportUser, @DefaultSupportGroup, @CompanyDomains, @SupportHoursMonth, @SupportHoursUsed, @SupportHoursRemaining, @NeedsIndexing, @CustDisIndex, @CustDistIndexTrend); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[OrganizationsView] (    [OrganizationID],    [Name],    [Description],    [Website],    [IsActive],    [InActiveReason],    [PrimaryUserID],    [PrimaryContactEmail],    [PrimaryContact],    [ParentID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [HasPortalAccess],    [CreatedBy],    [LastModifiedBy],    [SAExpirationDate],    [SlaName],    [CRMLinkID],    [PortalGuid],    [SlaLevelID],    [DefaultWikiArticleID],    [DefaultSupportGroupID],    [DefaultSupportUserID],    [DefaultSupportUser],    [DefaultSupportGroup],    [CompanyDomains],    [SupportHoursMonth],    [SupportHoursUsed],    [SupportHoursRemaining],    [NeedsIndexing],    [CustDisIndex],    [CustDistIndexTrend],    [PhoneNumbers]) VALUES ( @OrganizationID, @Name, @Description, @Website, @IsActive, @InActiveReason, @PrimaryUserID, @PrimaryContactEmail, @PrimaryContact, @ParentID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @HasPortalAccess, @CreatedBy, @LastModifiedBy, @SAExpirationDate, @SlaName, @CRMLinkID, @PortalGuid, @SlaLevelID, @DefaultWikiArticleID, @DefaultSupportGroupID, @DefaultSupportUserID, @DefaultSupportUser, @DefaultSupportGroup, @CompanyDomains, @SupportHoursMonth, @SupportHoursUsed, @SupportHoursRemaining, @NeedsIndexing, @CustDisIndex, @CustDistIndexTrend, @PhoneNumbers); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("PhoneNumbers", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("CustDistIndexTrend", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -638,7 +647,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("DefaultSupportUser", SqlDbType.VarChar, 202);
+		tempParameter = insertCommand.Parameters.Add("DefaultSupportUser", SqlDbType.NVarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -701,14 +710,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("LastModifiedBy", SqlDbType.VarChar, 202);
+		tempParameter = insertCommand.Parameters.Add("LastModifiedBy", SqlDbType.NVarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("CreatedBy", SqlDbType.VarChar, 202);
+		tempParameter = insertCommand.Parameters.Add("CreatedBy", SqlDbType.NVarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -757,14 +766,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("PrimaryContact", SqlDbType.VarChar, 202);
+		tempParameter = insertCommand.Parameters.Add("PrimaryContact", SqlDbType.NVarChar, 202);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("PrimaryContactEmail", SqlDbType.VarChar, 1024);
+		tempParameter = insertCommand.Parameters.Add("PrimaryContactEmail", SqlDbType.NVarChar, 256);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -806,7 +815,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Name", SqlDbType.VarChar, 255);
+		tempParameter = insertCommand.Parameters.Add("Name", SqlDbType.NVarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -932,7 +941,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationID], [Name], [Description], [Website], [IsActive], [InActiveReason], [PrimaryUserID], [PrimaryContactEmail], [PrimaryContact], [ParentID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [HasPortalAccess], [CreatedBy], [LastModifiedBy], [SAExpirationDate], [SlaName], [CRMLinkID], [PortalGuid], [SlaLevelID], [DefaultWikiArticleID], [DefaultSupportGroupID], [DefaultSupportUserID], [DefaultSupportUser], [DefaultSupportGroup], [CompanyDomains], [SupportHoursMonth], [SupportHoursUsed], [SupportHoursRemaining], [NeedsIndexing], [CustDisIndex], [CustDistIndexTrend] FROM [dbo].[OrganizationsView] WHERE ([OrganizationID] = @OrganizationID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationID], [Name], [Description], [Website], [IsActive], [InActiveReason], [PrimaryUserID], [PrimaryContactEmail], [PrimaryContact], [ParentID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [HasPortalAccess], [CreatedBy], [LastModifiedBy], [SAExpirationDate], [SlaName], [CRMLinkID], [PortalGuid], [SlaLevelID], [DefaultWikiArticleID], [DefaultSupportGroupID], [DefaultSupportUserID], [DefaultSupportUser], [DefaultSupportGroup], [CompanyDomains], [SupportHoursMonth], [SupportHoursUsed], [SupportHoursRemaining], [NeedsIndexing], [CustDisIndex], [CustDistIndexTrend], [PhoneNumbers] FROM [dbo].[OrganizationsView] WHERE ([OrganizationID] = @OrganizationID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("OrganizationID", organizationID);
         Fill(command);

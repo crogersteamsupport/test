@@ -230,7 +230,7 @@ namespace TSWebServices
 
 
         [WebMethod]
-        public string SetPortalOption(PortalOptionProxy proxy, string externalLink, bool isPublicArticles, int? groupID)
+        public string SetPortalOption(PortalOptionProxy proxy, string externalLink, bool isPublicArticles)
         {
             Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), proxy.OrganizationID);
             if (organization.OrganizationID != TSAuthentication.OrganizationID || !TSAuthentication.IsSystemAdmin) return null;
@@ -320,7 +320,6 @@ namespace TSWebServices
 
             //organization.AgentRating = agentRatingEnabled;
             organization.IsPublicArticles = isPublicArticles;
-            organization.DefaultPortalGroupID = groupID;
             organization.UseForums = proxy.DisplayForum == null ? false : (bool)proxy.DisplayForum;
             organization.Collection.Save();
 
@@ -372,7 +371,7 @@ namespace TSWebServices
         public CRMLinkTableItemProxy[] AdminGetCrmLinks(int organizationID)
         {
 
-      if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return null;
+            if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return null;
 
             CRMLinkTable table = new CRMLinkTable(TSAuthentication.GetLoginUser());
             table.LoadByOrganizationID(organizationID);
@@ -598,10 +597,15 @@ namespace TSWebServices
                 CustomField custom = CustomFields.GetCustomField(link.Collection.LoginUser, tsFieldID);
                 field.TSFieldName = custom.Name;
             }
-            else
+            else if (refType != ReferenceType.TicketTypes)
             {
                 ReportTableField rtf = ReportTableFields.GetReportTableField(link.Collection.LoginUser, tsFieldID);
                 field.TSFieldName = rtf.FieldName;
+            }
+            else
+            {
+                TicketType ticketType = TicketTypes.GetTicketType(link.Collection.LoginUser, tsFieldID);
+                field.TSFieldName = ticketType.Name;
             }
 
             switch (refType)
@@ -614,6 +618,9 @@ namespace TSWebServices
                     break;
                 case ReferenceType.Tickets:
                     field.CRMObjectName = "Ticket";
+                    break;
+                case ReferenceType.TicketTypes:
+                    field.CRMObjectName = "TicketType";
                     break;
                 default:
                     break;
@@ -658,24 +665,33 @@ namespace TSWebServices
             return AdminGetCustomers(1, name);
         }
 
+        private void VerifyAccountAdmin()
+        {
+            bool result = (TSAuthentication.OrganizationID == 1078);
+            Groups groups = new Groups(TSAuthentication.GetLoginUser());
+            groups.LoadByGroupName(TSAuthentication.OrganizationID, "Account Admin");
+            result = result && !groups.IsEmpty;
+            if (!result) throw new Exception("User is not an account administrator.");
+        }
+
         [WebMethod]
         public void AdminSetAllPortalUsers(int organizationID, bool sendEmails)
         {
-            if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
+            VerifyAccountAdmin();
             Organizations.SetAllPortalUsers(TSAuthentication.GetLoginUser(), organizationID, sendEmails, false);
         }
 
         [WebMethod]
         public void AdminSetAllHubUsers(int organizationID, bool sendEmails)
         {
-            if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
+            VerifyAccountAdmin();
             Organizations.SetAllPortalUsers(TSAuthentication.GetLoginUser(), organizationID, sendEmails, true);
         }
 
         [WebMethod]
         public void AdminRebuildIndexes(int organizationID)
         {
-		  if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
+            if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
             Organizations.SetRebuildIndexes(TSAuthentication.GetLoginUser(), organizationID);
         }
 
@@ -685,7 +701,7 @@ namespace TSWebServices
         public void AdminQueryOrganizations(int parentID, string query)
         {
             List<TypeAheadItem> result = new List<TypeAheadItem>();
-				if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
+            if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
 
             int orgID = -1;
             bool flag = true;
@@ -732,7 +748,7 @@ namespace TSWebServices
         {
             List<AutocompleteItem> result = new List<AutocompleteItem>();
 
-				if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return result.ToArray();
+            if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return result.ToArray();
             Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
             organizations.LoadByLikeOrganizationName(parentID, name, false, 20);
             foreach (Organization organization in organizations)
@@ -761,6 +777,7 @@ namespace TSWebServices
         [WebMethod]
         public void AdminRenameCompany(int orgID, string name)
         {
+            VerifyAccountAdmin();
             Organization org = GetAdminOrgTarget(orgID);
             org.Name = name;
             org.Collection.Save();
@@ -770,6 +787,7 @@ namespace TSWebServices
         [WebMethod]
         public void AdminUpdateSeats(int orgID, int count)
         {
+            VerifyAccountAdmin();
             Organization org = GetAdminOrgTarget(orgID);
             org.UserSeats = count;
             org.Collection.Save();
@@ -778,6 +796,7 @@ namespace TSWebServices
         [WebMethod]
         public void AdminSetNextTicketNumber(int orgID, int number)
         {
+            VerifyAccountAdmin();
             Organization org = GetAdminOrgTarget(orgID);
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Ticket ticket = (new Tickets(loginUser)).AddNewTicket();
@@ -810,6 +829,7 @@ namespace TSWebServices
         [WebMethod]
         public void AdminUpdateProductType(int orgID, int productType)
         {
+            VerifyAccountAdmin();
             Organization org = GetAdminOrgTarget(orgID);
             org.ProductType = (ProductType)productType;
             org.IsInventoryEnabled = org.ProductType == ProductType.Enterprise;
@@ -832,6 +852,7 @@ namespace TSWebServices
         [WebMethod]
         public void AdminSetApiCount(int orgID, int count)
         {
+            VerifyAccountAdmin();
             Organization org = GetAdminOrgTarget(orgID);
             org.APIRequestLimit = count;
             org.Collection.Save();
@@ -840,6 +861,7 @@ namespace TSWebServices
         [WebMethod]
         public void AdminEnable(int orgID, bool value)
         {
+            VerifyAccountAdmin();
             Organization org = GetAdminOrgTarget(orgID);
             org.IsActive = value;
             org.IsAdvancedPortal = value;

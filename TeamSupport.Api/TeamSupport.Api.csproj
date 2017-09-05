@@ -138,6 +138,7 @@
     <Compile Include="RestData\RestAssetsView.cs" />
     <Compile Include="RestData\RestAttachments.cs" />
     <Compile Include="RestData\RestContacts.cs" />
+    <Compile Include="RestData\RestDeletedTickets.cs" />
     <Compile Include="RestData\RestGroups.cs" />
     <Compile Include="RestData\RestNotes.cs" />
     <Compile Include="RestData\RestOrganizationProducts.cs">

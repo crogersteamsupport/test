@@ -179,28 +179,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int exceptionLogID)
     {
-      BeforeDBDelete(exceptionLogID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ExceptionLogs] WHERE ([ExceptionLogID] = @ExceptionLogID);";
         deleteCommand.Parameters.Add("ExceptionLogID", SqlDbType.Int);
         deleteCommand.Parameters["ExceptionLogID"].Value = exceptionLogID;
 
+        BeforeDBDelete(exceptionLogID);
         BeforeRowDelete(exceptionLogID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(exceptionLogID);
-      }
-      AfterDBDelete(exceptionLogID);
-      
-    }
+        AfterDBDelete(exceptionLogID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("ExceptionLogsSave");
@@ -277,19 +267,13 @@ namespace TeamSupport.Data
 		
 
 		SqlCommand insertCommand = connection.CreateCommand();
-          
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-        // check to see if the log has aready been logged in the past 10 min. The logging in general needs to improve and move to sentry.io
-             //add this, but commented it out, needed more testing, as it could slow the system.
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ExceptionLogs] (    [URL],    [PageInfo],    [ExceptionName],    [Message],    [StackTrace],    [Browser],    [CreatorID],    [DateCreated],    [ModifierID],    [DateModified]) VALUES ( @URL, @PageInfo, @ExceptionName, @Message, @StackTrace, @Browser, @CreatorID, @DateCreated, @ModifierID, @DateModified); SET @Identity = SCOPE_IDENTITY();";
 
-            //insertCommand.CommandText = "SET NOCOUNT OFF; IF NOT EXISTS (SELECT Top 1 * FROM  [dbo].[ExceptionLogs] WHERE URL = @URL AND Message = @Message and [DateCreated] > GetDate()-.0075 ) BEGIN  INSERT INTO [dbo].[ExceptionLogs] (    [URL],    [PageInfo],    [ExceptionName],    [Message],    [StackTrace],    [Browser],    [CreatorID],    [DateCreated],    [ModifierID],    [DateModified]) VALUES ( @URL, @PageInfo, @ExceptionName, @Message, @StackTrace, @Browser, @CreatorID, @DateCreated, @ModifierID, @DateModified) END ; SET @Identity = SCOPE_IDENTITY();";
-        insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ExceptionLogs] (    [URL],    [PageInfo],    [ExceptionName],    [Message],    [StackTrace],    [Browser],    [CreatorID],    [DateCreated],    [ModifierID],    [DateModified]) VALUES ( @URL, @PageInfo, @ExceptionName, @Message, @StackTrace, @Browser, @CreatorID, @DateCreated, @ModifierID, @DateModified); SET @Identity = SCOPE_IDENTITY();";
-
-
-
-            tempParameter = insertCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
+		
+		tempParameter = insertCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 23;

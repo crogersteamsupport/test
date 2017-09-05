@@ -256,8 +256,11 @@ Namespace TeamSupport
 				Dim ticketData As StringBuilder = New StringBuilder()
 				Dim TFSProjectName As String = String.Empty
 				Dim customMappingFields As New CRMLinkFields(User)
-				Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(User)
-				Dim crmLinkAttachmentErrors As CRMLinkErrors = New CRMLinkErrors(User)
+                Dim ticketTypeMappings As New CRMLinkFields(User)
+                ticketTypeMappings.LoadByObjectType("TicketType", CRMLinkRow.CRMLinkID)
+
+                Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(User)
+                Dim crmLinkAttachmentErrors As CRMLinkErrors = New CRMLinkErrors(User)
 
 				'Get the errors only for the tickets to be processed
 				crmLinkErrors.LoadByOperationAndObjectIds(CRMLinkRow.OrganizationID,
@@ -312,7 +315,12 @@ Namespace TeamSupport
 
                             workItemValues = GetTicketData(ticket, workItemFields, TFSProjectName, actionDescriptionId, customMappingFields, crmLinkErrors)
                             ticketData.Append(String.Join(",", workItemValues.Select(Function(p) String.Format("""{0}""=""{1}""", p.name, p.value)).ToArray()))
-                            workItem = _tfs.CreateWorkItem(workItemValues, TFSProjectName, ticket.TicketTypeName)
+                            Dim mappedTicketType As CRMLinkField = ticketTypeMappings.FindByTSFieldName(ticket.TicketTypeName)
+                            If mappedTicketType Is Nothing Then
+                                workItem = _tfs.CreateWorkItem(workItemValues, TFSProjectName, ticket.TicketTypeName)
+                            Else
+                                workItem = _tfs.CreateWorkItem(workItemValues, TFSProjectName, mappedTicketType.CRMFieldName)
+                            End If
 
                             'We don't know if the workItem's type has Description or not, so we will always add a Comment with it too.
                             If (workItem IsNot Nothing AndAlso workItem.Id > 0) Then
@@ -1297,7 +1305,10 @@ Namespace TeamSupport
 												GetDescription(ObjectType.Action),
 												isCleared:=False)
 
-				For Each workItem As WorkItem In workItemsToPullAsTickets.value
+                Dim ticketTypeMappings As CRMLinkFields = New CRMLinkFields(User)
+                ticketTypeMappings.LoadByObjectType("TicketType", CRMLinkRow.CRMLinkID)
+
+                For Each workItem As WorkItem In workItemsToPullAsTickets.value
 					Dim newComments As List(Of WorkItemComment) = Nothing
 
 					For Each ticketID As Integer In GetLinkedTicketIDs(workItem, ticketLinkToTFS)
@@ -1309,7 +1320,14 @@ Namespace TeamSupport
 
                             Try
                                 Dim ticketLinkToTFSItem As TicketLinkToTFSItem = ticketLinkToTFS.FindByTicketID(ticketID)
-                                UpdateTicketWithWorkItemData(ticketID, workItem, newActionsTypeID, allStatuses, crmLinkError, crmLinkErrors, ticketLinkToTFSItem)
+                                UpdateTicketWithWorkItemData(ticketID,
+                                                             workItem,
+                                                             newActionsTypeID,
+                                                             allStatuses,
+                                                             crmLinkError,
+                                                             crmLinkErrors,
+                                                             ticketLinkToTFSItem,
+                                                             ticketTypeMappings)
                                 ClearCrmLinkError(crmLinkError)
 
                                 If newComments Is Nothing Then
@@ -1359,43 +1377,50 @@ Namespace TeamSupport
 				Return result
 			End Function
 
-			'//vv Private Sub UpdateTicketWithWorkItemData(ByVal ticketID As Integer, ByVal workItem As JObject, ByVal newActionsTypeID As Integer, ByVal allStatuses As TicketStatuses, ByRef crmLinkError As CRMLinkError, ByRef crmlinkErrors As CRMLinkErrors, ByVal ticketLinkToTFSItem As TicketLinkToTFSItem)
-			Private Sub UpdateTicketWithWorkItemData(ByVal ticketID As Integer, ByVal workItem As WorkItem, ByVal newActionsTypeID As Integer, ByVal allStatuses As TicketStatuses, ByRef crmLinkError As CRMLinkError, ByRef crmlinkErrors As CRMLinkErrors, ByVal ticketLinkToTFSItem As TicketLinkToTFSItem)
-				Dim updateTicket As Tickets = New Tickets(User)
-				updateTicket.LoadByTicketID(ticketID)
+            '//vv Private Sub UpdateTicketWithWorkItemData(ByVal ticketID As Integer, ByVal workItem As JObject, ByVal newActionsTypeID As Integer, ByVal allStatuses As TicketStatuses, ByRef crmLinkError As CRMLinkError, ByRef crmlinkErrors As CRMLinkErrors, ByVal ticketLinkToTFSItem As TicketLinkToTFSItem)
+            Private Sub UpdateTicketWithWorkItemData(ByVal ticketID As Integer,
+                                                     ByVal workItem As WorkItem,
+                                                     ByVal newActionsTypeID As Integer,
+                                                     ByVal allStatuses As TicketStatuses,
+                                                     ByRef crmLinkError As CRMLinkError,
+                                                     ByRef crmlinkErrors As CRMLinkErrors,
+                                                     ByVal ticketLinkToTFSItem As TicketLinkToTFSItem,
+                                                     ByRef ticketTypeMappings As CRMLinkFields)
+                Dim updateTicket As Tickets = New Tickets(User)
+                updateTicket.LoadByTicketID(ticketID)
 
-				If updateTicket.Count > 0 AndAlso updateTicket(0).OrganizationID = CRMLinkRow.OrganizationID Then
-					Dim ticketTypeId As Integer = 0
-					Dim customFields As New CRMLinkFields(User)
-					Dim allTypes As TicketTypes = New TicketTypes(User)
-					'Dim ticketLinkToTFS As TicketLinkToTFS = New TicketLinkToTFS(User)
+                If updateTicket.Count > 0 AndAlso updateTicket(0).OrganizationID = CRMLinkRow.OrganizationID Then
+                    Dim ticketTypeId As Integer = 0
+                    Dim customFields As New CRMLinkFields(User)
+                    Dim allTypes As TicketTypes = New TicketTypes(User)
+                    'Dim ticketLinkToTFS As TicketLinkToTFS = New TicketLinkToTFS(User)
 
-					'ticketLinkToTFS.LoadByTicketID(updateTicket(0).TicketID)
-					allTypes.LoadByOrganizationID(CRMLinkRow.OrganizationID)
+                    'ticketLinkToTFS.LoadByTicketID(updateTicket(0).TicketID)
+                    allTypes.LoadByOrganizationID(CRMLinkRow.OrganizationID)
 
-					'For Each field As KeyValuePair(Of String, JToken) In CType(workItem("fields"), JObject)
-					'    'If field.Key.Trim().ToLower() = "issuetype" Then
-					'    Dim issueTypeName As String = GetFieldValue(field)
-					'        Dim ticketType As TicketType = allTypes.FindByName(issueTypeName)
+                    'For Each field As KeyValuePair(Of String, JToken) In CType(workItem("fields"), JObject)
+                    '    'If field.Key.Trim().ToLower() = "issuetype" Then
+                    '    Dim issueTypeName As String = GetFieldValue(field)
+                    '        Dim ticketType As TicketType = allTypes.FindByName(issueTypeName)
 
-					'        If ticketType IsNot Nothing Then
-					'            ticketTypeId = allTypes.FindByName(issueTypeName).TicketTypeID
-					'            customFields.LoadByObjectTypeAndCustomFieldAuxID(GetDescription(ObjectType.Ticket), CRMLinkRow.CRMLinkID, ticketTypeId)
-					'        End If
+                    '        If ticketType IsNot Nothing Then
+                    '            ticketTypeId = allTypes.FindByName(issueTypeName).TicketTypeID
+                    '            customFields.LoadByObjectTypeAndCustomFieldAuxID(GetDescription(ObjectType.Ticket), CRMLinkRow.CRMLinkID, ticketTypeId)
+                    '        End If
 
-					'        Exit For
-					'    End If
-					'Next
+                    '        Exit For
+                    '    End If
+                    'Next
 
-					If ticketTypeId = 0 Then
-						customFields.LoadByObjectTypeAndCustomFieldAuxID(GetDescription(ObjectType.Ticket), CRMLinkRow.CRMLinkID, updateTicket(0).TicketTypeID)
-					End If
+                    If ticketTypeId = 0 Then
+                        customFields.LoadByObjectTypeAndCustomFieldAuxID(GetDescription(ObjectType.Ticket), CRMLinkRow.CRMLinkID, updateTicket(0).TicketTypeID)
+                    End If
 
-					Dim ticketValuesChanged = False
-					Dim workItemStateChangedNotUpdatedInTicket = False
-					Dim ticketView As TicketsView = New TicketsView(User)
-					ticketView.LoadByTicketID(ticketID)
-					Dim tfsProjectName As String = GetProjectName(ticketView(0), crmlinkErrors)
+                    Dim ticketValuesChanged = False
+                    Dim workItemStateChangedNotUpdatedInTicket = False
+                    Dim ticketView As TicketsView = New TicketsView(User)
+                    ticketView.LoadByTicketID(ticketID)
+                    Dim tfsProjectName As String = GetProjectName(ticketView(0), crmlinkErrors)
                     Dim workItemFields As List(Of TFSLibrary.WorkItemField) = GetWorkItemFields(ticketView(0), tfsProjectName, crmLinkError, Orientation.IntoTeamSupport)
                     Dim ticketsFieldMap As Tickets = New Tickets(User)
 
@@ -1501,7 +1526,14 @@ Namespace TeamSupport
                             Select Case field.Key.Trim().ToLower()
                                 Case "system.workitemtype"
                                     Dim currentType As TicketType = allTypes.FindByTicketTypeID(updateTicket(0).TicketTypeID)
-                                    Dim newType As TicketType = allTypes.FindByName(value)
+                                    Dim newType As TicketType = Nothing
+                                    Dim mappedTicketType As CRMLinkField = ticketTypeMappings.FindByCRMFieldName(value)
+                                    If mappedTicketType Is Nothing Then
+                                        newType = allTypes.FindByName(value)
+                                    Else
+                                        newType = allTypes.FindByName(mappedTicketType.TSFieldName)
+                                    End If
+
                                     Dim updateType As Boolean = CRMLinkRow.UpdateTicketType
 
                                     If updateType AndAlso newType IsNot Nothing AndAlso newType.TicketTypeID <> currentType.TicketTypeID Then
@@ -1580,25 +1612,25 @@ Namespace TeamSupport
                     Next
 
                     If ticketValuesChanged Then
-						ticketLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow
-						updateTicket.Save()
-						ticketLinkToTFSItem.Collection.Save()
+                        ticketLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow
+                        updateTicket.Save()
+                        ticketLinkToTFSItem.Collection.Save()
 
-						Dim actionLogDescription As String = "Updated Ticket with TFS Work Item Title: '" + workItem.Fields("System.Title").ToString() + "' changes."
-						ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, updateTicket(0).TicketID, actionLogDescription)
-					Else
-						AddLog("ticketID: " + updateTicket(0).TicketID.ToString() + " values were not updated because have not changed.")
+                        Dim actionLogDescription As String = "Updated Ticket with TFS Work Item Title: '" + workItem.Fields("System.Title").ToString() + "' changes."
+                        ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, updateTicket(0).TicketID, actionLogDescription)
+                    Else
+                        AddLog("ticketID: " + updateTicket(0).TicketID.ToString() + " values were not updated because have not changed.")
 
-						If workItemStateChangedNotUpdatedInTicket Then
-							ticketLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow
-							ticketLinkToTFSItem.Collection.Save()
-							AddLog("The ticket status in the TicketLinkToTFS was updated because it changed but was not updated in TeamSupport because either it is setup to be excluded or it does not exist. TFS State:" + ticketLinkToTFSItem.TFSState)
-						End If
-					End If
-				Else
-					AddLog("Ticket with ID: """ + ticketID.ToString() + """ was not found to be updated.")
-				End If
-			End Sub
+                        If workItemStateChangedNotUpdatedInTicket Then
+                            ticketLinkToTFSItem.DateModifiedByTFSSync = DateTime.UtcNow
+                            ticketLinkToTFSItem.Collection.Save()
+                            AddLog("The ticket status in the TicketLinkToTFS was updated because it changed but was not updated in TeamSupport because either it is setup to be excluded or it does not exist. TFS State:" + ticketLinkToTFSItem.TFSState)
+                        End If
+                    End If
+                Else
+                    AddLog("Ticket with ID: """ + ticketID.ToString() + """ was not found to be updated.")
+                End If
+            End Sub
 
             Private Function GetFieldValue(ByVal field As KeyValuePair(Of String, Object)) As String
                 Dim result As String = Nothing

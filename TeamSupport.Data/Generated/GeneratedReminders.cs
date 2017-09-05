@@ -74,8 +74,8 @@ namespace TeamSupport.Data
     
     public ReferenceType RefType
     {
-        get { return (ReferenceType)Row["RefType"]; }
-        set { Row["RefType"] = CheckValue("RefType", value); }
+      get { return (ReferenceType)Row["RefType"]; }
+      set { Row["RefType"] = CheckValue("RefType", value); }
     }
     
     public int OrganizationID

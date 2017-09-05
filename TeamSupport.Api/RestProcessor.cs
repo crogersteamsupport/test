@@ -85,6 +85,7 @@ namespace TeamSupport.Api
 
                 switch (uriTemplate)
                 {
+                    case "/deletedtickets/": data = RestDeletedTickets.GetDeletedTickets(_command); break;
                     case "/tickets/": data = RestTickets.GetTickets(_command); break;
                     case "/ticketsreport/": data = RestReportTicketsView.GetTickets(_command); break;
                     case "/tickets/{id}/": data = RestTickets.GetTicket(_command, GetId(1)); break;

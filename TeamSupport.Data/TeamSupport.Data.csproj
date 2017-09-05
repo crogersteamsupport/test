@@ -258,6 +258,7 @@
     <Compile Include="BusinessObjects\CustomValues.cs" />
     <Compile Include="BusinessObjects\DeflectionLog.cs" />
     <Compile Include="BusinessObjects\DeletedIndexItems.cs" />
+    <Compile Include="BusinessObjects\DeletedTickets.cs" />
     <Compile Include="BusinessObjects\EMailActions.cs" />
     <Compile Include="BusinessObjects\EmailAddresses.cs" />
     <Compile Include="BusinessObjects\EMailAlternateInbound.cs" />
@@ -391,6 +392,7 @@
     <Compile Include="FieldMaps\CustomPortalColumnsFieldMap.cs" />
     <Compile Include="FieldMaps\DeflectionLogFieldMap.cs" />
     <Compile Include="FieldMaps\DeletedIndexItemsFieldMap.cs" />
+    <Compile Include="FieldMaps\DeletedTicketsFieldMap.cs" />
     <Compile Include="FieldMaps\EmailAddressesFieldMap.cs" />
     <Compile Include="FieldMaps\EMailAlternateInboundFieldMap.cs" />
     <Compile Include="FieldMaps\EmailPostHistoryFieldMap.cs" />
@@ -660,6 +662,7 @@
     <Compile Include="Generated\GeneratedCustomValues.cs" />
     <Compile Include="Generated\GeneratedDeflectionLog.cs" />
     <Compile Include="Generated\GeneratedDeletedIndexItems.cs" />
+    <Compile Include="Generated\GeneratedDeletedTickets.cs" />
     <Compile Include="Generated\GeneratedEmailActions.cs" />
     <Compile Include="Generated\GeneratedEmailAddresses.cs" />
     <Compile Include="Generated\GeneratedEMailAlternateInbound.cs" />
@@ -809,6 +812,7 @@
     <Compile Include="Proxies\CustomFieldsViewProxy.cs" />
     <Compile Include="Proxies\CustomPortalColumnsProxy.cs" />
     <Compile Include="Proxies\DeflectionLogProxy.cs" />
+    <Compile Include="Proxies\DeletedTicketsProxy.cs" />
     <Compile Include="Proxies\EmailAddressesProxy.cs" />
     <Compile Include="Proxies\FullContactUpdatesProxy.cs" />
     <Compile Include="Proxies\GroupAssignmentHistoryProxy.cs" />
