@@ -1129,7 +1129,7 @@ namespace TSWebServices
                 user.ActivatedOn = DateTime.UtcNow;
                 user.IsPortalUser = false;
                 user.EnforceSingleSession = true;
-
+                user.NeedsIndexing = true;
                 user.Collection.Save();
 
                 PhoneTypes phoneTypes = new PhoneTypes(TSAuthentication.GetLoginUser());
