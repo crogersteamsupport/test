@@ -50,13 +50,26 @@ namespace TeamSupport.Data
 			DateTime timeOnly = default(DateTime).Add(StartDateUtc.TimeOfDay);
 			DayOfWeek dayOfWeek = DayOfWeek.Sunday;
             int dayDiff = 0;
+            User creator = Users.GetUser(LoginUser.Anonymous, CreatorId);
+            TimeZoneInfo tz = TimeZoneInfo.Local;
 
-            int initialDayDiff = StartDateUtc.DayOfWeek - StartDate.DayOfWeek;
+            if (!string.IsNullOrWhiteSpace(creator.TimeZoneID))
+            {
+                tz = TimeZoneInfo.FindSystemTimeZoneById(creator.TimeZoneID);
+                Debug(string.Format("CreatorId: {0} TimeZoneID: {1} tz.DisplayName: {2}", CreatorId.ToString(), creator.TimeZoneID.ToString(), tz.DisplayName));
+            }
+
+            DateTime StartDateToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(StartDateUtc, tz);
+            DateTime lastRunToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(LastRunUtc.Value, tz);
+            DateTime nextRunToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(NextRunUtc.Value, tz);
+
+            // The initialDayDiff should not be calculated against our local time but the user's local time.
+            int initialDayDiff = StartDateUtc.DayOfWeek - StartDateToCreatorTimeZone.DayOfWeek;
 
             if (LastRunUtc != null)
 			{
 				dateOnly = StartDateUtc > LastRunUtc ? StartDateUtc.Date : ((DateTime)LastRunUtc).Date;
-                initialDayDiff = ((DateTime)LastRunUtc).DayOfWeek - ((DateTime)LastRun).DayOfWeek;
+                initialDayDiff = ((DateTime)LastRunUtc).DayOfWeek - lastRunToCreatorTimeZone.DayOfWeek;
 
                 //Difference in day (due to the UTC) between Sund-Sat or Sat-Sun will be handled here because the substraction will return 6 or -6, we only need to know if it's 1 or -1 (day ahead or day behind)
                 if (initialDayDiff == -6) //Sun (0) back to Sat (6)
@@ -104,10 +117,12 @@ namespace TeamSupport.Data
                     }
 
                     NextRun = dateOnly.Add(timeOnly.TimeOfDay).AddDays(initialDayDiff);
+                    nextRunToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(NextRunUtc.Value, tz);
 
-                    if (NextRun.Value.DayOfWeek != dayOfWeek)
+                    // The day of the week check must be done on the creator timezone as well.
+                    if (nextRunToCreatorTimeZone.DayOfWeek != dayOfWeek)
                     {
-                        dayDiff = dayOfWeek - NextRun.Value.DayOfWeek;
+                        dayDiff = dayOfWeek - nextRunToCreatorTimeZone.DayOfWeek;
                         NextRun = dateOnly.AddDays(dayDiff).Add(timeOnly.TimeOfDay);
                     }
 
@@ -214,18 +229,7 @@ namespace TeamSupport.Data
             //Check for DLS and update if needed
             if (NextRun.HasValue)
             {
-				User creator = Users.GetUser(LoginUser.Anonymous, CreatorId);
-                TimeZoneInfo tz = TimeZoneInfo.Local;
-
-                if (!string.IsNullOrWhiteSpace(creator.TimeZoneID))
-                {
-                    tz = TimeZoneInfo.FindSystemTimeZoneById(creator.TimeZoneID);
-					Debug(string.Format("CreatorId: {0} TimeZoneID: {1} tz.DisplayName: {2}", CreatorId.ToString(), creator.TimeZoneID.ToString(), tz.DisplayName));
-                }
-
-                DateTime StartDateToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(StartDateUtc, tz);
-                DateTime nextRunToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(NextRunUtc.Value, tz);
-
+                nextRunToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(NextRunUtc.Value, tz);
                 Debug(string.Format("StartDateToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(StartDateUtc, tz): {0}", StartDateToCreatorTimeZone.ToString("MM/dd/yyyy HH:mm")));
                 Debug(string.Format("nextRunToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(NextRunUtc.Value, tz): {0}", nextRunToCreatorTimeZone.ToString("MM/dd/yyyy HH:mm")));
 
