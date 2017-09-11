@@ -513,7 +513,7 @@
       <span class="label">My Status</span>
       <input type="text"  class="ui-widget-content ui-corner-all text menu-status-text menu-input" style="width: 200px"/>
     </div>
-    <div class="menu-office-status-action ui-helper-hidden">
+    <div class="menu-office-status-action">
       <button class="menu-office-save">Save Status</button> or <a href="#" class="ts-link ui-state-default menu-office-cancel">Cancel</a>
     </div>
   </div>
