@@ -510,7 +510,9 @@ button.ticket-option {
 }
 
 li.daystrip {
+    margin:20px auto 10px;
     background-color: rgba(96,125,139,0.5);
+    box-shadow:1px 1px 0px rgba(0,0,0,0.1);
 }
 
 span.daybadge {
