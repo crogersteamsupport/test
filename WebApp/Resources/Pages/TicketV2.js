@@ -4393,7 +4393,7 @@ function FetchTimeLineItems(start) {
             //create first timeline date marker if needed
             if (_currDateSpan == null) {
                 _currDateSpan = _timeLine[0].item.DateCreated;
-                var dateSpan = '<li style="text-align:center;"><span class="label bgcolor-bluegray daybadge">' + _currDateSpan.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><li>';
+                var dateSpan = '<li class="daystrip" style="text-align:center;"><span class="daybadge">' + _currDateSpan.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><li>';
                 $("#action-timeline").append(dateSpan);
             };
             var isPublicFiltered = $('.filter-public').hasClass('bgcolor-darkgray');
