@@ -515,7 +515,7 @@ namespace TeamSupport.Handlers
 
                 try
                 {
-                    TSHubSpot.HubspotPost(tsUser.FirstName, tsUser.LastName, tsUser.Email, tsOrg.Name, phone.Number, promo, source, hubSpotUtk, productType);
+                    TSHubSpot.HubspotPost(tsUser.FirstName, tsUser.LastName, tsUser.Email, tsOrg.Name, phone.Number, promo, tsOrg.PotentialSeats, source, hubSpotUtk, productType);
                 }
                 catch (Exception ex)
                 {
