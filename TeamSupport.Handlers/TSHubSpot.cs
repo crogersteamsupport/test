@@ -24,7 +24,9 @@ namespace TeamSupport.Handlers
             dictFormValues.Add("marketingsource", source);
             dictFormValues.Add("lifecyclestage", "salesqualifiedlead");
             dictFormValues.Add("type_of_sql", "Trial");
-            dictFormValues.Add("no_of_users", seats);
+            int numSeats = 0;
+            int.TryParse(seats, out numSeats);
+            dictFormValues.Add("no_of_users", numSeats.ToString());
 
             
             //dictFormValues.Add("recent_conversion_event_name", "TS Trial Sign Up");

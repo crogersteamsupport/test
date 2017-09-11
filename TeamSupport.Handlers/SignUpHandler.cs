@@ -423,6 +423,7 @@ namespace TeamSupport.Handlers
             payload.Campaign = campaign;
             payload.PodName = SystemSettings.GetPodName();
             payload.Key = "81f4060c-2166-48c3-a126-b12c94f1fd9d";
+            payload.PotentialSeats = 0;
 
             */
             try
@@ -437,6 +438,7 @@ namespace TeamSupport.Handlers
                 tsOrg.ImportID = data.PodName.ToString() + "-" + data.OrganizationID.ToString();
                 tsOrg.HasPortalAccess = true;
                 tsOrg.IsActive = true;
+                tsOrg.PotentialSeats = data.PotentialSeats;
                 tsOrg.Collection.Save();
 
                 User tsUser = (new Users(loginUser)).AddNewUser();
@@ -493,6 +495,7 @@ namespace TeamSupport.Handlers
                 string hubSpotUtk = data.HubSpotUtk.ToString();
                 string source = data.Source.ToString();
                 string campaign = data.Campaign.ToString();
+                string potentialSeats = data.PotentialSeats.ToString();
                 ProductType productType = (ProductType)int.Parse(data.ProductType.ToString());
                 string version = productType == ProductType.HelpDesk ? "Support Desk" : "Enterprise";
 
@@ -515,7 +518,7 @@ namespace TeamSupport.Handlers
 
                 try
                 {
-                    TSHubSpot.HubspotPost(tsUser.FirstName, tsUser.LastName, tsUser.Email, tsOrg.Name, phone.Number, promo, tsOrg.PotentialSeats, source, hubSpotUtk, productType);
+                    TSHubSpot.HubspotPost(tsUser.FirstName, tsUser.LastName, tsUser.Email, tsOrg.Name, phone.Number, promo, potentialSeats, source, hubSpotUtk, productType);
                 }
                 catch (Exception ex)
                 {
