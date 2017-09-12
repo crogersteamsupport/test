@@ -11,7 +11,7 @@ namespace TeamSupport.Handlers
 {
     public class TSHubSpot
     {
-        public static void HubspotPost(string fname, string lname, string email, string company, string phone, string promo, string source, string utkCookie, ProductType version)
+        public static void HubspotPost(string fname, string lname, string email, string company, string phone, string promo, string seats, string source, string utkCookie, ProductType version)
         {
 
             Dictionary<string, string> dictFormValues = new Dictionary<string, string>();
@@ -24,6 +24,11 @@ namespace TeamSupport.Handlers
             dictFormValues.Add("marketingsource", source);
             dictFormValues.Add("lifecyclestage", "salesqualifiedlead");
             dictFormValues.Add("type_of_sql", "Trial");
+            int numSeats = 0;
+            int.TryParse(seats, out numSeats);
+            dictFormValues.Add("no_of_users", numSeats.ToString());
+
+            
             //dictFormValues.Add("recent_conversion_event_name", "TS Trial Sign Up");
             dictFormValues.Add("product_edition", GetProductVersionName(version));
             //dictFormValues.Add("hubspot_owner_id", GetSalesGuyHubSpotID(salesGuy));

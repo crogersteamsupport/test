@@ -6002,7 +6002,42 @@ namespace TeamSupport.ServiceLibrary
             {
                 return null;
             }
-            return TimeZoneInfo.ConvertTimeToUtc(result);
+
+            // We use to do just the following:
+            // return TimeZoneInfo.ConvertTimeToUtc(result);
+            // But due to ticket #46668 exception ArgumentException	TimeZoneInfo.Local.IsInvalidDateTime(dateTime) returns true.
+            // See https://blogs.msdn.microsoft.com/bclteam/2007/06/11/system-timezoneinfo-working-with-ambiguous-and-invalid-points-in-time-josh-free/
+            // We are implementing the following logic
+            DateTime? utcResult = null;
+            try
+            {
+                utcResult = TimeZoneInfo.ConvertTimeToUtc(result);
+            }
+            catch (ArgumentException argEx)
+            {
+                if (result.Month == 3)
+                {
+                    result = result.AddHours(1);
+                }
+                else
+                {
+                    result = result.AddHours(-1);
+                }
+                try
+                {
+                    utcResult = TimeZoneInfo.ConvertTimeToUtc(result);
+                }
+                catch (Exception ex2)
+                {
+                    _importLog.Write("Reading DateNull field " + field + " with value " + value + " the following exception was thrown: " + ex2.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                _importLog.Write("Reading DateNull field " + field + " with value " + value + " the following exception was thrown: " + ex.Message);
+            }
+
+            return utcResult;
         }
 
         private bool ReadBool(string field, string existingValue)
