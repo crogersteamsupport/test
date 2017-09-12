@@ -20,52 +20,17 @@ function loadPusher() {
     top.Ts.Settings.System.read('PusherKey', '1', function (key) {
         var orgID = top.Ts.System.Organization.OrganizationID;
         var userID = top.Ts.System.User.UserID;
-        pusher = new Pusher(key);
 
-        //var presenceChannelName = 'presence-' + orgID;
-        //var presence = new Pusher(key, {
-        //    authEndpoint: service + 'Auth',
-        //    auth: {
-        //        params: {
-        //            userID: top.Ts.System.User.UserID
-        //        }
-        //    }
-        //});
+        top.Ts.Pusher = new Pusher(key, {
+            authEndpoint: service + 'Auth',
+            auth: {
+                params: {
+                    userID: top.Ts.System.User.UserID
+                }
+            }
+        });
 
-        //pressenceChannel = presence.subscribe(presenceChannelName);
-
-        //pressenceChannel.bind('pusher:subscription_succeeded', function (members) {
-        //    var mainWC = $("#iframe-mniWC2");
-        //    try {
-        //        if (mainWC[0].contentWindow.updateUsers) { mainWC[0].contentWindow.updateUsers(members); }
-        //    } catch (err) { }
-        //});
-
-        //pressenceChannel.bind('pusher:member_added', function (member) {
-        //      var mainWC = $("#iframe-mniWC2");
-        //      try {
-        //        if (mainWC[0].contentWindow.updateUsers) { mainWC[0].contentWindow.updateUser(member); }
-        //      } catch (err) { }
-
-        //      //var userPage = $("#iframe-mniUsers");
-        //      //  try {
-        //      //      if (userPage[0].contentWindow.Update) { userPage[0].contentWindow.Update(); }
-        //      //  } catch (err) { }
-        //});
-
-        //pressenceChannel.bind('pusher:member_removed', function (member) {
-        //      var windows = getChildWindows();
-        //      for (var i = 0; i < windows.length; i++) {
-        //        try { if (windows[i].disconnect) windows[i].disconnect(member.info.userid); } catch (err) { }
-        //      }
-
-        //      var mainWC = $("#iframe-mniUsers");
-        //        try {
-        //            if (mainWC[0].contentWindow.Update) { mainWC[0].contentWindow.Update(); }
-        //        } catch (err) { }
-        //});
-
-        ticket_channel = pusher.subscribe('ticket-dispatch-' + orgID);
+        ticket_channel = top.Ts.Pusher.subscribe('ticket-dispatch-' + orgID);
 
         ticket_channel.bind('addThread', function (data) {
             var windows = getChildWindows();
@@ -104,33 +69,36 @@ function loadPusher() {
         });
 
         ticket_channel.bind('getTicketViewing', function (data) {
+            console.log("getTicketViewing in chan bind" + data);
             if ($('.main-ticket-' + data).length > 0) {
                 if ($('.main-ticket-' + data).is(":visible")) {
-                    mainFrame.Ts.Services.Dispatch.ticketViewingAdd(data, top.Ts.System.User.UserID);
+                    //mainFrame.Ts.Services.Dispatch.ticketViewingAdd(data, top.Ts.System.User.UserID);
+                    $('.main-ticket-' + data).find('iframe')[0].contentWindow.SetupPusher();
                 }
             }
         });
 
-        ticket_channel.bind('ticketViewingAdd', function (data) {
-            if (data.user != top.Ts.System.User.UserID) {
-                if ($('.main-ticket-' + data.ticket).length > 0) {
-                    if ($('.main-ticket-' + data.ticket).is(":visible")) {
-                        $('.main-ticket-' + data.ticket).find('iframe')[0].contentWindow.addUserViewing(data.user);
-                    }
-                }
-            }
-                var ticketWin = $(".ticketIframe");
-                for (var i = 0; i < ticketWin.length; i++) {
-                    ticketWin[i].contentWindow.removeUserViewing(data.ticket, data.user);
-                }
-        });
+        //ticket_channel.bind('ticketViewingAdd', function (data) {
+        //    console.log("ticketViewingAdd in chan bind");
+        //    if (data.user != top.Ts.System.User.UserID) {
+        //        if ($('.main-ticket-' + data.ticket).length > 0) {
+        //            if ($('.main-ticket-' + data.ticket).is(":visible")) {
+        //                $('.main-ticket-' + data.ticket).find('iframe')[0].contentWindow.addUserViewing(data.user);
+        //            }
+        //        }
+        //    }
+        //        var ticketWin = $(".ticketIframe");
+        //        for (var i = 0; i < ticketWin.length; i++) {
+        //            ticketWin[i].contentWindow.removeUserViewing(data.ticket, data.user);
+        //        }
+        //});
 
-        ticket_channel.bind('ticketViewingRemove', function (data) {
-            var ticketWin = $(".ticketIframe");
-            for (var i = 0; i < ticketWin.length; i++) {
-                ticketWin[i].contentWindow.removeUserViewing(null, data.user);
-            }
-        });
+        //ticket_channel.bind('ticketViewingRemove', function (data) {
+        //    var ticketWin = $(".ticketIframe");
+        //    for (var i = 0; i < ticketWin.length; i++) {
+        //        ticketWin[i].contentWindow.removeUserViewing(null, data.user);
+        //    }
+        //});
 
         ticket_channel.bind('DisplayTicketUpdate', function (data) {
             var mergeticket;

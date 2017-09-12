@@ -322,7 +322,7 @@ namespace TSWebServices
             LoginUser loginUser = new LoginUser(connString, TSAuthentication.GetLoginUser().UserID, TSAuthentication.GetLoginUser().OrganizationID, null);
             var result = pusher.Trigger("ticket-dispatch-" + TSAuthentication.GetLoginUser().OrganizationID, "getTicketViewing", ticketID);
             //Clients.Group(loginUser.OrganizationID.ToString(), Context.ConnectionId).getTicketViewing(ticketID);
-            ticketViewingAdd(ticketID, loginUser.UserID.ToString());
+            //ticketViewingAdd(ticketID, loginUser.UserID.ToString());
         }
 
         [WebMethod]
@@ -339,7 +339,8 @@ namespace TSWebServices
         public void ticketViewingRemove(string ticketNum, string userID)
         {
             LoginUser loginUser = new LoginUser(connString, TSAuthentication.GetLoginUser().UserID, TSAuthentication.GetLoginUser().OrganizationID, null);
-            var result = pusher.Trigger("ticket-dispatch-" + TSAuthentication.GetLoginUser().OrganizationID, "ticketViewingRemove", new { ticket = ticketNum, user = userID });
+            string chanName = "presence-ticket-" + ticketNum + "-org-" + TSAuthentication.GetLoginUser().OrganizationID;
+            var result = pusher.Trigger("presence-ticket-" + ticketNum + "-org-" + TSAuthentication.GetLoginUser().OrganizationID, "ticketViewingRemove", new { ticket = ticketNum, user = userID, chan = chanName });
             //Clients.Group(loginUser.OrganizationID.ToString(), Context.ConnectionId).ticketViewingRemove(ticketNum, userID);
         }
 

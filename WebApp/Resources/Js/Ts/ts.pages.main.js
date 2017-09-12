@@ -1025,7 +1025,11 @@ Ts.Pages.Main.prototype = {
                     }
 
                     try {
-                        mainFrame.Ts.Services.Dispatch.ticketViewingRemove(null, mainFrame.Ts.System.User.UserID);
+                        if ($('.main-ticket-' + mainFrame.Ts.TicketViewing).length > 0) {
+
+                            $('.main-ticket-' + mainFrame.Ts.TicketViewing).find('iframe')[0].contentWindow.Unsubscribe();
+                        }
+                        mainFrame.Ts.TicketViewing = 0;
                     } catch (err) { }
                     $('.main-info-content').load(item.getData().PaneInfoUrl);
                     break;
@@ -1053,6 +1057,12 @@ Ts.Pages.Main.prototype = {
                         div.show();
 
                         try {
+                            if (mainFrame.Ts.TicketViewing != 0) {
+                                if ($('.main-ticket-' + mainFrame.Ts.TicketViewing).length > 0) {
+                                    $('.main-ticket-' + mainFrame.Ts.TicketViewing).find('iframe')[0].contentWindow.Unsubscribe();
+                                }
+                            }
+                            mainFrame.Ts.TicketViewing = 0;
                             mainFrame.Ts.Services.Dispatch.getTicketViewing(ticketID);
                         } catch (err) { }
                     }
@@ -1081,7 +1091,11 @@ Ts.Pages.Main.prototype = {
                         div.show();
                     }
                     try {
-                        mainFrame.Ts.Services.Dispatch.ticketViewingRemove(mainFrame.Ts.System.User.UserID);
+                        if ($('.main-ticket-' + mainFrame.Ts.TicketViewing).length > 0) {
+
+                            $('.main-ticket-' + mainFrame.Ts.TicketViewing).find('iframe')[0].contentWindow.Unsubscribe();
+                        }
+                        mainFrame.Ts.TicketViewing = 0;
                     } catch (err) { }
                     $('.main-info-content').load('vcr/1_9_0/PaneInfo/newticket.html');
                     break;

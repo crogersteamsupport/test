@@ -61,16 +61,8 @@ $(document).ready(function () {
         //pusher = new Pusher(key);
 
         var presenceChannelName = 'presence-' + orgID;
-        var presence = new Pusher(key, {
-            authEndpoint: service + 'Auth',
-            auth: {
-                params: {
-                    userID: top.Ts.System.User.UserID
-                }
-            }
-        });
 
-        pressenceChannel = presence.subscribe(presenceChannelName);
+        pressenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
 
         pressenceChannel.bind('pusher:subscription_succeeded', function (members) {
             var mainWC = $("#iframe-mniWC2");
