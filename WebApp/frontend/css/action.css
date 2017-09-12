@@ -1,5 +1,6 @@
 
 div.action {
+    margin-bottom:20px;
     padding:0px;
     background-color:white;
     box-shadow:1px 1px 0px rgba(0,0,0,0.1);
@@ -11,6 +12,9 @@ div.action .header {
 div.action .header .avatar {
     width:80px;
     padding-right:30px;
+}
+div.action .header .avatar img {
+    width:50px;
 }
 div.action .header .info .perspective {
     margin-bottom:10px;
