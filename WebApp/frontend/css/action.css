@@ -38,7 +38,8 @@ div.action .options {
     border-bottom:1px solid rgba(0,0,0,0.1);
     vertical-align:center;
 }
-div.action .specifics {
+div.action .specifics,
+div.action .attachments {
     padding:20px;
 }
 div.action .specifics .title {
