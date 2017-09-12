@@ -4551,7 +4551,7 @@ function CreateHandleBarHelpers() {
                 $('#applause-' + actionID).html(thacode);
             }
         });
-        return '<span id="applause-' + actionID + '" class="pull-right" style="position:absolute;top:25px;right:100px;display:' + display + '"></span>';
+        return '<span id="applause-' + actionID + '" class="pull-right" style="display:' + display + '"></span>';
     });
 
     Handlebars.registerHelper('ActionData', function () {
