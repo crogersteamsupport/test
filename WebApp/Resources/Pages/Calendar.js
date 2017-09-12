@@ -887,6 +887,7 @@
     $("#calURL").click(function () { $('#subscribeURL').val(mainFrame.Ts.System.AppDomain + "/dc/" + mainFrame.Ts.System.User.OrganizationID + "/calendarfeed/" + mainFrame.Ts.System.User.CalGUID); $('#subscribeModal').modal(); mainFrame.Ts.System.logAction('Calendar Event - Subscription Button Clicked'); });
     $("#newEvent").click(function () {
         clearModal();
+        theTempEvent = null;
         isNewButton = true;
         mainFrame.Ts.System.logAction('Calendar Event - New Event Button Clicked');
         $('#fullCalModal').modal();
