@@ -48,3 +48,7 @@ div.action .specifics .title {
 div.action .specifics .details {
     margin-bottom:50px;
 }
+
+div.action .specifics .details img {
+    max-width:100% !important;
+}
