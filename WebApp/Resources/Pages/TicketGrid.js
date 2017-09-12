@@ -929,7 +929,6 @@ TicketGrid = function (options) {
 		grid.setColumns(removeViewColumns(addManColumns(columns)));
 	}
 
-
 	var gridOptions = {
 		rowHeight: (self.options.isCompact == true ? 24 : 32),
 		editable: false,
