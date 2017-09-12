@@ -69,7 +69,6 @@ function loadPusher() {
         });
 
         ticket_channel.bind('getTicketViewing', function (data) {
-            console.log("getTicketViewing in chan bind" + data);
             if ($('.main-ticket-' + data).length > 0) {
                 if ($('.main-ticket-' + data).is(":visible")) {
                     //mainFrame.Ts.Services.Dispatch.ticketViewingAdd(data, top.Ts.System.User.UserID);
