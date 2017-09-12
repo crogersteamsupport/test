@@ -43,7 +43,7 @@ namespace TeamSupport.Data
 
         }
 
-        public static void SyncNewOrg(int orgID, string company, int userID, string firstName, string lastName, string email, string phoneNumber, ProductType productType, string promo, string hubSpotUtk, string source, string campaign)
+        public static void SyncNewOrg(int orgID, string company, int userID, string firstName, string lastName, string email, string phoneNumber, ProductType productType, string promo, string potentialSeats, string hubSpotUtk, string source, string campaign)
         {
             dynamic payload = new ExpandoObject();
             payload.OrganizationID = orgID;
@@ -57,6 +57,7 @@ namespace TeamSupport.Data
             payload.Promo = promo;
             payload.HubSpotUtk = hubSpotUtk;
             payload.Source = source;
+            payload.PotentialSeats = potentialSeats;
             payload.Campaign = campaign;
 
              
