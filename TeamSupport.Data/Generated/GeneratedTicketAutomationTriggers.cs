@@ -185,28 +185,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int triggerID)
     {
-      BeforeDBDelete(triggerID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TicketAutomationTriggers] WHERE ([TriggerID] = @TriggerID);";
         deleteCommand.Parameters.Add("TriggerID", SqlDbType.Int);
         deleteCommand.Parameters["TriggerID"].Value = triggerID;
 
+        BeforeDBDelete(triggerID);
         BeforeRowDelete(triggerID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(triggerID);
-      }
-      AfterDBDelete(triggerID);
-      
-    }
+        AfterDBDelete(triggerID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("TicketAutomationTriggersSave");

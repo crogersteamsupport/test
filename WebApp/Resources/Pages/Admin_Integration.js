@@ -386,8 +386,25 @@ AdminInt = function () {
                 }
                 break;
             case 'TFS':
-                if ($('.int-tfs-map-tsfield option').size() == 0) {
-                    loadFields(element.find('.int-tfs-map-tsfield'), 17);
+                if ($('.int-map-type option').length < 1) {
+                    $('<option>')
+                      .text('Ticket')
+                      .attr('value', window.parent.parent.Ts.ReferenceTypes.Tickets)
+                      .attr('selected', 'selected')
+                      .appendTo('.int-map-type');
+
+                    $('<option>')
+                      .text('Ticket Type')
+                      .attr('value', window.parent.parent.Ts.ReferenceTypes.TicketTypes)
+                      .appendTo('.int-map-type');
+
+                    $('.int-map-type').combobox({
+                        selected: function (e, ui) {
+                            loadFields(element.find('.int-tfs-map-tsfield'), element.find('.int-map-type').val());
+                        }
+                    });
+
+                    loadFields(element.find('.int-tfs-map-tsfield'), element.find('.int-map-type').val());
                 }
                 break;
             case 'ZohoCrm':
@@ -434,6 +451,7 @@ AdminInt = function () {
         var account = element.find('.map-account').empty();
         var contact = element.find('.map-contact').empty();
         var ticket = element.find('.map-ticket').empty();
+        var ticketType = element.find('.map-ticket-type').empty();
 
         if (fields.length > 0) {
             for (var i = 0; i < fields.length; i++) {
@@ -446,6 +464,9 @@ AdminInt = function () {
                         break;
                     case 'Ticket':
                         appendMappedField(ticket, fields[i]);
+                        break;
+                    case 'TicketType':
+                        appendMappedField(ticketType, fields[i]);
                         break;
                 }
             }
@@ -722,7 +743,7 @@ AdminInt = function () {
           tsField.ID,
           tsField.IsCustom,
           crmField,
-          17,
+          parent.find('.int-map-type').val(),
           function (fields) {
               loadMapFields(parent, fields);
           }

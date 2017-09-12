@@ -316,7 +316,7 @@ namespace TeamSupport.ServiceLibrary
                         Log("No data in series.", LogType.Both);
                     }
                 }
-                else if (records.Count = 2)
+                else if (records.Count == 2)
                 {
                     Log("//vv Unhandled chart case until know.");
                     //options.series.push("{ name: records[1].name, data: [] }");

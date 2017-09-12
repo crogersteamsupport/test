@@ -366,28 +366,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int ticketID)
     {
-      BeforeDBDelete(ticketID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TicketGridView] WHERE ([TicketID] = @TicketID);";
         deleteCommand.Parameters.Add("TicketID", SqlDbType.Int);
         deleteCommand.Parameters["TicketID"].Value = ticketID;
 
+        BeforeDBDelete(ticketID);
         BeforeRowDelete(ticketID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(ticketID);
-      }
-      AfterDBDelete(ticketID);
-      
-    }
+        AfterDBDelete(ticketID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("TicketGridViewSave");
@@ -1093,7 +1083,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT * FROM [dbo].[TicketGridView] WHERE ([TicketID] = @TicketID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketID], [ProductName], [ReportedVersion], [SolvedVersion], [GroupName], [TicketTypeName], [UserName], [Status], [StatusPosition], [SeverityPosition], [IsClosed], [Severity], [TicketNumber], [IsVisibleOnPortal], [IsKnowledgeBase], [ReportedVersionID], [SolvedVersionID], [ProductID], [GroupID], [UserID], [TicketStatusID], [TicketTypeID], [TicketSeverityID], [OrganizationID], [Name], [ParentID], [ModifierID], [CreatorID], [DateModified], [DateCreated], [DateClosed], [CloserID], [DaysClosed], [DaysOpened], [CloserName], [CreatorName], [ModifierName], [SlaViolationTime], [SlaWarningTime], [SlaViolationHours], [SlaWarningHours], [DueDate] FROM [dbo].[TicketGridView] WHERE ([TicketID] = @TicketID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("TicketID", ticketID);
         Fill(command);

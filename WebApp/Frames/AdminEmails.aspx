@@ -63,6 +63,7 @@
         $('#cbNeedCustForTicketMatch')[0].checked = result.NeedCustForTicketMatch;
         $('#cbReplyToAlternateEmailAddresses')[0].checked = result.ReplyToAlternateEmailAddresses;
         $('#cbAddEmailViaTS')[0].checked = !result.AddEmailViaTS;
+        $find('cmbDefaultGroup').findItemByValue(result.DefaultPortalGroupID == null ? -1 : result.DefaultPortalGroupID).select();
         _organizationUseProductFamily = result.UseProductFamilies;
         
         $('#divSettingsButtons').hide();
@@ -98,9 +99,8 @@
     
     }
 
-    function saveEmailSettings() {
-
-      PageMethods.SaveEmailSettings($find('textReply').get_value(), $('#cbRequireNew')[0].checked, $('#cbRequireKnown')[0].checked, $('#cbChangeStatus')[0].checked, $('#cbAssociatePeople')[0].checked, $('#cbMatchSubject')[0].checked, $('#cbForceBccPrivate')[0].checked, $('#cbNeedCustForTicketMatch')[0].checked, $('#cbReplyToAlternateEmailAddresses')[0].checked, !$('#cbAddEmailViaTS')[0].checked);
+      function saveEmailSettings() {
+        PageMethods.SaveEmailSettings($find('textReply').get_value(), $('#cbRequireNew')[0].checked, $('#cbRequireKnown')[0].checked, $('#cbChangeStatus')[0].checked, $('#cbAssociatePeople')[0].checked, $('#cbMatchSubject')[0].checked, $('#cbForceBccPrivate')[0].checked, $('#cbNeedCustForTicketMatch')[0].checked, $('#cbReplyToAlternateEmailAddresses')[0].checked, !$('#cbAddEmailViaTS')[0].checked, $find('cmbDefaultGroup').get_value());
       $('#divSettingsButtons').hide();
       parent.parent.Ts.System.logAction('Admin Email - Email Settings Saved');
     }
@@ -263,6 +263,10 @@
             Width="300px">
           </telerik:RadTextBox>
           <p>Enter your companies support address here.  This way, when TeamSupport sends emails to your customers, your address will be on the FROM line.</p>
+          <label class="text" for="cmbDefaultGroup">Default Group Assignment</label>
+          <telerik:RadComboBox ID="cmbDefaultGroup" runat="server" CssClass="text" Width="200px">
+          </telerik:RadComboBox>
+          <p>The group in your account where customer email submissions will be assigned initially.</p>
           <asp:CheckBox ID="cbRequireNew" runat="server" CssClass="checkBox" Text="Require [New] keyword for emails" />
           <p>In some cases, our customers do not want tickets created via email from their end users - or potential spam mail creating tickets.  Setting this ON will only create a new ticket from email if we see [new] in the subject line.  The majority of our customers leave this OFF.</p>
           <asp:CheckBox ID="cbRequireKnown" runat="server" CssClass="checkBox" Text="Require a known email address for emails" />

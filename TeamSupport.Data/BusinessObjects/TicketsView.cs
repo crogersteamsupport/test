@@ -1057,24 +1057,22 @@ ORDER BY TicketNumber DESC";
             {
                 string text = @"
         SELECT TOP {0} TicketID
-        FROM TicketsView tv WITH(NOLOCK)
+        FROM Tickets tv WITH(NOLOCK)
         WHERE tv.NeedsIndexing = 1
-        AND tv.OrganizationID= @OrganizationID
-        ORDER BY DateModified DESC";
+        AND tv.OrganizationID= @OrganizationID";
 
                 if (isRebuilding)
                 {
                     text = @"
         SELECT TicketID
-        FROM TicketsView tv WITH(NOLOCK)
-        WHERE tv.OrganizationID= @OrganizationID
-        ORDER BY DateModified DESC";
+        FROM Tickets tv WITH(NOLOCK)
+        WHERE tv.OrganizationID= @OrganizationID";
                 }
 
                 command.CommandText = string.Format(text, max.ToString());
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
-                Fill(command);
+                Fill(command, "", false);
             }
         }
 

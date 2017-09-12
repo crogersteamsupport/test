@@ -863,7 +863,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
 
                 EmailPosts.SendWelcomeNewSignup(loginUser, user.UserID, "");
                 EmailPosts.SendSignUpNotification(loginUser, user.UserID, url, referrer);
-                TeamSupportSync.SyncNewOrg(organization.OrganizationID, organization.Name, user.UserID, user.FirstName, user.LastName, user.Email, phoneNumber.Number, productType, signUpParams != null ? signUpParams.promo : "", signUpParams != null ? signUpParams.hubspotutk : "", signUpParams != null ? signUpParams.gaSource : "", signUpParams != null ? signUpParams.gaCampaign : "");
+                TeamSupportSync.SyncNewOrg(organization.OrganizationID, organization.Name, user.UserID, user.FirstName, user.LastName, user.Email, phoneNumber.Number, productType, signUpParams != null ? signUpParams.promo : "", potentialSeats, signUpParams != null ? signUpParams.hubspotutk : "", signUpParams != null ? signUpParams.gaSource : "", signUpParams != null ? signUpParams.gaCampaign : "");
 
                 return user;
             }

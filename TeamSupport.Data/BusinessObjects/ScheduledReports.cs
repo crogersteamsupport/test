@@ -50,29 +50,35 @@ namespace TeamSupport.Data
 			DateTime timeOnly = default(DateTime).Add(StartDateUtc.TimeOfDay);
 			DayOfWeek dayOfWeek = DayOfWeek.Sunday;
             int dayDiff = 0;
+            User creator = Users.GetUser(LoginUser.Anonymous, CreatorId);
+            TimeZoneInfo tz = TimeZoneInfo.Local;
 
-            DebugScheduleData(dateOnly, timeOnly);
+            if (!string.IsNullOrWhiteSpace(creator.TimeZoneID))
+            {
+                tz = TimeZoneInfo.FindSystemTimeZoneById(creator.TimeZoneID);
+                Debug(string.Format("CreatorId: {0} TimeZoneID: {1} tz.DisplayName: {2}", CreatorId.ToString(), creator.TimeZoneID.ToString(), tz.DisplayName));
+            }
 
-            int initialDayDiff = StartDateUtc.DayOfWeek - StartDate.DayOfWeek;
-            Debug(string.Format("initialDayDiff(57) : {0}", initialDayDiff.ToString()));
+            DateTime StartDateToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(StartDateUtc, tz);
+            DateTime lastRunToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(LastRunUtc.Value, tz);
+            DateTime nextRunToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(NextRunUtc.Value, tz);
+
+            // The initialDayDiff should not be calculated against our local time but the user's local time.
+            int initialDayDiff = StartDateUtc.DayOfWeek - StartDateToCreatorTimeZone.DayOfWeek;
 
             if (LastRunUtc != null)
 			{
 				dateOnly = StartDateUtc > LastRunUtc ? StartDateUtc.Date : ((DateTime)LastRunUtc).Date;
-                Debug(string.Format("dateOnly(62) : {0}", dateOnly.ToString()));
-                initialDayDiff = ((DateTime)LastRunUtc).DayOfWeek - ((DateTime)LastRun).DayOfWeek;
-                Debug(string.Format("initialDayDiff(64) : {0}", initialDayDiff.ToString()));
+                initialDayDiff = ((DateTime)LastRunUtc).DayOfWeek - lastRunToCreatorTimeZone.DayOfWeek;
 
                 //Difference in day (due to the UTC) between Sund-Sat or Sat-Sun will be handled here because the substraction will return 6 or -6, we only need to know if it's 1 or -1 (day ahead or day behind)
                 if (initialDayDiff == -6) //Sun (0) back to Sat (6)
                 {
                     initialDayDiff = 1;
-                    Debug(string.Format("initialDayDiff(70) : {0}", initialDayDiff.ToString()));
                 }
                 else if (initialDayDiff == 6) //Sat (6) onto Sun (0)
                 {
                     initialDayDiff = -1;
-                    Debug(string.Format("initialDayDiff(75) : {0}", initialDayDiff.ToString()));
                 }
             }
 
@@ -90,10 +96,7 @@ namespace TeamSupport.Data
                     {
                         while (dateOnly.DayOfWeek != dayOfWeek)
                         {
-                            Debug(string.Format("dateOnly.DayOfWeek(93): {0}", dateOnly.DayOfWeek.ToString()));
                             dateOnly = dateOnly.AddDays(1);
-                            Debug(string.Format("dayOfWeek(95): {0}", dayOfWeek.ToString()));
-                            Debug(string.Format("dateOnly(96): {0}", dateOnly.ToString()));
                         }
                     }
                     else
@@ -104,32 +107,23 @@ namespace TeamSupport.Data
                         while (dateOnly < DateTime.UtcNow)
                         {
                             dateOnly = dateOnly.AddDays(totalDays);
-                            Debug(string.Format("dateOnly(107): {0}", dateOnly.ToString()));
 
                             if (dateOnly.DayOfWeek != dayOfWeek)
                             {
-                                Debug(string.Format("dateOnly.DayOfWeek(111): {0}", dateOnly.DayOfWeek.ToString()));
-                                Debug(string.Format("dayOfWeek(112): {0}", dayOfWeek.ToString()));
-                                Debug(string.Format("dayOfWeek - dateOnly.DayOfWeek: {0}", (dayOfWeek - dateOnly.DayOfWeek).ToString()));
-
                                 dateOnly = dateOnly.AddDays(-totalDaysInAWeek);
                                 dateOnly = dateOnly.AddDays(dayOfWeek - dateOnly.DayOfWeek);
-                                Debug(string.Format("dateOnly(117): {0}", dateOnly.ToString()));
                             }
                         }
                     }
 
                     NextRun = dateOnly.Add(timeOnly.TimeOfDay).AddDays(initialDayDiff);
-                    Debug(string.Format("NextRun(123): {0}", NextRun.ToString()));
+                    nextRunToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(NextRunUtc.Value, tz);
 
-                    if (NextRun.Value.DayOfWeek != dayOfWeek)
+                    // The day of the week check must be done on the creator timezone as well.
+                    if (nextRunToCreatorTimeZone.DayOfWeek != dayOfWeek)
                     {
-                        Debug(string.Format("dayOfWeek(127): {0}", dayOfWeek.ToString()));
-                        Debug(string.Format("NextRun.Value.DayOfWeek(128): {0}", NextRun.Value.DayOfWeek.ToString()));
-
-                        dayDiff = dayOfWeek - NextRun.Value.DayOfWeek;
+                        dayDiff = dayOfWeek - nextRunToCreatorTimeZone.DayOfWeek;
                         NextRun = dateOnly.AddDays(dayDiff).Add(timeOnly.TimeOfDay);
-                        Debug(string.Format("NextRun(132): {0}", NextRun.ToString()));
                     }
 
                     break;
@@ -158,70 +152,51 @@ namespace TeamSupport.Data
 								diff = 0;
 							}
 
-                            Debug(string.Format("startOfTheMonth(161) : {0}", startOfTheMonth.ToString()));
-                            Debug(string.Format("diff : {0}", diff.ToString()));
-
                             dateOnly = startOfTheMonth.AddDays(diff + (((byte)Monthday - 1) * totalDaysInAWeek));
-                            Debug(string.Format("dateOnly(165) : {0}", dateOnly.ToString()));
 						}
 						else
 						{
 							Weekday = null;
 
-                            if (startOfTheMonth.AddDays((byte)Monthday - 1).Add(timeOnly.TimeOfDay) < new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 0, 0, 0).Add(timeOnly.TimeOfDay))
+                            if (startOfTheMonth.AddDays((byte)Monthday - 1).Add(timeOnly.TimeOfDay) < new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 0, 0, 0).Add(timeOnly.TimeOfDay) || isServiceCall)
                             {
                                 dateOnly = startOfTheMonth.AddMonths((byte)Every);
-                                Debug(string.Format("startOfTheMonth(174) : {0}", startOfTheMonth.ToString()));
-                                Debug(string.Format("dateOnly(175) : {0}", dateOnly.ToString()));
-                            }
+							}
                             else
                             {
                                 dateOnly = startOfTheMonth;
-                                Debug(string.Format("dateOnly(180) : {0}", dateOnly.ToString()));
-                            }
+							}
 
                             int monthTemp = dateOnly.Month;
                             dateOnly = dateOnly.AddDays((byte)Monthday - 1); //Calculation starts on first of the month, so substract it.
-                            Debug(string.Format("dateOnly(185) : {0}", dateOnly.ToString()));
 
-                            if (dateOnly.Month > monthTemp)
+							if (dateOnly.Month > monthTemp)
                             {
                                 dateOnly = dateOnly.AddDays(-dateOnly.Day);
-                                Debug(string.Format("dateOnly(190) : {0}", dateOnly.ToString()));
-                            }
+							}
                         }
 					}
 
+					Debug("Exited while. Monthly Next Run calculation. DateOnly: " + dateOnly.ToString());
+
 					NextRun = dateOnly.Add(timeOnly.TimeOfDay);
-                    Debug(string.Format("NextRun(196) : {0}", NextRun.ToString()));
 
                     if (Monthday < 5 && Weekday != null && Weekday > 0 && NextRun.Value.DayOfWeek != dayOfWeek)
                     {
                         dayDiff = dayOfWeek - NextRun.Value.DayOfWeek;
-                        Debug(string.Format("dayOfWeek(201): {0}", dayOfWeek.ToString()));
-                        Debug(string.Format("NextRun.Value.DayOfWeek(202): {0}", NextRun.Value.DayOfWeek.ToString()));
-
                         NextRun = dateOnly.AddDays(dayDiff).Add(timeOnly.TimeOfDay);
-                        Debug(string.Format("NextRun(205) : {0}", NextRun.ToString()));
                     }
 
                     dayDiff = (int)(dateOnly.Date - NextRun.Value.Date).TotalDays;
 
                     if (dayDiff != 0)
                     {
-                        Debug(string.Format("NextRun.Value.Date(212): {0}", NextRun.Value.Date.ToString()));
-
                         NextRun = dateOnly.AddDays(dayDiff).Add(timeOnly.TimeOfDay);
-                        Debug(string.Format("NextRun(215) : {0}", NextRun.ToString()));
                     }
 
                     if (NextRunUtc.Value.DayOfYear < NextRun.Value.DayOfYear)
                     {
-                        Debug(string.Format("NextRunUtc.Value.DayOfYear(220): {0}", NextRunUtc.Value.DayOfYear.ToString()));
-                        Debug(string.Format("NextRun.Value.DayOfYear(221): {0}", NextRun.Value.DayOfYear.ToString()));
-
                         NextRun = NextRun.Value.AddDays(1);
-                        Debug(string.Format("NextRun(224) : {0}", NextRun.ToString()));
                     }
 
                     break;
@@ -254,18 +229,7 @@ namespace TeamSupport.Data
             //Check for DLS and update if needed
             if (NextRun.HasValue)
             {
-				User creator = Users.GetUser(LoginUser.Anonymous, CreatorId);
-                TimeZoneInfo tz = TimeZoneInfo.Local;
-
-                if (!string.IsNullOrWhiteSpace(creator.TimeZoneID))
-                {
-                    tz = TimeZoneInfo.FindSystemTimeZoneById(creator.TimeZoneID);
-					Debug(string.Format("CreatorId: {0} TimeZoneID: {1} tz.DisplayName: {2}", CreatorId.ToString(), creator.TimeZoneID.ToString(), tz.DisplayName));
-                }
-
-                DateTime StartDateToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(StartDateUtc, tz);
-                DateTime nextRunToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(NextRunUtc.Value, tz);
-
+                nextRunToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(NextRunUtc.Value, tz);
                 Debug(string.Format("StartDateToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(StartDateUtc, tz): {0}", StartDateToCreatorTimeZone.ToString("MM/dd/yyyy HH:mm")));
                 Debug(string.Format("nextRunToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(NextRunUtc.Value, tz): {0}", nextRunToCreatorTimeZone.ToString("MM/dd/yyyy HH:mm")));
 
@@ -357,40 +321,6 @@ namespace TeamSupport.Data
 				ExceptionLogs.LogException(LoginUser.Anonymous, ex, "ScheduledReports-Debug", "Tickets.Clone - Actions");
 			}
 		}
-
-        private void DebugScheduleData(DateTime DateOnly, DateTime TimeOnly)
-        {
-            Debug(string.Format("UtcNow : {0}", DateTime.UtcNow.ToString("MM/dd/yyyy HH:mm")));
-            Debug(string.Format("ScheduledReports.Id : {0}", Id.ToString()));
-            Debug(string.Format("StartDateUtc : {0}", StartDateUtc.ToString("MM/dd/yyyy HH:mm")));
-            Debug(string.Format("DateOnly : {0}", DateOnly.ToString("MM/dd/yyyy HH:mm")));
-            Debug(string.Format("TimeOnly : {0}", TimeOnly.ToString("MM/dd/yyyy HH:mm")));
-            Debug(string.Format("RecurrencyId : {0}", RecurrencyId.ToString()));
-            Debug(string.Format("Every : {0}", Every.ToString()));
-            Debug(string.Format("Weekday : {0}", Weekday.ToString()));
-            Debug(string.Format("Monthday : {0}", Monthday.ToString()));
-
-            if (LastRunUtc.HasValue)
-            {
-                Debug(string.Format("LastRunUtc : {0}", ((DateTime)LastRunUtc).ToString("MM/dd/yyyy HH:mm")));
-            }
-            else
-            {
-                Debug(string.Format("LastRunUtc : NULL"));
-            }
-
-            Debug(string.Format("IsSuccessful : {0}", IsSuccessful.ToString()));
-
-            if (NextRunUtc.HasValue)
-            {
-                Debug(string.Format("NextRunUtc : {0}", ((DateTime)NextRunUtc).ToString("MM/dd/yyyy HH:mm")));
-            }
-            else
-            {
-                Debug(string.Format("NextRunUtc : NULL"));
-            }
-
-        }
     }
 
 	public partial class ScheduledReports

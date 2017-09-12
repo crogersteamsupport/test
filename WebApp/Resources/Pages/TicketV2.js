@@ -210,48 +210,39 @@ Selectize.define('no_results', function (options) {
     })();
 });
 
-$.fn.autoGrow = function () {
+$.fn.autoGr33ow = function () {
     return this.each(function () {
-
         // Variables
         var colsDefault = this.cols;
         var rowsDefault = this.rows;
-
         //Functions
         var grow = function () {
             growByRef(this);
         }
-
         var growByRef = function (obj) {
             var linesCount = 0;
             var lines = obj.value.split('\n');
-
             for (var i = lines.length - 1; i >= 0; --i) {
                 linesCount += Math.floor((lines[i].length / colsDefault) + 1);
             }
-
             if (linesCount > rowsDefault)
                 obj.rows = linesCount + 1;
             else
                 obj.rows = rowsDefault;
         }
-
         var characterWidth = function (obj) {
             var characterWidth = 0;
             var temp1 = 0;
             var temp2 = 0;
             var tempCols = obj.cols;
-
             obj.cols = 1;
             temp1 = obj.offsetWidth;
             obj.cols = 2;
             temp2 = obj.offsetWidth;
             characterWidth = temp2 - temp1;
             obj.cols = tempCols;
-
             return characterWidth;
         }
-
         // Manipulations
         //this.style.width = "auto";
         this.style.height = "auto";
@@ -267,13 +258,22 @@ $.fn.autoGrow = function () {
 
 
 
-$(window).resize(function() {
-    maxwidth();
+
+$(window).load(function(e) {
+    $('textarea.autogrow').autogrow();
+});
+
+$(window).resize(function(e) {
+    pagewidth();
+    ticketmenu();
 });
 
 
+
+
 $(document).ready(function () {
-    maxwidth();
+    pagewidth();
+
     _ticketNumber = window.parent.Ts.Utils.getQueryValue("TicketNumber", window);
 
     apiKey = "45228242";
@@ -322,14 +322,9 @@ $(document).ready(function () {
         }
     });
 
-
     watson(_ticketNumber);
-    // $("input[type=text], textarea").autoGrow({fixMinHeight: true, onInitialize: true});
+    $('textarea.autogrow').autogrow();
 });
-
-
-
-
 
 var loadTicket = function (ticketNumber, refresh) {
     window.parent.Ts.Services.Tickets.GetTicketInfo(_ticketNumber, function (info) {
@@ -439,7 +434,7 @@ function SetupTicketPage() {
     //Create the new action LI element
     CreateNewActionLI();
 
-    $("input[type=text], textarea").autoGrow();
+    $('textarea.autogrow').autogrow();
 
     window.parent.Ts.Services.TicketPage.GetTicketPageOrder("TicketFieldsOrder", function (order) {
         SetupTicketProperties(order);
@@ -559,12 +554,8 @@ function SetupTicketProperties(order) {
 
         //set the url for the copy paste button
         //var ticketURLLink = ""
-        var ticketURLLink = new ZeroClipboard(document.getElementById("Ticket-URL"));
-        ticketURLLink.on("aftercopy", function (event) {
-            alert("Copied URL to clipboard: " + event.data["text/plain"]);
-        });
         var ticketUrl = window.parent.Ts.System.AppDomain + "/?TicketNumber=" + _ticketNumber;
-        $("#Ticket-URL").attr("data-clipboard-text", ticketUrl);
+        $("#clipboard").attr("data-copy", ticketUrl);
 
         //set the ticket title
         $('#ticket-title-label').text($.trim(_ticketInfo.Ticket.Name) === '' ? '[Untitled Ticket]' : $.trim(_ticketInfo.Ticket.Name));
@@ -738,6 +729,7 @@ function CreateNewActionLI() {
                                         actionElement.find('.ticket-action-number').text(_actionTotal);
                                     }
                                     else {
+                                        console.log('#action-new-save:updateactionelement');
                                         UpdateActionElement(result, false);
                                     }
                                     clearTicketEditor();
@@ -787,6 +779,7 @@ function CreateNewActionLI() {
                                 actionElement.find('.ticket-action-number').text(_actionTotal);
                             }
                             else {
+                                console.log('#action-timeline:updateactionelement');
                                 UpdateActionElement(result, false);
                             }
                             clearTicketEditor();
@@ -940,48 +933,30 @@ function SetupActionEditor(elem, action) {
         dropZone: element,
         add: function (e, data) {
             for (var i = 0; i < data.files.length; i++) {
-                var item = $('<li>')
-                .appendTo(element.find('.upload-queue'));
+                var item = $('<li>').appendTo(element.find('.upload-queue'));
 
                 data.context = item;
                 item.data('data', data);
 
-                var bg = $('<div>')
-                .appendTo(item);
+                var bg = $('<div>').appendTo(item);
 
-                $('<div>')
-                .text(data.files[i].name + '  (' + window.parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
-                .addClass('filename')
-                .appendTo(bg);
+                $('<div>').text(data.files[i].name + '  (' + window.parent.Ts.Utils.getSizeString(data.files[i].size) + ')').addClass('filename').appendTo(bg);
 
-                $('<div>')
-                .addClass('progress')
-                .hide()
-                .appendTo(bg);
+                $('<div>').addClass('progress').hide().appendTo(bg);
 
-                $('<span>')
-                .addClass('ui-icon ui-icon-close')
-                .click(function (e) {
+                $('<span>').addClass('ui-icon ui-icon-close').click(function (e) {
                     e.preventDefault();
                     $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
-                })
-                .appendTo(bg);
-
+                }).appendTo(bg);
                 //<span class="tagRemove" aria-hidden="true">×</span>
-
-                $('<span>')
-                .addClass('ui-icon ui-icon-cancel')
-                .hide()
-                .click(function (e) {
+                $('<span>').addClass('ui-icon ui-icon-cancel').hide().click(function (e) {
                     e.preventDefault();
                     var data = $(this).closest('li').data('data');
                     data.jqXHR.abort();
                 })
                 .appendTo(bg);
-
                 if ((data.files[i].size / 1000000) > 25)
                     alert("Warning " + data.files[i].name + " is over 25MB");
-
             }
 
         },
@@ -1006,14 +981,15 @@ function SetupActionEditor(elem, action) {
         stop: function (e, data) {
             window.parent.Ts.Services.TicketPage.GetActionAttachments(_newAction.item.RefID, function (attachments) {
                 _newAction.Attachments = attachments;
+                clearTicketEditor();
                 if (_oldActionID === -1) {
-                    clearTicketEditor();
                     _actionTotal = _actionTotal + 1;
+                    console.log('#action-file-upload:createactionelement');
                     var actionElement = CreateActionElement(_newAction, false);
                     actionElement.find('.ticket-action-number').text(_actionTotal);
                 }
                 else {
-                    clearTicketEditor();
+                    console.log('#action-file-upload:updateactionelement');
                     UpdateActionElement(_newAction, false);
                 }
                 _newAction = null;
@@ -1869,10 +1845,12 @@ function LoadTicketControls() {
     $('#ticket-TimeSpent').text(window.parent.Ts.Utils.getTimeSpentText(_ticketInfo.Ticket.HoursSpent));
 
     if (_ticketInfo.Ticket.IsClosed == true) {
-        $('#ticket-DaysOpened').text(_ticketInfo.Ticket.DaysClosed).parent().prev().html('Days Closed');
+        $('#ticket-DaysOpened').text(_ticketInfo.Ticket.DaysClosed);
+        $('#label-days').text('Days Closed');
     }
     else {
-        $('#ticket-DaysOpened').text(_ticketInfo.Ticket.DaysOpened).parent().prev().html('Days Opened');
+        $('#ticket-DaysOpened').text(_ticketInfo.Ticket.DaysOpened);
+        $('#label-days').text('Days Opened');
     }
 
     var dueDate = _ticketInfo.Ticket.DueDate;
@@ -3408,14 +3386,9 @@ var AddCustomFieldEdit = function (field, parentContainer) {
 
     var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
     var inputGroupContainer = $('<div>').addClass('input-group').appendTo(inputContainer);
-    var input = $('<textarea>')
-                    .addClass('form-control ticket-simple-textarea muted-placeholder')
-                    .attr("placeholder", "Enter Value")
-                    .val(field.Value)
-                    .autoGrow()
-                    .appendTo(inputGroupContainer)
-                    .after(getUrls(field.Value));
+    var input = $('<textarea>').addClass('form-control ticket-simple-textarea muted-placeholder autogrow fart').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputGroupContainer).after(getUrls(field.Value)).autogrow();
 
+    $('textarea.autogrow').autogrow();
 
     if (field.Mask) {
         input.mask(field.Mask);
@@ -4348,6 +4321,11 @@ var SetupTFSFieldValues = function () {
     });
 };
 
+function validateEmail(email) {
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
+
 var getUrls = function (input) {
     var source = (input || '').toString();
     var parentDiv = $('<div>').addClass('input-group-addon external-link')
@@ -4364,6 +4342,12 @@ var getUrls = function (input) {
         if (url.length > 2 && url.substring(0, 3) == 'www') {
             url = 'http://' + url;
         }
+
+        if (validateEmail(url))
+        {
+            url = "mailto:" + url;
+        }
+
         result = result + '<a target="_blank" class="valueLink" href="' + url + '" title="' + matchArray[0] + '"><i class="fa fa-external-link fa-lg custom-field-link"></i></a>';
     }
 
@@ -4403,6 +4387,7 @@ function FetchTimeLineItems(start) {
             $('.results-loading').hide();
             $('.results-done').show();
         } else {
+            console.log('handlebars:action.handlebars');
             _compiledActionTemplate = Handlebars.templates['action'];
 
             //create first timeline date marker if needed
@@ -4450,6 +4435,7 @@ function CreateActionElement(val, ShouldAppend) {
             val.WaterCoolerReplies[wc].WaterCoolerReplyProxy.Message = wcmsgtext.replace(/\n\r?/g, '<br />');
         }
     }
+    console.log('createactionelecment:recycle:handlebars:action.handlebars');
     var html = _compiledActionTemplate(val);
     var actionElement = $(html);
     actionElement.find('a').attr('target', '_blank');
@@ -4479,10 +4465,18 @@ function UpdateActionElement(val) {
         $("#action-timeline").append(dateSpan);
         _currDateSpan = val.item.DateCreated;
     }
+    console.log('updateactionelement:recycle:handlebars:action.handlebars');
     var html = _compiledActionTemplate(val);
+    var actionElement = $(html);
     var li = $("#action-timeline li[data-id=" + val.item.RefID + "]");
     var actionNumber = li.find('.ticket-action-number').text();
-    li.replaceWith(html);
+    try {
+        $('.action-placeholder').after(actionElement);
+        // li.replaceWith(html);
+        console.log('Acion appended.');
+    } catch (e) {
+        console.log('Unable to append action.');
+    }
     $("#action-timeline li[data-id=" + val.item.RefID + "]").find('.ticket-action-number').text(actionNumber);
 };
 
@@ -5465,17 +5459,23 @@ function SetupWCArea() {
             }
         }
     });
+
     //handle the event association
-    $('.addticket').click(function ()
-    { itemAssociation("0"); });
-    $('.adduser').click(function ()
-    { itemAssociation("1"); });
-    $('.addcustomer').click(function ()
-    { itemAssociation("2"); });
-    $('.addgroup').click(function ()
-    { itemAssociation("3"); });
-    $('.addproduct').click(function ()
-    { itemAssociation("4"); });
+    $('.addticket').click(function (e) {
+        itemAssociation("0");
+    });
+    $('.adduser').click(function (e) {
+        itemAssociation("1");
+    });
+    $('.addcustomer').click(function (e) {
+        itemAssociation("2");
+    });
+    $('.addgroup').click(function (e) {
+        itemAssociation("3");
+    });
+    $('.addproduct').click(function (e) {
+        itemAssociation("4");
+    });
 
     function itemAssociation(associationType) {
         var searchbox = $('#associationSearch');
@@ -5521,7 +5521,7 @@ function SetupWCArea() {
                 break;
             case "1":
                 $('#searchGroup').show();
-                $(".arrow-up").css('left', '30px');
+                $(".arrow-up").css('left', '36px');
                 $('#associationSearch').attr("placeholder", "Search Users").val("");
                 searchbox.autocomplete({
                     minLength: 3, source: getUsers, delay: 300,
@@ -5560,7 +5560,7 @@ function SetupWCArea() {
                 break;
             case "2":
                 $('#searchGroup').show();
-                $(".arrow-up").css('left', '53px');
+                $(".arrow-up").css('left', '60px');
                 $('#associationSearch').attr("placeholder", "Search Companies").val("");
                 $('#associationSearch').autocomplete({
                     minLength: 3,
@@ -5600,7 +5600,7 @@ function SetupWCArea() {
                 break;
             case "3":
                 $('#searchGroup').show();
-                $(".arrow-up").css('left', '78px');
+                $(".arrow-up").css('left', '95px');
                 $('#associationSearch').attr("placeholder", "Search Groups").val("");
                 $('#associationSearch').autocomplete({
                     minLength: 2,
@@ -5640,7 +5640,7 @@ function SetupWCArea() {
                 break;
             case "4":
                 $('#searchGroup').show();
-                $(".arrow-up").css('left', '104px');
+                $(".arrow-up").css('left', '125px');
                 $('#associationSearch').attr("placeholder", "Search Products").val("");
                 $('#associationSearch').autocomplete({
                     minLength: 3,
@@ -6073,7 +6073,7 @@ function watson (ticketnumber) {
 
 function ticketmenu () {
     var width = $('#ticketpage').width();
-    $('#ticketmenu-container').css('width',width);
+    // $('#ticketmenu-container').css('width',width);
     if (width > 900) {
         $('#ticketmenu-actions-lg').show();
         $('#ticketmenu-actions-sm').hide();
@@ -6098,5 +6098,7 @@ function maxwidth () {
 
 function pagewidth () {
     var width = $(window).width();
+    $('#frame-container, #ticketpage').css('max-width',width);
     $('#ticketpage').css('max-width',width);
+    $('#ticketpane').css('max-width',width - 310);
 }

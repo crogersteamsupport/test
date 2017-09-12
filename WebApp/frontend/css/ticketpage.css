@@ -22,6 +22,11 @@ input {
     bottom:0px;
     padding-top:0px;
     height: auto !important;
+    border: none;
+    overflow-x:hidden;
+    overflow-y:auto;
+    height:100%;
+
 }
 
 #ticketpage {
@@ -76,7 +81,7 @@ input {
 
 #ticketpane {
     width:100%;
-    max-width:100%;
+    max-width:400px;
 }
 
 
@@ -136,6 +141,16 @@ input {
     font-size:11px;
 
 }
+
+.add-associations span {
+    margin-right:5px;
+    font-size:23px;
+    color:#95A0AB;
+}
+
+
+
+
 
 
 
@@ -548,6 +563,7 @@ button.ticket-option {
 .timeline > li > .timeline-panel {
     margin-bottom:10px;
     width:100%;
+    max-width:100%;
     float:left;
     border:1px solid white;
     border-radius:0px;
@@ -722,46 +738,6 @@ div.ticket-badge > div > a:focus {
     background-image:url('/Resources/Images/icons/attachment.png');
     cursor:pointer;
 }
-.addticket {
-    margin:2px 4px;
-    width:16px;
-    height:16px;
-    float:left;
-    background-image:url('/Resources/Images/nav/16/Tickets.png');
-    cursor:pointer;
-}
-.addgroup {
-    margin:2px 4px;
-    width:16px;
-    height:16px;
-    float:left;
-    background-image:url('/Resources/Images/nav/16/Groups.png');
-    cursor:pointer;
-}
-.addcustomer {
-    margin:2px 4px;
-    width:16px;
-    height:16px;
-    float:left;
-    background-image:url('/Resources/Images/nav/16/Customers.png');
-    cursor:pointer;
-}
-.addproduct {
-    margin:2px 4px;
-    width:16px;
-    height:16px;
-    float:left;
-    background-image:url('/Resources/Images/nav/16/Products.png');
-    cursor:pointer;
-}
-.adduser {
-    margin:2px 4px;
-    width:16px;
-    height:16px;
-    float:left;
-    background-image:url('/Resources/Images/nav/16/Users.png');
-    cursor:pointer;
-}
 
 
 .arrow-up {
@@ -871,7 +847,7 @@ form.file-upload input {
     padding:0;
     cursor:pointer;
     margin-left:.25em;
-    background-image:url("../css/images/ui-icons_373737_256x240.png");
+    background-image:url("/resources/css/images/ui-icons_373737_256x240.png");
     background-position:-80px -128px;
     width:16px;
     height:16px;

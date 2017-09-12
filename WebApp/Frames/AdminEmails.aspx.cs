@@ -77,6 +77,9 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
                 cmbProductFamily.Visible = true;
             }
 
+            LoadGroupTypes(organization.OrganizationID);
+            cmbDefaultGroup.SelectedValue = organization.DefaultPortalGroupID.ToString();
+
             EmailTemplates templates = new EmailTemplates(UserSession.LoginUser);
 
             templates.LoadAll((UserSession.LoginUser.OrganizationID == 1078) && UserSession.CurrentUser.IsSystemAdmin, organization.ProductType);
@@ -90,6 +93,23 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
 
         }
     }
+
+    private void LoadGroupTypes(int organizationID)
+    {
+
+        cmbDefaultGroup.Items.Clear();
+
+        Groups groups = new Groups(UserSession.LoginUser);
+        groups.LoadByOrganizationID(organizationID);
+        cmbDefaultGroup.Items.Add(new RadComboBoxItem("Unassigned", "-1"));
+        foreach (Group group in groups)
+        {
+            cmbDefaultGroup.Items.Add(new RadComboBoxItem(group.Name, group.GroupID.ToString()));
+        }
+
+        cmbDefaultGroup.SelectedIndex = 0;
+    }
+
 
     private void LoadEAICombos()
     {
@@ -188,7 +208,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
     }
 
     [WebMethod(true)]
-    public static void SaveEmailSettings(string reply, bool reqNew, bool reqKnown, bool changeStatus, bool addContacts, bool matchSubject, bool forceBccPrivate, bool needCustForTicketMatch, bool replyToAlternateEmailAddresses, bool addEmailViaTS)
+    public static void SaveEmailSettings(string reply, bool reqNew, bool reqKnown, bool changeStatus, bool addContacts, bool matchSubject, bool forceBccPrivate, bool needCustForTicketMatch, bool replyToAlternateEmailAddresses, bool addEmailViaTS, int? defaultPortalGroupID)
     {
         if (!UserSession.CurrentUser.IsSystemAdmin) return;
 
@@ -203,6 +223,8 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
         organization.NeedCustForTicketMatch = needCustForTicketMatch;
         organization.ReplyToAlternateEmailAddresses = replyToAlternateEmailAddresses;
         organization.AddEmailViaTS = addEmailViaTS;
+        organization.DefaultPortalGroupID = defaultPortalGroupID < 0 ? null : defaultPortalGroupID;
+
         organization.Collection.Save();
     }
 

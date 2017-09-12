@@ -187,28 +187,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int reportTableFieldID)
     {
-      BeforeDBDelete(reportTableFieldID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ReportTableFields] WHERE ([ReportTableFieldID] = @ReportTableFieldID);";
         deleteCommand.Parameters.Add("ReportTableFieldID", SqlDbType.Int);
         deleteCommand.Parameters["ReportTableFieldID"].Value = reportTableFieldID;
 
+        BeforeDBDelete(reportTableFieldID);
         BeforeRowDelete(reportTableFieldID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(reportTableFieldID);
-      }
-      AfterDBDelete(reportTableFieldID);
-      
-    }
+        AfterDBDelete(reportTableFieldID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("ReportTableFieldsSave");

@@ -301,28 +301,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int invoiceID)
     {
-      BeforeDBDelete(invoiceID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Invoices] WHERE ([InvoiceID] = @InvoiceID);";
         deleteCommand.Parameters.Add("InvoiceID", SqlDbType.Int);
         deleteCommand.Parameters["InvoiceID"].Value = invoiceID;
 
+        BeforeDBDelete(invoiceID);
         BeforeRowDelete(invoiceID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(invoiceID);
-      }
-      AfterDBDelete(invoiceID);
-      
-    }
+        AfterDBDelete(invoiceID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("InvoicesSave");

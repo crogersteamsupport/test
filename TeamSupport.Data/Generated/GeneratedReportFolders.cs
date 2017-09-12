@@ -144,28 +144,18 @@ namespace TeamSupport.Data
 	
     public virtual void DeleteFromDB(int folderID)
     {
-      BeforeDBDelete(folderID);
-      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
-      {
-        connection.Open();
-
-        SqlCommand deleteCommand = connection.CreateCommand();
-
-        deleteCommand.Connection = connection;
+        SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
         deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ReportFolders] WHERE ([FolderID] = @FolderID);";
         deleteCommand.Parameters.Add("FolderID", SqlDbType.Int);
         deleteCommand.Parameters["FolderID"].Value = folderID;
 
+        BeforeDBDelete(folderID);
         BeforeRowDelete(folderID);
-        deleteCommand.ExecuteNonQuery();
-		connection.Close();
-        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        TryDeleteFromDB(deleteCommand);
         AfterRowDelete(folderID);
-      }
-      AfterDBDelete(folderID);
-      
-    }
+        AfterDBDelete(folderID);
+	}
 
     public override void Save(SqlConnection connection)    {
 		//SqlTransaction transaction = connection.BeginTransaction("ReportFoldersSave");
