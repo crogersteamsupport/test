@@ -491,7 +491,6 @@ button.ticket-option {
 }
 
 .timeline {
-    list-style:none;
     margin-bottom:40px;
     padding:0px 0px 0px;
     position:relative;
@@ -509,55 +508,30 @@ button.ticket-option {
 .timeline-done {display:none;
 }
 
-li.daystrip {
-    margin:20px auto 10px;
-    background-color: rgba(96,125,139,0.5);
-    box-shadow:1px 1px 0px rgba(0,0,0,0.1);
+
+
+.daystrip {
+
 }
 
-span.daybadge {
+.daybadge {
+    margin:20px auto 10px;
     position:relative;
     z-index:1;
     display:block;
     margin-left:auto;
     margin-right:auto;
-    width:70px;
     padding:5px;
-    margin-bottom:10px;
     font-size:13px;
-    font-weight:normal;
-    border-radius:0px;
     color:white;
     letter-spacing:2px;
     font-weight:bold;
+    background-color: rgba(96,125,139,0.5);
 }
 
 
 
-.timeline > li {
-    margin-bottom:10px;
-    position:relative;
-}
 
-.timeline > li:before,
-.timeline > li:after {
-    /* content:""; */
-    display:table;
-}
-
-.timeline > li:after {
-    clear:both;
-}
-
-.timeline > li:before,
-.timeline > li:after {
-    /* content:""; */
-    display:table;
-}
-
-.timeline > li:after {
-    clear:both;
-}
 
 .timeline > li > .timeline-panel {
     margin-bottom:10px;

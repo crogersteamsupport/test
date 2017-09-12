@@ -1,0 +1,36 @@
+
+
+
+div.action {
+    padding:0px;
+    background-color:white;
+    box-shadow:1px 1px 0px rgba(0,0,0,0.1);
+}
+div.action .header {
+    padding:20px 20px 20px;
+    border-bottom:1px solid rgba(0,0,0,0.1);
+}
+div.action .header .avatar {
+    width:50px;
+}
+div.action .options {
+    margin-bottom:20px;
+    padding:20px 20px 20px;
+    border-bottom:1px solid rgba(0,0,0,0.1);
+    vertical-align:center;
+}
+div.action .status {
+    font-size:14px;
+    text-transform: uppercase;
+    line-height:29px;
+    vertical-align:center;
+}
+div.action .specifics {
+    padding:20px;
+}
+div.action .specifics .title {
+    margin-bottom:20px;
+    font-size:14px;
+}
+div.action .specifics .details {
+}

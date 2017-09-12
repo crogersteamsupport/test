@@ -612,7 +612,6 @@ function CreateNewActionLI() {
     $("#action-timeline").append(html);
 
     $('#action-add-public, #action-add-public-sm').click(function (e) {
-        console.log('here');
         e.preventDefault();
         e.stopPropagation();
         if ($(this).hasClass('click-disabled')) {
@@ -2377,9 +2376,7 @@ function SetupTagsSection() {
             }
         })
         .data("autocomplete")._renderItem = function (ul, item) {
-            return $("<li>")
-                .append("<a>" + item.label + "</a>")
-                .appendTo(ul);
+            return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
         };
 
         $('#ticket-tags').on('click', 'span.tagRemove', function (e) {
@@ -4393,7 +4390,7 @@ function FetchTimeLineItems(start) {
             //create first timeline date marker if needed
             if (_currDateSpan == null) {
                 _currDateSpan = _timeLine[0].item.DateCreated;
-                var dateSpan = '<li class="daystrip" style="text-align:center;"><span class="daybadge">' + _currDateSpan.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><li>';
+                var dateSpan = '<div class="daystrip" style="text-align:center;"><span class="daybadge">' + _currDateSpan.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
                 $("#action-timeline").append(dateSpan);
             };
             var isPublicFiltered = $('.filter-public').hasClass('bgcolor-darkgray');
@@ -4423,7 +4420,7 @@ function FetchTimeLineItems(start) {
 
 function CreateActionElement(val, ShouldAppend) {
     if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
-        var dateSpan = '<li class="daystrip" style="text-align:center;"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><li>';
+        var dateSpan = '<div class="daystrip" style="text-align:center;"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
         $("#action-timeline").append(dateSpan);
         _currDateSpan = val.item.DateCreated;
     }
@@ -5749,8 +5746,7 @@ function SetupWCArea() {
         dropZone: wcelement,
         add: function (e, data) {
             for (var i = 0; i < data.files.length; i++) {
-                var item = $('<li>')
-                .appendTo(wcelement.find('.wc-attachments'));
+                var item = $('<li>').appendTo(wcelement.find('.wc-attachments'));
 
                 data.context = item;
                 item.data('data', data);
