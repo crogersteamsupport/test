@@ -1,6 +1,4 @@
 
-
-
 div.action {
     padding:0px;
     background-color:white;
@@ -11,18 +9,29 @@ div.action .header {
     border-bottom:1px solid rgba(0,0,0,0.1);
 }
 div.action .header .avatar {
-    width:50px;
+    width:80px;
+    padding-right:30px;
+}
+div.action .header .info .perspective {
+    margin-bottom:10px;
+    font-size:15px;
+    text-transform:capitalize;
+}
+div.action .header .info .status {
+    margin-left:0px;
+    font-size:12px;
+    opacity:0.9;
+    text-transform: uppercase;
+}
+div.action .header .info .expiration {
+    margin-left:0px;
+    font-size:12px;
+    opacity:0.7;
 }
 div.action .options {
     margin-bottom:20px;
     padding:20px 20px 20px;
     border-bottom:1px solid rgba(0,0,0,0.1);
-    vertical-align:center;
-}
-div.action .status {
-    font-size:14px;
-    text-transform: uppercase;
-    line-height:29px;
     vertical-align:center;
 }
 div.action .specifics {
@@ -33,4 +42,5 @@ div.action .specifics .title {
     font-size:14px;
 }
 div.action .specifics .details {
+    margin-bottom:50px;
 }

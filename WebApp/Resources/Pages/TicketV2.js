@@ -4385,7 +4385,7 @@ function FetchTimeLineItems(start) {
             $('.results-done').show();
         } else {
             console.log('handlebars:action.handlebars');
-            _compiledActionTemplate = Handlebars.templates['action'];
+            _compiledActionTemplate = Handlebars.templates['action2'];
 
             //create first timeline date marker if needed
             if (_currDateSpan == null) {
