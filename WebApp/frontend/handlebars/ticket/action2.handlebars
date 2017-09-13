@@ -11,8 +11,8 @@
             <small class="text-muted">added a {{item.MessageType}} on {{FormatDateTime item.DateCreated}}</small><br />
             <small class="text-muted">{{TimeSpent}} <span id="watson-{{item.RefID}}">{{Watson}}</span></small><br />
         </div>
-        <div class="flexpull">{{{Applause}}}</div>
-        <div class="flexpull">{{ActionNumber}}</div>
+        <div class="applause flexpull">{{{Applause}}}</div>
+        <div class="number flexpull">{{ActionNumber}}</div>
     </div>
 
     <div class="specifics">
@@ -24,5 +24,39 @@
         <a target="_blank" href="../../../dc/1/attachments/{{AttachmentID}}"><i class="glyphicon glyphicon-paperclip"></i>{{FileName}}</a>
         <a data-attachmentid="{{AttachmentID}}" data-name="{{FileName}}" class="remove-attachment"><i class="glyphicon glyphicon-remove" style="font-size:10px; margin-left:5px; cursor:pointer;"></i></a> {{/each}}
     </div>
+
+
+    {{#if item.IsWC}}
+    <div id="timeline-wc-responses" class="timeline-wc-responses">
+        {{#each WaterCoolerReplies}}
+        <div data-messageid="{{WaterCoolerReplyProxy.MessageID}}" class="timeline-wc-reply">
+            <img class="user-avatar pull-left wc-avatar" src="../../../dc/{{WaterCoolerReplyProxy.OrganizationID}}/UserAvatar/{{WaterCoolerReplyProxy.UserID}}/120">
+            <div>
+                <a class="TeamSupportBlue">{{WaterCoolerReplyProxy.UserName}}</a>
+                <small class="text-muted">  {{FormatDateTime WaterCoolerReplyProxy.LastModified}}  </small>
+                <a data-liked="{{DidLike}}" href="#" class="wc-reply-like-link"><span class="wc-reply-like-total">{{WCLikes}}</span> <span>{{#unless DidLike}} like {{/unless}}</span></a>
+                <p>{{{WaterCoolerReplyProxy.Message}}}</p>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+
+    <div class="wc-options">
+        {{#if DidLike}}
+        <span data-liked="{{DidLike}}" class="wc-option wc-option-likes wc-liked">+<span>{{Likes}}</span></span>
+        {{else}}
+        <span data-liked="{{DidLike}}" class="wc-option wc-option-likes">+<span>{{Likes}}</span></span>
+        {{/if}}
+        <div class="wc-option-replyarea">
+            <span class="wc-faux-textarea text-muted">post comment...</span>
+        </div>
+        <div class="wc-textarea" style="display:none;">
+            <textarea class="form-control wc-reply-text" rows="3"></textarea>
+            <button type="button" class="btn btn-primary wc-textarea-send">Reply</button>
+        </div>
+    </div>
+    {{/if}}
+
+
 
 </div>
