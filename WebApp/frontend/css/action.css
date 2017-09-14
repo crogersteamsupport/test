@@ -76,3 +76,11 @@ div.action .wc-responses {
     padding-top:10px;
     padding-left:20px;
 }
+
+div.action .wc-options {
+    padding-bottom:10px;
+    background-color:#F5F5F5;
+    margin-right:0px;
+    margin-left:0px;
+    padding-left:20px;
+}
