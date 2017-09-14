@@ -66,9 +66,6 @@ div.action .specifics .details {
 div.action .specifics .details img {
     max-width:100% !important;
 }
-
-
-
 div.action .wc-responses {
     background-color:#F5F5F5;
     margin-right:0px;
@@ -76,15 +73,19 @@ div.action .wc-responses {
     padding-top:10px;
     padding-left:20px;
 }
-
 div.action .wc-options {
     padding-bottom:10px;
     background-color:#F5F5F5;
     margin-right:0px;
     margin-left:0px;
 }
-
 div.action .wc-textarea textarea {
-    background-color:white;
+    background-color:white !important;
+    border-radius:0px;
+}
+
+div.action .wc-textarea .wc-textarea-send {
+    margin-top:15px;
+    float:right;
     border-radius:0px;
 }
