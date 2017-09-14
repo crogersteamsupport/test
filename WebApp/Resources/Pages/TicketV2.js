@@ -5522,7 +5522,7 @@ function SetupWCArea() {
                 break;
             case "1":
                 $('#searchGroup').show();
-                $(".arrow-up").css('left', '30px');
+                $(".arrow-up").css('left', '36px');
                 $('#associationSearch').attr("placeholder", "Search Users").val("");
                 searchbox.autocomplete({
                     minLength: 3, source: getUsers, delay: 300,
@@ -5561,7 +5561,7 @@ function SetupWCArea() {
                 break;
             case "2":
                 $('#searchGroup').show();
-                $(".arrow-up").css('left', '53px');
+                $(".arrow-up").css('left', '60px');
                 $('#associationSearch').attr("placeholder", "Search Companies").val("");
                 $('#associationSearch').autocomplete({
                     minLength: 3,
@@ -5601,7 +5601,7 @@ function SetupWCArea() {
                 break;
             case "3":
                 $('#searchGroup').show();
-                $(".arrow-up").css('left', '78px');
+                $(".arrow-up").css('left', '95px');
                 $('#associationSearch').attr("placeholder", "Search Groups").val("");
                 $('#associationSearch').autocomplete({
                     minLength: 2,
@@ -5641,7 +5641,7 @@ function SetupWCArea() {
                 break;
             case "4":
                 $('#searchGroup').show();
-                $(".arrow-up").css('left', '104px');
+                $(".arrow-up").css('left', '125px');
                 $('#associationSearch').attr("placeholder", "Search Products").val("");
                 $('#associationSearch').autocomplete({
                     minLength: 3,
