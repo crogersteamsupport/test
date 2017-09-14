@@ -6,19 +6,25 @@ div.action {
     box-shadow:1px 1px 0px rgba(0,0,0,0.1);
 }
 div.action .header {
-    padding:10px 10px 10px;
     border-bottom:1px solid rgba(0,0,0,0.1);
 }
 div.action .header .avatar {
-    width:60px;
-    padding-right:10px;
+    padding:15px;
+    width:90px;
+}
+div.action .header .info {
+    padding:10px 0px;
 }
 div.action .header .applause {
-    min-width:80px;
+    padding:10px 10px 10px;
+    min-width:100px;
 }
 div.action .header .number {
+    padding:5px;
     min-width:80px;
     text-align:right;
+    font-size:11px;
+    font-weight:bold;
 }
 
 
