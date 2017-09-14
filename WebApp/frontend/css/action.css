@@ -66,3 +66,13 @@ div.action .specifics .details {
 div.action .specifics .details img {
     max-width:100% !important;
 }
+
+
+
+div.action .wc-responses {
+    background-color:#F5F5F5;
+    margin-right:0px;
+    margin-left:0px;
+    padding-top:10px;
+    padding-left:20px;
+}
