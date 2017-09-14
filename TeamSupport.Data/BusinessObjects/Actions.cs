@@ -142,9 +142,11 @@ namespace TeamSupport.Data
 
         partial void BeforeRowEdit(Action action)
         {
+            var oldAction = (Action)Actions.GetActionByID(LoginUser, action.ActionID);
+
             action.Description = HtmlUtility.FixScreenRFrame((action.Row["Description"] == DBNull.Value) ? string.Empty : action.Description);
             string actionNumber = GetActionNumber(action.TicketID, action.ActionID);
-            string description = "Modified action #" + actionNumber + " on " + Tickets.GetTicketLink(LoginUser, action.TicketID);
+            string description = "Modified action #" + actionNumber + " on " + Tickets.GetTicketLink(LoginUser, action.TicketID) + (oldAction.IsVisibleOnPortal != action.IsVisibleOnPortal ? " - action changed is visible to = " + action.IsVisibleOnPortal:"");
             if(!this.isAdminClean)
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, action.TicketID, description);
         }
