@@ -19,13 +19,18 @@ div.action .header .applause {
     padding:10px 10px 10px;
     min-width:100px;
 }
-div.action .header .number {
-    padding:5px 10px 0px 5px;
+
+div.action .header .badges {
+    padding:0px;
     min-width:80px;
     text-align:right;
+}
+div.action .header .number {
+    padding:5px 10px 0px 5px;
     font-size:11px;
     font-weight:bold;
 }
+
 
 
 
