@@ -83,3 +83,8 @@ div.action .wc-options {
     margin-right:0px;
     margin-left:0px;
 }
+
+div.action .wc-textarea textarea {
+    background-color:white;
+    border-radius:0px;
+}
