@@ -5055,14 +5055,14 @@ function CreateTimeLineDelegates() {
 
     $('#action-timeline').on('click', '.wc-option-replyarea', function (e) {
         $(this).hide();
-        $(this).parent().find('.wc-textarea').slideToggle("fast").find('textarea').focus();
+        $(this).parent().find('.wc-textarea').show().find('textarea').focus();
     });
 
     $('#action-timeline').on('click', 'button.wc-textarea-send', function (e) {
         e.preventDefault();
         e.stopPropagation();
         var self = $(this);
-        var action = self.closest('li').data().action;
+        var action = self.closest('div.action').data().action;
         var replyText = self.closest('.wc-textarea').find('textarea').val();
         if (replyText.length > 0) {
             $(this).prop('disabled', true);
