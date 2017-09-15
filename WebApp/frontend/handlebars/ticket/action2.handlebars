@@ -11,6 +11,18 @@
             <small class="text-muted">{{item.MessageType}} added on {{FormatDateTime item.DateCreated}}</small><br />
             <small class="text-muted">{{TimeSpent}} <span id="watson-{{item.RefID}}">{{Watson}}</span></small><br />
         </div>
+        <div class="indicators flexpull">
+            {{#if item.IsKnowledgeBase}}
+            <a class="glyphicon glyphicon-bookmark TeamSupportBlue ticket-action-kb" aria-hidden="true"></a>
+            {{else}}
+            <a class="glyphicon glyphicon-bookmark TeamSupportBlue ticket-action-kb hidden" aria-hidden="true"></a>
+            {{/if}}
+            {{#if item.IsPinned}}
+            <a class="glyphicon glyphicon-pushpin TeamSupportBlue ticket-action-pinned" aria-hidden="true"></a>
+            {{else}}
+            <a class="glyphicon glyphicon-pushpin TeamSupportBlue ticket-action-pinned hidden" aria-hidden="true"></a>
+            {{/if}}
+        </div>
         <div class="applause flexpull">{{{Applause}}}</div>
         <div class="badges flexpull">
             <span class="number">{{ActionNumber}}</span>

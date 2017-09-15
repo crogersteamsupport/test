@@ -15,11 +15,15 @@ div.action .header .avatar {
 div.action .header .info {
     padding:10px 0px;
 }
+
+div.action .header .indicators {
+    padding:10px;
+    min-width:100px;
+}
 div.action .header .applause {
     padding:10px 10px 10px;
     min-width:100px;
 }
-
 div.action .header .badges {
     padding:0px;
     min-width:80px;
