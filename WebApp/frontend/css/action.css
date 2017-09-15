@@ -35,7 +35,7 @@ div.action .header .action-option-items a {
 div.action .header .indicators {
     padding:10px;
     min-width:50px;
-    text-align:right;
+    text-align:left;
 }
 div.action .header .applause {
     padding:10px 5px 0px;
