@@ -19,6 +19,7 @@ div.action .header .info {
 div.action .header .indicators {
     padding:10px;
     min-width:100px;
+    text-align:right;
 }
 div.action .header .applause {
     padding:10px 10px 10px;
