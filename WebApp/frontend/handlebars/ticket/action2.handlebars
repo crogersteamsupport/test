@@ -11,22 +11,56 @@
             <small class="text-muted">{{item.MessageType}} added on {{FormatDateTime item.DateCreated}}</small><br />
             <small class="text-muted">{{TimeSpent}} <span id="watson-{{item.RefID}}">{{Watson}}</span></small><br />
         </div>
-        <div class="applause flexpull">{{{Applause}}}</div>
-        <div class="indicators flexpull">
-            {{#if item.IsKnowledgeBase}}
-            <a class="glyphicon glyphicon-bookmark TeamSupportBlue ticket-action-kb" aria-hidden="true"></a>
-            {{else}}
-            <a class="glyphicon glyphicon-bookmark TeamSupportBlue ticket-action-kb hidden" aria-hidden="true"></a>
-            {{/if}}
-            {{#if item.IsPinned}}
-            <a class="glyphicon glyphicon-pushpin TeamSupportBlue ticket-action-pinned" aria-hidden="true"></a>
-            {{else}}
-            <a class="glyphicon glyphicon-pushpin TeamSupportBlue ticket-action-pinned hidden" aria-hidden="true"></a>
-            {{/if}}
-        </div>
-        <div class="badges flexpull">
-            <span class="number">{{ActionNumber}}</span>
-            <div class="ticket-badge">{{{TimeLineLabel}}} {{{WaterCoolerRelationships}}}</div>
+        <div class="extras flexpull">
+            <div class="flexbox">
+
+                {{#unless item.IsWC}}
+                <div class="applause flexpull">{{{Applause}}}</div>
+                <div class="indicators flexpull">
+                    {{#if item.IsKnowledgeBase}}
+                    <a class="glyphicon glyphicon-bookmark TeamSupportBlue ticket-action-kb" aria-hidden="true"></a>
+                    {{else}}
+                    <a class="glyphicon glyphicon-bookmark TeamSupportBlue ticket-action-kb hidden" aria-hidden="true"></a>
+                    {{/if}}
+                    {{#if item.IsPinned}}
+                    <a class="glyphicon glyphicon-pushpin TeamSupportBlue ticket-action-pinned" aria-hidden="true"></a>
+                    {{else}}
+                    <a class="glyphicon glyphicon-pushpin TeamSupportBlue ticket-action-pinned hidden" aria-hidden="true"></a>
+                    {{/if}}
+                </div>
+                {{/unless}}
+                <div class="badges flexpull">
+                    <span class="number">{{ActionNumber}}</span>
+                    <div class="ticket-badge">{{{TimeLineLabel}}} {{{WaterCoolerRelationships}}}</div>
+                </div>
+
+            </div>
+            <div class="flexbox" style="text-align:right;position:relative;top:0px;right:10px;">
+                <div class="action-options">
+                    <span class="action-option-items" style="display:none;">
+                        {{#CanEdit}}
+                        <a href="#" class="action-option-edit"><i class="glyphicon glyphicon-pencil action-option-item"></i> Edit</a>
+                        <a href="#" class="action-option-delete"><i class="glyphicon glyphicon-trash action-option-item"></i> Delete</a>
+                        {{/CanEdit}}
+                        {{#CanPin}}
+                        {{#if item.IsPinned}}
+                        <a href="#" class="action-option-pin"><i class="glyphicon glyphicon-pushpin action-option-item"></i> Unpin</a>
+                        {{else}}
+                        <a href="#" class="action-option-pin"><i class="glyphicon glyphicon-pushpin action-option-item"></i> Pin</a>
+                        {{/if}}
+                        {{/CanPin}}
+                        {{#CanKB}}
+                        <a href="#" class="action-option-kb"><i class="glyphicon glyphicon-bookmark action-option-item"></i> KB</a>
+                        {{/CanKB}}
+                        {{#CanMakeVisible}}
+                        <a href="#" class="action-option-visible"><i class="glyphicon glyphicon-eye-open action-option-item"></i> Visible</a>
+                        {{/CanMakeVisible}}
+                    </span>
+                    <span class="fa fa-ellipsis-h action-options-icon text-muted" aria-hidden="true"></span>
+                </div>
+
+
+            </div>
         </div>
     </div>
 

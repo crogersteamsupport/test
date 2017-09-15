@@ -964,23 +964,6 @@ div.timeline-wc-response > .user-avatar {
     color:#0057c2;
 }
 
-.action-option-items {
-    padding:20px;
-    display:none;
-}
-
-.action-option-item {
-    margin-right:5px;
-}
-
-span.action-option-items > a {
-    margin-left:5px;
-    color:#777;
-}
-
-span.action-option-items {
-    font-size:12px;
-}
 
 /*    Right Hand Ticket Options*/
 
