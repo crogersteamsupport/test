@@ -17,7 +17,7 @@ div.action .header .info {
 }
 
 div.action .header .extras {
-    min-width:200px;
+    min-width:300px;
     text-align:right;
 }
 div.action .header .action-options {
@@ -34,12 +34,12 @@ div.action .header .action-option-items a {
 
 div.action .header .indicators {
     padding:10px;
-    min-width:100px;
+    min-width:50px;
     text-align:right;
 }
 div.action .header .applause {
-    padding:10px 10px 10px;
-    min-width:100px;
+    padding:10px 5px 0px;
+    min-width:50px;
 }
 div.action .header .badges {
     padding:0px;
