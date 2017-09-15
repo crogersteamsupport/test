@@ -354,31 +354,30 @@ AdminInt = function () {
 
         switch (data.CRMType) {
             case 'Salesforce':
-                if ($('.int-map-type option').length < 1) {
-                    $('<option>')
-                      .text('Account')
-                      .attr('value', window.parent.parent.Ts.ReferenceTypes.Organizations)
-                      .attr('selected', 'selected')
-                      .appendTo('.int-map-type');
+                $('.int-map-type option').remove();
+                $('<option>')
+                  .text('Account')
+                  .attr('value', window.parent.parent.Ts.ReferenceTypes.Organizations)
+                  .attr('selected', 'selected')
+                  .appendTo('.int-map-type');
 
-                    $('<option>')
-                      .text('Contact')
-                      .attr('value', window.parent.parent.Ts.ReferenceTypes.Contacts)
-                      .appendTo('.int-map-type');
+                $('<option>')
+                  .text('Contact')
+                  .attr('value', window.parent.parent.Ts.ReferenceTypes.Contacts)
+                  .appendTo('.int-map-type');
 
-                    $('<option>')
-                      .text('Ticket')
-                      .attr('value', window.parent.parent.Ts.ReferenceTypes.Tickets)
-                      .appendTo('.int-map-type');
+                $('<option>')
+                  .text('Ticket')
+                  .attr('value', window.parent.parent.Ts.ReferenceTypes.Tickets)
+                  .appendTo('.int-map-type');
 
-                    $('.int-map-type').combobox({
-                        selected: function (e, ui) {
-                            loadFields(element.find('.int-map-tsfield'), element.find('.int-map-type').val());
-                        }
-                    });
+                $('.int-map-type').combobox({
+                    selected: function (e, ui) {
+                        loadFields(element.find('.int-map-tsfield'), element.find('.int-map-type').val());
+                    }
+                });
 
-                    loadFields(element.find('.int-map-tsfield'), element.find('.int-map-type').val());
-                }
+                loadFields(element.find('.int-map-tsfield'), element.find('.int-map-type').val());
                 break;
             case 'Jira':
                 if ($('.int-jira-map-tsfield option').size() == 0) {
@@ -386,26 +385,25 @@ AdminInt = function () {
                 }
                 break;
             case 'TFS':
-                if ($('.int-map-type option').length < 1) {
-                    $('<option>')
-                      .text('Ticket')
-                      .attr('value', window.parent.parent.Ts.ReferenceTypes.Tickets)
-                      .attr('selected', 'selected')
-                      .appendTo('.int-map-type');
+                $('.int-map-type option').remove();
+                $('<option>')
+                  .text('Ticket')
+                  .attr('value', window.parent.parent.Ts.ReferenceTypes.Tickets)
+                  .attr('selected', 'selected')
+                  .appendTo('.int-map-type');
 
-                    $('<option>')
-                      .text('Ticket Type')
-                      .attr('value', window.parent.parent.Ts.ReferenceTypes.TicketTypes)
-                      .appendTo('.int-map-type');
+                $('<option>')
+                  .text('Ticket Type')
+                  .attr('value', window.parent.parent.Ts.ReferenceTypes.TicketTypes)
+                  .appendTo('.int-map-type');
 
-                    $('.int-map-type').combobox({
-                        selected: function (e, ui) {
-                            loadFields(element.find('.int-tfs-map-tsfield'), element.find('.int-map-type').val());
-                        }
-                    });
+                $('.int-map-type').combobox({
+                    selected: function (e, ui) {
+                        loadFields(element.find('.int-tfs-map-tsfield'), element.find('.int-map-type').val());
+                    }
+                });
 
-                    loadFields(element.find('.int-tfs-map-tsfield'), element.find('.int-map-type').val());
-                }
+                loadFields(element.find('.int-tfs-map-tsfield'), element.find('.int-map-type').val());
                 break;
             case 'ZohoCrm':
                 if ($('.int-zoho-map-type option').length < 1) {
