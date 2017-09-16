@@ -1078,6 +1078,7 @@ namespace TSWebServices
                 organization.HasPortalAccess = false;
                 organization.IsActive = true;
                 organization.IsBasicPortal = true;
+                organization.NeedsIndexing = true;
 
                 int? id = -1;
                 organization.PrimaryUserID = id < 0 ? null : id;
