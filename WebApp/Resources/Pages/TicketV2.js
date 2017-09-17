@@ -3376,7 +3376,7 @@ var appendMatchingParentValueFields = function (container, parentField) {
 }
 
 var AddCustomFieldEdit = function (field, parentContainer) {
-    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
+    var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldEdit').appendTo(parentContainer);
     var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
     var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
     var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
@@ -3441,7 +3441,7 @@ var AddCustomFieldEdit = function (field, parentContainer) {
 
 var AddCustomFieldDate = function (field, parentContainer) {
     var date = field.Value == null ? null : window.parent.Ts.Utils.getMsDate(field.Value);
-    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
+    var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldDate').appendTo(parentContainer);
     var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
     var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
     var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
@@ -3521,7 +3521,7 @@ var AddCustomFieldDate = function (field, parentContainer) {
 
 var AddCustomFieldDateTime = function (field, parentContainer) {
     var date = field.Value == null ? null : window.parent.Ts.Utils.getMsDate(field.Value);
-    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
+    var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldDateTime').appendTo(parentContainer);
     var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
     var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
     var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
@@ -3624,7 +3624,7 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
 
 var AddCustomFieldTime = function (field, parentContainer) {
     var date = field.Value == null ? null : window.parent.Ts.Utils.getMsDate(field.Value);
-    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
+    var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldTime').appendTo(parentContainer);
     var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
     var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
     var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
@@ -3726,7 +3726,7 @@ var AddCustomFieldTime = function (field, parentContainer) {
 }
 
 var AddCustomFieldBool = function (field, parentContainer) {
-    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
+    var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldBool').appendTo(parentContainer);
     var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
     var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
     var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
@@ -3749,7 +3749,7 @@ var AddCustomFieldBool = function (field, parentContainer) {
 }
 
 var AddCustomFieldNumber = function (field, parentContainer) {
-    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
+    var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldNumber').appendTo(parentContainer);
     var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
     var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
     var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
@@ -3808,7 +3808,7 @@ var AddCustomFieldNumber = function (field, parentContainer) {
 }
 
 var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFields) {
-    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
+    var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldSelect').appendTo(parentContainer);
     var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
     var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
     var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
