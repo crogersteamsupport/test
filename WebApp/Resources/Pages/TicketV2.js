@@ -4468,8 +4468,8 @@ function UpdateActionElement(val) {
     var li = $("#action-timeline li[data-id=" + val.item.RefID + "]");
     var actionNumber = li.find('.ticket-action-number').text();
     try {
-        $('.action-placeholder').after(actionElement);
-        // li.replaceWith(html);
+        // $('.action-placeholder').after(actionElement);
+        li.replaceWith(html);
         console.log('Acion appended.');
     } catch (e) {
         console.log('Unable to append action.');
@@ -4685,7 +4685,7 @@ function CreateTimeLineDelegates() {
         e.stopPropagation();
 
         var self = $(this);
-        var parentLI = self.closest('li');
+        var parentLI = self.closest('div.action');
         var titleElement = $('.action-placeholder');
         var Action = parentLI.data().action;
         var isPinned = parentLI.hasClass('pinned');
@@ -4747,7 +4747,7 @@ function CreateTimeLineDelegates() {
         e.stopPropagation();
 
         var self = $(this);
-        var parentLI = self.closest('li');
+        var parentLI = self.closest('div.action');
         var action = parentLI.data().action;
         var titleElement = $('.action-placeholder');
 
@@ -4780,7 +4780,7 @@ function CreateTimeLineDelegates() {
         e.stopPropagation();
 
         var self = $(this);
-        var action = self.closest('li').data().action;
+        var action = self.closest('div.action').data().action;
 
         if (window.parent.Ts.System.User.ChangeKbVisibility || window.parent.Ts.System.User.IsSystemAdmin) {
             window.parent.Ts.System.logAction('Ticket - Action KB Icon Clicked');
@@ -4800,13 +4800,13 @@ function CreateTimeLineDelegates() {
         e.stopPropagation();
 
         var self = $(this);
-        var action = self.closest('li').data().action;
+        var action = self.closest('div.action').data().action;
 
         if (window.parent.Ts.System.User.ChangeKbVisibility || window.parent.Ts.System.User.IsSystemAdmin) {
             window.parent.Ts.System.logAction('Ticket - Action KB Icon Clicked');
             window.parent.Ts.Services.Tickets.SetActionKb(action.RefID, !action.IsKnowledgeBase,
           function (result) {
-              var parentLI = self.closest('li');
+              var parentLI = self.closest('div.action');
               parentLI.data().action.IsKnowledgeBase = result;
               parentLI.find('a.ticket-action-kb').toggleClass('hidden');
           }, function () {
@@ -4882,7 +4882,7 @@ function CreateTimeLineDelegates() {
         e.stopPropagation();
 
         var self     = $(this);
-        var action   = self.closest('li').data().action;
+        var action   = self.closest('div.action').data().action;
         var applause = '#applause-' + action.RefID;
 
         if (window.parent.Ts.System.User.ChangeTicketVisibility || window.parent.Ts.System.User.IsSystemAdmin) {
@@ -4890,7 +4890,7 @@ function CreateTimeLineDelegates() {
             if (!action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
             window.parent.Ts.Services.TicketPage.SetActionPortal(action.RefID, !action.IsVisibleOnPortal,
             function (result) {
-                var parentLI = self.closest('li');
+                var parentLI = self.closest('div.action');
                 parentLI.data().action.IsVisibleOnPortal = result;
                 var badgeDiv = parentLI.find('div.ticket-badge');
                 badgeDiv.empty();
@@ -4927,7 +4927,7 @@ function CreateTimeLineDelegates() {
     $('#action-timeline').on('click', 'a.action-option-edit', function (e) {
         e.preventDefault();
         e.stopPropagation();
-
+        console.log('action-option-edit');
         if ($(this).hasClass('click-disabled')) {
             return false;
         } else {
@@ -4935,11 +4935,10 @@ function CreateTimeLineDelegates() {
         }
 
         var self = $(this);
-        var action = self.closest('li').data().action;
+        var action = self.closest('div.action').data().action;
         var editor = $('#action-new-editor');
         SetupActionTypeSelect();
         SetupActionEditor(editor, action);
-
 
         $('#action-new-KB').prop('checked', action.IsKnowledgeBase);
 
@@ -4954,12 +4953,12 @@ function CreateTimeLineDelegates() {
         e.stopPropagation();
 
         var self = $(this);
-        var action = self.closest('li').data().action;
+        var action = self.closest('div.action').data().action;
 
         if (confirm('Are you sure you would like to delete this action?')) {
             window.parent.Ts.System.logAction('Ticket - Action Deleted');
             window.parent.Ts.Services.Tickets.DeleteAction(action.RefID, function () {
-                self.closest('li').remove();
+                self.closest('div.action').remove();
                 window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "deleteaction", userFullName);
             },
             function () { alert('There was an error deleting this action.'); });
@@ -5110,7 +5109,7 @@ function CreateTimeLineDelegates() {
                 var _compiledWCReplyTemplate = Handlebars.templates['wc-new-reply'];
                 Message.Message = Message.Message.replace(/\n\r?/g, '<br />');
                 var html = _compiledWCReplyTemplate(Message);
-                self.closest('li').find('.timeline-wc-responses').append(html);
+                self.closest('div.action').find('.timeline-wc-responses').append(html);
                 self.parent().hide();
                 self.parent().parent().find('.wc-option-replyarea').show();
                 self.closest('.wc-textarea').find('textarea').val('');
