@@ -32,7 +32,7 @@
                 <div class="badges flexpull">
                     <span class="number">{{ActionNumber}}</span>
                     <div class="ticket-badge">{{{TimeLineLabel}}} {{{WaterCoolerRelationships}}}</div>
-                </div> 
+                </div>
 
             </div>
             <div class="flexbox" style="text-align:right;position:relative;top:10px;right:10px;">
@@ -68,13 +68,17 @@
         <div class="details">{{{item.Message}}}</div>
     </div>
 
-    {{#if Attachements}}
+
     <div class="attachments">
+        {{#if Attachements}}
+        test
+        {{/if}}
+
         {{#each Attachments}}
         <a target="_blank" href="../../../dc/1/attachments/{{AttachmentID}}"><i class="glyphicon glyphicon-paperclip"></i>{{FileName}}</a>
         <a data-attachmentid="{{AttachmentID}}" data-name="{{FileName}}" class="remove-attachment"><i class="glyphicon glyphicon-remove" style="font-size:10px; margin-left:5px; cursor:pointer;"></i></a> {{/each}}
     </div>
-    {{/if}}
+
 
 
     {{#if item.IsWC}}
