@@ -4433,6 +4433,7 @@ function CreateActionElement(val, ShouldAppend) {
         }
     }
     console.log('createactionelecment:recycle:handlebars:action.handlebars');
+    console.log(val);
     var html = _compiledActionTemplate(val);
     var actionElement = $(html);
     actionElement.find('a').attr('target', '_blank');
@@ -4463,6 +4464,7 @@ function UpdateActionElement(val) {
         _currDateSpan = val.item.DateCreated;
     }
     console.log('updateactionelement:recycle:handlebars:action.handlebars');
+    console.log(val);
     var html = _compiledActionTemplate(val);
     var actionElement = $(html);
     var li = $("#action-timeline div[data-id=" + val.item.RefID + "]");
@@ -4786,7 +4788,7 @@ function CreateTimeLineDelegates() {
             window.parent.Ts.System.logAction('Ticket - Action KB Icon Clicked');
             window.parent.Ts.Services.Tickets.SetActionKb(action.RefID, !action.IsKnowledgeBase,
           function (result) {
-              var parentLI = self.closest('li');
+              var parentLI = self.closest('div.action');
               parentLI.data().action.IsKnowledgeBase = result;
               parentLI.find('a.ticket-action-kb').toggleClass('hidden');
           }, function () {
