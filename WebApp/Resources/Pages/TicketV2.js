@@ -4465,16 +4465,16 @@ function UpdateActionElement(val) {
     console.log('updateactionelement:recycle:handlebars:action.handlebars');
     var html = _compiledActionTemplate(val);
     var actionElement = $(html);
-    var li = $("#action-timeline li[data-id=" + val.item.RefID + "]");
+    var li = $("#action-timeline div[data-id=" + val.item.RefID + "]");
     var actionNumber = li.find('.ticket-action-number').text();
     try {
         // $('.action-placeholder').after(actionElement);
         li.replaceWith(html);
-        console.log('Acion appended.');
+        console.log('Acion updated');
     } catch (e) {
         console.log('Unable to append action.');
     }
-    $("#action-timeline li[data-id=" + val.item.RefID + "]").find('.ticket-action-number').text(actionNumber);
+    $("#action-timeline div[data-id=" + val.item.RefID + "]").find('.ticket-action-number').text(actionNumber);
 };
 
 function CreateHandleBarHelpers() {

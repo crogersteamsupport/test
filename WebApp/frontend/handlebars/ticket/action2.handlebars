@@ -72,7 +72,8 @@
     <div class="attachments">
         {{#each Attachments}}
         <a target="_blank" href="../../../dc/1/attachments/{{AttachmentID}}"><i class="glyphicon glyphicon-paperclip"></i> {{FileName}}</a>
-        <a data-attachmentid="{{AttachmentID}}" data-name="{{FileName}}" class="remove-attachment"><i class="glyphicon glyphicon-remove" style="font-size:10px; margin-left:5px; cursor:pointer;"></i></a> {{/each}}
+        <a data-attachmentid="{{AttachmentID}}" data-name="{{FileName}}" class="remove-attachment"><i class="glyphicon glyphicon-remove" style="font-size:10px; margin-left:5px; cursor:pointer;"></i></a>
+        {{/each}}
     </div>
     {{/if}}
 
