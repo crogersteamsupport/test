@@ -4471,8 +4471,8 @@ function UpdateActionElement(val) {
     var li = $("#action-timeline li[data-id=" + val.item.RefID + "]");
     var actionNumber = li.find('.ticket-action-number').text();
     try {
-        $('.action-placeholder').after(actionElement);
-        // li.replaceWith(html);
+        // $('.action-placeholder').after(actionElement);
+        li.replaceWith(html);
         console.log('Acion appended.');
     } catch (e) {
         console.log('Unable to append action.');
