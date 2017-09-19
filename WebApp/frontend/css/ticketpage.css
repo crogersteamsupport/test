@@ -85,6 +85,21 @@ input {
 }
 
 
+#ticket-content-wrapper {
+    padding:20px 10px 100px;
+}
+
+#ticket-content-wrapper:after {
+    content:"";
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    border-left: 2px solid #444;
+}
+
+
 #action-add-public {
     padding:5px 10px;
     font-size:11px;
