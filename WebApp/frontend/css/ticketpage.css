@@ -95,8 +95,8 @@ input {
     z-index: -1;
     top: 0;
     bottom: 0;
-    left: 50%;
-    border-left: 2px solid #444;
+    left: 30px;
+    border-left: 2px solid #ccc;
 }
 
 
