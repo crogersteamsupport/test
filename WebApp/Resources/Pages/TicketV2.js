@@ -4460,7 +4460,7 @@ function CreateActionElement(val, ShouldAppend) {
 
 function UpdateActionElement(val) {
     if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
-        var dateSpan = '<li class="daystrip arrow_box"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span></li>';
+        var dateSpan = '<div class="daystrip arrow_box"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span></div>';
         $("#action-timeline").append(dateSpan);
         _currDateSpan = val.item.DateCreated;
     }
