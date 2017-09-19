@@ -1,6 +1,6 @@
 
 div.action {
-    margin-bottom:30px;
+    margin-bottom:15px;
     padding:0px;
     background-color:white;
     box-shadow:1px 1px 0px rgba(0,0,0,0.1);
@@ -126,9 +126,9 @@ div.action .wc-textarea .wc-textarea-send {
 
 
 .daystrip {
-    margin-bottom:5px;
+    margin-bottom:15px;
     color:rgba(0,0,0,0.6);
-    text-align:center;
+    text-align:left;
 }
 
 .daybadge {
