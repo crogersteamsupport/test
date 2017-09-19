@@ -62,7 +62,6 @@ input {
 }
 #ticket-title-label {
     font-size:16px;
-    margin-bottom:5px;
 }
 #ticketinfo {
     position:absolute;
@@ -155,9 +154,9 @@ input {
 }
 
 #watson {
-    padding:0px 10px;
+    margin-bottom:10px;
+    padding:0px 30px;
     font-size:11px;
-
 }
 
 .add-associations span {
