@@ -147,7 +147,7 @@ input {
     border:none;
 }
 #ticket-timeline {
-    background: url('/frontend/images/line.png') center repeat-y;
+    background: url('/frontend/images/block-white.png') center repeat-y;
 }
 #ticket-duedate {
     height:30px;
