@@ -1313,7 +1313,8 @@ div.tag-item {
     background:none;
 }
 .custom-field-link {
-    margin-left:6px;
+    margin-bottom:4px;
+    display:block;
 }
 
 
