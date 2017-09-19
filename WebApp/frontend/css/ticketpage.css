@@ -520,26 +520,6 @@ button.ticket-option {
 
 
 
-.daystrip {
-
-}
-
-.daybadge {
-    margin:20px auto 10px;
-    position:relative;
-    z-index:1;
-    display:block;
-    margin-left:auto;
-    margin-right:auto;
-    padding:5px;
-    font-size:13px;
-    color:white;
-    letter-spacing:2px;
-    font-weight:bold;
-    background-color: rgba(96,125,139,0.5);
-}
-
-
 
 
 

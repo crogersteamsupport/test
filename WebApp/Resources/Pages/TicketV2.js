@@ -4391,7 +4391,7 @@ function FetchTimeLineItems(start) {
             //create first timeline date marker if needed
             if (_currDateSpan == null) {
                 _currDateSpan = _timeLine[0].item.DateCreated;
-                var dateSpan = '<div class="daystrip" style="text-align:center;"><span class="daybadge">' + _currDateSpan.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
+                var dateSpan = '<div class="daystrip arrow_box"><span class="daybadge">' + _currDateSpan.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
                 $("#action-timeline").append(dateSpan);
             };
             var isPublicFiltered = $('.filter-public').hasClass('bgcolor-darkgray');
@@ -4421,7 +4421,7 @@ function FetchTimeLineItems(start) {
 
 function CreateActionElement(val, ShouldAppend) {
     if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
-        var dateSpan = '<div class="daystrip" style="text-align:center;"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
+        var dateSpan = '<div class="daystrip arrow_box"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
         $("#action-timeline").append(dateSpan);
         _currDateSpan = val.item.DateCreated;
     }
@@ -4460,7 +4460,7 @@ function CreateActionElement(val, ShouldAppend) {
 
 function UpdateActionElement(val) {
     if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
-        var dateSpan = '<li class="daystrip" style="text-align:center;"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span></li>';
+        var dateSpan = '<li class="daystrip arrow_box"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span></li>';
         $("#action-timeline").append(dateSpan);
         _currDateSpan = val.item.DateCreated;
     }
