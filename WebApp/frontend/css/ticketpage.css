@@ -90,17 +90,17 @@ input {
 }
 
 
-/*
+
 #ticket-content-wrapper:after {
     content:"";
     position: absolute;
     z-index: -1;
-    top: 0;
+    top: 50px;
     bottom: 0;
     left: 30px;
-    border-left: 2px solid #ccc;
+    border-left: 5px solid #ffffff;
 }
-*/
+
 
 #action-add-public {
     padding:5px 10px;
@@ -147,7 +147,7 @@ input {
     border:none;
 }
 #ticket-timeline {
-    background: url('/frontend/images/block-white.png') center repeat-y;
+    /* background: url('/frontend/images/block-white.png') center repeat-y; */
 }
 #ticket-duedate {
     height:30px;
