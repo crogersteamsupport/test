@@ -3183,13 +3183,13 @@ function SetupTasksSection() {
         var checkbox = $(this);
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Ticket Page - Change Task Status');
-
         parent.Ts.Services.Task.SetTaskIsCompleted(id, checked, function (data) {
             if (data.IncompleteSubtasks) {
                 checkbox.prop("checked", false);
                 alert('There are subtasks pending completion, please finish them before completing the parent task.')
             }
             else if (data.Value) {
+                document.getElementById('iframe-o-' + id).contentDocument.location.reload(true);
                 _completeCommentTaskID = id;
                 $('#modalTaskComment').modal('show');
             }
