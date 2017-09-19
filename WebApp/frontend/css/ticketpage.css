@@ -89,6 +89,8 @@ input {
     padding:20px 10px 100px;
 }
 
+
+/*
 #ticket-content-wrapper:after {
     content:"";
     position: absolute;
@@ -98,7 +100,7 @@ input {
     left: 30px;
     border-left: 2px solid #ccc;
 }
-
+*/
 
 #action-add-public {
     padding:5px 10px;
@@ -145,6 +147,7 @@ input {
     border:none;
 }
 #ticket-timeline {
+    background: url('/frontend/images/line.png') center repeat-y;
 }
 #ticket-duedate {
     height:30px;

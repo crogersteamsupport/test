@@ -126,8 +126,10 @@ div.action .wc-textarea .wc-textarea-send {
 
 
 .daystrip {
+    margin-bottom:5px;
     color:rgba(0,0,0,0.5);
-    text-align:left;
+    text-align:center;
+    background-color:#eeeeee;
 }
 
 .daybadge {
@@ -135,9 +137,9 @@ div.action .wc-textarea .wc-textarea-send {
     position:relative;
     z-index:1;
     display:block;
-    padding:5px 5px 5px 40px;
-    font-size:13px;
-    letter-spacing:2px;
+    padding:5px 5px 5px 30px;
+    font-size:12px;
+    letter-spacing:1.5px;
     font-weight:bold;
 }
 
