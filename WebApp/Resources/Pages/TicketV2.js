@@ -3184,6 +3184,7 @@ function SetupTasksSection() {
                 alert('There are subtasks pending completion, please finish them before completing the parent task.')
             }
             else if (data.Value) {
+                document.getElementById('iframe-o-' + id).contentDocument.location.reload(true);
                 _completeCommentTaskID = id;
                 $('#modalTaskComment').modal('show');
             }
