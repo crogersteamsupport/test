@@ -132,6 +132,7 @@ div.action .wc-textarea .wc-textarea-send {
 }
 
 .daybadge {
+    font-family: 'Roboto' !important;
     margin:0px auto 0px;
     display:block;
     padding:5px 10px;
