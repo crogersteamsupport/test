@@ -55,17 +55,18 @@ var initEditor = function (element, shouldResize, init, postinit) {
                 ed.on('init', function (e) {
                     _mainFrame.Ts.System.refreshUser(function () {
                         if (_mainFrame.Ts.System.User.FontFamilyDescription != "Unassigned") {
-                            ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily));
+                            //ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily));
                             ed.getBody().style.fontFamily = GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily);
                         }
                         else if (_mainFrame.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-                            ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily));
+                            //ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily));
                             ed.getBody().style.fontFamily = GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily);
                         }
 
                         if (_mainFrame.Ts.System.User.FontSize != "0") {
                             //ed.execCommand("FontSize", false, _mainFrame.Ts.System.User.FontSizeDescription);
-                            ed.getBody().style.fontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize + 1);
+                            var fs = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize);
+                            ed.getBody().style.fontSize = fs;
                         }
                         else if (_mainFrame.Ts.System.Organization.FontSize != "0") {
                             //ed.execCommand("FontSize", false, _mainFrame.Ts.System.Organization.FontSize + 1);
@@ -686,25 +687,25 @@ function GetTinyMCEFontSize(fontSize) {
     var result = '';
     switch (fontSize) {
         case 1:
-            result = "8px";
+            result = "8pt";
             break;
         case 2:
-            result = "10px";
+            result = "10pt";
             break;
         case 3:
-            result = "12px";
+            result = "12pt";
             break;
         case 4:
-            result = "14px";
+            result = "14pt";
             break;
         case 5:
-            result = "18px";
+            result = "18pt";
             break;
         case 6:
-            result = "24px";
+            result = "24pt";
             break;
         case 7:
-            result = "36px";
+            result = "36pt";
             break;
     }
     return result;

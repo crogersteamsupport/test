@@ -301,6 +301,11 @@ $(document).ready(function () {
         $('#customerPhoneBtn').hide();
         $('#customerAddressBtn').hide();
         $('#fileToggle').hide();
+
+        $('#noteToggle').hide();
+        $('#productToggle').hide();
+        $('.asset-action-assign').hide();
+        $(".task-action-add").hide();
     }
 
     if (!_isAdmin) {
