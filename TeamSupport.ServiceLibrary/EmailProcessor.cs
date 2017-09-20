@@ -1053,8 +1053,8 @@ namespace TeamSupport.ServiceLibrary
             {
                 User sender   = Users.GetUser(LoginUser, creatorID); 
                 User receiver = Users.GetUser(LoginUser, receiverID);
-
-                MailMessage message = EmailTemplates.GetReaction(LoginUser, sender, receiver, ticketID, hostName);
+				Ticket ticket = Tickets.GetTicket(LoginUser, ticketID);
+				MailMessage message = EmailTemplates.GetReaction(LoginUser, sender, receiver, ticket.GetTicketView(), hostName);
 
                 message.To.Add(GetMailAddress(receiver.Email, receiver.FirstLastName));
                 // message.Subject = message.Subject;
