@@ -124,6 +124,18 @@ namespace TeamSupport.ServiceLibrary
             Logs.WriteHeader("Processing Email");
             Logs.WriteEventFormat("EmailID: {0}, EmailPostID: {1}", email.EmailID.ToString(), email.EmailPostID.ToString());
 
+            Organization organization = Organizations.GetOrganization(LoginUser, email.OrganizationID);
+            if (!organization.IsActive)
+            {
+                email.IsSuccess = true;
+                email.IsWaiting = false;
+                email.Body = "";
+                email.DateSent = DateTime.UtcNow;
+                email.LastFailedReason = "Organization is inactive, not sent";
+                email.Collection.Save();
+                return;
+            }
+
             try
             {
                 email.Attempts = email.Attempts + 1;
