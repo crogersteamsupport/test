@@ -132,14 +132,14 @@ namespace TeamSupport.WebUtils
   {
     public override string ReadString(string key, string defaultValue)
     {
-      object value = HttpContext.Current.Session["SessionSetting-" + key];
+            object value = null; // HttpContext.Current.Session["SessionSetting-" + key];
       if (value == null) return defaultValue;
       else return (string)value;
     }
 
     public override void WriteString(string key, string value)
     {
-      HttpContext.Current.Session["SessionSetting-" + key] = value;
+      //HttpContext.Current.Session["SessionSetting-" + key] = value;
     }
   }
 

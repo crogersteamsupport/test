@@ -31,7 +31,7 @@ public class BaseFramePage: System.Web.UI.Page
   
   protected override void SavePageStateToPersistenceMedium(object viewState)
   {
-    Session[Request.Url.AbsolutePath] = viewState;
+    //Session[Request.Url.AbsolutePath] = viewState;
   }
 
   protected override object LoadPageStateFromPersistenceMedium()
