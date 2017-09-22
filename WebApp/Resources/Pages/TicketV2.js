@@ -684,9 +684,7 @@ function CreateNewActionLI() {
         e.preventDefault();
         e.stopPropagation();
         $('#action-new-editor').parent().fadeOut('normal', function () {
-            if (window.parent.Ts.System.User.OrganizationID !== 13679) {
                 tinymce.activeEditor.destroy();
-            }
         });
         window.parent.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
         $('#action-add-public').removeClass('click-disabled');
@@ -832,13 +830,8 @@ function CreateNewActionLI() {
         HideActionTimer(!action.IsTimed);
         window.parent.Ts.Services.TicketPage.GetActionTicketTemplate(actionID, function (result) {
             if (result != null && result != "" && result != "<br>") {
-                if (window.parent.Ts.System.User.OrganizationID !== 13679) {
                     var currenttext = tinyMCE.activeEditor.getContent();
                     tinyMCE.activeEditor.setContent(currenttext + result);
-                }
-                else {
-                    $('#action-new-editor').summernote('insertNode', result);
-                }
             }
             //elem.parent().fadeIn('normal');
         });
@@ -884,7 +877,6 @@ function SetupActionEditor(elem, action) {
 
     window.parent.Ts.MainPage.highlightTicketTab(_ticketNumber, true);
 
-    if (window.parent.Ts.System.User.OrganizationID !== 13679) {
         initEditor(elem, true, function (ed) {
             $("#action-new-type").val($("#action-new-type option:first").val());
             $('#action-new-editor').val('');
@@ -914,20 +906,6 @@ function SetupActionEditor(elem, action) {
                 scrollTop: 0
             }, 600);
         });
-
-    }
-    else {
-        if (!editorInit) {
-            initEditorV2(elem, function () {
-                editorInit = true;
-                SetupNewAction(elem, action);
-            });
-        }
-        else {
-            elem.summernote('reset');
-            SetupNewAction(elem, action);
-        }
-    }
 
 
     var element = $('.action-new-area');
@@ -1065,12 +1043,7 @@ function SetupActionEditor(elem, action) {
             element.find('#muteTokScreen').hide();
             tokurl = result;
             videoURL = '<video width="100%" controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/player.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
-            if (window.parent.Ts.System.User.OrganizationID !== 13679) {
-                tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
-            }
-            else {
-                $('#action-new-editor').summernote('insertNode', videoURL);
-            }
+            tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
             element.find('#statusTextScreen').text("Your video is currently processing. It may not play in the editor below but should be live within a minute.");
             session.unpublish(screenSharingPublisher);
             session.unpublish(publisher);
@@ -1106,15 +1079,8 @@ function SetupActionEditor(elem, action) {
     element.find('#inserttok').hide();
 
     element.find('#inserttok').click(function (e) {
-        if (window.parent.Ts.System.User.OrganizationID !== 13679) {
-            tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
-        }
-        else {
-            $('#action-new-editor').summernote('insertNode', $('<br/>')[0]);
-            var html = $('<video width="400" height="400" controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>')[0];
-            $('#action-new-editor').summernote('insertNode', html);
-        }
 
+        tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
         session.unpublish(publisher);
         element.find('#rcdtok').show();
         element.find('#stoptok').hide();
@@ -1225,13 +1191,8 @@ function StopRecording(element) {
         tokurl = result;
         videoURL = '<video controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
 
-        if (window.parent.Ts.System.User.OrganizationID !== 13679) {
-            tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
-        }
-        else {
-            $('#action-new-editor').summernote('insertNode', videoURL);
-        }
 
+        tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
         element.find('#statusTextScreen').text("");
         session.unpublish(screenSharingPublisher);
         session.unpublish(publisher);
@@ -1407,7 +1368,7 @@ function SaveAction(_oldActionID, isPrivate, callback) {
     action.IsKnowledgeBase = $('#action-new-KB').prop('checked');
     action.IsVisibleOnPortal = !isPrivate;
 
-    if (window.parent.Ts.System.User.OrganizationID !== 13679) {
+
         // Get Content Grab and Check with .Get MEthod
         if (tinymce.get('action-new-editor')) {
             try {
@@ -1480,40 +1441,7 @@ function SaveAction(_oldActionID, isPrivate, callback) {
             return;
 
         }
-    }
-    else {
-        var fontSize;
-        var fontFamily;
-        var styleBlock;
-        if (window.parent.Ts.System.User.FontFamilyDescription != "Unassigned") {
-            fontFamily = GetTinyMCEFontName(window.parent.Ts.System.User.FontFamily);
-        }
-        else if (window.parent.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-            fontFamily = GetTinyMCEFontName(window.parent.Ts.System.Organization.FontFamily);
-        }
 
-        if (window.parent.Ts.System.User.FontSize != "0") {
-            fontSize = GetTinyMCEFontSize(window.parent.Ts.System.User.FontSize);
-        }
-        else if (window.parent.Ts.System.Organization.FontSize != "0") {
-            fontSize = GetTinyMCEFontSize(window.parent.Ts.System.Organization.FontSize);
-        }
-
-        if (fontFamily !== undefined) styleBlock = 'font-family: ' + fontFamily;
-
-        if (fontSize !== undefined) {
-            if (styleBlock !== undefined) styleBlock += '; font-size: ' + fontSize;
-            else styleBlock = 'font-size: ' + fontSize;
-        }
-
-        var actionText = $('#action-new-editor').summernote('code');
-        var actionHTML = $('<span />', {
-            style: styleBlock,
-            html: actionText
-        });
-
-        action.Description = actionHTML[0].outerHTML;
-    }
 
     if (action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
     if (_insertedKBTicketID) {
@@ -2335,9 +2263,7 @@ function AddCustomers(customers) {
 
 function clearTicketEditor() {
     $('#action-new-editor').parent().fadeOut('normal', function () {
-        if (window.parent.Ts.System.User.OrganizationID !== 13679) {
             tinymce.activeEditor.destroy();
-        }
     });
     $('.upload-queue').empty();
 

@@ -58,16 +58,16 @@ var initEditor = function (element, shouldResize, init, postinit) {
                             //ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily));
                             ed.getBody().style.fontFamily = GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily);
                         }
-                        else if (_mainFrame.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
+                        else if (_mainFrame.Ts.System.Organization.FontFamily != "Unassigned") {
                             //ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily));
                             ed.getBody().style.fontFamily = GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily);
                         }
 
-                        //if (_mainFrame.Ts.System.User.FontSize != "0") {
-                        //    //ed.execCommand("FontSize", false, _mainFrame.Ts.System.User.FontSizeDescription);
-                        //    ed.getBody().style.fontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize);;
-                        //}
-                        //else
+                        if (_mainFrame.Ts.System.User.FontSize != "0") {
+                            //ed.execCommand("FontSize", false, _mainFrame.Ts.System.User.FontSizeDescription);
+                            ed.getBody().style.fontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize);;
+                        }
+                        else
                             if (_mainFrame.Ts.System.Organization.FontSize != "0") {
                             //ed.execCommand("FontSize", false, _mainFrame.Ts.System.Organization.FontSize + 1);
                             ed.getBody().style.fontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize);
