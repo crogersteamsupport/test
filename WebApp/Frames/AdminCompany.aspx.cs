@@ -183,6 +183,22 @@ public partial class Frames_AdminCompany : BaseFramePage
 	table.Rows.Add(new string[] { "Two Factor Verification:", organization.TwoStepVerificationEnabled.ToString() });
 	table.Rows.Add(new string[] { "How many days before user passwords expire:", organization.DaysBeforePasswordExpire.ToString() });
 	table.Rows.Add(new string[] { "Do not include attachments on outbound emails:", organization.NoAttachmentsInOutboundEmail.ToString() });
+
+		if (organization.NoAttachmentsInOutboundEmail && !string.IsNullOrEmpty(organization.NoAttachmentsInOutboundExcludeProductLine))
+		{
+			ProductFamilies productFamilies = new ProductFamilies(UserSession.LoginUser);
+
+			try
+			{
+				productFamilies.LoadByIds(organization.NoAttachmentsInOutboundExcludeProductLine.Split(',').Select(int.Parse).ToList(), organization.OrganizationID);
+				table.Rows.Add(new string[] { "Except for the following Product Lines (include attachments):", string.Join(",", productFamilies.Select(p => p.Name).ToArray()) });
+			}
+			catch (Exception ex)
+			{
+				ExceptionLogs.LogException(UserSession.LoginUser, ex, "AdminCompany.aspx.cs.LoadProperties");
+			}
+		}
+
     table.Rows.Add(new string[] { "Warn if contact has no email address:", organization.AlertContactNoEmail.ToString() });
         table.Rows.Add(new string[] { "Allow TeamSupport to log into your account for technical support:", (!organization.DisableSupportLogin).ToString() });
 

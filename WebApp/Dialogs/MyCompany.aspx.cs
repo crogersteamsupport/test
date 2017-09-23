@@ -41,6 +41,8 @@ public partial class Dialogs_Organization : BaseDialogPage
             LoadUsers(_organizationID);
             LoadOrganization(_organizationID);
         }
+
+		cbNoAttachmentsInOutboundEmail.Attributes.Add("onclick", "ToggleProductLinesListForAttachments()");
     }
 
     private void LoadDateFormats()
@@ -184,6 +186,22 @@ public partial class Dialogs_Organization : BaseDialogPage
         cbIsCustomerInsightsActive.Checked = organization.IsCustomerInsightsActive;
         cbTwoStepVerification.Checked = organization.TwoStepVerificationEnabled;
         cbNoAttachmentsInOutboundEmail.Checked = organization.NoAttachmentsInOutboundEmail;
+
+		lbNoAttachmentsInOutboundExcludeProductLine.Items.Clear();
+		ProductFamilies productFamilies = new ProductFamilies(UserSession.LoginUser);
+		productFamilies.LoadByOrganizationID(organization.OrganizationID);
+		string[] excluded = organization.NoAttachmentsInOutboundExcludeProductLine.Split(',');
+
+		foreach (ProductFamily productFamily in productFamilies)
+		{
+			lbNoAttachmentsInOutboundExcludeProductLine.Items.Add(new ListItem() { Value = productFamily.ProductFamilyID.ToString(), Text = productFamily.Name, Selected = Array.Exists(excluded, element => element == productFamily.ProductFamilyID.ToString()) });
+		}
+
+		if (!organization.NoAttachmentsInOutboundEmail)
+		{
+			trProductLines.Style.Add("display", "none");
+		}
+
         cbRequireGroupAssignmentOnTickets.Checked = organization.RequireGroupAssignmentOnTickets;
         cbAlertContactNoEmail.Checked = organization.AlertContactNoEmail;
         cbDisableSupport.Checked = !organization.DisableSupportLogin;
@@ -283,6 +301,27 @@ public partial class Dialogs_Organization : BaseDialogPage
         organization.IsCustomerInsightsActive = cbIsCustomerInsightsActive.Checked;
         organization.TwoStepVerificationEnabled = cbTwoStepVerification.Checked;
         organization.NoAttachmentsInOutboundEmail = cbNoAttachmentsInOutboundEmail.Checked;
+
+		if (organization.NoAttachmentsInOutboundEmail)
+		{
+			string exclude = null;
+
+			foreach(ListItem item in lbNoAttachmentsInOutboundExcludeProductLine.Items)
+			{
+				if (item.Selected)
+				{
+					exclude += string.Empty + item.Value + ",";
+				}
+			}
+
+			if (!string.IsNullOrEmpty(exclude) && exclude.LastIndexOf(",") == exclude.Length-1)
+			{
+				exclude = exclude.TrimEnd(',');
+			}
+
+			organization.NoAttachmentsInOutboundExcludeProductLine = exclude;
+		}
+
         organization.RequireGroupAssignmentOnTickets = cbRequireGroupAssignmentOnTickets.Checked;
         organization.AlertContactNoEmail = cbAlertContactNoEmail.Checked;
         if (organization.DisableSupportLogin != !cbDisableSupport.Checked)

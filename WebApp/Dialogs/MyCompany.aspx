@@ -2,7 +2,14 @@
   AutoEventWireup="true" CodeFile="MyCompany.aspx.cs" Inherits="Dialogs_Organization" %>
 
 <%@ Register Assembly="Telerik.Web.UI" Namespace="Telerik.Web.UI" TagPrefix="telerik" %>
-<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server"></asp:Content>
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
+	<style type="text/css">
+		.attachmentProductLines
+		{
+			margin-left: 20px;
+		}
+	</style>
+</asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
   <div class="dialogContentWrapperDiv">
     <div class="dialogContentDiv">
@@ -149,6 +156,12 @@
 		<tr>
             <td class="labelColTD" colspan="4"><asp:CheckBox ID="cbNoAttachmentsInOutboundEmail" runat="server" Text="Do not include attachments on outbound emails"/></td>
         </tr>
+		<tr id="trProductLines">
+			<td class="labelColTD" colspan="4">
+				<asp:Label runat="server" CssClass="attachmentProductLines">Except for the following Product Lines</asp:Label><br />
+				<asp:ListBox ID="lbNoAttachmentsInOutboundExcludeProductLine" CssClass="attachmentProductLines" SelectionMode="Multiple" runat="server"/>
+			</td>
+		</tr>
 		<tr>
             <td class="labelColTD" colspan="4"><asp:CheckBox ID="cbRequireGroupAssignmentOnTickets" runat="server" Text="Require a group assignment when creating or saving a ticket"/></td>
         </tr>
@@ -203,4 +216,19 @@
       </div>
     </div>
   </div>
+
+	<telerik:RadScriptBlock ID="RadScriptBlock1" runat="server">
+"
+    <script type="text/javascript">
+		function ToggleProductLinesListForAttachments() {
+			if (document.getElementById("<%= cbNoAttachmentsInOutboundEmail.ClientID %>").checked == true) {
+				document.getElementById("<%= trProductLines.ClientID %>").style.display = '';
+			}
+			else {
+				document.getElementById("<%= trProductLines.ClientID %>").style.display = 'none';
+			}
+		}
+    </script>
+
+  </telerik:RadScriptBlock>
 </asp:Content>

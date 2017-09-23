@@ -207,6 +207,27 @@ namespace TeamSupport.Data
                 Fill(command);
             }
         }
-    }
+
+		public void LoadByIds(List<int> productFamilyIds, int organizationId)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				StringBuilder text = new StringBuilder(@"
+                SELECT
+                    * 
+                FROM 
+                    ProductFamilies 
+                WHERE 
+                    OrganizationID = @OrganizationID
+                    AND ProductFamilyID IN (" + string.Join(",", productFamilyIds.ToArray()) + ")");
+
+				command.CommandText = text.ToString();
+				command.CommandType = CommandType.Text;
+
+				command.Parameters.AddWithValue("@OrganizationID", organizationId);
+				Fill(command);
+			}
+		}
+	}
 
 }

@@ -371,6 +371,11 @@ namespace TeamSupport.ServiceLibrary
                 Logs.WriteEvent("DisableStatusNotification: " + OrganizationSettings.ReadString(LoginUser, ticket.OrganizationID, "DisableStatusNotification", "False"));
                 Logs.WriteEventFormat("NoAttachmentsInOutboundEmail: {0} ({1} them)", ticketOrganization.NoAttachmentsInOutboundEmail.ToString(), ticketOrganization.NoAttachmentsInOutboundEmail ? "exclude" : "include");
 
+				if (ticketOrganization.NoAttachmentsInOutboundEmail && !string.IsNullOrEmpty(ticketOrganization.NoAttachmentsInOutboundExcludeProductLine))
+				{
+					Logs.WriteEventFormat("Except for the following Product Lines ids (still include attachments): {0}", ticketOrganization.NoAttachmentsInOutboundExcludeProductLine);
+				}
+
                 if (oldTicketStatusID != null && bool.Parse(OrganizationSettings.ReadString(LoginUser, ticket.OrganizationID, "DisableStatusNotification", "False")))
                 {
                     Logs.WriteEvent(string.Format("TicketStatusID: {0}  IsClosedEmail: {1}", ticket.TicketStatusID.ToString(), status.IsClosed.ToString()));
@@ -560,15 +565,15 @@ namespace TeamSupport.ServiceLibrary
 
                 List<string> fileNames = new List<string>();
 
-                if (!actions.IsEmpty && !ticketOrganization.NoAttachmentsInOutboundEmail)
-                {
-                    Attachments attachments = actions[0].GetAttachments();
-                    foreach (Data.Attachment attachment in attachments)
-                    {
-                        fileNames.Add(attachment.Path);
-                        Logs.WriteEventFormat("Adding Attachment   AttachmentID:{0}, ActionID:{1}, Path:{2}", attachment.AttachmentID.ToString(), actions[0].ActionID.ToString(), attachment.Path);
-                    }
-                }
+				if (CanIncludeAttachments(ticket, actions, ticketOrganization))
+				{
+					Attachments attachments = actions[0].GetAttachments();
+					foreach (Data.Attachment attachment in attachments)
+					{
+						fileNames.Add(attachment.Path);
+						Logs.WriteEventFormat("Adding Attachment   AttachmentID:{0}, ActionID:{1}, Path:{2}", attachment.AttachmentID.ToString(), actions[0].ActionID.ToString(), attachment.Path);
+					}
+				}
 
                 string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
 
@@ -682,14 +687,14 @@ namespace TeamSupport.ServiceLibrary
                     Actions actions = new Actions(LoginUser);
                     actions.LoadLatestByTicket(ticket.TicketID, false);
 
-                    if (!actions.IsEmpty && !ticketOrganization.NoAttachmentsInOutboundEmail)
-                    {
-                        Attachments attachments = actions[0].GetAttachments();
-                        foreach (Data.Attachment attachment in attachments)
-                        {
-                            fileNames.Add(attachment.Path);
-                        }
-                    }
+					if (CanIncludeAttachments(ticket, actions, ticketOrganization))
+					{
+						Attachments attachments = actions[0].GetAttachments();
+						foreach (Data.Attachment attachment in attachments)
+						{
+							fileNames.Add(attachment.Path);
+						}
+					}
 
                     foreach (Data.Action item in actions)
                     {
@@ -857,16 +862,16 @@ namespace TeamSupport.ServiceLibrary
                     Actions actions = new Actions(LoginUser);
                     actions.LoadLatestByTicket(ticket.TicketID, true);
 
-                    if (!actions.IsEmpty && !ticketOrganization.NoAttachmentsInOutboundEmail)
-                    {
-                        Attachments attachments = actions[0].GetAttachments();
+					if (CanIncludeAttachments(ticket, actions, ticketOrganization))
+					{
+						Attachments attachments = actions[0].GetAttachments();
 
-                        foreach (Data.Attachment attachment in attachments)
-                        {
-                            fileNames.Add(attachment.Path);
-                            Logs.WriteEvent(string.Format("Adding Attachment   AttachmentID:{0}, ActionID:{1}, Path:{2}", attachment.AttachmentID.ToString(), actions[0].ActionID.ToString(), attachment.Path));
-                        }
-                    }
+						foreach (Data.Attachment attachment in attachments)
+						{
+							fileNames.Add(attachment.Path);
+							Logs.WriteEvent(string.Format("Adding Attachment   AttachmentID:{0}, ActionID:{1}, Path:{2}", attachment.AttachmentID.ToString(), actions[0].ActionID.ToString(), attachment.Path));
+						}
+					}
                 }
 
                 MailMessage message = null;
@@ -1089,7 +1094,7 @@ namespace TeamSupport.ServiceLibrary
 
             if (organization != null && organization.Count > 0)
             {
-                includeAttachments = !organization[0].NoAttachmentsInOutboundEmail;
+				includeAttachments = CanIncludeAttachments(ticket, actions, organization[0]);
             }
 
             foreach (Data.Action action in actions)
@@ -1378,7 +1383,29 @@ namespace TeamSupport.ServiceLibrary
             AddMessage(user.OrganizationID, "TS Password Changed [" + user.FirstLastName + "]", message);
         }
 
-        #region Utility Methods
+		private bool CanIncludeAttachments(Ticket ticket, Actions actions, Organization ticketOrganization)
+		{
+			bool include = false;
+
+			if (!actions.IsEmpty && !ticketOrganization.NoAttachmentsInOutboundEmail)
+			{
+				include = true;
+			}
+			else if (!actions.IsEmpty && ticketOrganization.NoAttachmentsInOutboundEmail && !string.IsNullOrEmpty(ticketOrganization.NoAttachmentsInOutboundExcludeProductLine) && ticket.ProductID != null)
+			{
+				Product product = Products.GetProduct(LoginUser, (int)ticket.ProductID);
+
+				if (product != null && product.ProductFamilyID != null)
+				{
+					List<string> except = ticketOrganization.NoAttachmentsInOutboundExcludeProductLine.Split(',').ToList();
+					include = except.Contains(product.ProductFamilyID.ToString());
+				}
+			}
+
+			return include;
+		}
+
+		#region Utility Methods
 
         private int GetIntParam(string param)
         {
