@@ -100,7 +100,7 @@
 #sidebar .form-horizontal .form-label,
 #sidebar .form-horizontal label {
     width:100px;
-    padding:6px 5px 0px 15px;
+    padding:0px 0px 0px 10px;
     font-size:12px;
     text-align:left;
     text-transform:capitalize;
@@ -125,12 +125,11 @@
 #sidebar .selectize-input.focus,
 #sidebar .selectize-input .item,
 #sidebar .selectize-input .option,
-#sidebar .selectize-input input,
-#sidebar .control-label {
+#sidebar .selectize-input input {
     padding:5px !important;
-    min-height:20px;
-    line-height:15px;
-    font-size:12px;
+    min-height:20px !important;
+    line-height:15px !important;
+    font-size:12px !important;
     font-family: 'Roboto' !important;
     border-radius:0px;
     box-shadow:none !important;
