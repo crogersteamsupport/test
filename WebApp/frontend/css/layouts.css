@@ -26,6 +26,13 @@
     min-height:100%;
 }
 
+#page .label {
+    font-weight:normal !important;
+}
+
+
+
+
 #primary {
 }
 #primary .spacer {
@@ -95,6 +102,9 @@
     padding:6px 5px 0px 15px;
     font-size:12px;
     text-align:left;
+    text-transform:capitalize;
+    color:rgba(0,0,0,0.6);
+    font-weight: normal !important;
 }
 #sidebar .form-horizontal .form-input {
     padding:5px;
