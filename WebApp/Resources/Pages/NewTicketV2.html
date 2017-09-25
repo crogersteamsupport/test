@@ -140,5 +140,257 @@
                 </div>
             </div>
         </div>
+
+        <div id="dialog" title="Alert Message">
+            <div id="modalAlertMessage"></div>
+            <input type="hidden" id="alertType" />
+            <input type="hidden" id="alertID" />
+        </div>
+
+    	<div id="ChromeInstallModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    		<div class="modal-dialog">
+    			<div class="modal-content">
+    				<div class="modal-header">
+    					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    					<h4 class="modal-title">Extension Required</h4>
+    				</div>
+    				<div class="modal-body">
+    					<div class="form-group">
+    						<p>An Extension is required in order for Screen Sharing to function properly. Please select your browser and install the extension. Once the installation is complete close this dialog and click the Record Screen button again.</p>
+    						<p id="chromemodalbutton"><button type="button" class="btn btn-primary" onclick="top.Ts.MainPage.installChromePlugin();" id="install-button">Add to Chrome</button></p>
+    					</div>
+    				</div>
+    				<div class="modal-footer">
+    					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    				</div>
+    			</div>
+    		</div>
+    	</div>
+
+    	<div id="FireFoxInstallModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    		<div class="modal-dialog">
+    			<div class="modal-content">
+    				<div class="modal-header">
+    					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    					<h4 class="modal-title">Extension Required</h4>
+    				</div>
+    				<div class="modal-body">
+    					<div class="form-group">
+    						<p>An Extension is required in order for Screen Sharing to function properly. Please install the browser extension. Once the installation is complete you will need to refresh your browser for the installation to complete. Please save your ticket action text if any before proceeding.</p>
+    						<p id="firefoxmodalbutton"><a href="../../../ScreenShare/ScreenSharing.xpi" class="btn btn-info" role="button">Add to Firefox</a></p>
+    					</div>
+    				</div>
+    				<div class="modal-footer">
+    					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    				</div>
+    			</div>
+    		</div>
+    	</div>
+
+        <div id="RemindersModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="RemindersModalTitle" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="RemindersModalTitle">Add Reminder</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="ticket-reminder-title">What is the reminder about?</label>
+                            <input type="text" class="form-control" id="ticket-reminder-title" placeholder="Enter Name of Event">
+                        </div>
+                        <div class="form-group">
+                            <label for="ticket-reminder-date">When do you want to be reminded?</label>
+                            <input id="ticket-reminder-date" type='text' class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="ticket-reminder-who">Who do you want to remind?</label>
+                            <select id="ticket-reminder-who" class="form-control"></select>
+                        </div>
+                        <div id="reminder-success" class="alert alert-success" role="alert" style="display:none;">Reminder Added!</div>
+                        <div id="reminder-error" class="alert alert-danger" role="alert" style="display:none;">There was an error saving your reminder.  Please try again.</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button id="ticket-reminder-save" type="button" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="MergeModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MergeModalTitle" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="MergeModalTitle">Merge Tickets</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div style="border: 1px solid #fbfbfb;padding:10px;background-color: #fbfbfb;">
+                            <h4>1. You have selected the "loser" of the merge</h4>
+                            <p>All the actions, customers, tags, subscriptions, associations, queues, reminders and assets to this ticket will be moved to the "winner" you choose below. The "loser" will then be deleted.</p>
+                        </div>
+                        <div style="border: 1px solid #fbfbfb;padding:10px;background-color: #fbfbfb;">
+                            <h4>2. Next choose the Ticket you want to keep the "winner"</h4>
+                            <p>You can only choose one Ticket. If you'd like to merge more than two tickets together just go through the merge process again after the merge you are performing now is done.</p>
+                        </div>
+                        <input type="text" id="Ticket-Merge-search" class="form-control" placeholder="Search for the ticket you want to merge ..." />
+                        <div class="ui-helper-hidden" id="dialog-ticketmerge-preview" style="padding-top: 10px;">
+                            <div id="ticketmerge-preview-details">Here is some basic information about the ticket you have selected :</div>
+                        </div>
+                        <div class="ui-helper-hidden" id="dialog-ticketmerge-warning" style="padding-top:10px;">
+                            <h4>3. Finally, click "OK" to merge these Tickets.</h4>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" id="dialog-ticketmerge-confirm"> I understand that I will be deleting the losing ticket, and there is no recovery from that action.
+                                </label>
+                            </div>
+                        </div>
+                        <div id="merge-success" class="alert alert-success" role="alert" style="display:none;">Merge Successfull!</div>
+                        <div id="merge-error" class="alert alert-danger" role="alert" style="display:none;">There was an error merging your tickets.  Please try again.</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button id="ticket-merge-complete" type="button" class="btn btn-primary">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="TicketHistoryModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="TicketHistoryModalTitle" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="TicketHistoryModalTitle">Ticket History</h4>
+                    </div>
+                    <div class="modal-body">
+                        <table id="ticket-history-table" class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <td>User</td>
+                                    <td>Date</td>
+                                    <td>Descrption</td>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="EmailModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="EmailModalTitle" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="EmailModalTitle">Email Ticket</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="ticket-email-input">Please enter the email addresses you would like to send this ticket to. (Comma separated)</label>
+                            <input type="text" class="form-control" id="ticket-email-input" placeholder="Enter Comma Separated Email Addresses">
+                        </div>
+                        <div class="form-group">
+                            <label for="ticket-intro-input">Introduction</label>
+                            <textarea class="form-control" id="ticket-intro-input" placeholder="Introduction"></textarea>
+                        </div>
+                        <div id="email-success" class="alert alert-success" role="alert" style="display:none;">Your emails have been sent!</div>
+                        <div id="email-error" class="alert alert-danger" role="alert" style="display:none;">There was an error sending the ticket email</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button id="Ticket-Email" type="button" class="btn btn-primary">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="NewCustomerModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="NewCustomerModalTitle" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="NewCustomerModalTitle">Create New Customer</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="customer-fname-input">First Name</label>
+                            <input type="text" class="form-control" id="customer-fname-input" placeholder="First Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="customer-lname-input">Last Name</label>
+                            <input type="text" class="form-control" id="customer-lname-input" placeholder="Last Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="customer-email-input">Email Address</label>
+                            <input type="text" class="form-control" id="customer-email-input" placeholder="Email Address">
+                        </div>
+                        <div class="form-group">
+                            <label for="customer-phone-input">Phone Number</label>
+                            <input type="text" class="form-control" id="customer-phone-input" placeholder="Phone Number">
+                        </div>
+                        <div class="form-group">
+                            <label for="customer-company-input">Company Name</label>
+                            <select class="form-control" id="customer-company-input" placeholder="Company Name"></select>
+                        </div>
+                        <div id="customer-success" class="alert alert-success" role="alert" style="display:none;">Your customer has been created!</div>
+                        <div id="customer-error" class="alert alert-danger" role="alert" style="display:none;">There was an error creating your customer.</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button id="Customer-Create" type="button" class="btn btn-primary">Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="AssociateTicketModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="AssociateTicketModalTitle" aria-hidden="true">
+            <div class="modal-dialog" style="width:400px;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="AssociateTicketModalTitle">How do you want this ticket associated?</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="center-block">
+                            <button class="btn btn-default btn-block ticket-association" data-isparent="null">Related</button>
+                            <button class="btn btn-default btn-block ticket-association" data-isparent="true">Parent</button>
+                            <button class="btn btn-default btn-block ticket-association" data-isparent="false">Child</button>
+                        </div>
+                        <br />
+                        <div id="associate-success" class="alert alert-success" role="alert" style="display:none;">Ticket Associated!</div>
+                        <div id="associate-error" class="alert alert-danger" role="alert" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="SuggestedSolutionsModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="SuggestedSolutionModalTitle" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="SuggestedSolutionsModalTitle">Insert Knowledgebase</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <div class="dialog-select-ticket2" title="Select a Ticket">
+                                <p>Search a ticket number or description:</p>
+                                <input type="text" class="text ui-corner-all ui-widget-content" style="width:50%;" />
+                            </div>
+                        </div>
+                        <p>Or select a suggested solution:</p>
+                        <iframe id="SuggestedSolutionsIFrame" class="afterSearch" src="" style="width:100%; height:350px;"></iframe>
+                    </div>
+                    <div class="modal-footer" style="margin-top: -16px">
+                        <button id="InsertSuggestedSolutions" type="button" class="btn btn-primary afterSearch">Insert</button>
+                        <button type="button" class="btn btn-default afterSearch" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </body>
 </html>
