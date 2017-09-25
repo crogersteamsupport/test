@@ -53,11 +53,17 @@ textarea {
     border:1px solid rbga(0,0,0,0.1);
     border-radius:0px;
 }
+input {
+    margin:0px;
+    border-radius:0px;
+}
 
 
 
 
-
+body {
+    background-color:#eeeeee;
+}
 
 body.white, div.white {
     background-color:white !important;
