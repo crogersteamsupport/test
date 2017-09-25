@@ -140,3 +140,7 @@
     border:none !important;
     vertical-align:top;
 }
+
+#sidebar .selectize-control.single .selectize-input:after {
+    content:none;
+}
