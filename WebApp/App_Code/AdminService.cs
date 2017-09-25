@@ -600,7 +600,8 @@ namespace TSWebServices
 				ImportID = @ImportFileID		
 		");
 
-            using (SqlConnection connection = new SqlConnection(TSAuthentication.GetLoginUser().ConnectionString))
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
             {
                 try
                 {
@@ -611,6 +612,13 @@ namespace TSWebServices
                     command.CommandText = query.ToString();
                     command.Parameters.AddWithValue("@ImportFileID", importFileID);
                     command.ExecuteNonQuery();
+
+                    //_importUser = new Data.LoginUser(LoginUser.ConnectionString, -5, imports[0].OrganizationID, null);
+                    string path = AttachmentPath.GetPath(loginUser, loginUser.OrganizationID, AttachmentPath.Folder.ImportLogs);
+                    //string logPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Logs");
+                    //logPath = Path.Combine(logPath, imports[0].OrganizationID.ToString());
+                    ImportLog _importLog = new ImportLog(path, importFileID);
+                    _importLog.Write("Rollback Complete on " + DateTime.Now.ToShortDateString());
                 }
                 catch (Exception e)
                 {
@@ -1485,5 +1493,38 @@ namespace TSWebServices
         public string Name { get; set; }
         public int? ProductFamilyID { get; set; }
         public string URL { get; set; }
+    }
+
+    public class ImportLog
+    {
+        private string _logPath;
+        private string _fileName;
+
+        public ImportLog(string path, int importID)
+        {
+            _logPath = path;
+            _fileName = importID.ToString() + ".txt";
+
+            if (!Directory.Exists(_logPath))
+            {
+                Directory.CreateDirectory(_logPath);
+            }
+        }
+
+        public void Write(string text)
+        {
+            if (!File.Exists(_logPath + @"\" + _fileName))
+            {
+                foreach (string oldFileName in Directory.GetFiles(_logPath))
+                {
+                    if (File.GetLastWriteTime(oldFileName).AddDays(30) < DateTime.Today)
+                    {
+                        File.Delete(oldFileName);
+                    }
+                }
+            }
+
+            File.AppendAllText(_logPath + @"\" + _fileName, DateTime.Now.ToLongTimeString() + ": " + text + Environment.NewLine);
+        }
     }
 }
