@@ -110,7 +110,7 @@
     font-weight: normal !important;
 }
 #sidebar .form-horizontal .form-input {
-    padding:5px;
+    padding:0px 0px 0px 5px;
 }
 
 #sidebar input {
