@@ -97,7 +97,8 @@
 
 #sidebar .form-horizontal {
 }
-#sidebar .form-horizontal .form-label {
+#sidebar .form-horizontal .form-label,
+#sidebar .form-horizontal label {
     width:100px;
     padding:6px 5px 0px 15px;
     font-size:12px;
