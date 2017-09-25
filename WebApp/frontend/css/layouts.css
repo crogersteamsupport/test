@@ -128,7 +128,7 @@
 #sidebar .selectize-input .item,
 #sidebar .selectize-input .option,
 #sidebar .selectize-input input {
-    padding:5px !important;
+    padding:0px !important;
     min-height:20px !important;
     line-height:15px !important;
     font-size:12px !important;
