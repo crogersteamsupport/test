@@ -54,7 +54,7 @@ textarea {
     border-radius:0px;
 }
 input {
-    margin:0px;
+    margin:0px !important;
     border-radius:0px;
 }
 
