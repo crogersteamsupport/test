@@ -111,6 +111,9 @@
     padding:5px;
 }
 
+#sidebar input {
+
+}
 
 
 
@@ -128,4 +131,6 @@
     line-height:15px;
     font-size:12px;
     font-family: 'Roboto' !important;
+    border-radius:0px;
+    box-shadow:0px;
 }
