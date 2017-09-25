@@ -132,5 +132,7 @@
     font-size:12px;
     font-family: 'Roboto' !important;
     border-radius:0px;
-    box-shadow:0px;
+    box-shadow:none !important;
+    outline:none;
+    border:none !important;
 }
