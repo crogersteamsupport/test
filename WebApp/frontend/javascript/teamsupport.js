@@ -33,3 +33,11 @@ $(document).on('click', '#clipboard', function (e) {
     $temp.remove();
     alert("Ticket URL has been copied.\n\n" + text);
 });
+
+
+
+$(document).on('click', '#file-browse', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    $('#file-input').trigger('click');
+});
