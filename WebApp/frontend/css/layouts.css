@@ -122,6 +122,7 @@
     border:0px;
 }
 
+#sidebar .selectize-input.focus,
 #sidebar .selectize-input .item,
 #sidebar .selectize-input .option,
 #sidebar .selectize-input input,
