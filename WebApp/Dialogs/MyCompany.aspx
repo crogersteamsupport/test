@@ -221,11 +221,13 @@
 "
     <script type="text/javascript">
 		function ToggleProductLinesListForAttachments() {
-			if (document.getElementById("<%= cbNoAttachmentsInOutboundEmail.ClientID %>").checked == true) {
-				document.getElementById("<%= trProductLines.ClientID %>").style.display = '';
-			}
-			else {
-				document.getElementById("<%= trProductLines.ClientID %>").style.display = 'none';
+			if (document.getElementById("<%= lbNoAttachmentsInOutboundExcludeProductLine.ClientID %>").options.length > 0) {
+				if (document.getElementById("<%= cbNoAttachmentsInOutboundEmail.ClientID %>").checked == true) {
+					document.getElementById("<%= trProductLines.ClientID %>").style.display = '';
+				}
+				else {
+					document.getElementById("<%= trProductLines.ClientID %>").style.display = 'none';
+				}
 			}
 		}
     </script>

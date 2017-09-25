@@ -191,7 +191,11 @@ public partial class Frames_AdminCompany : BaseFramePage
 			try
 			{
 				productFamilies.LoadByIds(organization.NoAttachmentsInOutboundExcludeProductLine.Split(',').Select(int.Parse).ToList(), organization.OrganizationID);
-				table.Rows.Add(new string[] { "Except for the following Product Lines (include attachments):", string.Join(",", productFamilies.Select(p => p.Name).ToArray()) });
+
+				if (productFamilies.Count > 0)
+				{
+					table.Rows.Add(new string[] { "Except for the following Product Lines (include attachments):", string.Join(",", productFamilies.Select(p => p.Name).ToArray()) });
+				}
 			}
 			catch (Exception ex)
 			{

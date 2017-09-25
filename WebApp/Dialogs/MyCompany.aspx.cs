@@ -197,7 +197,7 @@ public partial class Dialogs_Organization : BaseDialogPage
 			lbNoAttachmentsInOutboundExcludeProductLine.Items.Add(new ListItem() { Value = productFamily.ProductFamilyID.ToString(), Text = productFamily.Name, Selected = Array.Exists(excluded, element => element == productFamily.ProductFamilyID.ToString()) });
 		}
 
-		if (!organization.NoAttachmentsInOutboundEmail)
+		if (!organization.NoAttachmentsInOutboundEmail || lbNoAttachmentsInOutboundExcludeProductLine.Items.Count == 0)
 		{
 			trProductLines.Style.Add("display", "none");
 		}
@@ -302,7 +302,7 @@ public partial class Dialogs_Organization : BaseDialogPage
 		organization.TwoStepVerificationEnabled = cbTwoStepVerification.Checked;
 		organization.NoAttachmentsInOutboundEmail = cbNoAttachmentsInOutboundEmail.Checked;
 
-		if (organization.NoAttachmentsInOutboundEmail)
+		if (organization.NoAttachmentsInOutboundEmail && lbNoAttachmentsInOutboundExcludeProductLine.Items.Count > 0)
 		{
 			string exclude = null;
 
