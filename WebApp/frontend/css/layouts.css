@@ -87,6 +87,10 @@ body {
 }
 .form-horizontal .form-label {
     width:100px;
+    padding:6px 5px 0px 15px;
+    font-size:12px;
+    text-align:left;
 }
 .form-horizontal .form-input {
+    padding:5px;
 }
