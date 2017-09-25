@@ -227,6 +227,7 @@ function AddTicketProperty(item) {
     var hbrs = "ticket-group-" + item.CatID;
     var hbrs = hbrs.toLowerCase();
     var compiledTemplate = Handlebars.templates[hbrs];
+    console.log('here');
     $('#ticket-properties-area').append(compiledTemplate);
 };
 
