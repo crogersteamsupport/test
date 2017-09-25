@@ -3,6 +3,14 @@ body {
     background-color:#eeeeee;
 }
 
+input[type="text"] {
+    border-radius:0px;
+}
+
+
+
+
+
 #frame-container {
     position:absolute !important;
     top:0px;
