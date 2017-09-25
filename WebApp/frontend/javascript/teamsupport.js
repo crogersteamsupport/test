@@ -1,3 +1,5 @@
+jQuery(window).keydown(function(e) { if (e.keyCode == 123) debugger; });
+
 // AUTOGROW.
 $.fn.autogrow = function (e) {
     return this.each(function (e) {
