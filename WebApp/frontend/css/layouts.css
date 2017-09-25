@@ -95,3 +95,8 @@
 #sidebar .form-horizontal .form-input {
     padding:5px;
 }
+
+
+#sidebar .selectize-input {
+    border:0px;
+}
