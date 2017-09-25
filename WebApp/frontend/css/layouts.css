@@ -31,15 +31,12 @@ body {
 
 #primary {
 }
-
 #primary .spacer {
     padding:10px;
 }
-
 #primary .paper {
     background-color:white;
 }
-
 #sidebar {
     min-width:300px;
     min-height:100%;
@@ -49,19 +46,17 @@ body {
 
 
 
-.spinner {
+#primary .spinner {
     width:75px;
 }
-
-
-.input-group-btn-vertical {
-  position: relative;
-  white-space: nowrap;
-  width: 1%;
-  vertical-align: middle;
-  display: table-cell;
+#primary .input-group-btn-vertical {
+    position: relative;
+    white-space: nowrap;
+    width: 1%;
+    vertical-align: middle;
+    display: table-cell;
 }
-.input-group-btn-vertical .btn {
+#primary .input-group-btn-vertical .btn {
     display:block;
     float:none;
     width: 100%;
@@ -71,15 +66,27 @@ body {
     position: relative;
     border-radius: 0;
 }
-.input-group-btn-vertical .btn:first-child {
-  border-top-right-radius: 4px;
+#primary .input-group-btn-vertical .btn:first-child {
+    border-top-right-radius: 4px;
 }
-.input-group-btn-vertical .btn:last-child {
-  margin-top: -2px;
-  border-bottom-right-radius: 4px;
+#primary .input-group-btn-vertical .btn:last-child {
+    margin-top: -2px;
+    border-bottom-right-radius: 4px;
 }
-.input-group-btn-vertical i{
-  position: absolute;
-  top: 0;
-  left: 4px;
+#primary .input-group-btn-vertical i {
+    position: absolute;
+    top: 0;
+    left: 4px;
+}
+
+
+
+
+
+.form-horizontal {
+}
+.form-horizontal .form-label {
+    width:100px;
+}
+.form-horizontal .form-input {
 }
