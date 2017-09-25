@@ -98,6 +98,7 @@
 #sidebar .form-horizontal {
     margin-bottom:10px;
     max-height:40px;
+    min-height:40px;
 }
 #sidebar .form-horizontal .form-label,
 #sidebar .form-horizontal label {
