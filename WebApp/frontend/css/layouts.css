@@ -1,0 +1,48 @@
+
+body {
+    background-color:#eeeeee;
+}
+
+#frame-container {
+    position:absolute !important;
+    top:0px;
+    bottom:0px;
+    padding-top:0px;
+    height: auto !important;
+    border: none;
+    overflow-x:hidden;
+    overflow-y:auto;
+    height:100%;
+    width:100%;
+    max-width:100%;
+    min-height:100%;
+}
+
+#page {
+    border:none;
+    overflow:auto;
+    position:absolute;
+    left:0px;
+    right:0px;
+    width:100%;
+    max-width:100%;
+    min-height:100%;
+}
+
+#primary {
+}
+
+#primary .spacer {
+    padding:10px;
+}
+
+#primary .paper {
+    padding:10px;
+    background-color:white;
+}
+
+#sidebar {
+    min-width:300px;
+    min-height:100%;
+    background-color:white;
+}
