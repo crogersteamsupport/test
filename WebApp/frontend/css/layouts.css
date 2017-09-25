@@ -33,8 +33,10 @@
 }
 #primary .paper {
     background-color:white;
+    box-shadow:1px 1px 0px rgba(0,0,0,0.1);
 }
 #sidebar {
+    padding-bottom:100px;
     min-width:300px;
     min-height:100%;
     background-color:white;
@@ -78,18 +80,18 @@
 
 
 
-.form-group {
+#sidebar .form-group {
     padding:15px;
 }
 
-.form-horizontal {
+#sidebar .form-horizontal {
 }
-.form-horizontal .form-label {
+#sidebar .form-horizontal .form-label {
     width:100px;
     padding:6px 5px 0px 15px;
     font-size:12px;
     text-align:left;
 }
-.form-horizontal .form-input {
+#sidebar .form-horizontal .form-input {
     padding:5px;
 }
