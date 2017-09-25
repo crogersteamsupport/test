@@ -81,7 +81,9 @@ body {
 
 
 
-
+.form-group {
+    padding:15px;
+}
 
 .form-horizontal {
 }
