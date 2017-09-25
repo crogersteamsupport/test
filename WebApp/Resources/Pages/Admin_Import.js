@@ -12,6 +12,7 @@ function onShow() {
 
 ImportPage = function () {
     LoadImports(1);
+    LoadTypes();
 
     function LoadImports(start) {
         showLoadingIndicator();
@@ -71,6 +72,34 @@ ImportPage = function () {
                 }
             }
         });
+    }
+
+    function LoadTypes() {
+        $('#import-type').append($('<option>', { text: '1. Users', value: '22' }));
+        $('#import-type').append($('<option>', { text: '2. Companies', value: '9' }));
+        $('#import-type').append($('<option>', { text: '3. Contacts', value: '32' }));
+        var prefixAdjustement = 0;
+        if (parent.parent.parent.Ts.System.Organization.UseProductFamilies == true) {
+            $('#import-type').append($('<option>', { text: '4. Product Lines', value: '44' }));
+            prefixAdjustement = 1;
+        }
+        $('#import-type').append($('<option>', { text: 4 + prefixAdjustement + '. Products', value: '13' }));
+        $('#import-type').append($('<option>', { text: 5 + prefixAdjustement + '. Product Versions', value: '14' }));
+        $('#import-type').append($('<option>', { text: 6 + prefixAdjustement + '. Company Products', value: '8' }));
+        $('#import-type').append($('<option>', { text: 7 + prefixAdjustement + '. Assets', value: '34' }));
+        $('#import-type').append($('<option>', { text: 8 + prefixAdjustement + '. Tickets', value: '17' }));
+        $('#import-type').append($('<option>', { text: 9 + prefixAdjustement + '. Company Tickets', value: '10' }));
+        $('#import-type').append($('<option>', { text: 10 + prefixAdjustement + '. Contact Tickets', value: '52' }));
+        $('#import-type').append($('<option>', { text: 11 + prefixAdjustement + '. Asset Tickets', value: '53' }));
+        $('#import-type').append($('<option>', { text: 12 + prefixAdjustement + '. Associated Tickets', value: '54' }));
+        $('#import-type').append($('<option>', { text: 13 + prefixAdjustement + '. Actions', value: '0' }));
+        $('#import-type').append($('<option>', { text: 14 + prefixAdjustement + '. Company Primary Contact', value: '56' }));
+        $('#import-type').append($('<option>', { text: 15 + prefixAdjustement + '. Company Notes', value: '40' }));
+        $('#import-type').append($('<option>', { text: 16 + prefixAdjustement + '. Company Addresses', value: '48' }));
+        $('#import-type').append($('<option>', { text: 17 + prefixAdjustement + '. Company Phone Numbers', value: '49' }));
+        $('#import-type').append($('<option>', { text: 18 + prefixAdjustement + '. Contact Notes', value: '58' }));
+        $('#import-type').append($('<option>', { text: 19 + prefixAdjustement + '. Contact Addresses', value: '50' }));
+        $('#import-type').append($('<option>', { text: 20 + prefixAdjustement + '. Contact Phone Numbers', value: '51' }));
     }
 
     function LoadFields(refType) {
