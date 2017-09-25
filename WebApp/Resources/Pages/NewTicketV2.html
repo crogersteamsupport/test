@@ -14,11 +14,11 @@
         <!--<link href="../Css/editor.css" rel="stylesheet" />-->
 
         <!-- BOOTSTRAP -->
-        <link rel="stylesheet" type="text/css" href="/frontend/bootstrap-3.3.7/css/bootstrap.min.css?1505240059">
+        <link rel="stylesheet" type="text/css" href="/frontend/bootstrap-3.3.7/css/bootstrap.min.css?1505240062">
 
         <!-- CUSTOM CSS -->
-        <link rel="stylesheet" type="text/css" href="/frontend/css/standards.css?1505240059">
-        <link rel="stylesheet" type="text/css" href="/frontend/css/layouts.css?1505240059">
+        <link rel="stylesheet" type="text/css" href="/frontend/css/standards.css?1505240062">
+        <link rel="stylesheet" type="text/css" href="/frontend/css/layouts.css?1505240062">
 
         <!--<script src="../Js/deployJava.js" type="text/javascript"></script>-->
         <script src="../Js/Ts/ts.pendo.js" type="text/javascript"></script>
@@ -45,8 +45,8 @@
 
         <!-- HANDLEBARS. -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.runtime.js"></script>
-        <script src="/frontend/library/handlebars.js?1505240059" type="text/javascript"></script>
-        <script src="/frontend/handlebars/newticket.js?1505240059" type="text/javascript"></script>
+        <script src="/frontend/library/handlebars.js?1505240062" type="text/javascript"></script>
+        <script src="/frontend/handlebars/newticket.js?1505240062" type="text/javascript"></script>
 
     </head>
 
@@ -58,17 +58,22 @@
             <div id="page" class="flexbox">
                 <div id="primary" class="flexpush">
                     <div class="spacer">
-                        <div class="paper">
+                        <div class="paper spacer">
                             <div id="ticket-title-panel" class="form-group">
                                 <input id="ticket-title-input" type="text" class="form-control" placeholder="Enter a name for the ticket...">
                             </div>
+                        </div>
 
-                            <div class="divScreenRecorderMessages" style="display:none;">
-                                <p class="pAllowPluginsToRunInstructions">Please verify java is supported and allowed to run in your browser.</p>
-                                <p>Finally, the first run of the screen recorder takes about 40 seconds to load on a 2 Mbps internet connection.</p>
-                            </div>
+                        <div class="divScreenRecorderMessages" style="display:none;">
+                            <p class="pAllowPluginsToRunInstructions">Please verify java is supported and allowed to run in your browser.</p>
+                            <p>Finally, the first run of the screen recorder takes about 40 seconds to load on a 2 Mbps internet connection.</p>
+                        </div>
 
+                        <div class="paper">
                             <textarea id="ticket-description"></textarea>
+                        </div>
+
+                        <div class="paper spacer">
 
                             <div class="action-new-toolbar">
                                 <div id="action-save-alert" class="alert alert-danger" role="alert" style="display:none;"></div>
@@ -78,6 +83,7 @@
                             </div>
 
                         </div>
+
                     </div>
                 </div>
 

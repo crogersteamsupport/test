@@ -2400,7 +2400,6 @@ function SetupTagsSection() {
 };
 
 function PrependTask(parent, id, value, data) {
-    // var _compiledTaskTemplate = Handlebars.compile($("#task-record").html());
     var _compiledTaskTemplate = Handlebars.templates['taskrecord'];
     var taskHTML = _compiledTaskTemplate({ id: id, value: value, IsComplete: data.IsComplete });
     return $(taskHTML).prependTo(parent).data('task', data);
@@ -2419,8 +2418,7 @@ function AddTags(tags) {
 
 function PrependTag(parent, id, value, data, cssclass) {
     if (cssclass === undefined) cssclass = 'tag-item';
-    // var _compiledTagTemplate = Handlebars.compile($("#ticket-tag").html());
-    var _compiledTagTemplate = Handlebars.templates["ticket-tag"];
+    var _compiledTagTemplate = Handlebars.templates['ticket-tag'];
     var tagHTML = _compiledTagTemplate({ id: id, value: value, data: data, css: cssclass });
     return $(tagHTML).prependTo(parent).data('tag', data);
 }
@@ -4385,7 +4383,6 @@ function FetchTimeLineItems(start) {
             $('.results-loading').hide();
             $('.results-done').show();
         } else {
-            console.log('handlebars:action.handlebars');
             _compiledActionTemplate = Handlebars.templates['action2'];
 
             //create first timeline date marker if needed
@@ -4433,8 +4430,6 @@ function CreateActionElement(val, ShouldAppend) {
             val.WaterCoolerReplies[wc].WaterCoolerReplyProxy.Message = wcmsgtext.replace(/\n\r?/g, '<br />');
         }
     }
-    console.log('createactionelecment:recycle:handlebars:action.handlebars');
-    console.log(val);
     var html = _compiledActionTemplate(val);
     var actionElement = $(html);
     actionElement.find('a').attr('target', '_blank');
@@ -4464,8 +4459,6 @@ function UpdateActionElement(val) {
         $("#action-timeline").append(dateSpan);
         _currDateSpan = val.item.DateCreated;
     }
-    console.log('updateactionelement:recycle:handlebars:action.handlebars');
-    console.log(val);
     var html = _compiledActionTemplate(val);
     var actionElement = $(html);
     var li = $("#action-timeline div[data-id=" + val.item.RefID + "]");
@@ -5108,7 +5101,6 @@ function CreateTimeLineDelegates() {
             if (commentinfo.User.length > 0) window.parent.Ts.System.logAction('Water Cooler - User Inserted');
 
             window.parent.Ts.Services.WaterCooler.NewComment(parent.JSON.stringify(commentinfo), function (Message) {
-                // var _compiledWCReplyTemplate = Handlebars.compile($("#wc-new-reply-template").html());
                 var _compiledWCReplyTemplate = Handlebars.templates['wc-new-reply'];
                 Message.Message = Message.Message.replace(/\n\r?/g, '<br />');
                 var html = _compiledWCReplyTemplate(Message);

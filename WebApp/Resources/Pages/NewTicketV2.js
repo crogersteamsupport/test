@@ -224,10 +224,10 @@ function LoadTicketPageOrder() {
 };
 
 function AddTicketProperty(item) {
-    if ($("#ticket-group-" + item.CatID).length > 0) {
-        var compiledTemplate = Handlebars.compile($("#ticket-group-" + item.CatID).html());
-        $('#ticket-properties-area').append(compiledTemplate);
-    }
+    var hbrs = "ticket-group-" + item.CatID;
+    var hbrs = hbrs.toLowerCase();
+    var compiledTemplate = Handlebars.templates[hbrs];
+    $('#ticket-properties-area').append(compiledTemplate);
 };
 
 function UpdateTicketGroups(callback) {
