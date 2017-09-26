@@ -57,21 +57,26 @@ Namespace TeamSupport
 
                 'Make sure credentials are good
                 If (result) Then
-                    Try
-                        If (Not String.IsNullOrEmpty(CRMLinkRow.SecurityToken1)) Then
-                            _tfs = New TFSLibrary(_baseURI, CRMLinkRow.SecurityToken1)
-                        Else
-                            _tfs = New TFSLibrary(_baseURI, CRMLinkRow.Username, CRMLinkRow.Password, CRMLinkRow.UseNetworkCredentials)
-                        End If
+					Try
+						Dim logFile As String = Log.Path & "\" & Log.FileNamePath
+						If (Not String.IsNullOrEmpty(CRMLinkRow.SecurityToken1)) Then
+							_tfs = New TFSLibrary(_baseURI, CRMLinkRow.SecurityToken1, logFile)
+						Else
+							_tfs = New TFSLibrary(_baseURI, CRMLinkRow.Username, CRMLinkRow.Password, CRMLinkRow.UseNetworkCredentials, logFile)
+						End If
 
-                        Dim errorMessage As String = _tfs.CheckCredentialsAndHost()
-                        If (String.IsNullOrEmpty(errorMessage)) Then
-                            AddLog("Tfs credentials ok.")
-                        Else
-                            AddLog("Tfs credentials didn't work. " + errorMessage)
-                        End If
-                    Catch ex As Exception
-                        result = False
+						Dim workItemId As Integer
+						workItemId = 1
+						Dim errorMessage As String = _tfs.CheckCredentialsAndHost(workItemId)
+
+						If (String.IsNullOrEmpty(errorMessage)) Then
+							AddLog("Tfs credentials ok.")
+						Else
+							AddLog("Tfs credentials didn't work. " + errorMessage)
+							result = False
+						End If
+					Catch ex As Exception
+						result = False
 						_exception = New IntegrationException(ex.InnerException.Message, ex)
 					End Try
 				End If
@@ -183,18 +188,16 @@ Namespace TeamSupport
 				Dim recentClause As String = String.Empty
 				numberOfWorkItemsToPull = 0
 
-				Dim fields As List(Of String) = New List(Of String)
-
 				'Search only for the tfs ids we have, those are the ones linked and the only ones that we need to check for updates
-				If (tfsIdList IsNot Nothing AndAlso tfsIdList.Any()) Then
+				If (tfsIdList.Count > 0) Then
 					'//vv we might end up doing this in batches too. We'll see.
 					Dim workItemsList As TFSLibrary.WorkItems = _tfs.GetWorkItemsBy(tfsIdList, CRMLinkRow.LastLinkUtc)
 
 					If (workItemsList IsNot Nothing AndAlso workItemsList.count > 0) Then
-                        'ToDo //vv is there anything else we need from this Function??
-                        numberOfWorkItemsToPull += workItemsList.count
-                        result = workItemsList
-                    End If
+						'ToDo //vv is there anything else we need from this Function??
+						numberOfWorkItemsToPull += workItemsList.count
+						result = workItemsList
+					End If
 				End If
 
 				Log.Write("Got " + numberOfWorkItemsToPull.ToString() + " Work Items To Pull As Tickets.")
@@ -781,6 +784,19 @@ Namespace TeamSupport
 				fieldValue = workItemFields.Where(Function(w) w.name = "Description").FirstOrDefault
 				fieldValue.value = description
 				workItemValues.Add(fieldValue)
+
+				'//vv Specific for Alegeus now, we need to find out how to get the 'required' fields from TFS, currently the call to get the fields does not say
+				If (CRMLinkRow.OrganizationID = 1150007) Then
+					fieldValue = workItemFields.Where(Function(w) w.referenceName = "Alegeus.TargetVersion").FirstOrDefault
+					Dim customValues As New CustomValues(User)
+					Dim cRMLinkField As CRMLinkField = customMappingFields.FindByCRMFieldName("Alegeus.TargetVersion")
+					customValues.LoadByFieldID(cRMLinkField.CustomFieldID, ticket.TicketID)
+
+					If customValues.Count > 0 Then
+						fieldValue.value = customValues(0).Value
+						workItemValues.Add(fieldValue)
+					End If
+				End If
 
 				Dim customField As StringBuilder = New StringBuilder()
 				'ToDo //vv seems like the only required field in TFS to create work item is the Title, do we need this next line then??

@@ -19,29 +19,32 @@ namespace TeamSupport.ServiceLibrary
 		private static string _password;
 		private static bool _useNetworkCredentials;
 		private static List<WorkItemField> _workItemFields;
+		private static string _logFile;
 
 		public TFS()
 		{
 		}
 
-		public TFS(string hostname, string accessToken)
+		public TFS(string hostname, string accessToken, string logFile)
 		{
-			_hostname = hostname;
-			_accessToken = accessToken;
+			_hostname = hostname.Trim();
+			_accessToken = accessToken.Trim();
 			_username = string.Empty;
 			_password = string.Empty;
+			_logFile = logFile;
 		}
 
-		public TFS(string hostname, string username, string password, bool useNetworkCredentials)
+		public TFS(string hostname, string username, string password, bool useNetworkCredentials, string logFile)
 		{
-			_hostname = hostname;
-			_username = username;
-			_password = password;
+			_hostname = hostname.Trim();
+			_username = username.Trim();
+			_password = password.Trim();
 			_useNetworkCredentials = useNetworkCredentials;
 			_accessToken = string.Empty;
+			_logFile = logFile;
 		}
 
-		private string MakeRequest(string uri, ApiMethod method, string patchDocument = null)
+		private string MakeRequest(string uri, ApiMethod method, string patchDocument = "")
 		{
 			string result = null;
 			string contentType = "application/json";
@@ -73,21 +76,33 @@ namespace TeamSupport.ServiceLibrary
 				}
 				else
 				{
+					if (uri.Contains("alegeus"))
+					{
+						LogTFS("uri: " + uri);
+						LogTFS("method: " + method.ToString());
+						LogTFS("patchDocument: " + patchDocument);
+						LogTFS("Encoding.UTF8.GetBytes(patchDocument): " + Encoding.UTF8.GetBytes(patchDocument));
+					}
+
 					byte[] response = client.UploadData(uri, method.ToString(), Encoding.UTF8.GetBytes(patchDocument));
-					result = client.Encoding.GetString(response);
+
+					if (response != null)
+					{
+						result = client.Encoding.GetString(response);
+					}
 				}
 			}
 
 			return result;
 		}
 
-		public string CheckCredentialsAndHost()
+		public string CheckCredentialsAndHost(int workItemId = 1)
 		{
 			string responseBody = null;
 
 			try
 			{
-				responseBody = MakeRequest(string.Format("{0}/_apis/wit/workitems/1", HostName), ApiMethod.Get);
+				responseBody = MakeRequest(string.Format("{0}/_apis/wit/workitems/{1}", HostName, workItemId.ToString()), ApiMethod.Get);
 
 				//This is what we check for vs team services (cloud). If the credentials are wrong then there is a result back, with the html code for the sign in page.
 				if (!responseBody.Contains("<!DOCTYPE html PUBLIC") && !responseBody.Contains("Visual Studio Team Services | Sign In"))
@@ -108,10 +123,10 @@ namespace TeamSupport.ServiceLibrary
 					//hostname is invalid
 					responseBody = ex.Message;
 				}
-				else if (ex.Message.ToLower().Contains("error") || ex.Message.ToLower().Contains("404"))
+				else if (ex.Message.ToLower().Contains("not found") || ex.Message.ToLower().Contains("404"))
 				{
-					//hostname is invalid
-					responseBody = ex.Message;
+					//the workItemId used to 'test' this was not found but at least we know the credentials and hostname worked, which is what we really want from this method.
+					responseBody = null;
 				}
 			}
 
@@ -229,6 +244,12 @@ namespace TeamSupport.ServiceLibrary
 			try
 			{
 				string response = MakeRequest(string.Format("{0}/_apis/wit/wiql?api-version=2.2", HostName), ApiMethod.Post, patchValue.ReadAsStringAsync().Result);
+
+				if (HostName.Contains("alegeus"))
+				{
+					LogTFS(response);
+				}
+
 				WorkItemQueryResult workItemQueryResult = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemQueryResult>(response);
 
 				//now that we have a bunch of work items, build a list of id's so we can get details
@@ -258,6 +279,9 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (WebException webEx)
 			{
+				LogTFS(string.Format("GET: {0}/_apis/wit/wiql?api-version=2.2", HostName));
+				LogTFS("webexception: " + webEx.Message);
+				LogTFS("webexception: " + webEx.StackTrace);
 				string exceptionResponse;
 				var responseStream = webEx.Response?.GetResponseStream();
 
@@ -280,6 +304,8 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (Exception ex)
 			{
+				LogTFS("ex: " + ex.Message);
+				LogTFS("ex: " + ex.StackTrace);
 				throw;
 			}
 
@@ -297,6 +323,9 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (WebException webEx)
 			{
+				LogTFS(string.Format("GET: {0}/_apis/wit/workItems/{1}?api-version=2.2{2}", HostName, workItemId, (expandAll ? "&$expand=all" : "")));
+				LogTFS("webexception: " + webEx.Message);
+				LogTFS("webexception: " + webEx.StackTrace);
 				string exceptionResponse;
 				var responseStream = webEx.Response?.GetResponseStream();
 
@@ -319,6 +348,8 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (Exception ex)
 			{
+				LogTFS("ex: " + ex.Message);
+				LogTFS("ex: " + ex.StackTrace);
 				throw;
 			}
 
@@ -336,6 +367,9 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (WebException webEx)
 			{
+				LogTFS(string.Format("GET: {0}/_apis/wit/workItems/{1}/comments", HostName, workItemId));
+				LogTFS("webexception: " + webEx.Message);
+				LogTFS("webexception: " + webEx.StackTrace);
 				string exceptionResponse;
 				var responseStream = webEx.Response?.GetResponseStream();
 
@@ -358,6 +392,8 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (Exception ex)
 			{
+				LogTFS("ex: " + ex.Message);
+				LogTFS("ex: " + ex.StackTrace);
 				throw;
 			}
 
@@ -375,6 +411,9 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (WebException webEx)
 			{
+				LogTFS(string.Format("GET: {0}/_apis/wit/workItems/{1}/comments/{2}", HostName, workItemId, revisionId));
+				LogTFS("webexception: " + webEx.Message);
+				LogTFS("webexception: " + webEx.StackTrace);
 				string exceptionResponse;
 				var responseStream = webEx.Response?.GetResponseStream();
 
@@ -397,6 +436,8 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (Exception ex)
 			{
+				LogTFS("ex: " + ex.Message);
+				LogTFS("ex: " + ex.StackTrace);
 				throw;
 			}
 
@@ -414,6 +455,9 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (WebException webEx)
 			{
+				LogTFS(string.Format("GET: {0}/_apis/wit/workItems/{1}/history", HostName, workItemId));
+				LogTFS("webexception: " + webEx.Message);
+				LogTFS("webexception: " + webEx.StackTrace);
 				string exceptionResponse;
 				var responseStream = webEx.Response?.GetResponseStream();
 
@@ -436,6 +480,8 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (Exception ex)
 			{
+				LogTFS("ex: " + ex.Message);
+				LogTFS("ex: " + ex.StackTrace);
 				throw;
 			}
 
@@ -453,6 +499,9 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (WebException webEx)
 			{
+				LogTFS(string.Format("GET: {0}/_apis/wit/workItems/{1}/history/{2}", HostName, workItemId, revisionId));
+				LogTFS("webexception: " + webEx.Message);
+				LogTFS("webexception: " + webEx.StackTrace);
 				string exceptionResponse;
 				var responseStream = webEx.Response?.GetResponseStream();
 
@@ -475,6 +524,8 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (Exception ex)
 			{
+				LogTFS("ex: " + ex.Message);
+				LogTFS("ex: " + ex.StackTrace);
 				throw;
 			}
 
@@ -489,11 +540,14 @@ namespace TeamSupport.ServiceLibrary
 
 			try
 			{
-				string result = MakeRequest(HostName + "/" + project + "/_apis/wit/workitems/$" + type + "?api-version=2.2", ApiMethod.Patch, patchValue.ReadAsStringAsync().Result);
+				string result = MakeRequest(HostName + "/" + project + "/_apis/wit/workitems/$" + type.Replace(" ", "%20") + "?api-version=2.2", ApiMethod.Patch, patchValue.ReadAsStringAsync().Result);
 				workItem = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItem>(result);
 			}
 			catch (WebException webEx)
 			{
+				LogTFS("PATCH: " + HostName + "/" + project + "/_apis/wit/workitems/$" + type.Replace(" ", "%20") + "?api-version=2.2");
+				LogTFS("webexception: " + webEx.Message);
+				LogTFS("webexception: " + webEx.StackTrace);
 				string exceptionResponse;
 				var responseStream = webEx.Response?.GetResponseStream();
 
@@ -516,6 +570,8 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (Exception ex)
 			{
+				LogTFS("webexception: " + ex.Message);
+				LogTFS("webexception: " + ex.StackTrace);
 				throw;
 			}
 
@@ -542,6 +598,9 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (WebException webEx)
 			{
+				LogTFS("PATCH: " + HostName + "/_apis/wit/workitems/" + workItemId + "?api-version=2.2");
+				LogTFS("webexception: " + webEx.Message);
+				LogTFS("webexception: " + webEx.StackTrace);
 				string exceptionResponse;
 				var responseStream = webEx.Response?.GetResponseStream();
 
@@ -564,6 +623,8 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (Exception ex)
 			{
+				LogTFS("ex: " + ex.Message);
+				LogTFS("ex: " + ex.StackTrace);
 				throw;
 			}
 
@@ -582,6 +643,9 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (WebException webEx)
 			{
+				LogTFS("PATCH: " + HostName + "/_apis/wit/workitems/" + workItemId + "?api-version=2.2");
+				LogTFS("webexception: " + webEx.Message);
+				LogTFS("webexception: " + webEx.StackTrace);
 				string exceptionResponse;
 				var responseStream = webEx.Response?.GetResponseStream();
 
@@ -604,6 +668,8 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (Exception ex)
 			{
+				LogTFS("ex: " + ex.Message);
+				LogTFS("ex: " + ex.StackTrace);
 				throw;
 			}
 		}
@@ -622,6 +688,9 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (WebException webEx)
 			{
+				LogTFS("PATCH: " + HostName + "/_apis/wit/workitems/" + workItemId.ToString() + "?api-version=2.2");
+				LogTFS("webexception: " + webEx.Message);
+				LogTFS("webexception: " + webEx.StackTrace);
 				string exceptionResponse;
 				var responseStream = webEx.Response?.GetResponseStream();
 
@@ -644,6 +713,8 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (Exception ex)
 			{
+				LogTFS("ex: " + ex.Message);
+				LogTFS("ex: " + ex.StackTrace);
 				throw;
 			}
 
@@ -672,6 +743,9 @@ namespace TeamSupport.ServiceLibrary
 					}
 					catch (WebException webEx)
 					{
+						LogTFS("PATCH: " + HostName + "/_apis/wit/workitems/" + workItemId + "?api-version=2.2");
+						LogTFS("webexception: " + webEx.Message);
+						LogTFS("webexception: " + webEx.StackTrace);
 						string exceptionResponse;
 						var responseStream = webEx.Response?.GetResponseStream();
 
@@ -694,6 +768,8 @@ namespace TeamSupport.ServiceLibrary
 					}
 					catch (Exception ex)
 					{
+						LogTFS("ex: " + ex.Message);
+						LogTFS("ex: " + ex.StackTrace);
 						throw;
 					}
 				}
@@ -760,6 +836,9 @@ namespace TeamSupport.ServiceLibrary
 				}
 				catch (WebException webEx)
 				{
+					LogTFS("PATCH: " + HostName + "/_apis/wit/workitems/" + workItemId + "?api-version=2.2");
+					LogTFS("webexception: " + webEx.Message);
+					LogTFS("webexception: " + webEx.StackTrace);
 					string exceptionResponse;
 					var responseStream = webEx.Response?.GetResponseStream();
 
@@ -782,6 +861,8 @@ namespace TeamSupport.ServiceLibrary
 				}
 				catch (Exception ex)
 				{
+					LogTFS("ex: " + ex.Message);
+					LogTFS("ex: " + ex.StackTrace);
 					throw;
 				}
 			}
@@ -801,6 +882,9 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (WebException webEx)
 			{
+				LogTFS(string.Format("GET: {0}/_apis/wit/fields?api-version=2.2"));
+				LogTFS("webexception: " + webEx.Message);
+				LogTFS("webexception: " + webEx.StackTrace);
 				string exceptionResponse;
 				var responseStream = webEx.Response?.GetResponseStream();
 
@@ -823,6 +907,8 @@ namespace TeamSupport.ServiceLibrary
 			}
 			catch (Exception ex)
 			{
+				LogTFS("ex: " + ex.Message);
+				LogTFS("ex: " + ex.StackTrace);
 				throw;
 			}
 
@@ -921,6 +1007,20 @@ namespace TeamSupport.ServiceLibrary
 			//postDataStream.Write(endBoundaryBytes, 0, endBoundaryBytes.Length);
 
 			return postDataStream;
+		}
+
+		private void LogTFS(string Text)
+		{
+			try
+			{
+				if (!string.IsNullOrEmpty(LogFile))
+				{
+					File.AppendAllText(LogFile, DateTime.Now.ToLongTimeString() + ": " + Text + Environment.NewLine);
+				}
+			}
+			catch (Exception ex)
+			{
+			}
 		}
 
 		[Serializable]
@@ -1065,7 +1165,7 @@ namespace TeamSupport.ServiceLibrary
 		{
 			get
 			{
-				return _hostname.TrimEnd('/');
+				return _hostname.Trim().TrimEnd('/');
 			}
 			set
 			{
@@ -1121,6 +1221,14 @@ namespace TeamSupport.ServiceLibrary
 				{
 					return Data.DataUtils.GetEncodedCredentials(UserName, Password);
 				}
+			}
+		}
+
+		private string LogFile
+		{
+			get
+			{
+				return _logFile;
 			}
 		}
 
