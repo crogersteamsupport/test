@@ -2550,6 +2550,19 @@ ORDER BY
                   SqlExecutor.ExecuteNonQuery(loginUser, command);*/
         }
 
+        public Organization FindOnlyByImportID(string importID)
+        {
+            importID = importID.ToLower().Trim();
+            foreach (Organization organization in this)
+            {
+                if (organization.ImportID != null && organization.ImportID.Trim().ToLower() == importID)
+                {
+                    return organization;
+                }
+            }
+            return null;
+        }
+
         public Organization FindByImportID(string importID)
         {
             importID = importID.ToLower().Trim();
