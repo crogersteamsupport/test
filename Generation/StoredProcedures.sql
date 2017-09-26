@@ -1,495 +1,595 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedTicket
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductFamily
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectDeletedTicket
+CREATE PROCEDURE dbo.uspGeneratedSelectProductFamily
 
 (
-  @ID int
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ID],
-    [TicketID],
-    [TicketNumber],
+    [ProductFamilyID],
     [OrganizationID],
     [Name],
-    [DateDeleted],
-    [DeleterID]
-  FROM [dbo].[DeletedTickets]
-  WHERE ([ID] = @ID)
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [NeedsIndexing],
+    [ImportID],
+    [ImportFileID]
+  FROM [dbo].[ProductFamilies]
+  WHERE ([ProductFamilyID] = @ProductFamilyID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedTicket
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductFamily
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertDeletedTicket
+CREATE PROCEDURE dbo.uspGeneratedInsertProductFamily
 
 (
-  @TicketID int,
-  @TicketNumber int,
   @OrganizationID int,
-  @Name nvarchar(255),
-  @DateDeleted datetime,
-  @DeleterID int,
+  @Name nvarchar(MAX),
+  @Description nvarchar(MAX),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @NeedsIndexing int,
+  @ImportID varchar(500),
+  @ImportFileID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[DeletedTickets]
+  INSERT INTO [dbo].[ProductFamilies]
   (
-    [TicketID],
-    [TicketNumber],
     [OrganizationID],
     [Name],
-    [DateDeleted],
-    [DeleterID])
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [NeedsIndexing],
+    [ImportID],
+    [ImportFileID])
   VALUES (
-    @TicketID,
-    @TicketNumber,
     @OrganizationID,
     @Name,
-    @DateDeleted,
-    @DeleterID)
+    @Description,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @NeedsIndexing,
+    @ImportID,
+    @ImportFileID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductFamily
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
+CREATE PROCEDURE dbo.uspGeneratedUpdateProductFamily
 
 (
-  @ID int,
-  @TicketID int,
-  @TicketNumber int,
+  @ProductFamilyID int,
   @OrganizationID int,
-  @Name nvarchar(255),
-  @DateDeleted datetime,
-  @DeleterID int
+  @Name nvarchar(MAX),
+  @Description nvarchar(MAX),
+  @DateModified datetime,
+  @ModifierID int,
+  @NeedsIndexing int,
+  @ImportID varchar(500),
+  @ImportFileID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[DeletedTickets]
+  UPDATE [dbo].[ProductFamilies]
   SET
-    [TicketID] = @TicketID,
-    [TicketNumber] = @TicketNumber,
     [OrganizationID] = @OrganizationID,
     [Name] = @Name,
-    [DateDeleted] = @DateDeleted,
-    [DeleterID] = @DeleterID
-  WHERE ([ID] = @ID)
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [NeedsIndexing] = @NeedsIndexing,
+    [ImportID] = @ImportID,
+    [ImportFileID] = @ImportFileID
+  WHERE ([ProductFamilyID] = @ProductFamilyID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedTicket
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductFamily
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedTicket
+CREATE PROCEDURE dbo.uspGeneratedDeleteProductFamily
 
 (
-  @ID int
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[DeletedTickets]
-  WHERE ([ID] = @ID)
+  DELETE FROM [dbo].[ProductFamilies]
+  WHERE ([ProductFamilyID] = @ProductFamilyID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedTicket
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductFamily
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectDeletedTicket
+CREATE PROCEDURE dbo.uspGeneratedSelectProductFamily
 
 (
-  @ID int
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ID],
-    [TicketID],
-    [TicketNumber],
+    [ProductFamilyID],
     [OrganizationID],
     [Name],
-    [DateDeleted],
-    [DeleterID]
-  FROM [dbo].[DeletedTickets]
-  WHERE ([ID] = @ID)
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [NeedsIndexing],
+    [ImportID],
+    [ImportFileID]
+  FROM [dbo].[ProductFamilies]
+  WHERE ([ProductFamilyID] = @ProductFamilyID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedTicket
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductFamily
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertDeletedTicket
+CREATE PROCEDURE dbo.uspGeneratedInsertProductFamily
 
 (
-  @TicketID int,
-  @TicketNumber int,
   @OrganizationID int,
-  @Name nvarchar(255),
-  @DateDeleted datetime,
-  @DeleterID int,
+  @Name nvarchar(MAX),
+  @Description nvarchar(MAX),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @NeedsIndexing int,
+  @ImportID varchar(500),
+  @ImportFileID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[DeletedTickets]
+  INSERT INTO [dbo].[ProductFamilies]
   (
-    [TicketID],
-    [TicketNumber],
     [OrganizationID],
     [Name],
-    [DateDeleted],
-    [DeleterID])
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [NeedsIndexing],
+    [ImportID],
+    [ImportFileID])
   VALUES (
-    @TicketID,
-    @TicketNumber,
     @OrganizationID,
     @Name,
-    @DateDeleted,
-    @DeleterID)
+    @Description,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @NeedsIndexing,
+    @ImportID,
+    @ImportFileID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductFamily
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
+CREATE PROCEDURE dbo.uspGeneratedUpdateProductFamily
 
 (
-  @ID int,
-  @TicketID int,
-  @TicketNumber int,
+  @ProductFamilyID int,
   @OrganizationID int,
-  @Name nvarchar(255),
-  @DateDeleted datetime,
-  @DeleterID int
+  @Name nvarchar(MAX),
+  @Description nvarchar(MAX),
+  @DateModified datetime,
+  @ModifierID int,
+  @NeedsIndexing int,
+  @ImportID varchar(500),
+  @ImportFileID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[DeletedTickets]
+  UPDATE [dbo].[ProductFamilies]
   SET
-    [TicketID] = @TicketID,
-    [TicketNumber] = @TicketNumber,
     [OrganizationID] = @OrganizationID,
     [Name] = @Name,
-    [DateDeleted] = @DateDeleted,
-    [DeleterID] = @DeleterID
-  WHERE ([ID] = @ID)
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [NeedsIndexing] = @NeedsIndexing,
+    [ImportID] = @ImportID,
+    [ImportFileID] = @ImportFileID
+  WHERE ([ProductFamilyID] = @ProductFamilyID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedTicket
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductFamily
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedTicket
+CREATE PROCEDURE dbo.uspGeneratedDeleteProductFamily
 
 (
-  @ID int
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[DeletedTickets]
-  WHERE ([ID] = @ID)
+  DELETE FROM [dbo].[ProductFamilies]
+  WHERE ([ProductFamilyID] = @ProductFamilyID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedTicket
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductFamily
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectDeletedTicket
+CREATE PROCEDURE dbo.uspGeneratedSelectProductFamily
 
 (
-  @ID int
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ID],
-    [TicketID],
-    [TicketNumber],
+    [ProductFamilyID],
     [OrganizationID],
     [Name],
-    [DateDeleted],
-    [DeleterID]
-  FROM [dbo].[DeletedTickets]
-  WHERE ([ID] = @ID)
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [NeedsIndexing],
+    [ImportID],
+    [ImportFileID]
+  FROM [dbo].[ProductFamilies]
+  WHERE ([ProductFamilyID] = @ProductFamilyID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedTicket
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductFamily
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertDeletedTicket
+CREATE PROCEDURE dbo.uspGeneratedInsertProductFamily
 
 (
-  @TicketID int,
-  @TicketNumber int,
   @OrganizationID int,
-  @Name nvarchar(255),
-  @DateDeleted datetime,
-  @DeleterID int,
+  @Name nvarchar(MAX),
+  @Description nvarchar(MAX),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @NeedsIndexing int,
+  @ImportID varchar(500),
+  @ImportFileID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[DeletedTickets]
+  INSERT INTO [dbo].[ProductFamilies]
   (
-    [TicketID],
-    [TicketNumber],
     [OrganizationID],
     [Name],
-    [DateDeleted],
-    [DeleterID])
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [NeedsIndexing],
+    [ImportID],
+    [ImportFileID])
   VALUES (
-    @TicketID,
-    @TicketNumber,
     @OrganizationID,
     @Name,
-    @DateDeleted,
-    @DeleterID)
+    @Description,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @NeedsIndexing,
+    @ImportID,
+    @ImportFileID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductFamily
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
+CREATE PROCEDURE dbo.uspGeneratedUpdateProductFamily
 
 (
-  @ID int,
-  @TicketID int,
-  @TicketNumber int,
+  @ProductFamilyID int,
   @OrganizationID int,
-  @Name nvarchar(255),
-  @DateDeleted datetime,
-  @DeleterID int
+  @Name nvarchar(MAX),
+  @Description nvarchar(MAX),
+  @DateModified datetime,
+  @ModifierID int,
+  @NeedsIndexing int,
+  @ImportID varchar(500),
+  @ImportFileID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[DeletedTickets]
+  UPDATE [dbo].[ProductFamilies]
   SET
-    [TicketID] = @TicketID,
-    [TicketNumber] = @TicketNumber,
     [OrganizationID] = @OrganizationID,
     [Name] = @Name,
-    [DateDeleted] = @DateDeleted,
-    [DeleterID] = @DeleterID
-  WHERE ([ID] = @ID)
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [NeedsIndexing] = @NeedsIndexing,
+    [ImportID] = @ImportID,
+    [ImportFileID] = @ImportFileID
+  WHERE ([ProductFamilyID] = @ProductFamilyID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedTicket
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductFamily
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedTicket
+CREATE PROCEDURE dbo.uspGeneratedDeleteProductFamily
 
 (
-  @ID int
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[DeletedTickets]
-  WHERE ([ID] = @ID)
+  DELETE FROM [dbo].[ProductFamilies]
+  WHERE ([ProductFamilyID] = @ProductFamilyID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedTicket
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductFamily
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectDeletedTicket
+CREATE PROCEDURE dbo.uspGeneratedSelectProductFamily
 
 (
-  @ID int
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ID],
-    [TicketID],
-    [TicketNumber],
+    [ProductFamilyID],
     [OrganizationID],
     [Name],
-    [DateDeleted],
-    [DeleterID]
-  FROM [dbo].[DeletedTickets]
-  WHERE ([ID] = @ID)
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [NeedsIndexing],
+    [ImportID],
+    [ImportFileID]
+  FROM [dbo].[ProductFamilies]
+  WHERE ([ProductFamilyID] = @ProductFamilyID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedTicket
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductFamily
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertDeletedTicket
+CREATE PROCEDURE dbo.uspGeneratedInsertProductFamily
 
 (
-  @TicketID int,
-  @TicketNumber int,
   @OrganizationID int,
-  @Name nvarchar(255),
-  @DateDeleted datetime,
-  @DeleterID int,
+  @Name nvarchar(MAX),
+  @Description nvarchar(MAX),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @NeedsIndexing int,
+  @ImportID varchar(500),
+  @ImportFileID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[DeletedTickets]
+  INSERT INTO [dbo].[ProductFamilies]
   (
-    [TicketID],
-    [TicketNumber],
     [OrganizationID],
     [Name],
-    [DateDeleted],
-    [DeleterID])
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [NeedsIndexing],
+    [ImportID],
+    [ImportFileID])
   VALUES (
-    @TicketID,
-    @TicketNumber,
     @OrganizationID,
     @Name,
-    @DateDeleted,
-    @DeleterID)
+    @Description,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @NeedsIndexing,
+    @ImportID,
+    @ImportFileID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductFamily
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
+CREATE PROCEDURE dbo.uspGeneratedUpdateProductFamily
 
 (
-  @ID int,
-  @TicketID int,
-  @TicketNumber int,
+  @ProductFamilyID int,
   @OrganizationID int,
-  @Name nvarchar(255),
-  @DateDeleted datetime,
-  @DeleterID int
+  @Name nvarchar(MAX),
+  @Description nvarchar(MAX),
+  @DateModified datetime,
+  @ModifierID int,
+  @NeedsIndexing int,
+  @ImportID varchar(500),
+  @ImportFileID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[DeletedTickets]
+  UPDATE [dbo].[ProductFamilies]
   SET
-    [TicketID] = @TicketID,
-    [TicketNumber] = @TicketNumber,
     [OrganizationID] = @OrganizationID,
     [Name] = @Name,
-    [DateDeleted] = @DateDeleted,
-    [DeleterID] = @DeleterID
-  WHERE ([ID] = @ID)
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [NeedsIndexing] = @NeedsIndexing,
+    [ImportID] = @ImportID,
+    [ImportFileID] = @ImportFileID
+  WHERE ([ProductFamilyID] = @ProductFamilyID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedTicket
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductFamily
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedTicket
+CREATE PROCEDURE dbo.uspGeneratedDeleteProductFamily
 
 (
-  @ID int
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[DeletedTickets]
-  WHERE ([ID] = @ID)
+  DELETE FROM [dbo].[ProductFamilies]
+  WHERE ([ProductFamilyID] = @ProductFamilyID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedTicket
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductFamily
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectDeletedTicket
+CREATE PROCEDURE dbo.uspGeneratedSelectProductFamily
 
 (
-  @ID int
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ID],
-    [TicketID],
-    [TicketNumber],
+    [ProductFamilyID],
     [OrganizationID],
     [Name],
-    [DateDeleted],
-    [DeleterID]
-  FROM [dbo].[DeletedTickets]
-  WHERE ([ID] = @ID)
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [NeedsIndexing],
+    [ImportID],
+    [ImportFileID]
+  FROM [dbo].[ProductFamilies]
+  WHERE ([ProductFamilyID] = @ProductFamilyID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedTicket
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductFamily
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertDeletedTicket
+CREATE PROCEDURE dbo.uspGeneratedInsertProductFamily
 
 (
-  @TicketID int,
-  @TicketNumber int,
   @OrganizationID int,
-  @Name nvarchar(255),
-  @DateDeleted datetime,
-  @DeleterID int,
+  @Name nvarchar(MAX),
+  @Description nvarchar(MAX),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @NeedsIndexing int,
+  @ImportID varchar(500),
+  @ImportFileID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[DeletedTickets]
+  INSERT INTO [dbo].[ProductFamilies]
   (
-    [TicketID],
-    [TicketNumber],
     [OrganizationID],
     [Name],
-    [DateDeleted],
-    [DeleterID])
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [NeedsIndexing],
+    [ImportID],
+    [ImportFileID])
   VALUES (
-    @TicketID,
-    @TicketNumber,
     @OrganizationID,
     @Name,
-    @DateDeleted,
-    @DeleterID)
+    @Description,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @NeedsIndexing,
+    @ImportID,
+    @ImportFileID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductFamily
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedTicket
+CREATE PROCEDURE dbo.uspGeneratedUpdateProductFamily
 
 (
-  @ID int,
-  @TicketID int,
-  @TicketNumber int,
+  @ProductFamilyID int,
   @OrganizationID int,
-  @Name nvarchar(255),
-  @DateDeleted datetime,
-  @DeleterID int
+  @Name nvarchar(MAX),
+  @Description nvarchar(MAX),
+  @DateModified datetime,
+  @ModifierID int,
+  @NeedsIndexing int,
+  @ImportID varchar(500),
+  @ImportFileID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[DeletedTickets]
+  UPDATE [dbo].[ProductFamilies]
   SET
-    [TicketID] = @TicketID,
-    [TicketNumber] = @TicketNumber,
     [OrganizationID] = @OrganizationID,
     [Name] = @Name,
-    [DateDeleted] = @DateDeleted,
-    [DeleterID] = @DeleterID
-  WHERE ([ID] = @ID)
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [NeedsIndexing] = @NeedsIndexing,
+    [ImportID] = @ImportID,
+    [ImportFileID] = @ImportFileID
+  WHERE ([ProductFamilyID] = @ProductFamilyID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedTicket
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductFamily
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedTicket
+CREATE PROCEDURE dbo.uspGeneratedDeleteProductFamily
 
 (
-  @ID int
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[DeletedTickets]
-  WHERE ([ID] = @ID)
+  DELETE FROM [dbo].[ProductFamilies]
+  WHERE ([ProductFamilyID] = @ProductFamilyID)
 GO
 
 
