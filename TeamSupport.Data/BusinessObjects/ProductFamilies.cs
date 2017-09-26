@@ -228,6 +228,30 @@ namespace TeamSupport.Data
 				Fill(command);
 			}
 		}
+
+        public ProductFamily FindByName(string name)
+        {
+            foreach (ProductFamily productFamily in this)
+            {
+                if (productFamily.Name.Trim().ToLower() == name.Trim().ToLower())
+                {
+                    return productFamily;
+                }
+            }
+            return null;
+        }
+
+        public ProductFamily FindByImportID(string importID)
+        {
+            foreach (ProductFamily productFamily in this)
+            {
+                if (productFamily.ImportID.Trim().ToLower() == importID.Trim().ToLower())
+                {
+                    return productFamily;
+                }
+            }
+            return null;
+        }
 	}
 
 }
