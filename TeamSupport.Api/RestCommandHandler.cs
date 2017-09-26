@@ -59,7 +59,17 @@ namespace TeamSupport.Api
                     int apiRequestCount = ApiLogs.GetDailyRequestCount(_loginUser, companyId);
 
                     if (apiRequestCount >= apiRequestLimit)
-                        throw new RestException(HttpStatusCode.Forbidden, "You have exceeded your 24 hour API request limit of " + _organization.APIRequestLimit.ToString() + ".");
+					{
+						string requestLimitError = "{ \"Error\": \"You have exceeded your 24 hour API request limit of " + _organization.APIRequestLimit.ToString() + ".\"}";
+
+						if (command.Format == RestFormat.XML)
+						{
+							System.Xml.XmlDocument xmlDoc = Newtonsoft.Json.JsonConvert.DeserializeXmlNode(requestLimitError);
+							requestLimitError = xmlDoc.InnerXml;
+						}
+
+						throw new RestException(HttpStatusCode.Forbidden, requestLimitError);
+					}
 
                     processor.Process();
 

@@ -27,7 +27,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
         	toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect styleselect | bold italic underline strikethrough blockquote codesample | code | table",
             statusbar: true,
             gecko_spellcheck: true,
-            extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type],table[class=table|border:1],iframe[src|width|height|frameborder|webkitallowfullscreen|mozallowfullscreen|allowfullscreen]",
+            extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type],iframe[src|width|height|frameborder|webkitallowfullscreen|mozallowfullscreen|allowfullscreen]",
             content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
             //table_default_styles: {
             //    border: '1px solid black'
@@ -55,21 +55,22 @@ var initEditor = function (element, shouldResize, init, postinit) {
                 ed.on('init', function (e) {
                     _mainFrame.Ts.System.refreshUser(function () {
                         if (_mainFrame.Ts.System.User.FontFamilyDescription != "Unassigned") {
-                            ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily));
+                            //ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily));
                             ed.getBody().style.fontFamily = GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily);
                         }
-                        else if (_mainFrame.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-                            ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily));
+                        else if (_mainFrame.Ts.System.Organization.FontFamily != "Unassigned") {
+                            //ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily));
                             ed.getBody().style.fontFamily = GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily);
                         }
 
                         if (_mainFrame.Ts.System.User.FontSize != "0") {
                             //ed.execCommand("FontSize", false, _mainFrame.Ts.System.User.FontSizeDescription);
-                            ed.getBody().style.fontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize + 1);
+                            ed.getBody().style.fontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize);;
                         }
-                        else if (_mainFrame.Ts.System.Organization.FontSize != "0") {
+                        else
+                            if (_mainFrame.Ts.System.Organization.FontSize != "0") {
                             //ed.execCommand("FontSize", false, _mainFrame.Ts.System.Organization.FontSize + 1);
-                            ed.getBody().style.fontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize + 1);
+                            ed.getBody().style.fontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize);
                         }
 
                       if(postinit) postinit();
@@ -686,25 +687,25 @@ function GetTinyMCEFontSize(fontSize) {
     var result = '';
     switch (fontSize) {
         case 1:
-            result = "8px";
+            result = "8pt";
             break;
         case 2:
-            result = "10px";
+            result = "10pt";
             break;
         case 3:
-            result = "12px";
+            result = "12pt";
             break;
         case 4:
-            result = "14px";
+            result = "14pt";
             break;
         case 5:
-            result = "18px";
+            result = "18pt";
             break;
         case 6:
-            result = "24px";
+            result = "24pt";
             break;
         case 7:
-            result = "36px";
+            result = "36pt";
             break;
     }
     return result;

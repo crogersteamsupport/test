@@ -118,13 +118,16 @@ namespace TeamSupport.Data
     [DataMember] public bool RequireGroupAssignmentOnTickets { get; set; }
     [DataMember] public bool AlertContactNoEmail { get; set; }
     [DataMember] public bool DisableSupportLogin { get; set; }
-    }
+    [DataMember] public string NoAttachmentsInOutboundExcludeProductLine { get; set; }
+          
+  }
   
   public partial class Organization : BaseItem
   {
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.NoAttachmentsInOutboundExcludeProductLine = this.NoAttachmentsInOutboundExcludeProductLine;
       result.AlertContactNoEmail = this.AlertContactNoEmail;
       result.RequireGroupAssignmentOnTickets = this.RequireGroupAssignmentOnTickets;
       result.AutoAssociateCustomerToTicketBasedOnAssetAssignment = this.AutoAssociateCustomerToTicketBasedOnAssetAssignment;

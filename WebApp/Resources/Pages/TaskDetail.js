@@ -535,6 +535,7 @@ $(document).ready(function () {
 
         $('#btnDescriptionCancel').click(function (e) {
             e.preventDefault();
+            tinymce.activeEditor.destroy();
             $('#descriptionForm').hide();
             $('#descriptionContent').show();
             header.show();
@@ -544,7 +545,7 @@ $(document).ready(function () {
         $('#btnDescriptionSave').click(function (e) {
             e.preventDefault();
             window.parent.parent.Ts.System.logAction('Task Detail - Save Description Edit');
-            window.parent.parent.Ts.Services.Task.SetDescription(_taskID, $(this).prev().find('textarea').val(), function (result) {
+            window.parent.parent.Ts.Services.Task.SetDescription(_taskID, tinyMCE.activeEditor.getContent(), function (result) {
                 header.html(result);
                 $('#taskEdit').removeClass("disabled");
             },
@@ -555,6 +556,7 @@ $(document).ready(function () {
             });
 
             $('#descriptionForm').hide();
+            tinymce.activeEditor.destroy();
             $('#descriptionContent').show();
             header.show();
         })

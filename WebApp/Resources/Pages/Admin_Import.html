@@ -16,20 +16,71 @@
 
     <title>Import</title>
     <style>
-        body { background-color: #fff; }
-        .import-section { padding: 10px 10px; }
-        .field-panel .well { margin: 15px 0 0 0; }
-        .available-field-list { list-style-type: none; padding: 0; margin: 0; }
-            .available-field-list li { border-bottom: 1px solid #ececec; margin-bottom: 10px; }
-                .available-field-list li:last-child { border-bottom: none; }
-        .available-field-name { font-size: 16px; margin: 0 0 5px 0; font-weight: bold; }
-        .available-field-type { font-weight: normal; }
-        .available-field-desc { margin-bottom: 10px; color: #777; }
-        .import-upload { border: 4px dashed #ddd; border-radius: 2px; color:#ccc; text-align:center; }
-            .import-upload h3 { margin-top: 50px; }
-            .import-upload button { margin: 10px 0 50px 0;}
-        .import-new-action { text-align:center; margin: 30px 0; }
-            .import-new-action button { margin-right: 15px; }
+        body {
+            background-color: #fff;
+        }
+
+        .import-section {
+            padding: 10px 10px;
+        }
+
+        .field-panel .well {
+            margin: 15px 0 0 0;
+        }
+
+        .available-field-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+            .available-field-list li {
+                border-bottom: 1px solid #ececec;
+                margin-bottom: 10px;
+            }
+
+                .available-field-list li:last-child {
+                    border-bottom: none;
+                }
+
+        .available-field-name {
+            font-size: 16px;
+            margin: 0 0 5px 0;
+            font-weight: bold;
+        }
+
+        .available-field-type {
+            font-weight: normal;
+        }
+
+        .available-field-desc {
+            margin-bottom: 10px;
+            color: #777;
+        }
+
+        .import-upload {
+            border: 4px dashed #ddd;
+            border-radius: 2px;
+            color: #ccc;
+            text-align: center;
+        }
+
+            .import-upload h3 {
+                margin-top: 50px;
+            }
+
+            .import-upload button {
+                margin: 10px 0 50px 0;
+            }
+
+        .import-new-action {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+            .import-new-action button {
+                margin-right: 15px;
+            }
     </style>
 
 
@@ -58,18 +109,18 @@
                 </tbody>
 
             </table>
-          <div class="results-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
-          <div class="results-done">There are no more imports.</div>
-          <div class="results-empty">There are no imports.</div>
-          <div class="maincontainerx">
-            <a href="#" class="scrollup">Scroll</a>
-            <div class="row">
-              <div>
+            <div class="results-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
+            <div class="results-done">There are no more imports.</div>
+            <div class="results-empty">There are no imports.</div>
+            <div class="maincontainerx">
+                <a href="#" class="scrollup">Scroll</a>
                 <div class="row">
+                    <div>
+                        <div class="row">
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
         </div>
         <div class="import-section hidden" id="import-new">
             <div class="row">
@@ -79,52 +130,48 @@
                             <div class="form-group">
                                 <label for="import-type">What would you like to import?</label>
                                 <select class="form-control" id="import-type">
-										  	<option value="22">1. Users</option>
-                                  <option value="9">2. Companies</option>
-                                  <option value="32">3. Contacts</option>
-                                  <option value="13">4. Products</option>
-                                  <option value="14">5. Product Versions</option>
-										  	<option value="8">6. Company Products</option>
-                                  <option value="34">7. Assets</option>
-                                  <option value="17">8. Tickets</option>
-                                  <option value="10">9. Company Tickets</option>
-                                  <option value="52">10. Contact Tickets</option>
-                                  <option value="53">11. Asset Tickets</option>
-                                  <option value="54">12. Associated Tickets</option>
-                                  <option value="0">13. Actions</option>
-                                  <!--<option value="?">Asset History</option>-->
-                                  <option value="56">14. Company Primary Contact</option>
-                                  <option value="40">15. Company Notes</option>
-                                  <option value="48">16. Company Addresses</option>
-                                  <option value="49">17. Company Phone Numbers</option>
-                                  <option value="58">18. Contact Notes</option>
-                                  <option value="50">19. Contact Addresses</option>
-                                  <option value="51">20. Contact Phone Numbers</option>
-                                  <!--<option value="6">Groups</option>-->
-                                  <!--<option value="?">User Groups</option>-->
-                                  <!--<option value="39">Wiki</option>-->
+                                    <!--<option value="22">1. Users</option>
+                                    <option value="9">2. Companies</option>
+                                    <option value="32">3. Contacts</option>
+                                    <option value="13">4. Products</option>
+                                    <option value="14">5. Product Versions</option>
+                                    <option value="8">6. Company Products</option>
+                                    <option value="34">7. Assets</option>
+                                    <option value="17">8. Tickets</option>
+                                    <option value="10">9. Company Tickets</option>
+                                    <option value="52">10. Contact Tickets</option>
+                                    <option value="53">11. Asset Tickets</option>
+                                    <option value="54">12. Associated Tickets</option>
+                                    <option value="0">13. Actions</option>
+                                    <option value="56">14. Company Primary Contact</option>
+                                    <option value="40">15. Company Notes</option>
+                                    <option value="48">16. Company Addresses</option>
+                                    <option value="49">17. Company Phone Numbers</option>
+                                    <option value="58">18. Contact Notes</option>
+                                    <option value="50">19. Contact Addresses</option>
+                                    <option value="51">20. Contact Phone Numbers</option>-->
                                 </select>
                             </div>
                         </form>
-                      <div id="importUpload">
-                        <form class="import-upload"
-                              action="Upload/Actions/555"
-                              method="POST"
-                              enctype="multipart/form-data">
-                          <div id="drop">
-                            <h3>Drag a file here</h3>
-                            <div>Or, if you prefer</div>
-                            <button id="btnSelectFile" class="btn btn-primary">Select a file from your computer</button>
-                            <input class="hiddenfile" type="file" name="file[]" multiple>
-                          </div>
-                          <ul class="upload-queue"></ul>
-                        </form>
+                        <div id="importUpload">
+                            <form class="import-upload"
+                                  action="Upload/Actions/555"
+                                  method="POST"
+                                  enctype="multipart/form-data">
+                                <div id="drop">
+                                    <h3>Drag a file here</h3>
+                                    <div>Or, if you prefer</div>
+                                    <button id="btnSelectFile" class="btn btn-primary">Select a file from your computer</button>
+                                    <input class="hiddenfile" type="file" name="file[]" multiple>
+                                </div>
+                                <ul class="upload-queue"></ul>
+                            </form>
 
-                        <div class="import-new-action">
-                          <button class="btn btn-warning btnCancel">Cancel</button>
-                          <button id="btnUpload" class="btn btn-primary">Next</button>
+                            <div class="import-new-action">
+                                <button class="btn btn-warning btnCancel">Cancel</button>
+                                <button id="btnUpload" class="btn btn-primary">Next</button>
+                            </div>
                         </div>
-                      </div>
                     </div>
 
 
@@ -216,8 +263,8 @@
                         </div>
                     </div>
                     <div id="importButtons" class="import-new-action">
-                      <button class="btn btn-warning btnCancel">Cancel</button>
-                      <button id="btnImport" class="btn btn-primary">Import</button>
+                        <button class="btn btn-warning btnCancel">Cancel</button>
+                        <button id="btnImport" class="btn btn-primary">Import</button>
                     </div>
 
                 </div>
@@ -253,7 +300,7 @@
 
                 </div>
             </div>
-            
+
         </div>
     </div>
 </body>

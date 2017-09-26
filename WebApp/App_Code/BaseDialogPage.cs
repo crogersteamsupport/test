@@ -37,22 +37,22 @@ public class BaseDialogPage : System.Web.UI.Page
   public virtual bool Save() { return false; }
   public virtual bool Close() { return false; }
 
-  protected override void SavePageStateToPersistenceMedium(object viewState)
-  {
-    Session[Request.Url.AbsolutePath] = viewState;
-  }
+  //protected override void SavePageStateToPersistenceMedium(object viewState)
+  //{
+  //  Session[Request.Url.AbsolutePath] = viewState;
+  //}
 
-  protected override object LoadPageStateFromPersistenceMedium()
-  {
-    object o = Session[Request.Url.AbsolutePath];
-    if (o == null)
-    {
-      throw new Exception("The Viewstate is missing!!!");
-    }
-    else
-    {
-      return o;
-    }
-  }
+  //protected override object LoadPageStateFromPersistenceMedium()
+  //{
+  //  object o = Session[Request.Url.AbsolutePath];
+  //  if (o == null)
+  //  {
+  //    throw new Exception("The Viewstate is missing!!!");
+  //  }
+  //  else
+  //  {
+  //    return o;
+  //  }
+  //}
 
 }

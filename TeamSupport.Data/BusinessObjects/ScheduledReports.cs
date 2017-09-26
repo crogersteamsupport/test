@@ -60,14 +60,14 @@ namespace TeamSupport.Data
             }
 
             DateTime StartDateToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(StartDateUtc, tz);
-            DateTime lastRunToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(LastRunUtc.Value, tz);
-            DateTime nextRunToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(NextRunUtc.Value, tz);
+            DateTime nextRunToCreatorTimeZone = NextRunUtc != null ? TimeZoneInfo.ConvertTimeFromUtc(NextRunUtc.Value, tz) : TimeZoneInfo.ConvertTimeFromUtc(StartDateUtc, tz);
 
             // The initialDayDiff should not be calculated against our local time but the user's local time.
             int initialDayDiff = StartDateUtc.DayOfWeek - StartDateToCreatorTimeZone.DayOfWeek;
 
             if (LastRunUtc != null)
 			{
+				DateTime lastRunToCreatorTimeZone = TimeZoneInfo.ConvertTimeFromUtc(LastRunUtc.Value, tz);
 				dateOnly = StartDateUtc > LastRunUtc ? StartDateUtc.Date : ((DateTime)LastRunUtc).Date;
                 initialDayDiff = ((DateTime)LastRunUtc).DayOfWeek - lastRunToCreatorTimeZone.DayOfWeek;
 

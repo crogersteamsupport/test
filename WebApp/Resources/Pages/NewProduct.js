@@ -303,7 +303,7 @@ $(document).ready(function () {
       versionInfo.ProductID = $("#ddlProduct").val();
       versionInfo.ProductVersionStatusID = $("#ddlStatus").val();
       if ($("#inputExpectedRelease").val() != "")
-      	versionInfo.ReleaseDate = moment($("#inputExpectedRelease").val(), _dateFormat).format('MM/DD/YYYY');
+          versionInfo.ReleaseDate = top.Ts.Utils.getMsDate(moment($("#inputExpectedRelease").val(), _dateFormat).format('MM/DD/YYYY'));
       else
       	versionInfo.ReleaseDate = "";
       versionInfo.IsReleased = $("#cbReleased").prop('checked');

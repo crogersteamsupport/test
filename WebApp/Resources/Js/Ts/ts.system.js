@@ -419,8 +419,9 @@ var _startDate = new Date();
   Ts.ProductType.Enterprise = 2;
   Ts.ProductType.BugTracking= 3;
 
-  
+  Ts.Pusher = null;
 
+  Ts.TicketViewing = 0;
 })();
 
 

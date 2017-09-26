@@ -19,11 +19,11 @@ public class BasePage : System.Web.UI.Page
   protected override void OnPreLoad(EventArgs e)
   {
     base.OnPreLoad(e);
-    string sessionXsrfId = Session[_XsrfName] as string;
+    //string sessionXsrfId = Session[_XsrfName] as string;
     if (IsPostBack)
     {
       string vwId = ViewState[_XsrfName] as string;
-      if (string.IsNullOrEmpty(vwId) || !vwId.Equals(sessionXsrfId))
+      if (string.IsNullOrEmpty(vwId))
       {
         Response.Write("Unauthorized Request");
         Response.End();
@@ -32,12 +32,12 @@ public class BasePage : System.Web.UI.Page
     }
     else
     {
-      if (string.IsNullOrEmpty(sessionXsrfId))
-      {
-        sessionXsrfId = GenerateCode();
-        Session.Add(_XsrfName, sessionXsrfId);
-        ViewState.Add(_XsrfName, sessionXsrfId);
-      }
+      //if (string.IsNullOrEmpty(sessionXsrfId))
+      //{
+      //  sessionXsrfId = GenerateCode();
+      //  Session.Add(_XsrfName, sessionXsrfId);
+      //  ViewState.Add(_XsrfName, sessionXsrfId);
+      //}
     }
   }
 
@@ -49,15 +49,15 @@ public class BasePage : System.Web.UI.Page
     return Convert.ToBase64String(randBytes);
   }
 
-  protected override void SavePageStateToPersistenceMedium(object viewState)
-  {
-    Session[Request.Url.AbsolutePath] = viewState;
-  }
+  //protected override void SavePageStateToPersistenceMedium(object viewState)
+  //{
+  //  Session[Request.Url.AbsolutePath] = viewState;
+  //}
 
-  protected override object LoadPageStateFromPersistenceMedium()
-  {
-    object o = Session[Request.Url.AbsolutePath];
-    return o;
-  }
+  //protected override object LoadPageStateFromPersistenceMedium()
+  //{
+  //  object o = Session[Request.Url.AbsolutePath];
+  //  return o;
+  //}
 
 }

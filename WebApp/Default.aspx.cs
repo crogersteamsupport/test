@@ -26,15 +26,16 @@ public partial class _Default : BasePage
 {
   protected override void InitializeCulture()
   {
-    //base.InitializeCulture();
-    this.Culture = UserSession.LoginUser.CultureInfo.Name;
+        //base.InitializeCulture();
+        this.Culture = TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).CultureName;
+            //UserSession.LoginUser.CultureInfo.Name;
   }
 
   protected override void OnLoad(EventArgs e)
   {
     base.OnLoad(e);
-    Session.Clear();
-    Session.Abandon();
+    //Session.Clear();
+    //Session.Abandon();
     Response.Cache.SetAllowResponseInBrowserHistory(false);
     Response.Cache.SetCacheability(HttpCacheability.NoCache);
     Response.Cache.SetNoStore();
