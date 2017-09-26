@@ -134,7 +134,7 @@ namespace TSWebServices
                 SignInResult errorResult = new SignInResult();
                 errorResult.Error = "There was a error signing you in. Please verify your email and password and try again.";
                 errorResult.Result = LoginResult.Fail;
-                return JsonConvert.SerializeObject(errorResult);
+                return JsonConvert.SerializeObject(ex);
             }
         }
 
