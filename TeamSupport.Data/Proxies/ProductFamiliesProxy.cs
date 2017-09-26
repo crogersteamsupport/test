@@ -22,6 +22,8 @@ namespace TeamSupport.Data
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
     [DataMember] public int NeedsIndexing { get; set; }
+    [DataMember] public string ImportID { get; set; }
+    [DataMember] public int? ImportFileID { get; set; }
           
   }
   
@@ -30,7 +32,8 @@ namespace TeamSupport.Data
     public ProductFamilyProxy GetProxy()
     {
       ProductFamilyProxy result = new ProductFamilyProxy();
-
+      result.ImportFileID = this.ImportFileID;
+      result.ImportID = this.ImportID;
       result.NeedsIndexing = this.NeedsIndexing;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;

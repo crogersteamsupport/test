@@ -65,6 +65,28 @@ namespace TeamSupport.Data
 
         }
 
+        public void LoadCategoriesAndSubcategories(int organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "SELECT * FROM ForumCategories WHERE OrganizationID = @OrganizationID";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                Fill(command);
+            }
+        }
+
+        public ForumCategory FindByName(string name)
+        {
+            foreach (ForumCategory forumCategory in this)
+            {
+                if (forumCategory.CategoryName.ToLower().Trim() == name.ToLower().Trim())
+                {
+                    return forumCategory;
+                }
+            }
+            return null;
+        }
     }
 
 }

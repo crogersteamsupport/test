@@ -40,6 +40,18 @@ namespace TeamSupport.Data
       set { Row["Description"] = CheckValue("Description", value); }
     }
     
+    public string ImportID
+    {
+      get { return Row["ImportID"] != DBNull.Value ? (string)Row["ImportID"] : null; }
+      set { Row["ImportID"] = CheckValue("ImportID", value); }
+    }
+    
+    public int? ImportFileID
+    {
+      get { return Row["ImportFileID"] != DBNull.Value ? (int?)Row["ImportFileID"] : null; }
+      set { Row["ImportFileID"] = CheckValue("ImportFileID", value); }
+    }
+    
 
     
     public int NeedsIndexing
@@ -197,7 +209,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ProductFamilies] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [NeedsIndexing] = @NeedsIndexing  WHERE ([ProductFamilyID] = @ProductFamilyID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ProductFamilies] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [NeedsIndexing] = @NeedsIndexing,    [ImportID] = @ImportID,    [ImportFileID] = @ImportFileID  WHERE ([ProductFamilyID] = @ProductFamilyID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int, 4);
@@ -249,13 +261,41 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ImportID", SqlDbType.VarChar, 500);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ProductFamilies] (    [OrganizationID],    [Name],    [Description],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [NeedsIndexing]) VALUES ( @OrganizationID, @Name, @Description, @DateCreated, @DateModified, @CreatorID, @ModifierID, @NeedsIndexing); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ProductFamilies] (    [OrganizationID],    [Name],    [Description],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [NeedsIndexing],    [ImportID],    [ImportFileID]) VALUES ( @OrganizationID, @Name, @Description, @DateCreated, @DateModified, @CreatorID, @ModifierID, @NeedsIndexing, @ImportID, @ImportFileID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ImportFileID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ImportID", SqlDbType.VarChar, 500);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("NeedsIndexing", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -413,18 +453,6 @@ namespace TeamSupport.Data
       return null;
     }
 
-    public ProductFamily FindByName(string name)
-    {
-      foreach (ProductFamily productFamily in this)
-      {
-        if (productFamily.Name.Trim().ToLower() == name.Trim().ToLower())
-        {
-          return productFamily;
-        }
-      }
-      return null;
-    }
-
     public virtual ProductFamily AddNewProductFamily()
     {
       if (Table.Columns.Count < 1) LoadColumns("ProductFamilies");
@@ -437,7 +465,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ProductFamilyID], [OrganizationID], [Name], [Description], [DateCreated], [DateModified], [CreatorID], [ModifierID], [NeedsIndexing] FROM [dbo].[ProductFamilies] WHERE ([ProductFamilyID] = @ProductFamilyID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ProductFamilyID], [OrganizationID], [Name], [Description], [DateCreated], [DateModified], [CreatorID], [ModifierID], [NeedsIndexing], [ImportID], [ImportFileID] FROM [dbo].[ProductFamilies] WHERE ([ProductFamilyID] = @ProductFamilyID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ProductFamilyID", productFamilyID);
         Fill(command);
