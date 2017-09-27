@@ -33,7 +33,8 @@
 
 
 
-#primary {
+#primary .mce-tinymce.mce-container {
+    border-bottom:1px solid rgba(255,255,255,0.1);
 }
 #primary .spacer {
     padding:10px;
@@ -42,10 +43,6 @@
     background-color:white;
     box-shadow:1px 1px 0px rgba(0,0,0,0.1);
 }
-
-
-
-
 #primary .spinner {
     width:75px;
 }
@@ -92,10 +89,6 @@
     min-height:100%;
     background-color:rgba(255,255,255,0.7);
 }
-
-
-
-
 #sidebar .form-group {
     margin:0px 0px 10px;
     max-height:40px;
@@ -115,18 +108,12 @@
 #sidebar .form-horizontal .form-input {
     padding:0px 0px 0px 5px;
 }
-
 #sidebar input {
-
 }
-
-
-
 #sidebar .selectize-input {
     padding:0px;
     border:0px;
 }
-
 #sidebar .selectize-input.focus,
 #sidebar .selectize-input .item,
 #sidebar .selectize-input .option,
@@ -142,7 +129,6 @@
     border:none !important;
     vertical-align:top;
 }
-
 #sidebar .selectize-control.single .selectize-input:after {
     content:none;
 }
