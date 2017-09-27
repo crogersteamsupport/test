@@ -164,9 +164,15 @@
     width:90%;
     border-top:1px solid #d9d9d9;
 }
-#ticket-properties-area ::-webkit-input-placeholder {
+#ticket-properties-area input::-webkit-input-placeholder {
     /* color:#428bca; */
     color:rgba(0,0,0,0.5);
+    opacity:1;
+    vertical-align:top;
+    /*text-decoration:underline;*/
+}
+#ticket-properties-area .tagContainer input::-webkit-input-placeholder {
+    color:#428bca;
     opacity:1;
     vertical-align:top;
     /*text-decoration:underline;*/
