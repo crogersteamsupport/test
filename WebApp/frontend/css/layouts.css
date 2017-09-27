@@ -33,12 +33,7 @@
 
 
 
-#primary .mce-tinymce.mce-container {
-    border-top:1px solid rgba(0,0,0,0.1);
-    border-bottom:1px solid rgba(0,0,0,0.1);
-    border-left:none;
-    border-right:none;
-}
+
 #primary .spacer {
     padding:10px;
 }
@@ -81,7 +76,12 @@
 #primary .upload-area {
     margin:0px 0px 30px 20px;
 }
-
+#primary #box-tinymce {
+    border-top:1px solid rgba(0,0,0,0.1);
+    border-bottom:1px solid rgba(0,0,0,0.1);
+    border-left:none;
+    border-right:none;
+}
 
 
 
