@@ -151,3 +151,9 @@
     width:300px;
     margin-bottom:20px;
 }
+
+#ticket-properties-area hr {
+    margin:0px auto;
+    width:90%
+    border-top:#d9d9d9;
+}
