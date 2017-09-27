@@ -16,12 +16,13 @@ var _mainFrame = getMainFrame();
 var initEditor = function (element, shouldResize, init, postinit) {
     execSuggestedSolutions = null;
     _mainFrame.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
-        var resizePluginCode = ''; 
+        var resizePluginCode = '';
         if (shouldResize)
         {
             resizePluginCode = 'autoresize';
         }
         var editorOptions = {
+            branding: false,
             plugins: "paste link code textcolor image imagetools moxiemanager table lists codesample " + resizePluginCode,
         	toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox insertUser recordVideo recordScreenTok | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
         	toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect styleselect | bold italic underline strikethrough blockquote codesample | code | table",
@@ -31,7 +32,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
             content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
             //table_default_styles: {
             //    border: '1px solid black'
-            //}, 
+            //},
             convert_urls: true,
             autoresize_bottom_margin: 20,
             remove_script_host: false,
@@ -235,7 +236,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
                 					alert("This browser does not support screen sharing");
                 				} else if (response.extensionInstalled === false && BrowserDetect.browser != "Mozilla") {
                 					// prompt to install the response.extensionRequired extension
-                					
+
                 					if (BrowserDetect.browser == "Chrome") {
                 						$('#ChromeInstallModal').modal('show');
                 					}
