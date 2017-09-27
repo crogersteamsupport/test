@@ -2444,7 +2444,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
 
     if (field.ParentProductID) { groupContainer.addClass('product-dependent'); }
 
-    var selectContainer = $('<div>').addClass('ticket-input-container').appendTo(groupContainer);
+    var selectContainer = $('<div>').addClass('flexpush form-input ticket-input-container').appendTo(groupContainer);
     var select = $('<select>').addClass('hidden-select').attr("placeholder", "Select Value").appendTo(selectContainer);
     var options = field.ListValues.split('|');
 
