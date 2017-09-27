@@ -113,7 +113,7 @@
 }
 #sidebar input {
     border:none;
-    
+    padding:0px !important;
 }
 #sidebar .selectize-input {
     padding:0px;
