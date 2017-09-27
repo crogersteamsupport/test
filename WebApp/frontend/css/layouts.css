@@ -116,6 +116,14 @@
     padding:0px !important;
     vertical-align:top;
     outline:0;
+    box-shadow:none;
+}
+#sidebar input:focus {
+    border:none;
+    padding:0px !important;
+    vertical-align:top;
+    outline:0;
+    box-shadow:none;
 }
 #sidebar .selectize-input {
     padding:0px;
