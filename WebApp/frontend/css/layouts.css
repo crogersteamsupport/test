@@ -165,7 +165,8 @@
     border-top:1px solid #d9d9d9;
 }
 #ticket-properties-area ::-webkit-input-placeholder {
-    color:#428bca;
+    /* color:#428bca; */
+    color:rgba(0,0,0,0.5);
     opacity:1;
     vertical-align:top;
     /*text-decoration:underline;*/
