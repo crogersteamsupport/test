@@ -112,6 +112,8 @@
     padding:0px 0px 0px 5px;
 }
 #sidebar input {
+    border:none;
+    
 }
 #sidebar .selectize-input {
     padding:0px;
