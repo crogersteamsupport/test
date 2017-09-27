@@ -34,7 +34,10 @@
 
 
 #primary .mce-tinymce.mce-container {
+    border-top:1px solid rgba(0,0,0,0.1);
     border-bottom:1px solid rgba(0,0,0,0.1);
+    border-left:none;
+    border-right:none;
 }
 #primary .spacer {
     padding:10px;
