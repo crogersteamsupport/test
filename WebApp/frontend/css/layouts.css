@@ -114,6 +114,8 @@
 #sidebar input {
     border:none;
     padding:0px !important;
+    vertical-align:top;
+    outline:0;
 }
 #sidebar .selectize-input {
     padding:0px;
