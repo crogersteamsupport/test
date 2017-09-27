@@ -117,6 +117,7 @@
     vertical-align:top;
     outline:0;
     box-shadow:none;
+    background:none;
 }
 #sidebar input:focus {
     border:none;
@@ -165,5 +166,6 @@
 #ticket-properties-area ::-webkit-input-placeholder {
     color:#428bca;
     opacity:1;
+    vertical-align:top;
     /*text-decoration:underline;*/
 }
