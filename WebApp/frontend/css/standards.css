@@ -523,3 +523,12 @@ div.main-footer {
     font-size: 20px !important;
     color:black;
 }
+
+
+
+
+/* TINYMCE STANDARDS */
+
+.mce-container {
+    border:none !important;
+}
