@@ -23,7 +23,6 @@ var initEditor = function (element, shouldResize, init, postinit) {
         }
         var editorOptions = {
             branding: false,
-            object_resizing: false,
             plugins: "paste link code textcolor image imagetools moxiemanager table lists codesample " + resizePluginCode,
         	toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox insertUser recordVideo recordScreenTok | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
         	toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect styleselect | bold italic underline strikethrough blockquote codesample | code | table",
