@@ -129,6 +129,7 @@
 #sidebar .selectize-input {
     padding:0px;
     border:0px;
+    background:none;
 }
 #sidebar .selectize-input.focus,
 #sidebar .selectize-input .item,
