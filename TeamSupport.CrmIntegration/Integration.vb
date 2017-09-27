@@ -1696,24 +1696,36 @@ Namespace TeamSupport
                 End If
             End Sub
 
-            Public Sub Write(ByVal Text As String)
-                ' the very first time we write to this file (once each day), prune old files
-                If Not File.Exists(LogPath & "\" & FileName) Then
-                    For Each oldFileName As String In Directory.GetFiles(LogPath)
-                        If File.GetLastWriteTime(oldFileName).AddDays(7) < Today Then
-                            File.Delete(oldFileName)
-                        End If
-                    Next
-                End If
+			Public Sub Write(ByVal Text As String)
+				' the very first time we write to this file (once each day), prune old files
+				If Not File.Exists(LogPath & "\" & FileName) Then
+					For Each oldFileName As String In Directory.GetFiles(LogPath)
+						If File.GetLastWriteTime(oldFileName).AddDays(7) < Today Then
+							File.Delete(oldFileName)
+						End If
+					Next
+				End If
 
-                Try
-                    File.AppendAllText(LogPath & "\" & FileName, Now.ToLongTimeString() + ": " & Text & Environment.NewLine)
-                Catch ex As IOException
-                    'unfortunately if the file cannot be accessed we'll just keep going. Need to revisit this.
-                End Try
+				Try
+					File.AppendAllText(LogPath & "\" & FileName, Now.ToLongTimeString() + ": " & Text & Environment.NewLine)
+				Catch ex As IOException
+					'unfortunately if the file cannot be accessed we'll just keep going. Need to revisit this.
+				End Try
 
-            End Sub
+			End Sub
 
-        End Class
+			Public ReadOnly Property Path() As String
+				Get
+					Return LogPath
+				End Get
+			End Property
+
+			Public ReadOnly Property FileNamePath() As String
+				Get
+					Return FileName
+				End Get
+			End Property
+
+		End Class
     End Namespace
 End Namespace

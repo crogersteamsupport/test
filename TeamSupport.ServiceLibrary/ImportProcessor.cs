@@ -29,6 +29,7 @@ namespace TeamSupport.ServiceLibrary
         {
             Imports imports = new Imports(LoginUser);
             imports.LoadWaiting();
+            System.Threading.Thread healthThread = new System.Threading.Thread(new System.Threading.ThreadStart(KeepHealthUpdated));
 
             try
             {
@@ -42,9 +43,9 @@ namespace TeamSupport.ServiceLibrary
                     _importLog.Write("Importing importID: " + imports[0].ImportID.ToString());
                     _importLog.Write("Revision 3868");
 
+                    healthThread.Start();
                     ProcessImport(imports[0]);
                 }
-                UpdateHealth();
             }
             catch (Exception ex)
             {
@@ -55,7 +56,7 @@ namespace TeamSupport.ServiceLibrary
             finally
             {
                 ClearEmails();
-
+                healthThread.Abort();
             }
         }
 
@@ -240,15 +241,8 @@ namespace TeamSupport.ServiceLibrary
             Actions actions = new Actions(_importUser);
             int count = 0;
 
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
 
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
@@ -487,16 +481,8 @@ namespace TeamSupport.ServiceLibrary
             Users contacts = new Users(_importUser);
 
             int count = 0;
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
-
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
                 //_currentRow = row;
@@ -1164,16 +1150,8 @@ namespace TeamSupport.ServiceLibrary
             SortedList<string, int> userList = GetUserAndContactList();
             CustomValues customValues = new CustomValues(_importUser);
             int count = 0;
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
-
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
                 int refID = 0;
@@ -1763,16 +1741,8 @@ namespace TeamSupport.ServiceLibrary
             Organizations companies = new Organizations(_importUser);
 
             int count = 0;
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
-
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
 
@@ -1983,16 +1953,8 @@ namespace TeamSupport.ServiceLibrary
             Users users = new Users(_importUser);
 
             int count = 0;
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
-
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
 
@@ -2314,16 +2276,8 @@ namespace TeamSupport.ServiceLibrary
 
             Addresses addresses = new Addresses(_importUser);
             int count = 0;
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
-
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
 
@@ -2650,16 +2604,8 @@ namespace TeamSupport.ServiceLibrary
             PhoneNumbers phoneNumbers = new PhoneNumbers(_importUser);
             int count = 0;
             int bulkCount = 0;
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
-
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
 
@@ -3204,16 +3150,8 @@ namespace TeamSupport.ServiceLibrary
             CustomerRelationships customerRelationships = new CustomerRelationships(_importUser);
             int count = 0;
             int bulkCount = 0;
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
-
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
 
@@ -3639,16 +3577,8 @@ namespace TeamSupport.ServiceLibrary
 
             int count = 0;
 
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
-
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
 
@@ -4461,16 +4391,8 @@ namespace TeamSupport.ServiceLibrary
             tickets.LoadByOrganizationID(_organizationID);
 
             Tickets newTickets = new Tickets(_importUser);
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
-
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
 
@@ -4709,16 +4631,8 @@ namespace TeamSupport.ServiceLibrary
             Organizations companies = new Organizations(_importUser);
             companies.LoadByParentID(_organizationID, false);
 
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
-
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
 
@@ -5257,16 +5171,8 @@ namespace TeamSupport.ServiceLibrary
         {
             SortedList<string, int> assetList = GetAssetList();
 
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
-
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
 
@@ -5540,16 +5446,8 @@ namespace TeamSupport.ServiceLibrary
 
         private void ImportTicketRelationships(Import import)
         {
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
-
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
 
@@ -5745,16 +5643,8 @@ namespace TeamSupport.ServiceLibrary
             ProductFamilies productFamilies = new ProductFamilies(_importUser);
 
             int count = 0;
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
-
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
 
@@ -5910,16 +5800,8 @@ namespace TeamSupport.ServiceLibrary
             ProductVersions productVersions = new ProductVersions(_importUser);
 
             int count = 0;
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
-
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
 
@@ -6123,16 +6005,8 @@ namespace TeamSupport.ServiceLibrary
             Users users = new Users(_importUser);
 
             int count = 0;
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
-
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
 
@@ -6318,16 +6192,8 @@ namespace TeamSupport.ServiceLibrary
 
             OrganizationProducts organizationProducts = new OrganizationProducts(_importUser);
             int count = 0;
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
-
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
 
@@ -6537,16 +6403,8 @@ namespace TeamSupport.ServiceLibrary
             contacts.LoadContacts(_organizationID, false);
 
             int count = 0;
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
-
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
 
@@ -6606,16 +6464,8 @@ namespace TeamSupport.ServiceLibrary
 
             Notes notes = new Notes(_loginUser);
             int count = 0;
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
-
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
 
@@ -6750,16 +6600,8 @@ namespace TeamSupport.ServiceLibrary
 
             Notes notes = new Notes(_loginUser);
             int count = 0;
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
-
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
 
@@ -6886,16 +6728,8 @@ namespace TeamSupport.ServiceLibrary
             ProductFamilies productFamilies = new ProductFamilies(_importUser);
             int count = 0;
 
-            DateTime alertTimeLowerLimit = DateTime.Now;
             while (_csv.ReadNextRecord())
             {
-                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
-                {
-                    UpdateHealth();
-                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
-                    alertTimeLowerLimit = DateTime.Now;
-                }
-
                 long rowNumber = _csv.CurrentRecordIndex + 1;
                 string messagePrefix = "Row " + rowNumber.ToString() + ": ";
 
@@ -7474,6 +7308,20 @@ GROUP BY o.Name";
             }
 
             return max;
+        }
+
+        private void KeepHealthUpdated()
+        {
+            DateTime alertTimeLowerLimit = DateTime.Now;
+            while (true)
+            {
+                if (DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes > 9)
+                {
+                    UpdateHealth();
+                    Logs.WriteEvent("Health update after " + DateTime.Now.Subtract(alertTimeLowerLimit).TotalMinutes.ToString() + " processing minutes.");
+                    alertTimeLowerLimit = DateTime.Now;
+                }
+            }
         }
     }
 
