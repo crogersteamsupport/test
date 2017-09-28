@@ -1,6 +1,6 @@
 ﻿var notify = false;
 var _pressenceChannel = false;
-function loadPusher() { 
+function loadPusher() {
     $("#jquery_jplayer_1").jPlayer({
         ready: function () {
             $(this).jPlayer("setMedia", {
@@ -72,7 +72,7 @@ function loadPusher() {
             if ($('.main-ticket-' + data).length > 0) {
                 if ($('.main-ticket-' + data).is(":visible")) {
                     //mainFrame.Ts.Services.Dispatch.ticketViewingAdd(data, top.Ts.System.User.UserID);
-                    $('.main-ticket-' + data).find('iframe')[0].contentWindow.SetupPusher();
+                    // $('.main-ticket-' + data).find('iframe')[0].contentWindow.SetupPusher();
                 }
             }
         });
@@ -101,7 +101,7 @@ function loadPusher() {
 
         ticket_channel.bind('DisplayTicketUpdate', function (data) {
             var mergeticket;
-            
+
             if (data.ticket.indexOf(',') != -1) {
                 var mergeTickets = data.ticket.split(',');
                 var losingTicket = mergeTickets[0];
@@ -180,7 +180,7 @@ function loadPusher() {
         //addWindow($("#iframe-mniCustomers").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations"));
       addWindow($(".customerIframe").contents().find("#watercoolerIframe"));
       addWindow($("#iframe-mniProducts").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations"));
-      addWindow($(".ticketIframe").contents().find("#watercoolerIframe"));  
+      addWindow($(".ticketIframe").contents().find("#watercoolerIframe"));
       return result;
     }
 
@@ -272,4 +272,3 @@ function chime(chimeType) {
             mp3: "vcr/1_9_0/Audio/drop.mp3"
         }).jPlayer("play", 0);
 }
-
