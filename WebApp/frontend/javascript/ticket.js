@@ -4457,13 +4457,13 @@ function UpdateActionElement(val) {
     }
     var html = _compiledActionTemplate(val);
     var actionElement = $(html);
-    var li = $("#action-timeline div[data-id=" + val.item.RefID + "]");
+    var li = $("#action-timeline div.action[data-id=" + val.item.RefID + "]");
     var actionNumber = li.find('.ticket-action-number').text();
     try {
         // $('.action-placeholder').after(actionElement);
         li.replaceWith(html);
     } catch (e) { }
-    $("#action-timeline div[data-id=" + val.item.RefID + "]").find('.ticket-action-number').text(actionNumber);
+    $("#action-timeline div.action[data-id=" + val.item.RefID + "]").find('.ticket-action-number').text(actionNumber);
 };
 
 function CreateHandleBarHelpers() {
@@ -4969,8 +4969,13 @@ function CreateTimeLineDelegates() {
         if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
             // var count = $('#action-timeline > li').length;
             // FetchTimeLineItems($('#action-timeline > li').length - 1);
+<<<<<<< HEAD
             var count = $('#action-timeline > div[data-id]').length;
             FetchTimeLineItems($('#action-timeline > div[data-id]').length + 1);
+=======
+            var count = $('#action-timeline > div.action[data-id]').length;
+            FetchTimeLineItems($('#action-timeline > div.action[data-id]').length + 1);
+>>>>>>> Reboot
         }
     });
 
