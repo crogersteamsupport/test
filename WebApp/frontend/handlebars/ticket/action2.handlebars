@@ -35,7 +35,11 @@
                 {{/if}}
 
                 <div class="badges flexpull">
+                    {{#if item.IsWC}}
+                    <span class="number ticket-action-number">&nbsp;</span>
+                    {{else}}
                     <span class="number ticket-action-number">{{ActionNumber}}</span>
+                    {{/if}}
                     <div class="ticket-badge">{{{TimeLineLabel}}} {{{WaterCoolerRelationships}}}</div>
                 </div>
 
