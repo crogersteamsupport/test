@@ -533,5 +533,6 @@ div.main-footer {
     border:none !important;
 }
 
-.mce-flow-layout-item {
+.mce-path {
+    display:none;
 }

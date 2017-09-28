@@ -83,7 +83,8 @@
     border-right:none;
 }
 
-#primary #box-tinymce .mce-flow-layout-item {
+#primary #box-tinymce .mce-path {
+    display:none;
 }
 
 
