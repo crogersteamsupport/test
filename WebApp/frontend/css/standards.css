@@ -532,3 +532,7 @@ div.main-footer {
 .mce-container {
     border:none !important;
 }
+
+.mce-flow-layout-item {
+    display:none;
+}
