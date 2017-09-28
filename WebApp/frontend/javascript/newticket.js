@@ -2191,7 +2191,7 @@ var AddCustomFieldDate = function (field, parentContainer) {
         groupContainer.addClass('product-dependent');
     }
     var dateContainer = $('<div>').addClass('flexpush form-input ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
-    var dateLink = $('<a>').attr('href', '#').text((date === null ? 'unassigned' : date.localeFormat(parent.Ts.Utils.getDatePattern()))).addClass('control-label').attr('style', 'padding-left: 5px;').appendTo(dateContainer);
+    var dateLink = $('<a>').attr('href', '#').text((date === null ? 'unassigned' : date.localeFormat(parent.Ts.Utils.getDatePattern()))).addClass('control-label').appendTo(dateContainer);
 
     dateLink.click(function (e) {
         e.preventDefault();
@@ -2251,7 +2251,7 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
     if (field.ParentProductID) { groupContainer.addClass('product-dependent'); }
 
     var dateContainer = $('<div>').addClass('flexpush form-input ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
-    var dateLink = $('<a>').attr('href', '#').text((date === null ? 'unassigned' : date.localeFormat(parent.Ts.Utils.getDateTimePattern()))).addClass('control-label').attr('style', 'padding-left: 5px;').appendTo(dateContainer);
+    var dateLink = $('<a>').attr('href', '#').text((date === null ? 'unassigned' : date.localeFormat(parent.Ts.Utils.getDateTimePattern()))).addClass('control-label').appendTo(dateContainer);
 
     dateLink.click(function (e) {
         e.preventDefault();
@@ -2316,7 +2316,7 @@ var AddCustomFieldTime = function (field, parentContainer) {
     if (field.ParentProductID) { groupContainer.addClass('product-dependent'); }
 
     var dateContainer = $('<div>').addClass('flexpush form-input ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
-    var dateLink = $('<a>').attr('href', '#').text((date === null ? 'unassigned' : date.localeFormat(parent.Ts.Utils.getTimePattern()))).addClass('control-label').attr('style', 'padding-left: 5px;').appendTo(dateContainer);
+    var dateLink = $('<a>').attr('href', '#').text((date === null ? 'unassigned' : date.localeFormat(parent.Ts.Utils.getTimePattern()))).addClass('control-label').appendTo(dateContainer);
 
     dateLink.click(function (e) {
         e.preventDefault();
