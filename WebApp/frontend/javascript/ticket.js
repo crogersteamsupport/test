@@ -125,11 +125,11 @@ var isFormValid = function (callback) {
         //If custom required check if the ticket is a KB if not then see if we have at least one customer
         if (requireNewTicketCustomer == "True" && $('#ticket-isKB').is(":checked") == false) {
             if ($('#ticket-Customer > div.tag-item').length < 1) {
-                $('#ticket-Customer').closest('.form-input').addClass('hasError');
+                $('#ticket-Customer').closest('.form-group').addClass('hasError');
                 result = false;
             }
             else {
-                $('#ticket-Customer').closest('.form-input').removeClass('hasError');
+                $('#ticket-Customer').closest('.form-group').removeClass('hasError');
             }
         }
 
@@ -1741,9 +1741,9 @@ function LoadTicketControls() {
 
             if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
                 if ($('#ticket-group').val() == "")
-                    $('#ticket-group').closest('.form-input').addClass('hasError');
+                    $('#ticket-group').closest('.form-group').addClass('hasError');
                 else
-                    $('#ticket-group').closest('.form-input').removeClass('hasError');
+                    $('#ticket-group').closest('.form-group').removeClass('hasError');
             }
 
         });
@@ -1977,11 +1977,11 @@ function SetupTicketPropertyEvents() {
         if (GroupID == '-1') {
             GroupID = null;
             if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
-                $('#ticket-group').closest('.form-input').addClass('hasError');
+                $('#ticket-group').closest('.form-group').addClass('hasError');
             }
         }
         else
-            $('#ticket-group').closest('.form-input').removeClass('hasError');
+            $('#ticket-group').closest('.form-group').removeClass('hasError');
         if (GroupID !== ((_ticketGroupID !== null) ? _ticketGroupID.toString() : _ticketGroupID)) {
             window.parent.Ts.Services.Tickets.SetTicketGroup(_ticketID, GroupID, function (result) {
                 if (result !== null) {
@@ -2129,11 +2129,11 @@ function SetupCustomerSection() {
             create: function (input, callback) {
                 $('#NewCustomerModal').modal('show');
                 callback(null);
-                $('#ticket-Customers-Input').closest('.form-input').removeClass('hasError');
+                $('#ticket-Customers-Input').closest('.form-group').removeClass('hasError');
             },
             onItemAdd: function (value, $item) {
                 if (this.settings.initData === false) {
-                    $('#ticket-Customers-Input').closest('.form-input').removeClass('hasError');
+                    $('#ticket-Customers-Input').closest('.form-group').removeClass('hasError');
                     var customerData = $item.data();
 
                     window.parent.Ts.Services.Tickets.AddTicketCustomer(_ticketID, customerData.type, value, function (customers) {
@@ -2524,9 +2524,9 @@ function SetupProductSection() {
 
         window.parent.Ts.Services.Organizations.IsProductRequired(function (result) {
             if (result && _ticketInfo.Ticket.ProductID == null)
-                $('#ticket-Product').closest('.form-input').addClass('hasError');
+                $('#ticket-Product').closest('.form-group').addClass('hasError');
             else
-                $('#ticket-Product').closest('.form-input').removeClass('hasError');
+                $('#ticket-Product').closest('.form-group').removeClass('hasError');
         });
 
         $('#ticket-Product').change(function (e) {
@@ -2538,9 +2538,9 @@ function SetupProductSection() {
 
                     window.parent.Ts.Services.Organizations.IsProductRequired(function (IsRequired) {
                         if (IsRequired && (name == null || name == ''))
-                            $('#ticket-Product').closest('.form-input').addClass('hasError');
+                            $('#ticket-Product').closest('.form-group').addClass('hasError');
                         else
-                            $('#ticket-Product').closest('.form-input').removeClass('hasError');
+                            $('#ticket-Product').closest('.form-group').removeClass('hasError');
                     });
 
                     SetupProductVersionsControl(product);
@@ -2585,7 +2585,7 @@ function SetupProductSection() {
         $('#ticket-Versions').change(function (e) {
             window.parent.Ts.System.logAction('Ticket - Reported Version Changed');
             window.parent.Ts.Services.Tickets.SetReportedVersion(_ticketID, $(this).val(), function (result) {
-                $('#ticket-Versions').closest('.form-input').removeClass('hasError');
+                $('#ticket-Versions').closest('.form-group').removeClass('hasError');
                 window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changereported", userFullName);
             },
             function (error) {
@@ -2596,7 +2596,7 @@ function SetupProductSection() {
         $('#ticket-Resolved').change(function (e) {
             window.parent.Ts.System.logAction('Ticket - Resolved Version Changed');
             window.parent.Ts.Services.Tickets.SetSolvedVersion(_ticketID, $(this).val(), function (result) {
-                $('#ticket-Resolved').closest('.form-input').removeClass('hasError');
+                $('#ticket-Resolved').closest('.form-group').removeClass('hasError');
                 window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changeresolved", userFullName);
             },
             function (error) {
@@ -2659,9 +2659,9 @@ function LoadGroups() {
     }
 
     if ($('#ticket-group').val() == -1)
-        $('#ticket-group').closest('.form-input').addClass('hasError');
+        $('#ticket-group').closest('.form-group').addClass('hasError');
     else
-        $('#ticket-group').closest('.form-input').removeClass('hasError');
+        $('#ticket-group').closest('.form-group').removeClass('hasError');
 
 }
 
@@ -2770,9 +2770,9 @@ function SetProductVersionAndResolved(versionId, resolvedId) {
 
     window.parent.Ts.Services.Organizations.IsProductVersionRequired(function (IsProductVersionRequired) {
         if (IsProductVersionRequired && (versionId == null && resolvedId == null))
-            $('#ticket-Versions').closest('.form-input').addClass('hasError');
+            $('#ticket-Versions').closest('.form-group').addClass('hasError');
         else
-            $('#ticket-Versions').closest('.form-input').removeClass('hasError');
+            $('#ticket-Versions').closest('.form-group').removeClass('hasError');
     });
 };
 

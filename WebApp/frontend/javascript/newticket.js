@@ -390,9 +390,9 @@ function SetupTicketProperties() {
 
     if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
         if ($('#ticket-group').val() == "" || $('#ticket-group').val() == "-1")
-            $('#ticket-group').closest('.form-group').addClass('hasError');
+            $('#ticket-group').closest('.form-input').addClass('hasError');
         else
-            $('#ticket-group').closest('.form-group').removeClass('hasError');
+            $('#ticket-group').closest('.form-input').removeClass('hasError');
     }
 
     $('#ticket-group').change(function (e) {
@@ -401,11 +401,11 @@ function SetupTicketProperties() {
         if (_ticketGroupID == '-1') {
             _ticketGroupID = null;
             if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
-                $('#ticket-group').closest('.form-group').addClass('hasError');
+                $('#ticket-group').closest('.form-input').addClass('hasError');
             }
         }
         else
-            $('#ticket-group').closest('.form-group').removeClass('hasError');
+            $('#ticket-group').closest('.form-input').removeClass('hasError');
 
     });
 
@@ -707,17 +707,17 @@ function isFormValid(callback) {
                 var status = parent.Ts.Cache.getTicketStatus($('#ticket-status').val());
 
                 //Check if we need a product
-                product.closest('.form-group').removeClass('hasError');
+                product.closest('.form-input').removeClass('hasError');
                 if (isProductRequired && (productID == -1 || productID == "")) {
-                    product.closest('.form-group').addClass('hasError');
+                    product.closest('.form-input').addClass('hasError');
                     InsertCreateError("Product is a required field.");
                     result = false;
                 }
 
                 //See if we need a version
-                reportversion.closest('.form-group').removeClass('hasError');
+                reportversion.closest('.form-input').removeClass('hasError');
                 if (isProductVersionRequired && (reportversionID == -1 || reportversionID == "")) {
-                    reportversion.closest('.form-group').addClass('hasError');
+                    reportversion.closest('.form-input').addClass('hasError');
                     InsertCreateError("Product version is a required field.");
                     result = false;
                 }
@@ -818,12 +818,12 @@ function isFormValid(callback) {
                 //If custom required check if the ticket is a KB if not then see if we have at least one customer
                 if (requireNewTicketCustomer == "True" && $('#ticket-isKB').is(":checked") == false) {
                     if ($('#ticket-Customer > div.tag-item').length < 1) {
-                        $('#ticket-Customer').closest('.form-group').addClass('hasError');
+                        $('#ticket-Customer').closest('.form-input').addClass('hasError');
                         InsertCreateError("A customer is required to create a ticket.")
                         result = false;
                     }
                     else {
-                        $('#ticket-Customer').closest('.form-group').removeClass('hasError');
+                        $('#ticket-Customer').closest('.form-input').removeClass('hasError');
                     }
                 }
 
@@ -1380,7 +1380,7 @@ function SetupCustomerSection() {
                 'no_results': {}
             },
             onItemAdd: function (value, $item) {
-                $('#ticket-Customer').closest('.form-group').removeClass('hasError');
+                $('#ticket-Customer').closest('.form-input').removeClass('hasError');
                 AddCustomers($item.data());
 
                 this.removeItem(value, true);
@@ -1461,7 +1461,7 @@ function SetupCustomerSection() {
                             $('.ticket-new-customer-last').val('');
                             $('.ticket-new-customer-company').val('');
                             $('.ticket-new-customer-phone').val('');
-                            $('#ticket-Customer').closest('.form-group').removeClass('hasError');
+                            $('#ticket-Customer').closest('.form-input').removeClass('hasError');
                             $('#NewCustomerModal').modal('hide');
                         });
                     }
@@ -1473,7 +1473,7 @@ function SetupCustomerSection() {
                     $('.ticket-new-customer-last').val('');
                     $('.ticket-new-customer-company').val('');
                     $('.ticket-new-customer-phone').val('');
-                    $('#ticket-Customer').closest('.form-group').removeClass('hasError');
+                    $('#ticket-Customer').closest('.form-input').removeClass('hasError');
                     $('#NewCustomerModal').modal('hide');
                 }
             }
@@ -1486,10 +1486,10 @@ function SetupCustomerSection() {
     parent.Ts.Settings.Organization.read('RequireNewTicketCustomer', false, function (requireNewTicketCustomer) {
         if (requireNewTicketCustomer == "True" && $('#ticket-isKB').is(":checked") == false) {
             if ($('#ticket-Customer > div.tag-item').length < 1) {
-                $('#ticket-Customer').closest('.form-group').addClass('hasError');
+                $('#ticket-Customer').closest('.form-input').addClass('hasError');
             }
             else {
-                $('#ticket-Customer').closest('.form-group').removeClass('hasError');
+                $('#ticket-Customer').closest('.form-input').removeClass('hasError');
             }
         }
     });
@@ -1556,9 +1556,9 @@ function SetupProductSection() {
 
     parent.Ts.Services.Organizations.IsProductRequired(function (result) {
         if (result)
-            $('#ticket-Product').closest('.form-group').addClass('hasError');
+            $('#ticket-Product').closest('.form-input').addClass('hasError');
         else
-            $('#ticket-Product').closest('.form-group').removeClass('hasError');
+            $('#ticket-Product').closest('.form-input').removeClass('hasError');
     });
 
     $('#ticket-Product').change(function (e) {
@@ -1566,7 +1566,7 @@ function SetupProductSection() {
         var product = parent.Ts.Cache.getProduct(self.val());
         loadVersions(product);
         AppendProductMatchingCustomFields();
-        $('#ticket-Product').closest('.form-group').removeClass('hasError');
+        $('#ticket-Product').closest('.form-input').removeClass('hasError');
         if (parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != product.ProductFamilyID) {
             _productFamilyID = product.ProductFamilyID;
             UpdateTicketGroups(function (persistedGroup) {
@@ -1682,7 +1682,7 @@ function SetupProductVersionsControl(product) {
         var $select = $("#ticket-Versions").selectize({
             onItemAdd: function (value, $item) {
                 var reportversion = $('#ticket-Versions');
-                reportversion.closest('.form-group').removeClass('hasError');
+                reportversion.closest('.form-input').removeClass('hasError');
             },
             onDropdownClose: function ($dropdown) {
                 $($dropdown).prev().find('input').blur();
@@ -1715,9 +1715,9 @@ function SetupProductVersionsControl(product) {
 
     parent.Ts.Services.Organizations.IsProductVersionRequired(function (result) {
         if (result)
-            $('#ticket-Versions').closest('.form-group').addClass('hasError');
+            $('#ticket-Versions').closest('.form-input').addClass('hasError');
         else
-            $('#ticket-Versions').closest('.form-group').removeClass('hasError');
+            $('#ticket-Versions').closest('.form-input').removeClass('hasError');
     });
 }
 
@@ -2624,9 +2624,9 @@ function setInitialValue() {
                     AppendProductMatchingCustomFields();
                     parent.Ts.Services.Organizations.IsProductRequired(function (IsRequired) {
                         if (IsRequired)
-                            $('#ticket-Product').closest('.form-group').addClass('hasError');
+                            $('#ticket-Product').closest('.form-input').addClass('hasError');
                         else
-                            $('#ticket-Product').closest('.form-group').removeClass('hasError');
+                            $('#ticket-Product').closest('.form-input').removeClass('hasError');
                     });
                     if (parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != product.ProductFamilyID) {
                         _productFamilyID = product.ProductFamilyID;
