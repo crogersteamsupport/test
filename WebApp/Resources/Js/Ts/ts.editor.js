@@ -77,6 +77,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
                       if(postinit) postinit();
                     });
                     _insertedKBTicketID = null;
+                    ed.focus();
                 });
 
                 //ed.on('paste', function (ed, e) {
