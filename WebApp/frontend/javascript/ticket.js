@@ -4436,16 +4436,12 @@ function CreateActionElement(val, ShouldAppend) {
     if (ShouldAppend) {
         try {
             $("#action-timeline").append(actionElement);
-        }
-        catch (e) {
-            console.log('Unable to append action.');
-        }
+        } catch (e) { }
     }
     else {
         if ($('.ticket-action.pinned').length) {
             $('.ticket-action.pinned').after(actionElement);
-        }
-        else {
+        } else {
             $('.action-placeholder').after(actionElement);
         }
     }
@@ -4466,10 +4462,7 @@ function UpdateActionElement(val) {
     try {
         // $('.action-placeholder').after(actionElement);
         li.replaceWith(html);
-        console.log('Acion updated');
-    } catch (e) {
-        console.log('Unable to append action.');
-    }
+    } catch (e) { }
     $("#action-timeline div[data-id=" + val.item.RefID + "]").find('.ticket-action-number').text(actionNumber);
 };
 

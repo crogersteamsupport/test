@@ -83,6 +83,10 @@
     border-right:none;
 }
 
+#primary #box-tinymce .mce-path {
+    display:none;
+}
+
 
 
 
@@ -94,8 +98,8 @@
 }
 #sidebar .form-group {
     margin:0px 0px 10px;
-    max-height:40px;
-    min-height:40px;
+    max-height:30px;
+    min-height:30px;
     width:100%;
 }
 #sidebar .form-horizontal .form-label,
