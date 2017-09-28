@@ -75,9 +75,9 @@ var initEditor = function (element, shouldResize, init, postinit) {
                         }
 
                       if(postinit) postinit();
+                      ed.focus();
                     });
                     _insertedKBTicketID = null;
-                    // ed.focus();
                 });
 
                 //ed.on('paste', function (ed, e) {
