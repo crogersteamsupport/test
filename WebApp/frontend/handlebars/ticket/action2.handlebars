@@ -29,6 +29,11 @@
                 </div>
                 <div class="applause flexpull">{{{Applause}}}</div>
                 {{/unless}}
+
+                {{#if item.IsWC}}
+                <div class="indicators flexpush"></div>
+                {{/if}}
+
                 <div class="badges flexpull">
                     <span class="number">{{ActionNumber}}</span>
                     <div class="ticket-badge">{{{TimeLineLabel}}} {{{WaterCoolerRelationships}}}</div>
