@@ -29,6 +29,11 @@
                 </div>
                 <div class="applause flexpull">{{{Applause}}}</div>
                 {{/unless}}
+
+                {{#if item.IsWC}}
+                <div class="indicators flexpush"></div>
+                {{/if}}
+
                 <div class="badges flexpull">
                     <span class="number">{{ActionNumber}}</span>
                     <div class="ticket-badge">{{{TimeLineLabel}}} {{{WaterCoolerRelationships}}}</div>
@@ -59,7 +64,6 @@
                     <span class="fa fa-ellipsis-h action-options-icon text-muted" aria-hidden="true"></span>
                 </div>
 
-
             </div>
         </div>
     </div>
@@ -76,7 +80,6 @@
         {{/each}}
     </div>
     {{/if}}
-
 
     {{#if item.IsWC}}
     <div id="timeline-wc-responses" class="wc-responses">
