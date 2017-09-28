@@ -181,3 +181,8 @@
     vertical-align:top;
     /*text-decoration:underline;*/
 }
+
+#ticket-properties-area .hasError {
+    border:1px solid #a94442;
+
+}
