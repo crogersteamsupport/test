@@ -188,6 +188,8 @@
 #ticket-properties-area .hasError .form-label label {
     color:#a94442 !important;
 }
-#ticket-properties-area .hasError .form-input {
+
+#ticket-properties-area .hasError .form-input,
+#ticket-properties-area .hasError .selectize-input {
     border:1px solid #a94442;
 }
