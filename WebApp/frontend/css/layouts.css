@@ -163,8 +163,8 @@
     margin-bottom:20px;
 }
 #ticket-properties-area hr {
-    margin:15px auto;
-    width:98%;
+    margin:10px auto 20px;
+    width:100%;
     border-top:1px solid #d9d9d9;
 }
 #ticket-properties-area input::-webkit-input-placeholder {
