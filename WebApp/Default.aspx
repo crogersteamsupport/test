@@ -30,12 +30,10 @@
   <script src="vcr/1_9_0/Js/chat.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/json2.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/browser.js" type="text/javascript"></script>
-  <script src="vcr/1_9_0/Js/jquery.signalR-2.1.2.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/jquery.jplayer.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/jquery.pnotify.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/moment.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/Ts/ts.editor.js" type="text/javascript"></script>
-  <script src="vcr/1_9_0/Js/Ts/ts.wc.signalr.js" type="text/javascript"></script>
 
   <script src="../js_5/imagepaste.js" type="text/javascript"></script>
   <script src="../js_5/jquery.Jcrop.js" type="text/javascript"></script>
@@ -209,7 +207,6 @@
       </compositescript>
   </asp:ScriptManager>
   <asp:HiddenField ID="fieldSID" runat="server" Value="1234"></asp:HiddenField>
-  <asp:HiddenField ID="SignalRUrl" runat="server" Value=""></asp:HiddenField>
       <asp:HiddenField ID="Evergage" runat="server" Value=""></asp:HiddenField>
   <div id="jquery_jplayer_1"></div>
   <div class="main-loading ts-loading">
