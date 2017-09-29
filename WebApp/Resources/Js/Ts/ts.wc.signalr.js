@@ -72,8 +72,8 @@ function loadPusher() {
             if ($('.main-ticket-' + data).length > 0) {
                 if ($('.main-ticket-' + data).is(":visible")) {
                     //mainFrame.Ts.Services.Dispatch.ticketViewingAdd(data, top.Ts.System.User.UserID);
-                    // $('.main-ticket-' + data).find('iframe')[0].contentWindow.SetupPusher();
-                    $('.main-ticket-' + data).find('iframe')[0].contentWindow;
+                    $('.main-ticket-' + data).find('iframe')[0].contentWindow.SetupPusher();
+                    // $('.main-ticket-' + data).find('iframe')[0].contentWindow;
                 }
             }
         });
