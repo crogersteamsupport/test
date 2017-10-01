@@ -1325,11 +1325,7 @@ function SetupTagsSection() {
                 });
 
                 if (filtered.length === 0) {
-                    ui.content.push({
-                        label: inputValue,
-                        value: inputValue,
-                        id: 0
-                    });
+                    ui.content.push({ label: inputValue, value: inputValue, id: 0 });
                 }
             },
             select: function (event, ui) {
@@ -1340,15 +1336,15 @@ function SetupTagsSection() {
             }
         })
         .data("autocomplete")._renderItem = function (ul, item) {
-            return $("<li>")
-                .append("<a>" + item.label + "</a>")
-                .appendTo(ul);
+            return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
         };
     }
 };
 
 function PrependTag(parent, id, value, data, cssclass) {
     if (cssclass === undefined) cssclass = 'tag-item';
+    var compiledTemplate = Handlebars.templates['ticket-tag'];
+
     var _compiledTagTemplate = Handlebars.compile($("#ticket-tag").html());
     var tagHTML = _compiledTagTemplate({ id: id, value: value, data: data, css: cssclass });
     return $(tagHTML).prependTo(parent).data('tag', data);
