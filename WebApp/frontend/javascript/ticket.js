@@ -242,6 +242,7 @@ $(document).ready(function () {
 
     //Setup WC Area
     SetupWCArea();
+    SetupPusher();
 
     var script = document.createElement('script');
     script.type = 'text/javascript';
@@ -251,7 +252,7 @@ $(document).ready(function () {
     script.setAttribute('data-app-key', 'ebdoql1dhyy7l72');
     script.setAttribute('id', 'dropboxjs');
     if (window.parent.Ts.System.User.OrganizationID != 1150007)
-      firstScript.parentNode.insertBefore(script, firstScript);
+        firstScript.parentNode.insertBefore(script, firstScript);
     slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
     $('.wcTooltip').tipTip({ defaultPosition: "top", edgeOffset: 7, keepAlive: true });
 
@@ -282,6 +283,7 @@ var loadTicket = function (ticketNumber, refresh) {
     window.parent.Ts.Services.Tickets.GetTicketInfo(_ticketNumber, function (info) {
         _ticketInfo = info;
         _ticketID = info.Ticket.TicketID;
+        top.Ts.TicketViewing = _ticketNumber;
         window.parent.Ts.Services.Tickets.GetTicketLastSender(_ticketID, function (result) {
             if (result !== null) {
                 _ticketSender = new Object();
@@ -343,10 +345,6 @@ var loadTicket = function (ticketNumber, refresh) {
         SetupTFSFieldValues();
         LoadGroups();
         LoadPlugins(info);
-
-        if (typeof refresh === "undefined") {
-            window.parent.Ts.Services.Dispatch.getTicketViewing(_ticketNumber);
-        }
 
     });
 };
@@ -539,14 +537,8 @@ function SetupTicketProperties(order) {
         isFormValid();
         LoadPlugins(info);
         console.log("_before calling getTicketViewing");
-        if (typeof refresh === "undefined") {
-            console.log("_calling getTicketViewing");
-            window.parent.Ts.Services.Dispatch.getTicketViewing(_ticketNumber);
-        }
 
-
-
-  });
+    });
 };
 
 function SetupToolTips() {
@@ -632,9 +624,7 @@ function CreateNewActionLI() {
         e.preventDefault();
         e.stopPropagation();
         $('#action-new-editor').parent().fadeOut('normal', function () {
-            if (window.parent.Ts.System.User.OrganizationID !== 13679) {
-                tinymce.activeEditor.destroy();
-            }
+            tinymce.activeEditor.destroy();
         });
         window.parent.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
         $('#action-add-public').removeClass('click-disabled');
@@ -780,13 +770,9 @@ function CreateNewActionLI() {
         HideActionTimer(!action.IsTimed);
         window.parent.Ts.Services.TicketPage.GetActionTicketTemplate(actionID, function (result) {
             if (result != null && result != "" && result != "<br>") {
-                if (window.parent.Ts.System.User.OrganizationID !== 13679) {
-                    var currenttext = tinyMCE.activeEditor.getContent();
-                    tinyMCE.activeEditor.setContent(currenttext + result);
-                }
-                else {
-                    $('#action-new-editor').summernote('insertNode', result);
-                }
+                var currenttext = tinyMCE.activeEditor.getContent();
+                tinyMCE.activeEditor.setContent(currenttext + result);
+
             }
             //elem.parent().fadeIn('normal');
         });
@@ -832,7 +818,6 @@ function SetupActionEditor(elem, action) {
 
     window.parent.Ts.MainPage.highlightTicketTab(_ticketNumber, true);
 
-    if (window.parent.Ts.System.User.OrganizationID !== 13679) {
         initEditor(elem, true, function (ed) {
             $("#action-new-type").val($("#action-new-type option:first").val());
             $('#action-new-editor').val('');
@@ -843,7 +828,6 @@ function SetupActionEditor(elem, action) {
                     $('#action-new-minutes').val(Math.floor(action.TimeSpent % 60));
                 }
                 tinyMCE.activeEditor.setContent(action.Message);
-                //elem.parent().fadeIn('normal');
             }
             else {
                 var actionTypeID = $('#action-new-type').val();
@@ -862,20 +846,6 @@ function SetupActionEditor(elem, action) {
                 scrollTop: 0
             }, 600);
         });
-
-    }
-    else {
-        if (!editorInit) {
-            initEditorV2(elem, function () {
-                editorInit = true;
-                SetupNewAction(elem, action);
-            });
-        }
-        else {
-            elem.summernote('reset');
-            SetupNewAction(elem, action);
-        }
-    }
 
 
     var element = $('.action-new-area');
@@ -948,42 +918,39 @@ function SetupActionEditor(elem, action) {
         }
     });
 
-  element.find('#recordScreenContainer').hide();
-  element.find('#ssDiv').hide();
-  element.find('#rcdtokScreen').click(function (e) {
-      if (window.parent.Ts.System.User.OrganizationID == 0) {
-          window.parent.Ts.Services.Tickets.StartArchivingScreen(sessionId, function (resultID) {
-              element.find('#rcdtokScreen').hide();
-              element.find('#stoptokScreen').show();
-              element.find('#deletetokScreen').hide();
-              //element.find('#muteTokScreen').show();
-              recordingID = resultID;
-              element.find('#tokScreenCountdown').show();
-              setTimeout(function () {
-                  update(element);
-              }, 1000);
-              //countdown("tokScreenCountdown", 5, 0, element);
-              //recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
-              element.find('#statusTextScreen').text("Currently Recording Screen...");
-              });
-      }
-      else {
-          window.parent.Ts.Services.Tickets.StartArchivingScreen(sessionId, function (resultID) {
-              element.find('#rcdtokScreen').hide();
-              element.find('#stoptokScreen').show();
-              element.find('#deletetokScreen').hide();
-              //element.find('#muteTokScreen').show();
-              recordingID = resultID;
-              element.find('#tokScreenCountdown').show();
-              setTimeout(function () {
-                  update(element);
-              }, 1000);
-              //countdown("tokScreenCountdown", 5, 0, element);
-              //recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
-              element.find('#statusTextScreen').text("Currently Recording Screen...");
-          });
-      }
-  });
+
+
+    element.find('#recordScreenContainer').hide();
+    element.find('#ssDiv').hide();
+    element.find('#rcdtokScreen').click(function (e) {
+        if (window.parent.Ts.System.User.OrganizationID == 0) {
+            window.parent.Ts.Services.Tickets.StartArchivingScreen(sessionId, function (resultID) {
+                element.find('#rcdtokScreen').hide();
+                element.find('#stoptokScreen').show();
+                element.find('#deletetokScreen').hide();
+                recordingID = resultID;
+                element.find('#tokScreenCountdown').show();
+                setTimeout(function () {
+                    update(element);
+                }, 1000);
+                element.find('#statusTextScreen').text("Currently Recording Screen...");
+            });
+        }
+        else {
+            window.parent.Ts.Services.Tickets.StartArchivingScreen(sessionId, function (resultID) {
+                element.find('#rcdtokScreen').hide();
+                element.find('#stoptokScreen').show();
+                element.find('#deletetokScreen').hide();
+                recordingID = resultID;
+                element.find('#tokScreenCountdown').show();
+                setTimeout(function () {
+                    update(element);
+                }, 1000);
+                element.find('#statusTextScreen').text("Currently Recording Screen...");
+            });
+        }
+    });
+
 
     //element.find('#muteTokScreen').hide();
     element.find('#muteTokScreen').click(function (e) {
@@ -1013,12 +980,7 @@ function SetupActionEditor(elem, action) {
             element.find('#muteTokScreen').hide();
             tokurl = result;
             videoURL = '<video width="100%" controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/player.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
-            if (window.parent.Ts.System.User.OrganizationID !== 13679) {
-                tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
-            }
-            else {
-                $('#action-new-editor').summernote('insertNode', videoURL);
-            }
+            tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
             element.find('#statusTextScreen').text("Your video is currently processing. It may not play in the editor below but should be live within a minute.");
             session.unpublish(screenSharingPublisher);
             session.unpublish(publisher);
@@ -1054,15 +1016,7 @@ function SetupActionEditor(elem, action) {
     element.find('#inserttok').hide();
 
     element.find('#inserttok').click(function (e) {
-        if (window.parent.Ts.System.User.OrganizationID !== 13679) {
-            tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
-        }
-        else {
-            $('#action-new-editor').summernote('insertNode', $('<br/>')[0]);
-            var html = $('<video width="400" height="400" controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>')[0];
-            $('#action-new-editor').summernote('insertNode', html);
-        }
-
+        tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
         session.unpublish(publisher);
         element.find('#rcdtok').show();
         element.find('#stoptok').hide();
@@ -1173,13 +1127,7 @@ function StopRecording(element) {
         tokurl = result;
         videoURL = '<video controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
 
-        if (window.parent.Ts.System.User.OrganizationID !== 13679) {
-            tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
-        }
-        else {
-            $('#action-new-editor').summernote('insertNode', videoURL);
-        }
-
+        tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
         element.find('#statusTextScreen').text("");
         session.unpublish(screenSharingPublisher);
         session.unpublish(publisher);
@@ -1355,7 +1303,7 @@ function SaveAction(_oldActionID, isPrivate, callback) {
     action.IsKnowledgeBase = $('#action-new-KB').prop('checked');
     action.IsVisibleOnPortal = !isPrivate;
 
-    if (window.parent.Ts.System.User.OrganizationID !== 13679) {
+
         // Get Content Grab and Check with .Get MEthod
         if (tinymce.get('action-new-editor')) {
             try {
@@ -1429,39 +1377,7 @@ function SaveAction(_oldActionID, isPrivate, callback) {
 
         }
     }
-    else {
-        var fontSize;
-        var fontFamily;
-        var styleBlock;
-        if (window.parent.Ts.System.User.FontFamilyDescription != "Unassigned") {
-            fontFamily = GetTinyMCEFontName(window.parent.Ts.System.User.FontFamily);
-        }
-        else if (window.parent.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-            fontFamily = GetTinyMCEFontName(window.parent.Ts.System.Organization.FontFamily);
-        }
 
-        if (window.parent.Ts.System.User.FontSize != "0") {
-            fontSize = GetTinyMCEFontSize(window.parent.Ts.System.User.FontSize);
-        }
-        else if (window.parent.Ts.System.Organization.FontSize != "0") {
-            fontSize = GetTinyMCEFontSize(window.parent.Ts.System.Organization.FontSize);
-        }
-
-        if (fontFamily !== undefined) styleBlock = 'font-family: ' + fontFamily;
-
-        if (fontSize !== undefined) {
-            if (styleBlock !== undefined) styleBlock += '; font-size: ' + fontSize;
-            else styleBlock = 'font-size: ' + fontSize;
-        }
-
-        var actionText = $('#action-new-editor').summernote('code');
-        var actionHTML = $('<span />', {
-            style: styleBlock,
-            html: actionText
-        });
-
-        action.Description = actionHTML[0].outerHTML;
-    }
 
     if (action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
     if (_insertedKBTicketID) {
@@ -1599,45 +1515,45 @@ function LoadTicketControls() {
         $('#Ticket-Subscribe').children().addClass('color-green');
     }
 
-  if ($('#ticket-assigned').length) {
-      window.parent.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
-          var isActive = false;
-          $.each(users, function (index, item) {
-              if (item.Name === _ticketInfo.Ticket.UserName)
-                  isActive = true;
-
-          });
-
-          if (!isActive && _ticketInfo.Ticket.UserName != null) {
-              $("#ticket-assigned").attr('placeholder', _ticketInfo.Ticket.UserName + ' (Inactive)');
-              _ticketCurrUser = -99;
-          }
-
-      $('#ticket-assigned').selectize({
-        dataAttr: 'assigned',
-        onDropdownClose: function ($dropdown) {
-          $($dropdown).prev().find('input').blur();
-        },
-        onChange: function (value) {
-          if (value == '-1') value = null;
-          if (value !== ((_ticketCurrUser !== null) ? _ticketCurrUser.toString() : _ticketCurrUser)) {
-            window.parent.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
-                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changeassigned", userFullName);
-              LoadGroups();
-            },
-            function (error) {
-              alert('There was an error setting the assigned user.');
+    if ($('#ticket-assigned').length) {
+        window.parent.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
+            var isActive = false;
+            $.each(users, function (index, item) {
+                if (item.Name === _ticketInfo.Ticket.UserName) {
+                    isActive = true;
+                }
             });
-          }
-          _ticketSender = new Object();
-          _ticketSender.UserID = window.parent.Ts.System.User.UserID;
-          _ticketSender.Name = userFullName;
-        },
-        closeAfterSelect: true,
-        render: {
-          option: function (item, escape) {
-            var optionlabel = item.text;
-            if (item.data.InOfficeMessage) optionlabel = optionlabel + ' - ' + item.data.InOfficeMessage;
+
+            if (!isActive && _ticketInfo.Ticket.UserName != null) {
+                $("#ticket-assigned").attr('placeholder', _ticketInfo.Ticket.UserName + ' (Inactive)');
+                _ticketCurrUser = -99;
+            }
+
+            $('#ticket-assigned').selectize({
+                dataAttr: 'assigned',
+                onDropdownClose: function ($dropdown) {
+                    $($dropdown).prev().find('input').blur();
+                },
+                onChange: function (value) {
+                    if (value == '-1') value = null;
+                    if (value !== ((_ticketCurrUser !== null) ? _ticketCurrUser.toString() : _ticketCurrUser)) {
+                        window.parent.Ts.Services.Tickets.SetTicketUser(_ticketID, value, function (userInfo) {
+                            window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changeassigned", userFullName);
+                            LoadGroups();
+                        },
+                        function (error) {
+                            alert('There was an error setting the assigned user.');
+                        });
+                    }
+                    _ticketSender = new Object();
+                    _ticketSender.UserID = window.parent.Ts.System.User.UserID;
+                    _ticketSender.Name = userFullName;
+                },
+                closeAfterSelect: true,
+                render: {
+                    option: function (item, escape) {
+                        var optionlabel = item.text;
+                        if (item.data.InOfficeMessage) optionlabel = optionlabel + ' - ' + item.data.InOfficeMessage;
 
                         if (item.data.IsSender && item.data.IsCreator)
                             return '<div data-value="' + escape(item.value) + '" data-selectable="" class="option">' + optionlabel + ' (Sender and Creator)</div>';
@@ -1654,16 +1570,16 @@ function LoadTicketControls() {
             var selectize = $("#ticket-assigned")[0].selectize;
             selectize.addOption({ value: -1, text: 'Unassigned', data: '' });
 
-      for (var i = 0; i < users.length; i++) {
-          selectize.addOption({ value: users[i].ID, text: users[i].Name, data: users[i] });
+            for (var i = 0; i < users.length; i++) {
+                selectize.addOption({ value: users[i].ID, text: users[i].Name, data: users[i] });
 
-        if (users[i].IsSelected) {
-          _ticketCurrUser = users[i].ID;
-          SetAssignedUser(users[i].ID);
-        }
-      }
-    });
-  }
+                if (users[i].IsSelected) {
+                    _ticketCurrUser = users[i].ID;
+                    SetAssignedUser(users[i].ID);
+                }
+            }
+        });
+    }
 
     if ($('#ticket-group').length) {
         window.parent.Ts.Services.TicketPage.GetTicketGroups(_ticketID, function (groups) {
@@ -1702,30 +1618,30 @@ function LoadTicketControls() {
     }
 
 
-  _ticketTypeID = _ticketInfo.Ticket.TicketTypeID;
-  var types = window.parent.Ts.Cache.getTicketTypes();
-  if (window.parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
-      for (var i = 0; i < types.length; i++) {
-          if ((types[i].IsActive && (types[i].ProductFamilyID == null || _productFamilyID == types[i].ProductFamilyID || _ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID))
-                || (!types[i].IsActive && _ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID)) {
-              AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name, (_ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID));
-              if (types[i].ProductFamilyID != null && _productFamilyID != types[i].ProductFamilyID) {
-                  alert('This ticket type belongs to a different product line. Please set the correct ticket type.');
-              }
-          }
-      }
+    _ticketTypeID = _ticketInfo.Ticket.TicketTypeID;
+    var types = window.parent.Ts.Cache.getTicketTypes();
+    if (window.parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
+        for (var i = 0; i < types.length; i++) {
+            if ((types[i].IsActive && (types[i].ProductFamilyID == null || _productFamilyID == types[i].ProductFamilyID || _ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID))
+                  || (!types[i].IsActive && _ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID)) {
+                AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name, (_ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID));
+                if (types[i].ProductFamilyID != null && _productFamilyID != types[i].ProductFamilyID) {
+                    alert('This ticket type belongs to a different product line. Please set the correct ticket type.');
+                }
+            }
+        }
 
-      if ($('#ticket-type')[0].childElementCount == 0) {
-          alert('There are no ticket types available for this product line. Please contact your TeamSupport administrator.');
-      }
-  }
-  else {
-      for (var i = 0; i < types.length; i++) {
-          if (types[i].IsActive || (!types[i].IsActive && types[i].TicketTypeID === _ticketTypeID)) {
-              AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name, (_ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID));
-          }
-      }
-  }
+        if ($('#ticket-type')[0].childElementCount == 0) {
+            alert('There are no ticket types available for this product line. Please contact your TeamSupport administrator.');
+        }
+    }
+    else {
+        for (var i = 0; i < types.length; i++) {
+            if (types[i].IsActive || (!types[i].IsActive && types[i].TicketTypeID === _ticketTypeID)) {
+                AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name, (_ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID));
+            }
+        }
+    }
 
     $('#ticket-type').selectize({
         onDropdownClose: function ($dropdown) {
@@ -2283,9 +2199,7 @@ function AddCustomers(customers) {
 
 function clearTicketEditor() {
     $('#action-new-editor').parent().fadeOut('normal', function () {
-        if (window.parent.Ts.System.User.OrganizationID !== 13679) {
-            tinymce.activeEditor.destroy();
-        }
+        tinymce.activeEditor.destroy();
     });
     $('.upload-queue').empty();
 
@@ -2652,14 +2566,15 @@ function SetupProductVersionsControl(product) {
         });
         var resolvedInput = $select[0].selectize;
 
-    if (resolvedInput) {
-      resolvedInput.destroy();
+        if (resolvedInput) {
+            resolvedInput.destroy();
+        }
     }
-  }
+
     $('#ticket-Versions').empty();
     $('#ticket-Resolved').empty();
-  if (product !== null && product.Versions.length > 0) {
-  	var versions = product.Versions;
+    if (product !== null && product.Versions.length > 0) {
+  	  var versions = product.Versions;
 
   	for (var i = 0; i < versions.length; i++) {
         try{
@@ -4460,7 +4375,7 @@ function CreateHandleBarHelpers() {
             // console.log(result);
             if (result != 'negative' && result != 'nothing' && result != 'hidden') {
                 var data = jQuery.parseJSON(result);
-                var sentiments = { 1:'Sad', 2:'Frustrated', 3:'Satisfied', 4:'Excited', 5:'Polite', 6:'Impolite', 7: 'Sympathetic' }
+                var sentiments = { 1:'Sad', 2:'Frustrated', 3:'Satisfied', 4:'Excited', 5:'Polite', 6:'Impolite', 7:'Sympathetic' }
                 var display = [];
                 $.each(data.watson, function(key,sentiment) {
                     if (sentiment.SentimentID > 0) {
@@ -5766,37 +5681,41 @@ var MergeSuccessEvent = function (_ticketNumber, winningTicketNumber) {
     window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
 };
 
-var addUserViewing = function (userID) {
-    $('#ticket-now-viewing').show();
-    if ($('.ticket-viewer:data(ChatID=' + userID + ')').length < 1) {
-        window.parent.Ts.Services.Users.GetUser(userID, function (user) {
-            $('.ticket-viewer:data(ChatID=' + user.UserID + ')').remove();
-            var fullName = user.FirstName + " " + user.LastName;
-            var viewuser = $('<a>')
-                    .data('ChatID', user.UserID)
-                    .data('Name', fullName)
-                    .addClass('ticket-viewer')
-                    .click(function () {
-                        window.parent.openChat($(this).data('Name'), $(this).data('ChatID'));
-                        window.parent.Ts.System.logAction('Now Viewing - Chat Opened');
-                    })
-                    .html('<img class="user-avatar ticket-viewer-avatar" src="../../../dc/' + user.OrganizationID + '/useravatar/' + user.UserID + '/48">' + fullName + '</a>')
-                    .appendTo($('#ticket-viewing-users'));
-        });
-    }
-
+var addUsersViewing = function (members) {
+    members.each(function (member) {
+        addUserViewing(member.id);
+    });
 }
 
-var removeUserViewing = function (ticketNum, userID) {
-    if (ticketNum != _ticketNumber) {
+var addUserViewing = function (userID) {
+    if (userID != top.Ts.System.User.UserID) {
+         $('#ticket-now-viewing').show();
+         if ($('.ticket-viewer:data(ChatID=' + userID + ')').length < 1) {
+             window.parent.Ts.Services.Users.GetUser(userID, function (user) {
+                 $('.ticket-viewer:data(ChatID=' + user.UserID + ')').remove();
+                 var fullName = user.FirstName + " " + user.LastName;
+                 var viewuser = $('<a>')
+                         .data('ChatID', user.UserID)
+                         .data('Name', fullName)
+                         .addClass('ticket-viewer')
+                         .click(function () {
+                             window.parent.openChat($(this).data('Name'), $(this).data('ChatID'));
+                             window.parent.Ts.System.logAction('Now Viewing - Chat Opened');
+                         })
+                         .html('<img class="user-avatar ticket-viewer-avatar" src="../../../dc/' + user.OrganizationID + '/useravatar/' + user.UserID + '/48">' + fullName + '</a>')
+                         .appendTo($('#ticket-viewing-users'));
+            });
+        }
+    }
+
+    var removeUserViewing = function (userID) {
         if ($('.ticket-viewer:data(ChatID=' + userID + ')').length > 0) {
             $('.ticket-viewer:data(ChatID=' + userID + ')').remove();
             if ($('.ticket-viewer').length < 1) {
                 $('#ticket-now-viewing').hide();
-            }
-        }
-    }
-}
+             }
+         }
+     }
 
 var resetSLAInfo = function () {
     window.parent.Ts.Services.TicketPage.GetTicketSLAInfo(_ticketNumber, function (info) {
@@ -5812,47 +5731,47 @@ var resetSLAInfo = function () {
 }
 
 var setSLAInfo = function () {
-  $('#ticket-SLAStatus').find('i').removeClass('color-green color-red color-yellow');
-  if (_ticketInfo.IsSlaPaused !== undefined
-          && _ticketInfo.IsSlaPaused
-          && !_ticketInfo.Ticket.IsClosed
-          && _ticketInfo.SlaTriggerId !== null
-          && _ticketInfo.SlaTriggerId > 0) {
-      $('#ticket-SLAStatus').find('i').removeClass('fa-bomb');
-      $('#ticket-SLAStatus').find('i').addClass('fa-pause');
-      $('#ticket-SLAStatus').find('i').addClass('slaPausedIcon');
-      $('#ticket-SLANote').text('Paused');
-  }
-  else if (_ticketInfo.Ticket.SlaViolationTime === null
-      && ((_ticketInfo.SlaTriggerId === null || _ticketInfo.SlaTriggerId == 0)
-            || (_ticketInfo.SlaTriggerId !== null && _ticketInfo.SlaTriggerId > 0 && _ticketInfo.IsSlaPending !== null && !_ticketInfo.IsSlaPending))
-      ) {
-    $('#ticket-SLAStatus').find('i').addClass('color-green');
-    $('#ticket-SLANote').text('');
-    $('#ticket-SLAStatus').find('i').addClass('fa-bomb');
-    $('#ticket-SLAStatus').find('i').removeClass('fa-pause');
-    $('#ticket-SLAStatus').find('i').removeClass('slaPausedIcon');
-  }
-  else if (_ticketInfo.SlaTriggerId !== null
-            && _ticketInfo.SlaTriggerId > 0
-            && _ticketInfo.IsSlaPaused !== undefined
-            && !_ticketInfo.IsSlaPaused
+    $('#ticket-SLAStatus').find('i').removeClass('color-green color-red color-yellow');
+    if (_ticketInfo.IsSlaPaused !== undefined
+            && _ticketInfo.IsSlaPaused
             && !_ticketInfo.Ticket.IsClosed
-            && _ticketInfo.IsSlaPending !== null
-            && _ticketInfo.IsSlaPending) {
-      $('#ticket-SLAStatus').find('i').addClass('color-yellow');
-      $('#ticket-SLANote').text('Calculating...');
-      $('#ticket-SLAStatus').find('i').addClass('fa-bomb');
-      $('#ticket-SLAStatus').find('i').removeClass('fa-pause');
-      $('#ticket-SLAStatus').find('i').removeClass('slaPausedIcon');
-  }
-  else {
-    $('#ticket-SLAStatus')
-      .find('i')
-      .addClass((_ticketInfo.Ticket.SlaViolationTime < 1 ? 'color-red' : (_ticketInfo.Ticket.SlaWarningTime < 1 ? 'color-yellow' : 'color-green')));
-    $('#ticket-SLAStatus').find('i').addClass('fa-bomb');
-    $('#ticket-SLAStatus').find('i').removeClass('fa-pause');
-    $('#ticket-SLAStatus').find('i').removeClass('slaPausedIcon');
+            && _ticketInfo.SlaTriggerId !== null
+            && _ticketInfo.SlaTriggerId > 0) {
+        $('#ticket-SLAStatus').find('i').removeClass('fa-bomb');
+        $('#ticket-SLAStatus').find('i').addClass('fa-pause');
+        $('#ticket-SLAStatus').find('i').addClass('slaPausedIcon');
+        $('#ticket-SLANote').text('Paused');
+    }
+    else if (_ticketInfo.Ticket.SlaViolationTime === null
+        && ((_ticketInfo.SlaTriggerId === null || _ticketInfo.SlaTriggerId == 0)
+              || (_ticketInfo.SlaTriggerId !== null && _ticketInfo.SlaTriggerId > 0 && _ticketInfo.IsSlaPending !== null && !_ticketInfo.IsSlaPending))
+        ) {
+        $('#ticket-SLAStatus').find('i').addClass('color-green');
+        $('#ticket-SLANote').text('');
+        $('#ticket-SLAStatus').find('i').addClass('fa-bomb');
+        $('#ticket-SLAStatus').find('i').removeClass('fa-pause');
+        $('#ticket-SLAStatus').find('i').removeClass('slaPausedIcon');
+    }
+    else if (_ticketInfo.SlaTriggerId !== null
+              && _ticketInfo.SlaTriggerId > 0
+              && _ticketInfo.IsSlaPaused !== undefined
+              && !_ticketInfo.IsSlaPaused
+              && !_ticketInfo.Ticket.IsClosed
+              && _ticketInfo.IsSlaPending !== null
+              && _ticketInfo.IsSlaPending) {
+        $('#ticket-SLAStatus').find('i').addClass('color-yellow');
+        $('#ticket-SLANote').text('Calculating...');
+        $('#ticket-SLAStatus').find('i').addClass('fa-bomb');
+        $('#ticket-SLAStatus').find('i').removeClass('fa-pause');
+        $('#ticket-SLAStatus').find('i').removeClass('slaPausedIcon');
+    }
+    else {
+        $('#ticket-SLAStatus')
+          .find('i')
+          .addClass((_ticketInfo.Ticket.SlaViolationTime < 1 ? 'color-red' : (_ticketInfo.Ticket.SlaWarningTime < 1 ? 'color-yellow' : 'color-green')));
+        $('#ticket-SLAStatus').find('i').addClass('fa-bomb');
+        $('#ticket-SLAStatus').find('i').removeClass('fa-pause');
+        $('#ticket-SLAStatus').find('i').removeClass('slaPausedIcon');
 
         if (_ticketInfo.Ticket.SlaViolationDate !== null) {
             $('#ticket-SLANote').text(_ticketInfo.Ticket.SlaViolationDate.localeFormat(window.parent.Ts.Utils.getDateTimePattern()));
@@ -6036,4 +5955,14 @@ function pagewidth () {
     $('#frame-container, #ticketpage').css('max-width',width);
     $('#ticketpage').css('max-width',width);
     $('#ticketpane').css('max-width',width - 310);
+}
+
+
+
+function Unsubscribe() {
+    console.log("in unsubscribe");
+    var orgID = top.Ts.System.Organization.OrganizationID;
+
+    var presenceChannelName = 'presence-ticket-' + _ticketNumber + '-org-' + orgID;
+    top.Ts.Pusher.unsubscribe(presenceChannelName);
 }
