@@ -212,7 +212,6 @@
       </compositescript>
   </asp:ScriptManager>
   <asp:HiddenField ID="fieldSID" runat="server" Value="1234"></asp:HiddenField>
-  <asp:HiddenField ID="SignalRUrl" runat="server" Value=""></asp:HiddenField>
       <asp:HiddenField ID="Evergage" runat="server" Value=""></asp:HiddenField>
   <div id="jquery_jplayer_1"></div>
   <div class="main-loading ts-loading">

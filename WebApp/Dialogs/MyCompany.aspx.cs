@@ -14,6 +14,7 @@ using TeamSupport.Data;
 using TeamSupport.WebUtils;
 using Telerik.Web.UI;
 using System.Globalization;
+using System.Collections.Generic;
 
 public partial class Dialogs_Organization : BaseDialogPage
 {
@@ -186,15 +187,20 @@ public partial class Dialogs_Organization : BaseDialogPage
 		cbIsCustomerInsightsActive.Checked = organization.IsCustomerInsightsActive;
 		cbTwoStepVerification.Checked = organization.TwoStepVerificationEnabled;
 		cbNoAttachmentsInOutboundEmail.Checked = organization.NoAttachmentsInOutboundEmail;
-
 		lbNoAttachmentsInOutboundExcludeProductLine.Items.Clear();
 		ProductFamilies productFamilies = new ProductFamilies(UserSession.LoginUser);
 		productFamilies.LoadByOrganizationID(organization.OrganizationID);
-		string[] excluded = organization.NoAttachmentsInOutboundExcludeProductLine.Split(',');
+
+		List<string> excluded = new List<string>();
+
+		if (!string.IsNullOrEmpty(organization.NoAttachmentsInOutboundExcludeProductLine))
+		{
+			excluded = organization.NoAttachmentsInOutboundExcludeProductLine.Split(',').ToList();
+		}
 
 		foreach (ProductFamily productFamily in productFamilies)
 		{
-			lbNoAttachmentsInOutboundExcludeProductLine.Items.Add(new ListItem() { Value = productFamily.ProductFamilyID.ToString(), Text = productFamily.Name, Selected = Array.Exists(excluded, element => element == productFamily.ProductFamilyID.ToString()) });
+			lbNoAttachmentsInOutboundExcludeProductLine.Items.Add(new ListItem() { Value = productFamily.ProductFamilyID.ToString(), Text = productFamily.Name, Selected = excluded.Exists(p => p == productFamily.ProductFamilyID.ToString()) });
 		}
 
 		if (!organization.NoAttachmentsInOutboundEmail || lbNoAttachmentsInOutboundExcludeProductLine.Items.Count == 0)
