@@ -1,6 +1,6 @@
 ﻿var notify = false;
 var _pressenceChannel = false;
-function loadPusher() {
+function loadPusher() { 
     $("#jquery_jplayer_1").jPlayer({
         ready: function () {
             $(this).jPlayer("setMedia", {
@@ -20,17 +20,52 @@ function loadPusher() {
     top.Ts.Settings.System.read('PusherKey', '1', function (key) {
         var orgID = top.Ts.System.Organization.OrganizationID;
         var userID = top.Ts.System.User.UserID;
+        pusher = new Pusher(key);
 
-        top.Ts.Pusher = new Pusher(key, {
-            authEndpoint: service + 'Auth',
-            auth: {
-                params: {
-                    userID: top.Ts.System.User.UserID
-                }
-            }
-        });
+        //var presenceChannelName = 'presence-' + orgID;
+        //var presence = new Pusher(key, {
+        //    authEndpoint: service + 'Auth',
+        //    auth: {
+        //        params: {
+        //            userID: top.Ts.System.User.UserID
+        //        }
+        //    }
+        //});
 
-        ticket_channel = top.Ts.Pusher.subscribe('ticket-dispatch-' + orgID);
+        //pressenceChannel = presence.subscribe(presenceChannelName);
+
+        //pressenceChannel.bind('pusher:subscription_succeeded', function (members) {
+        //    var mainWC = $("#iframe-mniWC2");
+        //    try {
+        //        if (mainWC[0].contentWindow.updateUsers) { mainWC[0].contentWindow.updateUsers(members); }
+        //    } catch (err) { }
+        //});
+
+        //pressenceChannel.bind('pusher:member_added', function (member) {
+        //      var mainWC = $("#iframe-mniWC2");
+        //      try {
+        //        if (mainWC[0].contentWindow.updateUsers) { mainWC[0].contentWindow.updateUser(member); }
+        //      } catch (err) { }
+
+        //      //var userPage = $("#iframe-mniUsers");
+        //      //  try {
+        //      //      if (userPage[0].contentWindow.Update) { userPage[0].contentWindow.Update(); }
+        //      //  } catch (err) { }
+        //});
+
+        //pressenceChannel.bind('pusher:member_removed', function (member) {
+        //      var windows = getChildWindows();
+        //      for (var i = 0; i < windows.length; i++) {
+        //        try { if (windows[i].disconnect) windows[i].disconnect(member.info.userid); } catch (err) { }
+        //      }
+
+        //      var mainWC = $("#iframe-mniUsers");
+        //        try {
+        //            if (mainWC[0].contentWindow.Update) { mainWC[0].contentWindow.Update(); }
+        //        } catch (err) { }
+        //});
+
+        ticket_channel = pusher.subscribe('ticket-dispatch-' + orgID);
 
         ticket_channel.bind('addThread', function (data) {
             var windows = getChildWindows();
@@ -71,38 +106,35 @@ function loadPusher() {
         ticket_channel.bind('getTicketViewing', function (data) {
             if ($('.main-ticket-' + data).length > 0) {
                 if ($('.main-ticket-' + data).is(":visible")) {
-                    //mainFrame.Ts.Services.Dispatch.ticketViewingAdd(data, top.Ts.System.User.UserID);
-                    $('.main-ticket-' + data).find('iframe')[0].contentWindow.SetupPusher();
-                    // $('.main-ticket-' + data).find('iframe')[0].contentWindow;
+                    mainFrame.Ts.Services.Dispatch.ticketViewingAdd(data, top.Ts.System.User.UserID);
                 }
             }
         });
 
-        //ticket_channel.bind('ticketViewingAdd', function (data) {
-        //    console.log("ticketViewingAdd in chan bind");
-        //    if (data.user != top.Ts.System.User.UserID) {
-        //        if ($('.main-ticket-' + data.ticket).length > 0) {
-        //            if ($('.main-ticket-' + data.ticket).is(":visible")) {
-        //                $('.main-ticket-' + data.ticket).find('iframe')[0].contentWindow.addUserViewing(data.user);
-        //            }
-        //        }
-        //    }
-        //        var ticketWin = $(".ticketIframe");
-        //        for (var i = 0; i < ticketWin.length; i++) {
-        //            ticketWin[i].contentWindow.removeUserViewing(data.ticket, data.user);
-        //        }
-        //});
+        ticket_channel.bind('ticketViewingAdd', function (data) {
+            if (data.user != top.Ts.System.User.UserID) {
+                if ($('.main-ticket-' + data.ticket).length > 0) {
+                    if ($('.main-ticket-' + data.ticket).is(":visible")) {
+                        $('.main-ticket-' + data.ticket).find('iframe')[0].contentWindow.addUserViewing(data.user);
+                    }
+                }
+            }
+                var ticketWin = $(".ticketIframe");
+                for (var i = 0; i < ticketWin.length; i++) {
+                    ticketWin[i].contentWindow.removeUserViewing(data.ticket, data.user);
+                }
+        });
 
-        //ticket_channel.bind('ticketViewingRemove', function (data) {
-        //    var ticketWin = $(".ticketIframe");
-        //    for (var i = 0; i < ticketWin.length; i++) {
-        //        ticketWin[i].contentWindow.removeUserViewing(null, data.user);
-        //    }
-        //});
+        ticket_channel.bind('ticketViewingRemove', function (data) {
+            var ticketWin = $(".ticketIframe");
+            for (var i = 0; i < ticketWin.length; i++) {
+                ticketWin[i].contentWindow.removeUserViewing(null, data.user);
+            }
+        });
 
         ticket_channel.bind('DisplayTicketUpdate', function (data) {
             var mergeticket;
-
+            
             if (data.ticket.indexOf(',') != -1) {
                 var mergeTickets = data.ticket.split(',');
                 var losingTicket = mergeTickets[0];
@@ -181,7 +213,7 @@ function loadPusher() {
         //addWindow($("#iframe-mniCustomers").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations"));
       addWindow($(".customerIframe").contents().find("#watercoolerIframe"));
       addWindow($("#iframe-mniProducts").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations"));
-      addWindow($(".ticketIframe").contents().find("#watercoolerIframe"));
+      addWindow($(".ticketIframe").contents().find("#watercoolerIframe"));  
       return result;
     }
 
@@ -273,3 +305,4 @@ function chime(chimeType) {
             mp3: "vcr/1_9_0/Audio/drop.mp3"
         }).jPlayer("play", 0);
 }
+
