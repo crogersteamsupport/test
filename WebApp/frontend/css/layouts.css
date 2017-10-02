@@ -98,7 +98,6 @@
 }
 #sidebar .form-group {
     margin:0px 0px 10px;
-    max-height:30px;
     min-height:30px;
     width:100%;
 }
@@ -164,8 +163,8 @@
     margin-bottom:20px;
 }
 #ticket-properties-area hr {
-    margin:15px auto;
-    width:98%;
+    margin:10px auto 20px;
+    width:100%;
     border-top:1px solid #d9d9d9;
 }
 #ticket-properties-area input::-webkit-input-placeholder {
@@ -178,11 +177,18 @@
 #ticket-properties-area .tagContainer input::-webkit-input-placeholder {
     color:#428bca;
     opacity:1;
-    vertical-align:top;
+    vertical-align:middle;
     /*text-decoration:underline;*/
 }
 
-#ticket-properties-area .hasError {
-    border:1px solid #a94442;
 
+
+#ticket-properties-area .hasError .form-label,
+#ticket-properties-area .hasError .form-label label {
+    color:#a94442 !important;
+}
+
+#ticket-properties-area .hasError .form-input,
+#ticket-properties-area .hasError .tagContainer {
+    border:1px solid #a94442;
 }
