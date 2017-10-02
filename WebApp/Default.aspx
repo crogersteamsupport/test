@@ -5,11 +5,11 @@
 <%@ Register TagPrefix="scriptSvc" Namespace="ScriptReferenceProfiler" Assembly="ScriptReferenceProfiler, Version=1.1.0.0, Culture=neutral" %>
 <%@ Register Assembly="Telerik.Web.UI" Namespace="Telerik.Web.UI" TagPrefix="telerik" %>
 <html>
-<head id="Head1" runat="server">
-  <meta name="robots" content="noindex, nofollow">
-  <title>Teamsupport</title>
-   <link rel="SHORTCUT ICON" href="~/favicon.ico" />
-	<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/laehkaldepkacogpkokmimggbepafabg">
+    <head id="Head1" runat="server">
+        <meta name="robots" content="noindex, nofollow">
+        <title>Teamsupport</title>
+        <link rel="SHORTCUT ICON" href="~/favicon.ico" />
+	    <link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/laehkaldepkacogpkokmimggbepafabg">
 
   <link href="vcr/1_9_0/Css/standards.css" rel="stylesheet" type="text/css">
 
@@ -19,21 +19,26 @@
   <link href="vcr/1_9_0/Css/ts.ui.css" rel="stylesheet" type="text/css" />
   <link href="vcr/1_9_0/Css/jquery.ui.combobox.css" rel="stylesheet" type="text/css" />
   <link href="vcr/1_9_0/Css/jquery.ui.timepicker.css" rel="stylesheet" type="text/css" />
-  <!--[if IE 7]><link href="vcr/1_9_0/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="vcr/1_9_0/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
+  <!--[if IE 7]><link href="vcr/1_9_0/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]-->
+  <!--[if IE 8]><link href="vcr/1_9_0/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
   <link href="vcr/1_9_0/Css/ts.mainpage.css?1502980826" rel="stylesheet" type="text/css" />
   <link href="vcr/1_9_0/Css/chat.css" rel="stylesheet" type="text/css" />
   <link href="vcr/1_9_0/Css/jquery.pnotify.default.icons.css" rel="stylesheet" />
   <link href="vcr/1_9_0/Css/jquery.pnotify.default.css" rel="stylesheet" />
+
+        <script src="https://js.pusher.com/3.1/pusher.min.js" type="text/javascript"></script>
 
   <script src="vcr/1_9_0/Js/jquery-latest.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/chat.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/json2.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/browser.js" type="text/javascript"></script>
+  <script src="vcr/1_9_0/Js/jquery.signalR-2.1.2.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/jquery.jplayer.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/jquery.pnotify.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/moment.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/Ts/ts.editor.js" type="text/javascript"></script>
+  <script src="vcr/1_9_0/Js/Ts/ts.wc.signalr.js" type="text/javascript"></script>
 
   <script src="../js_5/imagepaste.js" type="text/javascript"></script>
   <script src="../js_5/jquery.Jcrop.js" type="text/javascript"></script>
@@ -194,7 +199,6 @@
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.ui.tabs.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.ui.menutree.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.pages.main.js" />
-          <asp:ScriptReference Path="https://js.pusher.com/3.1/pusher.min.js" />
           <asp:ScriptReference Path="js_5/dialogs.js" />
 
       </scripts>
@@ -207,6 +211,7 @@
       </compositescript>
   </asp:ScriptManager>
   <asp:HiddenField ID="fieldSID" runat="server" Value="1234"></asp:HiddenField>
+  <asp:HiddenField ID="SignalRUrl" runat="server" Value=""></asp:HiddenField>
       <asp:HiddenField ID="Evergage" runat="server" Value=""></asp:HiddenField>
   <div id="jquery_jplayer_1"></div>
   <div class="main-loading ts-loading">
