@@ -1,4 +1,4 @@
-﻿var _ticketInfo = null;
+var _ticketInfo = null;
 var _ticketNumber = null;
 var _ticketID = null;
 var _ticketCreator = new Object();
@@ -210,7 +210,6 @@ Selectize.define('no_results', function (options) {
     })();
 });
 
-
 $(window).load(function(e) {
     $('textarea.autogrow').autogrow();
 });
@@ -219,9 +218,6 @@ $(window).resize(function(e) {
     pagewidth();
     ticketmenu();
 });
-
-
-
 
 $(document).ready(function () {
     pagewidth();
@@ -1158,7 +1154,6 @@ function update(parentElement) {
     }, 1000);
 }
 
-
 function countdown(elementName, minutes, seconds, parentElement) {
     var element, endTime, hours, mins, msLeft, time;
 
@@ -1278,7 +1273,6 @@ function convertToValidDate(val) {
     else
         return val;
 }
-
 
 function SaveAction(_oldActionID, isPrivate, callback) {
     var action = new parent.TeamSupport.Data.ActionProxy();
@@ -1533,7 +1527,7 @@ function GetActionCount(callback) {
         _workingActionNumer = total;
         callback();
     });
-};
+}
 
 function LoadTicketControls() {
     if (_ticketInfo.Ticket.IsFlagged) {
@@ -1834,7 +1828,7 @@ function AppendSelect(parent, data, type, id, name, isSelected) {
     if (isSelected) {
         option.attr('selected', 'selected');
     }
-};
+}
 
 function SetupTicketPropertyEvents() {
     $('#ticket-title-label').click(function (e) {
@@ -2403,7 +2397,6 @@ function UpdateTicketTypes(persistedGroup, callback) {
 
     callback({ Group: persistedGroup, Type: persistedType })
 }
-
 
 function SetupProductSection() {
     window.parent.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {
@@ -3923,7 +3916,6 @@ var SetupStatusField = function (StatusId) {
     }
 }
 
-//click events and logic
 var SetupJiraFields = function () {
     $('#newJiraIssue').click(function (e) {
         e.preventDefault();
@@ -4021,7 +4013,6 @@ var SetupJiraFields = function () {
     });
 };
 
-//Load and display the proper fields/values
 var SetupJiraFieldValues = function () {
     window.parent.Ts.Services.Admin.GetJiraInstanceNameForTicket(_ticketID, function (result) {
         if (result.length > 0) {
@@ -4070,7 +4061,6 @@ var SetupJiraFieldValues = function () {
     });
 };
 
-//click events and logic
 var SetupTFSFields = function () {
     $('#newTFSWorkItem').click(function (e) {
         e.preventDefault();
@@ -4168,7 +4158,6 @@ var SetupTFSFields = function () {
     });
 };
 
-//Load and display the proper TFS fields/values
 var SetupTFSFieldValues = function () {
     window.parent.Ts.Services.Admin.GetTFSCRMLinkTableRecordForTicket(_ticketID, function (result) {
         if (result.length > 0) {
@@ -4436,7 +4425,7 @@ function CreateHandleBarHelpers() {
                 var reckoning = data[1].validation[0].reckoning;
                 var opacity = (reckoning > 0) ? '1' : '0.2';
                 var oldvalue = (reckoning > 0) ? '1' : '0';
-                var thacode = '<span id="tally-' + actionID + '" class="listreactions" data-actionid="' + actionID + '" data-ticketid="' + ticketID + '">' + tally + '</span><a href="#" class="updatereaction" data-actionid="' + actionID + '" data-ticketid="' + ticketID + '" data-oldvalue="' + oldvalue + '" style="opacity:' + opacity + ';"><img src="/vcr/1_9_0/Images/icons/applause.png" style="margin-left:5px;height:24px;"></a>';
+                var thacode = '<span id="tally-' + actionID + '" class="listreactions" data-actionid="' + actionID + '" data-ticketid="' + ticketID + '">' + tally + '</span><a href="#" class="updatereaction" data-actionid="' + actionID + '" data-ticketid="' + ticketID + '" data-oldvalue="' + oldvalue + '" style="opacity:' + opacity + ';"><img src="/vcr/480/Images/icons/applause.png" style="margin-left:5px;height:24px;"></a>';
                 $('#applause-' + actionID).html(thacode);
             }
         });
@@ -4508,9 +4497,7 @@ function CreateHandleBarHelpers() {
     });
 };
 
-
-function BuildWaterCoolerAssociationToolTip(references)
-{
+function BuildWaterCoolerAssociationToolTip(references){
     var tixatt = references.Tickets;
     var tixattstr = "";
     var tixHasAtt = false;
@@ -5929,10 +5916,6 @@ var SetSolved = function (ResolvedID) {
     }
 };
 
-
-
-
-
 function watson (ticketnumber) {
     window.parent.Ts.Services.Tickets.GetTicketInfo(ticketnumber, function (info) {
         // console.log(info);
@@ -5957,7 +5940,6 @@ function watson (ticketnumber) {
     });
 }
 
-
 function ticketmenu () {
     var width = $('#ticketpage').width();
     // $('#ticketmenu-container').css('width',width);
@@ -5981,8 +5963,6 @@ function maxwidth () {
     });
 }
 
-
-
 function pagewidth () {
     var width = $(window).width();
     $('#frame-container, #ticketpage').css('max-width',width);
@@ -5990,12 +5970,12 @@ function pagewidth () {
     $('#ticketpane').css('max-width',width - 310);
 }
 
-
-
 function Unsubscribe() {
     console.log("in unsubscribe");
     var orgID = top.Ts.System.Organization.OrganizationID;
 
     var presenceChannelName = 'presence-ticket-' + _ticketNumber + '-org-' + orgID;
     top.Ts.Pusher.unsubscribe(presenceChannelName);
+}
+
 }
