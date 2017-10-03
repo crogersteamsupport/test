@@ -4070,15 +4070,6 @@ function FetchTimeLineItems(start) {
 }
 
 function CreateActionElement(val, ShouldAppend) {
-    if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
-        var dateSpan = '<div class="daystrip"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
-        $("#action-timeline").append(dateSpan);
-        _currDateSpan = val.item.DateCreated;
-        console.log('Date Added.');
-    } else {
-        console.log('No Date Added.');
-    }
-    
     if (val.item.IsWC) {
         val.item.Message = val.item.Message.replace(/\n\r?/g, '<br />');
         for (wc = 0; wc < val.WaterCoolerReplies.length; wc++) {
@@ -4100,6 +4091,16 @@ function CreateActionElement(val, ShouldAppend) {
             $('.action-placeholder').after(actionElement);
         }
     }
+
+    if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
+        var dateSpan = '<div class="daystrip"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
+        $("#action-timeline").prepend(dateSpan);
+        _currDateSpan = val.item.DateCreated;
+        console.log('Date Added.');
+    } else {
+        console.log('No Date Added.');
+    }
+
     _isCreatingAction = false;
     return actionElement;
 }
