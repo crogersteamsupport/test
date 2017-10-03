@@ -239,8 +239,8 @@ AdminInt = function () {
             zohoGrids.append('<option value="EU">EU</option>');
         } else {
             zohoGrids.append('<option value="US">US</option>');
-            zohoGrids.append('<option value="EU"'+ selected +'EU</option>');
-        }        
+            zohoGrids.append('<option value="EU"' + selected + 'EU</option>');
+        }
 
         $("#AddingInstanceLabel").hide();
         $("#JiraInstacesListWrapper").show();
@@ -838,8 +838,7 @@ AdminInt = function () {
         }
 
         var useNetworkCredentials = parent.find('.int-crm-use-network-credentials').prop('checked');
-        if (!useNetworkCredentials)
-        {
+        if (!useNetworkCredentials) {
             useNetworkCredentials = false;
         }
         var pullCasesAsTickets = parent.find('.int-crm-pull-cases-as-tickets').prop('checked');
