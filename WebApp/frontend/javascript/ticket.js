@@ -4077,28 +4077,28 @@ function CreateActionElement(val, ShouldAppend) {
             val.WaterCoolerReplies[wc].WaterCoolerReplyProxy.Message = wcmsgtext.replace(/\n\r?/g, '<br />');
         }
     }
+
+    if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
+        var dateSpan = '<div class="daystrip"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
+        _currDateSpan = val.item.DateCreated;
+    }
+
     var html = _compiledActionTemplate(val);
     var actionElement = $(html);
     actionElement.find('a').attr('target', '_blank');
     if (ShouldAppend) {
         try {
+            $("#action-timeline").append(dateSpan);
             $("#action-timeline").append(actionElement);
         } catch (e) { }
     } else {
         if ($('.ticket-action.pinned').length) {
             $('.ticket-action.pinned').after(actionElement);
+            $('.ticket-action.pinned').after(dateSpan);
         } else {
             $('.action-placeholder').after(actionElement);
+            $('.action-placeholder').after(dateSpan);
         }
-    }
-
-    if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
-        var dateSpan = '<div class="daystrip"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
-        $("#action-timeline").prepend(dateSpan);
-        _currDateSpan = val.item.DateCreated;
-        console.log('Date Added.');
-    } else {
-        console.log('No Date Added.');
     }
 
     _isCreatingAction = false;
