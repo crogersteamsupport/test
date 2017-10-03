@@ -5335,36 +5335,6 @@ var MergeSuccessEvent = function (_ticketNumber, winningTicketNumber) {
     window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
 }
 
-var addUsersViewing = function (members) {
-    members.each(function (member) {
-        addUserViewing(member.id);
-    });
-}
-
-var addUserViewing = function (userID) {
-    if (userID != top.Ts.System.User.UserID) {
-        $('#ticket-now-viewing').show();
-        if ($('.ticket-viewer:data(ChatID=' + userID + ')').length < 1) {
-            window.parent.Ts.Services.Users.GetUser(userID, function (user) {
-                $('.ticket-viewer:data(ChatID=' + user.UserID + ')').remove();
-                var fullName = user.FirstName + " " + user.LastName;
-                var viewuser = $('<a>').data('ChatID', user.UserID).data('Name', fullName).addClass('ticket-viewer').click(function () {
-                    window.parent.openChat($(this).data('Name'), $(this).data('ChatID'));
-                    window.parent.Ts.System.logAction('Now Viewing - Chat Opened');
-                }).html('<img class="user-avatar ticket-viewer-avatar" src="../../../dc/' + user.OrganizationID + '/useravatar/' + user.UserID + '/48">' + fullName + '</a>').appendTo($('#ticket-viewing-users'));
-            });
-        }
-    }
-}
-
-var removeUserViewing = function (userID) {
-    if ($('.ticket-viewer:data(ChatID=' + userID + ')').length > 0) {
-        $('.ticket-viewer:data(ChatID=' + userID + ')').remove();
-        if ($('.ticket-viewer').length < 1) {
-            $('#ticket-now-viewing').hide();
-        }
-    }
-}
 
 var resetSLAInfo = function () {
     window.parent.Ts.Services.TicketPage.GetTicketSLAInfo(_ticketNumber, function (info) {
