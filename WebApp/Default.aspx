@@ -37,7 +37,7 @@
 
         <!-- PUSHER -->
         <script src="https://js.pusher.com/3.1/pusher.min.js" type="text/javascript"></script>
-        <script src="/frontend/javascript/pusher.js?1506972191" type="text/javascript"></script>
+        <script src="/frontend/javascript/pusher.js?1506974994" type="text/javascript"></script>
 
         <script src="../js_5/imagepaste.js" type="text/javascript"></script>
         <script src="../js_5/jquery.Jcrop.js" type="text/javascript"></script>
