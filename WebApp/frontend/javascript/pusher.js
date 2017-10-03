@@ -192,9 +192,9 @@ function openChat(name, chatid) {
 }
 
 function chime(chimeType) {
-        $("#jquery_jplayer_1").jPlayer("setMedia", {
-            mp3: "vcr/1_9_0/Audio/drop.mp3"
-        }).jPlayer("play", 0);
+    $("#jquery_jplayer_1").jPlayer("setMedia", {
+        mp3: "vcr/1_9_0/Audio/drop.mp3"
+    }).jPlayer("play", 0);
 }
 
 
@@ -239,19 +239,15 @@ function SetupPusher() {
             top.Ts.Pusher.unsubscribe(data.chan);
         });
     });
-
 }
 
-
-
-
-var addUsersViewing = function (members) {
+function addUsersViewing (members) {
     members.each(function (member) {
         addUserViewing(member.id);
     });
 }
 
-var addUserViewing = function (userID) {
+function addUserViewing (userID) {
     if (userID != top.Ts.System.User.UserID) {
         $('#ticket-now-viewing').show();
         if ($('.ticket-viewer:data(ChatID=' + userID + ')').length < 1) {
@@ -267,7 +263,7 @@ var addUserViewing = function (userID) {
     }
 }
 
-var removeUserViewing = function (userID) {
+function removeUserViewing (userID) {
     if ($('.ticket-viewer:data(ChatID=' + userID + ')').length > 0) {
         $('.ticket-viewer:data(ChatID=' + userID + ')').remove();
         if ($('.ticket-viewer').length < 1) {
