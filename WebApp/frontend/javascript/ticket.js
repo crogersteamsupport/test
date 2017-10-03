@@ -4074,7 +4074,11 @@ function CreateActionElement(val, ShouldAppend) {
         var dateSpan = '<div class="daystrip"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
         $("#action-timeline").append(dateSpan);
         _currDateSpan = val.item.DateCreated;
+        console.log('Date Added.');
+    } else {
+        console.log('No Date Added.');
     }
+    
     if (val.item.IsWC) {
         val.item.Message = val.item.Message.replace(/\n\r?/g, '<br />');
         for (wc = 0; wc < val.WaterCoolerReplies.length; wc++) {
