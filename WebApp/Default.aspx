@@ -35,15 +35,9 @@
         <script src="vcr/1_9_0/Js/moment.min.js" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/Ts/ts.editor.js" type="text/javascript"></script>
 
-        <!-- PUSHER -->
-        <script src="https://js.pusher.com/3.1/pusher.min.js" type="text/javascript"></script>
-        <script src="/frontend/javascript/pusher.js?1506974994" type="text/javascript"></script>
-
         <script src="../js_5/imagepaste.js" type="text/javascript"></script>
         <script src="../js_5/jquery.Jcrop.js" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/aes.js" type="text/javascript"></script>
-
-
 
   <!-- Start Apptegic Code
   <script type="text/javascript">
