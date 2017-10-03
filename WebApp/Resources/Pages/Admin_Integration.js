@@ -380,9 +380,25 @@ AdminInt = function () {
                 loadFields(element.find('.int-map-tsfield'), element.find('.int-map-type').val());
                 break;
             case 'Jira':
-                if ($('.int-jira-map-tsfield option').size() == 0) {
-                    loadFields(element.find('.int-jira-map-tsfield'), 17);
+                $('.int-map-type option').remove();
+                $('<option>')
+                  .text('Ticket')
+                  .attr('value', window.parent.parent.Ts.ReferenceTypes.Tickets)
+                  .attr('selected', 'selected')
+                  .appendTo('.int-map-type');
+
+                $('<option>')
+                  .text('Ticket Type')
+                  .attr('value', window.parent.parent.Ts.ReferenceTypes.TicketTypes)
+                  .appendTo('.int-map-type');
+
+                $('.int-map-type').combobox({
+                    selected: function (e, ui) {
+                        loadFields(element.find('.int-jira-map-tsfield'), element.find('.int-map-type').val());
                 }
+                });
+
+                loadFields(element.find('.int-jira-map-tsfield'), element.find('.int-map-type').val());
                 break;
             case 'TFS':
                 $('.int-map-type option').remove();
@@ -716,7 +732,7 @@ AdminInt = function () {
           tsField.ID,
           tsField.IsCustom,
           crmField,
-          17,
+          parent.find('.int-map-type').val(),
           function (fields) {
               loadMapFields(parent, fields);
           }
