@@ -5357,7 +5357,6 @@ var addUserViewing = function (userID) {
     }
 }
 
-
 var removeUserViewing = function (userID) {
     if ($('.ticket-viewer:data(ChatID=' + userID + ')').length > 0) {
         $('.ticket-viewer:data(ChatID=' + userID + ')').remove();
@@ -5366,7 +5365,6 @@ var removeUserViewing = function (userID) {
         }
     }
 }
-
 
 var resetSLAInfo = function () {
     window.parent.Ts.Services.TicketPage.GetTicketSLAInfo(_ticketNumber, function (info) {
