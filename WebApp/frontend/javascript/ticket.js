@@ -4070,11 +4070,6 @@ function FetchTimeLineItems(start) {
 }
 
 function CreateActionElement(val, ShouldAppend) {
-    if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
-        var dateSpan = '<div class="daystrip"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
-        $("#action-timeline").append(dateSpan);
-        _currDateSpan = val.item.DateCreated;
-    }
     if (val.item.IsWC) {
         val.item.Message = val.item.Message.replace(/\n\r?/g, '<br />');
         for (wc = 0; wc < val.WaterCoolerReplies.length; wc++) {
@@ -4082,20 +4077,30 @@ function CreateActionElement(val, ShouldAppend) {
             val.WaterCoolerReplies[wc].WaterCoolerReplyProxy.Message = wcmsgtext.replace(/\n\r?/g, '<br />');
         }
     }
+
+    if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
+        var dateSpan = '<div class="daystrip"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
+        _currDateSpan = val.item.DateCreated;
+    }
+
     var html = _compiledActionTemplate(val);
     var actionElement = $(html);
     actionElement.find('a').attr('target', '_blank');
     if (ShouldAppend) {
         try {
+            $("#action-timeline").append(dateSpan);
             $("#action-timeline").append(actionElement);
         } catch (e) { }
     } else {
         if ($('.ticket-action.pinned').length) {
             $('.ticket-action.pinned').after(actionElement);
+            $('.ticket-action.pinned').after(dateSpan);
         } else {
             $('.action-placeholder').after(actionElement);
+            $('.action-placeholder').after(dateSpan);
         }
     }
+
     _isCreatingAction = false;
     return actionElement;
 }
@@ -5330,36 +5335,6 @@ var MergeSuccessEvent = function (_ticketNumber, winningTicketNumber) {
     window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
 }
 
-var addUsersViewing = function (members) {
-    members.each(function (member) {
-        addUserViewing(member.id);
-    });
-}
-
-var addUserViewing = function (userID) {
-    if (userID != top.Ts.System.User.UserID) {
-        $('#ticket-now-viewing').show();
-        if ($('.ticket-viewer:data(ChatID=' + userID + ')').length < 1) {
-            window.parent.Ts.Services.Users.GetUser(userID, function (user) {
-                $('.ticket-viewer:data(ChatID=' + user.UserID + ')').remove();
-                var fullName = user.FirstName + " " + user.LastName;
-                var viewuser = $('<a>').data('ChatID', user.UserID).data('Name', fullName).addClass('ticket-viewer').click(function () {
-                    window.parent.openChat($(this).data('Name'), $(this).data('ChatID'));
-                    window.parent.Ts.System.logAction('Now Viewing - Chat Opened');
-                }).html('<img class="user-avatar ticket-viewer-avatar" src="../../../dc/' + user.OrganizationID + '/useravatar/' + user.UserID + '/48">' + fullName + '</a>').appendTo($('#ticket-viewing-users'));
-            });
-        }
-    }
-
-    var removeUserViewing = function (userID) {
-        if ($('.ticket-viewer:data(ChatID=' + userID + ')').length > 0) {
-            $('.ticket-viewer:data(ChatID=' + userID + ')').remove();
-            if ($('.ticket-viewer').length < 1) {
-                $('#ticket-now-viewing').hide();
-            }
-        }
-    }
-}
 
 var resetSLAInfo = function () {
     window.parent.Ts.Services.TicketPage.GetTicketSLAInfo(_ticketNumber, function (info) {

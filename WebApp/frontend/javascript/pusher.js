@@ -3,9 +3,7 @@ var _pressenceChannel = false;
 function loadPusher() {
     $("#jquery_jplayer_1").jPlayer({
         ready: function () {
-            $(this).jPlayer("setMedia", {
-                mp3: "vcr/1_9_0/Audio/chime.mp3"
-            });
+            $(this).jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/chime.mp3" });
         },
         loop: false,
         swfPath: "vcr/1_9_0/Js"
@@ -24,9 +22,7 @@ function loadPusher() {
         top.Ts.Pusher = new Pusher(key, {
             authEndpoint: service + 'Auth',
             auth: {
-                params: {
-                    userID: top.Ts.System.User.UserID
-                }
+                params: { userID: top.Ts.System.User.UserID }
             }
         });
 
@@ -94,9 +90,7 @@ function loadPusher() {
                         top.Ts.MainPage.AppNotify("Ticket " + data.ticket, data.update, "error");
                     }
                 }
-
                 data.ticket = mergeTickets[1];
-
             }
 
             if ($('.main-ticket-' + data.ticket).length > 0) {
@@ -192,13 +186,10 @@ function openChat(name, chatid) {
 }
 
 function chime(chimeType) {
-        $("#jquery_jplayer_1").jPlayer("setMedia", {
-            mp3: "vcr/1_9_0/Audio/drop.mp3"
-        }).jPlayer("play", 0);
+    $("#jquery_jplayer_1").jPlayer("setMedia", {
+        mp3: "vcr/1_9_0/Audio/drop.mp3"
+    }).jPlayer("play", 0);
 }
-
-
-
 
 function SetupPusher() {
     console.log("setup pusher");
@@ -239,5 +230,35 @@ function SetupPusher() {
             top.Ts.Pusher.unsubscribe(data.chan);
         });
     });
+}
 
+function addUsersViewing (members) {
+    members.each(function (member) {
+        addUserViewing(member.id);
+    });
+}
+
+function addUserViewing (userID) {
+    if (userID != top.Ts.System.User.UserID) {
+        $('#ticket-now-viewing').show();
+        if ($('.ticket-viewer[data-ChatID="' + userID + '"]').length < 1) {
+            window.parent.Ts.Services.Users.GetUser(userID, function (user) {
+                $('.ticket-viewer[data-ChatID="' + user.UserID + '"]').remove();
+                var fullName = user.FirstName + " " + user.LastName;
+                var viewuser = $('<a>').data('ChatID', user.UserID).data('Name', fullName).addClass('ticket-viewer').click(function () {
+                    window.parent.openChat($(this).data('Name'), $(this).data('ChatID'));
+                    window.parent.Ts.System.logAction('Now Viewing - Chat Opened');
+                }).html('<img class="user-avatar ticket-viewer-avatar" src="../../../dc/' + user.OrganizationID + '/useravatar/' + user.UserID + '/48">' + fullName + '</a>').appendTo($('#ticket-viewing-users'));
+            });
+        }
+    }
+}
+
+function removeUserViewing (userID) {
+    if ($('.ticket-viewer[data-ChatID="' + userID + '"]').length > 0) {
+        $('.ticket-viewer[data-ChatID="' + userID + '"]').remove();
+        if ($('.ticket-viewer').length < 1) {
+            $('#ticket-now-viewing').hide();
+        }
+    }
 }
