@@ -26,7 +26,7 @@ function loadPusher() {
             }
         });
 
-        ticket_channel = top.Ts.Pusher.subscribe('ticket-dispatch-' + orgID);
+        ticket_channel = pusher.subscribe('ticket-dispatch-' + orgID);
 
         ticket_channel.bind('addThread', function (data) {
             var windows = getChildWindows();
