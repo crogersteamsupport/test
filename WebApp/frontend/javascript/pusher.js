@@ -3,9 +3,7 @@ var _pressenceChannel = false;
 function loadPusher() {
     $("#jquery_jplayer_1").jPlayer({
         ready: function () {
-            $(this).jPlayer("setMedia", {
-                mp3: "vcr/1_9_0/Audio/chime.mp3"
-            });
+            $(this).jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/chime.mp3" });
         },
         loop: false,
         swfPath: "vcr/1_9_0/Js"
@@ -24,9 +22,7 @@ function loadPusher() {
         top.Ts.Pusher = new Pusher(key, {
             authEndpoint: service + 'Auth',
             auth: {
-                params: {
-                    userID: top.Ts.System.User.UserID
-                }
+                params: { userID: top.Ts.System.User.UserID }
             }
         });
 
@@ -94,9 +90,7 @@ function loadPusher() {
                         top.Ts.MainPage.AppNotify("Ticket " + data.ticket, data.update, "error");
                     }
                 }
-
                 data.ticket = mergeTickets[1];
-
             }
 
             if ($('.main-ticket-' + data.ticket).length > 0) {
@@ -196,9 +190,6 @@ function chime(chimeType) {
         mp3: "vcr/1_9_0/Audio/drop.mp3"
     }).jPlayer("play", 0);
 }
-
-
-
 
 function SetupPusher() {
     console.log("setup pusher");
