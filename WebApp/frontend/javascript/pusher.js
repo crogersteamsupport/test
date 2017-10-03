@@ -202,6 +202,7 @@ function SetupPusher() {
 
         var presenceChannelName = 'presence-ticket-' + _ticketNumber + '-org-' + orgID;
 
+        console.log(presenceChannelName);
         pressenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
 
         pressenceChannel.bind('pusher:subscription_succeeded', function (members) {
