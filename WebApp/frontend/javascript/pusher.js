@@ -241,9 +241,9 @@ function addUsersViewing (members) {
 function addUserViewing (userID) {
     if (userID != top.Ts.System.User.UserID) {
         $('#ticket-now-viewing').show();
-        if ($('.ticket-viewer:data(ChatID=' + userID + ')').length < 1) {
+        if ($('.ticket-viewer[data-ChatID="' + userID + '"]').length < 1) {
             window.parent.Ts.Services.Users.GetUser(userID, function (user) {
-                $('.ticket-viewer:data(ChatID=' + user.UserID + ')').remove();
+                $('.ticket-viewer[data-ChatID="' + user.UserID + '"]').remove();
                 var fullName = user.FirstName + " " + user.LastName;
                 var viewuser = $('<a>').data('ChatID', user.UserID).data('Name', fullName).addClass('ticket-viewer').click(function () {
                     window.parent.openChat($(this).data('Name'), $(this).data('ChatID'));
@@ -255,8 +255,8 @@ function addUserViewing (userID) {
 }
 
 function removeUserViewing (userID) {
-    if ($('.ticket-viewer:data(ChatID=' + userID + ')').length > 0) {
-        $('.ticket-viewer:data(ChatID=' + userID + ')').remove();
+    if ($('.ticket-viewer[data-ChatID="' + userID + '"]').length > 0) {
+        $('.ticket-viewer[data-ChatID="' + userID + '"]').remove();
         if ($('.ticket-viewer').length < 1) {
             $('#ticket-now-viewing').hide();
         }
