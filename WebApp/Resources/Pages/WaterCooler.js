@@ -86,7 +86,7 @@ $(document).ready(function () {
         pressenceChannel.bind('pusher:member_removed', function (member) {
             disconnect(member.info.userid);
             var windows = getChildWindows();
-            
+
             for (var i = 0; i < windows.length; i++) {
                 try { if (windows[i].disconnect) windows[i].disconnect(member.info.userid); } catch (err) { }
             }
@@ -626,7 +626,7 @@ $(document).ready(function () {
 
     })
     .tooltip();
-    
+
     $('.file-upload').fileupload({
         namespace: 'new_ticket',
         dropZone: $('.file-upload'),
@@ -977,7 +977,7 @@ function addComment (message) {
                     mainFrame.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler (" + newMsg++ + ")");
                 }
             }
-            else 
+            else
             {
                 parentThread.hide();
             }
@@ -1101,7 +1101,7 @@ function updateattachments (message) {
 
 function disconnect (windowid) {
         if (pageType == -1) {
-            $('.sidebarusers').find('.onlineUser:data(ChatID=' + windowid + ')').remove();
+            $('.sidebarusers').find('.onlineUser[data-ChatID="' + windowid + '"]').remove();
         }
         //chatAddMsg(windowid, "User is currently offline", "system");
     };
@@ -1110,34 +1110,20 @@ function updateUsers (members) {
     if (pageType == -1) {
         var name;
         var chatID;
-
         members.each(function (member) {
             name = member.info.name
             chatID = member.info.userid; //users[i].AppChatID;
-
-            var user = $('.sidebarusers').find('.onlineUser:data(ChatID=' + chatID + ')');
-
+            var user = $('.sidebarusers').find('.onlineUser[data-ChatID="' + chatID + '"]');
             if (user.length > 0) {
                 user.data('ChatID', chatID);
-            }
-            else {
-                var onlineuser = $('<li>')
-            .data('ChatID', chatID)
-            .data('Name', name)
-            .addClass('onlineUser ts-vcard')
-            .click(function () {
-                window.mainFrame.openChat($(this).data('Name'), $(this).data('ChatID'));
-            })
-            .attr('rel', '../../../Tips/User.aspx?UserID=' + chatID)
-            .cluetip(clueTipOptions)
-            .html('<a class="ui-state-default ts-link" href="#"><img class="chatavatar" src="' + member.info.avatar + '">' + name + '</a>')
-            .appendTo($('.sidebarusers'));
+            } else {
+                var onlineuser = $('<li>').data('ChatID', chatID).data('Name', name).addClass('onlineUser ts-vcard').click(function () {
+                    window.mainFrame.openChat($(this).data('Name'), $(this).data('ChatID'));
+                }).attr('rel', '../../../Tips/User.aspx?UserID=' + chatID).cluetip(clueTipOptions).html('<a class="ui-state-default ts-link" href="#"><img class="chatavatar" src="' + member.info.avatar + '">' + name + '</a>').appendTo($('.sidebarusers'));
             }
         });
-
-
     }
-    };
+}
 
 function updateUser (member) {
     if (pageType == -1) {
@@ -2451,8 +2437,5 @@ function getChildWindows() {
 }
 
 function ellipseString(text, max) {
-    return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; 
+    return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text;
  };
-
-
-
