@@ -668,11 +668,11 @@ namespace TeamSupport.ServiceLibrary
                 {
                     User contactAssignedTo = null;
                     bool contactMatchedByID = false;
+                    Organizations companyAssignedTo = new Organizations(_importUser);
 
                     string importIDOfCompanyAssignedTo = ReadString("ImportIDOfCompanyAssignedTo", string.Empty);
                     if (!string.IsNullOrEmpty(importIDOfCompanyAssignedTo))
                     {
-                        Organizations companyAssignedTo = new Organizations(_importUser);
                         companyAssignedTo.LoadByImportID(importIDOfCompanyAssignedTo, _organizationID);
                         if (companyAssignedTo.Count == 1)
                         {
@@ -781,7 +781,6 @@ namespace TeamSupport.ServiceLibrary
                         string nameOfCompanyAssignedTo = ReadString("NameOfCompanyAssignedTo", string.Empty);
                         if (!string.IsNullOrEmpty(nameOfCompanyAssignedTo))
                         {
-                            Organizations companyAssignedTo = new Organizations(_importUser);
                             companyAssignedTo.LoadByOrganizationNameActive(nameOfCompanyAssignedTo, _organizationID);
                             if (companyAssignedTo.Count == 1)
                             {
@@ -890,7 +889,6 @@ namespace TeamSupport.ServiceLibrary
                             int IDOfCompanyAssignedTo = ReadInt("IDOfCompanyAssignedTo");
                             if (IDOfCompanyAssignedTo != 0)
                             {
-                                Organizations companyAssignedTo = new Organizations(_importUser);
                                 companyAssignedTo.LoadByOrganizationID(IDOfCompanyAssignedTo);
                                 if (companyAssignedTo.Count == 1 && companyAssignedTo[0].ParentID == _organizationID)
                                 {
@@ -1088,7 +1086,7 @@ namespace TeamSupport.ServiceLibrary
                         string description = String.Format("Assigned asset to {0}.", contactAssignedTo.FirstLastName);
                         ActionLogs.AddActionLog(_importUser, ActionLogType.Update, ReferenceType.Assets, asset.AssetID, description);
                     }
-                    else
+                    else if (companyAssignedTo.Count == 0)
                     {
                         if (contactMatchedByID)
                         {
