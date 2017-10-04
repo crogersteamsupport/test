@@ -52,7 +52,7 @@ $(document).ready(function () {
         mainFrame.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler");
     });
 
-    var pressenceChannel = null;
+    var presenceChannel = null;
     var pusher = null;
     var service = '/Services/DispatchService.asmx/';
     top.Ts.Settings.System.read('PusherKey', '1', function (key) {
@@ -62,10 +62,10 @@ $(document).ready(function () {
 
         var presenceChannelName = 'presence-' + orgID;
         console.log(presenceChannelName);
-        pressenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
+        presenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
         console.log(presenceChannel);
 
-        pressenceChannel.bind('pusher:subscription_succeeded', function (members) {
+        presenceChannel.bind('pusher:subscription_succeeded', function (members) {
             console.log('pusher:subscription_succeeded');
             var mainWC = $("#iframe-mniWC2");
             try {
@@ -73,7 +73,7 @@ $(document).ready(function () {
             } catch (err) { }
         });
 
-        pressenceChannel.bind('pusher:member_added', function (member) {
+        presenceChannel.bind('pusher:member_added', function (member) {
             console.log('pusher:member_added');
             var mainWC = $("#iframe-mniWC2");
             try {
@@ -86,7 +86,7 @@ $(document).ready(function () {
             //  } catch (err) { }
         });
 
-        pressenceChannel.bind('pusher:member_removed', function (member) {
+        presenceChannel.bind('pusher:member_removed', function (member) {
             disconnect(member.info.userid);
             var windows = getChildWindows();
 
