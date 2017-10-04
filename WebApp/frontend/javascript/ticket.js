@@ -4269,7 +4269,7 @@ function CreateHandleBarHelpers() {
     });
 
     Handlebars.registerHelper("taskComplete", function (isComplete) {
-        return isComplete == true ? ' checked="checked"' : '';
+        return isComplete == true ? ' checked' : '';
     });
 }
 
