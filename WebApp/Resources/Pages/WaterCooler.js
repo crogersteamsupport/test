@@ -65,6 +65,7 @@ $(document).ready(function () {
         pressenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
 
         pressenceChannel.bind('pusher:subscription_succeeded', function (members) {
+            console.log('pusher:subscription_succeeded');
             var mainWC = $("#iframe-mniWC2");
             try {
                 updateUsers(members);
@@ -72,6 +73,7 @@ $(document).ready(function () {
         });
 
         pressenceChannel.bind('pusher:member_added', function (member) {
+            console.log('pusher:member_added');
             var mainWC = $("#iframe-mniWC2");
             try {
                 updateUser(member);
@@ -1106,7 +1108,7 @@ function disconnect (windowid) {
     };
 
 function updateUsers (members) {
-    console.log(members);
+    console.log('updateUsers');
     if (pageType == -1) {
         var name;
         var chatID;
@@ -1126,7 +1128,7 @@ function updateUsers (members) {
 }
 
 function updateUser (member) {
-    console.log(member);
+    console.log('updateUser');
     if (pageType == -1) {
         var name;
         var chatID;
