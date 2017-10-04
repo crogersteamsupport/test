@@ -34,14 +34,11 @@
         <script src="vcr/1_9_0/Js/jquery.pnotify.min.js" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/moment.min.js" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/Ts/ts.editor.js" type="text/javascript"></script>
+        <script src="vcr/1_9_0/Js/Ts/ts.wc.signalr.js" type="text/javascript"></script>
 
         <script src="../js_5/imagepaste.js" type="text/javascript"></script>
         <script src="../js_5/jquery.Jcrop.js" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/aes.js" type="text/javascript"></script>
-
-        <!-- PUSHER -->
-        <script src="https://js.pusher.com/3.1/pusher.min.js" type="text/javascript"></script>
-        <script src="/frontend/javascript/pusher.js?1506974999" type="text/javascript"></script>
 
   <script type="text/javascript" language="javascript">
 
@@ -181,6 +178,7 @@
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.ui.tabs.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.ui.menutree.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.pages.main.js" />
+          <asp:ScriptReference Path="https://js.pusher.com/3.1/pusher.min.js" />
           <asp:ScriptReference Path="js_5/dialogs.js" />
 
       </scripts>
