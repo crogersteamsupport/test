@@ -1,9 +1,8 @@
 ﻿var notify = false;
 var _pressenceChannel = false;
 
-loadPusher();
-
 $(document).ready(function () {
+    loadPusher();
 });
 
 function loadPusher() {
@@ -31,6 +30,8 @@ function loadPusher() {
                 params: { userID: top.Ts.System.User.UserID }
             }
         });
+
+        console.log(top.Ts.Pusher);
 
         ticket_channel = top.Ts.Pusher.subscribe('ticket-dispatch-' + orgID);
 
