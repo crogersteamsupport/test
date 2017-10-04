@@ -2986,15 +2986,26 @@ function SetupTasksSection() {
         var checkbox = $(this);
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Ticket Page - Change Task Status');
-        var iframe = $('iframe-o-' + id);
-        console.log('Refresh iFrame: ' + iframe);
+        var iframeName = 'iframe-o-' + id;
+        var iframeLink = $(iframeName + ':hidden');
+        console.log(typeof iframeLink);
+
+
+
 
         parent.Ts.Services.Task.SetTaskIsCompleted(id, checked, function (data) {
             if (data.IncompleteSubtasks) {
                 checkbox.prop("checked", false);
                 alert('There are subtasks pending completion, please finish them before completing the parent task.')
             } else if (data.Value) {
-                iframe.contentWindow.location.reload(true);
+                console.log('Refresh iFrame: ' + iframeName);
+                try {
+                    parent.document.getElementById(iframeName).contentDocument.location.reload(true);
+                    // iframeLink.src = iframeLink.src;
+                } catch (err) {
+                    console.log(err);
+                }
+
                 _completeCommentTaskID = id;
                 $('#modalTaskComment').modal('show');
             }
