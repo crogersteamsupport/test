@@ -34,7 +34,7 @@ namespace TeamSupport.Handlers
 
             int userID = -1;
             int parentID = -1;
-            int hubID = -1;
+            int customerHubID = -1;
 
 
             //Parse the URL and get the route and ParentID
@@ -90,10 +90,10 @@ namespace TeamSupport.Handlers
                 else userID = -1;
 
 
-                if (data["HubID"] != null)
+                if (data["CustomerHubID"] != null)
                 {
-                    hubID = (int)data["UserID"];
-                    if (hubID == 0) hubID = -1;
+                    customerHubID = (int)data["CustomerHubID"];
+                    if (customerHubID == 0) customerHubID = -1;
                 }
 
                 string searchTerm = data["q"];
@@ -101,7 +101,7 @@ namespace TeamSupport.Handlers
                 //Route to the proper method, passing ParentID and UserID (if unauthenticated -1)
                 try
                 {
-                    ProcessSearch(context, route, parentID, userID, searchTerm, hubID);
+                    ProcessSearch(context, route, parentID, userID, searchTerm, customerHubID);
                 }
                 catch (Exception ex)
                 {
@@ -129,11 +129,11 @@ namespace TeamSupport.Handlers
             context.Response.End();
         }
 
-        private void ProcessSearch(HttpContext context, string route, int parentID, int userID, string searchTerm, int hubID)
+        private void ProcessSearch(HttpContext context, string route, int parentID, int userID, string searchTerm, int customerHubID)
         {
             switch (route)
             {
-                case "search/kb": ProcessKBSearch(context, parentID, userID, searchTerm, hubID); break;
+                case "search/kb": ProcessKBSearch(context, parentID, userID, searchTerm, customerHubID); break;
                 case "search/wiki": ProcessWikiSearch(context, parentID, userID, searchTerm); break;
                 case "search/ticket": ProcessTicketSearch(context, parentID, userID, searchTerm); break;
                 default:
@@ -180,10 +180,10 @@ namespace TeamSupport.Handlers
             WriteJson(context, result);
         }
 
-        private void ProcessKBSearch(HttpContext context, int parentID, int userID, string searchTerm, int hubID)
+        private void ProcessKBSearch(HttpContext context, int parentID, int userID, string searchTerm, int customerHubID)
         {
             SearchResults kbResults = TicketsView.GetHubSearchKBResults(searchTerm, LoginUser.Anonymous, parentID);
-            List<KBSearchItem> result = GetKBResults(kbResults, LoginUser.Anonymous, userID, parentID, hubID);
+            List<KBSearchItem> result = GetKBResults(kbResults, LoginUser.Anonymous, userID, parentID, customerHubID);
             WriteJson(context, result);
         }
 
