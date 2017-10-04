@@ -34,6 +34,7 @@ namespace TeamSupport.Handlers
 
             int userID = -1;
             int parentID = -1;
+            int hubID = -1;
 
 
             //Parse the URL and get the route and ParentID
@@ -88,12 +89,19 @@ namespace TeamSupport.Handlers
                 }
                 else userID = -1;
 
+
+                if (data["HubID"] != null)
+                {
+                    hubID = (int)data["UserID"];
+                    if (hubID == 0) hubID = -1;
+                }
+
                 string searchTerm = data["q"];
 
                 //Route to the proper method, passing ParentID and UserID (if unauthenticated -1)
                 try
                 {
-                    ProcessSearch(context, route, parentID, userID, searchTerm);
+                    ProcessSearch(context, route, parentID, userID, searchTerm, hubID);
                 }
                 catch (Exception ex)
                 {
@@ -121,11 +129,11 @@ namespace TeamSupport.Handlers
             context.Response.End();
         }
 
-        private void ProcessSearch(HttpContext context, string route, int parentID, int userID, string searchTerm)
+        private void ProcessSearch(HttpContext context, string route, int parentID, int userID, string searchTerm, int hubID)
         {
             switch (route)
             {
-                case "search/kb": ProcessKBSearch(context, parentID, userID, searchTerm); break;
+                case "search/kb": ProcessKBSearch(context, parentID, userID, searchTerm, hubID); break;
                 case "search/wiki": ProcessWikiSearch(context, parentID, userID, searchTerm); break;
                 case "search/ticket": ProcessTicketSearch(context, parentID, userID, searchTerm); break;
                 default:
@@ -172,19 +180,29 @@ namespace TeamSupport.Handlers
             WriteJson(context, result);
         }
 
-        private void ProcessKBSearch(HttpContext context, int parentID, int userID, string searchTerm)
+        private void ProcessKBSearch(HttpContext context, int parentID, int userID, string searchTerm, int hubID)
         {
             SearchResults kbResults = TicketsView.GetHubSearchKBResults(searchTerm, LoginUser.Anonymous, parentID);
-            List<KBSearchItem> result = GetKBResults(kbResults, LoginUser.Anonymous, userID, parentID);
+            List<KBSearchItem> result = GetKBResults(kbResults, LoginUser.Anonymous, userID, parentID, hubID);
             WriteJson(context, result);
         }
 
-        private List<KBSearchItem> GetKBResults(SearchResults results, LoginUser loginUser, int userID, int parentID)
+        private List<KBSearchItem> GetKBResults(SearchResults results, LoginUser loginUser, int userID, int parentID, int hubID)
         {
+            bool enableCustomerProductAssociation = true;
+
             List<KBSearchItem> items = new List<KBSearchItem>();
             int customerID = 0;
             User user = Users.GetUser(loginUser, userID);
             if (user != null) customerID = user.OrganizationID;
+
+            CustomerHubFeatureSettings hubFeatureSettings = new CustomerHubFeatureSettings(loginUser);
+            hubFeatureSettings.LoadByCustomerHubID(hubID);
+
+            if (hubFeatureSettings.Any())
+            {
+                enableCustomerProductAssociation = hubFeatureSettings[0].EnableCustomerProductAssociation;
+            }
 
             for (int i = 0; i < results.Count; i++)
             {
@@ -193,7 +211,7 @@ namespace TeamSupport.Handlers
                 if (ticketID > 0)
                 {
                     TicketsView ticketsViewHelper = new TicketsView(loginUser);
-                    ticketsViewHelper.LoadHubKBByID(ticketID, parentID, customerID);
+                    ticketsViewHelper.LoadHubKBByID(ticketID, parentID, customerID, enableCustomerProductAssociation);
 
                     if (ticketsViewHelper.Any())
                     {
