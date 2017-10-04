@@ -19,7 +19,7 @@ function loadPusher() {
     var watercooler_channel = null;
     var presenceChannel = null;
 
-    var service = '../Services/DispatchService.asmx/';
+    var service = '/Services/DispatchService.asmx/';
     top.Ts.Settings.System.read('PusherKey', '1', function (key) {
         var orgID = top.Ts.System.Organization.OrganizationID;
         var userID = top.Ts.System.User.UserID;
