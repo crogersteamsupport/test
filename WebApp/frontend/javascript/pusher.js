@@ -1,5 +1,10 @@
 ﻿var notify = false;
 var _pressenceChannel = false;
+
+$(document).ready(function () {
+    loadPusher();
+});
+
 function loadPusher() {
     $("#jquery_jplayer_1").jPlayer({
         ready: function () {
@@ -27,7 +32,7 @@ function loadPusher() {
         });
 
         try {
-            ticket_channel = pusher.subscribe('ticket-dispatch-' + orgID);
+            ticket_channel = top.Ts.Pusher.subscribe('ticket-dispatch-' + orgID);
         } catch (e) {
             console.log(e);
         }
@@ -207,7 +212,13 @@ function SetupPusher() {
         var presenceChannelName = 'presence-ticket-' + _ticketNumber + '-org-' + orgID;
 
         console.log(presenceChannelName);
-        pressenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
+        try {
+            pressenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
+        } catch (ex) {
+            console.log(ex);
+        }
+
+
 
         pressenceChannel.bind('pusher:subscription_succeeded', function (members) {
             try {
