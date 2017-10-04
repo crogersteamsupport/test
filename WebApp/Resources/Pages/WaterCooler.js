@@ -88,10 +88,9 @@ $(document).ready(function () {
             var windows = getChildWindows();
 
             for (var i = 0; i < windows.length; i++) {
-                try { if (windows[i].disconnect) windows[i].disconnect(member.info.userid); } catch (err) { }
+                try { if (windows[i].disconnect) windows[i].disconnect(member.info.userid); }
+                catch (err) { }
             }
-
-
 
             var mainWC = $("#iframe-mniUsers");
             try {
@@ -1107,6 +1106,7 @@ function disconnect (windowid) {
     };
 
 function updateUsers (members) {
+    console.log(members);
     if (pageType == -1) {
         var name;
         var chatID;
@@ -1126,6 +1126,7 @@ function updateUsers (members) {
 }
 
 function updateUser (member) {
+    console.log(member);
     if (pageType == -1) {
         var name;
         var chatID;
