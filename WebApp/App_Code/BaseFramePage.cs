@@ -37,16 +37,6 @@ public class BaseFramePage: System.Web.UI.Page
   protected override object LoadPageStateFromPersistenceMedium()
   {
         return null;
-    //object o = Session[Request.Url.AbsolutePath];
-    //if (o == null)
-    //{
-    //  return null;
-    //  //throw new Exception("The Viewstate is missing!!!");
-    //}
-    //else
-    //{
-    //  return o;
-    //}
   }
 }
 
