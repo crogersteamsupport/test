@@ -1,4 +1,4 @@
-﻿/// <reference path="ts/ts.js" />
+/// <reference path="ts/ts.js" />
 /// <reference path="ts/mainFrame.Ts.Services.js" />
 /// <reference path="ts/ts.system.js" />
 /// <reference path="ts/ts.utils.js" />
@@ -86,7 +86,7 @@ $(document).ready(function () {
         pressenceChannel.bind('pusher:member_removed', function (member) {
             disconnect(member.info.userid);
             var windows = getChildWindows();
-            
+
             for (var i = 0; i < windows.length; i++) {
                 try { if (windows[i].disconnect) windows[i].disconnect(member.info.userid); } catch (err) { }
             }
@@ -626,7 +626,7 @@ $(document).ready(function () {
 
     })
     .tooltip();
-    
+
     $('.file-upload').fileupload({
         namespace: 'new_ticket',
         dropZone: $('.file-upload'),
@@ -977,7 +977,7 @@ function addComment (message) {
                     mainFrame.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler (" + newMsg++ + ")");
                 }
             }
-            else 
+            else
             {
                 parentThread.hide();
             }
@@ -2451,8 +2451,5 @@ function getChildWindows() {
 }
 
 function ellipseString(text, max) {
-    return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; 
+    return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text;
  };
-
-
-

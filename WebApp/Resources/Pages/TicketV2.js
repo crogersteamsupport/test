@@ -1,4 +1,4 @@
-var _ticketInfo = null;
+﻿var _ticketInfo = null;
 var _ticketNumber = null;
 var _ticketID = null;
 var _ticketCreator = new Object();
@@ -210,14 +210,66 @@ Selectize.define('no_results', function (options) {
     })();
 });
 
-$(window).load(function(e) {
+$.fn.autoGr33ow = function () {
+    return this.each(function () {
+        // Variables
+        var colsDefault = this.cols;
+        var rowsDefault = this.rows;
+        //Functions
+        var grow = function () {
+            growByRef(this);
+        }
+        var growByRef = function (obj) {
+            var linesCount = 0;
+            var lines = obj.value.split('\n');
+            for (var i = lines.length - 1; i >= 0; --i) {
+                linesCount += Math.floor((lines[i].length / colsDefault) + 1);
+            }
+            if (linesCount > rowsDefault)
+                obj.rows = linesCount + 1;
+            else
+                obj.rows = rowsDefault;
+        }
+        var characterWidth = function (obj) {
+            var characterWidth = 0;
+            var temp1 = 0;
+            var temp2 = 0;
+            var tempCols = obj.cols;
+            obj.cols = 1;
+            temp1 = obj.offsetWidth;
+            obj.cols = 2;
+            temp2 = obj.offsetWidth;
+            characterWidth = temp2 - temp1;
+            obj.cols = tempCols;
+            return characterWidth;
+        }
+        // Manipulations
+        //this.style.width = "auto";
+        this.style.height = "auto";
+        this.style.width = "100%";
+        // this.style.overflow = "hidden";
+        // this.style.width = ((characterWidth(this) * this.cols) + 6) + "px";
+        this.onkeyup = grow;
+        this.onfocus = grow;
+        this.onblur = grow;
+        growByRef(this);
+    });
+};
+
+
+
+
+$(window).load(function (e) {
     $('textarea.autogrow').autogrow();
 });
 
-$(window).resize(function(e) {
+$(window).resize(function (e) {
     pagewidth();
     ticketmenu();
 });
+
+
+
 
 $(document).ready(function () {
     pagewidth();
@@ -247,9 +299,8 @@ $(document).ready(function () {
     var firstScript = document.getElementsByTagName('script')[0];
     script.setAttribute('data-app-key', 'ebdoql1dhyy7l72');
     script.setAttribute('id', 'dropboxjs');
-    if (window.parent.Ts.System.User.OrganizationID != 1150007) {
+    if (window.parent.Ts.System.User.OrganizationID != 1150007)
         firstScript.parentNode.insertBefore(script, firstScript);
-    }
     slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
     $('.wcTooltip').tipTip({ defaultPosition: "top", edgeOffset: 7, keepAlive: true });
 
@@ -257,13 +308,15 @@ $(document).ready(function () {
         e.preventDefault();
         if ($('#taskCompleteComment').val() == '') {
             alert('Please type your comments before clicking on the Yes button.');
-        } else {
+        }
+        else {
             window.parent.parent.Ts.System.logAction('Task - Add Task Complete Comment');
             window.parent.parent.Ts.Services.Task.AddTaskCompleteComment(_completeCommentTaskID, $('#taskCompleteComment').val(), function (result) {
                 if (result.Value) {
                     $('#taskCompleteComment').val('');
                     $('#modalTaskComment').modal('hide');
-                } else {
+                }
+                else {
                     alert('There was an error saving your comment. Please try again.')
                 }
             });
@@ -278,6 +331,7 @@ var loadTicket = function (ticketNumber, refresh) {
     window.parent.Ts.Services.Tickets.GetTicketInfo(_ticketNumber, function (info) {
         _ticketInfo = info;
         _ticketID = info.Ticket.TicketID;
+        console.log("loadticket : " + _ticketNumber);
         top.Ts.TicketViewing = _ticketNumber;
         window.parent.Ts.Services.Tickets.GetTicketLastSender(_ticketID, function (result) {
             if (result !== null) {
@@ -340,6 +394,10 @@ var loadTicket = function (ticketNumber, refresh) {
         SetupTFSFieldValues();
         LoadGroups();
         LoadPlugins(info);
+        console.log("_before calling getTicketViewing , loadticket");
+        //if (typeof refresh === "undefined") {
+        //    window.parent.Ts.Services.Dispatch.getTicketViewing(_ticketNumber);
+        //}
 
     });
 };
@@ -376,11 +434,15 @@ function CreateNewAction(actions) {
 }
 
 function SetupTicketPage() {
+    //Create the new action LI element
     CreateNewActionLI();
+
     $('textarea.autogrow').autogrow();
+
     window.parent.Ts.Services.TicketPage.GetTicketPageOrder("TicketFieldsOrder", function (order) {
         SetupTicketProperties(order);
     });
+
     $('#NewCustomerModal').on('shown.bs.modal', function () {
         if ((top.Ts.System.User.CanCreateContact) || top.Ts.System.User.IsSystemAdmin) {
             return;
@@ -392,6 +454,7 @@ function SetupTicketPage() {
             $('#customer-phone-input').prop("disabled", true);
         }
     })
+
     window.parent.Ts.Services.Customers.GetDateFormat(false, function (format) {
         dateFormat = format.replace("yyyy", "yy");
         if (dateFormat.length < 8) {
@@ -408,7 +471,8 @@ function SetupTicketPage() {
             dateFormat = dateArr[0] + "/" + dateArr[1] + "/" + dateArr[2];
         }
     });
-}
+
+};
 
 function AddTicketProperty(item) {
     if (item.ItemID) {
@@ -419,6 +483,7 @@ function AddTicketProperty(item) {
         var hbrs = "ticket-group-" + item.CatID;
         var hbrs = hbrs.toLowerCase();
         var compiledTemplate = Handlebars.templates[hbrs];
+
         if (item.CatID == "Attachments") {
             var context = { Attachments: _ticketInfo.Attachments };
             var html = compiledTemplate(context);
@@ -525,9 +590,15 @@ function SetupTicketProperties(order) {
         isFormValid();
         LoadPlugins(info);
         console.log("_before calling getTicketViewing");
+        //if (typeof refresh === "undefined") {
+        //    console.log("_calling getTicketViewing");
+        //    window.parent.Ts.Services.Dispatch.getTicketViewing(_ticketNumber);
+        //}
+
+
 
     });
-}
+};
 
 function SetupToolTips() {
     $('#Ticket-Subscribe').attr('data-original-title', (_ticketInfo.Ticket.IsSubscribed) ? 'UnSubscribe to Ticket' : 'Subscribe to Ticket');
@@ -535,14 +606,16 @@ function SetupToolTips() {
     $('#Ticket-Flag').attr('data-original-title', (_ticketInfo.Ticket.IsFlagged) ? 'UnFlag Ticket' : 'Flag Ticket');
     $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: '.ticket-toolbar-row', animation: false });
     $('.btn-tooltip').tooltip({ placement: 'bottom', animation: false });
-}
+};
 
 function CreateNewActionLI() {
+
     var _compiledNewActionTemplate = Handlebars.templates['newaction'];
     var html = _compiledNewActionTemplate({ OrganizationID: window.parent.Ts.System.User.OrganizationID, UserID: window.parent.Ts.System.User.UserID });
     $("#action-timeline").append(html);
 
     $('#action-add-public, #action-add-public-sm').click(function (e) {
+        console.log('here');
         e.preventDefault();
         e.stopPropagation();
         if ($(this).hasClass('click-disabled')) {
@@ -611,7 +684,9 @@ function CreateNewActionLI() {
         e.preventDefault();
         e.stopPropagation();
         $('#action-new-editor').parent().fadeOut('normal', function () {
-            tinymce.activeEditor.destroy();
+            if (window.parent.Ts.System.User.OrganizationID !== 13679) {
+                tinymce.activeEditor.destroy();
+            }
         });
         window.parent.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
         $('#action-add-public').removeClass('click-disabled');
@@ -749,6 +824,7 @@ function CreateNewActionLI() {
               alert('There was a problem deleting "' + attachment.FileName + '."');
           });
     });
+    //remove-attachment
 
     $('#action-new-type').change(function (e) {
         var actionID = $(this).val();
@@ -756,14 +832,26 @@ function CreateNewActionLI() {
         HideActionTimer(!action.IsTimed);
         window.parent.Ts.Services.TicketPage.GetActionTicketTemplate(actionID, function (result) {
             if (result != null && result != "" && result != "<br>") {
-                var currenttext = tinyMCE.activeEditor.getContent();
-                tinyMCE.activeEditor.setContent(currenttext + result);
+                if (window.parent.Ts.System.User.OrganizationID !== 13679) {
+                    var currenttext = tinyMCE.activeEditor.getContent();
+                    tinyMCE.activeEditor.setContent(currenttext + result);
+                }
+                else {
+                    $('#action-new-editor').summernote('insertNode', result);
+                }
             }
+            //elem.parent().fadeIn('normal');
         });
     });
 
     $('#new-action-avatar').attr("src", $('#new-action-avatar').attr("src") + "/" + (new Date().getTime()).toString());
-}
+
+
+
+
+
+
+};
 
 function DisableCreateBtns() {
     if ($('.action-save-group').hasClass('open')) {
@@ -787,42 +875,60 @@ function SetupActionEditor(elem, action) {
         $('#action-new-date-started').val(moment(action.DateStarted).format(dateFormat + ' hh:mm A'));
     }
     else {
-        if ($('#action-new-date-started').data("DateTimePicker")) {
+        if ($('#action-new-date-started').data("DateTimePicker"))
             $('#action-new-date-started').data("DateTimePicker").destroy();
-        }
+
         $('#action-new-date-started').datetimepicker({ format: dateFormat + ' hh:mm A', defaultDate: new Date() });
+
     }
 
     window.parent.Ts.MainPage.highlightTicketTab(_ticketNumber, true);
 
-    initEditor(elem, true, function (ed) {
-        $("#action-new-type").val($("#action-new-type option:first").val());
-        $('#action-new-editor').val('');
-        if (action) {
-            $('#action-new-type').val(action.ActionTypeID);
-            if (action.TimeSpent) {
-                $('#action-new-hours').val(Math.floor(action.TimeSpent / 60));
-                $('#action-new-minutes').val(Math.floor(action.TimeSpent % 60));
-            }
-            tinyMCE.activeEditor.setContent(action.Message);
-        }
-        else {
-            var actionTypeID = $('#action-new-type').val();
-            $('#action-new-hours').val(0);
-            $('#action-new-minutes').val(0);
-            window.parent.Ts.Services.TicketPage.GetActionTicketTemplate(actionTypeID, function (result) {
-                if (result != null && result != "" && result != "<br>") {
-                    var currenttext = tinyMCE.activeEditor.getContent();
-                    tinyMCE.activeEditor.setContent(currenttext + result);
+    if (window.parent.Ts.System.User.OrganizationID !== 13679) {
+        initEditor(elem, true, function (ed) {
+            $("#action-new-type").val($("#action-new-type option:first").val());
+            $('#action-new-editor').val('');
+            if (action) {
+                $('#action-new-type').val(action.ActionTypeID);
+                if (action.TimeSpent) {
+                    $('#action-new-hours').val(Math.floor(action.TimeSpent / 60));
+                    $('#action-new-minutes').val(Math.floor(action.TimeSpent % 60));
                 }
+                tinyMCE.activeEditor.setContent(action.Message);
+                //elem.parent().fadeIn('normal');
+            }
+            else {
+                var actionTypeID = $('#action-new-type').val();
+                $('#action-new-hours').val(0);
+                $('#action-new-minutes').val(0);
+                window.parent.Ts.Services.TicketPage.GetActionTicketTemplate(actionTypeID, function (result) {
+                    if (result != null && result != "" && result != "<br>") {
+                        var currenttext = tinyMCE.activeEditor.getContent();
+                        tinyMCE.activeEditor.setContent(currenttext + result);
+                    }
+                });
+            }
+            elem.parent().fadeIn('normal');
+
+            $('.ticketpage').animate({
+                scrollTop: 0
+            }, 600);
+        });
+
+    }
+    else {
+        if (!editorInit) {
+            initEditorV2(elem, function () {
+                editorInit = true;
+                SetupNewAction(elem, action);
             });
         }
-        elem.parent().fadeIn('normal');
+        else {
+            elem.summernote('reset');
+            SetupNewAction(elem, action);
+        }
+    }
 
-        $('.ticketpage').animate({
-            scrollTop: 0
-        }, 600);
-    });
 
     var element = $('.action-new-area');
     $('#action-file-upload').fileupload({
@@ -902,11 +1008,14 @@ function SetupActionEditor(elem, action) {
                 element.find('#rcdtokScreen').hide();
                 element.find('#stoptokScreen').show();
                 element.find('#deletetokScreen').hide();
+                //element.find('#muteTokScreen').show();
                 recordingID = resultID;
                 element.find('#tokScreenCountdown').show();
                 setTimeout(function () {
                     update(element);
                 }, 1000);
+                //countdown("tokScreenCountdown", 5, 0, element);
+                //recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
                 element.find('#statusTextScreen').text("Currently Recording Screen...");
             });
         }
@@ -915,16 +1024,20 @@ function SetupActionEditor(elem, action) {
                 element.find('#rcdtokScreen').hide();
                 element.find('#stoptokScreen').show();
                 element.find('#deletetokScreen').hide();
+                //element.find('#muteTokScreen').show();
                 recordingID = resultID;
                 element.find('#tokScreenCountdown').show();
                 setTimeout(function () {
                     update(element);
                 }, 1000);
+                //countdown("tokScreenCountdown", 5, 0, element);
+                //recordScreenTimer = setTimeout(function () { StopRecording(element); }, 300000);
                 element.find('#statusTextScreen').text("Currently Recording Screen...");
             });
         }
     });
 
+    //element.find('#muteTokScreen').hide();
     element.find('#muteTokScreen').click(function (e) {
         publisher.publishAudio(false);
         element.find('#unmuteTokScreen').show();
@@ -952,7 +1065,12 @@ function SetupActionEditor(elem, action) {
             element.find('#muteTokScreen').hide();
             tokurl = result;
             videoURL = '<video width="100%" controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/player.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
-            tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
+            if (window.parent.Ts.System.User.OrganizationID !== 13679) {
+                tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
+            }
+            else {
+                $('#action-new-editor').summernote('insertNode', videoURL);
+            }
             element.find('#statusTextScreen').text("Your video is currently processing. It may not play in the editor below but should be live within a minute.");
             session.unpublish(screenSharingPublisher);
             session.unpublish(publisher);
@@ -988,7 +1106,15 @@ function SetupActionEditor(elem, action) {
     element.find('#inserttok').hide();
 
     element.find('#inserttok').click(function (e) {
-        tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
+        if (window.parent.Ts.System.User.OrganizationID !== 13679) {
+            tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/><video width="400" height="400" controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>');
+        }
+        else {
+            $('#action-new-editor').summernote('insertNode', $('<br/>')[0]);
+            var html = $('<video width="400" height="400" controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>')[0];
+            $('#action-new-editor').summernote('insertNode', html);
+        }
+
         session.unpublish(publisher);
         element.find('#rcdtok').show();
         element.find('#stoptok').hide();
@@ -996,6 +1122,7 @@ function SetupActionEditor(elem, action) {
         element.find('#recordVideoContainer').hide();
         element.find('#statusText').text("");
     });
+
 
     element.find('#canceltokScreen').click(function (e) {
         element.find('#statusTextScreen').text("");
@@ -1052,7 +1179,7 @@ function SetupActionEditor(elem, action) {
             $('#action-new-saveoptions').append('<li><a class="action-create-option" data-actionid=-1 data-statusid=' + statuses[i].TicketStatusID + ' href="#">Save and Set Status to ' + statuses[i].Name + '</a></li>');
         }
     }
-}
+};
 
 function SetupNewAction(elem, action) {
     $("#action-new-type").val($("#action-new-type option:first").val());
@@ -1097,10 +1224,18 @@ function StopRecording(element) {
         element.find('#muteTokScreen').hide();
         tokurl = result;
         videoURL = '<video controls poster="' + window.parent.Ts.System.AppDomain + '/dc/1078/images/static/videoview1.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
-        tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
+
+        if (window.parent.Ts.System.User.OrganizationID !== 13679) {
+            tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
+        }
+        else {
+            $('#action-new-editor').summernote('insertNode', videoURL);
+        }
+
         element.find('#statusTextScreen').text("");
         session.unpublish(screenSharingPublisher);
         session.unpublish(publisher);
+
     });
 }
 
@@ -1111,24 +1246,30 @@ function update(parentElement) {
     dt.setHours(0);
     dt.setMinutes(ss[0]);
     dt.setSeconds(ss[1]);
+
     var dt2 = new Date(dt.valueOf() + 1000);
     var temp = dt2.toTimeString().split(" ");
     var ts = temp[0].split(":");
+
     if (temp[0] == "05") {
         StopRecording(parentElement);
         return;
     }
+
     $("#tokScreenCountdown").html(ts[1] + ":" + ts[2]);
     tokTimer = setTimeout(function () {
         update(parentElement);
     }, 1000);
 }
 
+
 function countdown(elementName, minutes, seconds, parentElement) {
     var element, endTime, hours, mins, msLeft, time;
+
     function twoDigits(n) {
         return (n <= 9 ? "0" + n : n);
     }
+
     function updateTimer(parentElement) {
         msLeft = endTime - (+new Date);
         if (msLeft < 1000) {
@@ -1141,22 +1282,27 @@ function countdown(elementName, minutes, seconds, parentElement) {
             recordScreenTimer = setTimeout(updateTimer, time.getUTCMilliseconds() + 500);
         }
     }
+
     element = document.getElementById(elementName);
     endTime = (+new Date) + 1000 * (60 * minutes + seconds) + 500;
     updateTimer(parentElement);
 }
 
 function SetupActionTimers() {
+    //$('#action-new-date-started').datetimepicker({ useCurrent: true, format: dateFormat + ' hh:mm A', defaultDate: new Date() });
+
     $('.spinner .btn:first-of-type').click(function () {
         var spinner = $(this).parent().prev();
         spinner.val(parseInt(spinner.val(), 10) + 1);
     });
+
     $('.spinner .btn:last-of-type').click(function () {
         var spinner = $(this).parent().prev();
         spinner.val(parseInt(spinner.val(), 10) - 1);
     });
     $('#action-new-timer').click(function (e) {
         var hasStarted = $(this).data('hasstarted');
+
         if (!hasStarted) {
             start = new Date().getTime();
             tickettimer();
@@ -1187,7 +1333,8 @@ function HideActionTimer(ShouldHide) {
         $('#action-new-minutes').closest('.form-group').hide();
         $('#action-new-hours').closest('.form-group').hide();
         $('#action-new-date-started').closest('.form-group').hide();
-    } else {
+    }
+    else {
         $('#action-new-minutes').closest('.form-group').show();
         $('#action-new-hours').closest('.form-group').show();
         $('#action-new-date-started').closest('.form-group').show();
@@ -1198,7 +1345,8 @@ function FlipNewActionBadge(isPrivate) {
     if (isPrivate) {
         $('#private-badge').show();
         $('#public-badge').hide();
-    } else {
+    }
+    else {
         $('#private-badge').hide();
         $('#public-badge').show();
     }
@@ -1207,32 +1355,32 @@ function FlipNewActionBadge(isPrivate) {
 
 function convertToValidDate(val) {
     var value = '';
-    if (val == "") { return value; }
+    if (val == "")
+        return value;
 
     if (dateFormat.indexOf("M") != 0) {
         var dateArr = val.replace(/\./g, '/').replace(/-/g, '/').split('/');
-        if (dateFormat.indexOf("D") == 0) {
+        if (dateFormat.indexOf("D") == 0)
             var day = dateArr[0];
-        }
-        if (dateFormat.indexOf("Y") == 0) {
+        if (dateFormat.indexOf("Y") == 0)
             var year = dateArr[0];
-        }
-        if (dateFormat.indexOf("M") == 3 || dateFormat.indexOf("M") == 5) {
+        if (dateFormat.indexOf("M") == 3 || dateFormat.indexOf("M") == 5)
             var month = dateArr[1];
-        }
+
         var timeSplit = dateArr[2].split(' ');
-        if (dateFormat.indexOf("Y") == 6) {
+        if (dateFormat.indexOf("Y") == 6)
             var year = timeSplit[0];
-        } else {
+        else
             var day = timeSplit[0];
-        }
+
         var theTime = timeSplit[1];
+
         var formattedDate = month + "/" + day + "/" + year + " " + theTime + (timeSplit[2] != null ? " " + timeSplit[2] : "");
         value = window.parent.Ts.Utils.getMsDate(formattedDate);
         return value;
-    } else {
-        return val;
     }
+    else
+        return val;
 }
 
 function SaveAction(_oldActionID, isPrivate, callback) {
@@ -1247,6 +1395,7 @@ function SaveAction(_oldActionID, isPrivate, callback) {
     if (actionType !== null) {
         if (timeSpent < 1 && actionType.IsTimed == true && window.parent.Ts.System.Organization.TimedActionsRequired == true) {
             $('#action-save-alert').text('Please enter the time you worked on this action.').show();
+            //$('#action-new-save').prop('disabled', false);
             EnableCreateBtns();
             return false;
         }
@@ -1267,7 +1416,8 @@ function SaveAction(_oldActionID, isPrivate, callback) {
                     saveError = 1;
                     window.parent.Ts.Services.System.LogException("TinyMCE save action contains an empty string with getContent Function. ticket " + _ticketID + ",body: " + tinymce.get('action-new-editor').getBody().innerHTML, "TinyMCE Error");
                 }
-            } catch (ex) {
+            }
+            catch (ex) {
                 saveError = 2;
                 window.parent.Ts.Services.System.LogException("TinyMCE save action threw exception : " + ex.message + " . ticket " + _ticketID, "TinyMCE Error");
             }
@@ -1323,48 +1473,49 @@ function SaveAction(_oldActionID, isPrivate, callback) {
                 EnableCreateBtns();
                 return;
             }
-        } else {
+        }
+        else {
             alert("We’re very sorry, but there was an error saving your action. Please copy and save your action text, refresh the ticket and try again. ");
             EnableCreateBtns();
             return;
 
         }
-    } else {
+    }
+    else {
         var fontSize;
         var fontFamily;
         var styleBlock;
         if (window.parent.Ts.System.User.FontFamilyDescription != "Unassigned") {
             fontFamily = GetTinyMCEFontName(window.parent.Ts.System.User.FontFamily);
-        } else if (window.parent.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
+        }
+        else if (window.parent.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
             fontFamily = GetTinyMCEFontName(window.parent.Ts.System.Organization.FontFamily);
         }
 
         if (window.parent.Ts.System.User.FontSize != "0") {
             fontSize = GetTinyMCEFontSize(window.parent.Ts.System.User.FontSize);
-        } else if (window.parent.Ts.System.Organization.FontSize != "0") {
+        }
+        else if (window.parent.Ts.System.Organization.FontSize != "0") {
             fontSize = GetTinyMCEFontSize(window.parent.Ts.System.Organization.FontSize);
         }
 
-        if (fontFamily !== undefined) {
-            styleBlock = 'font-family: ' + fontFamily;
-        }
+        if (fontFamily !== undefined) styleBlock = 'font-family: ' + fontFamily;
 
         if (fontSize !== undefined) {
-            if (styleBlock !== undefined) {
-                styleBlock += '; font-size: ' + fontSize;
-            } else {
-                styleBlock = 'font-size: ' + fontSize;
-            }
+            if (styleBlock !== undefined) styleBlock += '; font-size: ' + fontSize;
+            else styleBlock = 'font-size: ' + fontSize;
         }
+
         var actionText = $('#action-new-editor').summernote('code');
         var actionHTML = $('<span />', {
             style: styleBlock,
             html: actionText
         });
+
         action.Description = actionHTML[0].outerHTML;
     }
 
-    if (action.IsVisibleOnPortal == true) { confirmVisibleToCustomers(); }
+    if (action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
     if (_insertedKBTicketID) {
         window.parent.Ts.Services.TicketPage.UpdateActionCopyingAttachment(action, _insertedKBTicketID, function (result) {
             _newAction = result;
@@ -1372,7 +1523,7 @@ function SaveAction(_oldActionID, isPrivate, callback) {
             if (actionType !== null) {
                 result.item.MessageType = actionType.Name;
             }
-            callback(result);
+            callback(result)
         }, function (error) {
             callback(null);
         });
@@ -1384,7 +1535,7 @@ function SaveAction(_oldActionID, isPrivate, callback) {
             if (actionType !== null) {
                 result.item.MessageType = actionType.Name;
             }
-            callback(result);
+            callback(result)
         }, function (error) {
             callback(null);
         });
@@ -1392,7 +1543,8 @@ function SaveAction(_oldActionID, isPrivate, callback) {
     window.parent.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
         _ticketInfo = info;
 
-        if (_ticketInfo.SlaTriggerId !== null && _ticketInfo.SlaTriggerId > 0) {
+        if (_ticketInfo.SlaTriggerId !== null
+              && _ticketInfo.SlaTriggerId > 0) {
             $('#ticket-SLAStatus').find('i').addClass('color-yellow');
             $('#ticket-SLANote').text('Calculating...');
             slaCheckTimer = setInterval(RefreshSlaDisplay, 5000);
@@ -1401,6 +1553,7 @@ function SaveAction(_oldActionID, isPrivate, callback) {
 
     window.parent.Ts.System.logAction('Action Saved');
     window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "addaction", userFullName);
+
 }
 
 var confirmVisibleToCustomers = function () {
@@ -1421,13 +1574,17 @@ function UploadAttachments(newAction) {
             $(o).data('data', data);
         });
     }
+    //$('.upload-queue').empty();
 }
 
 function tickettimer() {
     var real = (counter * speed),
     ideal = (new Date().getTime() - start);
+
     counter++;
+
     var diff = (ideal - real);
+
     if (_timerElapsed != Math.floor(ideal / 60000)) {
         var oldVal = parseInt($('#action-new-minutes').val()) || 0;
         $('#action-new-minutes').val(oldVal + 1);
@@ -1471,7 +1628,7 @@ function LoadTicketNotes(note) {
         });
 
     }
-}
+};
 
 function GetActionCount(callback) {
     window.parent.Ts.Services.TicketPage.GetActionCount(_ticketID, function (total) {
@@ -1479,15 +1636,17 @@ function GetActionCount(callback) {
         _workingActionNumer = total;
         callback();
     });
-}
+};
 
 function LoadTicketControls() {
     if (_ticketInfo.Ticket.IsFlagged) {
         $('#Ticket-Flag').children().addClass('color-red');
     }
+
     if (_ticketInfo.Ticket.IsEnqueued) {
         $('#Ticket-Queue').children().addClass('color-green');
     }
+
     if (_ticketInfo.Ticket.IsSubscribed) {
         $('#Ticket-Subscribe').children().addClass('color-green');
     }
@@ -1496,9 +1655,9 @@ function LoadTicketControls() {
         window.parent.Ts.Services.TicketPage.GetTicketUsers(_ticketID, function (users) {
             var isActive = false;
             $.each(users, function (index, item) {
-                if (item.Name === _ticketInfo.Ticket.UserName) {
+                if (item.Name === _ticketInfo.Ticket.UserName)
                     isActive = true;
-                }
+
             });
 
             if (!isActive && _ticketInfo.Ticket.UserName != null) {
@@ -1532,15 +1691,14 @@ function LoadTicketControls() {
                         var optionlabel = item.text;
                         if (item.data.InOfficeMessage) optionlabel = optionlabel + ' - ' + item.data.InOfficeMessage;
 
-                        if (item.data.IsSender && item.data.IsCreator) {
+                        if (item.data.IsSender && item.data.IsCreator)
                             return '<div data-value="' + escape(item.value) + '" data-selectable="" class="option">' + optionlabel + ' (Sender and Creator)</div>';
-                        } else if (item.data.IsSender) {
+                        else if (item.data.IsSender)
                             return '<div data-value="' + escape(item.value) + '" data-selectable="" class="option">' + optionlabel + ' (Sender)</div>';
-                        } else if (item.data.IsCreator) {
+                        else if (item.data.IsCreator)
                             return '<div data-value="' + escape(item.value) + '" data-selectable="" class="option">' + optionlabel + ' (Creator)</div>';
-                        } else {
+                        else
                             return '<div data-value="' + escape(item.value) + '" data-selectable="" class="option">' + optionlabel + '</div>';
-                        }
                     }
                 },
             });
@@ -1550,6 +1708,7 @@ function LoadTicketControls() {
 
             for (var i = 0; i < users.length; i++) {
                 selectize.addOption({ value: users[i].ID, text: users[i].Name, data: users[i] });
+
                 if (users[i].IsSelected) {
                     _ticketCurrUser = users[i].ID;
                     SetAssignedUser(users[i].ID);
@@ -1585,30 +1744,34 @@ function LoadTicketControls() {
             });
 
             if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
-                if ($('#ticket-group').val() == "") {
+                if ($('#ticket-group').val() == "")
                     $('#ticket-group').closest('.form-group').addClass('hasError');
-                } else {
+                else
                     $('#ticket-group').closest('.form-group').removeClass('hasError');
-                }
             }
+
         });
     }
+
 
     _ticketTypeID = _ticketInfo.Ticket.TicketTypeID;
     var types = window.parent.Ts.Cache.getTicketTypes();
     if (window.parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != null) {
         for (var i = 0; i < types.length; i++) {
-            if ((types[i].IsActive && (types[i].ProductFamilyID == null || _productFamilyID == types[i].ProductFamilyID || _ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID)) || (!types[i].IsActive && _ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID)) {
+            if ((types[i].IsActive && (types[i].ProductFamilyID == null || _productFamilyID == types[i].ProductFamilyID || _ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID))
+                  || (!types[i].IsActive && _ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID)) {
                 AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name, (_ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID));
                 if (types[i].ProductFamilyID != null && _productFamilyID != types[i].ProductFamilyID) {
                     alert('This ticket type belongs to a different product line. Please set the correct ticket type.');
                 }
             }
         }
+
         if ($('#ticket-type')[0].childElementCount == 0) {
             alert('There are no ticket types available for this product line. Please contact your TeamSupport administrator.');
         }
-    } else {
+    }
+    else {
         for (var i = 0; i < types.length; i++) {
             if (types[i].IsActive || (!types[i].IsActive && types[i].TicketTypeID === _ticketTypeID)) {
                 AppendSelect('#ticket-type', types[i], 'type', types[i].TicketTypeID, types[i].Name, (_ticketInfo.Ticket.TicketTypeID === types[i].TicketTypeID));
@@ -1638,23 +1801,28 @@ function LoadTicketControls() {
         closeAfterSelect: true
     });
 
-    $('#ticket-visible').prop("checked", _ticketInfo.Ticket.IsVisibleOnPortal);
+    $('#ticket-visible').prop("checked", _ticketInfo.Ticket.IsVisibleOnPortal)
 
-    $('#ticket-isKB').prop("checked", _ticketInfo.Ticket.IsKnowledgeBase);
+    $('#ticket-isKB').prop("checked", _ticketInfo.Ticket.IsKnowledgeBase)
 
     if (window.parent.Ts.System.User.ChangeKbVisibility || window.parent.Ts.System.User.IsSystemAdmin) {
         if (_ticketInfo.Ticket.IsKnowledgeBase) {
             $('#ticket-isKB').prop("checked", true);
             $('#ticket-group-KBCat').show();
-        } else {
+        }
+        else {
             $('#ticket-isKB').prop("checked", false);
             $('#ticket-group-KBCat').hide();
             $('#ticket-KBVisible-RO').hide();
+
+
         }
+
         var categories = window.parent.Ts.Cache.getKnowledgeBaseCategories();
         for (var i = 0; i < categories.length; i++) {
             var cat = categories[i].Category;
             AppendSelect('#ticket-KB-Category', cat, 'category', cat.CategoryID, cat.CategoryName, (_ticketInfo.Ticket.KnowledgeBaseCategoryID === cat.CategoryID));
+
             for (var j = 0; j < categories[i].Subcategories.length; j++) {
                 var subcat = categories[i].Subcategories[j];
                 AppendSelect('#ticket-KB-Category', subcat, 'subcategory', subcat.CategoryID, cat.CategoryName + ' -> ' + subcat.CategoryName, (_ticketInfo.Ticket.KnowledgeBaseCategoryID === subcat.CategoryID));
@@ -1668,7 +1836,8 @@ function LoadTicketControls() {
                 closeAfterSelect: true
             });
         }
-    } else {
+    }
+    else {
         $('#ticket-KBInfo').remove();
         $('#ticket-isKB-RO').text(_ticketInfo.Ticket.IsKnowledgeBase ? "True" : "False");
         $('#ticket-isKB').closest('.form-horizontal').remove();
@@ -1681,7 +1850,8 @@ function LoadTicketControls() {
     if (_ticketInfo.Ticket.IsClosed == true) {
         $('#ticket-DaysOpened').text(_ticketInfo.Ticket.DaysClosed);
         $('#label-days').text('Days Closed');
-    } else {
+    }
+    else {
         $('#ticket-DaysOpened').text(_ticketInfo.Ticket.DaysOpened);
         $('#label-days').text('Days Opened');
     }
@@ -1713,13 +1883,15 @@ function LoadTicketControls() {
                     closeAfterSelect: true
                 });
             }
-        } else {
+        }
+        else {
             $('#ticket-CommunityInfo-RO').show();
             $('#ticket-Community-RO').text((_ticketInfo.Ticket.CategoryName == null ? 'Unassigned' : _ticketInfo.Ticket.CategoryDisplayString));
             $('#ticket-Community-RO').show();
             $('#ticket-Community').closest('.form-horizontal').remove();
         }
-    } else {
+    }
+    else {
         $('#ticket-Community').closest('.form-horizontal').remove();
         //$('#ticket-Community-RO').remove();
     }
@@ -1729,9 +1901,8 @@ function LoadTicketControls() {
     SetupTicketPropertyEvents();
     if (window.parent.Ts.System.Organization.ProductType == window.parent.Ts.ProductType.Express) {
         $('#ticket-Customer').closest('.form-group').remove();
-    } else {
-        SetupCustomerSection();
     }
+    else SetupCustomerSection();
 
     SetupTagsSection();
 
@@ -1739,13 +1910,13 @@ function LoadTicketControls() {
         $('#ticket-Product').closest('.form-horizontal').remove();
         $('#ticket-Resolved').closest('.form-horizontal').remove();
         $('#ticket-Versions').closest('.form-horizontal').remove();
-    } else {
-        SetupProductSection();
     }
+    else SetupProductSection();
 
     if (window.parent.Ts.System.Organization.IsInventoryEnabled === true) {
         SetupInventorySection();
-    } else {
+    }
+    else {
         $('#ticket-group-assets').hide();
     }
 
@@ -1759,14 +1930,14 @@ function LoadTicketControls() {
     SetupJiraFieldValues();
     SetupTFSFields();
     SetupTFSFieldValues();
-}
+};
 
 function AppendSelect(parent, data, type, id, name, isSelected) {
     var option = $('<option>').val(id).text(name).appendTo(parent).data(type, data);
     if (isSelected) {
         option.attr('selected', 'selected');
     }
-}
+};
 
 function SetupTicketPropertyEvents() {
     $('#ticket-title-label').click(function (e) {
@@ -1900,7 +2071,8 @@ function SetupTicketPropertyEvents() {
             function (result) {
                 if (result === true) {
                     $('#ticket-group-KBCat').show();
-                } else {
+                }
+                else {
                     $('#ticket-group-KBCat').hide();
                 }
                 window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changeiskb", userFullName);
@@ -1975,7 +2147,8 @@ function SetupCustomerSection() {
                             window.parent.Ts.Services.Customers.LoadAlert(value, window.parent.Ts.ReferenceTypes.Users, function (note) {
                                 LoadTicketNotes(note);
                             });
-                        } else {
+                        }
+                        else {
                             window.parent.Ts.Services.Customers.LoadAlert(value, window.parent.Ts.ReferenceTypes.Organizations, function (note) {
                                 LoadTicketNotes(note);
                             });
@@ -2069,7 +2242,8 @@ function SetupCustomerSection() {
                     control.clear();
                     $('#NewCustomerModal').modal('hide');
                 });
-            } else if (result.indexOf("The company you have specified is invalid") !== -1) {
+            }
+            else if (result.indexOf("The company you have specified is invalid") !== -1) {
                 if (window.parent.Ts.System.User.CanCreateCompany || window.parent.Ts.System.User.IsSystemAdmin) {
                     if (confirm('Unknown company, would you like to create it?')) {
                         window.parent.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, true, function (result) {
@@ -2084,7 +2258,8 @@ function SetupCustomerSection() {
                             });
                         });
                     }
-                } else {
+                }
+                else {
                     alert("We're sorry, but you do not have the rights to create a new company.");
                     $('.ticket-new-customer-email').val('');
                     $('.ticket-new-customer-first').val('');
@@ -2093,7 +2268,8 @@ function SetupCustomerSection() {
                     $('.ticket-new-customer-phone').val('');
                     $('#NewCustomerModal').modal('hide');
                 }
-            } else {
+            }
+            else {
                 alert(result);
             }
         });
@@ -2111,7 +2287,8 @@ function SetupCustomerSection() {
                 alert('There was a problem removing the contact from the ticket.');
             });
             window.parent.Ts.System.logAction('Ticket - Contact Removed');
-        } else {
+        }
+        else {
             window.parent.Ts.Services.Tickets.RemoveTicketCompany(_ticketID, data.OrganizationID, function (customers) {
                 AddCustomers(customers);
                 window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "removecompany", userFullName);
@@ -2121,7 +2298,12 @@ function SetupCustomerSection() {
             window.parent.Ts.System.logAction('Ticket - Customer Removed');
         }
     });
-}
+
+    //$('#ticket-task-span').on('click', '', function (e) {
+    //    alert('clicked');
+
+    //});
+};
 
 function AddCustomers(customers) {
     var customerDiv = $("#ticket-Customer");
@@ -2137,11 +2319,13 @@ function AddCustomers(customers) {
         if (customers[i].Contact !== null && customers[i].Company !== null) {
             label = '<span class="UserAnchor" data-userid="' + customers[i].UserID + '" data-placement="left" data-ticketid="' + _ticketID + '">' + customers[i].Contact + '</span><br/><span class="OrgAnchor" data-orgid="' + customers[i].OrganizationID + '" data-placement="left">' + customers[i].Company + '</span>';
             var newelement = PrependTag(customerDiv, customers[i].UserID, label, customers[i], cssClasses);
-        } else if (customers[i].Contact !== null) {
+        }
+        else if (customers[i].Contact !== null) {
             label = '<span class="UserAnchor" data-userid="' + customers[i].UserID + '" data-placement="left">' + customers[i].Contact + '</span>';
             var newelement = PrependTag(customerDiv, customers[i].UserID, label, customers[i], cssClasses);
             newelement.data('userid', customers[i].UserID).data('placement', 'left').data('ticketid', _ticketID);
-        } else if (customers[i].Company !== null) {
+        }
+        else if (customers[i].Company !== null) {
             label = '<span class="OrgAnchor" data-orgid="' + customers[i].OrganizationID + '" data-placement="left">' + customers[i].Company + '</span>';
             var newelement = PrependTag(customerDiv, customers[i].OrganizationID, label, customers[i], cssClasses);
             newelement.data('orgid', customers[i].OrganizationID).data('placement', 'left').data('ticketid', _ticketID);
@@ -2151,9 +2335,12 @@ function AddCustomers(customers) {
 
 function clearTicketEditor() {
     $('#action-new-editor').parent().fadeOut('normal', function () {
-        tinymce.activeEditor.destroy();
+        if (window.parent.Ts.System.User.OrganizationID !== 13679) {
+            tinymce.activeEditor.destroy();
+        }
     });
     $('.upload-queue').empty();
+
 }
 
 function SetupTagsSection() {
@@ -2178,7 +2365,8 @@ function SetupTagsSection() {
                 }
             },
             select: function (event, ui) {
-                $(this).data('item', ui.item);
+                $(this)
+            .data('item', ui.item)
 
                 window.parent.Ts.Services.Tickets.AddTag(_ticketID, ui.item.value, function (tags) {
                     if (tags !== null) {
@@ -2192,7 +2380,9 @@ function SetupTagsSection() {
             }
         })
         .data("autocomplete")._renderItem = function (ul, item) {
-            return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
+            return $("<li>")
+                .append("<a>" + item.label + "</a>")
+                .appendTo(ul);
         };
 
         $('#ticket-tags').on('click', 'span.tagRemove', function (e) {
@@ -2206,14 +2396,17 @@ function SetupTagsSection() {
                 }, function () {
                     alert('There was a problem removing the tag from the ticket.');
                 });
-            } else {
+            }
+            else {
                 alert('There was a problem removing the reminder from the ticket.');
             }
+
         });
     }
-}
+};
 
 function PrependTask(parent, id, value, data) {
+    // var _compiledTaskTemplate = Handlebars.compile($("#task-record").html());
     var _compiledTaskTemplate = Handlebars.templates['taskrecord'];
     var taskHTML = _compiledTaskTemplate({ id: id, value: value, IsComplete: data.IsComplete });
     return $(taskHTML).prependTo(parent).data('task', data);
@@ -2232,7 +2425,8 @@ function AddTags(tags) {
 
 function PrependTag(parent, id, value, data, cssclass) {
     if (cssclass === undefined) cssclass = 'tag-item';
-    var _compiledTagTemplate = Handlebars.templates['ticket-tag'];
+    // var _compiledTagTemplate = Handlebars.compile($("#ticket-tag").html());
+    var _compiledTagTemplate = Handlebars.templates["ticket-tag"];
     var tagHTML = _compiledTagTemplate({ id: id, value: value, data: data, css: cssclass });
     return $(tagHTML).prependTo(parent).data('tag', data);
 }
@@ -2255,7 +2449,8 @@ function UpdateTicketGroups(callback) {
                 }
             }
         }
-    } else {
+    }
+    else {
         persistedGroup = true;
         for (var i = 0; i < groups.length; i++) {
             selectizeGroup.addOption({ value: groups[i].GroupID, text: groups[i].Name });
@@ -2267,7 +2462,8 @@ function UpdateTicketGroups(callback) {
     if (!persistedGroup && _ticketGroupID != null) {
         selectizeGroup.addItem(-1);
         callback(false);
-    } else {
+    }
+    else {
         callback(true);
     }
 }
@@ -2317,13 +2513,15 @@ function UpdateTicketTypes(persistedGroup, callback) {
     callback({ Group: persistedGroup, Type: persistedType })
 }
 
+
 function SetupProductSection() {
     window.parent.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {
         if (showOnlyCustomers == "True") {
             window.parent.Ts.Services.TicketPage.GetTicketCustomerProducts(_ticketID, function (CustomerProducts) {
                 LoadProductList(CustomerProducts);
             });
-        } else {
+        }
+        else {
             var products = window.parent.Ts.Cache.getProducts();
             LoadProductList(products);
         }
@@ -2333,11 +2531,10 @@ function SetupProductSection() {
         SetProductVersionAndResolved(_ticketInfo.Ticket.ReportedVersionID, _ticketInfo.Ticket.SolvedVersionID);
 
         window.parent.Ts.Services.Organizations.IsProductRequired(function (result) {
-            if (result && _ticketInfo.Ticket.ProductID == null) {
+            if (result && _ticketInfo.Ticket.ProductID == null)
                 $('#ticket-Product').closest('.form-group').addClass('hasError');
-            } else {
+            else
                 $('#ticket-Product').closest('.form-group').removeClass('hasError');
-            }
         });
 
         $('#ticket-Product').change(function (e) {
@@ -2348,11 +2545,10 @@ function SetupProductSection() {
                     var product = window.parent.Ts.Cache.getProduct(self.val());
 
                     window.parent.Ts.Services.Organizations.IsProductRequired(function (IsRequired) {
-                        if (IsRequired && (name == null || name == '')) {
+                        if (IsRequired && (name == null || name == ''))
                             $('#ticket-Product').closest('.form-group').addClass('hasError');
-                        } else {
+                        else
                             $('#ticket-Product').closest('.form-group').removeClass('hasError');
-                        }
                     });
 
                     SetupProductVersionsControl(product);
@@ -2372,6 +2568,7 @@ function SetupProductSection() {
                                     if (!persistedData.Type) {
                                         message += 'Type';
                                     }
+
                                     alert(message += '.');
                                 }
                             });
@@ -2414,8 +2611,9 @@ function SetupProductSection() {
                 alert('There was an error setting the reported version.');
             });
         });
+
     })
-}
+};
 
 function LoadProductList(products) {
     if ($('#ticket-Product').length) {
@@ -2467,11 +2665,12 @@ function LoadGroups() {
             }
         });
     }
-    if ($('#ticket-group').val() == -1) {
+
+    if ($('#ticket-group').val() == -1)
         $('#ticket-group').closest('.form-group').addClass('hasError');
-    } else {
+    else
         $('#ticket-group').closest('.form-group').removeClass('hasError');
-    }
+
 }
 
 function SetupProductVersionsControl(product) {
@@ -2513,19 +2712,17 @@ function SetupProductVersionsControl(product) {
             resolvedInput.destroy();
         }
     }
-
     $('#ticket-Versions').empty();
     $('#ticket-Resolved').empty();
     if (product !== null && product.Versions.length > 0) {
-  	    var versions = product.Versions;
+        var versions = product.Versions;
 
-  	    for (var i = 0; i < versions.length; i++) {
+        for (var i = 0; i < versions.length; i++) {
             try {
                 AppendSelect('#ticket-Versions', versions[i], 'version', versions[i].ProductVersionID, versions[i].VersionNumber, false);
                 AppendSelect('#ticket-Resolved', versions[i], 'resolved', versions[i].ProductVersionID, versions[i].VersionNumber, false);
-            } catch(e) {}
+            } catch (e) { }
         }
-
         if ($('#ticket-Resolved').length) {
             $('#ticket-Versions').selectize({
                 render: {
@@ -2564,6 +2761,7 @@ function SetProductVersionAndResolved(versionId, resolvedId) {
             },
             closeAfterSelect: true
         });
+
         SetVersion(versionId)
     }
 
@@ -2574,15 +2772,15 @@ function SetProductVersionAndResolved(versionId, resolvedId) {
             },
             closeAfterSelect: true
         });
+
         SetSolved(resolvedId);
     }
 
     window.parent.Ts.Services.Organizations.IsProductVersionRequired(function (IsProductVersionRequired) {
-        if (IsProductVersionRequired && (versionId == null && resolvedId == null)) {
+        if (IsProductVersionRequired && (versionId == null && resolvedId == null))
             $('#ticket-Versions').closest('.form-group').addClass('hasError');
-        } else {
+        else
             $('#ticket-Versions').closest('.form-group').removeClass('hasError');
-        }
     });
 };
 
@@ -2637,7 +2835,7 @@ function SetupInventorySection() {
             });
         });
     }
-}
+};
 
 function AddInventory(Inventory) {
     var InventoryDiv = $("#ticket-Inventory");
@@ -2647,7 +2845,7 @@ function AddInventory(Inventory) {
         var label = '<span class="AssetAnchor" data-assetid="' + Inventory[i].AssetID + '" data-placement="left">' + Inventory[i].Name + '</span>';
         var newelement = PrependTag(InventoryDiv, Inventory[i].AssetID, label, Inventory[i], "tag-item");
         newelement.data('assetid', Inventory[i].AssetID).data('placement', 'left');
-    }
+    };
 }
 
 function SetupUserQueuesSection() {
@@ -2775,7 +2973,7 @@ function AddSubscribers(Subscribers) {
         var label = '<span class="UserAnchor" data-userid="' + Subscribers[i].UserID + '" data-placement="left">' + Subscribers[i].FirstName + " " + Subscribers[i].LastName + '</span>';
         var newelement = PrependTag(SubscribersDiv, Subscribers[i].UserID, label, Subscribers[i], "tag-item");
         newelement.data('userid', Subscribers[i].UserID).data('placement', 'left').data('ticketid', _ticketID);
-    }
+    };
 }
 
 function SetupAssociatedTicketsSection() {
@@ -2849,7 +3047,7 @@ function SetupAssociatedTicketsSection() {
             });
         });
     }
-}
+};
 
 function AddAssociatedTickets(Tickets) {
     if (Tickets !== null) {
@@ -2866,7 +3064,7 @@ function AddAssociatedTickets(Tickets) {
 
             var newelement = PrependTag(AssociatedTicketsDiv, related.TicketID, related.IsClosed ? '<s>' + label + '</s>' : label, related, 'tag-item TicketAnchor');
             newelement.data('ticketid', related.TicketID).data('placement', 'left').data('IsParent', related.IsParent);
-        }
+        };
     }
 }
 
@@ -2955,12 +3153,12 @@ function SetupRemindersSection() {
                 }, function () {
                     alert('There was a problem removing the reminder from the ticket.');
                 });
-            } else {
-                if (currentUserID != window.parent.Ts.System.User.UserID) {
+            }
+            else {
+                if (currentUserID != window.parent.Ts.System.User.UserID)
                     alert('You do not have permission to delete this reminder');
-                } else {
+                else
                     alert('There was a problem removing the reminder from the ticket.');
-                }
             }
         });
 
@@ -2972,9 +3170,8 @@ function SetupRemindersSection() {
             $('#ticket-reminder-title').val(reminder.Description);
             var date = reminder.DueDate == null ? null : window.parent.Ts.Utils.getMsDate(reminder.DueDate);
             $('#ticket-reminder-date').val(date.localeFormat(window.parent.Ts.Utils.getDateTimePattern()));
-            if (!reminderClose) {
+            if (!reminderClose)
                 $('#RemindersModal').modal('show');
-            }
         });
     }
 }
@@ -2986,15 +3183,13 @@ function SetupTasksSection() {
         var checkbox = $(this);
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Ticket Page - Change Task Status');
-        var iframe = $('iframe-o-' + id);
-        console.log('Refresh iFrame: ' + iframe);
 
         parent.Ts.Services.Task.SetTaskIsCompleted(id, checked, function (data) {
             if (data.IncompleteSubtasks) {
                 checkbox.prop("checked", false);
                 alert('There are subtasks pending completion, please finish them before completing the parent task.')
-            } else if (data.Value) {
-                iframe.contentWindow.location.reload(true);
+            }
+            else if (data.Value) {
                 _completeCommentTaskID = id;
                 $('#modalTaskComment').modal('show');
             }
@@ -3014,11 +3209,10 @@ function SetupTasksSection() {
             });
         }
         else {
-            if (currentUserID != window.parent.Ts.System.User.UserID) {
+            if (currentUserID != window.parent.Ts.System.User.UserID)
                 alert('You do not have permission to delete this reminder');
-            } else {
+            else
                 alert('There was a problem removing the reminder from the ticket.');
-            }
         }
     });
 
@@ -3026,6 +3220,7 @@ function SetupTasksSection() {
         e.preventDefault();
         parent.Ts.System.logAction('Tasks Page - New Task');
         parent.Ts.MainPage.newTaskFromSource(17, _ticketID, _ticketInfo.Ticket.Name, _ticketInfo.Ticket.TicketNumber);
+
     });
 
     $('.taskContainer').on('click', 'a.tasklink', function (e) {
@@ -3039,16 +3234,19 @@ function SetupTasksSection() {
         var id = $(this).data('taskid');
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Tasks Page - Change Task Status');
+
         parent.Ts.Services.Task.SetTaskIsCompleted(id, checked, function (data) {
             if (!data.IncompleteSubtasks) {
                 _completeCommentTaskID = id;
                 $('#modalTaskComment').modal('show');
-            } else {
+            }
+            else {
                 checkbox.prop("checked", false);
                 alert('There are subtasks pending completion, please finish them before completing the parent task.')
             }
         });
     });
+
 }
 
 function AddReminders(reminders) {
@@ -3071,7 +3269,8 @@ function AddTasks(tasks) {
             if (tasks[i].Name == null) {
                 if (tasks[i].Description == null || tasks[i].Description == "") {
                     _TaskName = 'No Title';
-                } else {
+                }
+                else {
                     _TaskName = tasks[i].Description;
                 }
             }
@@ -3091,7 +3290,7 @@ function SetupCustomFieldsSection() {
 function AppenCustomValues(fields) {
     var parentContainer = $('#ticket-group-custom-fields');
     if (fields === null || fields.length < 1) { parentContainer.empty().hide(); return; }
-    parentContainer.empty();
+    parentContainer.empty()
 
     _parentFields = [];
 
@@ -3122,13 +3321,16 @@ var appendCategorizedCustomValues = function (fields) {
             var isFirstFieldAdded = true;
             for (var i = 0; i < fields.length; i++) {
                 var item = null;
+
                 var field = fields[i];
+
                 if (field.CustomFieldCategoryID == categories[j].CustomFieldCategoryID) {
                     if (isFirstFieldAdded) {
                         isFirstFieldAdded = false;
                         var header = $('<label>').text(categories[j].Category).addClass('customFieldCategoryHeader');
                         container.append($('<hr>')).append(header);
                     }
+
                     switch (field.FieldType) {
                         case window.parent.Ts.CustomFieldType.Text: AddCustomFieldEdit(field, container); break;
                         case window.parent.Ts.CustomFieldType.Date: AddCustomFieldDate(field, container); break;
@@ -3180,10 +3382,10 @@ var appendMatchingParentValueFields = function (container, parentField) {
 }
 
 var AddCustomFieldEdit = function (field, parentContainer) {
-    var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldEdit').appendTo(parentContainer);
+    var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
     var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
     var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+    var formLabel = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
 
     var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
     var inputGroupContainer = $('<div>').addClass('input-group').appendTo(inputContainer);
@@ -3201,19 +3403,22 @@ var AddCustomFieldEdit = function (field, parentContainer) {
 
         if (field.IsRequired && (value === null || $.trim(value) === '')) {
             groupContainer.addClass('hasError');
-        } else {
+        }
+        else {
             groupContainer.removeClass('hasError');
         }
         if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
             groupContainer.addClass('hasCloseError');
             alert("This field can not be cleared in a closed ticket");
             return;
-        } else {
+        }
+        else {
             groupContainer.removeClass('hasCloseError');
         }
         if (value === null || $.trim(value) === '') {
             groupContainer.addClass('isEmpty');
-        } else {
+        }
+        else {
             groupContainer.removeClass('isEmpty');
         }
         window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
@@ -3242,10 +3447,10 @@ var AddCustomFieldEdit = function (field, parentContainer) {
 
 var AddCustomFieldDate = function (field, parentContainer) {
     var date = field.Value == null ? null : window.parent.Ts.Utils.getMsDate(field.Value);
-    var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldDate').appendTo(parentContainer);
+    var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
     var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
     var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+    var formLabel = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
 
     var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
     var dateLink = $('<a>').attr('href', '#').addClass('ticket-anchor ticket-nullable-link ticket-duedate-anchor').text((date === null ? 'unassigned' : date.localeFormat(window.parent.Ts.Utils.getDatePattern()))).appendTo(dateContainer);
@@ -3259,46 +3464,50 @@ var AddCustomFieldDate = function (field, parentContainer) {
         var theinput = $('<input type="text">').addClass('form-control').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getDatePattern())).datetimepicker({ pickTime: false }).appendTo(container1).focus();
 
         $('<i>').addClass('col-xs-1 fa fa-times').click(function (e) {
-              $(this).closest('div').remove();
-              header.show();
+            $(this).closest('div').remove();
+            header.show();
         }).insertAfter(container1);
 
         $('<i>').addClass('col-xs-1 fa fa-check').click(function (e) {
-              var currDate = $(this).prev().find('input').val();
-              var value = null;
-              if (currDate !== '') {
-                  value = window.parent.Ts.Utils.getMsDate(currDate);
-              }
+            var currDate = $(this).prev().find('input').val();
+            var value = null;
+            if (currDate !== '') {
+                value = window.parent.Ts.Utils.getMsDate(currDate);
+            }
 
-              if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                  groupContainer.addClass('hasError');
-              } else {
-                  groupContainer.removeClass('hasError');
-              }
-              if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
-                  groupContainer.addClass('hasCloseErrory');
-                  alert("This field can not be cleared in a closed ticket");
-                  return;
-              } else {
-                  groupContainer.removeClass('hasCloseErrory');
-              }
-              if (value === null || $.trim(value) === '') {
-                  groupContainer.addClass('isEmpty');
-              } else {
-                  groupContainer.removeClass('isEmpty');
-              }
+            if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                groupContainer.addClass('hasError');
+            }
+            else {
+                groupContainer.removeClass('hasError');
+            }
+            if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
+                groupContainer.addClass('hasCloseErrory');
+                alert("This field can not be cleared in a closed ticket");
+                return;
+            }
+            else {
+                groupContainer.removeClass('hasCloseErrory');
+            }
+            if (value === null || $.trim(value) === '') {
+                groupContainer.addClass('isEmpty');
+            }
+            else {
+                groupContainer.removeClass('isEmpty');
+            }
 
-              window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
-                  var date = result === null ? null : window.parent.Ts.Utils.getMsDate(result);
-                  dateLink.text((value === null ? 'unassigned' : value.localeFormat(window.parent.Ts.Utils.getDatePattern()))).show();
-                  window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changecustom", userFullName);
-              }, function () {
-                  alert("There was a problem saving your ticket property.");
-              });
+            window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
+                var date = result === null ? null : window.parent.Ts.Utils.getMsDate(result);
+                dateLink.text((value === null ? 'unassigned' : value.localeFormat(window.parent.Ts.Utils.getDatePattern()))).show();
+                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changecustom", userFullName);
+            }, function () {
+                alert("There was a problem saving your ticket property.");
+            });
 
-              $(this).closest('div').remove();
-              header.show();
-          }).insertAfter(container1);
+            $(this).closest('div').remove();
+            header.show();
+        })
+          .insertAfter(container1);
     });
 
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
@@ -3318,62 +3527,90 @@ var AddCustomFieldDate = function (field, parentContainer) {
 
 var AddCustomFieldDateTime = function (field, parentContainer) {
     var date = field.Value == null ? null : window.parent.Ts.Utils.getMsDate(field.Value);
-    var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldDateTime').appendTo(parentContainer);
+    var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
     var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
     var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
-    var dateContainer  = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
-    var dateLink       = $('<a>').attr('href', '#').addClass('ticket-anchor ticket-nullable-link').text((date === null ? 'unassigned' : date.localeFormat(window.parent.Ts.Utils.getDateTimePattern()))).appendTo(dateContainer);
+    var formLabel = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+
+    var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
+    var dateLink = $('<a>')
+                      .attr('href', '#')
+                      .addClass('ticket-anchor ticket-nullable-link')
+                      .text((date === null ? 'unassigned' : date.localeFormat(window.parent.Ts.Utils.getDateTimePattern())))
+                      .appendTo(dateContainer);
 
     dateLink.click(function (e) {
         e.preventDefault();
         e.stopPropagation();
-        var header     = $(this).hide();
-        var container  = $('<div>').addClass('row').insertAfter(header);
-        var container1 = $('<div style="padding-right:0px;">').addClass('col-xs-10').appendTo(container);
-        var theinput   = $('<input type="text">').addClass('form-control').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getDateTimePattern())).datetimepicker({ pickTime: true }).appendTo(container1).focus();
+        var header = $(this).hide();
+        var container = $('<div>')
+              .addClass('row')
+              .insertAfter(header);
 
-        $('<i>').addClass('col-xs-1 fa fa-times').click(function (e) {
-            $(this).closest('div').remove();
-            header.show();
-            $('#customerEdit').removeClass("disabled");
-        }).insertAfter(container1);
+        var container1 = $('<div style="padding-right:0px;">')
+            .addClass('col-xs-10')
+            .appendTo(container);
 
-        $('<i>').addClass('col-xs-1 fa fa-check').click(function (e) {
-            var currDate = $(this).prev().find('input').val();
-            var value = null;
-            if (currDate !== '') {
-                value = window.parent.Ts.Utils.getMsDate(currDate);
-            }
-            if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                groupContainer.addClass('hasError');
-            } else {
-                groupContainer.removeClass('hasError');
-            }
-            if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
-                groupContainer.addClass('hasCloseErrory');
-                alert("This field can not be cleared in a closed ticket");
-                return;
-            } else {
-                groupContainer.removeClass('hasCloseErrory');
-            }
-            if (value === null || $.trim(value) === '') {
+        var theinput = $('<input type="text">')
+          .addClass('form-control')
+          .val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getDateTimePattern()))
+          .datetimepicker({ pickTime: true })
+          .appendTo(container1)
+          .focus();
+
+
+        $('<i>')
+          .addClass('col-xs-1 fa fa-times')
+          .click(function (e) {
+              $(this).closest('div').remove();
+              header.show();
+              $('#customerEdit').removeClass("disabled");
+          })
+          .insertAfter(container1);
+
+
+        $('<i>')
+          .addClass('col-xs-1 fa fa-check')
+          .click(function (e) {
+              var currDate = $(this).prev().find('input').val();
+              var value = null;
+              if (currDate !== '') {
+                  value = window.parent.Ts.Utils.getMsDate(currDate);
+              }
+
+              if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                  groupContainer.addClass('hasError');
+              }
+              else {
+                  groupContainer.removeClass('hasError');
+              }
+              if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
+                  groupContainer.addClass('hasCloseErrory');
+                  alert("This field can not be cleared in a closed ticket");
+                  return;
+              }
+              else {
+                  groupContainer.removeClass('hasCloseErrory');
+              }
+              if (value === null || $.trim(value) === '') {
                   groupContainer.addClass('isEmpty');
-            } else {
-                groupContainer.removeClass('isEmpty');
-            }
+              }
+              else {
+                  groupContainer.removeClass('isEmpty');
+              }
 
-            window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
-                var date = result === null ? null : window.parent.Ts.Utils.getMsDate(result);
-                dateLink.text((value === null ? '' : value.localeFormat(window.parent.Ts.Utils.getDateTimePattern()))).show();
-                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changecustom", userFullName);
-            }, function () {
-                alert("There was a problem saving your ticket property.");
-            });
+              window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
+                  var date = result === null ? null : window.parent.Ts.Utils.getMsDate(result);
+                  dateLink.text((value === null ? '' : value.localeFormat(window.parent.Ts.Utils.getDateTimePattern()))).show();
+                  window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changecustom", userFullName);
+              }, function () {
+                  alert("There was a problem saving your ticket property.");
+              });
 
-            $(this).closest('div').remove();
-            header.show();
-        }).insertAfter(container1);
+              $(this).closest('div').remove();
+              header.show();
+          })
+          .insertAfter(container1);
     });
 
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
@@ -3388,66 +3625,95 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
     if (field.Value === null || $.trim(field.Value) === '') {
         groupContainer.addClass('isEmpty');
     }
+
 }
 
 var AddCustomFieldTime = function (field, parentContainer) {
     var date = field.Value == null ? null : window.parent.Ts.Utils.getMsDate(field.Value);
-    var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldTime').appendTo(parentContainer);
+    var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
     var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
     var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
-    var dateContainer  = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
-    var dateLink       = $('<a>').attr('href', '#').addClass('ticket-anchor ticket-nullable-link ticket-duedate-anchor').text((date === null ? 'Unassigned' : date.localeFormat(window.parent.Ts.Utils.getTimePattern()))).appendTo(dateContainer);
+    var formLabel = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+
+    var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
+    var dateLink = $('<a>')
+                      .attr('href', '#')
+                      .addClass('ticket-anchor ticket-nullable-link ticket-duedate-anchor')
+                      .text((date === null ? 'Unassigned' : date.localeFormat(window.parent.Ts.Utils.getTimePattern())))
+                      .appendTo(dateContainer);
 
     dateLink.click(function (e) {
         e.preventDefault();
         e.stopPropagation();
-        var header     = $(this).hide();
-        var container  = $('<div>').addClass('row').insertAfter(header);
-        var container1 = $('<div style="padding-right:0px;">').addClass('col-xs-10').appendTo(container);
-        var theinput   = $('<input type="text">').addClass('form-control').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getTimePattern())).datetimepicker({ pickDate: false }).appendTo(container1).focus();
+        var header = $(this).hide();
+        var container = $('<div>')
+              .addClass('row')
+              .insertAfter(header);
 
-        $('<i>').addClass('col-xs-1 fa fa-times').click(function (e) {
-            $(this).closest('div').remove();
-            header.show();
-            $('#customerEdit').removeClass("disabled");
-        }).insertAfter(container1);
+        var container1 = $('<div style="padding-right:0px;">')
+            .addClass('col-xs-10')
+            .appendTo(container);
 
-        $('<i>').addClass('col-xs-1 fa fa-check').click(function (e) {
-            var currDate = $(this).prev().find('input').val();
-            var value = null;
-            if (currDate !== '') {
-                value = window.parent.Ts.Utils.getMsDate("1/1/1900 " + currDate);
-            }
-            if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                groupContainer.addClass('hasError');
-            } else {
-                groupContainer.removeClass('hasError');
-            }
-            if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
-                groupContainer.addClass('hasCloseErrory');
-                alert("This field can not be cleared in a closed ticket");
-                return;
-            } else {
-                groupContainer.removeClass('hasCloseErrory');
-            }
-            if (value === null || $.trim(value) === '') {
-                groupContainer.addClass('isEmpty');
-            } else {
-                groupContainer.removeClass('isEmpty');
-            }
+        var theinput = $('<input type="text">')
+          .addClass('form-control')
+          .val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getTimePattern()))
+          .datetimepicker({ pickDate: false })
+          .appendTo(container1)
+          .focus();
 
-            window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
-                var date = result === null ? null : window.parent.Ts.Utils.getMsDate(result);
-                dateLink.text((value === null ? '' : value.localeFormat(window.parent.Ts.Utils.getTimePattern()))).show();
-                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changecustom", userFullName);
-            }, function () {
-                alert("There was a problem saving your ticket property.");
-            });
 
-            $(this).closest('div').remove();
-            header.show();
-          }).insertAfter(container1);
+        $('<i>')
+          .addClass('col-xs-1 fa fa-times')
+          .click(function (e) {
+              $(this).closest('div').remove();
+              header.show();
+              $('#customerEdit').removeClass("disabled");
+          })
+          .insertAfter(container1);
+
+
+        $('<i>')
+          .addClass('col-xs-1 fa fa-check')
+          .click(function (e) {
+              var currDate = $(this).prev().find('input').val();
+              var value = null;
+              if (currDate !== '') {
+                  value = window.parent.Ts.Utils.getMsDate("1/1/1900 " + currDate);
+              }
+
+              if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                  groupContainer.addClass('hasError');
+              }
+              else {
+                  groupContainer.removeClass('hasError');
+              }
+              if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
+                  groupContainer.addClass('hasCloseErrory');
+                  alert("This field can not be cleared in a closed ticket");
+                  return;
+              }
+              else {
+                  groupContainer.removeClass('hasCloseErrory');
+              }
+              if (value === null || $.trim(value) === '') {
+                  groupContainer.addClass('isEmpty');
+              }
+              else {
+                  groupContainer.removeClass('isEmpty');
+              }
+
+              window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
+                  var date = result === null ? null : window.parent.Ts.Utils.getMsDate(result);
+                  dateLink.text((value === null ? '' : value.localeFormat(window.parent.Ts.Utils.getTimePattern()))).show();
+                  window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changecustom", userFullName);
+              }, function () {
+                  alert("There was a problem saving your ticket property.");
+              });
+
+              $(this).closest('div').remove();
+              header.show();
+          })
+          .insertAfter(container1);
     });
 
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
@@ -3462,18 +3728,21 @@ var AddCustomFieldTime = function (field, parentContainer) {
     if (field.Value === null || $.trim(field.Value) === '') {
         groupContainer.addClass('isEmpty');
     }
+
 }
 
 var AddCustomFieldBool = function (field, parentContainer) {
-    var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldBool').appendTo(parentContainer);
+    var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
     var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
     var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+    var formLabel = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
 
     var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
-    var input = $('<input type="checkbox">').css('margin','5px').appendTo(inputContainer);
+    // var inputDiv = $('<div>').addClass('checkbox ticket-checkbox').appendTo(inputContainer);
+    var input = $('<input type="checkbox">').css('margin', '5px').appendTo(inputContainer);
     var value = (field.Value === null || $.trim(field.Value) === '' || field.Value.toLowerCase() === 'false' || field.Value.toLowerCase() === '0' ? false : true);
     input.prop("checked", value);
+
     input.change(function (e) {
         var isChecked = input.is(':checked')
         window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, isChecked, function (result) {
@@ -3486,32 +3755,40 @@ var AddCustomFieldBool = function (field, parentContainer) {
 }
 
 var AddCustomFieldNumber = function (field, parentContainer) {
-    var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldNumber').appendTo(parentContainer);
+    var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
     var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
     var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+    var formLabel = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
 
     var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
-    var input = $('<input type="text">').addClass('form-control ticket-simple-input muted-placeholder').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputContainer).numeric();
+    var input = $('<input type="text">')
+                    .addClass('form-control ticket-simple-input muted-placeholder')
+                    .attr("placeholder", "Enter Value")
+                    .val(field.Value)
+                    .appendTo(inputContainer)
+                    .numeric();
 
     input.change(function (e) {
         var value = input.val();
 
         if (field.IsRequired && (value === null || $.trim(value) === '')) {
             groupContainer.addClass('hasError');
-        } else {
+        }
+        else {
             groupContainer.removeClass('hasError');
         }
         if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
             groupContainer.addClass('hasCloseError');
             alert("This field can not be cleared in a closed ticket");
             return;
-        } else {
+        }
+        else {
             groupContainer.removeClass('hasCloseError');
         }
         if (value === null || $.trim(value) === '') {
             groupContainer.addClass('isEmpty');;
-        } else {
+        }
+        else {
             groupContainer.removeClass('isEmpty');
         }
         window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
@@ -3537,10 +3814,10 @@ var AddCustomFieldNumber = function (field, parentContainer) {
 }
 
 var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFields) {
-    var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldSelect').appendTo(parentContainer);
+    var formcontainer = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
     var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
     var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+    var formLabel = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
 
     var selectContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
     var select = $('<select>').addClass('hidden-select muted-placeholder').attr("placeholder", "Select Value").appendTo(selectContainer);
@@ -3548,9 +3825,8 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
 
     if (field.Value == "") {
         $('<option>').text("unassigned").val("").appendTo(select);
-        if (field.IsRequired) {
-            groupContainer.addClass('hasError');
-        }
+        if (field.IsRequired) groupContainer.addClass('hasError');
+
     }
     for (var i = 0; i < options.length; i++) {
         var optionValue = options[i];
@@ -3562,21 +3838,27 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
         onItemAdd: function (value, $item) {
             if (field.IsRequired && field.IsFirstIndexSelect == true && (value == "" || field.ListValues.split("|")[0] == value)) {
                 groupContainer.addClass('hasError');
-            } else {
+            }
+            else {
                 groupContainer.removeClass('hasError');
             }
+
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && field.IsFirstIndexSelect == true && value == "") {
                 groupContainer.addClass('hasCloseError');
                 alert("This field can not be cleared in a closed ticket");
                 return;
-            } else {
+            }
+            else {
                 groupContainer.removeClass('hasCloseError');
             }
+
             if (field.IsFirstIndexSelect == true && value == "") {
                 groupContainer.addClass('isEmpty');
-            } else {
+            }
+            else {
                 groupContainer.removeClass('isEmpty');
             }
+
             window.parent.Ts.System.logAction('Ticket - Custom Value Set');
             window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
                 $('.' + field.CustomFieldID + 'children').remove();
@@ -3614,10 +3896,11 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
 
 var SetupDueDateField = function (duedate) {
     var dateContainer = $('#ticket-duedate-container');
-    var dateLink = $('<a>').attr('href', '#').attr('id','ticket-duedate').addClass('control-label ticket-anchor ticket-nullable-link ticket-duedate-anchor').appendTo(dateContainer);
+    var dateLink = $('<a>').attr('href', '#').attr('id', 'ticket-duedate').addClass('control-label ticket-anchor ticket-nullable-link ticket-duedate-anchor').appendTo(dateContainer);
 
     if (duedate !== null) {
         dateLink.text(duedate.localeFormat(window.parent.Ts.Utils.getDateTimePattern()));
+
         if (duedate < new Date()) {
             dateLink.addClass('nonrequired-field-error-font');
         }
@@ -3626,39 +3909,60 @@ var SetupDueDateField = function (duedate) {
     dateLink.click(function (e) {
         e.preventDefault();
         e.stopPropagation();
-        var header     = $(this).hide();
-        var container  = $('<div>').addClass('row').insertAfter(header);
-        var container1 = $('<div style="padding-right:0px;">').addClass('col-xs-10').appendTo(container);
-        var theinput   = $('<input type="text">').addClass('form-control').val('').datetimepicker({ pickTime: true }).appendTo(container1).focus();
+        var header = $(this).hide();
+        var container = $('<div>')
+              .addClass('row')
+              .insertAfter(header);
 
-        $('<i>').addClass('col-xs-1 fa fa-times').click(function (e) {
-            $(this).closest('div').remove();
-            header.show();
-            $('#customerEdit').removeClass("disabled");
-        }).insertAfter(container1);
+        var container1 = $('<div style="padding-right:0px;">')
+            .addClass('col-xs-10')
+            .appendTo(container);
 
-        $('<i>').addClass('col-xs-1 fa fa-check').click(function (e) {
-            var currDate = $(this).prev().find('input').val();
-            var value = '';
-            if (currDate !== '') {
-                value = window.parent.Ts.Utils.getMsDate(currDate);
-            }
-            window.parent.Ts.Services.Tickets.SetDueDate(_ticketID, value, function (result) {
-                var date = result === null ? null : window.parent.Ts.Utils.getMsDate(result);
-                dateLink.text((value === '' ? '' : value.localeFormat(window.parent.Ts.Utils.getDateTimePattern()))).show();
-                duedate = value === '' ? null : window.parent.Ts.Utils.getMsDate(value); //result;
-                if (date != null && date < Date.now()) {
-                    dateLink.addClass('nonrequired-field-error-font');
-                } else {
-                    dateLink.removeClass('nonrequired-field-error-font');
-                }
-                window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changeduedate", userFullName);
-            }, function () {
-                alert("There was a problem saving your ticket property.");
-            });
-            $(this).closest('div').remove();
-            header.show();
-        }).insertAfter(container1);
+        var theinput = $('<input type="text">')
+          .addClass('form-control')
+          .val('')
+          .datetimepicker({ pickTime: true })
+          .appendTo(container1)
+          .focus();
+
+
+        $('<i>')
+          .addClass('col-xs-1 fa fa-times')
+          .click(function (e) {
+              $(this).closest('div').remove();
+              header.show();
+              $('#customerEdit').removeClass("disabled");
+          })
+          .insertAfter(container1);
+
+
+        $('<i>')
+          .addClass('col-xs-1 fa fa-check')
+          .click(function (e) {
+              var currDate = $(this).prev().find('input').val();
+              var value = '';
+              if (currDate !== '') {
+                  value = window.parent.Ts.Utils.getMsDate(currDate);
+              }
+              window.parent.Ts.Services.Tickets.SetDueDate(_ticketID, value, function (result) {
+                  var date = result === null ? null : window.parent.Ts.Utils.getMsDate(result);
+                  dateLink.text((value === '' ? '' : value.localeFormat(window.parent.Ts.Utils.getDateTimePattern()))).show();
+                  duedate = value === '' ? null : window.parent.Ts.Utils.getMsDate(value); //result;
+
+                  if (date != null && date < Date.now()) {
+                      dateLink.addClass('nonrequired-field-error-font');
+                  }
+                  else {
+                      dateLink.removeClass('nonrequired-field-error-font');
+                  }
+                  window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changeduedate", userFullName);
+              }, function () {
+                  alert("There was a problem saving your ticket property.");
+              });
+              $(this).closest('div').remove();
+              header.show();
+          })
+          .insertAfter(container1);
     });
 }
 
@@ -3692,7 +3996,8 @@ var SetupStatusField = function (StatusId) {
                                 SetStatus(_ticketCurrStatus);
                                 alert('There was an error setting your ticket status.');
                             });
-                        } else {
+                        }
+                        else {
                             SetStatus(_ticketCurrStatus);
                             alert("Please fill in the required fields before closing the ticket.");
                             return;
@@ -3704,13 +4009,15 @@ var SetupStatusField = function (StatusId) {
                 item: function (item, escape) {
                     if (item.data.IsClosed) {
                         return '<div data-value="' + escape(item.value) + '" data-item="' + escape(item.data) + '" data-selectable="" class="option"><s>' + escape(item.text) + '</s></div>';
-                    } else {
+                    }
+                    else {
                         return '<div data-value="' + escape(item.value) + '" data-item="' + escape(item.data) + '" data-selectable="" class="option">' + escape(item.text) + '</div>';
                     }
                 }
             },
         });
         var selectize = $("#ticket-status")[0].selectize;
+
         if (statuses) {
             for (var i = 0; i < statuses.length; i++) {
                 if (statuses[i]) {
@@ -3718,10 +4025,12 @@ var SetupStatusField = function (StatusId) {
                 }
             }
         }
+
         selectize.addItem(StatusId, true);
     }
 }
 
+//click events and logic
 var SetupJiraFields = function () {
     $('#newJiraIssue').click(function (e) {
         e.preventDefault();
@@ -3733,7 +4042,8 @@ var SetupJiraFields = function () {
                 if (syncResult.IsSuccessful === true) {
                     $('#issueKeyValue').text('Pending...');
                     $('#issueKey').show();
-                } else {
+                }
+                else {
                     $('.ts-jira-buttons-container').show();
                     $('#issueKey').hide();
                     alert(syncResult.Error);
@@ -3765,11 +4075,13 @@ var SetupJiraFields = function () {
         if ($.trim($('#issueKeyInput').val()) === '') {
             $('.ts-jira-buttons-container').show();
             $('#enterIssueKey').hide();
-        } else {
+        }
+        else {
             $('#issueKeyValue').text($.trim($('#issueKeyInput').val()));
             $('#enterIssueKey').hide();
             $('#issueKey').show();
             var errorMessage = "There was an error setting your Jira Issue Key. Please contact TeamSupport.com";
+
             window.parent.Ts.Services.Tickets.SetJiraIssueKey(_ticketID, $.trim($('#issueKeyInput').val()), function (result) {
                 if (result != null) {
                     var syncResult = JSON.parse(result);
@@ -3798,9 +4110,10 @@ var SetupJiraFields = function () {
             e.preventDefault();
             window.parent.Ts.Services.Tickets.UnSetSyncWithJira(_ticketID, function (result) {
                 if (result === true) {
-					$('.ts-jira-buttons-container').show();
-            		$('#issueKey').hide();
-                } else {
+                    $('.ts-jira-buttons-container').show();
+                    $('#issueKey').hide();
+                }
+                else {
                     alert('There was an error setting your Jira Issue Key. Please try again later');
                     $('.ts-jira-buttons-container').hide();
                     $('#issueKey').show();
@@ -3813,8 +4126,9 @@ var SetupJiraFields = function () {
             });
         }
     });
-}
+};
 
+//Load and display the proper fields/values
 var SetupJiraFieldValues = function () {
     window.parent.Ts.Services.Admin.GetJiraInstanceNameForTicket(_ticketID, function (result) {
         if (result.length > 0) {
@@ -3823,34 +4137,47 @@ var SetupJiraFieldValues = function () {
             if (_ticketInfo.LinkToJira != null) {
                 if (!_ticketInfo.LinkToJira.JiraKey) {
                     $('#issueKeyValue').text('Pending...');
-                } else if (!_ticketInfo.LinkToJira.JiraLinkURL) {
+                }
+                else if (!_ticketInfo.LinkToJira.JiraLinkURL) {
                     $('#issueKeyValue').text(_ticketInfo.LinkToJira.JiraKey);
                     if (_ticketInfo.LinkToJira.JiraKey.indexOf('Error') > -1) {
                         $('#issueKeyValue').closest('.form-group').addClass('fieldError');
-                    } else {
+                    }
+                    else {
                         $('#issueKeyValue').closest('.form-group').addClass('fieldError');
                     }
-                } else {
+                }
+                else {
                     if ($(".jiraLink").length) {
                         $(".jiraLink").remove();
                     }
-                    var jiraLink = $('<a>').attr('href', _ticketInfo.LinkToJira.JiraLinkURL).attr('target', '_blank').attr('title', result + ' instance').text(_ticketInfo.LinkToJira.JiraKey).addClass('jiraLink control-label ticket-anchor').prependTo($('#ticket-jirakey-container'));
+
+                    var jiraLink = $('<a>')
+                          .attr('href', _ticketInfo.LinkToJira.JiraLinkURL)
+                          .attr('target', '_blank')
+                          .attr('title', result + ' instance')
+                          .text(_ticketInfo.LinkToJira.JiraKey)
+                          .addClass('jiraLink control-label ticket-anchor ')
+                          .prependTo($('#ticket-jirakey-container'));
                 }
 
                 $('#issueKey').show();
                 $('.ts-jira-buttons-container').hide();
-            } else {
+            }
+            else {
                 $('#ticket-jirafields').show();
                 $('#issueKey').hide();
                 $('.ts-jira-buttons-container').show();
                 $('#newJiraIssue').attr('title', result + ' instance');
             }
-        } else {
+        }
+        else {
             $('#ticket-jirafields').hide();
         }
     });
-}
+};
 
+//click events and logic
 var SetupTFSFields = function () {
     $('#newTFSWorkItem').click(function (e) {
         e.preventDefault();
@@ -3862,7 +4189,8 @@ var SetupTFSFields = function () {
                 if (syncResult.IsSuccessful === true) {
                     $('#workItemTitleValue').text('Pending...');
                     $('#workItemTitle').show();
-                } else {
+                }
+                else {
                     $('.ts-tfs-buttons-container').show();
                     $('#workItemTitle').hide();
                     alert(syncResult.Error);
@@ -3894,7 +4222,8 @@ var SetupTFSFields = function () {
         if ($.trim($('#workItemIDInput').val()) === '') {
             $('.ts-tfs-buttons-container').show();
             $('#enterWorkItemTitle').hide();
-        } else {
+        }
+        else {
             $('#workItemTitleValue').text($.trim($('#workItemIDInput').val()));
             $('#enterWorkItemTitle').hide();
             $('#workItemTitle').show();
@@ -3912,11 +4241,11 @@ var SetupTFSFields = function () {
                     alert(errorMessage);
                 }
             },
-            function (error) {
-                $('.ts-tfs-buttons-container').show();
-                $('#workItemTitle').hide();
-                alert(errorMessage);
-            });
+          function (error) {
+              $('.ts-tfs-buttons-container').show();
+              $('#workItemTitle').hide();
+              alert(errorMessage);
+          });
         }
     });
 
@@ -3930,7 +4259,8 @@ var SetupTFSFields = function () {
                 if (result === true) {
                     $('.ts-tfs-buttons-container').show();
                     $('#workItemTitle').hide();
-                } else {
+                }
+                else {
                     alert('There was an error setting your TFS Work Item Title. Please try again later');
                     $('.ts-tfs-buttons-container').hide();
                     $('#workItemTitle').show();
@@ -3943,40 +4273,56 @@ var SetupTFSFields = function () {
             });
         }
     });
-}
+};
 
+//Load and display the proper TFS fields/values
 var SetupTFSFieldValues = function () {
     window.parent.Ts.Services.Admin.GetTFSCRMLinkTableRecordForTicket(_ticketID, function (result) {
         if (result.length > 0) {
             $('#ticket-tfsfields').show();
+
             if (_ticketInfo.LinkToTFS != null) {
                 if (!_ticketInfo.LinkToTFS.TFSTitle) {
                     $('#workItemTitleValue').text('Pending...');
-                } else if (!_ticketInfo.LinkToTFS.TFSURL) {
+                }
+                else if (!_ticketInfo.LinkToTFS.TFSURL) {
                     $('#workItemTitleValue').text(_ticketInfo.LinkToTFS.TFSTitle);
                     if (_ticketInfo.LinkToTFS.TFSTitle.indexOf('Error') > -1) {
                         $('#workItemTitleValue').closest('.form-group').addClass('fieldError');
-                    } else {
+                    }
+                    else {
                         $('#workItemTitleValue').closest('.form-group').addClass('fieldError');
                     }
-                } else {
+                }
+                else {
                     if ($(".tfsLink").length) {
                         $(".tfsLink").remove();
                     }
-                    var tfsLink = $('<a>').attr('href', _ticketInfo.LinkToTFS.TFSURL).attr('target', '_blank').text(_ticketInfo.LinkToTFS.TFSTitle).addClass('tfsLink control-label ticket-anchor').prependTo($('#ticket-workItemTitle-container'));
+
+                    var tfsLink = $('<a>')
+                          .attr('href', _ticketInfo.LinkToTFS.TFSURL)
+                          .attr('target', '_blank')
+                          //.attr('title', result + ' instance')
+                          .text(_ticketInfo.LinkToTFS.TFSTitle)
+                          .addClass('tfsLink control-label ticket-anchor ')
+                          .prependTo($('#ticket-workItemTitle-container'));
                 }
+
                 $('#workItemTitleValue').show();
                 $('.ts-tfs-buttons-container').hide();
-            } else {
+            }
+            else {
                 $('#ticket-tfsfields').show();
                 $('#workItemTitle').hide();
                 $('.ts-tfs-buttons-container').show();
+                //$('#newTFSWorkItem').attr('title', result + ' instance');
             }
-        } else {
+        }
+        else {
             $('#ticket-tfsfields').hide();
         }
     });
-}
+};
 
 function validateEmail(email) {
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -3989,23 +4335,28 @@ var getUrls = function (input) {
     var url;
     var matchArray;
     var result = '';
+
     // Regular expression to find FTP, HTTP(S) and email URLs. Updated to include urls without http
     var regexToken = /(((ftp|https?|www):?\/?\/?)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g;
+
     // Iterate through any URLs in the text.
     while ((matchArray = regexToken.exec(source)) !== null) {
         url = matchArray[0];
         if (url.length > 2 && url.substring(0, 3) == 'www') {
             url = 'http://' + url;
         }
+
         if (validateEmail(url)) {
             url = "mailto:" + url;
         }
+
         result = result + '<a target="_blank" class="valueLink" href="' + url + '" title="' + matchArray[0] + '"><i class="fa fa-external-link fa-lg custom-field-link"></i></a>';
     }
 
     if (result !== '') {
         return parentDiv.append(result);
     }
+
     return result;
 }
 
@@ -4038,12 +4389,13 @@ function FetchTimeLineItems(start) {
             $('.results-loading').hide();
             $('.results-done').show();
         } else {
-            _compiledActionTemplate = Handlebars.templates['action2'];
+            console.log('handlebars:action.handlebars');
+            _compiledActionTemplate = Handlebars.templates['action'];
 
             //create first timeline date marker if needed
             if (_currDateSpan == null) {
                 _currDateSpan = _timeLine[0].item.DateCreated;
-                var dateSpan = '<div class="daystrip"><span class="daybadge">' + _currDateSpan.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
+                var dateSpan = '<li style="text-align:center;"><span class="label bgcolor-bluegray daybadge">' + _currDateSpan.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><li>';
                 $("#action-timeline").append(dateSpan);
             };
             var isPublicFiltered = $('.filter-public').hasClass('bgcolor-darkgray');
@@ -4068,9 +4420,16 @@ function FetchTimeLineItems(start) {
             $('.results-loading').hide();
         };
     });
-}
+
+};
 
 function CreateActionElement(val, ShouldAppend) {
+    if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
+        var dateSpan = '<li style="text-align:center;"><span class="label bgcolor-bluegray daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><li>';
+        $("#action-timeline").append(dateSpan);
+        _currDateSpan = val.item.DateCreated;
+    }
+
     if (val.item.IsWC) {
         val.item.Message = val.item.Message.replace(/\n\r?/g, '<br />');
         for (wc = 0; wc < val.WaterCoolerReplies.length; wc++) {
@@ -4078,66 +4437,65 @@ function CreateActionElement(val, ShouldAppend) {
             val.WaterCoolerReplies[wc].WaterCoolerReplyProxy.Message = wcmsgtext.replace(/\n\r?/g, '<br />');
         }
     }
-
-    if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
-        var dateSpan = '<div class="daystrip"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
-        _currDateSpan = val.item.DateCreated;
-    }
-
+    console.log('createactionelecment:recycle:handlebars:action.handlebars');
     var html = _compiledActionTemplate(val);
     var actionElement = $(html);
     actionElement.find('a').attr('target', '_blank');
     if (ShouldAppend) {
         try {
-            $("#action-timeline").append(dateSpan);
             $("#action-timeline").append(actionElement);
-        } catch (e) { }
-    } else {
-        if ($('.ticket-action.pinned').length) {
-            $('.ticket-action.pinned').after(actionElement);
-            $('.ticket-action.pinned').after(dateSpan);
-        } else {
-            $('.action-placeholder').after(actionElement);
-            $('.action-placeholder').after(dateSpan);
+        }
+        catch (e) {
+            console.log('Unable to append action.');
         }
     }
-
+    else {
+        if ($('.ticket-action.pinned').length) {
+            $('.ticket-action.pinned').after(actionElement);
+        }
+        else {
+            $('.action-placeholder').after(actionElement);
+        }
+    }
     _isCreatingAction = false;
     return actionElement;
-}
+};
 
 function UpdateActionElement(val) {
     if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
-        var dateSpan = '<div class="daystrip"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span></div>';
+        var dateSpan = '<li style="text-align:center;"><span class="label bgcolor-bluegray daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span></li>';
         $("#action-timeline").append(dateSpan);
         _currDateSpan = val.item.DateCreated;
     }
+    console.log('updateactionelement:recycle:handlebars:action.handlebars');
     var html = _compiledActionTemplate(val);
     var actionElement = $(html);
-    var li = $("#action-timeline div.action[data-id=" + val.item.RefID + "]");
+    var li = $("#action-timeline li[data-id=" + val.item.RefID + "]");
     var actionNumber = li.find('.ticket-action-number').text();
     try {
-        li.replaceWith(html);
-    } catch (e) { }
-    $("#action-timeline div.action[data-id=" + val.item.RefID + "]").find('.ticket-action-number').text(actionNumber);
-}
+        $('.action-placeholder').after(actionElement);
+        // li.replaceWith(html);
+        console.log('Acion appended.');
+    } catch (e) {
+        console.log('Unable to append action.');
+    }
+    $("#action-timeline li[data-id=" + val.item.RefID + "]").find('.ticket-action-number').text(actionNumber);
+};
 
 function CreateHandleBarHelpers() {
 
     Handlebars.registerHelper('WaterCoolerRelationships', function () {
-        if (this.WatercoolerReferences) {
+        if (this.WatercoolerReferences)
             return BuildWaterCoolerAssociationToolTip(this.WatercoolerReferences);
-        } else {
+        else
             return "";
-        }
     });
 
     Handlebars.registerHelper('UserImageTag', function () {
-      	if (this.item.CreatorID > 0) {
-  	    	return '<img class="user-avatar pull-left" src="/dc/' + this.item.OrganizationID + '/UserAvatar/' + this.item.CreatorID + '/120/' + new Date().getTime() + '" />';
-  	    } else {
-            return "";
+        if (this.item.CreatorID > 0) {
+            return '<img class="user-avatar pull-left" src="/dc/' + this.item.OrganizationID + '/UserAvatar/' + this.item.CreatorID + '/120/' + new Date().getTime() + '" />';
         }
+        else return "";
     });
 
     Handlebars.registerHelper('FormatDateTime', function (Date) {
@@ -4161,40 +4519,44 @@ function CreateHandleBarHelpers() {
         if (this.item.OrganizationID != '1078') { return; }
         var ticketID = this.item.TicketID;
         var actionID = this.item.RefID;
+
         var output = window.parent.Ts.Services.TicketPage.WatsonAction(ticketID, actionID, function (result) {
+            // console.log(result);
             if (result != 'negative' && result != 'nothing' && result != 'hidden') {
                 var data = jQuery.parseJSON(result);
-                var sentiments = { 1:'Sad', 2:'Frustrated', 3:'Satisfied', 4:'Excited', 5:'Polite', 6:'Impolite', 7:'Sympathetic' }
+                var sentiments = { 1: 'Sad', 2: 'Frustrated', 3: 'Satisfied', 4: 'Excited', 5: 'Polite', 6: 'Impolite', 7: 'Sympathetic' }
                 var display = [];
-                $.each(data.watson, function(key,sentiment) {
+                $.each(data.watson, function (key, sentiment) {
                     if (sentiment.SentimentID > 0) {
                         var emotion = sentiments[sentiment.SentimentID];
                         var percent = Math.round(sentiment.SentimentScore * 100);
                         display.push(emotion + ': ' + percent + '%');
                     }
                 });
+                // console.log('Watson Action:' + actionID + ' / ' + display.join(', '));
                 $('#watson-' + actionID).text(display.join(', '));
             }
         });
+        // return '<span id="watson-' + actionID + '"></span>';
     });
 
     Handlebars.registerHelper('Applause', function () {
         if (this.item.IsWC) { return; }
         var ticketID = this.item.TicketID;
         var actionID = this.item.RefID;
-        var display  = (this.item.OrganizationID === window.parent.Ts.System.User.OrganizationID && !this.item.IsWC) ? 'inline' : 'none';
-        var output   = window.parent.Ts.Services.TicketPage.PullReactions(ticketID, actionID, function (result) {
+        var display = (this.item.OrganizationID === window.parent.Ts.System.User.OrganizationID && !this.item.IsWC) ? 'inline' : 'none';
+        var output = window.parent.Ts.Services.TicketPage.PullReactions(ticketID, actionID, function (result) {
             if (result != 'negative' && result != 'nothing' && result != 'hidden') {
                 var data = jQuery.parseJSON(result);
                 var tally = data[0].reactions[0].tally;
                 var reckoning = data[1].validation[0].reckoning;
                 var opacity = (reckoning > 0) ? '1' : '0.2';
                 var oldvalue = (reckoning > 0) ? '1' : '0';
-                var thacode = '<span id="tally-' + actionID + '" class="listreactions" data-actionid="' + actionID + '" data-ticketid="' + ticketID + '">' + tally + '</span><a href="#" class="updatereaction" data-actionid="' + actionID + '" data-ticketid="' + ticketID + '" data-oldvalue="' + oldvalue + '" style="opacity:' + opacity + ';"><img src="/vcr/480/Images/icons/applause.png" style="margin-left:5px;height:24px;"></a>';
+                var thacode = '<span id="tally-' + actionID + '" class="listreactions" data-actionid="' + actionID + '" data-ticketid="' + ticketID + '">' + tally + '</span><a href="#" class="updatereaction" data-actionid="' + actionID + '" data-ticketid="' + ticketID + '" data-oldvalue="' + oldvalue + '" style="opacity:' + opacity + ';"><img src="/vcr/1_9_0/Images/icons/applause.png" style="margin-left:5px;height:24px;"></a>';
                 $('#applause-' + actionID).html(thacode);
             }
         });
-        return '<span id="applause-' + actionID + '" class="pull-right" style="display:' + display + '"></span>';
+        return '<span id="applause-' + actionID + '" class="pull-right" style="position:absolute;top:25px;right:100px;display:' + display + '"></span>';
     });
 
     Handlebars.registerHelper('ActionData', function () {
@@ -4239,14 +4601,14 @@ function CreateHandleBarHelpers() {
         var timeSpentString = "";
         if (hours > 0) timeSpentString = hours + ((hours > 1) ? " hours " : " hour ");
         if (mins > 0) timeSpentString += mins + ((mins > 1) ? " minutes " : " minute ");
-        if (timeSpentString == "") {
-            return "";
-        } else {
+        if (timeSpentString == "") return ""
+        else {
             if (this.item.DateStarted !== null) {
                 var time = this.item.DateStarted.localeFormat(window.parent.Ts.Utils.getDateTimePattern())
                 return timeSpentString + " - " + time
             }
         }
+
         return timeSpentString;
     });
 
@@ -4260,9 +4622,10 @@ function CreateHandleBarHelpers() {
     Handlebars.registerHelper("taskComplete", function (isComplete) {
         return isComplete == true ? ' checked="checked"' : '';
     });
-}
+};
 
-function BuildWaterCoolerAssociationToolTip(references){
+
+function BuildWaterCoolerAssociationToolTip(references) {
     var tixatt = references.Tickets;
     var tixattstr = "";
     var tixHasAtt = false;
@@ -4308,6 +4671,7 @@ function BuildWaterCoolerAssociationToolTip(references){
             tixuserstr = tixuserstr + ' ' + tixuser[i].CreatorName + ' added user <a href="#" target="_blank" onclick="window.parent.Ts.MainPage.openNewContact(' + tixuser[i].AttachmentID + '); return false;">' + tixuser[i].UserName + '</a><br/>';
         }
     }
+
     return "<span class='fa fa-info-circle fa-lg wcTooltip' title='' data-info='" + tixattstr + tixgrpstr + tixprodstr + tixcompanystr + tixuserstr + "'></span>";
 }
 
@@ -4325,15 +4689,12 @@ function CreateTimeLineDelegates() {
         e.stopPropagation();
 
         var self = $(this);
-        var parentLI = self.closest('div.action');
+        var parentLI = self.closest('li');
         var titleElement = $('.action-placeholder');
         var Action = parentLI.data().action;
         var isPinned = parentLI.hasClass('pinned');
-        if (isPinned) {
-            self.get(0).lastChild.nodeValue = "Pin";
-        } else {
-            self.get(0).lastChild.nodeValue = "Unpin";
-        }
+        if (isPinned) self.get(0).lastChild.nodeValue = "Pin";
+        else self.get(0).lastChild.nodeValue = "Unpin";
 
         if (window.parent.Ts.System.User.IsSystemAdmin || window.parent.Ts.System.User.UserCanPinAction) {
             $('a.ticket-action-pinned').addClass('hidden');
@@ -4342,27 +4703,35 @@ function CreateTimeLineDelegates() {
             function (result) {
                 if (result) {
                     Action.IsPinned = result;
+                    //parentLI.data('action', Action);
                     parentLI.find('a.ticket-action-pinned').toggleClass('hidden');
                     var pinnedAction = $('.pinned');
                     var actionID = parseInt(pinnedAction.find('.ticket-action-number').text()) + 1;
+
                     titleElement.after(parentLI.clone().addClass('pinned'));
                     parentLI.insertAfter(titleElement);
                     parentLI.remove();
+
                     var InLineElement = $("label.ticket-action-number:contains('" + actionID + "')").closest('li');
                     if (InLineElement.length > 0) {
                         InLineElement.after(pinnedAction.clone().removeClass('pinned'));
-                    } else {
+                    }
+                    else {
                         titleElement.next().after(pinnedAction.clone().removeClass('pinned'));
                     }
                     pinnedAction.remove();
-                } else {
+                }
+                else {
                     parentLI.data().action.IsPinned = result;
                     parentLI.find('a.ticket-action-pinned').toggleClass('hidden');
+
                     var actionID = parseInt(parentLI.find('.ticket-action-number').text()) + 1;
+
                     var InLineElement = $("label.ticket-action-number:contains('" + actionID + "')").closest('li');
                     if (InLineElement.length > 0) {
                         InLineElement.after(parentLI.clone().removeClass('pinned'));
-                    } else {
+                    }
+                    else {
                         titleElement.next().after(parentLI.clone().removeClass('pinned'));
                     }
                     $('a.ticket-action-pinned').addClass('hidden');
@@ -4373,14 +4742,16 @@ function CreateTimeLineDelegates() {
                 alert('There was an error editing this action.');
             });
         }
+
     });
+
 
     $('#action-timeline').on('click', 'a.ticket-action-pinned', function (e) {
         e.preventDefault();
         e.stopPropagation();
 
         var self = $(this);
-        var parentLI = self.closest('div.action');
+        var parentLI = self.closest('li');
         var action = parentLI.data().action;
         var titleElement = $('.action-placeholder');
 
@@ -4396,7 +4767,8 @@ function CreateTimeLineDelegates() {
                 var InLineElement = $("label.ticket-action-number:contains('" + actionID + "')").closest('li');
                 if (InLineElement.length > 0) {
                     InLineElement.after(parentLI.clone().removeClass('pinned'));
-                } else {
+                }
+                else {
                     titleElement.next().after(parentLI.clone().removeClass('pinned'));
                 }
                 $('a.ticket-action-pinned').addClass('hidden');
@@ -4412,13 +4784,13 @@ function CreateTimeLineDelegates() {
         e.stopPropagation();
 
         var self = $(this);
-        var action = self.closest('div.action').data().action;
+        var action = self.closest('li').data().action;
 
         if (window.parent.Ts.System.User.ChangeKbVisibility || window.parent.Ts.System.User.IsSystemAdmin) {
             window.parent.Ts.System.logAction('Ticket - Action KB Icon Clicked');
             window.parent.Ts.Services.Tickets.SetActionKb(action.RefID, !action.IsKnowledgeBase,
           function (result) {
-              var parentLI = self.closest('div.action');
+              var parentLI = self.closest('li');
               parentLI.data().action.IsKnowledgeBase = result;
               parentLI.find('a.ticket-action-kb').toggleClass('hidden');
           }, function () {
@@ -4432,19 +4804,21 @@ function CreateTimeLineDelegates() {
         e.stopPropagation();
 
         var self = $(this);
-        var action = self.closest('div.action').data().action;
+        var action = self.closest('li').data().action;
 
         if (window.parent.Ts.System.User.ChangeKbVisibility || window.parent.Ts.System.User.IsSystemAdmin) {
             window.parent.Ts.System.logAction('Ticket - Action KB Icon Clicked');
-            window.parent.Ts.Services.Tickets.SetActionKb(action.RefID, !action.IsKnowledgeBase, function (result) {
-                var parentLI = self.closest('div.action');
-                parentLI.data().action.IsKnowledgeBase = result;
-                parentLI.find('a.ticket-action-kb').toggleClass('hidden');
-            }, function () {
-                alert('There was an error editing this action.');
-            });
+            window.parent.Ts.Services.Tickets.SetActionKb(action.RefID, !action.IsKnowledgeBase,
+          function (result) {
+              var parentLI = self.closest('li');
+              parentLI.data().action.IsKnowledgeBase = result;
+              parentLI.find('a.ticket-action-kb').toggleClass('hidden');
+          }, function () {
+              alert('There was an error editing this action.');
+          });
         }
     });
+
 
     $('#action-timeline').on('click', 'a.updatereaction', function (e) {
         e.preventDefault();
@@ -4504,12 +4878,15 @@ function CreateTimeLineDelegates() {
         top.Ts.MainPage.openUser(userid);
     });
 
+
+
+
     $('#action-timeline').on('click', 'a.action-option-visible', function (e) {
         e.preventDefault();
         e.stopPropagation();
 
-        var self     = $(this);
-        var action   = self.closest('div.action').data().action;
+        var self = $(this);
+        var action = self.closest('li').data().action;
         var applause = '#applause-' + action.RefID;
 
         if (window.parent.Ts.System.User.ChangeTicketVisibility || window.parent.Ts.System.User.IsSystemAdmin) {
@@ -4517,22 +4894,24 @@ function CreateTimeLineDelegates() {
             if (!action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
             window.parent.Ts.Services.TicketPage.SetActionPortal(action.RefID, !action.IsVisibleOnPortal,
             function (result) {
-                var parentLI = self.closest('div.action');
+                var parentLI = self.closest('li');
                 parentLI.data().action.IsVisibleOnPortal = result;
                 var badgeDiv = parentLI.find('div.ticket-badge');
                 badgeDiv.empty();
 
                 if (result) {
                     badgeDiv.html('<div class="bgcolor-green"><span class="bgcolor-green">&nbsp;</span><a href="#" class="action-option-visible">Public</a></div>');
+
                     if (window.parent.Ts.System.Organization.AlertContactNoEmail) {
                         window.parent.Ts.Services.TicketPage.CheckContactEmails(_ticketID, function (isInvalid) {
-                            if (!isInvalid && window.parent.Ts.System.Organization.AlertContactNoEmail) {
+                            if (!isInvalid && window.parent.Ts.System.Organization.AlertContactNoEmail)
                                 alert("At least one of the contacts associated with this ticket does not have an email address defined or is inactive, and will not receive any emails about this ticket.");
-                            }
                         });
                     }
-                } else {
+                }
+                else {
                     badgeDiv.html('<div class="bgcolor-orange"><span class="bgcolor-orange">&nbsp;</span><a href="#" class="action-option-visible">Private</a></div>');
+
                 }
 
                 window.parent.Ts.Services.Tickets.GetAction(action.RefID, function (action) {
@@ -4543,7 +4922,8 @@ function CreateTimeLineDelegates() {
             }, function () {
                 alert('There was an error editing this action.');
             });
-        } else {
+        }
+        else {
             alert('Sorry, you do not have permission to change ticket visibility, please contact your TeamSupport admin.')
         }
     });
@@ -4551,7 +4931,7 @@ function CreateTimeLineDelegates() {
     $('#action-timeline').on('click', 'a.action-option-edit', function (e) {
         e.preventDefault();
         e.stopPropagation();
-        console.log('action-option-edit');
+
         if ($(this).hasClass('click-disabled')) {
             return false;
         } else {
@@ -4559,10 +4939,11 @@ function CreateTimeLineDelegates() {
         }
 
         var self = $(this);
-        var action = self.closest('div.action').data().action;
+        var action = self.closest('li').data().action;
         var editor = $('#action-new-editor');
         SetupActionTypeSelect();
         SetupActionEditor(editor, action);
+
 
         $('#action-new-KB').prop('checked', action.IsKnowledgeBase);
 
@@ -4577,12 +4958,12 @@ function CreateTimeLineDelegates() {
         e.stopPropagation();
 
         var self = $(this);
-        var action = self.closest('div.action').data().action;
+        var action = self.closest('li').data().action;
 
         if (confirm('Are you sure you would like to delete this action?')) {
             window.parent.Ts.System.logAction('Ticket - Action Deleted');
             window.parent.Ts.Services.Tickets.DeleteAction(action.RefID, function () {
-                self.closest('div.action').remove();
+                self.closest('li').remove();
                 window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "deleteaction", userFullName);
             },
             function () { alert('There was an error deleting this action.'); });
@@ -4591,6 +4972,7 @@ function CreateTimeLineDelegates() {
     });
 
     $('.frame-container').bind('scroll', function () {
+        // console.log($(this).scrollTop() + ' / ' + $(this).innerHeight() + ' / ' + $(this)[0].scrollHeight);
         if ($(this).scrollTop() > 100) {
             $('.scrollup').fadeIn();
         } else {
@@ -4601,8 +4983,10 @@ function CreateTimeLineDelegates() {
         if ($('.results-done').is(':visible')) return;
 
         if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
-            var count = $('#action-timeline > div.action[data-id]').length;
-            FetchTimeLineItems($('#action-timeline > div.action[data-id]').length + 1);
+            // var count = $('#action-timeline > li').length;
+            // FetchTimeLineItems($('#action-timeline > li').length - 1);
+            var count = $('#action-timeline > [data-id]').length;
+            FetchTimeLineItems($('#action-timeline > [data-id]').length + 1);
         }
     });
 
@@ -4616,61 +5000,73 @@ function CreateTimeLineDelegates() {
     $('.ticket-filter-public').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
+
         var isVisible = $(this).data('visible');
+
         if (isVisible) {
             $('li > div.timeline-panel > div.ticket-badge > div.bgcolor-green').closest('li').hide();
             $('.filter-public').addClass('bgcolor-darkgray');
             $('.filter-public').removeClass('bgcolor-green');
-        } else {
+        }
+        else {
             $('li > div.timeline-panel > div.ticket-badge > div.bgcolor-green').closest('li').show();
             $('.filter-public').removeClass('bgcolor-darkgray');
             $('.filter-public').addClass('bgcolor-green');
         }
+
         $(this).data('visible', !isVisible)
     });
 
     $('.ticket-filter-private').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
+
         var isVisible = $(this).data('visible');
+
         if (isVisible) {
             $('li > div.timeline-panel > div.ticket-badge > div.bgcolor-orange').closest('li').hide();
             $('.filter-private').addClass('bgcolor-darkgray');
             $('.filter-private').removeClass('bgcolor-orange');
-        } else {
+        }
+        else {
             $('li > div.timeline-panel > div.ticket-badge > div.bgcolor-orange').closest('li').show();
             $('.filter-private').removeClass('bgcolor-darkgray');
             $('.filter-private').addClass('bgcolor-orange');
         }
+
         $(this).data('visible', !isVisible)
     });
 
     $('.ticket-filter-wc').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
+
         var isVisible = $(this).data('visible');
+
         if (isVisible) {
             $('li > div.timeline-panel > div.ticket-badge > div.bgcolor-blue').closest('li').hide();
             $('.filter-wc').addClass('bgcolor-darkgray');
             $('.filter-wc').removeClass('bgcolor-blue');
-        } else {
+        }
+        else {
             $('li > div.timeline-panel > div.ticket-badge > div.bgcolor-blue').closest('li').show();
             $('.filter-wc').removeClass('bgcolor-darkgray');
             $('.filter-wc').addClass('bgcolor-blue');
         }
+
         $(this).data('visible', !isVisible)
     });
 
     $('#action-timeline').on('click', '.wc-option-replyarea', function (e) {
         $(this).hide();
-        $(this).parent().find('.wc-textarea').show().find('textarea').focus();
+        $(this).parent().find('.wc-textarea').slideToggle("fast").find('textarea').focus();
     });
 
     $('#action-timeline').on('click', 'button.wc-textarea-send', function (e) {
         e.preventDefault();
         e.stopPropagation();
         var self = $(this);
-        var action = self.closest('div.action').data().action;
+        var action = self.closest('li').data().action;
         var replyText = self.closest('.wc-textarea').find('textarea').val();
         if (replyText.length > 0) {
             $(this).prop('disabled', true);
@@ -4683,10 +5079,29 @@ function CreateTimeLineDelegates() {
             commentinfo.PageID = -1;
 
             commentinfo.Tickets = new Array();
+            //$('#commentatt:first').find('.ticket-queue').find('.ticket-removable-item').each(function () {
+            //    commentinfo.Tickets[commentinfo.Tickets.length] = $(this).data('Ticket');
+            //});
+
             commentinfo.Groups = new Array();
+            //$('#commentatt:first').find('.group-queue').find('.ticket-removable-item').each(function () {
+            //    commentinfo.Groups[commentinfo.Groups.length] = $(this).data('Group');
+            //});
+
             commentinfo.Products = new Array();
+            //$('#commentatt:first').find('.product-queue').find('.ticket-removable-item').each(function () {
+            //    commentinfo.Products[commentinfo.Products.length] = $(this).data('Product');
+            //});
+
             commentinfo.Company = new Array();
+            //$('#commentatt:first').find('.customer-queue').find('.ticket-removable-item').each(function () {
+            //    commentinfo.Company[commentinfo.Company.length] = $(this).data('Company');
+            //});
+
             commentinfo.User = new Array();
+            //$('#commentatt:first').find('.user-queue').find('.ticket-removable-item').each(function () {
+            //    commentinfo.User[commentinfo.User.length] = $(this).data('User');
+            //});
 
             if (commentinfo.Tickets.length > 0) window.parent.Ts.System.logAction('Water Cooler - Ticket Inserted');
             if (commentinfo.Groups.length > 0) window.parent.Ts.System.logAction('Water Cooler - Group Inserted');
@@ -4695,22 +5110,22 @@ function CreateTimeLineDelegates() {
             if (commentinfo.User.length > 0) window.parent.Ts.System.logAction('Water Cooler - User Inserted');
 
             window.parent.Ts.Services.WaterCooler.NewComment(parent.JSON.stringify(commentinfo), function (Message) {
+                // var _compiledWCReplyTemplate = Handlebars.compile($("#wc-new-reply-template").html());
                 var _compiledWCReplyTemplate = Handlebars.templates['wc-new-reply'];
                 Message.Message = Message.Message.replace(/\n\r?/g, '<br />');
                 var html = _compiledWCReplyTemplate(Message);
-                self.closest('div.action').find('.timeline-wc-responses').append(html);
+                self.closest('li').find('.timeline-wc-responses').append(html);
                 self.parent().hide();
                 self.parent().parent().find('.wc-option-replyarea').show();
                 self.closest('.wc-textarea').find('textarea').val('');
                 window.parent.Ts.Services.Dispatch.NewThread(Message.MessageID, window.parent.Ts.System.User.OrganizationID);
             });
         }
+
     });
 
     $(document).click(function (e) {
-        if ($(e.target).is('.wc-textarea *, .wc-option-replyarea, .wc-option-replyarea *')) {
-            return;
-        }
+        if ($(e.target).is('.wc-textarea *, .wc-option-replyarea, .wc-option-replyarea *')) return;
         $('.wc-textarea').hide();
         $('.wc-option-replyarea').show();
     });
@@ -4729,6 +5144,8 @@ function CreateTimeLineDelegates() {
                 countSpan.html("+" + likes.length);
                 self.data('liked', true);
                 countSpan.next().hide();
+                //TODO:  need to update signalr
+                //window.parent.chatHubClient.server.addLike(likes, messageID, thread.Message.MessageParent, window.parent.Ts.System.User.OrganizationID);
             });
         };
     });
@@ -4738,9 +5155,11 @@ function CreateTimeLineDelegates() {
         e.stopPropagation();
         if (this.text == 'Private') {
             FlipNewActionBadge(false);
-        } else {
+        }
+        else {
             FlipNewActionBadge(true);
         }
+
     })
 };
 
@@ -4777,7 +5196,8 @@ function CreateTicketToolbarDomEvents() {
                 self.find('i').addClass('color-blue');
                 self.attr('data-original-title', 'Mark Ticket as Read').tooltip('fixTitle');
                 window.parent.Ts.System.logAction('Ticket Grid - Mark UnRead');
-            } else {
+            }
+            else {
                 self.find('i').removeClass('color-blue');
                 self.attr('data-original-title', 'Mark Ticket as UnRead').tooltip('fixTitle');
                 window.parent.Ts.System.logAction('Ticket Grid - Mark Read');
@@ -4800,22 +5220,25 @@ function CreateTicketToolbarDomEvents() {
             try {
                 window.parent.Ts.Services.Tickets.GetTicketInfo(ui.item.id, function (info) {
                     var descriptionString = info.Actions[0].Action.Description;
-                    if (ellipseString(info.Actions[0].Action.Description, 30).indexOf("<img src") !== -1) {
+
+                    if (ellipseString(info.Actions[0].Action.Description, 30).indexOf("<img src") !== -1)
                         descriptionString = "This ticket starts off with an embedded/linked image. We have disabled this for the preview.";
-                    } else if (ellipseString(info.Actions[0].Action.Description, 30).indexOf(".viewscreencast.com") !== -1) {
+                    else if (ellipseString(info.Actions[0].Action.Description, 30).indexOf(".viewscreencast.com") !== -1)
                         descriptionString = "This ticket starts off with an embedded recorde video.  We have disabled this for the preview.";
-                    } else {
+                    else
                         descriptionString = ellipseString(info.Actions[0].Action.Description, 30);
-                    }
+
                     var ticketPreviewName = "<div><strong>Ticket Name:</strong> " + info.Ticket.Name + "</div>";
                     var ticketPreviewAssigned = "<div><strong>Ticket Assigned To:</strong> " + info.Ticket.UserName + "</div>";
                     var ticketPreviewDesc = "<div><strong>Ticket Desciption Sample:</strong> " + descriptionString + "</div>";
+
                     $('#ticketmerge-preview-details').after(ticketPreviewName + ticketPreviewAssigned + ticketPreviewDesc);
                     $('#dialog-ticketmerge-preview').show();
                     $('#dialog-ticketmerge-warning').show();
                     $(".dialog-ticketmerge").dialog("widget").find(".ui-dialog-buttonpane").find(":button:contains('OK')").prop("disabled", false).removeClass("ui-state-disabled");
                 })
-            } catch (e) {
+            }
+            catch (e) {
                 alert("Sorry, there was a problem loading the information for that ticket.");
             }
         },
@@ -4833,10 +5256,11 @@ function CreateTicketToolbarDomEvents() {
             var winningID = $('#Ticket-Merge-search').data('ticketid');
             var winningTicketNumber = $('#Ticket-Merge-search').data('ticketnumber');
             var JSTop = top;
+            //var window = window;
             window.parent.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, function (result) {
-                if (result != "") {
+                if (result != "")
                     alert(result);
-                } else {
+                else {
                     $('#MergeModal').modal('hide');
                     JSwindow.parent.Ts.MainPage.closeTicketTab(_ticketNumber);
                     JSwindow.parent.Ts.MainPage.openTicket(winningTicketNumber, true);
@@ -4844,7 +5268,12 @@ function CreateTicketToolbarDomEvents() {
                     window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
                 }
             });
-        } else {
+            //window.parent.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, MergeSuccessEvent(_ticketNumber, winningTicketNumber),
+            //  function () {
+            //  $('#merge-error').show();
+            //});
+        }
+        else {
             alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
         }
     });
@@ -4944,6 +5373,7 @@ function CreateTicketToolbarDomEvents() {
         window.parent.Ts.System.logAction('Ticket - Cloned');
         window.parent.Ts.Services.TicketPage.CloneTicket(_ticketID, function (clonedTicketId) {
             $('#CloningModal').modal('hide');
+
             if (clonedTicketId > 0) {
                 window.parent.Ts.MainPage.openTicketByID(clonedTicketId);
             } else {
@@ -4957,6 +5387,7 @@ function CreateTicketToolbarDomEvents() {
 };
 
 function SetupWCArea() {
+    //search functions for the associations
     var execGetCustomer = null;
     function getCustomers(request, response) {
         if (execGetCustomer) { execGetCustomer._executor.abort(); }
@@ -4964,11 +5395,13 @@ function SetupWCArea() {
             response(result);
         });
     }
+
     var execGetUsers = null;
     function getUsers(request, response) {
         if (execGetUsers) { execGetUsers._executor.abort(); }
         execGetUsers = window.parent.Ts.Services.Users.SearchUsers(request.term, function (result) { response(result); });
     }
+
     var execGetTicket = null;
     function getTicketsByTerm(request, response) {
         if (execGetTicket) { execGetTicket._executor.abort(); }
@@ -4977,7 +5410,9 @@ function SetupWCArea() {
             $('.main-quick-ticket').removeClass('ui-autocomplete-loading');
             response(result);
         });
+
     }
+
     var execGetGroups = null;
     function getGroupsByTerm(request, response) {
         if (execGetGroups) { execGetGroups._executor.abort(); }
@@ -5002,12 +5437,23 @@ function SetupWCArea() {
                     }
                 });
                 if (!isDupe) {
-                    var bg = $('<div>').addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn').appendTo($('#associationQueue').find('.ticket-queue')).data('Ticket', ui.item.id);
-                    $('<span>').text(ellipseString(ui.item.value, 20)).addClass('filename').appendTo(bg);
-                    $('<span>').addClass('ui-icon ui-icon-close').click(function (e) {
+                    var bg = $('<div>')
+                    .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+                    .appendTo($('#associationQueue').find('.ticket-queue')).data('Ticket', ui.item.id);
+
+
+                    $('<span>')
+                    .text(ellipseString(ui.item.value, 20))
+                    .addClass('filename')
+                    .appendTo(bg);
+
+                    $('<span>')
+                    .addClass('ui-icon ui-icon-close')
+                    .click(function (e) {
                         e.preventDefault();
                         $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
-                    }).appendTo(bg);
+                    })
+                    .appendTo(bg);
                     this.value = "";
                     return false;
                 }
@@ -5050,15 +5496,23 @@ function SetupWCArea() {
                                 }
                             });
                             if (!isDupe) {
-                                var bg = $('<div>') .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn').appendTo($('#associationQueue').find('.ticket-queue')).data('Ticket', ui.item.id);
-                                $('<span>').text(ellipseString(ui.item.value, 20)).addClass('filename').appendTo(bg);
+                                var bg = $('<div>')
+                                .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+                                .appendTo($('#associationQueue').find('.ticket-queue')).data('Ticket', ui.item.id);
 
-                                $('<span>').addClass('ui-icon ui-icon-close').click(function (e) {
+
+                                $('<span>')
+                                .text(ellipseString(ui.item.value, 20))
+                                .addClass('filename')
+                                .appendTo(bg);
+
+                                $('<span>')
+                                .addClass('ui-icon ui-icon-close')
+                                .click(function (e) {
                                     e.preventDefault();
-                                    $(this).closest('div').fadeOut(500, function () {
-                                        $(this).remove();
-                                    });
-                                }).appendTo(bg);
+                                    $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+                                })
+                                .appendTo(bg);
                                 this.value = "";
                                 return false;
                             }
@@ -5068,7 +5522,7 @@ function SetupWCArea() {
                 break;
             case "1":
                 $('#searchGroup').show();
-                $(".arrow-up").css('left', '36px');
+                $(".arrow-up").css('left', '30px');
                 $('#associationSearch').attr("placeholder", "Search Users").val("");
                 searchbox.autocomplete({
                     minLength: 3, source: getUsers, delay: 300,
@@ -5081,16 +5535,23 @@ function SetupWCArea() {
                                 }
                             });
                             if (!isDupe) {
-                                var bg = $('<div>').addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn').appendTo($('#associationQueue').find('.user-queue')).data('User', ui.item.id);
+                                var bg = $('<div>')
+                            .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+                            .appendTo($('#associationQueue').find('.user-queue')).data('User', ui.item.id);
 
-                                $('<span>').text(ellipseString(ui.item.value, 20)).addClass('filename').appendTo(bg);
 
-                                $('<span>').addClass('ui-icon ui-icon-close').click(function (e) {
-                                    e.preventDefault();
-                                    $(this).closest('div').fadeOut(500, function () {
-                                        $(this).remove();
-                                    });
-                                }).appendTo(bg);
+                                $('<span>')
+                            .text(ellipseString(ui.item.value, 20))
+                            .addClass('filename')
+                            .appendTo(bg);
+
+                                $('<span>')
+                            .addClass('ui-icon ui-icon-close')
+                            .click(function (e) {
+                                e.preventDefault();
+                                $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+                            })
+                            .appendTo(bg);
                                 this.value = "";
                                 return false;
                             }
@@ -5100,7 +5561,7 @@ function SetupWCArea() {
                 break;
             case "2":
                 $('#searchGroup').show();
-                $(".arrow-up").css('left', '60px');
+                $(".arrow-up").css('left', '53px');
                 $('#associationSearch').attr("placeholder", "Search Companies").val("");
                 $('#associationSearch').autocomplete({
                     minLength: 3,
@@ -5114,17 +5575,23 @@ function SetupWCArea() {
                                 }
                             });
                             if (!isDupe) {
-                                var bg = $('<div>').addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn').appendTo($('#associationQueue').find('.customer-queue')).data('Company', ui.item.id);
+                                var bg = $('<div>')
+                                .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+                                .appendTo($('#associationQueue').find('.customer-queue')).data('Company', ui.item.id);
 
 
-                                $('<span>').text(ellipseString(ui.item.value, 20)).addClass('filename').appendTo(bg);
+                                $('<span>')
+                                .text(ellipseString(ui.item.value, 20))
+                                .addClass('filename')
+                                .appendTo(bg);
 
-                                $('<span>').addClass('ui-icon ui-icon-close').click(function (e) {
+                                $('<span>')
+                                .addClass('ui-icon ui-icon-close')
+                                .click(function (e) {
                                     e.preventDefault();
-                                    $(this).closest('div').fadeOut(500, function () {
-                                        $(this).remove();
-                                    });
-                                }).appendTo(bg);
+                                    $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+                                })
+                                .appendTo(bg);
                                 this.value = "";
                                 return false;
                             }
@@ -5134,7 +5601,7 @@ function SetupWCArea() {
                 break;
             case "3":
                 $('#searchGroup').show();
-                $(".arrow-up").css('left', '95px');
+                $(".arrow-up").css('left', '78px');
                 $('#associationSearch').attr("placeholder", "Search Groups").val("");
                 $('#associationSearch').autocomplete({
                     minLength: 2,
@@ -5148,15 +5615,23 @@ function SetupWCArea() {
                                 }
                             });
                             if (!isDupe) {
-                                var bg = $('<div>').addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn').appendTo($('#associationQueue').find('.group-queue')).data('Group', ui.item.id);
-                                $('<span>').text(ellipseString(ui.item.value, 20)).addClass('filename').appendTo(bg);
+                                var bg = $('<div>')
+                                .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+                                .appendTo($('#associationQueue').find('.group-queue')).data('Group', ui.item.id);
 
-                                $('<span>').addClass('ui-icon ui-icon-close').click(function (e) {
+
+                                $('<span>')
+                                .text(ellipseString(ui.item.value, 20))
+                                .addClass('filename')
+                                .appendTo(bg);
+
+                                $('<span>')
+                                .addClass('ui-icon ui-icon-close')
+                                .click(function (e) {
                                     e.preventDefault();
-                                    $(this).closest('div').fadeOut(500, function () {
-                                        $(this).remove();
-                                    });
-                                }).appendTo(bg);
+                                    $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+                                })
+                                .appendTo(bg);
                                 this.value = "";
                                 return false;
                             }
@@ -5166,7 +5641,7 @@ function SetupWCArea() {
                 break;
             case "4":
                 $('#searchGroup').show();
-                $(".arrow-up").css('left', '125px');
+                $(".arrow-up").css('left', '104px');
                 $('#associationSearch').attr("placeholder", "Search Products").val("");
                 $('#associationSearch').autocomplete({
                     minLength: 3,
@@ -5180,17 +5655,23 @@ function SetupWCArea() {
                                 }
                             });
                             if (!isDupe) {
-                                var bg = $('<div>').addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn').appendTo($('#associationQueue').find('.product-queue')).data('Product', ui.item.id);
+                                var bg = $('<div>')
+                                .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+                                .appendTo($('#associationQueue').find('.product-queue')).data('Product', ui.item.id);
 
 
-                                $('<span>').text(ellipseString(ui.item.value, 20)).addClass('filename').appendTo(bg);
+                                $('<span>')
+                                .text(ellipseString(ui.item.value, 20))
+                                .addClass('filename')
+                                .appendTo(bg);
 
-                                $('<span>').addClass('ui-icon ui-icon-close').click(function (e) {
+                                $('<span>')
+                                .addClass('ui-icon ui-icon-close')
+                                .click(function (e) {
                                     e.preventDefault();
-                                    $(this).closest('div').fadeOut(500, function () {
-                                        $(this).remove();
-                                    });
-                                }).appendTo(bg);
+                                    $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+                                })
+                                .appendTo(bg);
                                 this.value = "";
                                 return false;
                             }
@@ -5240,11 +5721,11 @@ function SetupWCArea() {
                 commentinfo.User[commentinfo.User.length] = $(this).data('User');
             });
 
-            if (commentinfo.Tickets.length > 0) { window.parent.Ts.System.logAction('Water Cooler - Ticket Inserted'); }
-            if (commentinfo.Groups.length > 0) { window.parent.Ts.System.logAction('Water Cooler - Group Inserted'); }
-            if (commentinfo.Products.length > 0) { window.parent.Ts.System.logAction('Water Cooler - Product Inserted'); }
-            if (commentinfo.Company.length > 0) { window.parent.Ts.System.logAction('Water Cooler - Company Inserted'); }
-            if (commentinfo.User.length > 0) { window.parent.Ts.System.logAction('Water Cooler - User Inserted'); }
+            if (commentinfo.Tickets.length > 0) window.parent.Ts.System.logAction('Water Cooler - Ticket Inserted');
+            if (commentinfo.Groups.length > 0) window.parent.Ts.System.logAction('Water Cooler - Group Inserted');
+            if (commentinfo.Products.length > 0) window.parent.Ts.System.logAction('Water Cooler - Product Inserted');
+            if (commentinfo.Company.length > 0) window.parent.Ts.System.logAction('Water Cooler - Company Inserted');
+            if (commentinfo.User.length > 0) window.parent.Ts.System.logAction('Water Cooler - User Inserted');
 
             window.parent.Ts.Services.TicketPage.NewWCPost(parent.JSON.stringify(commentinfo), function (message) {
                 if ($('.wc-attachments li').length > 0) {
@@ -5269,31 +5750,44 @@ function SetupWCArea() {
         dropZone: wcelement,
         add: function (e, data) {
             for (var i = 0; i < data.files.length; i++) {
-                var item = $('<li>').appendTo(wcelement.find('.wc-attachments'));
+                var item = $('<li>')
+                .appendTo(wcelement.find('.wc-attachments'));
 
                 data.context = item;
                 item.data('data', data);
 
-                var bg = $('<div class="ui-corner-all ts-color-bg-accent ticket-removable-item ulfn">').appendTo(item);
+                var bg = $('<div class="ui-corner-all ts-color-bg-accent ticket-removable-item ulfn">')
+                .appendTo(item);
 
-                $('<span>').text(data.files[i].name + '  (' + window.parent.Ts.Utils.getSizeString(data.files[i].size) + ')').addClass('filename').appendTo(bg);
+                $('<span>')
+                .text(data.files[i].name + '  (' + window.parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
+                .addClass('filename')
+                .appendTo(bg);
 
-                $('<div>').addClass('progress').hide().appendTo(bg);
+                $('<div>')
+                .addClass('progress')
+                .hide()
+                .appendTo(bg);
 
-                $('<span>').addClass('ui-icon ui-icon-close').click(function (e) {
+                $('<span>')
+                .addClass('ui-icon ui-icon-close')
+                .click(function (e) {
                     e.preventDefault();
-                    $(this).closest('li').fadeOut(500, function () {
-                        $(this).remove();
-                    });
-                }).appendTo(bg);
+                    $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
+                })
+                .appendTo(bg);
 
                 //<span class="tagRemove" aria-hidden="true">×</span>
 
-                $('<span>').addClass('ui-icon ui-icon-cancel').hide().click(function (e) {
+                $('<span>')
+                .addClass('ui-icon ui-icon-cancel')
+                .hide()
+                .click(function (e) {
                     e.preventDefault();
                     var data = $(this).closest('li').data('data');
                     data.jqXHR.abort();
-                }).appendTo(bg);
+                })
+                .appendTo(bg);
             }
 
         },
@@ -5303,7 +5797,7 @@ function SetupWCArea() {
             }
         },
         fail: function (e, data) {
-            if (data.errorThrown === 'abort') { return; }
+            if (data.errorThrown === 'abort') return;
             alert('There was an error uploading "' + data.files[0].name + '".');
             callback(null);
         },
@@ -5315,8 +5809,60 @@ function SetupWCArea() {
             wcelement.find('.wc-attachments .ui-icon-close').hide();
             wcelement.find('.wc-attachments .ui-icon-cancel').show();
         },
-        stop: function (e, data) {}
+        stop: function (e, data) {
+
+        }
     });
+}
+
+function SetupPusher() {
+    console.log("setup pusher");
+    var pressenceChannel = null;
+    var service = '/Services/DispatchService.asmx/';
+    top.Ts.TicketViewing = _ticketNumber;
+    top.Ts.Settings.System.read('PusherKey', '1', function (key) {
+        var orgID = top.Ts.System.Organization.OrganizationID;
+        var userID = top.Ts.System.User.UserID;
+
+        var presenceChannelName = 'presence-ticket-' + _ticketNumber + '-org-' + orgID;
+
+        pressenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
+
+        pressenceChannel.bind('pusher:subscription_succeeded', function (members) {
+            try {
+                addUsersViewing(members);
+                console.log("sub succeeded");
+            } catch (err) { }
+        });
+
+        pressenceChannel.bind('pusher:member_added', function (member) {
+            try {
+                console.log("add user viewing");
+                addUserViewing(member.id);
+            } catch (err) { }
+        });
+
+        pressenceChannel.bind('pusher:member_removed', function (member) {
+            try {
+                console.log("removing user");
+                removeUserViewing(member.id);
+            } catch (err) { }
+        });
+
+        pressenceChannel.bind('ticketViewingRemove', function (data) {
+            console.log("ticketViewingRemove pusher");
+            top.Ts.Pusher.unsubscribe(data.chan);
+        });
+    });
+
+
+}
+
+function Unsubscribe() {
+    console.log("in unsubscribe");
+    var orgID = top.Ts.System.Organization.OrganizationID;
+    var presenceChannelName = 'presence-ticket-' + _ticketNumber + '-org-' + orgID;
+    top.Ts.Pusher.unsubscribe(presenceChannelName);
 }
 
 function RefreshSlaDisplay() {
@@ -5334,8 +5880,45 @@ var MergeSuccessEvent = function (_ticketNumber, winningTicketNumber) {
     window.parent.Ts.MainPage.openTicket(winningTicketNumber, true);
     window.location = window.location;
     window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
+};
+
+var addUsersViewing = function (members) {
+    members.each(function (member) {
+        addUserViewing(member.id);
+    });
 }
 
+var addUserViewing = function (userID) {
+    if (userID != top.Ts.System.User.UserID) {
+        $('#ticket-now-viewing').show();
+        if ($('.ticket-viewer:data(ChatID=' + userID + ')').length < 1) {
+            window.parent.Ts.Services.Users.GetUser(userID, function (user) {
+                $('.ticket-viewer:data(ChatID=' + user.UserID + ')').remove();
+                var fullName = user.FirstName + " " + user.LastName;
+                var viewuser = $('<a>')
+                        .data('ChatID', user.UserID)
+                        .data('Name', fullName)
+                        .addClass('ticket-viewer')
+                        .click(function () {
+                            window.parent.openChat($(this).data('Name'), $(this).data('ChatID'));
+                            window.parent.Ts.System.logAction('Now Viewing - Chat Opened');
+                        })
+                        .html('<img class="user-avatar ticket-viewer-avatar" src="../../../dc/' + user.OrganizationID + '/useravatar/' + user.UserID + '/48">' + fullName + '</a>')
+                        .appendTo($('#ticket-viewing-users'));
+            });
+        }
+    }
+
+}
+
+var removeUserViewing = function (userID) {
+    if ($('.ticket-viewer:data(ChatID=' + userID + ')').length > 0) {
+        $('.ticket-viewer:data(ChatID=' + userID + ')').remove();
+        if ($('.ticket-viewer').length < 1) {
+            $('#ticket-now-viewing').hide();
+        }
+    }
+}
 
 var resetSLAInfo = function () {
     window.parent.Ts.Services.TicketPage.GetTicketSLAInfo(_ticketNumber, function (info) {
@@ -5516,7 +6099,11 @@ var SetSolved = function (ResolvedID) {
     }
 };
 
-function watson (ticketnumber) {
+
+
+
+
+function watson(ticketnumber) {
     window.parent.Ts.Services.Tickets.GetTicketInfo(ticketnumber, function (info) {
         // console.log(info);
         if (info.Ticket.OrganizationID != '1078') { return; }
@@ -5524,9 +6111,9 @@ function watson (ticketnumber) {
         window.parent.Ts.Services.TicketPage.WatsonTicket(ticketid, function (result) {
             if (result != 'negative' && result != 'nothing' && result != 'hidden') {
                 var data = jQuery.parseJSON(result);
-                var sentiments = { 1:'Sad', 2:'Frustrated', 3:'Satisfied', 4:'Excited', 5:'Polite', 6:'Impolite', 7: 'Sympathetic' }
+                var sentiments = { 1: 'Sad', 2: 'Frustrated', 3: 'Satisfied', 4: 'Excited', 5: 'Polite', 6: 'Impolite', 7: 'Sympathetic' }
                 var display = [];
-                $.each(data.watson, function(key,sentiment) {
+                $.each(data.watson, function (key, sentiment) {
                     if (sentiment.SentimentID > 0) {
                         var emotion = sentiments[sentiment.SentimentID];
                         var percent = Math.round(sentiment.SentimentScore * 100);
@@ -5540,7 +6127,8 @@ function watson (ticketnumber) {
     });
 }
 
-function ticketmenu () {
+
+function ticketmenu() {
     var width = $('#ticketpage').width();
     // $('#ticketmenu-container').css('width',width);
     if (width > 900) {
@@ -5552,106 +6140,22 @@ function ticketmenu () {
     }
 }
 
-function maxwidth () {
+function maxwidth() {
     var width = $(window).width();
     var limit = width - 400;
-    $('#action-timeline img').each(function() {
+    $('#action-timeline img').each(function () {
         var image = $(this).width();
         if (image > limit) {
-            $(this).css('max-width',limit).css('width',limit);
+            $(this).css('max-width', limit).css('width', limit);
         }
     });
 }
 
-function pagewidth () {
+
+
+function pagewidth() {
     var width = $(window).width();
-    $('#frame-container, #ticketpage').css('max-width',width);
-    $('#ticketpage').css('max-width',width);
-    $('#ticketpane').css('max-width',width - 310);
-}
-
-
-function SetupPusher() {
-    console.log("setup pusher");
-    var presenceChannel = null;
-    var service = '/Services/DispatchService.asmx/';
-    top.Ts.TicketViewing = _ticketNumber;
-    top.Ts.Settings.System.read('PusherKey', '1', function (key) {
-        var orgID = top.Ts.System.Organization.OrganizationID;
-        var userID = top.Ts.System.User.UserID;
-
-        var presenceChannelName = 'presence-ticket-' + _ticketNumber + '-org-' + orgID;
-
-        console.log(presenceChannelName);
-        presenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
-
-        presenceChannel.bind('pusher:subscription_succeeded', function (members) {
-            try {
-                addUsersViewing(members);
-                console.log("sub succeeded");
-            } catch (err) { }
-        });
-
-        presenceChannel.bind('pusher:member_added', function (member) {
-            try {
-                console.log("add user viewing");
-                addUserViewing(member.id);
-            } catch (err) { }
-        });
-
-        presenceChannel.bind('pusher:member_removed', function (member) {
-            try {
-                console.log("removing user");
-                removeUserViewing(member.id);
-            } catch (err) { }
-        });
-
-        presenceChannel.bind('ticketViewingRemove', function (data) {
-            console.log("ticketViewingRemove pusher");
-            top.Ts.Pusher.unsubscribe(data.chan);
-        });
-    });
-}
-var addUsersViewing = function (members) {
-    members.each(function (member) {
-        addUserViewing(member.id);
-    });
-}
-
-var addUserViewing = function (userID) {
-    if (userID != top.Ts.System.User.UserID) {
-        $('#ticket-now-viewing').show();
-        if ($('.ticket-viewer:data(ChatID=' + userID + ')').length < 1) {
-            window.parent.Ts.Services.Users.GetUser(userID, function (user) {
-                $('.ticket-viewer:data(ChatID=' + user.UserID + ')').remove();
-                var fullName = user.FirstName + " " + user.LastName;
-                var viewuser = $('<a>')
-                        .data('ChatID', user.UserID)
-                        .data('Name', fullName)
-                        .addClass('ticket-viewer')
-                        .click(function () {
-                            window.parent.openChat($(this).data('Name'), $(this).data('ChatID'));
-                            window.parent.Ts.System.logAction('Now Viewing - Chat Opened');
-                        })
-                        .html('<img class="user-avatar ticket-viewer-avatar" src="../../../dc/' + user.OrganizationID + '/useravatar/' + user.UserID + '/48">' + fullName + '</a>')
-                        .appendTo($('#ticket-viewing-users'));
-            });
-        }
-    }
-}
-
-var removeUserViewing = function (userID) {
-    if ($('.ticket-viewer:data(ChatID=' + userID + ')').length > 0) {
-        $('.ticket-viewer:data(ChatID=' + userID + ')').remove();
-        if ($('.ticket-viewer').length < 1) {
-            $('#ticket-now-viewing').hide();
-        }
-    }
-}
-
-function Unsubscribe() {
-    console.log("in unsubscribe");
-    var orgID = top.Ts.System.Organization.OrganizationID;
-    var presenceChannelName = 'presence-ticket-' + _ticketNumber + '-org-' + orgID;
-    top.Ts.Pusher.unsubscribe(presenceChannelName);
+    $('#frame-container, #ticketpage').css('max-width', width);
+    $('#ticketpage').css('max-width', width);
+    $('#ticketpane').css('max-width', width - 310);
 }

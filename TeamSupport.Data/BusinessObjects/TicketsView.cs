@@ -878,7 +878,7 @@ ORDER BY TicketNumber DESC";
             }
         }
 
-        public void LoadHubKBByID(int ticketID, int organizationID, int customerID)
+        public void LoadHubKBByID(int ticketID, int organizationID, int customerID, bool enableCustomerProductAssociation)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -890,16 +890,17 @@ ORDER BY TicketNumber DESC";
 																	AND t.OrganizationID              = @OrganizationID 
 																	AND t.IsKnowledgeBase         = 1
 																	AND t.IsVisibleOnPortal         = 1");
-                if (customerID > 0)
+
+                if (customerID > 0 && enableCustomerProductAssociation)
                 {
                     builder.Append(@" AND(
-																														T.ProductID IS NULL
-																																										OR T.ProductID IN(
-																															SELECT productid
-																																											FROM organizationproducts
-																																											WHERE organizationid = @CustomerID
-																															)
-																														)");
+																T.ProductID IS NULL
+																												OR T.ProductID IN(
+																	SELECT productid
+																													FROM organizationproducts
+																													WHERE organizationid = @CustomerID
+																	)
+																)");
                 }
                 builder.Append(@" ORDER BY t.DateModified desc");
 

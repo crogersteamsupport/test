@@ -38,7 +38,7 @@ public partial class ServiceStatus : System.Web.UI.Page
 
         rowBuilder.Clear();
 
-        isFailed = CheckCount(isFailed, rowBuilder, 20, "Outbound Email Delayed", "There are outgoing email delays of more than 10 minutes, check EmailSender service and Socket Labs", @"
+        isFailed = CheckCount(isFailed, rowBuilder, 50, "Outbound Email Delayed", "There are outgoing email delays of more than 10 minutes, check EmailSender service and Socket Labs", @"
 SELECT COUNT(*)
 FROM Emails e 
 WHERE IsWaiting = 1 
@@ -46,13 +46,13 @@ AND e.Attempts < 1
 AND DATEDIFF(MINUTE, e.DateCreated, GETUTCDATE()) > 10
 ");
 
-        isFailed = CheckCount(isFailed, rowBuilder, 100, "Outbound Email", "There are too many out going emails pending, check EmailSender service", @"
+        isFailed = CheckCount(isFailed, rowBuilder, 1000, "Outbound Email", "There are too many out going emails pending, check EmailSender service", @"
 SELECT COUNT(*)
 FROM Emails e 
 WHERE IsWaiting = 1 
 ");
 
-        isFailed = CheckCount(isFailed, rowBuilder, 100, "Email Processing", "There are too many records in the EmailPosts table, check EmailProcessor service.", @"
+        isFailed = CheckCount(isFailed, rowBuilder, 1000, "Email Processing", "There are too many records in the EmailPosts table, check EmailProcessor service.", @"
 SELECT COUNT(*) FROM EmailPosts
 WHERE CreatorID <> -5 AND DATEDIFF(SECOND, GETUTCDATE(), DATEADD(SECOND, HoldTime, DateCreated)) < 0 
 ");
