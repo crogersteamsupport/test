@@ -1,5 +1,10 @@
 ﻿var notify = false;
 var _pressenceChannel = false;
+
+$(document).ready(function () {
+    loadPusher();
+});
+
 function loadPusher() {
     $("#jquery_jplayer_1").jPlayer({
         ready: function () {
@@ -25,6 +30,8 @@ function loadPusher() {
                 params: { userID: top.Ts.System.User.UserID }
             }
         });
+
+        console.log(top.Ts.Pusher);
 
         ticket_channel = top.Ts.Pusher.subscribe('ticket-dispatch-' + orgID);
 
@@ -202,6 +209,7 @@ function SetupPusher() {
 
         var presenceChannelName = 'presence-ticket-' + _ticketNumber + '-org-' + orgID;
 
+        console.log(presenceChannelName);
         pressenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
 
         pressenceChannel.bind('pusher:subscription_succeeded', function (members) {
