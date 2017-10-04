@@ -31,11 +31,8 @@ function loadPusher() {
             }
         });
 
-        try {
-            ticket_channel = top.Ts.Pusher.subscribe('ticket-dispatch-' + orgID);
-        } catch (e) {
-            console.log(e);
-        }
+
+        ticket_channel = top.Ts.Pusher.subscribe('ticket-dispatch-' + orgID);
 
         ticket_channel.bind('addThread', function (data) {
             var windows = getChildWindows();
@@ -212,13 +209,7 @@ function SetupPusher() {
         var presenceChannelName = 'presence-ticket-' + _ticketNumber + '-org-' + orgID;
 
         console.log(presenceChannelName);
-        try {
-            pressenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
-        } catch (ex) {
-            console.log(ex);
-        }
-
-
+        pressenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
 
         pressenceChannel.bind('pusher:subscription_succeeded', function (members) {
             try {

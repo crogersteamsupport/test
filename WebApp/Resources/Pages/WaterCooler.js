@@ -61,7 +61,7 @@ $(document).ready(function () {
         //pusher = new Pusher(key);
 
         var presenceChannelName = 'presence-' + orgID;
-
+        console.log(presenceChannelName);
         pressenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
 
         pressenceChannel.bind('pusher:subscription_succeeded', function (members) {
@@ -1137,19 +1137,10 @@ function updateUser (member) {
 
         if (user.length > 0) {
             user.data('ChatID', chatID);
-        }
-        else {
-            var onlineuser = $('<li>')
-        .data('ChatID', chatID)
-        .data('Name', name)
-        .addClass('onlineUser ts-vcard')
-        .click(function () {
-            window.mainFrame.openChat($(this).data('Name'), $(this).data('ChatID'));
-        })
-        .attr('rel', '../../../Tips/User.aspx?UserID=' + chatID)
-        .cluetip(clueTipOptions)
-        .html('<a class="ui-state-default ts-link" href="#"><img class="chatavatar" src="' + member.info.avatar + '">' + name + '</a>')
-        .appendTo($('.sidebarusers'));
+        } else {
+            var onlineuser = $('<li>').data('ChatID', chatID).data('Name', name).addClass('onlineUser ts-vcard').click(function () {
+                window.mainFrame.openChat($(this).data('Name'), $(this).data('ChatID'));
+            }).attr('rel', '../../../Tips/User.aspx?UserID=' + chatID).cluetip(clueTipOptions).html('<a class="ui-state-default ts-link" href="#"><img class="chatavatar" src="' + member.info.avatar + '">' + name + '</a>').appendTo($('.sidebarusers'));
         }
     }
     };
