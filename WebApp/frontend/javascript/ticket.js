@@ -5569,10 +5569,83 @@ function pagewidth () {
     $('#ticketpane').css('max-width',width - 310);
 }
 
+
+function SetupPusher() {
+    console.log("setup pusher");
+    var presenceChannel = null;
+    var service = '/Services/DispatchService.asmx/';
+    top.Ts.TicketViewing = _ticketNumber;
+    top.Ts.Settings.System.read('PusherKey', '1', function (key) {
+        var orgID = top.Ts.System.Organization.OrganizationID;
+        var userID = top.Ts.System.User.UserID;
+
+        var presenceChannelName = 'presence-ticket-' + _ticketNumber + '-org-' + orgID;
+
+        console.log(presenceChannelName);
+        presenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
+
+        presenceChannel.bind('pusher:subscription_succeeded', function (members) {
+            try {
+                addUsersViewing(members);
+                console.log("sub succeeded");
+            } catch (err) { }
+        });
+
+        presenceChannel.bind('pusher:member_added', function (member) {
+            try {
+                console.log("add user viewing");
+                addUserViewing(member.id);
+            } catch (err) { }
+        });
+
+        presenceChannel.bind('pusher:member_removed', function (member) {
+            try {
+                console.log("removing user");
+                removeUserViewing(member.id);
+            } catch (err) { }
+        });
+
+        presenceChannel.bind('ticketViewingRemove', function (data) {
+            console.log("ticketViewingRemove pusher");
+            top.Ts.Pusher.unsubscribe(data.chan);
+        });
+    });
+}
+
+var addUsersViewing = function (members) {
+    members.each(function (member) {
+        addUserViewing(member.id);
+    });
+}
+
+var addUserViewing = function  (userID) {
+    if (userID != top.Ts.System.User.UserID) {
+        $('#ticket-now-viewing').show();
+        if ($('.ticket-viewer[data-ChatID="' + userID + '"]').length < 1) {
+            window.parent.Ts.Services.Users.GetUser(userID, function (user) {
+                $('.ticket-viewer[data-ChatID="' + user.UserID + '"]').remove();
+                var fullName = user.FirstName + " " + user.LastName;
+                var viewuser = $('<a>').data('ChatID', user.UserID).data('Name', fullName).addClass('ticket-viewer').click(function () {
+                    window.parent.openChat($(this).data('Name'), $(this).data('ChatID'));
+                    window.parent.Ts.System.logAction('Now Viewing - Chat Opened');
+                }).html('<img class="user-avatar ticket-viewer-avatar" src="../../../dc/' + user.OrganizationID + '/useravatar/' + user.UserID + '/48">' + fullName + '</a>').appendTo($('#ticket-viewing-users'));
+            });
+        }
+    }
+}
+
+var removeUserViewing = function (ticketNum, userID) {
+    if ($('.ticket-viewer[data-ChatID="' + userID + '"]').length > 0) {
+        $('.ticket-viewer[data-ChatID="' + userID + '"]').remove();
+        if ($('.ticket-viewer').length < 1) {
+            $('#ticket-now-viewing').hide();
+        }
+    }
+}
+
 function Unsubscribe() {
     console.log("in unsubscribe");
     var orgID = top.Ts.System.Organization.OrganizationID;
-
     var presenceChannelName = 'presence-ticket-' + _ticketNumber + '-org-' + orgID;
     top.Ts.Pusher.unsubscribe(presenceChannelName);
 }
