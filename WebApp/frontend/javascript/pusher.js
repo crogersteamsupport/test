@@ -246,7 +246,7 @@ function addUsersViewing (members) {
     });
 }
 
-function addUserViewing (userID) {
+var addUserViewing = function  (userID) {
     if (userID != top.Ts.System.User.UserID) {
         $('#ticket-now-viewing').show();
         if ($('.ticket-viewer[data-ChatID="' + userID + '"]').length < 1) {
@@ -262,7 +262,7 @@ function addUserViewing (userID) {
     }
 }
 
-function removeUserViewing (userID) {
+var removeUserViewing = function (ticketNum, userID) {
     if ($('.ticket-viewer[data-ChatID="' + userID + '"]').length > 0) {
         $('.ticket-viewer[data-ChatID="' + userID + '"]').remove();
         if ($('.ticket-viewer').length < 1) {
