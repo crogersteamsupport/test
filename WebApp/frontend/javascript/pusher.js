@@ -1,5 +1,5 @@
 ﻿var notify = false;
-var _pressenceChannel = false;
+var _presenceChannel = false;
 
 $(document).ready(function () {
     loadPusher();
@@ -17,7 +17,7 @@ function loadPusher() {
     var pusher = null;
     var ticket_channel = null;
     var watercooler_channel = null;
-    var pressenceChannel = null;
+    var presenceChannel = null;
 
     var service = '../Services/DispatchService.asmx/';
     top.Ts.Settings.System.read('PusherKey', '1', function (key) {
@@ -200,7 +200,7 @@ function chime(chimeType) {
 
 function SetupPusher() {
     console.log("setup pusher");
-    var pressenceChannel = null;
+    var presenceChannel = null;
     var service = '/Services/DispatchService.asmx/';
     top.Ts.TicketViewing = _ticketNumber;
     top.Ts.Settings.System.read('PusherKey', '1', function (key) {
@@ -210,30 +210,30 @@ function SetupPusher() {
         var presenceChannelName = 'presence-ticket-' + _ticketNumber + '-org-' + orgID;
 
         console.log(presenceChannelName);
-        pressenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
+        presenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
 
-        pressenceChannel.bind('pusher:subscription_succeeded', function (members) {
+        presenceChannel.bind('pusher:subscription_succeeded', function (members) {
             try {
                 addUsersViewing(members);
                 console.log("sub succeeded");
             } catch (err) { }
         });
 
-        pressenceChannel.bind('pusher:member_added', function (member) {
+        presenceChannel.bind('pusher:member_added', function (member) {
             try {
                 console.log("add user viewing");
                 addUserViewing(member.id);
             } catch (err) { }
         });
 
-        pressenceChannel.bind('pusher:member_removed', function (member) {
+        presenceChannel.bind('pusher:member_removed', function (member) {
             try {
                 console.log("removing user");
                 removeUserViewing(member.id);
             } catch (err) { }
         });
 
-        pressenceChannel.bind('ticketViewingRemove', function (data) {
+        presenceChannel.bind('ticketViewingRemove', function (data) {
             console.log("ticketViewingRemove pusher");
             top.Ts.Pusher.unsubscribe(data.chan);
         });
