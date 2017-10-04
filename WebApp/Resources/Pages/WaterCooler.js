@@ -1,4 +1,4 @@
-﻿/// <reference path="ts/ts.js" />
+/// <reference path="ts/ts.js" />
 /// <reference path="ts/mainFrame.Ts.Services.js" />
 /// <reference path="ts/ts.system.js" />
 /// <reference path="ts/ts.utils.js" />
@@ -52,7 +52,7 @@ $(document).ready(function () {
         mainFrame.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler");
     });
 
-    var presenceChannel = null;
+    var pressenceChannel = null;
     var pusher = null;
     var service = '/Services/DispatchService.asmx/';
     top.Ts.Settings.System.read('PusherKey', '1', function (key) {
@@ -61,20 +61,17 @@ $(document).ready(function () {
         //pusher = new Pusher(key);
 
         var presenceChannelName = 'presence-' + orgID;
-        console.log(presenceChannelName);
-        presenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
-        console.log(presenceChannel);
 
-        presenceChannel.bind('pusher:subscription_succeeded', function (members) {
-            console.log('pusher:subscription_succeeded');
+        pressenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
+
+        pressenceChannel.bind('pusher:subscription_succeeded', function (members) {
             var mainWC = $("#iframe-mniWC2");
             try {
                 updateUsers(members);
             } catch (err) { }
         });
 
-        presenceChannel.bind('pusher:member_added', function (member) {
-            console.log('pusher:member_added');
+        pressenceChannel.bind('pusher:member_added', function (member) {
             var mainWC = $("#iframe-mniWC2");
             try {
                 updateUser(member);
@@ -86,14 +83,15 @@ $(document).ready(function () {
             //  } catch (err) { }
         });
 
-        presenceChannel.bind('pusher:member_removed', function (member) {
+        pressenceChannel.bind('pusher:member_removed', function (member) {
             disconnect(member.info.userid);
             var windows = getChildWindows();
 
             for (var i = 0; i < windows.length; i++) {
-                try { if (windows[i].disconnect) windows[i].disconnect(member.info.userid); }
-                catch (err) { }
+                try { if (windows[i].disconnect) windows[i].disconnect(member.info.userid); } catch (err) { }
             }
+
+
 
             var mainWC = $("#iframe-mniUsers");
             try {
@@ -1103,33 +1101,45 @@ function updateattachments (message) {
 
 function disconnect (windowid) {
         if (pageType == -1) {
-            $('.sidebarusers').find('.onlineUser[data-ChatID="' + windowid + '"]').remove();
+            $('.sidebarusers').find('.onlineUser:data(ChatID=' + windowid + ')').remove();
         }
         //chatAddMsg(windowid, "User is currently offline", "system");
     };
 
 function updateUsers (members) {
-    console.log('updateUsers');
     if (pageType == -1) {
         var name;
         var chatID;
+
         members.each(function (member) {
             name = member.info.name
             chatID = member.info.userid; //users[i].AppChatID;
-            var user = $('.sidebarusers').find('.onlineUser[data-ChatID="' + chatID + '"]');
+
+            var user = $('.sidebarusers').find('.onlineUser:data(ChatID=' + chatID + ')');
+
             if (user.length > 0) {
                 user.data('ChatID', chatID);
-            } else {
-                var onlineuser = $('<li>').data('ChatID', chatID).data('Name', name).addClass('onlineUser ts-vcard').click(function () {
-                    window.mainFrame.openChat($(this).data('Name'), $(this).data('ChatID'));
-                }).attr('rel', '../../../Tips/User.aspx?UserID=' + chatID).cluetip(clueTipOptions).html('<a class="ui-state-default ts-link" href="#"><img class="chatavatar" src="' + member.info.avatar + '">' + name + '</a>').appendTo($('.sidebarusers'));
+            }
+            else {
+                var onlineuser = $('<li>')
+            .data('ChatID', chatID)
+            .data('Name', name)
+            .addClass('onlineUser ts-vcard')
+            .click(function () {
+                window.mainFrame.openChat($(this).data('Name'), $(this).data('ChatID'));
+            })
+            .attr('rel', '../../../Tips/User.aspx?UserID=' + chatID)
+            .cluetip(clueTipOptions)
+            .html('<a class="ui-state-default ts-link" href="#"><img class="chatavatar" src="' + member.info.avatar + '">' + name + '</a>')
+            .appendTo($('.sidebarusers'));
             }
         });
+
+
     }
-}
+    };
 
 function updateUser (member) {
-    console.log('updateUser');
     if (pageType == -1) {
         var name;
         var chatID;
@@ -1141,10 +1151,19 @@ function updateUser (member) {
 
         if (user.length > 0) {
             user.data('ChatID', chatID);
-        } else {
-            var onlineuser = $('<li>').data('ChatID', chatID).data('Name', name).addClass('onlineUser ts-vcard').click(function () {
-                window.mainFrame.openChat($(this).data('Name'), $(this).data('ChatID'));
-            }).attr('rel', '../../../Tips/User.aspx?UserID=' + chatID).cluetip(clueTipOptions).html('<a class="ui-state-default ts-link" href="#"><img class="chatavatar" src="' + member.info.avatar + '">' + name + '</a>').appendTo($('.sidebarusers'));
+        }
+        else {
+            var onlineuser = $('<li>')
+        .data('ChatID', chatID)
+        .data('Name', name)
+        .addClass('onlineUser ts-vcard')
+        .click(function () {
+            window.mainFrame.openChat($(this).data('Name'), $(this).data('ChatID'));
+        })
+        .attr('rel', '../../../Tips/User.aspx?UserID=' + chatID)
+        .cluetip(clueTipOptions)
+        .html('<a class="ui-state-default ts-link" href="#"><img class="chatavatar" src="' + member.info.avatar + '">' + name + '</a>')
+        .appendTo($('.sidebarusers'));
         }
     }
     };
