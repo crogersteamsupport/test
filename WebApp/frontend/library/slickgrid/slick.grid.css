@@ -7,7 +7,7 @@ classes should alter those!
 
 .slick-header.ui-state-default, .slick-headerrow.ui-state-default, .slick-footerrow.ui-state-default, .slick-top-panel-scroller.ui-state-default {
   width: 100%;
-  overflow: auto;
+  overflow: hidden;
   position: relative;
   border-left: 0px !important;
 }
@@ -26,7 +26,7 @@ classes should alter those!
 .slick-header-column.ui-state-default {
   position: relative;
   display: inline-block;
- /*box-sizing: content-box !important; use this for Firefox! */ 
+ /*box-sizing: content-box !important; use this for Firefox! */
   overflow: hidden;
   -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
@@ -128,7 +128,7 @@ classes should alter those!
 .slick-footerrow-column {
   border-top-color: silver;
 }
- 
+
 .slick-group {
 }
 

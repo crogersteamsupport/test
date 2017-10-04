@@ -1443,9 +1443,19 @@ Namespace TeamSupport
                     '//vv For Each field As KeyValuePair(Of String, JToken) In CType(workItem("fields"), JObject)
                     'For Each field As KeyValuePair(Of String, JToken) In CType(workItem.Fields, JObject)
                     For Each field As KeyValuePair(Of String, Object) In workItem.Fields
-                        Dim value As String = Nothing
-                        Dim cRMLinkField As CRMLinkField = customFields.FindByCRMFieldName(GetFieldNameByKey(field.Key.ToString(), workItemFields))
-                        Dim crmLinkCustomFieldError As CRMLinkError = Nothing
+						Dim value As String = Nothing
+						Dim fieldNameByKey As String = GetFieldNameByKey(field.Key.ToString(), workItemFields)
+						Dim cRMLinkField As CRMLinkField = customFields.FindByCRMFieldName(fieldNameByKey)
+
+						If (cRMLinkField Is Nothing) Then
+							cRMLinkField = customFields.FindByCRMFieldName(field.Key.ToString())
+
+							If (Not cRMLinkField Is Nothing) Then
+								AddLog(String.Format("The mapped field was not found by name {0}, it was searched and found by reference name {1} instead.", fieldNameByKey, field.Key))
+							End If
+						End If
+
+						Dim crmLinkCustomFieldError As CRMLinkError = Nothing
 
                         Try
                             'Verify the field is mapped or part of the Select Case below (if more added there then add them to this check too)

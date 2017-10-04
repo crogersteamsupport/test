@@ -1,6 +1,6 @@
 ﻿var notify = false;
 var _pressenceChannel = false;
-function loadPusher() { 
+function loadPusher() {
     $("#jquery_jplayer_1").jPlayer({
         ready: function () {
             $(this).jPlayer("setMedia", {
@@ -73,6 +73,7 @@ function loadPusher() {
                 if ($('.main-ticket-' + data).is(":visible")) {
                     //mainFrame.Ts.Services.Dispatch.ticketViewingAdd(data, top.Ts.System.User.UserID);
                     $('.main-ticket-' + data).find('iframe')[0].contentWindow.SetupPusher();
+                    // $('.main-ticket-' + data).find('iframe')[0].contentWindow;
                 }
             }
         });
@@ -101,7 +102,7 @@ function loadPusher() {
 
         ticket_channel.bind('DisplayTicketUpdate', function (data) {
             var mergeticket;
-            
+
             if (data.ticket.indexOf(',') != -1) {
                 var mergeTickets = data.ticket.split(',');
                 var losingTicket = mergeTickets[0];
@@ -180,7 +181,7 @@ function loadPusher() {
         //addWindow($("#iframe-mniCustomers").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations"));
       addWindow($(".customerIframe").contents().find("#watercoolerIframe"));
       addWindow($("#iframe-mniProducts").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations"));
-      addWindow($(".ticketIframe").contents().find("#watercoolerIframe"));  
+      addWindow($(".ticketIframe").contents().find("#watercoolerIframe"));
       return result;
     }
 
@@ -273,3 +274,47 @@ function chime(chimeType) {
         }).jPlayer("play", 0);
 }
 
+
+
+
+function SetupPusher() {
+    console.log("setup pusher");
+    var pressenceChannel = null;
+    var service = '/Services/DispatchService.asmx/';
+    top.Ts.TicketViewing = _ticketNumber;
+    top.Ts.Settings.System.read('PusherKey', '1', function (key) {
+        var orgID = top.Ts.System.Organization.OrganizationID;
+        var userID = top.Ts.System.User.UserID;
+
+        var presenceChannelName = 'presence-ticket-' + _ticketNumber + '-org-' + orgID;
+
+        pressenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
+
+        pressenceChannel.bind('pusher:subscription_succeeded', function (members) {
+            try {
+                addUsersViewing(members);
+                console.log("sub succeeded");
+            } catch (err) { }
+        });
+
+        pressenceChannel.bind('pusher:member_added', function (member) {
+            try {
+                console.log("add user viewing");
+                addUserViewing(member.id);
+            } catch (err) { }
+        });
+
+        pressenceChannel.bind('pusher:member_removed', function (member) {
+            try {
+                console.log("removing user");
+                removeUserViewing(member.id);
+            } catch (err) { }
+        });
+
+        pressenceChannel.bind('ticketViewingRemove', function (data) {
+            console.log("ticketViewingRemove pusher");
+            top.Ts.Pusher.unsubscribe(data.chan);
+        });
+    });
+
+}

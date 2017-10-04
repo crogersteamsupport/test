@@ -929,12 +929,8 @@ function SetupDescriptionEditor() {
                 $('#muteTokScreen').hide();
                 tokurl = result;
                 videoURL = '<video width="100%" controls poster="' + parent.Ts.System.AppDomain + '/dc/1078/images/static/player.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
-                if (parent.Ts.System.User.OrganizationID !== 13679) {
-                    tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
-                }
-                else {
-                    $('#action-new-editor').summernote('insertNode', videoURL);
-                }
+
+                tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
                 $('#statusTextScreen').text("Your video is currently processing. It may not play in the editor below but should be live within a minute.");
                 session.unpublish(screenSharingPublisher);
                 session.unpublish(publisher);
@@ -1046,13 +1042,7 @@ function StopRecording() {
         tokurl = result;
         videoURL = '<video controls poster="' + parent.Ts.System.AppDomain + '/dc/1078/images/static/screenview.jpg"><source src="' + tokurl + '" type="video/mp4"><a href="' + tokurl + '">Please click here to view the video.</a></video>';
 
-        if (parent.Ts.System.User.OrganizationID !== 13679) {
-            tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
-        }
-        else {
-            $('#action-new-editor').summernote('insertNode', videoURL);
-        }
-
+        tinyMCE.activeEditor.execCommand('mceInsertContent', false, '<br/><br/>' + videoURL);
         $('#statusTextScreen').text("");
         session.unpublish(screenSharingPublisher);
         session.unpublish(publisher);
@@ -1325,11 +1315,7 @@ function SetupTagsSection() {
                 });
 
                 if (filtered.length === 0) {
-                    ui.content.push({
-                        label: inputValue,
-                        value: inputValue,
-                        id: 0
-                    });
+                    ui.content.push({ label: inputValue, value: inputValue, id: 0 });
                 }
             },
             select: function (event, ui) {
@@ -1340,16 +1326,14 @@ function SetupTagsSection() {
             }
         })
         .data("autocomplete")._renderItem = function (ul, item) {
-            return $("<li>")
-                .append("<a>" + item.label + "</a>")
-                .appendTo(ul);
+            return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
         };
     }
 };
 
 function PrependTag(parent, id, value, data, cssclass) {
     if (cssclass === undefined) cssclass = 'tag-item';
-    var _compiledTagTemplate = Handlebars.compile($("#ticket-tag").html());
+    var _compiledTagTemplate = Handlebars.templates['ticket-tag'];
     var tagHTML = _compiledTagTemplate({ id: id, value: value, data: data, css: cssclass });
     return $(tagHTML).prependTo(parent).data('tag', data);
 }
@@ -2191,7 +2175,7 @@ var AddCustomFieldDate = function (field, parentContainer) {
         groupContainer.addClass('product-dependent');
     }
     var dateContainer = $('<div>').addClass('flexpush form-input ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
-    var dateLink = $('<a>').attr('href', '#').text((date === null ? 'unassigned' : date.localeFormat(parent.Ts.Utils.getDatePattern()))).addClass('control-label').attr('style', 'padding-left: 5px;').appendTo(dateContainer);
+    var dateLink = $('<a>').attr('href', '#').text((date === null ? 'unassigned' : date.localeFormat(parent.Ts.Utils.getDatePattern()))).addClass('control-label').appendTo(dateContainer);
 
     dateLink.click(function (e) {
         e.preventDefault();
@@ -2251,7 +2235,7 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
     if (field.ParentProductID) { groupContainer.addClass('product-dependent'); }
 
     var dateContainer = $('<div>').addClass('flexpush form-input ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
-    var dateLink = $('<a>').attr('href', '#').text((date === null ? 'unassigned' : date.localeFormat(parent.Ts.Utils.getDateTimePattern()))).addClass('control-label').attr('style', 'padding-left: 5px;').appendTo(dateContainer);
+    var dateLink = $('<a>').attr('href', '#').text((date === null ? 'unassigned' : date.localeFormat(parent.Ts.Utils.getDateTimePattern()))).addClass('control-label').appendTo(dateContainer);
 
     dateLink.click(function (e) {
         e.preventDefault();
@@ -2316,7 +2300,7 @@ var AddCustomFieldTime = function (field, parentContainer) {
     if (field.ParentProductID) { groupContainer.addClass('product-dependent'); }
 
     var dateContainer = $('<div>').addClass('flexpush form-input ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
-    var dateLink = $('<a>').attr('href', '#').text((date === null ? 'unassigned' : date.localeFormat(parent.Ts.Utils.getTimePattern()))).addClass('control-label').attr('style', 'padding-left: 5px;').appendTo(dateContainer);
+    var dateLink = $('<a>').attr('href', '#').text((date === null ? 'unassigned' : date.localeFormat(parent.Ts.Utils.getTimePattern()))).addClass('control-label').appendTo(dateContainer);
 
     dateLink.click(function (e) {
         e.preventDefault();
@@ -2444,7 +2428,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
 
     if (field.ParentProductID) { groupContainer.addClass('product-dependent'); }
 
-    var selectContainer = $('<div>').addClass('ticket-input-container').appendTo(groupContainer);
+    var selectContainer = $('<div>').addClass('flexpush form-input ticket-input-container').appendTo(groupContainer);
     var select = $('<select>').addClass('hidden-select').attr("placeholder", "Select Value").appendTo(selectContainer);
     var options = field.ListValues.split('|');
 

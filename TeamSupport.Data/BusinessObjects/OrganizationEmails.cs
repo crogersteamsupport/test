@@ -36,7 +36,7 @@ namespace TeamSupport.Data
             }
         }
 
-        public void LoadByTemplateAndProductFamily(int organizationID, int emailTemplateID, int productFamilyID)
+        public void LoadByTemplateAndProductFamilyForDelete(int organizationID, int emailTemplateID, int productFamilyID)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -47,6 +47,49 @@ namespace TeamSupport.Data
                     AND ProductFamilyID {0}", productFamilyID == -1 ? "IS NULL" : "= @ProductFamilyID");
 
                 command.CommandText = sqlQuery;
+                command.Parameters.AddWithValue("@EmailTemplateID", emailTemplateID);
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+                Fill(command);
+            }
+        }
+
+        public void LoadByTemplateAndProductFamily(int organizationID, int emailTemplateID, int productFamilyID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+                    SELECT 
+                        * 
+                    FROM 
+                        OrganizationEmails 
+                    WHERE 
+                        EmailTemplateID = @EmailTemplateID 
+                        AND OrganizationID = @OrganizationID
+                        AND 
+                        (
+                            ProductFamilyID = @ProductFamilyID
+                            OR 
+                            (
+                                ProductFamilyID IS NULL 
+                                AND
+                                (
+                                    @ProductFamilyID = -1
+                                    OR NOT EXISTS
+                                    (
+                                        SELECT
+                                            *
+                                        FROM
+                                            OrganizationEmails
+                                        WHERE 
+                                            EmailTemplateID = @EmailTemplateID 
+                                            AND OrganizationID = @OrganizationID
+                                            AND ProductFamilyID = @ProductFamilyID
+                                    ) 
+                                )
+                            )
+                        )
+                ";
                 command.Parameters.AddWithValue("@EmailTemplateID", emailTemplateID);
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
                 command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);

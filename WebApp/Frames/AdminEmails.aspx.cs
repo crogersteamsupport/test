@@ -274,7 +274,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
     {
         if (!UserSession.CurrentUser.IsSystemAdmin) return;
         OrganizationEmails emails = new OrganizationEmails(UserSession.LoginUser);
-        emails.LoadByTemplateAndProductFamily(UserSession.LoginUser.OrganizationID, emailTemplateID, productFamilyID);
+        emails.LoadByTemplateAndProductFamilyForDelete(UserSession.LoginUser.OrganizationID, emailTemplateID, productFamilyID);
         if (!emails.IsEmpty && emails[0].OrganizationID == UserSession.LoginUser.OrganizationID)
         {
             emails[0].Delete();

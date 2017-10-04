@@ -39,8 +39,8 @@ namespace TSWebServices
         public TicketService()
         {
 
-            //Uncomment the following line if using designed components 
-            //InitializeComponent(); 
+            //Uncomment the following line if using designed components
+            //InitializeComponent();
         }
 
         [WebMethod]
@@ -204,27 +204,27 @@ namespace TSWebServices
             }
 
             string query = @"
-        DECLARE @TempItems 
+        DECLARE @TempItems
         TABLE
-        ( 
+        (
           ID        int IDENTITY,
-          TicketID  int 
+          TicketID  int
         )
 
-        INSERT INTO @TempItems 
+        INSERT INTO @TempItems
         (
           TicketID
-        ) 
-        SELECT 
-          utv.TicketID  
-        FROM 
-          UserTicketsView utv 
-        WHERE 
-          utv.OrganizationID              = @OrganizationID 
+        )
+        SELECT
+          utv.TicketID
+        FROM
+          UserTicketsView utv
+        WHERE
+          utv.OrganizationID              = @OrganizationID
           AND utv.IsKnowledgeBase         = 1
           AND utv.ViewerID                = @ViewerID " +
                 categoryIdClause + @"
-        ORDER BY 
+        ORDER BY
           " + orderByClause + @"
 
         SET @resultsCount = @@RowCount
@@ -232,13 +232,13 @@ namespace TSWebServices
         SELECT
           t.TicketID
           , t.Name
-        FROM 
-          @TempItems ti 
-          JOIN dbo.Tickets t 
+        FROM
+          @TempItems ti
+          JOIN dbo.Tickets t
             ON ti.TicketID = t.TicketID
-        WHERE 
+        WHERE
           ti.ID BETWEEN @FromIndex AND @toIndex
-        ORDER BY 
+        ORDER BY
           ti.ID
       ";
 
@@ -313,27 +313,27 @@ namespace TSWebServices
           int pageSize)
         {
             string query = @"
-        DECLARE @TempItems 
+        DECLARE @TempItems
         TABLE
-        ( 
+        (
           ID        int IDENTITY,
-          TicketID  int 
+          TicketID  int
         )
 
-        INSERT INTO @TempItems 
+        INSERT INTO @TempItems
         (
           TicketID
-        ) 
+        )
         SELECT
-          TOP 20 
-          utv.TicketID  
-        FROM 
-          UserTicketsView utv 
-        WHERE 
-          utv.OrganizationID              = @OrganizationID 
+          TOP 20
+          utv.TicketID
+        FROM
+          UserTicketsView utv
+        WHERE
+          utv.OrganizationID              = @OrganizationID
           AND utv.IsKnowledgeBase         = 1
           AND utv.ViewerID                = @ViewerID
-        ORDER BY 
+        ORDER BY
           utv.DateCreated DESC
 
         SET @resultsCount = @@RowCount
@@ -342,13 +342,13 @@ namespace TSWebServices
           t.TicketID
           , t.Name
           , t.DateCreated
-        FROM 
-          @TempItems ti 
-          JOIN dbo.Tickets t 
+        FROM
+          @TempItems ti
+          JOIN dbo.Tickets t
             ON ti.TicketID = t.TicketID
-        WHERE 
+        WHERE
           ti.ID BETWEEN @FromIndex AND @toIndex
-        ORDER BY 
+        ORDER BY
           ti.ID
       ";
 
@@ -423,27 +423,27 @@ namespace TSWebServices
           int pageSize)
         {
             string query = @"
-        DECLARE @TempItems 
+        DECLARE @TempItems
         TABLE
-        ( 
+        (
           ID        int IDENTITY,
-          TicketID  int 
+          TicketID  int
         )
 
-        INSERT INTO @TempItems 
+        INSERT INTO @TempItems
         (
           TicketID
-        ) 
+        )
         SELECT
-          TOP 20 
-          utv.TicketID  
-        FROM 
-          UserTicketsView utv 
-        WHERE 
-          utv.OrganizationID              = @OrganizationID 
+          TOP 20
+          utv.TicketID
+        FROM
+          UserTicketsView utv
+        WHERE
+          utv.OrganizationID              = @OrganizationID
           AND utv.IsKnowledgeBase         = 1
           AND utv.ViewerID                = @ViewerID
-        ORDER BY 
+        ORDER BY
           utv.DateModified DESC
 
         SET @resultsCount = @@RowCount
@@ -452,13 +452,13 @@ namespace TSWebServices
           t.TicketID
           , t.Name
           , t.DateModified
-        FROM 
-          @TempItems ti 
-          JOIN dbo.Tickets t 
+        FROM
+          @TempItems ti
+          JOIN dbo.Tickets t
             ON ti.TicketID = t.TicketID
-        WHERE 
+        WHERE
           ti.ID BETWEEN @FromIndex AND @toIndex
-        ORDER BY 
+        ORDER BY
           ti.ID
       ";
 
@@ -545,17 +545,17 @@ namespace TSWebServices
                 command.Parameters.Add(dtSearchTicketsResultsTable);
 
                 string query = @"
-          DECLARE @TempItems 
+          DECLARE @TempItems
           TABLE
-          ( 
-            ID            int IDENTITY, 
-            TicketID      int 
+          (
+            ID            int IDENTITY,
+            TicketID      int
           )
 
-          INSERT INTO @TempItems 
+          INSERT INTO @TempItems
           (
             TicketID
-          ) 
+          )
           SELECT
             utv.TicketID
           FROM
@@ -568,19 +568,19 @@ namespace TSWebServices
             AND utv.ViewerID = @ViewerID
           ORDER BY
             utv.DateModified DESC
-        
+
           SET @resultsCount = @@RowCount
 
           SELECT
             t.TicketID
             , t.Name
-          FROM 
-            @TempItems ti 
-            LEFT JOIN dbo.Tickets t 
+          FROM
+            @TempItems ti
+            LEFT JOIN dbo.Tickets t
               ON ti.TicketID = t.TicketID
-          WHERE 
+          WHERE
             ti.ID BETWEEN @FromIndex AND @toIndex
-          ORDER BY 
+          ORDER BY
             ti.ID
           ";
 
@@ -2574,7 +2574,7 @@ namespace TSWebServices
             {
                 ChatClients clients = new ChatClients(TSAuthentication.GetLoginUser());
                 clients.LoadByChatClientID(chat.InitiatorID);
-                
+
                 if (clients != null && clients.Any() && !string.IsNullOrEmpty(clients[0].Email))
                 {
                     string emailDomain = clients[0].Email.Substring(clients[0].Email.LastIndexOf('@') + 1).Trim();
@@ -2651,9 +2651,9 @@ namespace TSWebServices
             SqlCommand command = new SqlCommand();
 
             command.CommandText = @"
-SELECT 
+SELECT
 CAST((SELECT SUM(DATALENGTH(Description)) FROM Actions WHERE TicketID = t.TicketID) / 1024 AS Varchar) + ' KB' AS [Size],
-t.* 
+t.*
 FROM TicketsView t
 WHERE t.TicketID = @TicketID
 ";
@@ -2745,11 +2745,15 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public void MarkTicketAsRead(int ticketID)
         {
-            UserTicketStatus uts = UserTicketStatuses.GetUserTicketStatus(TSAuthentication.GetLoginUser(), TSAuthentication.UserID, ticketID);
-            Ticket ticket = Tickets.GetTicket(uts.Collection.LoginUser, ticketID);
-            if (ticket.OrganizationID != TSAuthentication.OrganizationID) return;
-            uts.DateRead = DateTime.UtcNow;
-            uts.Collection.Save();
+            try {
+                UserTicketStatus uts = UserTicketStatuses.GetUserTicketStatus(TSAuthentication.GetLoginUser(), TSAuthentication.UserID, ticketID);
+                Ticket ticket = Tickets.GetTicket(uts.Collection.LoginUser, ticketID);
+                if (ticket.OrganizationID != TSAuthentication.OrganizationID) return;
+                uts.DateRead = DateTime.UtcNow;
+                uts.Collection.Save();
+            }
+            catch (SqlException sqlEx) { }
+            catch (Exception ex) { }
         }
 
         [WebMethod]
@@ -4421,14 +4425,14 @@ WHERE t.TicketID = @TicketID
                         StringBuilder builder = new StringBuilder();
 
                         builder.Append(@"
-                            DECLARE @TempItems 
+                            DECLARE @TempItems
                             TABLE
-                            ( 
+                            (
                               ID        int IDENTITY,
-                              TicketID  int 
+                              TicketID  int
                             )
 
-                            INSERT INTO @TempItems 
+                            INSERT INTO @TempItems
                             (
                               TicketID
                             )
@@ -4447,15 +4451,15 @@ WHERE t.TicketID = @TicketID
                                 , t.Name
                                 , dbo.uspGetTags(17, t.TicketID) AS Tags
 	                            , kbc.CategoryName AS KnowledgeBaseCategoryName
-                            FROM 
-                                @TempItems ti 
+                            FROM
+                                @TempItems ti
                                 JOIN Tickets t
                                     ON ti.TicketID = t.TicketID
                                 LEFT JOIN KnowledgeBaseCategories kbc
                                     ON t.KnowledgeBaseCategoryID = kbc.CategoryID
                             WHERE
                                 ti.ID BETWEEN @FromIndex AND @toIndex
-                            ORDER BY 
+                            ORDER BY
                                 ti.ID"
                         );
                         command.CommandText = builder.ToString();
@@ -4505,9 +4509,9 @@ WHERE t.TicketID = @TicketID
             SELECT
                 Description
             FROM
-                Actions 
+                Actions
             WHERE
-                TicketID = @TicketID 
+                TicketID = @TicketID
                 and SystemActionTypeID IN (1,3,5)";
             command.Parameters.AddWithValue("@TicketID", ticketid.ToString());
 

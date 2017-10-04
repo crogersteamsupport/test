@@ -16,12 +16,13 @@ var _mainFrame = getMainFrame();
 var initEditor = function (element, shouldResize, init, postinit) {
     execSuggestedSolutions = null;
     _mainFrame.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
-        var resizePluginCode = ''; 
+        var resizePluginCode = '';
         if (shouldResize)
         {
             resizePluginCode = 'autoresize';
         }
         var editorOptions = {
+            branding: false,
             plugins: "paste link code textcolor image imagetools moxiemanager table lists codesample " + resizePluginCode,
         	toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox insertUser recordVideo recordScreenTok | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
         	toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect styleselect | bold italic underline strikethrough blockquote codesample | code | table",
@@ -31,7 +32,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
             content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
             //table_default_styles: {
             //    border: '1px solid black'
-            //}, 
+            //},
             convert_urls: true,
             autoresize_bottom_margin: 20,
             remove_script_host: false,
@@ -55,25 +56,26 @@ var initEditor = function (element, shouldResize, init, postinit) {
                 ed.on('init', function (e) {
                     _mainFrame.Ts.System.refreshUser(function () {
                         if (_mainFrame.Ts.System.User.FontFamilyDescription != "Unassigned") {
-                            //ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily));
+                            ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily));
                             ed.getBody().style.fontFamily = GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily);
                         }
                         else if (_mainFrame.Ts.System.Organization.FontFamily != "Unassigned") {
-                            //ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily));
+                            ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily));
                             ed.getBody().style.fontFamily = GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily);
                         }
 
                         if (_mainFrame.Ts.System.User.FontSize != "0") {
-                            //ed.execCommand("FontSize", false, _mainFrame.Ts.System.User.FontSizeDescription);
-                            ed.getBody().style.fontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize);;
+                            ed.execCommand("FontSize", false, GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize));
+                            ed.getBody().style.fontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize);
                         }
                         else
                             if (_mainFrame.Ts.System.Organization.FontSize != "0") {
-                            //ed.execCommand("FontSize", false, _mainFrame.Ts.System.Organization.FontSize + 1);
+                                ed.execCommand("FontSize", false, GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize));
                             ed.getBody().style.fontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize);
                         }
 
                       if(postinit) postinit();
+                      // ed.focus();
                     });
                     _insertedKBTicketID = null;
                 });
@@ -235,7 +237,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
                 					alert("This browser does not support screen sharing");
                 				} else if (response.extensionInstalled === false && BrowserDetect.browser != "Mozilla") {
                 					// prompt to install the response.extensionRequired extension
-                					
+
                 					if (BrowserDetect.browser == "Chrome") {
                 						$('#ChromeInstallModal').modal('show');
                 					}

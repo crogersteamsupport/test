@@ -29,8 +29,8 @@ namespace TSWebServices
 		public LoginService()
 		{
 
-			//Uncomment the following line if using designed components 
-			//InitializeComponent(); 
+			//Uncomment the following line if using designed components
+			//InitializeComponent();
 		}
 
 		[WebMethod]
@@ -155,8 +155,8 @@ namespace TSWebServices
                 }
 			}
 			return JsonConvert.SerializeObject("");
-			
-		
+
+
 		}
 
         [WebMethod]
@@ -207,7 +207,7 @@ namespace TSWebServices
 								devices.Save();
 
 								EmailPosts.SendNewDevice(loginUser, users[0].UserID);
-								
+
 							}
 							else
 							{
@@ -434,14 +434,14 @@ namespace TSWebServices
 				 User user = null;
 
 
-				 if (TSAuthentication.Ticket != null) 
+				 if (TSAuthentication.Ticket != null)
 				 {
 					 user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
 				 }
-				 else  
+				 else
 				 {
 					 user = Users.GetUser(LoginUser.Anonymous, userID);
-					 if (user.CryptedPassword != token && user.CryptedPassword != FormsAuthentication.HashPasswordForStoringInConfigFile(token, "MD5"))					 
+					 if (user.CryptedPassword != token && user.CryptedPassword != FormsAuthentication.HashPasswordForStoringInConfigFile(token, "MD5"))
 					 {
 						 user = null;
 					 }
@@ -464,7 +464,7 @@ namespace TSWebServices
 			 }
 
 			 return result.ToArray();
-		 
+
 		 }
 
 		private static SignInResult IsValid(LoginUser loginUser, string email, string password, int organizationId, ref User user, ref Organization organization)
@@ -559,7 +559,7 @@ namespace TSWebServices
 					{
 						validation.Error = "Your password has expired.";
 						validation.Result = LoginResult.PasswordExpired;
-					}					
+					}
 				}
 			}
 			else if (user == null)
@@ -735,7 +735,7 @@ namespace TSWebServices
 			}
 		}
 
-		
+
 
 		public class SignInResult
 		{
