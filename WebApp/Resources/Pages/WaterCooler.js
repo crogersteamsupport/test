@@ -63,6 +63,7 @@ $(document).ready(function () {
         var presenceChannelName = 'presence-' + orgID;
         console.log(presenceChannelName);
         pressenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
+        console.log(presenceChannel);
 
         pressenceChannel.bind('pusher:subscription_succeeded', function (members) {
             console.log('pusher:subscription_succeeded');
