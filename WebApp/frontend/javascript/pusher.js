@@ -240,7 +240,7 @@ function SetupPusher() {
     });
 }
 
-function addUsersViewing (members) {
+var addUsersViewing = function (members) {
     members.each(function (member) {
         addUserViewing(member.id);
     });
@@ -269,4 +269,11 @@ var removeUserViewing = function (ticketNum, userID) {
             $('#ticket-now-viewing').hide();
         }
     }
+}
+
+function Unsubscribe() {
+    console.log("in unsubscribe");
+    var orgID = top.Ts.System.Organization.OrganizationID;
+    var presenceChannelName = 'presence-ticket-' + _ticketNumber + '-org-' + orgID;
+    top.Ts.Pusher.unsubscribe(presenceChannelName);
 }

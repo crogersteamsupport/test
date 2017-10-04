@@ -41,7 +41,7 @@
 
         <!-- PUSHER -->
         <script src="https://js.pusher.com/3.1/pusher.min.js" type="text/javascript"></script>
-        <script src="/frontend/javascript/pusher.js?1506974999" type="text/javascript"></script>
+        <script src="/frontend/javascript/pusher.js?1506975007" type="text/javascript"></script>
 
   <script type="text/javascript" language="javascript">
 
