@@ -34,33 +34,11 @@
         <script src="vcr/1_9_0/Js/jquery.pnotify.min.js" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/moment.min.js" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/Ts/ts.editor.js" type="text/javascript"></script>
-
-        <!-- PUSHER -->
-        <script src="https://js.pusher.com/3.1/pusher.min.js" type="text/javascript"></script>
-        <script src="/frontend/javascript/pusher.js?1506974994" type="text/javascript"></script>
+        <script src="vcr/1_9_0/Js/Ts/ts.wc.signalr.js" type="text/javascript"></script>
 
         <script src="../js_5/imagepaste.js" type="text/javascript"></script>
         <script src="../js_5/jquery.Jcrop.js" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/aes.js" type="text/javascript"></script>
-
-
-
-  <!-- Start Apptegic Code
-  <script type="text/javascript">
-    var _aaq = _aaq || [];
-    var _evergageAccount = 'teamsupport';
-    var _evergageDataset = $("#Evergage").val();
-    if (_evergageDataset != '') {
-      (function () {
-        var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
-        g.type = 'text/javascript'; g.defer = true; g.async = true;
-        g.src = document.location.protocol + '//cdn.evergage.com/beacon/'
-              + _evergageAccount + '/' + _evergageDataset + '/scripts/evergage.min.js';
-        s.parentNode.insertBefore(g, s);
-      })();
-    }
-  </script>
-   End Apptegic Code -->
 
   <script type="text/javascript" language="javascript">
 
@@ -200,6 +178,7 @@
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.ui.tabs.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.ui.menutree.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.pages.main.js" />
+          <asp:ScriptReference Path="https://js.pusher.com/3.1/pusher.min.js" />
           <asp:ScriptReference Path="js_5/dialogs.js" />
 
       </scripts>

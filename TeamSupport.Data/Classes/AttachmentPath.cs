@@ -54,8 +54,7 @@ namespace TeamSupport.Data
 
     public static string GetImageCachePath(LoginUser loginUser)
     {
-      string root = SystemSettings.ReadString(loginUser, "FilePath", "C:\\TSData");
-      string path = Path.Combine(root, "ImageCache");
+      string path = SystemSettings.ReadString(loginUser, "ImageCachePath", "C:\\TSData\\ImageCache");
       Directory.CreateDirectory(path);
       return path;
     }
