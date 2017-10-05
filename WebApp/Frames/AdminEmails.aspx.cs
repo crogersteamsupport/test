@@ -307,7 +307,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
         {
             OrganizationEmails emails = new OrganizationEmails(UserSession.LoginUser);
             emails.LoadByTemplateAndProductFamily(UserSession.LoginUser.OrganizationID, emailTemplateID, productFamilyID);
-            OrganizationEmail email = emails.IsEmpty ? (new OrganizationEmails(UserSession.LoginUser)).AddNewOrganizationEmail() : emails[0];
+            OrganizationEmail email = emails.IsEmpty || (emails[0].ProductFamilyID == null && productFamilyID != -1) ? (new OrganizationEmails(UserSession.LoginUser)).AddNewOrganizationEmail() : emails[0];
 
             email.Body = body;
             email.EmailTemplateID = emailTemplateID;
