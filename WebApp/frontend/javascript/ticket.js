@@ -4050,15 +4050,6 @@ function FetchTimeLineItems(start) {
         } else {
             _compiledActionTemplate = Handlebars.templates['action2'];
 
-            if (_currDateSpan == null) {
-                console.log('daybadge 1');
-                console.log(_timeLine[0]);
-                _currDateSpan = _timeLine[0].item.DateCreated;
-                if (_timeLine[0].item.IsPinned != true) {
-                    var dateSpan  = '<div class="daystrip"><span class="daybadge">' + _currDateSpan.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
-                    $("#action-timeline").append(dateSpan);
-                }
-            };
             var isPublicFiltered  = $('.filter-public').hasClass('bgcolor-darkgray');
             var isPrivateFiltered = $('.filter-private').hasClass('bgcolor-darkgray');
             var isWCFiltered      = $('.filter-wc').hasClass('bgcolor-darkgray');
@@ -4090,10 +4081,13 @@ function CreateActionElement(val, ShouldAppend) {
         }
     }
 
-    if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
+    if (_currDateSpan == null || _currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
         console.log('daybadge 2');
-        var dateSpan = '<div class="daystrip"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
-        _currDateSpan = val.item.DateCreated;
+        if (!val.item.IsPinned) {
+            console.log('pinned');
+            var dateSpan = '<div class="daystrip"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
+            _currDateSpan = val.item.DateCreated;
+        }
     }
 
     var html = _compiledActionTemplate(val);
