@@ -4865,6 +4865,7 @@ function CreateTicketToolbarDomEvents() {
         e.stopPropagation();
         window.parent.Ts.System.logAction('Ticket - Refreshed');
         window.parent.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
+        Unsubscribe();
         window.location = window.location;
     });
 
