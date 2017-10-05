@@ -190,5 +190,5 @@
 
 #ticket-properties-area .hasError .form-input,
 #ticket-properties-area .hasError .tagContainer {
-    border:1px solid #a94442;
+    /* border:1px solid #a94442; */
 }
