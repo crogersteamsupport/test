@@ -4051,9 +4051,13 @@ function FetchTimeLineItems(start) {
             _compiledActionTemplate = Handlebars.templates['action2'];
 
             if (_currDateSpan == null) {
+                console.log('daybadge 1');
+                console.log(_timeLine[0]);
                 _currDateSpan = _timeLine[0].item.DateCreated;
-                var dateSpan  = '<div class="daystrip"><span class="daybadge">' + _currDateSpan.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
-                $("#action-timeline").append(dateSpan);
+                if (_timeLine[0].item.IsPinned != true) {
+                    var dateSpan  = '<div class="daystrip"><span class="daybadge">' + _currDateSpan.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
+                    $("#action-timeline").append(dateSpan);
+                }
             };
             var isPublicFiltered  = $('.filter-public').hasClass('bgcolor-darkgray');
             var isPrivateFiltered = $('.filter-private').hasClass('bgcolor-darkgray');
@@ -4087,6 +4091,7 @@ function CreateActionElement(val, ShouldAppend) {
     }
 
     if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
+        console.log('daybadge 2');
         var dateSpan = '<div class="daystrip"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
         _currDateSpan = val.item.DateCreated;
     }
@@ -4115,6 +4120,7 @@ function CreateActionElement(val, ShouldAppend) {
 
 function UpdateActionElement(val) {
     if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
+        console.log('daybadge 3');
         var dateSpan = '<div class="daystrip"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span></div>';
         $("#action-timeline").append(dateSpan);
         _currDateSpan = val.item.DateCreated;
