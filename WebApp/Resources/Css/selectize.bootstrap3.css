@@ -352,6 +352,9 @@
 .selectize-dropdown-header {
   padding: 6px 12px;
 }
+.selectize-input {
+  min-height: 34px;
+}
 .selectize-input.dropdown-active {
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
