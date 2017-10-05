@@ -1802,6 +1802,7 @@ UserPage = function () {
       plugins: "autoresize link code textcolor image moxiemanager",
       toolbar1: "image insertimage bold italic underline strikethrough bullist numlist fontselect fontsizeselect forecolor backcolor | link unlink | code",
       statusbar: false,
+      branding: false,
       gecko_spellcheck: true,
       convert_urls: true,
       remove_script_host: false,

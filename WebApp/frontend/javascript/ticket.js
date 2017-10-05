@@ -1161,8 +1161,7 @@ function SetupActionTimers() {
             start = new Date().getTime();
             tickettimer();
             $(this).find(':first-child').css('color', 'green');
-        }
-        else {
+        } else {
             $(this).find(':first-child').css('color', 'red');
             clearTimeout(_timerid);
             counter = 0;
@@ -2986,15 +2985,26 @@ function SetupTasksSection() {
         var checkbox = $(this);
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Ticket Page - Change Task Status');
-        var iframe = $('iframe-o-' + id);
-        console.log('Refresh iFrame: ' + iframe);
+        var iframeName = 'iframe-o-' + id;
+        var iframeLink = $(iframeName + ':hidden');
+        console.log(typeof iframeLink);
+
+
+
 
         parent.Ts.Services.Task.SetTaskIsCompleted(id, checked, function (data) {
             if (data.IncompleteSubtasks) {
                 checkbox.prop("checked", false);
                 alert('There are subtasks pending completion, please finish them before completing the parent task.')
             } else if (data.Value) {
-                iframe.contentWindow.location.reload(true);
+                console.log('Refresh iFrame: ' + iframeName);
+                try {
+                    parent.document.getElementById(iframeName).contentDocument.location.reload(true);
+                    // iframeLink.src = iframeLink.src;
+                } catch (err) {
+                    console.log(err);
+                }
+
                 _completeCommentTaskID = id;
                 $('#modalTaskComment').modal('show');
             }
@@ -4014,7 +4024,7 @@ var LoadTicketHistory = function () {
         var historyTable = $('#ticket-history-table > tbody');
         historyTable.empty().addClass('ts-loading');
         for (var i = 0; i < logs.length; i++) {
-            var row = $('<tr>').appendTo(historyTable);
+            var row  = $('<tr>').appendTo(historyTable);
             var col1 = $('<td>').text(logs[i].CreatorName).appendTo(row);
             var col2 = $('<td>').text(logs[i].DateCreated.localeFormat(window.parent.Ts.Utils.getDateTimePattern())).appendTo(row);
             var col3 = $('<td>').html(logs[i].Description).appendTo(row);
@@ -4040,26 +4050,23 @@ function FetchTimeLineItems(start) {
         } else {
             _compiledActionTemplate = Handlebars.templates['action2'];
 
-            //create first timeline date marker if needed
             if (_currDateSpan == null) {
                 _currDateSpan = _timeLine[0].item.DateCreated;
-                var dateSpan = '<div class="daystrip"><span class="daybadge">' + _currDateSpan.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
+                var dateSpan  = '<div class="daystrip"><span class="daybadge">' + _currDateSpan.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
                 $("#action-timeline").append(dateSpan);
             };
-            var isPublicFiltered = $('.filter-public').hasClass('bgcolor-darkgray');
+            var isPublicFiltered  = $('.filter-public').hasClass('bgcolor-darkgray');
             var isPrivateFiltered = $('.filter-private').hasClass('bgcolor-darkgray');
-            var isWCFiltered = $('.filter-wc').hasClass('bgcolor-darkgray');
+            var isWCFiltered      = $('.filter-wc').hasClass('bgcolor-darkgray');
 
             for (i = 0; i < _timeLine.length; i++) {
                 var timeLineItem = _timeLine[i];
-                var actionElem = CreateActionElement(timeLineItem, !timeLineItem.item.IsPinned);
+                var actionElem   = CreateActionElement(timeLineItem, !timeLineItem.item.IsPinned);
                 if (isPublicFiltered && timeLineItem.item.IsVisibleOnPortal) {
                     actionElem.hide();
-                }
-                if (isPrivateFiltered && !timeLineItem.item.IsVisibleOnPortal) {
+                } else if (isPrivateFiltered && !timeLineItem.item.IsVisibleOnPortal) {
                     actionElem.hide();
-                }
-                if (isWCFiltered && timeLineItem.item.IsWC) {
+                } else if (isWCFiltered && timeLineItem.item.IsWC) {
                     actionElem.hide();
                 }
             }
@@ -4093,9 +4100,9 @@ function CreateActionElement(val, ShouldAppend) {
             $("#action-timeline").append(actionElement);
         } catch (e) { }
     } else {
-        if ($('.ticket-action.pinned').length) {
-            $('.ticket-action.pinned').after(actionElement);
-            $('.ticket-action.pinned').after(dateSpan);
+        if ($('.action.pinned').length) {
+            $('.action.pinned').after(actionElement);
+            $('.action.pinned').after(dateSpan);
         } else {
             $('.action-placeholder').after(actionElement);
             $('.action-placeholder').after(dateSpan);
@@ -4258,7 +4265,7 @@ function CreateHandleBarHelpers() {
     });
 
     Handlebars.registerHelper("taskComplete", function (isComplete) {
-        return isComplete == true ? ' checked="checked"' : '';
+        return isComplete == true ? ' checked' : '';
     });
 }
 
@@ -4346,7 +4353,7 @@ function CreateTimeLineDelegates() {
                     var pinnedAction = $('.pinned');
                     var actionID = parseInt(pinnedAction.find('.ticket-action-number').text()) + 1;
                     titleElement.after(parentLI.clone().addClass('pinned'));
-                    parentLI.insertAfter(titleElement);
+                    parentLI.insertBefore(titleElement);
                     parentLI.remove();
                     var InLineElement = $("label.ticket-action-number:contains('" + actionID + "')").closest('li');
                     if (InLineElement.length > 0) {
@@ -4854,6 +4861,7 @@ function CreateTicketToolbarDomEvents() {
         e.stopPropagation();
         window.parent.Ts.System.logAction('Ticket - Refreshed');
         window.parent.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
+        Unsubscribe();
         window.location = window.location;
     });
 
