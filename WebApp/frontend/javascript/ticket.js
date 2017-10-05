@@ -4100,9 +4100,9 @@ function CreateActionElement(val, ShouldAppend) {
             $("#action-timeline").append(actionElement);
         } catch (e) { }
     } else {
-        if ($('.ticket-action.pinned').length) {
-            $('.ticket-action.pinned').after(actionElement);
-            $('.ticket-action.pinned').after(dateSpan);
+        if ($('.action.pinned').length) {
+            $('.action.pinned').after(actionElement);
+            $('.action.pinned').after(dateSpan);
         } else {
             $('.action-placeholder').after(actionElement);
             $('.action-placeholder').after(dateSpan);
