@@ -204,7 +204,7 @@ namespace TeamSupport.ServiceLibrary
                         ImportContactNotes(import);
                         break;
                     case ReferenceType.ProductFamilies:
-                        ImportContactNotes(import);
+                        ImportProductFamilies(import);
                         break;
                     default:
                         Logs.WriteEvent("ERROR: Unknown Reference Type");
