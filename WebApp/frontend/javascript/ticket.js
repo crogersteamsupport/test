@@ -95,8 +95,7 @@ var selectTicket = function (request, response) {
     var filter = $(this.element).data('filter');
     if (filter === undefined) {
         execSelectTicket = window.parent.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) { response(result); });
-    }
-    else {
+    } else {
         execSelectTicket = window.parent.Ts.Services.Tickets.SearchTickets(request.term, filter, function (result) { response(result); });
     }
 }
@@ -127,8 +126,7 @@ var isFormValid = function (callback) {
             if ($('#ticket-Customer > div.tag-item').length < 1) {
                 $('#ticket-Customer').closest('.form-group').addClass('hasError');
                 result = false;
-            }
-            else {
+            } else {
                 $('#ticket-Customer').closest('.form-group').removeClass('hasError');
             }
         }
@@ -147,7 +145,7 @@ Selectize.define('sticky_placeholder', function (options) {
             if (!this.settings.placeholder) return;
             var $input = this.$control_input;
             $input.attr('placeholder', this.settings.placeholder);
-        };
+        }
     })();
 
 });
@@ -4357,7 +4355,9 @@ function CreateTimeLineDelegates() {
         e.stopPropagation();
 
         var self = $(this);
-        var parentLI = self.closest('div.action');
+        // var parentLI = self.closest('div.action.pinned');
+        var parentLI = $('div.action.pinned');
+        console.log('unpinned.')
         var action = parentLI.data().action;
         var titleElement = $('.action-placeholder');
 
