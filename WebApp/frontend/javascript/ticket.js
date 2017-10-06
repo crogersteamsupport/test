@@ -521,11 +521,8 @@ function SetupTicketProperties(order) {
         $('#frame-container').show();
         $('.page-loading').hide().next().show();
 
-
         isFormValid();
         LoadPlugins(info);
-        console.log("_before calling getTicketViewing");
-
     });
 }
 
@@ -648,30 +645,24 @@ function CreateNewActionLI() {
                                 _isCreatingAction = true;
                                 if ($('.upload-queue li').length > 0) {
                                     UploadAttachments(result);
-                                }
-                                else {
+                                } else {
                                     _newAction = null;
                                     if (_oldActionID === -1) {
                                         _actionTotal = _actionTotal + 1;
                                         var actionElement = CreateActionElement(result, false);
                                         actionElement.find('.ticket-action-number').text(_actionTotal);
-                                    }
-                                    else {
-                                        console.log('#action-new-save:updateactionelement');
+                                    } else {
                                         UpdateActionElement(result, false);
                                     }
                                     clearTicketEditor();
                                 }
-                            }
-                            else {
+                            } else {
                                 alert("There was a error creating your action.  Please try again.");
                                 EnableCreateBtns();
                             }
-
                         });
                     });
-                }
-                else {
+                } else {
                     alert("Please fill in the required fields before submitting this action.");
                     EnableCreateBtns();
                     return;
@@ -698,33 +689,26 @@ function CreateNewActionLI() {
                     if (result) {
                         if ($('.upload-queue li').length > 0) {
                             UploadAttachments(result);
-                        }
-                        else {
+                        } else {
                             _newAction = null;
                             if (_oldActionID === -1) {
                                 _actionTotal = _actionTotal + 1;
                                 var actionElement = CreateActionElement(result, false);
                                 actionElement.find('.ticket-action-number').text(_actionTotal);
-                            }
-                            else {
-                                console.log('#action-timeline:updateactionelement');
+                            }  else {
                                 UpdateActionElement(result, false);
                             }
                             clearTicketEditor();
                         }
-
-
                         var statusID = self.data("statusid");
                         SetStatus(statusID);
                         EnableCreateBtns();
-                    }
-                    else {
+                    } else {
                         EnableCreateBtns();
                         alert("There was a error creating your action.  Please try again.");
                     }
                 });
-            }
-            else {
+            } else {
                 EnableCreateBtns();
                 alert("Please fill in the required fields before submitting this action.");
                 return;
@@ -881,11 +865,9 @@ function SetupActionEditor(elem, action) {
                 clearTicketEditor();
                 if (_oldActionID === -1) {
                     _actionTotal = _actionTotal + 1;
-                    console.log('#action-file-upload:createactionelement');
                     var actionElement = CreateActionElement(_newAction, false);
                     actionElement.find('.ticket-action-number').text(_actionTotal);
-                }
-                else {
+                } else {
                     console.log('#action-file-upload:updateactionelement');
                     UpdateActionElement(_newAction, false);
                 }
@@ -2987,24 +2969,15 @@ function SetupTasksSection() {
         parent.Ts.System.logAction('Ticket Page - Change Task Status');
         var iframeName = 'iframe-o-' + id;
         var iframeLink = $(iframeName + ':hidden');
-        console.log(typeof iframeLink);
-
-
-
-
         parent.Ts.Services.Task.SetTaskIsCompleted(id, checked, function (data) {
             if (data.IncompleteSubtasks) {
                 checkbox.prop("checked", false);
                 alert('There are subtasks pending completion, please finish them before completing the parent task.')
             } else if (data.Value) {
-                console.log('Refresh iFrame: ' + iframeName);
                 try {
                     parent.document.getElementById(iframeName).contentDocument.location.reload(true);
-                    // iframeLink.src = iframeLink.src;
                 } catch (err) {
-                    console.log(err);
                 }
-
                 _completeCommentTaskID = id;
                 $('#modalTaskComment').modal('show');
             }
@@ -4082,9 +4055,7 @@ function CreateActionElement(val, ShouldAppend) {
     }
 
     if (_currDateSpan == null || _currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
-        console.log('daybadge 2');
         if (!val.item.IsPinned) {
-            console.log('pinned');
             var dateSpan = '<div class="daystrip"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
             _currDateSpan = val.item.DateCreated;
         }
@@ -4114,7 +4085,6 @@ function CreateActionElement(val, ShouldAppend) {
 
 function UpdateActionElement(val) {
     if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
-        console.log('daybadge 3');
         var dateSpan = '<div class="daystrip"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span></div>';
         $("#action-timeline").append(dateSpan);
         _currDateSpan = val.item.DateCreated;
@@ -4558,7 +4528,6 @@ function CreateTimeLineDelegates() {
     $('#action-timeline').on('click', 'a.action-option-edit', function (e) {
         e.preventDefault();
         e.stopPropagation();
-        console.log('action-option-edit');
         if ($(this).hasClass('click-disabled')) {
             return false;
         } else {
@@ -5526,7 +5495,6 @@ var SetSolved = function (ResolvedID) {
 
 function watson (ticketnumber) {
     window.parent.Ts.Services.Tickets.GetTicketInfo(ticketnumber, function (info) {
-        // console.log(info);
         if (info.Ticket.OrganizationID != '1078') { return; }
         var ticketid = info.Ticket.TicketID;
         window.parent.Ts.Services.TicketPage.WatsonTicket(ticketid, function (result) {
@@ -5541,7 +5509,6 @@ function watson (ticketnumber) {
                         display.push(emotion + ': ' + percent + '%');
                     }
                 });
-                // console.log(display.join(', '));
                 $('#watson').text(display.join(', '));
             }
         });
@@ -5580,7 +5547,6 @@ function pagewidth () {
 
 
 function SetupPusher() {
-    console.log("setup pusher");
     var presenceChannel = null;
     var service = '/Services/DispatchService.asmx/';
     top.Ts.TicketViewing = _ticketNumber;
@@ -5589,8 +5555,6 @@ function SetupPusher() {
         var userID = top.Ts.System.User.UserID;
 
         var presenceChannelName = 'presence-ticket-' + _ticketNumber + '-org-' + orgID;
-
-        console.log(presenceChannelName);
         presenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
 
         presenceChannel.bind('pusher:subscription_succeeded', function (members) {
