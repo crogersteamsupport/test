@@ -4354,23 +4354,26 @@ function CreateTimeLineDelegates() {
         e.preventDefault();
         e.stopPropagation();
 
-        var self = $(this);
-        // var parentLI = self.closest('div.action.pinned');
-        var parentLI = $('div.action.pinned');
         console.log('unpinned.')
-        var action = parentLI.data().action;
+
+        var self         = $(this);
+        var parentLI     = self.closest('div.action');
+        var action       = parentLI.data().action;
         var titleElement = $('.action-placeholder');
+        var pinnedAction = $('.pinned');
+
+        console.log(pinnedAction);
 
         if (window.parent.Ts.System.User.IsSystemAdmin || window.parent.Ts.System.User.UserCanPinAction) {
             window.parent.Ts.System.logAction('Ticket - Action Pin Icon Clicked');
-            window.parent.Ts.Services.Tickets.SetActionPinned(_ticketID, action.RefID, false,
-            function (result) {
+            window.parent.Ts.Services.Tickets.SetActionPinned(_ticketID, action.RefID, false, function (result) {
+                console.log(result);
                 parentLI.data().action.IsPinned = result;
                 parentLI.find('a.ticket-action-pinned').toggleClass('hidden');
 
                 var actionID = parseInt(parentLI.find('.ticket-action-number').text()) + 1;
 
-                var InLineElement = $("label.ticket-action-number:contains('" + actionID + "')").closest('li');
+                var InLineElement = $("label.ticket-action-number:contains('" + actionID + "')").closest('div.action');
                 if (InLineElement.length > 0) {
                     InLineElement.after(parentLI.clone().removeClass('pinned'));
                 } else {
@@ -4378,6 +4381,7 @@ function CreateTimeLineDelegates() {
                 }
                 $('a.ticket-action-pinned').addClass('hidden');
                 parentLI.remove();
+                pinnedAction.remove();
             }, function () {
                 alert('There was an error editing this action.');
             });
