@@ -113,6 +113,7 @@
 }
 #sidebar .form-horizontal .form-input {
     padding:0px 0px 0px 5px;
+    height:25px;
 }
 #sidebar input {
     border:none;
@@ -148,6 +149,7 @@
     outline:none;
     border:none !important;
     vertical-align:top;
+    width:100% !important;
 }
 #sidebar .selectize-control.single .selectize-input:after {
     content:none;
@@ -187,8 +189,7 @@
 #ticket-properties-area .hasError .form-label label {
     color:#a94442 !important;
 }
-
-#ticket-properties-area .hasError .form-input,
-#ticket-properties-area .hasError .tagContainer {
-    /* border:1px solid #a94442; */
+#ticket-properties-area .hasError .form-input {
+    border:1px solid #a94442 !important;
+    border-radius:5px;
 }
