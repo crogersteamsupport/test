@@ -1237,7 +1237,6 @@ function SaveAction(_oldActionID, isPrivate, callback) {
     action.IsKnowledgeBase = $('#action-new-KB').prop('checked');
     action.IsVisibleOnPortal = !isPrivate;
 
-    if (window.parent.Ts.System.User.OrganizationID !== 13679) {
         // Get Content Grab and Check with .Get MEthod
         if (tinymce.get('action-new-editor')) {
             try {
@@ -1308,40 +1307,6 @@ function SaveAction(_oldActionID, isPrivate, callback) {
             return;
 
         }
-    } else {
-        var fontSize;
-        var fontFamily;
-        var styleBlock;
-        if (window.parent.Ts.System.User.FontFamilyDescription != "Unassigned") {
-            fontFamily = GetTinyMCEFontName(window.parent.Ts.System.User.FontFamily);
-        } else if (window.parent.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-            fontFamily = GetTinyMCEFontName(window.parent.Ts.System.Organization.FontFamily);
-        }
-
-        if (window.parent.Ts.System.User.FontSize != "0") {
-            fontSize = GetTinyMCEFontSize(window.parent.Ts.System.User.FontSize);
-        } else if (window.parent.Ts.System.Organization.FontSize != "0") {
-            fontSize = GetTinyMCEFontSize(window.parent.Ts.System.Organization.FontSize);
-        }
-
-        if (fontFamily !== undefined) {
-            styleBlock = 'font-family: ' + fontFamily;
-        }
-
-        if (fontSize !== undefined) {
-            if (styleBlock !== undefined) {
-                styleBlock += '; font-size: ' + fontSize;
-            } else {
-                styleBlock = 'font-size: ' + fontSize;
-            }
-        }
-        var actionText = $('#action-new-editor').summernote('code');
-        var actionHTML = $('<span />', {
-            style: styleBlock,
-            html: actionText
-        });
-        action.Description = actionHTML[0].outerHTML;
-    }
 
     if (action.IsVisibleOnPortal == true) { confirmVisibleToCustomers(); }
     if (_insertedKBTicketID) {

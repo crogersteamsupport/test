@@ -293,26 +293,22 @@ function SetupPusher() {
         pressenceChannel.bind('pusher:subscription_succeeded', function (members) {
             try {
                 addUsersViewing(members);
-                console.log("sub succeeded");
             } catch (err) { }
         });
 
         pressenceChannel.bind('pusher:member_added', function (member) {
             try {
-                console.log("add user viewing");
                 addUserViewing(member.id);
             } catch (err) { }
         });
 
         pressenceChannel.bind('pusher:member_removed', function (member) {
             try {
-                console.log("removing user");
                 removeUserViewing(member.id);
             } catch (err) { }
         });
 
         pressenceChannel.bind('ticketViewingRemove', function (data) {
-            console.log("ticketViewingRemove pusher");
             top.Ts.Pusher.unsubscribe(data.chan);
         });
     });
