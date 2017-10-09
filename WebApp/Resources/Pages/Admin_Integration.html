@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
   <link href="../Css/frame.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery.ui.combobox.css" rel="stylesheet" type="text/css" />
@@ -32,8 +32,7 @@
           <p>Each object (Tickets, Customers, Products, etc...) in TeamSupport is treated as a resource. You can use four verbs (GET, POST, PUT, DELETE) to manipulate the data.  <a href="http://help.teamsupport.com/1/en/topic/api" target="_blank">Learn more >></a></p>
           <p class="ui-helper-hidden">Try it out now.  Click the following link to view your users: <a class="int-api-link-users" target="_blank"></a></p>
           <div id="int-api-active" class="ui-helper-hidden">
-            <dl class="int-api-info ts-color-bg-accent ui-corner-all">
-            </dl>
+                        <dl class="int-api-info ts-color-bg-accent ui-corner-all"></dl>
             <p>
               <button id="int-api-enable" class="btn btn-primary">Enable your API</button>
               <button id="int-api-disable" class="btn btn-danger">Disable your API</button>
@@ -182,6 +181,10 @@
 		  				<h2>Custom Field Mapping (Optional)</h2>
 		  				<div>
 		  					<div class="label-block">
+                                        <span class="label">Mapping Type</span>
+                                        <select class="int-map-type"></select>
+                                    </div>
+                                    <div class="label-block">
 		  						<span class="label">Jira Field</span>
 		  						<input type="text" class="int-jira-map-crmfield text ui-widget-content ui-corner-all" style="width: 200px;" />
 		  					</div>
@@ -201,6 +204,11 @@
 		  					</div>
 		  					<div class="map-ticket"></div>
 		  					<div class="ts-clearfix"></div>
+                                    <h3>Ticket Type Mappings</h3>
+                                    <div class="ui-widget-content ts-separator">
+                                    </div>
+                                    <div class="map-ticket-type"></div>
+                                    <div class="ts-clearfix"></div>
 		  				</div>
 		  			</div>
 		  			<div>&nbsp</div>
@@ -331,8 +339,7 @@
                 <div>
                   <div class="label-block">
                     <span class="label">Mapping Type</span>
-                    <select class="int-map-type">
-                    </select>
+                                        <select class="int-map-type"></select>
                   </div>
                   <div class="label-block">
                     <span class="label">SalesForce Field</span>
@@ -562,8 +569,7 @@
                 <div>
                   <div class="label-block">
                     <span class="label">Mapping Type</span>
-                    <select class="int-zoho-map-type">
-                    </select>
+                                        <select class="int-zoho-map-type"></select>
                   </div>
                   <div class="label-block">
                     <span class="label">Zoho CRM Field</span>
