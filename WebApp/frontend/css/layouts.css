@@ -113,6 +113,7 @@
 }
 #sidebar .form-horizontal .form-input {
     padding:0px 0px 0px 5px;
+    height:25px;
 }
 #sidebar input {
     border:none;
@@ -133,6 +134,7 @@
     padding:0px 0px 0px 0px;
     border:0px;
     background:none;
+    min-height: inherit;
 }
 #sidebar .selectize-input.focus,
 #sidebar .selectize-input .item,
@@ -148,6 +150,7 @@
     outline:none;
     border:none !important;
     vertical-align:top;
+    width:100% !important;
 }
 #sidebar .selectize-control.single .selectize-input:after {
     content:none;
@@ -175,6 +178,7 @@
     /*text-decoration:underline;*/
 }
 #ticket-properties-area .tagContainer input::-webkit-input-placeholder {
+    padding:3px;
     color:#428bca;
     opacity:1;
     vertical-align:middle;
@@ -187,8 +191,8 @@
 #ticket-properties-area .hasError .form-label label {
     color:#a94442 !important;
 }
-
 #ticket-properties-area .hasError .form-input,
 #ticket-properties-area .hasError .tagContainer {
-    /* border:1px solid #a94442; */
+    border:1px solid #a94442 !important;
+    border-radius:5px;
 }

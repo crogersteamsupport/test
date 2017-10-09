@@ -95,8 +95,7 @@ var selectTicket = function (request, response) {
     var filter = $(this.element).data('filter');
     if (filter === undefined) {
         execSelectTicket = window.parent.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) { response(result); });
-    }
-    else {
+    } else {
         execSelectTicket = window.parent.Ts.Services.Tickets.SearchTickets(request.term, filter, function (result) { response(result); });
     }
 }
@@ -127,8 +126,7 @@ var isFormValid = function (callback) {
             if ($('#ticket-Customer > div.tag-item').length < 1) {
                 $('#ticket-Customer').closest('.form-group').addClass('hasError');
                 result = false;
-            }
-            else {
+            } else {
                 $('#ticket-Customer').closest('.form-group').removeClass('hasError');
             }
         }
@@ -147,7 +145,7 @@ Selectize.define('sticky_placeholder', function (options) {
             if (!this.settings.placeholder) return;
             var $input = this.$control_input;
             $input.attr('placeholder', this.settings.placeholder);
-        };
+        }
     })();
 
 });
@@ -1239,7 +1237,6 @@ function SaveAction(_oldActionID, isPrivate, callback) {
     action.IsKnowledgeBase = $('#action-new-KB').prop('checked');
     action.IsVisibleOnPortal = !isPrivate;
 
-    if (window.parent.Ts.System.User.OrganizationID !== 13679) {
         // Get Content Grab and Check with .Get MEthod
         if (tinymce.get('action-new-editor')) {
             try {
@@ -1310,40 +1307,6 @@ function SaveAction(_oldActionID, isPrivate, callback) {
             return;
 
         }
-    } else {
-        var fontSize;
-        var fontFamily;
-        var styleBlock;
-        if (window.parent.Ts.System.User.FontFamilyDescription != "Unassigned") {
-            fontFamily = GetTinyMCEFontName(window.parent.Ts.System.User.FontFamily);
-        } else if (window.parent.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-            fontFamily = GetTinyMCEFontName(window.parent.Ts.System.Organization.FontFamily);
-        }
-
-        if (window.parent.Ts.System.User.FontSize != "0") {
-            fontSize = GetTinyMCEFontSize(window.parent.Ts.System.User.FontSize);
-        } else if (window.parent.Ts.System.Organization.FontSize != "0") {
-            fontSize = GetTinyMCEFontSize(window.parent.Ts.System.Organization.FontSize);
-        }
-
-        if (fontFamily !== undefined) {
-            styleBlock = 'font-family: ' + fontFamily;
-        }
-
-        if (fontSize !== undefined) {
-            if (styleBlock !== undefined) {
-                styleBlock += '; font-size: ' + fontSize;
-            } else {
-                styleBlock = 'font-size: ' + fontSize;
-            }
-        }
-        var actionText = $('#action-new-editor').summernote('code');
-        var actionHTML = $('<span />', {
-            style: styleBlock,
-            html: actionText
-        });
-        action.Description = actionHTML[0].outerHTML;
-    }
 
     if (action.IsVisibleOnPortal == true) { confirmVisibleToCustomers(); }
     if (_insertedKBTicketID) {
@@ -4356,21 +4319,26 @@ function CreateTimeLineDelegates() {
         e.preventDefault();
         e.stopPropagation();
 
-        var self = $(this);
-        var parentLI = self.closest('div.action');
-        var action = parentLI.data().action;
+        console.log('unpinned.')
+
+        var self         = $(this);
+        var parentLI     = self.closest('div.action');
+        var action       = parentLI.data().action;
         var titleElement = $('.action-placeholder');
+        var pinnedAction = $('.pinned');
+
+        console.log(pinnedAction);
 
         if (window.parent.Ts.System.User.IsSystemAdmin || window.parent.Ts.System.User.UserCanPinAction) {
             window.parent.Ts.System.logAction('Ticket - Action Pin Icon Clicked');
-            window.parent.Ts.Services.Tickets.SetActionPinned(_ticketID, action.RefID, false,
-            function (result) {
+            window.parent.Ts.Services.Tickets.SetActionPinned(_ticketID, action.RefID, false, function (result) {
+                console.log(result);
                 parentLI.data().action.IsPinned = result;
                 parentLI.find('a.ticket-action-pinned').toggleClass('hidden');
 
                 var actionID = parseInt(parentLI.find('.ticket-action-number').text()) + 1;
 
-                var InLineElement = $("label.ticket-action-number:contains('" + actionID + "')").closest('li');
+                var InLineElement = $("label.ticket-action-number:contains('" + actionID + "')").closest('div.action');
                 if (InLineElement.length > 0) {
                     InLineElement.after(parentLI.clone().removeClass('pinned'));
                 } else {
@@ -4378,6 +4346,7 @@ function CreateTimeLineDelegates() {
                 }
                 $('a.ticket-action-pinned').addClass('hidden');
                 parentLI.remove();
+                pinnedAction.remove();
             }, function () {
                 alert('There was an error editing this action.');
             });
