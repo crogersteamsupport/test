@@ -1527,7 +1527,7 @@ AND ts.IsClosed = 0";
             }
         }
 
-        public void LoadKBByCategoryID(int categoryID, int organizationID, int customerID, int contactID, bool enforceCustomerProduct = true, int sortOrder = 0)
+        public void LoadKBByCategoryID(int categoryID, int organizationID, int customerID, int contactID, bool enableCustomerSpecificKB, bool enableCustomerProductAssociation, bool enableAnonymousProductAssociation, int sortOrder = 0)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -1539,15 +1539,15 @@ AND ts.IsClosed = 0";
 																	AND t.IsKnowledgeBase         = 1
 																	AND t.IsVisibleOnPortal         = 1
 																	AND t.KnowledgeBaseCategoryID = @KnowledgeBaseCategoryID");
-                if (customerID > 0 && enforceCustomerProduct)
+                if ((customerID > 0 || enableAnonymousProductAssociation) && enableCustomerProductAssociation)
                 {
                     builder.Append(@" AND(
-																						T.ProductID IS NULL
-																						OR T.ProductID IN(
-																								SELECT productid
-																								FROM organizationproducts
-																								WHERE organizationid = @CustomerID
-																							)");
+											T.ProductID IS NULL
+											OR T.ProductID IN(
+													SELECT productid
+													FROM organizationproducts
+													WHERE organizationid = @CustomerID
+												)");
 
                     builder.Append("OR T.ProductID IN(SELECT ProductID FROM UserProducts WHERE UserID = @ContactID )");
 
@@ -1596,32 +1596,28 @@ AND ts.IsClosed = 0";
             }
         }
 
-        public void LoadUncatogorizedKBs(int organizationID, int customerID, int contactID, bool enforceCustomerProduct = true, int sortOrder = 0)
+        public void LoadUncatogorizedKBs(int organizationID, int customerID, int contactID, bool enableCustomerSpecificKB, bool enableCustomerProductAssociation, bool enableAnonymousProductAssociation, int sortOrder = 0)
         {
             using (SqlCommand command = new SqlCommand())
             {
                 StringBuilder builder = new StringBuilder();
                 builder.Append(@"SELECT t.TicketID, NAME
-																FROM Tickets as T
-																WHERE 
-																	t.OrganizationID              = @OrganizationID 
-																	AND t.IsKnowledgeBase         = 1
-																	AND t.IsVisibleOnPortal         = 1
-																	AND t.KnowledgeBaseCategoryID IS NULL");
-                if (customerID > 0)
+								 FROM Tickets as T
+								 WHERE 
+									t.OrganizationID              = @OrganizationID 
+									AND t.IsKnowledgeBase         = 1
+									AND t.IsVisibleOnPortal         = 1
+									AND t.KnowledgeBaseCategoryID IS NULL");
+                if ((customerID > 0 || enableAnonymousProductAssociation) && enableCustomerProductAssociation)
                 {
                     builder.Append(@" AND(
-																						T.ProductID IS NULL
-																						OR T.ProductID IN(
-																								SELECT productid
-																								FROM organizationproducts
-																								WHERE organizationid = @CustomerID
-																							)");
+										T.ProductID IS NULL
+										OR T.ProductID IN(
+												SELECT productid
+												FROM organizationproducts
+												WHERE organizationid = @CustomerID
+											)");
 
-                    if (contactID > 0 && enforceCustomerProduct)
-                    {
-                        builder.Append("OR T.ProductID IN(SELECT ProductID FROM UserProducts WHERE UserID = @ContactID )");
-                    }
                     builder.Append(")");
                 }
 
