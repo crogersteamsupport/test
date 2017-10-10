@@ -353,7 +353,6 @@ function LoadPlugins(info) {
                 try {
                     plugin.html(info.Plugins[i].Code);
                 } catch (e) {
-
                 }
             }
         }
@@ -412,8 +411,7 @@ function AddTicketProperty(item) {
     if (item.ItemID) {
         var html = '<div class="ticket-plugin" id="ticket-group-plugin-' + item.ItemID + '"></div>';
         $('#ticket-properties-area').append(html);
-    }
-    else {
+    } else {
         var hbrs = "ticket-group-" + item.CatID;
         var hbrs = hbrs.toLowerCase();
         var compiledTemplate = Handlebars.templates[hbrs];
@@ -429,6 +427,7 @@ function AddTicketProperty(item) {
 
 function SetupTicketProperties(order) {
     window.parent.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
+        console.log(info);
         if (info == null) {
             var url = window.location.href;
             if (url.indexOf('.') > -1) {
@@ -459,9 +458,9 @@ function SetupTicketProperties(order) {
 
         jQuery.each(order, function (i, val) { if (val.Disabled == "false") AddTicketProperty(val); });
 
-        if (!window.parent.Ts.System.User.ChangeKbVisibility && !window.parent.Ts.System.User.IsSystemAdmin)
+        if (!window.parent.Ts.System.User.ChangeKbVisibility && !window.parent.Ts.System.User.IsSystemAdmin) {
             $('#action-new-KB').prop('disabled', true);
-
+        }
 
         if (window.parent.Ts.System.User.IsSystemAdmin || window.parent.Ts.System.User.UserID === _ticketInfo.UserID) {
             $('.ticket-menu-actions').append('<li><a id="Ticket-Delete">Delete</a></li>');
@@ -482,11 +481,11 @@ function SetupTicketProperties(order) {
 
         if (!window.parent.Ts.System.User.IsSystemAdmin && !window.parent.Ts.System.User.ChangeTicketVisibility) {
             $('#ticket-visible').prop('disabled', true);
-        };
+        }
 
         if (!window.parent.Ts.System.User.IsSystemAdmin && _ticketInfo.Ticket.IsKnowledgeBase && !window.parent.Ts.System.User.ChangeKbVisibility) {
             $('#ticket-visible').prop('disabled', true);
-        };
+        }
 
         //set the url for the copy paste button
         //var ticketURLLink = ""

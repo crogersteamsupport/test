@@ -174,9 +174,9 @@ input {
 
 
 #ticket-properties-area .selectize-input input {
-    opacity:0 !important;
-    position:absolute !important;
-    left:-10000px !important;
+    opacity:0;
+    position:absolute;
+    left:-10000px;
 }
 
 
