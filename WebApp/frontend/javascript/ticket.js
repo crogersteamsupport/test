@@ -3990,7 +3990,6 @@ function FetchTimeLineItems(start) {
             var isWCFiltered      = $('.filter-wc').hasClass('bgcolor-darkgray');
             for (i = 0; i < _timeLine.length; i++) {
                 var timeLineItem = _timeLine[i];
-                console.log(i + ' ' + timeLineItem.item.IsPinned);
                 var actionElem   = CreateActionElement(timeLineItem, !timeLineItem.item.IsPinned);
                 if (isPublicFiltered && timeLineItem.item.IsVisibleOnPortal) {
                     actionElem.hide();
@@ -4268,7 +4267,6 @@ function CreateTimeLineDelegates() {
         var Action   = nominee.data().action;
         var whoFirst = $('#action-timeline div.action').first().data('id');
         var isPinned = nominee.hasClass('pinned');
-        console.log(whoFirst);
 
         $(nominee).find('a.ticket-action-pinned').toggleClass('hidden');
         $('.action-option-items').hide();
@@ -4282,7 +4280,6 @@ function CreateTimeLineDelegates() {
         if (window.parent.Ts.System.User.IsSystemAdmin || window.parent.Ts.System.User.UserCanPinAction) {
             window.parent.Ts.System.logAction('Ticket - Action Pin Icon Clicked');
             window.parent.Ts.Services.TicketPage.SetActionPinned(_ticketID, Action.RefID, !isPinned, function (result) {
-                console.log(result);
                 if (result) {
                     $('#pinned-placeholder').empty();
                     $(nominee).find('a.action-option-pin span').text('Unpin');
