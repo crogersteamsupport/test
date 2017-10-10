@@ -154,7 +154,7 @@ input {
 
 
 #ticket-properties-area input[type="text"] {
-    min-width:100% !important;
+    /* min-width:100% !important; */
 }
 
 
@@ -178,7 +178,9 @@ input {
 }
 
 
-
+#ticket-properties-area .selectize-control.single .selectize-input:after {
+    display:none;
+}
 
 
 
