@@ -16,7 +16,9 @@ input {
     font-family:'Roboto';
 }
 
-
+.ticket-action-pinned {
+    color:#fb9915 !important;
+}
 
 
 #frame-container {
