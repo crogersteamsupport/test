@@ -4027,11 +4027,11 @@ function CreateActionElement(val, ShouldAppend) {
     var actionElement = $(html);
     actionElement.find('a').attr('target', '_blank');
     if (ShouldAppend || val.item.IsPinned) {
-        try {
-            $('#action-placeholder').after(actionElement);
-            $('#action-placeholder').after(dateSpan);
-            /// console.log(val.item.IsPinned);
-        } catch (e) { }
+        $("#action-timeline").append(dateSpan);
+        $("#action-timeline").append(actionElement);
+    } else {
+        $('.action-placeholder').after(actionElement);
+        $('.action-placeholder').after(dateSpan);
     }
 
     if (val.item.IsPinned) {
