@@ -4028,18 +4028,10 @@ function CreateActionElement(val, ShouldAppend) {
     actionElement.find('a').attr('target', '_blank');
     if (ShouldAppend || val.item.IsPinned) {
         try {
-            $("#action-timeline").append(dateSpan);
-            $("#action-timeline").append(actionElement);
+            $('#action-placeholder').after(actionElement);
+            $('#action-placeholder').after(dateSpan);
             /// console.log(val.item.IsPinned);
         } catch (e) { }
-    } else {
-        if ($('.action.pinned').length) {
-            $('.action.pinned').after(actionElement);
-            $('.action.pinned').after(dateSpan);
-        } else {
-            $('.action-placeholder').after(actionElement);
-            $('.action-placeholder').after(dateSpan);
-        }
     }
 
     if (val.item.IsPinned) {
