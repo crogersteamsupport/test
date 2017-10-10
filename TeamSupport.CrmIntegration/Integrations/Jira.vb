@@ -9,345 +9,345 @@ Imports Newtonsoft.Json
 Imports TeamSupport.JIRA
 
 Namespace TeamSupport
-    Namespace CrmIntegration
-        Public Class Jira
-            Inherits Integration
+  Namespace CrmIntegration
+	Public Class Jira
+      Inherits Integration
 
-            Private _baseURI As String
-            Private _encodedCredentials As String
-            Private _issueTypeFieldsList As Dictionary(Of IssueTypeFields, JObject) = New Dictionary(Of IssueTypeFields, JObject)
-            Private _jiraExceptionMessageFormat As String = "Jira InnerException Message: {0}{1}{2}{2}{2}Jira ErrorResponse: {3}"
+		Private _baseURI As String
+		Private _encodedCredentials As String
+		Private _issueTypeFieldsList As Dictionary(Of IssueTypeFields, JObject) = New Dictionary(Of IssueTypeFields, JObject)
+		Private _jiraExceptionMessageFormat As String = "Jira InnerException Message: {0}{1}{2}{2}{2}Jira ErrorResponse: {3}"
 
-            Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
-                MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.Jira)
-            End Sub
+		Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
+			MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.Jira)
+		End Sub
 
-            Public Overrides Function PerformSync() As Boolean
+		Public Overrides Function PerformSync() As Boolean
                 Dim Success As Boolean = True
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 Or SecurityProtocolType.Tls11 Or SecurityProtocolType.Tls
 
                 If ValidateSyncData() Then
-                    Success = SyncTickets()
-                Else
-                    Success = False
-                End If
+				Success = SyncTickets()
+			Else
+				Success = False
+			End If
 
-                Return Success
-            End Function
+			Return Success
+		End Function
 
-            Private Function ValidateSyncData() As Boolean
-                Dim result As Boolean = True
-                _issueTypeFieldsList = New Dictionary(Of IssueTypeFields, JObject)
+		Private Function ValidateSyncData() As Boolean
+			Dim result As Boolean = True
+			_issueTypeFieldsList =  New Dictionary(Of IssueTypeFields, JObject)
 
-                If CRMLinkRow.HostName Is Nothing Then
-                    result = False
-                    AddLog("HostName is missing and it is required to sync.")
-                Else
-                    Dim protocol As String = String.Empty
-                    If CRMLinkRow.HostName.Length > 4 AndAlso CRMLinkRow.HostName.Substring(0, 4).ToLower() <> "http" Then
-                        protocol = "https://"
-                    End If
-                    _baseURI = protocol + CRMLinkRow.HostName + "/rest/api/latest"
-                End If
+			If CRMLinkRow.HostName Is Nothing Then
+				result = False
+				AddLog("HostName is missing and it is required to sync.")
+			Else
+				Dim protocol As String = String.Empty
+				If CRMLinkRow.HostName.Length > 4 AndAlso CRMLinkRow.HostName.Substring(0, 4).ToLower() <> "http" Then
+					protocol = "https://"
+				End If
+				_baseURI = protocol + CRMLinkRow.HostName + "/rest/api/latest"
+			End If
 
-                If CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password Is Nothing Then
-                    result = False
-                    AddLog("Username and or Password are missing and they are required to sync.")
-                Else
-                    _encodedCredentials = DataUtils.GetEncodedCredentials(CRMLinkRow.Username, CRMLinkRow.Password)
-                End If
+			If CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password Is Nothing Then
+				result = False
+				AddLog("Username and or Password are missing and they are required to sync.")
+			Else
+				_encodedCredentials = DataUtils.GetEncodedCredentials(CRMLinkRow.Username, CRMLinkRow.Password)
+			End If
 
-                'Make sure credentials are good
-                If (result) Then
-                    Try
-                        Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest", ""), CRMLinkRow.Username, CRMLinkRow.Password)
-                        Dim serverInfo As ServerInfo = jiraClient.GetServerInfo()
-                        AddLog("Jira credentials ok.")
-                    Catch jiraEx As JiraClientException
-                        result = False
-                        _exception = New IntegrationException(jiraEx.InnerException.Message, jiraEx)
-                    End Try
-                End If
+			'Make sure credentials are good
+			If (result) Then
+				Try
+					Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest",""), CRMLinkRow.Username, CRMLinkRow.Password)
+					Dim serverInfo As ServerInfo = jiraClient.GetServerInfo()
+					AddLog("Jira credentials ok.")
+				Catch jiraEx As JiraClientException
+					result = False
+					_exception = New IntegrationException(jiraEx.InnerException.Message, jiraEx)
+				End Try
+			End If
 
-                Return result
-            End Function
+			Return result
+		End Function
 
-            Private Function SyncTickets() As Boolean
-                Dim numberOfIssuesToPullAsTickets As Integer = 0
-                Dim ticketLinkToJira As TicketLinkToJira = New TicketLinkToJira(User)
-                Dim issuesToPullAsTickets As List(Of JObject) = New List(Of JObject)
+		Private Function SyncTickets() As Boolean
+			Dim numberOfIssuesToPullAsTickets As Integer = 0
+			Dim ticketLinkToJira As TicketLinkToJira = New TicketLinkToJira(User)
+			Dim issuesToPullAsTickets As List(Of JObject) = New List(Of JObject)
 
-                ticketLinkToJira.LoadByCrmLinkId(CRMLinkRow.CRMLinkID, True)
+			ticketLinkToJira.LoadByCrmLinkId(CRMLinkRow.CRMLinkID, True)
 
-                If ticketLinkToJira.Any AndAlso ticketLinkToJira.Count > 0 Then
-                    Try
-                        issuesToPullAsTickets = GetIssuesToPullAsTickets(ticketLinkToJira, numberOfIssuesToPullAsTickets)
-                    Catch ex As Exception
-                        AddLog("GetIssuesToPullAsTickets with POST failed, using old version now.")
-                        issuesToPullAsTickets = New List(Of JObject)
-                        numberOfIssuesToPullAsTickets = 0
-                        Try
-                            issuesToPullAsTickets = GetIssuesToPullAsTickets(numberOfIssuesToPullAsTickets)
-                        Catch exception As Exception
-                            Log.Write(exception.Message)
-                            Log.Write(exception.StackTrace)
-                            _exception = New IntegrationException(exception.Message, exception)
-                            Return False
-                        End Try
-                    End Try
-                End If
+			If ticketLinkToJira.Any AndAlso ticketLinkToJira.Count > 0 Then
+				Try
+					issuesToPullAsTickets = GetIssuesToPullAsTickets(ticketLinkToJira, numberOfIssuesToPullAsTickets)
+				Catch ex As Exception
+					AddLog("GetIssuesToPullAsTickets with POST failed, using old version now.")
+					issuesToPullAsTickets = New List(Of JObject)
+					numberOfIssuesToPullAsTickets = 0
+					Try
+						issuesToPullAsTickets = GetIssuesToPullAsTickets(numberOfIssuesToPullAsTickets)
+					Catch exception As Exception
+						Log.Write(exception.Message)
+						Log.Write(exception.StackTrace)
+						_exception = New IntegrationException(exception.Message, exception)
+						Return False
+					End Try
+				End Try
+			End If
 
-                Dim ticketsLinksToJiraToPushAsIssues As TicketLinkToJira = Nothing
-                Dim ticketsToPushAsIssues As TicketsView = GetTicketsToPushAsIssues(ticketsLinksToJiraToPushAsIssues)
-                Dim allStatuses As TicketStatuses = New TicketStatuses(User)
-                Dim newActionsTypeID As Integer = 0
+			Dim ticketsLinksToJiraToPushAsIssues As TicketLinkToJira = Nothing
+			Dim ticketsToPushAsIssues As TicketsView = GetTicketsToPushAsIssues(ticketsLinksToJiraToPushAsIssues)
+			Dim allStatuses As TicketStatuses = New TicketStatuses(User)
+			Dim newActionsTypeID As Integer = 0
 
-                If ticketsToPushAsIssues.Count > 0 OrElse numberOfIssuesToPullAsTickets > 0 Then
-                    allStatuses.LoadByOrganizationID(CRMLinkRow.OrganizationID)
-                    newActionsTypeID = GetNewActionsTypeID(CRMLinkRow.OrganizationID)
-                End If
-
+			If ticketsToPushAsIssues.Count > 0 OrElse numberOfIssuesToPullAsTickets > 0 Then
+				allStatuses.LoadByOrganizationID(CRMLinkRow.OrganizationID)
+				newActionsTypeID = GetNewActionsTypeID(CRMLinkRow.OrganizationID)
+			End If
+			
                 Dim ticketTypeMappings As New CRMLinkFields(User)
                 ticketTypeMappings.LoadByObjectType("TicketType", CRMLinkRow.CRMLinkID)
 
-                If ticketsToPushAsIssues.Count > 0 Then
+			If ticketsToPushAsIssues.Count > 0 Then
                     PushTicketsAndActionsAsIssuesAndComments(ticketsToPushAsIssues, ticketsLinksToJiraToPushAsIssues, allStatuses, newActionsTypeID, ticketTypeMappings)
-                End If
+			End If
 
-                If numberOfIssuesToPullAsTickets > 0 Then
-                    For Each batchOfIssuesToPullAsTicket As JObject In issuesToPullAsTickets
+			If numberOfIssuesToPullAsTickets > 0 Then
+				For Each batchOfIssuesToPullAsTicket As JObject In issuesToPullAsTickets
                         PullIssuesAndCommentsAsTicketsAndActions(batchOfIssuesToPullAsTicket("issues"), allStatuses, newActionsTypeID, ticketTypeMappings)
-                    Next
-                End If
+				Next
+			End If
 
-                Return Not SyncError
-            End Function
+			Return Not SyncError
+		End Function
 
-            Private Function GetTicketsToPushAsIssues(ByRef ticketsLinksToJiraToPushAsIssues As TicketLinkToJira) As TicketsView
-                Dim result As New TicketsView(User)
-                result.LoadToPushToJira(CRMLinkRow)
-                AddLog("Got " + result.Count.ToString() + " Tickets To Push As Issues.")
+      Private Function GetTicketsToPushAsIssues(ByRef ticketsLinksToJiraToPushAsIssues As TicketLinkToJira) As TicketsView
+        Dim result As New TicketsView(User)
+        result.LoadToPushToJira(CRMLinkRow)
+        AddLog("Got " + result.Count.ToString() + " Tickets To Push As Issues.")
 
-                ticketsLinksToJiraToPushAsIssues = New TicketLinkToJira(User)
-                ticketsLinksToJiraToPushAsIssues.LoadToPushToJira(CRMLinkRow)
+        ticketsLinksToJiraToPushAsIssues = New TicketLinkToJira(User)
+        ticketsLinksToJiraToPushAsIssues.LoadToPushToJira(CRMLinkRow)
 
-                Return result
-            End Function
+        Return result
+      End Function
 
-            ''' <summary>
-            ''' Search by POSTing the query
-            ''' </summary>
-            ''' <param name="jiraIdList">List of the jira ids to search. These are the ones we know have been linked, already in TeamSupport in the TicketLinkToJira table.</param>
-            ''' <param name="numberOfIssuesToPull">variable that will have the count of the issues found.</param>
-            ''' <returns>A list of JObject with the issues found based on the query.</returns>
-            Private Function GetIssuesToPullAsTickets(ByRef ticketLinkToJira As TicketLinkToJira, ByRef numberOfIssuesToPull As Integer) As List(Of JObject)
-                Dim jiraIdList As List(Of Integer) = ticketLinkToJira.Where(Function(w) w.CrmLinkID IsNot Nothing).Select(Function(p) CType(p.JiraID, Integer)).ToList()
-                Dim result As List(Of JObject) = New List(Of JObject)
-                Dim recentClause As String = String.Empty
+		''' <summary>
+	  ''' Search by POSTing the query
+	  ''' </summary>
+	  ''' <param name="jiraIdList">List of the jira ids to search. These are the ones we know have been linked, already in TeamSupport in the TicketLinkToJira table.</param>
+	  ''' <param name="numberOfIssuesToPull">variable that will have the count of the issues found.</param>
+	  ''' <returns>A list of JObject with the issues found based on the query.</returns>
+		Private Function GetIssuesToPullAsTickets(ByRef ticketLinkToJira As TicketLinkToJira, ByRef numberOfIssuesToPull As Integer) As List(Of JObject)
+			Dim jiraIdList As List(Of Integer) = ticketLinkToJira.Where(Function(w) w.CrmLinkID IsNot Nothing).Select(Function(p) CType(p.JiraID, Integer)).ToList()
+			Dim result As List(Of JObject) = New List(Of JObject)
+			Dim recentClause As String = String.Empty
 
-                If CRMLinkRow.LastLink IsNot Nothing Then
-                    recentClause = "updated>-" + GetMinutesSinceLastLink().ToString() + "m"
-                Else
-                    Dim minutesSinceFirstSyncedTicket As Integer = GetMinutesSinceFirstSyncedTicket()
+			If CRMLinkRow.LastLink IsNot Nothing Then
+				recentClause = "updated>-" + GetMinutesSinceLastLink().ToString() + "m"
+			Else
+				Dim minutesSinceFirstSyncedTicket As Integer = GetMinutesSinceFirstSyncedTicket()
 
-                    If minutesSinceFirstSyncedTicket > 0 Then
-                        recentClause = "updated>-" + minutesSinceFirstSyncedTicket.ToString() + "m"
-                    Else
-                        Log.Write("No tickets have been synced, therefore no issues to pull exist.")
-                        Return result
-                    End If
-                End If
+				If minutesSinceFirstSyncedTicket > 0 Then
+					recentClause = "updated>-" + minutesSinceFirstSyncedTicket.ToString() + "m"
+				Else
+					Log.Write("No tickets have been synced, therefore no issues to pull exist.")
+					Return result
+				End If
+			End If
 
-                'Search only for the jira ids we have, those are the ones linked and the only ones that we need to check for updates
-                Dim URI As String = _baseURI + "/search"
-                Dim jiraIdClause As String = String.Empty
+			'Search only for the jira ids we have, those are the ones linked and the only ones that we need to check for updates
+			Dim URI As String = _baseURI + "/search"
+			Dim jiraIdClause As String = String.Empty
 
-                If (jiraIdList.Any() AndAlso jiraIdList.Count > 0) Then
-                    jiraIdClause = String.Join(",", jiraIdList.ToArray())
-                End If
+			If (jiraIdList.Any() AndAlso jiraIdList.Count > 0) Then
+				jiraIdClause = String.Join(",", jiraIdList.ToArray())
+			End If
 
-                If (Not String.IsNullOrEmpty(jiraIdClause)) Then
-                    Dim needToGetMore As Boolean = True
-                    Dim maxResults As Integer? = Nothing
-                    Dim body As StringBuilder = New StringBuilder()
-                    Dim startAt As Integer = 0
-                    Dim batch As JObject = New JObject
-                    Dim listWasScrubbed As Boolean = False
+			If (Not String.IsNullOrEmpty(jiraIdClause)) Then
+				Dim needToGetMore As Boolean = True
+				Dim maxResults As Integer? = Nothing
+				Dim body As StringBuilder = New StringBuilder()
+				Dim startAt As Integer = 0
+				Dim batch As JObject = New JObject
+				Dim listWasScrubbed As Boolean = False
 
-                    While needToGetMore
-                        listWasScrubbed = False
-                        body.Append("{")
-                        body.Append(String.Format("""jql"": ""id IN ({0}) AND {1} ORDER BY updated asc"",", jiraIdClause, recentClause))
-                        body.Append("""fields"": [""*all""],")
-                        body.Append(String.Format("""startAt"": {0}", startAt))
-                        body.Append("}")
+				While needToGetMore
+					listWasScrubbed = False
+					body.Append("{")
+					body.Append(String.Format("""jql"": ""id IN ({0}) AND {1} ORDER BY updated asc"",", jiraIdClause, recentClause))
+					body.Append("""fields"": [""*all""],")
+					body.Append(String.Format("""startAt"": {0}", startAt))
+					body.Append("}")
 
-                        Try
-                            batch = GetAPIJObject(URI, "POST", body.ToString())
-                        Catch webEx As WebException
-                            Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
+					Try
+						batch = GetAPIJObject(URI, "POST", body.ToString())
+					Catch webEx As WebException
+						Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
 
-                            If (jiraErrors IsNot Nothing AndAlso jiraErrors.HasErrors) Then
-                                AddLog("Error when searching issues, scrubbing.")
-                                ScrubIssues(jiraIdList, jiraErrors, ticketLinkToJira)
+						If (jiraErrors IsNot Nothing AndAlso jiraErrors.HasErrors) Then
+							AddLog("Error when searching issues, scrubbing.")
+							ScrubIssues(jiraIdList, jiraErrors, ticketLinkToJira)
 
-                                If (jiraIdList IsNot Nothing AndAlso jiraIdList.Count > 0 AndAlso jiraIdList.Any()) Then
-                                    jiraIdClause = String.Join(",", jiraIdList.ToArray())
-                                    startAt = 0
-                                    body.Clear()
-                                    batch = New JObject()
-                                    listWasScrubbed = True
-                                Else
-                                    Exit While
-                                End If
-                            Else
-                                numberOfIssuesToPull = 0
-                                Throw webEx
-                            End If
-                        End Try
+							If (jiraIdList IsNot Nothing AndAlso jiraIdList.Count > 0 AndAlso jiraIdList.Any()) Then
+								jiraIdClause = String.Join(",", jiraIdList.ToArray())
+								startAt = 0
+								body.Clear()
+								batch = New JObject()
+								listWasScrubbed = True
+							Else
+								Exit While
+							End If
+						Else
+							numberOfIssuesToPull = 0
+							Throw webEx
+						End If
+					End Try
 
-                        If (Not listWasScrubbed) Then
-                            result.Add(batch)
-                            body.Clear()
-                            Dim batchTotal As Integer = batch("issues").Count
-                            numberOfIssuesToPull += batchTotal
+					If (Not listWasScrubbed) Then
+						result.Add(batch)
+						body.Clear()
+						Dim batchTotal As Integer = batch("issues").Count
+						numberOfIssuesToPull += batchTotal
 
-                            If maxResults Is Nothing Then
-                                maxResults = CType(batch("maxResults").ToString(), Integer?)
-                            End If
+						If maxResults Is Nothing Then
+							maxResults = CType(batch("maxResults").ToString(), Integer?)
+						End If
 
-                            If batchTotal = maxResults Then
-                                startAt = numberOfIssuesToPull
-                            Else
-                                needToGetMore = False
-                            End If
-                        End If
-                    End While
-                End If
+						If batchTotal = maxResults Then
+							startAt = numberOfIssuesToPull
+						Else
+							needToGetMore = False
+						End If
+					End If
+				End While
+			End If
 
-                Log.Write("Got " + numberOfIssuesToPull.ToString() + " Issues To Pull As Tickets.")
-                Return result
-            End Function
+			Log.Write("Got " + numberOfIssuesToPull.ToString() + " Issues To Pull As Tickets.")
+			Return result
+		End Function
 
-            ''' <summary>
-            ''' Removes the non-existing issues in Jira from the list we have in the TicketLinkToJira table
-            ''' </summary>
-            ''' <param name="jiraIdList">A reference to the list we got from TicketLinkToJira</param>
-            ''' <param name="url">Organization's Jira url</param>
-            ''' <param name="recentClause">Recent clause. To narrow the results.</param>
-            Private Sub ScrubIssues(ByRef jiraIdList As List(Of Integer), ByVal errorsList As JiraErrorsResponse, ByRef ticketLinkToJira As TicketLinkToJira)
-                Dim nonExistingIssuesList As List(Of Integer) = New List(Of Integer)
-                Dim query As StringBuilder = New StringBuilder()
+		''' <summary>
+		''' Removes the non-existing issues in Jira from the list we have in the TicketLinkToJira table
+		''' </summary>
+		''' <param name="jiraIdList">A reference to the list we got from TicketLinkToJira</param>
+		''' <param name="url">Organization's Jira url</param>
+		''' <param name="recentClause">Recent clause. To narrow the results.</param>
+		Private Sub ScrubIssues(ByRef jiraIdList As List(Of Integer), ByVal errorsList As JiraErrorsResponse, ByRef ticketLinkToJira As TicketLinkToJira)
+			Dim nonExistingIssuesList As List(Of Integer) = New List(Of Integer)
+			Dim query As StringBuilder = New StringBuilder()
 
-                'As of 03/12/16 the format of the error message returned by Jira when the issueId does not exist is: "A value with ID '## Id Here ##' does not exist for the field 'id'."				
-                For Each issueId As Integer In jiraIdList
-                    If (errorsList.ErrorMessages.Where(Function(p) p.Contains("'" + issueId.ToString() + "'")).Any()) Then
-                        nonExistingIssuesList.Add(issueId)
+			'As of 03/12/16 the format of the error message returned by Jira when the issueId does not exist is: "A value with ID '## Id Here ##' does not exist for the field 'id'."				
+			For Each issueId As Integer In jiraIdList
+				If (errorsList.ErrorMessages.Where(Function(p) p.Contains("'" + issueId.ToString() + "'")).Any()) Then
+					nonExistingIssuesList.Add(issueId)
 
-                        Dim ticketLinkToJiraId As Integer = ticketLinkToJira.Where(Function(p) p.JiraID = issueId AndAlso p.CrmLinkID = CRMLinkRow.CRMLinkID).Select(Function(p) p.id).FirstOrDefault()
-                        Dim ticketLinkToJiraItem As TicketLinkToJiraItem = ticketLinkToJira.FindByid(ticketLinkToJiraId)
-                        ticketLinkToJiraItem.JiraID = Nothing
-                        ticketLinkToJiraItem.DateModifiedByJiraSync = Date.UtcNow
-                        ticketLinkToJiraItem.SyncWithJira = 0
-                        ticketLinkToJiraItem.JiraStatus = "DoesNotExist. IssueId: " + issueId.ToString()
-                        ticketLinkToJiraItem.Collection.Save()
-                    End If
-                Next
+					Dim ticketLinkToJiraId As Integer = ticketLinkToJira.Where(Function(p) p.JiraID = issueId AndAlso p.CrmLinkID = CRMLinkRow.CRMLinkID).Select(Function(p) p.id).FirstOrDefault()
+					Dim ticketLinkToJiraItem As TicketLinkToJiraItem = ticketLinkToJira.FindByid(ticketLinkToJiraId)
+					ticketLinkToJiraItem.JiraID = Nothing
+					ticketLinkToJiraItem.DateModifiedByJiraSync = Date.UtcNow
+					ticketLinkToJiraItem.SyncWithJira = 0
+					ticketLinkToJiraItem.JiraStatus = "DoesNotExist. IssueId: " + issueId.ToString()
+					ticketLinkToJiraItem.Collection.Save()
+				End If
+			Next
 
-                If (nonExistingIssuesList.Any() AndAlso nonExistingIssuesList.Count > 0) Then
-                    AddLog(String.Format("IssueIds not found in Jira that will be excluded on sync: {0}", String.Join(",", nonExistingIssuesList.ToArray())))
-                    jiraIdList = jiraIdList.Except(nonExistingIssuesList).ToList()
-                End If
-            End Sub
+			If (nonExistingIssuesList.Any() AndAlso nonExistingIssuesList.Count > 0) Then
+				AddLog(String.Format("IssueIds not found in Jira that will be excluded on sync: {0}", String.Join(",", nonExistingIssuesList.ToArray())))
+				jiraIdList = jiraIdList.Except(nonExistingIssuesList).ToList()
+			End If
+		End Sub
 
-            'Private Sub ScrubIssues(ByRef jiraIdList As List(Of Integer), ByVal url As String, ByVal recentClause As String, ByRef ticketLinkToJira As TicketLinkToJira)
-            '	Dim nonExistingIssuesList As List(Of Integer) = New List(Of Integer)
-            '	Dim query As StringBuilder = New StringBuilder()
+		'Private Sub ScrubIssues(ByRef jiraIdList As List(Of Integer), ByVal url As String, ByVal recentClause As String, ByRef ticketLinkToJira As TicketLinkToJira)
+		'	Dim nonExistingIssuesList As List(Of Integer) = New List(Of Integer)
+		'	Dim query As StringBuilder = New StringBuilder()
 
-            '	'If we get here then one or more issues don't exist in Jira. We'll have to go one by one! and NULL their jiraId here
-            '	For Each issueId As Integer In jiraIdList
-            '		query.Clear()
-            '		query.Append(_baseURI)
-            '		query.Append("/issue/")
-            '		query.Append(issueId.ToString())
-            '		query.Append("?fields=id")
+		'	'If we get here then one or more issues don't exist in Jira. We'll have to go one by one! and NULL their jiraId here
+		'	For Each issueId As Integer In jiraIdList
+		'		query.Clear()
+		'		query.Append(_baseURI)
+		'		query.Append("/issue/")
+		'		query.Append(issueId.ToString())
+		'		query.Append("?fields=id")
+					
+		'		Try
+		'			Dim result As JObject = GetAPIJObject(query.ToString(), "GET", String.Empty, False)
+		'		Catch ex2 As Exception
+		'			nonExistingIssuesList.Add(issueId)
+		'			Dim ticketLinkToJiraId As Integer = ticketLinkToJira.Where(Function(p) p.JiraID = issueId AndAlso p.CrmLinkID = CRMLinkRow.CRMLinkID).Select(Function(p) p.id).FirstOrDefault()
+		'			Dim ticketLinkToJiraItem As TicketLinkToJiraItem = ticketLinkToJira.FindByid(ticketLinkToJiraId)
+		'			ticketLinkToJiraItem.JiraID = Nothing
+		'			ticketLinkToJiraItem.DateModifiedByJiraSync = Date.UtcNow
+		'			ticketLinkToJiraItem.SyncWithJira = 0
+		'			ticketLinkToJiraItem.JiraStatus = "DoesNotExist. IssueId: " + issueId.ToString()
+		'			ticketLinkToJiraItem.Collection.Save()
+		'		End Try
+		'	Next
 
-            '		Try
-            '			Dim result As JObject = GetAPIJObject(query.ToString(), "GET", String.Empty, False)
-            '		Catch ex2 As Exception
-            '			nonExistingIssuesList.Add(issueId)
-            '			Dim ticketLinkToJiraId As Integer = ticketLinkToJira.Where(Function(p) p.JiraID = issueId AndAlso p.CrmLinkID = CRMLinkRow.CRMLinkID).Select(Function(p) p.id).FirstOrDefault()
-            '			Dim ticketLinkToJiraItem As TicketLinkToJiraItem = ticketLinkToJira.FindByid(ticketLinkToJiraId)
-            '			ticketLinkToJiraItem.JiraID = Nothing
-            '			ticketLinkToJiraItem.DateModifiedByJiraSync = Date.UtcNow
-            '			ticketLinkToJiraItem.SyncWithJira = 0
-            '			ticketLinkToJiraItem.JiraStatus = "DoesNotExist. IssueId: " + issueId.ToString()
-            '			ticketLinkToJiraItem.Collection.Save()
-            '		End Try
-            '	Next
+		'	If (nonExistingIssuesList.Any() AndAlso nonExistingIssuesList.Count > 0) Then
+		'		Log.Write(String.Format("IssueIds not found in Jira that will be excluded on sync: {0}", String.Join(",", nonExistingIssuesList.ToArray())))
+		'		jiraIdList = jiraIdList.Except(nonExistingIssuesList).ToList()
+		'	End If
+		'End Sub
 
-            '	If (nonExistingIssuesList.Any() AndAlso nonExistingIssuesList.Count > 0) Then
-            '		Log.Write(String.Format("IssueIds not found in Jira that will be excluded on sync: {0}", String.Join(",", nonExistingIssuesList.ToArray())))
-            '		jiraIdList = jiraIdList.Except(nonExistingIssuesList).ToList()
-            '	End If
-            'End Sub
+        Private Function GetMinutesSinceLastLink() As Integer
+          Dim datesDifference As TimeSpan = DateTime.UtcNow.Subtract(CRMLinkRow.LastLinkUtc)
+          Return datesDifference.TotalMinutes + 30
+        End Function
 
-            Private Function GetMinutesSinceLastLink() As Integer
-                Dim datesDifference As TimeSpan = DateTime.UtcNow.Subtract(CRMLinkRow.LastLinkUtc)
-                Return datesDifference.TotalMinutes + 30
-            End Function
+        Private Function GetMinutesSinceFirstSyncedTicket() As Integer
+          Dim firstSyncedTicket As Tickets = New Tickets(MyBase.User)
+          firstSyncedTicket.LoadFirstJiraSynced(CRMLinkRow.OrganizationID)
+          Dim result As Integer = 0
+          If firstSyncedTicket.Count > 0 Then
+            Dim datesDifference As TimeSpan = DateTime.UtcNow.Subtract(firstSyncedTicket(0).DateCreatedUtc)
+            result = datesDifference.TotalMinutes + 30
+          End If
+          Return result
+        End Function
 
-            Private Function GetMinutesSinceFirstSyncedTicket() As Integer
-                Dim firstSyncedTicket As Tickets = New Tickets(MyBase.User)
-                firstSyncedTicket.LoadFirstJiraSynced(CRMLinkRow.OrganizationID)
-                Dim result As Integer = 0
-                If firstSyncedTicket.Count > 0 Then
-                    Dim datesDifference As TimeSpan = DateTime.UtcNow.Subtract(firstSyncedTicket(0).DateCreatedUtc)
-                    result = datesDifference.TotalMinutes + 30
-                End If
-                Return result
-            End Function
+		Private Function GetAPIJObject(ByVal URI As String, ByVal verb As String, ByVal body As String) As JObject
+			AddLog(String.Format("{0} URI: {1}", verb, URI))
+			
+			If verb <> "GET" AndAlso Not String.IsNullOrEmpty(body) Then
+				AddLog("body: " + body)
+			End If
 
-            Private Function GetAPIJObject(ByVal URI As String, ByVal verb As String, ByVal body As String) As JObject
-                AddLog(String.Format("{0} URI: {1}", verb, URI))
+			Dim result As JObject
+			
+			Using response As HttpWebResponse = MakeHTTPRequest(_encodedCredentials, URI, verb, "application/json", Client, body)
+				Dim responseReader As New StreamReader(response.GetResponseStream())
+				result = JObject.Parse(responseReader.ReadToEnd)
+				responseReader.Close()
+				response.Close()
 
-                If verb <> "GET" AndAlso Not String.IsNullOrEmpty(body) Then
-                    AddLog("body: " + body)
-                End If
+				AddLog("responseReader and response closed. Exiting Using.")
+			End Using
 
-                Dim result As JObject
+			Return result
+		End Function
 
-                Using response As HttpWebResponse = MakeHTTPRequest(_encodedCredentials, URI, verb, "application/json", Client, body)
-                    Dim responseReader As New StreamReader(response.GetResponseStream())
-                    result = JObject.Parse(responseReader.ReadToEnd)
-                    responseReader.Close()
-                    response.Close()
+        Private Function GetAPIJArray(ByVal URI As String, ByVal verb As String, ByVal body As String) As JArray
+		  Log.Write(String.Format("{0} URI: {1}", verb, URI))
 
-                    AddLog("responseReader and response closed. Exiting Using.")
-                End Using
+			If verb <> "GET" AndAlso Not String.IsNullOrEmpty(body) Then
+				Log.Write("body: " + body)
+			End If
 
-                Return result
-            End Function
+			Dim result As JArray
 
-            Private Function GetAPIJArray(ByVal URI As String, ByVal verb As String, ByVal body As String) As JArray
-                Log.Write(String.Format("{0} URI: {1}", verb, URI))
+			Using response As HttpWebResponse = MakeHTTPRequest(_encodedCredentials, URI, verb, "application/json", Client, body)
+				Dim responseReader As New StreamReader(response.GetResponseStream())
+				result = JArray.Parse(responseReader.ReadToEnd)
+				response.Close()
+			End Using
+          
+			Return result
+		End Function
 
-                If verb <> "GET" AndAlso Not String.IsNullOrEmpty(body) Then
-                    Log.Write("body: " + body)
-                End If
-
-                Dim result As JArray
-
-                Using response As HttpWebResponse = MakeHTTPRequest(_encodedCredentials, URI, verb, "application/json", Client, body)
-                    Dim responseReader As New StreamReader(response.GetResponseStream())
-                    result = JArray.Parse(responseReader.ReadToEnd)
-                    response.Close()
-                End Using
-
-                Return result
-            End Function
-
-            Private Function MakeHTTPRequest(
+	Private Function MakeHTTPRequest(
         ByVal encodedCredentials As String,
         ByVal URI As String,
         ByVal method As String,
@@ -355,11 +355,11 @@ Namespace TeamSupport
         ByVal userAgent As String,
         ByVal body As String) As HttpWebResponse
 
-                Dim request As HttpWebRequest = WebRequest.Create(URI)
-                request.Headers.Add("Authorization", "Basic " + encodedCredentials)
-                request.Method = method
-                request.ContentType = contentType
-                request.UserAgent = userAgent
+        Dim request As HttpWebRequest = WebRequest.Create(URI)
+        request.Headers.Add("Authorization", "Basic " + encodedCredentials)
+        request.Method = method
+        request.ContentType = contentType
+		request.UserAgent = userAgent
 
                 If CRMLinkRow.OrganizationID = 869700 OrElse CRMLinkRow.OrganizationID = 794765 OrElse CRMLinkRow.OrganizationID = 881342 Then
                     request.Timeout = 600000
@@ -2146,123 +2146,123 @@ Namespace TeamSupport
                             End If
                         Case "issuetype", "status", "priority", "resolution"
                             result = field.Value("name").ToString()
-                        Case "progress", "worklog"
-                            result = field.Value("total").ToString()
-                        Case "project"
-                            result = field.Value("key").ToString()
-                        Case "votes"
-                            result = field.Value("votes").ToString()
-                        Case "watches"
-                            result = field.Value("watchCount").ToString()
-                        Case "timetracking"
-                            result = field.Value("timeSpentSeconds").ToString()
-                        Case "aggregrateprogress"
-                            result = field.Value("progress").ToString()
-                        Case "attachment"
-                            Dim attachmentsArray As JArray = DirectCast(field.Value, JArray)
-                            Dim resultBuilder As StringBuilder = New StringBuilder()
-                            Dim preffix = String.Empty
+				Case "progress", "worklog"
+					result = field.Value("total").ToString()
+				Case "project"
+					result = field.Value("key").ToString()
+				Case "votes"
+					result = field.Value("votes").ToString()
+				Case "watches"
+					result = field.Value("watchCount").ToString()
+				Case "timetracking"
+					result = field.Value("timeSpentSeconds").ToString()
+				Case "aggregrateprogress"
+					result = field.Value("progress").ToString()
+				Case "attachment"
+					Dim attachmentsArray As JArray = DirectCast(field.Value, JArray)
+					Dim resultBuilder As StringBuilder = New StringBuilder()
+					Dim preffix = String.Empty
 
-                            For i = 0 To attachmentsArray.Count - 1
-                                resultBuilder.Append(preffix)
-                                resultBuilder.Append(attachmentsArray(i)("content").ToString())
+					For i = 0 To attachmentsArray.Count - 1
+						resultBuilder.Append(preffix)
+						resultBuilder.Append(attachmentsArray(i)("content").ToString())
 
-                                If preffix = String.Empty Then
-                                    preffix = ", "
-                                End If
-                            Next
+						If preffix = String.Empty Then
+							preffix = ", "
+						End If
+					Next
 
-                            result = resultBuilder.ToString()
-                        Case "labels"
-                            Dim labelsArray As JArray = DirectCast(field.Value, JArray)
-                            Dim resultBuilder As StringBuilder = New StringBuilder()
-                            Dim preffix = String.Empty
+					result = resultBuilder.ToString()
+				Case "labels"
+					Dim labelsArray As JArray = DirectCast(field.Value, JArray)
+					Dim resultBuilder As StringBuilder = New StringBuilder()
+					Dim preffix = String.Empty
 
-                            For i = 0 To labelsArray.Count - 1
-                                resultBuilder.Append(preffix)
-                                resultBuilder.Append(labelsArray(i).ToString())
+					For i = 0 To labelsArray.Count - 1
+						resultBuilder.Append(preffix)
+						resultBuilder.Append(labelsArray(i).ToString())
 
-                                If preffix = String.Empty Then
-                                    preffix = ", "
-                                End If
-                            Next
+						If preffix = String.Empty Then
+							preffix = ", "
+						End If
+					Next
 
-                            result = resultBuilder.ToString()
-                        Case "issuelinks"
-                            Dim issuelinksArray As JArray = DirectCast(field.Value, JArray)
-                            Dim resultBuilder As StringBuilder = New StringBuilder()
-                            Dim preffix = String.Empty
+					result = resultBuilder.ToString()
+				Case "issuelinks"
+					Dim issuelinksArray As JArray = DirectCast(field.Value, JArray)
+					Dim resultBuilder As StringBuilder = New StringBuilder()
+					Dim preffix = String.Empty
 
-                            For i = 0 To issuelinksArray.Count - 1
-                                resultBuilder.Append(preffix)
+					For i = 0 To issuelinksArray.Count - 1
+						resultBuilder.Append(preffix)
 
-                                If issuelinksArray(i)("outwardIssue") IsNot Nothing Then
-                                    resultBuilder.Append(issuelinksArray(i)("outwardIssue")("key").ToString())
-                                Else
-                                    resultBuilder.Append(issuelinksArray(i)("inwardIssue")("key").ToString())
-                                End If
+						If issuelinksArray(i)("outwardIssue") IsNot Nothing Then
+							resultBuilder.Append(issuelinksArray(i)("outwardIssue")("key").ToString())
+						Else
+							resultBuilder.Append(issuelinksArray(i)("inwardIssue")("key").ToString())
+						End If
 
-                                If preffix = String.Empty Then
-                                    preffix = ", "
-                                End If
-                            Next
+						If preffix = String.Empty Then
+							preffix = ", "
+						End If
+					Next
+					
+					result = resultBuilder.ToString()
+				Case "versions", "fixversions"
+					Dim versionsArray As JArray = DirectCast(field.Value, JArray)
+					Dim resultBuilder As StringBuilder = New StringBuilder()
+					Dim preffix = String.Empty
 
-                            result = resultBuilder.ToString()
-                        Case "versions", "fixversions"
-                            Dim versionsArray As JArray = DirectCast(field.Value, JArray)
-                            Dim resultBuilder As StringBuilder = New StringBuilder()
-                            Dim preffix = String.Empty
+					For i = 0 To versionsArray.Count - 1
+						resultBuilder.Append(preffix)
 
-                            For i = 0 To versionsArray.Count - 1
-                                resultBuilder.Append(preffix)
+						Try
+							resultBuilder.Append(versionsArray(i)("name").ToString())
+						Catch ex As Exception
+							resultBuilder.Append(versionsArray(i)("description").ToString())
+						End Try
 
-                                Try
-                                    resultBuilder.Append(versionsArray(i)("name").ToString())
-                                Catch ex As Exception
-                                    resultBuilder.Append(versionsArray(i)("description").ToString())
-                                End Try
+						If preffix = String.Empty Then
+							preffix = ", "
+						End If
+					Next
 
-                                If preffix = String.Empty Then
-                                    preffix = ", "
-                                End If
-                            Next
+					result = resultBuilder.ToString()
+				Case "subtasks"
+					Dim subtasksArray As JArray = DirectCast(field.Value, JArray)
+					Dim resultBuilder As StringBuilder = New StringBuilder()
+					Dim preffix = String.Empty
 
-                            result = resultBuilder.ToString()
-                        Case "subtasks"
-                            Dim subtasksArray As JArray = DirectCast(field.Value, JArray)
-                            Dim resultBuilder As StringBuilder = New StringBuilder()
-                            Dim preffix = String.Empty
+					For i = 0 To subtasksArray.Count - 1
+						resultBuilder.Append(preffix)
+						resultBuilder.Append(subtasksArray(i)("fields")("summary").ToString())
 
-                            For i = 0 To subtasksArray.Count - 1
-                                resultBuilder.Append(preffix)
-                                resultBuilder.Append(subtasksArray(i)("fields")("summary").ToString())
+						If preffix = String.Empty Then
+							preffix = ", "
+						End If
+					Next
 
-                                If preffix = String.Empty Then
-                                    preffix = ", "
-                                End If
-                            Next
+					result = resultBuilder.ToString()
+				Case "components"
+					Dim componentsArray As JArray = DirectCast(field.Value, JArray)
+					Dim resultBuilder As StringBuilder = New StringBuilder()
+					Dim preffix = String.Empty
+					
+					For i = 0 To componentsArray.Count - 1
+						resultBuilder.Append(preffix)
+						resultBuilder.Append(componentsArray(i)("name").ToString())
 
-                            result = resultBuilder.ToString()
-                        Case "components"
-                            Dim componentsArray As JArray = DirectCast(field.Value, JArray)
-                            Dim resultBuilder As StringBuilder = New StringBuilder()
-                            Dim preffix = String.Empty
+						If preffix = String.Empty Then
+							preffix = ", "
+						End If
+					Next
 
-                            For i = 0 To componentsArray.Count - 1
-                                resultBuilder.Append(preffix)
-                                resultBuilder.Append(componentsArray(i)("name").ToString())
+					result = resultBuilder.ToString()
+				End Select
+			End If
 
-                                If preffix = String.Empty Then
-                                    preffix = ", "
-                                End If
-                            Next
-
-                            result = resultBuilder.ToString()
-                    End Select
-                End If
-
-                Return result
-            End Function
+			Return result
+		End Function
 
             Private Function GetTicketsTableRelatedFieldName(ByVal mappedFieldName As String, ByVal value As String, ByRef ticketsTableRelatedValue As Integer?)
                 Dim result As StringBuilder = New StringBuilder()
@@ -2329,70 +2329,70 @@ Namespace TeamSupport
                 Return result
             End Function
 
-            Private Sub AddNewCommentsInTicket(ByVal ticketID As Integer, ByRef newComments As JArray, ByVal newActionsTypeID As Integer, ByRef crmLinkActionErrors As CRMLinkErrors)
-                Dim crmLinkError As CRMLinkError = Nothing
+		Private Sub AddNewCommentsInTicket(ByVal ticketID As Integer, ByRef newComments As JArray, ByVal newActionsTypeID As Integer, ByRef crmLinkActionErrors As CRMLinkErrors)
+			Dim crmLinkError As CRMLinkError = Nothing
 
-                For i = 0 To newComments.Count - 1
-                    crmLinkError = crmLinkActionErrors.FindByObjectIDAndFieldName(newComments(i)("id").ToString(), String.Empty)
+			For i = 0 To newComments.Count - 1
+				crmLinkError = crmLinkActionErrors.FindByObjectIDAndFieldName(newComments(i)("id").ToString(), String.Empty)
 
-                    Try
-                        Dim updateActions As Actions = New Actions(User)
-                        updateActions.AddNewAction()
-                        updateActions(0).TicketID = ticketID
-                        updateActions(0).ActionTypeID = newActionsTypeID
+				Try
+					Dim updateActions As Actions = New Actions(User)
+					updateActions.AddNewAction()
+					updateActions(0).TicketID = ticketID
+					updateActions(0).ActionTypeID = newActionsTypeID
 
-                        Dim commentDescription = newComments(i)("body").ToString()
-                        Dim firstLine As String = "<p><em>Comment added in Jira {0}{1}</em></p> <p>&nbsp;</p>"
-                        Dim author As String = String.Empty
+					Dim commentDescription = newComments(i)("body").ToString()
+					Dim firstLine As String = "<p><em>Comment added in Jira {0}{1}</em></p> <p>&nbsp;</p>"
+					Dim author As String = String.Empty
 
-                        Try
-                            author = newComments(i)("author")("displayName").ToString()
-                        Catch ex As Exception
-                            AddLog("The author displayName was not found for the comment.")
-                        End Try
+					Try
+						author = newComments(i)("author")("displayName").ToString()
+					Catch ex As Exception
+						AddLog("The author displayName was not found for the comment.")
+					End Try
 
-                        Dim addedOnJiraString As String = String.Empty
+					Dim addedOnJiraString As String = String.Empty
 
-                        Try
-                            Dim addedOnJira As Date = Convert.ToDateTime(newComments(i)("created"))
+					Try
+						Dim addedOnJira As Date = Convert.ToDateTime(newComments(i)("created"))
 
-                            If (DateDiff(DateInterval.Day, Today.Date, addedOnJira.Date) <> 0) Then
-                                addedOnJiraString = addedOnJira.ToString()
-                            End If
-                        Catch ex As Exception
-                            AddLog("The created date was not found for the comment.")
-                        End Try
+						If (DateDiff(DateInterval.Day, Today.Date, addedOnJira.Date) <> 0) Then
+							addedOnJiraString = addedOnJira.ToString()
+						End If
+					Catch ex As Exception
+						AddLog("The created date was not found for the comment.")
+					End Try
 
-                        firstLine = String.Format(firstLine,
-                                                If(String.IsNullOrEmpty(author), "", "by " + author),
-                                                If(String.IsNullOrEmpty(addedOnJiraString), "", " on " + addedOnJiraString))
-                        Dim jiraCommentId = CType(newComments(i)("id").ToString(), Integer)
-                        commentDescription = firstLine + commentDescription
-                        updateActions(0).Description = commentDescription
-                        updateActions.ActionLogInstantMessage = "Jira Comment ID: " + jiraCommentId.ToString() + " Created In TeamSupport Action "
-                        Dim actionLinkToJira As ActionLinkToJira = New ActionLinkToJira(User)
-                        Dim actionLinkToJiraItem As ActionLinkToJiraItem = actionLinkToJira.AddNewActionLinkToJiraItem()
-                        actionLinkToJiraItem.JiraID = jiraCommentId
-                        actionLinkToJiraItem.DateModifiedByJiraSync = DateTime.UtcNow
-                        updateActions.Save()
-                        actionLinkToJiraItem.ActionID = updateActions(0).ActionID
-                        actionLinkToJira.Save()
+					firstLine = String.Format(firstLine,
+												If(String.IsNullOrEmpty(author), "", "by " + author),
+												If(String.IsNullOrEmpty(addedOnJiraString), "", " on " + addedOnJiraString))
+					Dim jiraCommentId = CType(newComments(i)("id").ToString(), Integer)
+					commentDescription = firstLine + commentDescription
+					updateActions(0).Description = commentDescription
+					updateActions.ActionLogInstantMessage = "Jira Comment ID: " + jiraCommentId.ToString() + " Created In TeamSupport Action "
+					Dim actionLinkToJira As ActionLinkToJira = New ActionLinkToJira(User)
+					Dim actionLinkToJiraItem As ActionLinkToJiraItem = actionLinkToJira.AddNewActionLinkToJiraItem()
+					actionLinkToJiraItem.JiraID = jiraCommentId
+					actionLinkToJiraItem.DateModifiedByJiraSync = DateTime.UtcNow
+					updateActions.Save()
+					actionLinkToJiraItem.ActionID = updateActions(0).ActionID
+					actionLinkToJira.Save()
 
-                        ClearCrmLinkError(crmLinkError)
-                    Catch ex As Exception
+					ClearCrmLinkError(crmLinkError)
+				Catch ex As Exception
                         AddLog(ex.ToString() + ex.StackTrace,
-                            LogType.TextAndReport,
-                            crmLinkError,
+							LogType.TextAndReport,
+							crmLinkError,
                             ex.Message,
                             Orientation.IntoTeamSupport,
                             ObjectType.Action,
                             newComments(i)("id").ToString(),
                             String.Empty,
                             newComments(i)("body").ToString(),
-                            OperationType.Create)
-                    End Try
-                Next
-            End Sub
+							OperationType.Create)
+				End Try
+			Next
+		End Sub
 
             Private Sub AddLog(ByVal exception As String,
                             Optional ByVal logTo As LogType = LogType.Text,
@@ -2403,167 +2403,167 @@ Namespace TeamSupport
                             Optional ByVal objectId As Integer = 0,
                             Optional ByVal objectFieldName As String = "",
                             Optional ByVal objectData As String = Nothing,
-                            Optional ByVal operationType As OperationType = OperationType.Unknown)
+							Optional ByVal operationType As OperationType = OperationType.Unknown)
 
-                If (logTo = LogType.Text OrElse logTo = LogType.TextAndReport) Then
-                    Log.Write(exception)
-                End If
+			If (logTo = LogType.Text OrElse logTo = LogType.TextAndReport) Then
+				Log.Write(exception)
+			End If
+			
+			If (logTo = LogType.Report OrElse logTo = LogType.TextAndReport) Then
+				Try
+					If crmLinkError Is Nothing Then
+						Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+						crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+						crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+						crmLinkError.CRMType = CRMLinkRow.CRMType
+						crmLinkError.Orientation = GetDescription(orientation)
+						crmLinkError.ObjectType = GetDescription(objectType)
+						crmLinkError.ObjectID = objectId.ToString()
+						crmLinkError.ObjectFieldName = objectFieldName
+						crmLinkError.ObjectData = objectData
+						crmLinkError.Exception = exception
+						crmLinkError.OperationType = GetDescription(operationType)
+						crmLinkError.ErrorCount = 1
+						crmLinkError.IsCleared = False
+						crmLinkError.ErrorMessage = errorMessage
+						newCrmLinkError.Save()
+					Else
+						crmLinkError.ErrorCount = crmLinkError.ErrorCount + 1
+						crmLinkError.IsCleared = False
+						crmLinkError.ObjectData = objectData
+						crmLinkError.Exception = exception
+						crmLinkError.Collection.Save()
+					End If
+				Catch errorException As Exception
+					Log.Write(errorException.ToString() + errorException.StackTrace)
+				End Try
+			End If
+		End Sub
 
-                If (logTo = LogType.Report OrElse logTo = LogType.TextAndReport) Then
-                    Try
-                        If crmLinkError Is Nothing Then
-                            Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
-                            crmLinkError = newCrmLinkError.AddNewCRMLinkError()
-                            crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
-                            crmLinkError.CRMType = CRMLinkRow.CRMType
-                            crmLinkError.Orientation = GetDescription(orientation)
-                            crmLinkError.ObjectType = GetDescription(objectType)
-                            crmLinkError.ObjectID = objectId.ToString()
-                            crmLinkError.ObjectFieldName = objectFieldName
-                            crmLinkError.ObjectData = objectData
-                            crmLinkError.Exception = exception
-                            crmLinkError.OperationType = GetDescription(operationType)
-                            crmLinkError.ErrorCount = 1
-                            crmLinkError.IsCleared = False
-                            crmLinkError.ErrorMessage = errorMessage
-                            newCrmLinkError.Save()
-                        Else
-                            crmLinkError.ErrorCount = crmLinkError.ErrorCount + 1
-                            crmLinkError.IsCleared = False
-                            crmLinkError.ObjectData = objectData
-                            crmLinkError.Exception = exception
-                            crmLinkError.Collection.Save()
-                        End If
-                    Catch errorException As Exception
-                        Log.Write(errorException.ToString() + errorException.StackTrace)
-                    End Try
-                End If
-            End Sub
+		Shared Function GetDescription(ByVal EnumConstant As [Enum]) As String
+			Dim fi As FieldInfo = EnumConstant.GetType().GetField(EnumConstant.ToString())
+			Dim attr() As DescriptionAttribute = DirectCast(
+			fi.GetCustomAttributes(GetType(DescriptionAttribute), False), 
+			DescriptionAttribute())
 
-            Shared Function GetDescription(ByVal EnumConstant As [Enum]) As String
-                Dim fi As FieldInfo = EnumConstant.GetType().GetField(EnumConstant.ToString())
-                Dim attr() As DescriptionAttribute = DirectCast(
-            fi.GetCustomAttributes(GetType(DescriptionAttribute), False),
-            DescriptionAttribute())
+			If attr.Length > 0 Then
+				Return attr(0).Description
+			Else
+				Return EnumConstant.ToString()
+			End If
+		End Function
 
-                If attr.Length > 0 Then
-                    Return attr(0).Description
-                Else
-                    Return EnumConstant.ToString()
-                End If
-            End Function
+		Private Function ClearCrmLinkError(ByRef crmLinkError As CRMLinkError)
+			If crmLinkError IsNot Nothing Then
+				crmLinkError.IsCleared = True
+				crmLinkError.DateModified = DateTime.UtcNow()
+				crmLinkError.Collection.Save()
+			End If
+		End Function
 
-            Private Function ClearCrmLinkError(ByRef crmLinkError As CRMLinkError)
-                If crmLinkError IsNot Nothing Then
-                    crmLinkError.IsCleared = True
-                    crmLinkError.DateModified = DateTime.UtcNow()
-                    crmLinkError.Collection.Save()
-                End If
-            End Function
+		<Obsolete("This method will be deprecated, use GetIssuesToPullAsTickets that POSTs the search instead.") >
+      Private Function GetIssuesToPullAsTickets(ByRef numberOfIssuesToPull As Integer) As List(Of JObject)
+        Dim result As List(Of JObject) = New List(Of JObject)
 
-            <Obsolete("This method will be deprecated, use GetIssuesToPullAsTickets that POSTs the search instead.")>
-            Private Function GetIssuesToPullAsTickets(ByRef numberOfIssuesToPull As Integer) As List(Of JObject)
-                Dim result As List(Of JObject) = New List(Of JObject)
+        Dim recentClause As String = String.Empty
+        If CRMLinkRow.LastLink IsNot Nothing Then
+          recentClause = "updated>-" + GetMinutesSinceLastLink().ToString() + "m+"
+        Else
+          Dim minutesSinceFirstSyncedTicket As Integer = GetMinutesSinceFirstSyncedTicket()
+          If minutesSinceFirstSyncedTicket > 0 Then
+            recentClause = "updated>-" + minutesSinceFirstSyncedTicket.ToString() + "m+"
+          Else
+            Log.Write("No tickets have been synced, therefore no issues to pull exist.")
+            Return result
+          End If
+        End If
 
-                Dim recentClause As String = String.Empty
-                If CRMLinkRow.LastLink IsNot Nothing Then
-                    recentClause = "updated>-" + GetMinutesSinceLastLink().ToString() + "m+"
-                Else
-                    Dim minutesSinceFirstSyncedTicket As Integer = GetMinutesSinceFirstSyncedTicket()
-                    If minutesSinceFirstSyncedTicket > 0 Then
-                        recentClause = "updated>-" + minutesSinceFirstSyncedTicket.ToString() + "m+"
-                    Else
-                        Log.Write("No tickets have been synced, therefore no issues to pull exist.")
-                        Return result
-                    End If
-                End If
+		Dim needToGetMore As Boolean = True
+		Dim startAt As String = String.Empty
+        Dim maxResults As Integer? = Nothing
 
-                Dim needToGetMore As Boolean = True
-                Dim startAt As String = String.Empty
-                Dim maxResults As Integer? = Nothing
+        While needToGetMore
+          Dim URI As String = _baseURI + "/search?jql=" + recentClause + "order+by+updated+asc&fields=*all" + startAt
+          Dim batch As JObject = GetAPIJObject(URI, "GET", String.Empty)
+          result.Add(batch)
 
-                While needToGetMore
-                    Dim URI As String = _baseURI + "/search?jql=" + recentClause + "order+by+updated+asc&fields=*all" + startAt
-                    Dim batch As JObject = GetAPIJObject(URI, "GET", String.Empty)
-                    result.Add(batch)
+          Dim batchTotal As Integer = batch("issues").Count
+          numberOfIssuesToPull += batchTotal
 
-                    Dim batchTotal As Integer = batch("issues").Count
-                    numberOfIssuesToPull += batchTotal
+          If maxResults Is Nothing Then
+            maxResults = CType(batch("maxResults").ToString(), Integer?)
+          End If
 
-                    If maxResults Is Nothing Then
-                        maxResults = CType(batch("maxResults").ToString(), Integer?)
-                    End If
+          If batchTotal = maxResults Then
+            startAt = "&startAt=" + (numberOfIssuesToPull).ToString()
+          Else
+            needToGetMore = False
+          End If
+        End While
 
-                    If batchTotal = maxResults Then
-                        startAt = "&startAt=" + (numberOfIssuesToPull).ToString()
-                    Else
-                        needToGetMore = False
-                    End If
-                End While
+        Log.Write("Got " + numberOfIssuesToPull.ToString() + " Issues To Pull As Tickets.")
+        Return result
+      End Function
 
-                Log.Write("Got " + numberOfIssuesToPull.ToString() + " Issues To Pull As Tickets.")
-                Return result
-            End Function
+		Private Class IssueTypeFields
+			Private _issueType As String
+			Private _project As String
 
-            Private Class IssueTypeFields
-                Private _issueType As String
-                Private _project As String
+			Property IssueType As String
+				Get
+					Return _issueType
+				End Get
+				Set(ByVal value As String)
+					_issueType = value
+				End Set
+			End Property
 
-                Property IssueType As String
-                    Get
-                        Return _issueType
-                    End Get
-                    Set(ByVal value As String)
-                        _issueType = value
-                    End Set
-                End Property
+			Property Project As String
+				Get
+					Return _project
+				End Get
+				Set(ByVal value As String)
+					_project = value
+				End Set
+			End Property
+		End Class
+	End Class
 
-                Property Project As String
-                    Get
-                        Return _project
-                    End Get
-                    Set(ByVal value As String)
-                        _project = value
-                    End Set
-                End Property
-            End Class
-        End Class
+		Public Enum LogType
+			Text
+			Report
+			TextAndReport
+		End Enum
 
-        Public Enum LogType
-            Text
-            Report
-            TextAndReport
-        End Enum
-
-        Public Enum Orientation
-            <Description("in")>
-            IntoTeamSupport
+		Public Enum Orientation
+			<Description("in")>
+			IntoTeamSupport
             <Description("out")>
             OutToJira
             <Description("out")>
             OutToTFS
         End Enum
 
-        Public Enum OperationType
-            <Description("unknown")>
-            Unknown
-            <Description("login")>
-            Login
-            <Description("create")>
-            Create
-            <Description("update")>
-            Update
-        End Enum
+		Public Enum OperationType
+			<Description("unknown")>
+			Unknown
+			<Description("login")>
+			Login
+			<Description("create")>
+			Create
+			<Description("update")>
+			Update
+		End Enum
 
-        Public Enum ObjectType
-            <Description("")>
-            Unknown
-            <Description("ticket")>
-            Ticket
-            <Description("action")>
-            Action
-            <Description("attachment")>
-            Attachment
-        End Enum
-    End Namespace
+		Public Enum ObjectType
+			<Description("")>
+			Unknown
+			<Description("ticket")>
+			Ticket
+			<Description("action")>
+			Action
+			<Description("attachment")>
+			Attachment
+		End Enum
+  End Namespace
 End Namespace

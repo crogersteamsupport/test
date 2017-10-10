@@ -878,29 +878,29 @@ ORDER BY TicketNumber DESC";
             }
         }
 
-        public void LoadHubKBByID(int ticketID, int organizationID, int customerID, bool enableCustomerProductAssociation)
+        public void LoadHubKBByID(int ticketID, int organizationID, int customerID, bool enableCustomerSpecificKB, bool enableCustomerProductAssociation, bool enableAnonymousProductAssociation )
         {
             using (SqlCommand command = new SqlCommand())
             {
                 StringBuilder builder = new StringBuilder();
                 builder.Append(@"SELECT t.*
-																FROM TicketsView as T
-																WHERE 
-																	t.ticketid = @ticketID
-																	AND t.OrganizationID              = @OrganizationID 
-																	AND t.IsKnowledgeBase         = 1
-																	AND t.IsVisibleOnPortal         = 1");
+								 FROM TicketsView as T
+								 WHERE 
+									t.ticketid = @ticketID
+									AND t.OrganizationID              = @OrganizationID 
+									AND t.IsKnowledgeBase         = 1
+									AND t.IsVisibleOnPortal         = 1");
 
-                if (customerID > 0 && enableCustomerProductAssociation)
+                if ((customerID > 0 || enableAnonymousProductAssociation) && enableCustomerProductAssociation)
                 {
                     builder.Append(@" AND(
-																T.ProductID IS NULL
-																												OR T.ProductID IN(
-																	SELECT productid
-																													FROM organizationproducts
-																													WHERE organizationid = @CustomerID
-																	)
-																)");
+									    T.ProductID IS NULL
+										OR T.ProductID IN(
+										    SELECT productid
+												FROM organizationproducts
+												WHERE organizationid = @CustomerID
+										    )
+									    )");
                 }
                 builder.Append(@" ORDER BY t.DateModified desc");
 

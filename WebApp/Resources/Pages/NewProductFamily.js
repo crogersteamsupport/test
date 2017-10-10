@@ -138,7 +138,7 @@ var initEditor = function (element, init) {
             extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type]",
             content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
             body_class: "ui-widget ui-widget-content",
-
+            branding: false,
             convert_urls: true,
             remove_script_host: false,
             relative_urls: false,

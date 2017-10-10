@@ -95,8 +95,7 @@ var selectTicket = function (request, response) {
     var filter = $(this.element).data('filter');
     if (filter === undefined) {
         execSelectTicket = window.parent.Ts.Services.Tickets.SearchTickets(request.term, null, function (result) { response(result); });
-    }
-    else {
+    } else {
         execSelectTicket = window.parent.Ts.Services.Tickets.SearchTickets(request.term, filter, function (result) { response(result); });
     }
 }
@@ -127,8 +126,7 @@ var isFormValid = function (callback) {
             if ($('#ticket-Customer > div.tag-item').length < 1) {
                 $('#ticket-Customer').closest('.form-group').addClass('hasError');
                 result = false;
-            }
-            else {
+            } else {
                 $('#ticket-Customer').closest('.form-group').removeClass('hasError');
             }
         }
@@ -147,7 +145,7 @@ Selectize.define('sticky_placeholder', function (options) {
             if (!this.settings.placeholder) return;
             var $input = this.$control_input;
             $input.attr('placeholder', this.settings.placeholder);
-        };
+        }
     })();
 
 });
@@ -521,11 +519,8 @@ function SetupTicketProperties(order) {
         $('#frame-container').show();
         $('.page-loading').hide().next().show();
 
-
         isFormValid();
         LoadPlugins(info);
-        console.log("_before calling getTicketViewing");
-
     });
 }
 
@@ -648,30 +643,24 @@ function CreateNewActionLI() {
                                 _isCreatingAction = true;
                                 if ($('.upload-queue li').length > 0) {
                                     UploadAttachments(result);
-                                }
-                                else {
+                                } else {
                                     _newAction = null;
                                     if (_oldActionID === -1) {
                                         _actionTotal = _actionTotal + 1;
                                         var actionElement = CreateActionElement(result, false);
                                         actionElement.find('.ticket-action-number').text(_actionTotal);
-                                    }
-                                    else {
-                                        console.log('#action-new-save:updateactionelement');
+                                    } else {
                                         UpdateActionElement(result, false);
                                     }
                                     clearTicketEditor();
                                 }
-                            }
-                            else {
+                            } else {
                                 alert("There was a error creating your action.  Please try again.");
                                 EnableCreateBtns();
                             }
-
                         });
                     });
-                }
-                else {
+                } else {
                     alert("Please fill in the required fields before submitting this action.");
                     EnableCreateBtns();
                     return;
@@ -698,33 +687,26 @@ function CreateNewActionLI() {
                     if (result) {
                         if ($('.upload-queue li').length > 0) {
                             UploadAttachments(result);
-                        }
-                        else {
+                        } else {
                             _newAction = null;
                             if (_oldActionID === -1) {
                                 _actionTotal = _actionTotal + 1;
                                 var actionElement = CreateActionElement(result, false);
                                 actionElement.find('.ticket-action-number').text(_actionTotal);
-                            }
-                            else {
-                                console.log('#action-timeline:updateactionelement');
+                            }  else {
                                 UpdateActionElement(result, false);
                             }
                             clearTicketEditor();
                         }
-
-
                         var statusID = self.data("statusid");
                         SetStatus(statusID);
                         EnableCreateBtns();
-                    }
-                    else {
+                    } else {
                         EnableCreateBtns();
                         alert("There was a error creating your action.  Please try again.");
                     }
                 });
-            }
-            else {
+            } else {
                 EnableCreateBtns();
                 alert("Please fill in the required fields before submitting this action.");
                 return;
@@ -881,11 +863,9 @@ function SetupActionEditor(elem, action) {
                 clearTicketEditor();
                 if (_oldActionID === -1) {
                     _actionTotal = _actionTotal + 1;
-                    console.log('#action-file-upload:createactionelement');
                     var actionElement = CreateActionElement(_newAction, false);
                     actionElement.find('.ticket-action-number').text(_actionTotal);
-                }
-                else {
+                } else {
                     console.log('#action-file-upload:updateactionelement');
                     UpdateActionElement(_newAction, false);
                 }
@@ -1161,8 +1141,7 @@ function SetupActionTimers() {
             start = new Date().getTime();
             tickettimer();
             $(this).find(':first-child').css('color', 'green');
-        }
-        else {
+        } else {
             $(this).find(':first-child').css('color', 'red');
             clearTimeout(_timerid);
             counter = 0;
@@ -1258,7 +1237,6 @@ function SaveAction(_oldActionID, isPrivate, callback) {
     action.IsKnowledgeBase = $('#action-new-KB').prop('checked');
     action.IsVisibleOnPortal = !isPrivate;
 
-    if (window.parent.Ts.System.User.OrganizationID !== 13679) {
         // Get Content Grab and Check with .Get MEthod
         if (tinymce.get('action-new-editor')) {
             try {
@@ -1329,40 +1307,6 @@ function SaveAction(_oldActionID, isPrivate, callback) {
             return;
 
         }
-    } else {
-        var fontSize;
-        var fontFamily;
-        var styleBlock;
-        if (window.parent.Ts.System.User.FontFamilyDescription != "Unassigned") {
-            fontFamily = GetTinyMCEFontName(window.parent.Ts.System.User.FontFamily);
-        } else if (window.parent.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-            fontFamily = GetTinyMCEFontName(window.parent.Ts.System.Organization.FontFamily);
-        }
-
-        if (window.parent.Ts.System.User.FontSize != "0") {
-            fontSize = GetTinyMCEFontSize(window.parent.Ts.System.User.FontSize);
-        } else if (window.parent.Ts.System.Organization.FontSize != "0") {
-            fontSize = GetTinyMCEFontSize(window.parent.Ts.System.Organization.FontSize);
-        }
-
-        if (fontFamily !== undefined) {
-            styleBlock = 'font-family: ' + fontFamily;
-        }
-
-        if (fontSize !== undefined) {
-            if (styleBlock !== undefined) {
-                styleBlock += '; font-size: ' + fontSize;
-            } else {
-                styleBlock = 'font-size: ' + fontSize;
-            }
-        }
-        var actionText = $('#action-new-editor').summernote('code');
-        var actionHTML = $('<span />', {
-            style: styleBlock,
-            html: actionText
-        });
-        action.Description = actionHTML[0].outerHTML;
-    }
 
     if (action.IsVisibleOnPortal == true) { confirmVisibleToCustomers(); }
     if (_insertedKBTicketID) {
@@ -2986,15 +2930,17 @@ function SetupTasksSection() {
         var checkbox = $(this);
         var checked = $(this).prop("checked");
         parent.Ts.System.logAction('Ticket Page - Change Task Status');
-        var iframe = $('iframe-o-' + id);
-        console.log('Refresh iFrame: ' + iframe);
-
+        var iframeName = 'iframe-o-' + id;
+        var iframeLink = $(iframeName + ':hidden');
         parent.Ts.Services.Task.SetTaskIsCompleted(id, checked, function (data) {
             if (data.IncompleteSubtasks) {
                 checkbox.prop("checked", false);
                 alert('There are subtasks pending completion, please finish them before completing the parent task.')
             } else if (data.Value) {
-                iframe.contentWindow.location.reload(true);
+                try {
+                    parent.document.getElementById(iframeName).contentDocument.location.reload(true);
+                } catch (err) {
+                }
                 _completeCommentTaskID = id;
                 $('#modalTaskComment').modal('show');
             }
@@ -4014,7 +3960,7 @@ var LoadTicketHistory = function () {
         var historyTable = $('#ticket-history-table > tbody');
         historyTable.empty().addClass('ts-loading');
         for (var i = 0; i < logs.length; i++) {
-            var row = $('<tr>').appendTo(historyTable);
+            var row  = $('<tr>').appendTo(historyTable);
             var col1 = $('<td>').text(logs[i].CreatorName).appendTo(row);
             var col2 = $('<td>').text(logs[i].DateCreated.localeFormat(window.parent.Ts.Utils.getDateTimePattern())).appendTo(row);
             var col3 = $('<td>').html(logs[i].Description).appendTo(row);
@@ -4040,26 +3986,18 @@ function FetchTimeLineItems(start) {
         } else {
             _compiledActionTemplate = Handlebars.templates['action2'];
 
-            //create first timeline date marker if needed
-            if (_currDateSpan == null) {
-                _currDateSpan = _timeLine[0].item.DateCreated;
-                var dateSpan = '<div class="daystrip"><span class="daybadge">' + _currDateSpan.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
-                $("#action-timeline").append(dateSpan);
-            };
-            var isPublicFiltered = $('.filter-public').hasClass('bgcolor-darkgray');
+            var isPublicFiltered  = $('.filter-public').hasClass('bgcolor-darkgray');
             var isPrivateFiltered = $('.filter-private').hasClass('bgcolor-darkgray');
-            var isWCFiltered = $('.filter-wc').hasClass('bgcolor-darkgray');
+            var isWCFiltered      = $('.filter-wc').hasClass('bgcolor-darkgray');
 
             for (i = 0; i < _timeLine.length; i++) {
                 var timeLineItem = _timeLine[i];
-                var actionElem = CreateActionElement(timeLineItem, !timeLineItem.item.IsPinned);
+                var actionElem   = CreateActionElement(timeLineItem, !timeLineItem.item.IsPinned);
                 if (isPublicFiltered && timeLineItem.item.IsVisibleOnPortal) {
                     actionElem.hide();
-                }
-                if (isPrivateFiltered && !timeLineItem.item.IsVisibleOnPortal) {
+                } else if (isPrivateFiltered && !timeLineItem.item.IsVisibleOnPortal) {
                     actionElem.hide();
-                }
-                if (isWCFiltered && timeLineItem.item.IsWC) {
+                } else if (isWCFiltered && timeLineItem.item.IsWC) {
                     actionElem.hide();
                 }
             }
@@ -4079,9 +4017,11 @@ function CreateActionElement(val, ShouldAppend) {
         }
     }
 
-    if (_currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
-        var dateSpan = '<div class="daystrip"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
-        _currDateSpan = val.item.DateCreated;
+    if (_currDateSpan == null || _currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
+        if (!val.item.IsPinned) {
+            var dateSpan = '<div class="daystrip"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
+            _currDateSpan = val.item.DateCreated;
+        }
     }
 
     var html = _compiledActionTemplate(val);
@@ -4093,9 +4033,9 @@ function CreateActionElement(val, ShouldAppend) {
             $("#action-timeline").append(actionElement);
         } catch (e) { }
     } else {
-        if ($('.ticket-action.pinned').length) {
-            $('.ticket-action.pinned').after(actionElement);
-            $('.ticket-action.pinned').after(dateSpan);
+        if ($('.action.pinned').length) {
+            $('.action.pinned').after(actionElement);
+            $('.action.pinned').after(dateSpan);
         } else {
             $('.action-placeholder').after(actionElement);
             $('.action-placeholder').after(dateSpan);
@@ -4258,7 +4198,7 @@ function CreateHandleBarHelpers() {
     });
 
     Handlebars.registerHelper("taskComplete", function (isComplete) {
-        return isComplete == true ? ' checked="checked"' : '';
+        return isComplete == true ? ' checked' : '';
     });
 }
 
@@ -4346,7 +4286,7 @@ function CreateTimeLineDelegates() {
                     var pinnedAction = $('.pinned');
                     var actionID = parseInt(pinnedAction.find('.ticket-action-number').text()) + 1;
                     titleElement.after(parentLI.clone().addClass('pinned'));
-                    parentLI.insertAfter(titleElement);
+                    parentLI.insertBefore(titleElement);
                     parentLI.remove();
                     var InLineElement = $("label.ticket-action-number:contains('" + actionID + "')").closest('li');
                     if (InLineElement.length > 0) {
@@ -4379,21 +4319,26 @@ function CreateTimeLineDelegates() {
         e.preventDefault();
         e.stopPropagation();
 
-        var self = $(this);
-        var parentLI = self.closest('div.action');
-        var action = parentLI.data().action;
+        console.log('unpinned.')
+
+        var self         = $(this);
+        var parentLI     = self.closest('div.action');
+        var action       = parentLI.data().action;
         var titleElement = $('.action-placeholder');
+        var pinnedAction = $('.pinned');
+
+        console.log(pinnedAction);
 
         if (window.parent.Ts.System.User.IsSystemAdmin || window.parent.Ts.System.User.UserCanPinAction) {
             window.parent.Ts.System.logAction('Ticket - Action Pin Icon Clicked');
-            window.parent.Ts.Services.Tickets.SetActionPinned(_ticketID, action.RefID, false,
-            function (result) {
+            window.parent.Ts.Services.Tickets.SetActionPinned(_ticketID, action.RefID, false, function (result) {
+                console.log(result);
                 parentLI.data().action.IsPinned = result;
                 parentLI.find('a.ticket-action-pinned').toggleClass('hidden');
 
                 var actionID = parseInt(parentLI.find('.ticket-action-number').text()) + 1;
 
-                var InLineElement = $("label.ticket-action-number:contains('" + actionID + "')").closest('li');
+                var InLineElement = $("label.ticket-action-number:contains('" + actionID + "')").closest('div.action');
                 if (InLineElement.length > 0) {
                     InLineElement.after(parentLI.clone().removeClass('pinned'));
                 } else {
@@ -4401,6 +4346,7 @@ function CreateTimeLineDelegates() {
                 }
                 $('a.ticket-action-pinned').addClass('hidden');
                 parentLI.remove();
+                pinnedAction.remove();
             }, function () {
                 alert('There was an error editing this action.');
             });
@@ -4551,7 +4497,6 @@ function CreateTimeLineDelegates() {
     $('#action-timeline').on('click', 'a.action-option-edit', function (e) {
         e.preventDefault();
         e.stopPropagation();
-        console.log('action-option-edit');
         if ($(this).hasClass('click-disabled')) {
             return false;
         } else {
@@ -4854,6 +4799,7 @@ function CreateTicketToolbarDomEvents() {
         e.stopPropagation();
         window.parent.Ts.System.logAction('Ticket - Refreshed');
         window.parent.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
+        Unsubscribe();
         window.location = window.location;
     });
 
@@ -5518,7 +5464,6 @@ var SetSolved = function (ResolvedID) {
 
 function watson (ticketnumber) {
     window.parent.Ts.Services.Tickets.GetTicketInfo(ticketnumber, function (info) {
-        // console.log(info);
         if (info.Ticket.OrganizationID != '1078') { return; }
         var ticketid = info.Ticket.TicketID;
         window.parent.Ts.Services.TicketPage.WatsonTicket(ticketid, function (result) {
@@ -5533,7 +5478,6 @@ function watson (ticketnumber) {
                         display.push(emotion + ': ' + percent + '%');
                     }
                 });
-                // console.log(display.join(', '));
                 $('#watson').text(display.join(', '));
             }
         });
@@ -5572,7 +5516,6 @@ function pagewidth () {
 
 
 function SetupPusher() {
-    console.log("setup pusher");
     var presenceChannel = null;
     var service = '/Services/DispatchService.asmx/';
     top.Ts.TicketViewing = _ticketNumber;
@@ -5581,8 +5524,6 @@ function SetupPusher() {
         var userID = top.Ts.System.User.UserID;
 
         var presenceChannelName = 'presence-ticket-' + _ticketNumber + '-org-' + orgID;
-
-        console.log(presenceChannelName);
         presenceChannel = top.Ts.Pusher.subscribe(presenceChannelName);
 
         presenceChannel.bind('pusher:subscription_succeeded', function (members) {
