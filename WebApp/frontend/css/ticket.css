@@ -21,6 +21,8 @@ input {
 }
 
 
+
+
 #frame-container {
     position:absolute !important;
     top:50px;
@@ -171,7 +173,11 @@ input {
 
 
 
-
+#ticket-properties-area .selectize-input input {
+    opacity:0 !important;
+    position:absolute !important;
+    left:-10000px !important;
+}
 
 
 
