@@ -4286,13 +4286,14 @@ function CreateTimeLineDelegates() {
                 if (result) {
                     $('#pinned-placeholder').empty();
                     $(nominee).find('a.action-option-pin span').text('Unpin');
-                    var cloned = $(nominee).clone().addClass('pinned');
+                    $(nominee).addClass('pinned');
+                    var cloned = $(nominee).clone();
                     $("#pinned-placeholder").html(cloned);
                     if (Action.RefID === whoFirst) {
                         nominee.hide();
                     }
                 } else {
-                    $('div.action').show();
+                    $('#action-timeline div.pinned').removeClass('pinned').show();
                     $('#pinned-placeholder').empty();
                     $('a.action-option-pin span').text('Pin');
                     $('a.ticket-action-pinned').toggleClass('hidden', true);
@@ -4314,7 +4315,8 @@ function CreateTimeLineDelegates() {
                 $('a.ticket-action-pinned').toggleClass('hidden', true);
                 $('a.action-option-pin span').text('Pin');
                 $('#pinned-placeholder').empty();
-                $('div.action').show();
+                $('#action-timeline div.pinned').show();
+                $('#action-timeline div.pinned').removeClass('pinned');
             }, function () {
                 alert('There was an error editing this action.');
             });
