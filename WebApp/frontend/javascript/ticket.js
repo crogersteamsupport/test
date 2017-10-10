@@ -3998,6 +3998,8 @@ function FetchTimeLineItems(start) {
                     actionElem.hide();
                 } else if (isWCFiltered && timeLineItem.item.IsWC) {
                     actionElem.hide();
+                } else if (i === 0 && _timeLine[0].item.IsPinned) {
+                    actionElem.hide();
                 }
             }
             _isLoading = false;
@@ -4264,8 +4266,9 @@ function CreateTimeLineDelegates() {
         var self     = $(this);
         var nominee  = self.closest('div.action');
         var Action   = nominee.data().action;
+        var whoFirst = $('#action-timeline div.action').first().data('id');
         var isPinned = nominee.hasClass('pinned');
-        console.log(isPinned);
+        console.log(whoFirst);
 
         $(nominee).find('a.ticket-action-pinned').toggleClass('hidden');
         $('.action-option-items').hide();
@@ -4283,9 +4286,13 @@ function CreateTimeLineDelegates() {
                 if (result) {
                     $('#pinned-placeholder').empty();
                     $(nominee).find('a.action-option-pin span').text('Unpin');
-                    var cloned = $(nominee).clone().addClass('pinned')
+                    var cloned = $(nominee).clone().addClass('pinned');
                     $("#pinned-placeholder").html(cloned);
+                    if (Action.RefID === whoFirst) {
+                        nominee.hide();
+                    }
                 } else {
+                    $('div.action').show();
                     $('#pinned-placeholder').empty();
                     $('a.action-option-pin span').text('Pin');
                     $('a.ticket-action-pinned').toggleClass('hidden', true);
@@ -4303,9 +4310,11 @@ function CreateTimeLineDelegates() {
         if (window.parent.Ts.System.User.IsSystemAdmin || window.parent.Ts.System.User.UserCanPinAction) {
             window.parent.Ts.System.logAction('Ticket - Action Pin Icon Clicked');
             window.parent.Ts.Services.Tickets.SetActionPinned(_ticketID, pinnedAction, false, function (result) {
+                // $('div.action').show();
                 $('a.ticket-action-pinned').toggleClass('hidden', true);
                 $('a.action-option-pin span').text('Pin');
                 $('#pinned-placeholder').empty();
+                $('div.action').show();
             }, function () {
                 alert('There was an error editing this action.');
             });
