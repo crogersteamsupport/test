@@ -99,7 +99,7 @@ namespace TeamSupport.Data
                 LEFT JOIN Users u 
                     ON u.UserID = a.CreatorID 
             WHERE 
-                RefType = {refType}
+                RefType = {(int)refType}
                 AND RefID IN
                 (
                     SELECT
@@ -118,7 +118,7 @@ namespace TeamSupport.Data
                 }
                 else
                 {
-                    command.CommandText = $"SELECT a.*, (u.FirstName + ' ' + u.LastName) AS CreatorName FROM Attachments a LEFT JOIN Users u ON u.UserID = a.CreatorID WHERE (RefID = @RefID) AND (RefType = {refType})";
+                    command.CommandText = $"SELECT a.*, (u.FirstName + ' ' + u.LastName) AS CreatorName FROM Attachments a LEFT JOIN Users u ON u.UserID = a.CreatorID WHERE (RefID = @RefID) AND (RefType = {(int)refType})";
 
                 }
         
