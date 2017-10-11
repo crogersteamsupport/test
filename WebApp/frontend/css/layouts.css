@@ -150,7 +150,10 @@
     outline:none;
     border:none !important;
     vertical-align:top;
-    width:100% !important;
+    /* width:100% !important; */
+}
+#sidebar .selectize-input input {
+
 }
 #sidebar .selectize-control.single .selectize-input:after {
     content:none;

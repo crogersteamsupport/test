@@ -7,24 +7,24 @@
     <div class="header flexbox">
         <div class="avatar flexpull">{{{UserImageTag}}}</div>
         <div class="info flexpush">
+            {{#if item.IsPinned}}
+            <a class="glyphicon glyphicon-pushpin TeamSupportBlue ticket-action-pinned" aria-hidden="true"></a>
+            {{else}}
+            <a class="glyphicon glyphicon-pushpin TeamSupportBlue ticket-action-pinned hidden" aria-hidden="true"></a>
+            {{/if}}
+
             <a data-userid="{{item.CreatorID}}" data-ticketid="{{item.TicketID}}" data-name="{{item.CreatorName}}" class="TeamSupportBlue UserAnchor">{{item.CreatorName}}</a><br>
             <small class="text-muted">{{item.MessageType}} added on {{FormatDateTime item.DateCreated}}</small><br />
             <small class="text-muted">{{TimeSpent}} <span id="watson-{{item.RefID}}">{{Watson}}</span></small><br />
         </div>
         <div class="extras flexpull">
             <div class="flexbox">
-
                 {{#unless item.IsWC}}
                 <div class="indicators flexpush">
                     {{#if item.IsKnowledgeBase}}
                     <a class="glyphicon glyphicon-bookmark TeamSupportBlue ticket-action-kb" aria-hidden="true"></a>
                     {{else}}
                     <a class="glyphicon glyphicon-bookmark TeamSupportBlue ticket-action-kb hidden" aria-hidden="true"></a>
-                    {{/if}}
-                    {{#if item.IsPinned}}
-                    <a class="glyphicon glyphicon-pushpin TeamSupportBlue ticket-action-pinned" aria-hidden="true"></a>
-                    {{else}}
-                    <a class="glyphicon glyphicon-pushpin TeamSupportBlue ticket-action-pinned hidden" aria-hidden="true"></a>
                     {{/if}}
                 </div>
                 <div class="applause flexpull">{{{Applause}}}</div>
@@ -53,9 +53,9 @@
                         {{/CanEdit}}
                         {{#CanPin}}
                         {{#if item.IsPinned}}
-                        <a href="#" class="action-option-pin"><i class="glyphicon glyphicon-pushpin action-option-item"></i> Unpin</a>
+                        <a href="#" class="action-option-pin"><i class="glyphicon glyphicon-pushpin action-option-item"></i> <span>Unpin</span></a>
                         {{else}}
-                        <a href="#" class="action-option-pin"><i class="glyphicon glyphicon-pushpin action-option-item"></i> Pin</a>
+                        <a href="#" class="action-option-pin"><i class="glyphicon glyphicon-pushpin action-option-item"></i> <span>Pin</span></a>
                         {{/if}}
                         {{/CanPin}}
                         {{#CanKB}}
