@@ -312,9 +312,31 @@ var loadTicket = function (ticketNumber, refresh) {
         SetCommunityCategory(_ticketInfo.Ticket.ForumCategory);
         SetDueDate(_ticketInfo.Ticket.DueDate);
 
-        SetProduct(_ticketInfo.Ticket.ProductID);
-        SetVersion(_ticketInfo.Ticket.ReportedVersionID);
-        SetSolved(_ticketInfo.Ticket.SolvedVersionID);
+        //var $select = $('#ticket-Versions').selectize();
+        //var control = $select[0].selectize;
+        //control.destroy();
+        //$('#ticket-Versions').empty();
+
+        //$select = $('#ticket-Resolved').selectize();
+        //control = $select[0].selectize;
+        //control.destroy();
+        //$('#ticket-Resolved').empty();
+
+        ////SetProduct(_ticketInfo.Ticket.ProductID);
+
+        //if (window.parent.Ts.System.Organization.ProductType == window.parent.Ts.ProductType.Express || window.parent.Ts.System.Organization.ProductType === window.parent.Ts.ProductType.HelpDesk) {
+        //    $('#ticket-Product').closest('.form-horizontal').remove();
+        //    $('#ticket-Resolved').closest('.form-horizontal').remove();
+        //    $('#ticket-Versions').closest('.form-horizontal').remove();
+        //} else {
+        //    SetupProductSection();
+        //}
+        //SetProduct(_ticketInfo.Ticket.ProductID);
+        //var $select = $('#ticket-Versions').selectize();
+        //var control = $select[0].selectize;
+        //control.destroy();
+        //$('#ticket-Versions').empty();
+        ////$('#ticket-Resolved').empty();
 
         SetAssignedUser(_ticketInfo.Ticket.UserID);
         SetGroup(_ticketInfo.Ticket.GroupID);
@@ -361,7 +383,7 @@ function LoadPlugins(info) {
 }
 
 function CreateNewAction(actions) {
-    var firstAction = $(".ticket-action[data-iswc='false']").first();
+    var firstAction = $(".action[data-iswc='false']").first();
 
     var firstActionID = firstAction.data('id');
     if (firstActionID !== actions[0].Action.ActionID) {
@@ -5437,9 +5459,9 @@ var SetSeverity = function (SeverityID) {
 };
 
 var SetProduct = function (ProductID) {
-    var selectField = $('#ticket-product');
+    var selectField = $('#ticket-Product');
     if (selectField.length > 0) {
-        var selectize = $('#ticket-product')[0].selectize;
+        var selectize = $('#ticket-Product')[0].selectize;
         selectize.addItem(ProductID, false);
     }
 };
@@ -5448,8 +5470,7 @@ var SetVersion = function (VersionID) {
     var selectField = $('#ticket-Versions');
     if (selectField.length > 0) {
         var selectize = $('#ticket-Versions')[0].selectize;
-        if (VersionID) selectize.addItem(VersionID, false);
-        else selectize.clear(true);
+        selectize.addItem(VersionID, false);
     }
 };
 
@@ -5457,8 +5478,9 @@ var SetSolved = function (ResolvedID) {
     var selectField = $('#ticket-Resolved');
     if (selectField.length > 0) {
         var selectize = $('#ticket-Resolved')[0].selectize;
-        if (ResolvedID) selectize.addItem(ResolvedID, false);
-        else selectize.clear(true);
+        selectize.addItem(ResolvedID, false);
+        //if (ResolvedID) selectize.addItem(ResolvedID, false);
+        //else selectize.clear(true);
     }
 };
 
@@ -5529,26 +5551,22 @@ function SetupPusher() {
         presenceChannel.bind('pusher:subscription_succeeded', function (members) {
             try {
                 addUsersViewing(members);
-                console.log("sub succeeded");
             } catch (err) { }
         });
 
         presenceChannel.bind('pusher:member_added', function (member) {
             try {
-                console.log("add user viewing");
                 addUserViewing(member.id);
             } catch (err) { }
         });
 
         presenceChannel.bind('pusher:member_removed', function (member) {
             try {
-                console.log("removing user");
                 removeUserViewing(member.id);
             } catch (err) { }
         });
 
         presenceChannel.bind('ticketViewingRemove', function (data) {
-            console.log("ticketViewingRemove pusher");
             top.Ts.Pusher.unsubscribe(data.chan);
         });
     });
@@ -5591,7 +5609,6 @@ var removeUserViewing = function (userID) {
 }
 
 function Unsubscribe() {
-    console.log("in unsubscribe");
     var orgID = top.Ts.System.Organization.OrganizationID;
     var presenceChannelName = 'presence-ticket-' + _ticketNumber + '-org-' + orgID;
     top.Ts.Pusher.unsubscribe(presenceChannelName);
