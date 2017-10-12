@@ -107,6 +107,7 @@ namespace TeamSupport.WebUtils
       ticket = new FormsAuthenticationTicket(1, ticket.Name, DateTime.UtcNow, DateTime.UtcNow.AddSeconds(TimeOut), false, ticket.UserData, FormsAuthentication.FormsCookiePath);
       HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket));
       cookie.Domain = FormsAuthentication.CookieDomain;
+      cookie.HttpOnly = true;
       cookie.Expires = DateTime.UtcNow.AddYears(1);
       HttpContext.Current.Response.Cookies.Add(cookie);
     }
@@ -124,6 +125,7 @@ namespace TeamSupport.WebUtils
         FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1, user.DisplayName, DateTime.UtcNow, DateTime.UtcNow.AddSeconds(TimeOut), false, userData, FormsAuthentication.FormsCookiePath);
         string encTicket = FormsAuthentication.Encrypt(ticket);
         HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encTicket);
+        cookie.HttpOnly = true;
         cookie.Domain = FormsAuthentication.CookieDomain;
         cookie.Expires = DateTime.UtcNow.AddYears(1);
         HttpContext.Current.Response.Cookies.Add(cookie);
