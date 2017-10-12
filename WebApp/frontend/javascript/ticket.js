@@ -312,6 +312,7 @@ var loadTicket = function (ticketNumber, refresh) {
         SetCommunityCategory(_ticketInfo.Ticket.ForumCategory);
         SetDueDate(_ticketInfo.Ticket.DueDate);
 
+        SetProduct(_ticketInfo.Ticket.ProductID);
         //var $select = $('#ticket-Versions').selectize();
         //var control = $select[0].selectize;
         //control.destroy();
@@ -5506,6 +5507,12 @@ function pagewidth () {
 function SetupPusher() {
     var presenceChannel = null;
     var service = '/Services/DispatchService.asmx/';
+    if (top.Ts.TicketViewing != 0) {
+        var orgID = top.Ts.System.Organization.OrganizationID;
+        var presenceChannelName = 'presence-ticket-' + top.Ts.TicketViewing + '-org-' + orgID;
+        top.Ts.Pusher.unsubscribe(presenceChannelName);
+    }
+
     top.Ts.TicketViewing = _ticketNumber;
     top.Ts.Settings.System.read('PusherKey', '1', function (key) {
         var orgID = top.Ts.System.Organization.OrganizationID;
