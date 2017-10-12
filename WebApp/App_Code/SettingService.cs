@@ -42,37 +42,37 @@ namespace TSWebServices
       Settings.UserDB.WriteString(key, value);
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public string ReadSessionSetting(string key, string defaultValue)
     {
       return Settings.Session.ReadString(key, defaultValue);
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public void WriteSessionSetting(string key, string value)
     {
       Settings.Session.WriteString(key, value);
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public string ReadOrganizationSetting(string key, string defaultValue)
     {
       return Settings.OrganizationDB.ReadString(key, defaultValue);
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public void WriteOrganizationSetting(string key, string value)
     {
       Settings.OrganizationDB.WriteString(key, value);
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public string ReadSystemSetting(string key, string defaultValue)
     {
       return Settings.SystemDB.ReadString(key, defaultValue);
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public void WriteSystemSetting(string key, string value)
     {
       Settings.SystemDB.WriteString(key, value);

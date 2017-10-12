@@ -16,7 +16,7 @@ public partial class Charts_TicketsBySource : BaseChartPage
         public int Count { get; set; }
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public static SourceCount[] GetData(DateTime start, DateTime end)
     {
         List<SourceCount> result = new List<SourceCount>();

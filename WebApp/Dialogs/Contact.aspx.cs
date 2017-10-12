@@ -276,7 +276,7 @@ public partial class Dialogs_Contact : BaseDialogPage
 
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static RadComboBoxItemData[] GetOrganization(RadComboBoxContext context)
   {
     IDictionary<string, object> contextDictionary = (IDictionary<string, object>)context;

@@ -269,7 +269,7 @@ public partial class Frames_AdminCompany : BaseFramePage
 		rptAddresses.DataBind();
 	}
 
-	[WebMethod(true)]
+	[WebMethod]
 	public static void ForceCRMResync()
 	{
 		CRMLinkTable crmLinkTable = new CRMLinkTable(UserSession.LoginUser);
@@ -283,7 +283,7 @@ public partial class Frames_AdminCompany : BaseFramePage
 
 	}
 
-	[WebMethod(true)]
+	[WebMethod]
 	public static void MarkChatOffline()
 	{
 		Users.MarkUsersChatUnavailable(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);

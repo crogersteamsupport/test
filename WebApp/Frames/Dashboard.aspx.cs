@@ -242,7 +242,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
     return builder.ToString();
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static void UpdatePortletHeight(string id, int height)
   {
     Portlet portlet = LoadPortlet(id);
@@ -254,7 +254,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
 
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static void UpdatePortletPositions(string[][] positions)
   {
     for (int x = 0; x < positions.Length; x++)
@@ -272,7 +272,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
     }
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static void UpdatePortletVisibility(string id, bool isOpen)
   {
     Portlet portlet = LoadPortlet(id);
@@ -284,20 +284,20 @@ public partial class Frames_Dashboard : System.Web.UI.Page
 
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static int GetTicketID(int number)
   {
     return Tickets.GetTicketByNumber(UserSession.LoginUser, number).TicketID;
 
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static int GetColumnCount()
   {
     return Settings.UserDB.ReadInt("DashboardColumns", 2);
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static int GetCustomerID(string name)
   {
     Organizations organizations = new Organizations(UserSession.LoginUser);
@@ -329,7 +329,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
     }
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static Portlet[] GetPortlets()
   {
     int[] portletIDs = Settings.UserDB.ReadIntArray("DashboardPortlets");
@@ -384,7 +384,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
     return portlets.ToArray();
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static void DeletePortlet(string portletID)
   {
     int[] portletIDs = Settings.UserDB.ReadIntArray("DashboardPortlets");
@@ -400,7 +400,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
     Settings.UserDB.WriteIntArray("DashboardPortlets", list.ToArray());
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static void AddPortlet(int reportID, int col)
   {
     Portlet[] portlets = GetPortlets();
@@ -423,7 +423,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
     Settings.UserDB.WriteIntArray("DashboardPortlets", list.ToArray());
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static RadComboBoxItemData[] GetReports(RadComboBoxContext context)
   {
     IDictionary<string, object> contextDictionary = (IDictionary<string, object>)context;

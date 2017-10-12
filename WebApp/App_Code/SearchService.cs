@@ -1125,7 +1125,7 @@ namespace TSWebServices
             sorters.DeleteFromDB(sorterID);
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public AdvancedSearchOptions GetAdvancedSearchOptions()
         {
             AdvancedSearchOptions result = new AdvancedSearchOptions();

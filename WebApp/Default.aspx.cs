@@ -51,7 +51,7 @@ public partial class _Default : BasePage
 
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static RadComboBoxItemData[] GetUsers(RadComboBoxContext context)
   {
     IDictionary<string, object> contextDictionary = (IDictionary<string, object>)context;

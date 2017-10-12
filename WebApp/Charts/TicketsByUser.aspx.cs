@@ -18,7 +18,7 @@ public partial class Charts_TicketsByUser : System.Web.UI.Page
         public int Count { get; set; }
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public static TicketCounts[] GetData()
     {
         List<TicketCounts> result = new List<TicketCounts>();

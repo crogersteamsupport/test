@@ -36,7 +36,7 @@ public partial class Oops : System.Web.UI.Page
     }
 
     /*
-    [WebMethod(true)]
+    [WebMethod]
     public static TicketProxy CreateTicket(int exceptionLogID) {
       ExceptionLog log = ExceptionLogs.GetExceptionLog(LoginUser.Anonymous, exceptionLogID);
       if (log == null) return null;
