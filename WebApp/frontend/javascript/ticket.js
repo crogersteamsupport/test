@@ -5507,7 +5507,6 @@ function pagewidth () {
 function SetupPusher() {
     var presenceChannel = null;
     var service = '/Services/DispatchService.asmx/';
-
     if (top.Ts.TicketViewing != 0) {
         var orgID = top.Ts.System.Organization.OrganizationID;
         var presenceChannelName = 'presence-ticket-' + top.Ts.TicketViewing + '-org-' + orgID;
