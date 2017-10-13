@@ -209,6 +209,7 @@
     min-height:30px;
     width:160px;
     display:inline-block;
+    text-align:left;
 }
 #ticket-duedate-container .fa {
     display:block;
