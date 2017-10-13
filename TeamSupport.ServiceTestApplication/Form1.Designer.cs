@@ -200,18 +200,6 @@
             this.button4.Text = "Start Task Processor";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
-				// 
-				// btnWebHooks
-				// 
-				this.btnWebHooks.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-				this.btnWebHooks.ForeColor = System.Drawing.Color.Green;
-				this.btnWebHooks.Location = new System.Drawing.Point(12, 266);
-				this.btnWebHooks.Name = "btnWebHooks";
-				this.btnWebHooks.Size = new System.Drawing.Size(221, 29);
-				this.btnWebHooks.TabIndex = 37;
-				this.btnWebHooks.Text = "Start WebHooks Processor";
-				this.btnWebHooks.UseVisualStyleBackColor = true;
-				this.btnWebHooks.Click += new System.EventHandler(this.btnWebHooks_Click);
             // 
             // Form1
             // 
@@ -254,7 +242,6 @@
 		private System.Windows.Forms.Button btnReportSender;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
-		private System.Windows.Forms.Button btnWebHooks;
     }
 }
 

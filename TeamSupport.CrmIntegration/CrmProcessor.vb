@@ -131,15 +131,12 @@ Namespace TeamSupport
                                 CRM = New HubSpot(CRMLinkTableItem, Log, LogPath, LoginUser, Me)
                             End If
                         Case IntegrationType.TFS
-							If Settings.ReadBool("TeamFoundationServices Enabled", True) Then
-								CRM = New TFS(CRMLinkTableItem, Log, LoginUser, Me)
-							Else
-								Return
-							End If
-						Case IntegrationType.ServiceNow
-							'This integration is not done by this service. See WebHooksProcessor.
-							Return
-					End Select
+                            If Settings.ReadBool("TeamFoundationServices Enabled", True) Then
+                                CRM = New TFS(CRMLinkTableItem, Log, LoginUser, Me)
+                            Else
+                                Return
+                            End If
+                    End Select
 
                     Dim isDebug As Boolean = Settings.ReadBool("Debug", False)
 

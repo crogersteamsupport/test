@@ -305,7 +305,7 @@ namespace TSWebServices
             CRMLinkTable organizationLinks = new CRMLinkTable(loginUser);
             organizationLinks.LoadByOrganizationID(TSAuthentication.OrganizationID);
 
-            List<CRMLinkTableItem> organizationJiraLinks = organizationLinks.Where(p => p.CRMType.ToLower() == Enums.GetDescription(IntegrationType.Jira).ToLower()).ToList();
+            List<CRMLinkTableItem> organizationJiraLinks = organizationLinks.Where(p => p.CRMType.ToLower() == "jira").ToList();
 
             if (organizationJiraLinks != null)
             {
@@ -331,7 +331,7 @@ namespace TSWebServices
                     if (ticket.ProductID != null)
                     {
                         JiraInstanceProducts jiraInstanceProduct = new JiraInstanceProducts(loginUser);
-                        jiraInstanceProduct.LoadByProductAndOrganization((int)ticket.ProductID, ticket.OrganizationID, Enums.GetDescription(IntegrationType.Jira));
+                        jiraInstanceProduct.LoadByProductAndOrganization((int)ticket.ProductID, ticket.OrganizationID, "Jira");
 
                         if (jiraInstanceProduct != null && jiraInstanceProduct.Count > 0)
                         {
@@ -383,7 +383,7 @@ namespace TSWebServices
 
             foreach (CRMLinkTableItem link in organizationLinks)
             {
-                if (link.CRMType.ToLower() == Enums.GetDescription(IntegrationType.Jira).ToLower() && link.Active)
+                if (link.CRMType == "Jira" && link.Active)
                 {
                     result = true;
                 }
@@ -402,7 +402,7 @@ namespace TSWebServices
             bool result = false;
 
             CRMLinkTable organizationLinks = new CRMLinkTable(TSAuthentication.GetLoginUser());
-            organizationLinks.LoadByOrganizationIDAndCRMType(TSAuthentication.OrganizationID, Enums.GetDescription(IntegrationType.TFS));
+            organizationLinks.LoadByOrganizationIDAndCRMType(TSAuthentication.OrganizationID, "TFS");
 
             foreach (CRMLinkTableItem link in organizationLinks)
             {
@@ -423,7 +423,7 @@ namespace TSWebServices
             CRMLinkTable organizationLinks = new CRMLinkTable(loginUser);
             organizationLinks.LoadByOrganizationID(TSAuthentication.OrganizationID);
 
-            List<CRMLinkTableItem> organizationTFSLinks = organizationLinks.Where(p => p.CRMType.ToLower() == Enums.GetDescription(IntegrationType.TFS).ToLower() && p.Active).ToList();
+            List<CRMLinkTableItem> organizationTFSLinks = organizationLinks.Where(p => p.CRMType.ToLower() == "tfs" && p.Active).ToList();
 
             if (organizationTFSLinks != null)
             {
@@ -489,38 +489,7 @@ namespace TSWebServices
             return result;
         }
 
-		[WebMethod]
-		public string GetSnowCRMLinkTableRecordForTicket(int ticketId)
-		{
-			string result = string.Empty;
-			LoginUser loginUser = TSAuthentication.GetLoginUser();
-			CRMLinkTable organizationLinks = new CRMLinkTable(loginUser);
-			organizationLinks.LoadByOrganizationID(TSAuthentication.OrganizationID);
-
-			List<CRMLinkTableItem> organizationSnowLinks = organizationLinks.Where(p => p.CRMType.ToLower() == Enums.GetDescription(IntegrationType.ServiceNow).ToLower() && p.Active).ToList();
-
-			if (organizationSnowLinks != null)
-			{
-				if (string.IsNullOrEmpty(organizationSnowLinks[0].RestrictedToTicketTypes))
-				{
-					result = "active";
-				}
-				else
-				{
-					List<int> ticketTypesToEnableSync = organizationSnowLinks[0].RestrictedToTicketTypes.Split(',').Select(p => int.Parse(p)).ToList();
-					Ticket ticket = Tickets.GetTicket(loginUser, ticketId);
-
-					if (ticketTypesToEnableSync.Contains(ticket.TicketTypeID))
-					{
-						result = "active";
-					}
-				}
-			}
-
-			return result;
-		}
-
-		[WebMethod]
+        [WebMethod]
         public void RollbackImport(int importFileID, ReferenceType refType)
         {
             StringBuilder query = new StringBuilder();

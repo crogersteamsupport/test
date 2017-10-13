@@ -37,38 +37,9 @@ namespace TeamSupport.Data
       set { Row["SecurityToken"] = CheckValue("SecurityToken", value); }
     }
 
-		public string WebHookToken
-		{
-			get
-			{
-				string result = null;
+    #endregion
 
-				WebHooksTokenItem token = WebHooksToken.GetWebHooksTokenItem(LoginUser.Anonymous, this.WebHookTokenId ?? 0);
-
-				if (token != null)
-				{
-					result = token.Token;
-				}
-
-				return result;
-			}
-		}
-
-		public string WebHookTokenFullUrl
-		{
-			get;
-			set;
-		}
-
-		public bool DisplayIntegrationPanel
-		{
-			get;
-			set;
-		}
-
-		#endregion
-
-	}
+  }
   
   public partial class CRMLinkTable
   {
@@ -133,27 +104,7 @@ ORDER BY clt.LastProcessed ASC
       }
     }
 
-		public void LoadByActionIdForServicesNow(int actionId)
-		{
-			using (SqlCommand command = new SqlCommand())
-			{
-				command.CommandText = @"SELECT CRMLinkTable.*
-				FROM
-					Actions WITH(NOLOCK)
-					JOIN TicketLinkToSnow WITH(NOLOCK)
-						ON Actions.TicketID = TicketLinkToSnow.TicketID
-					JOIN CRMLinkTable WITH(NOLOCK)
-						ON TicketLinkToSnow.CrmLinkID = CRMLinkTable.CRMLinkID
-				WHERE
-					Actions.ActionID = @ActionId
-					AND CRMLinkTable.CRMType = 'ServiceNow'";
-				command.CommandType = CommandType.Text;
-				command.Parameters.AddWithValue("@ActionId", actionId);
-				Fill(command);
-			}
-		}
-
-		public static List<string> GetOrganizationJiraProjectKeys(int organizationId, LoginUser login)
+    public static List<string> GetOrganizationJiraProjectKeys(int organizationId, LoginUser login)
     {
       List<string> jiraProjectKeys = new List<string>();
 
