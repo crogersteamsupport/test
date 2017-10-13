@@ -92,6 +92,7 @@ namespace TeamSupport.Api
             string xml = string.Empty;
             //Add the tag nodes to each deleted ticket object
             XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.XmlResolver = null;
             xmlDoc.LoadXml(deletedTicketsXml);
 
             //Do we have paging?
@@ -126,6 +127,7 @@ namespace TeamSupport.Api
                         string tagXmlString = string.Empty;
                         tagXmlString = Tags.EndXmlWrite(writer);
                         XmlDocument xmlTag = new XmlDocument();
+                        xmlDoc.XmlResolver = null;
                         xmlTag.LoadXml(tagXmlString);
                         node.AppendChild(node.OwnerDocument.ImportNode(xmlTag.FirstChild.NextSibling, true));
                     }

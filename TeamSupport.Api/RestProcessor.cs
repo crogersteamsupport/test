@@ -28,6 +28,7 @@ namespace TeamSupport.Api
                     if (_command.Context.Request.Files.Count == 0)
                     {
                         XmlDocument xmlData = new XmlDocument();
+                        xmlData.XmlResolver = null;
                         xmlData = JsonConvert.DeserializeXmlNode(_command.Data);
                         _command.Data = xmlData.InnerXml;
                     }
@@ -54,6 +55,7 @@ namespace TeamSupport.Api
                         _command.Context.Response.ContentType = "application/json";
 
                         XmlDocument doc = new XmlDocument();
+                        doc.XmlResolver = null;
                         doc.LoadXml(data.Replace(_xmlHeader, string.Empty));
 
                         if (_command.Method == HttpMethod.Get)
