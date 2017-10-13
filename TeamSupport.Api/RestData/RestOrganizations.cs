@@ -269,7 +269,8 @@ namespace TeamSupport.Api
 		private static XmlNode GetNode(RestCommand command, string field)
 		{
 			XmlDocument xml = new XmlDocument();
-			xml.LoadXml(command.Data);
+            xml.XmlResolver = null;
+            xml.LoadXml(command.Data);
 			string query = "*[translate(local-name(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='customer']" +
 							"/*[translate(local-name(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='{0}']";
 			query = string.Format(query, field);

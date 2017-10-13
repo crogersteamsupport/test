@@ -1266,32 +1266,28 @@ var SetupDueDateField = function (duedate) {
         var container1 = $('<div style="padding-right:0px;">').addClass('col-xs-10').appendTo(container);
         var theinput = $('<input type="text">').addClass('form-control').val(duedate === undefined ? '' : duedate.localeFormat(parent.Ts.Utils.getDateTimePattern())).datetimepicker({ pickTime: true }).appendTo(container1).focus();
 
-        $('<i>')
-          .addClass('col-xs-1 fa fa-times')
-          .click(function (e) {
-              $(this).closest('div').remove();
-              header.show();
-          })
-          .insertAfter(container1);
+        $('<i>').addClass('fa fa-times').click(function (e) {
+            $(this).closest('div').remove();
+            header.show();
+        })
+        .insertAfter(container1);
 
 
-        $('<i>')
-          .addClass('col-xs-1 fa fa-check')
-          .click(function (e) {
-              var currDate = $(this).prev().find('input').val();
-              var value = '';
-              if (currDate !== '') {
-                  value = parent.Ts.Utils.getMsDate(currDate);
-              }
-              _dueDate = value;
-              duedate = value;
-              theinput.blur().remove();
-              dateLink.text((value === '' ? '' : value.localeFormat(parent.Ts.Utils.getDateTimePattern()))).show();
+        $('<i>').addClass('fa fa-check').click(function (e) {
+            var currDate = $(this).prev().find('input').val();
+            var value = '';
+            if (currDate !== '') {
+                value = parent.Ts.Utils.getMsDate(currDate);
+            }
+            _dueDate = value;
+            duedate = value;
+            theinput.blur().remove();
+            dateLink.text((value === '' ? '' : value.localeFormat(parent.Ts.Utils.getDateTimePattern()))).show();
 
-              $(this).closest('div').remove();
-              header.show();
-          })
-          .insertAfter(container1);
+            $(this).closest('div').remove();
+            header.show();
+        })
+        .insertAfter(container1);
     });
 }
 

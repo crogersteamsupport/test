@@ -8,6 +8,7 @@ $.fn.autogrow = function (e) {
         }
     });
 }
+
 $(document).on('input', 'textarea.autogrow', function (e) {
     $(this).autogrow();
 });
@@ -33,8 +34,6 @@ $(document).on('click', '#clipboard', function (e) {
     $temp.remove();
     alert("Ticket URL has been copied.\n\n" + text);
 });
-
-
 
 $(document).on('click', '#file-browse', function (e) {
     e.preventDefault();

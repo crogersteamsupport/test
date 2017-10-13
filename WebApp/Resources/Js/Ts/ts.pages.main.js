@@ -1029,6 +1029,12 @@ Ts.Pages.Main.prototype = {
 
                             $('.main-ticket-' + mainFrame.Ts.TicketViewing).find('iframe')[0].contentWindow.Unsubscribe();
                         }
+                        else
+                        {
+                            var orgID = top.Ts.System.Organization.OrganizationID;
+                            var presenceChannelName = 'presence-ticket-' + mainFrame.Ts.TicketViewing + '-org-' + orgID;
+                            top.Ts.Pusher.unsubscribe(presenceChannelName);
+                        }
                         mainFrame.Ts.TicketViewing = 0;
                     } catch (err) { }
                     $('.main-info-content').load(item.getData().PaneInfoUrl);

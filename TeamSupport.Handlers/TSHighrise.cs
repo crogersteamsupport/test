@@ -241,7 +241,8 @@ namespace TeamSupport.Handlers
     private static int GetResponseID(string response)
     { 
       XmlDocument doc = new XmlDocument();
-      doc.LoadXml(response);
+        doc.XmlResolver = null;
+        doc.LoadXml(response);
       return int.Parse(doc.DocumentElement.SelectSingleNode("//id").FirstChild.Value);
     }
 

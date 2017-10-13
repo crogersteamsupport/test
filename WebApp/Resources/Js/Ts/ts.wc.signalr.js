@@ -278,7 +278,6 @@ function chime(chimeType) {
 
 
 function SetupPusher() {
-    console.log("setup pusher");
     var pressenceChannel = null;
     var service = '/Services/DispatchService.asmx/';
     top.Ts.TicketViewing = _ticketNumber;

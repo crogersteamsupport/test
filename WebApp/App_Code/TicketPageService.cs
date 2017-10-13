@@ -982,40 +982,45 @@ namespace TSWebServices
             TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             User author = Users.GetUser(loginUser, action.CreatorID);
-            if (loginUser.OrganizationID == author.OrganizationID)
+            if (author != null)
             {
-                string json1 = Actions.CountReactions(loginUser, ticketID, actionID);
-                string json2 = Actions.CheckReaction(loginUser, ticketID, actionID);
+                if (loginUser.OrganizationID == author.OrganizationID)
+                {
+                    string json1 = Actions.CountReactions(loginUser, ticketID, actionID);
+                    string json2 = Actions.CheckReaction(loginUser, ticketID, actionID);
 
-                if (json1 == "negative" || json2 == "negative")
-                {
-                    return "negative";
-                }
-                else if (json1 == "nothing" && json2 == "nothing")
-                {
-                    return "nothing";
-                }
-                else if (json1 != "nothing" && json2 != "nothing")
-                {
-                    return string.Format("[{0},{1}]", json1, json2);
-                }
-                else if (json1 != "nothing")
-                {
-                    return json1;
-                }
-                else if (json2 != "nothing")
-                {
-                    return json2;
+                    if (json1 == "negative" || json2 == "negative")
+                    {
+                        return "negative";
+                    }
+                    else if (json1 == "nothing" && json2 == "nothing")
+                    {
+                        return "nothing";
+                    }
+                    else if (json1 != "nothing" && json2 != "nothing")
+                    {
+                        return string.Format("[{0},{1}]", json1, json2);
+                    }
+                    else if (json1 != "nothing")
+                    {
+                        return json1;
+                    }
+                    else if (json2 != "nothing")
+                    {
+                        return json2;
+                    }
+                    else
+                    {
+                        return "negative";
+                    }
                 }
                 else
                 {
-                    return "negative";
+                    return "hidden";
                 }
             }
             else
-            {
                 return "hidden";
-            }
         }
 
         [WebMethod]
