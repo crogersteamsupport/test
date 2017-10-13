@@ -187,9 +187,6 @@
     vertical-align:middle;
     /*text-decoration:underline;*/
 }
-
-
-
 #ticket-properties-area .hasError .form-label,
 #ticket-properties-area .hasError .form-label label {
     color:#a94442 !important;
@@ -200,8 +197,22 @@
     border-radius:5px;
 }
 
-
-
+#ticket-duedate-container {
+    margin:0px;
+    padding:0px;
+    min-height:30px;
+    width:160px;
+}
+#ticket-duedate-container a {
+    margin:0px;
+    padding:0px;
+    min-height:30px;
+    width:160px;
+    display:inline-block;
+}
+#ticket-duedate-container .fa {
+    display:block;
+}
 
 
 
