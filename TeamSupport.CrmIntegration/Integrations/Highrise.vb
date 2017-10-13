@@ -272,6 +272,8 @@ Namespace TeamSupport
 
                             'Load the stream into an xml doc
                             Dim myxml As XmlDocument = New XmlDocument
+                            myxml.XmlResolver = Nothing
+
                             myxml.LoadXml(reader.ReadToEnd)
 
                             reader.Close()

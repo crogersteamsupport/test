@@ -108,7 +108,8 @@ namespace TeamSupport.ServiceLibrary
 					{
 						responseText = reader.ReadToEnd();
 						XmlDocument xmlDoc = new XmlDocument();
-						xmlDoc.LoadXml(responseText);
+                        xmlDoc.XmlResolver = null;
+  						xmlDoc.LoadXml(responseText);
 
 						string xpath = "PrettyPrintObject/metrics/metrics";
 						var nodes = xmlDoc.SelectNodes(xpath);
