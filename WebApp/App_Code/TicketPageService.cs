@@ -103,6 +103,7 @@ namespace TSWebServices
 
             info.LinkToJira = GetLinkToJira(ticket.TicketID);
             info.LinkToTFS = GetLinkToTFS(ticket.TicketID);
+			info.LinkToSnow = GetLinkToSnow(ticket.TicketID);
 
             TicketStatuses ticketStatus = new TicketStatuses(TSAuthentication.GetLoginUser());
             ticketStatus.LoadByStatusIDs(TSAuthentication.OrganizationID, new int[] { ticket.TicketStatusID });
@@ -1418,7 +1419,9 @@ namespace TSWebServices
             public TicketLinkToJiraItemProxy LinkToJira { get; set; }
             [DataMember]
             public TicketLinkToTFSItemProxy LinkToTFS { get; set; }
-            [DataMember]
+			[DataMember]
+			public TicketLinkToSnowItemProxy LinkToSnow { get; set; }
+			[DataMember]
             public AttachmentProxy[] Attachments { get; set; }
             [DataMember]
             public bool IsSlaPaused { get; set; }
@@ -1609,7 +1612,29 @@ namespace TSWebServices
             return result;
         }
 
-        private UserInfo[] GetSubscribers(TicketsViewItem ticket)
+		private TicketLinkToSnowItemProxy GetLinkToSnow(int ticketID)
+		{
+			TicketLinkToSnowItemProxy result = null;
+
+			try
+			{
+				TicketLinkToSnow linkToSnow = new TicketLinkToSnow(TSAuthentication.GetLoginUser());
+				linkToSnow.LoadByTicketID(ticketID);
+
+				if (linkToSnow.Count > 0)
+				{
+					result = linkToSnow[0].GetProxy();
+				}
+			}
+			catch (Exception ex)
+			{
+				ExceptionLogs.LogException(LoginUser.Anonymous, ex, "ServiceNow getting data", "TicketPageService.GetLinkToSnow");
+			}
+
+			return result;
+		}
+
+		private UserInfo[] GetSubscribers(TicketsViewItem ticket)
         {
             UsersView users = new UsersView(ticket.Collection.LoginUser);
             users.LoadBySubscription(ticket.TicketID, ReferenceType.Tickets);

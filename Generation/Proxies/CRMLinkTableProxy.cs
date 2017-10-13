@@ -44,6 +44,7 @@ namespace TeamSupport.Data
     [DataMember] public string ExcludedTicketStatusUpdate { get; set; }
     [DataMember] public bool IncludeIssueNonRequired { get; set; }
     [DataMember] public bool UseNetworkCredentials { get; set; }
+    [DataMember] public int? WebHookTokenId { get; set; }
           
   }
   
@@ -52,6 +53,7 @@ namespace TeamSupport.Data
     public CRMLinkTableItemProxy GetProxy()
     {
       CRMLinkTableItemProxy result = new CRMLinkTableItemProxy();
+      result.WebHookTokenId = this.WebHookTokenId;
       result.UseNetworkCredentials = this.UseNetworkCredentials;
       result.IncludeIssueNonRequired = this.IncludeIssueNonRequired;
       result.ExcludedTicketStatusUpdate = this.ExcludedTicketStatusUpdate;

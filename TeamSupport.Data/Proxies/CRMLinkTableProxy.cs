@@ -44,15 +44,20 @@ namespace TeamSupport.Data
     [DataMember] public string ExcludedTicketStatusUpdate { get; set; }
     [DataMember] public bool IncludeIssueNonRequired { get; set; }
     [DataMember] public bool UseNetworkCredentials { get; set; }
-          
-  }
+    [DataMember] public int? WebHookTokenId { get; set; }
+	[DataMember] public string WebHookTokenFullUrl { get; set; }
+	[DataMember] public bool DisplayIntegrationPanel { get; set; }
+	}
   
   public partial class CRMLinkTableItem : BaseItem
   {
     public CRMLinkTableItemProxy GetProxy()
     {
       CRMLinkTableItemProxy result = new CRMLinkTableItemProxy();
-      result.UseNetworkCredentials = this.UseNetworkCredentials;
+      result.WebHookTokenId = this.WebHookTokenId;
+	  result.WebHookTokenFullUrl = this.WebHookTokenFullUrl;
+	  result.DisplayIntegrationPanel = this.DisplayIntegrationPanel;
+	  result.UseNetworkCredentials = this.UseNetworkCredentials;
       result.IncludeIssueNonRequired = this.IncludeIssueNonRequired;
       result.ExcludedTicketStatusUpdate = this.ExcludedTicketStatusUpdate;
       result.InstanceName = this.InstanceName;
