@@ -520,7 +520,6 @@ function SetupTicketProperties(order) {
         _ticketGroupID = info.Ticket.GroupID;
 
         window.parent.Ts.System.logAction('View Ticket');
-        window.parent.Ts.Services.Settings.SetMoxieManagerSessionVariables();
 
         if (info == null) alert('no ticket');
 

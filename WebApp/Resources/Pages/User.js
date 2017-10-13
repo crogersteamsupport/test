@@ -2486,7 +2486,6 @@ UserPage = function () {
       result.parent().addClass('ui-state-error-custom ui-corner-all');
     }
   }
-  window.parent.parent.Ts.Services.Settings.SetMoxieManagerSessionVariables();
 };
 
 

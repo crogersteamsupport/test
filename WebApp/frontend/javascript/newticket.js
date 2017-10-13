@@ -514,7 +514,6 @@ function SetupTicketProperties() {
 
     setInitialValue();
 
-    parent.Ts.Services.Settings.SetMoxieManagerSessionVariables();
 };
 
 function SaveTicket() {
