@@ -16,7 +16,7 @@ public partial class Charts_TicketsCreatedByDay : BaseChartPage
         public int ClosedCount { get; set; }
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public static TicketCounts[] GetData(DateTime start, DateTime end)
     {
         List<TicketCounts> result = new List<TicketCounts>();

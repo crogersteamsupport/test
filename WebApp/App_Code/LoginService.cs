@@ -409,7 +409,7 @@ namespace TSWebServices
 			public string RouteURL { get; set; }
 		}
 
-		[WebMethod(true)]
+		[WebMethod]
 		 public string GetEmail(int userID)
 		 {
 			User user = Users.GetUser(LoginUser.Anonymous, userID);

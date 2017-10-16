@@ -51,7 +51,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
     }
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static ImageComboBoxData[] GetTicketTypeImagesComboData()
   {
     List<ImageComboBoxData> data = new List<ImageComboBoxData>();
@@ -80,7 +80,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
     return data.ToArray();
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static ImageComboBoxData[] GetTicketTypeProductFamilyComboData()
   {
       List<ImageComboBoxData> data = new List<ImageComboBoxData>();
@@ -102,7 +102,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
       return data.ToArray();
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static RadComboBoxItemData[] GetTicketTypesComboData()
   {
     TicketTypes ticketTypes = new TicketTypes(UserSession.LoginUser);
@@ -119,7 +119,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
     return data.ToArray();
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static RadComboBoxItemData[] GetTypesCombo()
   {
     TicketTypes ticketTypes = new TicketTypes(UserSession.LoginUser);
@@ -136,7 +136,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
     return data.ToArray();
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static RadComboBoxItemData[] GetReplaceTypeComboData(int id, SelectedType type, int ticketTypeID)
   {
     //IDictionary<string, object> contextDictionary = (IDictionary<string, object>)context;
@@ -223,7 +223,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>
-    [WebMethod(true)]
+    [WebMethod]
     public static TypesHtmlResult GetTypesHtml2(SelectedType type, string arg)
     {
         Organization organization = Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
@@ -327,7 +327,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>
-    [WebMethod(true)]
+    [WebMethod]
   public static string GetTypesHtml(SelectedType type, string arg)
   {
       Organization organization = Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
@@ -468,7 +468,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
     return builder.ToString();
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static string CanDelete(int id, SelectedType type, string arg)
   {
     string result = null;
@@ -495,7 +495,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
     return result;
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static string ReplaceType(SelectedType type, int oldID, int newID, string arg)
   {
     if (!UserSession.CurrentUser.IsSystemAdmin) return "";
@@ -581,7 +581,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
     return GetTypesHtml(type, arg);
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static string MoveUp(SelectedType type, int id, string arg)
   {
     if (!UserSession.CurrentUser.IsSystemAdmin) return "";
@@ -598,7 +598,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
     return GetTypesHtml(type, arg);
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static string MoveDown(SelectedType type, int id, string arg)
   {
     if (!UserSession.CurrentUser.IsSystemAdmin) return "";
@@ -615,7 +615,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
     return GetTypesHtml(type, arg);
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static TypeObject GetTypeObject(SelectedType type, int id)
   {
     TypeObject result = new TypeObject();
@@ -686,7 +686,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
     return result;
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static string UpdateType(SelectedType type, 
       string arg, 
       int? id, 

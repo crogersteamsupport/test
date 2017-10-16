@@ -22,7 +22,7 @@ public partial class Charts_TicketsByProduct : System.Web.UI.Page
         public int Features { get; set; }
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public static TicketCounts[] GetData()
     {
         List<TicketCounts> result = new List<TicketCounts>();

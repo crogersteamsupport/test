@@ -139,7 +139,7 @@ public partial class Frames_Organizations : BaseFramePage
 
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static string GetResults(string filter)
   {
     filter = filter.Trim();
@@ -171,7 +171,7 @@ public partial class Frames_Organizations : BaseFramePage
     return builder.ToString();
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static string GetContact(int id)
   {
     UsersView users = new UsersView(UserSession.LoginUser);
@@ -190,7 +190,7 @@ public partial class Frames_Organizations : BaseFramePage
   }
 
 
-  [WebMethod(true)]
+  [WebMethod]
   public static string GetCustomer(int id)
   {
     Organizations organizations = new Organizations(UserSession.LoginUser);

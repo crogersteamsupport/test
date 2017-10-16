@@ -30,7 +30,7 @@ namespace TSWebServices
       //InitializeComponent(); 
     }
     
-    [WebMethod(true)]
+    [WebMethod]
     public AutomationData GetData()
     {
       
@@ -413,7 +413,7 @@ namespace TSWebServices
       return result;
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public TicketAutomationTriggerProxy[] GetTriggers()
     {
       TicketAutomationTriggers triggers = new TicketAutomationTriggers(UserSession.LoginUser);
@@ -421,7 +421,7 @@ namespace TSWebServices
       return triggers.GetTicketAutomationTriggerProxies();
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public int CreateTrigger()
     {
       TicketAutomationTrigger trigger = (new TicketAutomationTriggers(UserSession.LoginUser)).AddNewTicketAutomationTrigger();
@@ -434,7 +434,7 @@ namespace TSWebServices
       return trigger.TriggerID;
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public TriggerData GetTrigger(int triggerID)
     {
       TicketAutomationTriggersViewItem trigger = TicketAutomationTriggersView.GetTicketAutomationTriggersViewItem(UserSession.LoginUser, triggerID);
@@ -453,7 +453,7 @@ namespace TSWebServices
       return result;
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public void DeleteTrigger(int triggerID)
     {
       TicketAutomationTrigger trigger = TicketAutomationTriggers.GetTicketAutomationTrigger(UserSession.LoginUser, triggerID);
@@ -463,7 +463,7 @@ namespace TSWebServices
       trigger.Collection.Save();
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public TicketAutomationTriggerProxy SaveTrigger(string value)
     {
       SaveTriggerData data = Newtonsoft.Json.JsonConvert.DeserializeObject<SaveTriggerData>(value);
