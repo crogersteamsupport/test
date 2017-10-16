@@ -236,7 +236,6 @@ namespace TSWebServices
         public TimeLineItem[] GetTimeLineItems(int ticketID, int from)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            List<TimeLineItem> timeLineItems = new List<TimeLineItem>();
             TicketTimeLineView TimeLineView = new TicketTimeLineView(loginUser);
 
             try {
@@ -244,6 +243,15 @@ namespace TSWebServices
             } catch (Exception ex) {
                 ExceptionLogs.LogException(loginUser, ex, "GetTimeLineItems", "TicketPageService.GetTimeLineItems");
             }
+
+            return processActions(TimeLineView);
+        }
+
+
+        private TimeLineItem[] processActions (TicketTimeLineView TimeLineView) {
+
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            List<TimeLineItem> timeLineItems = new List<TimeLineItem>();
 
             foreach (TicketTimeLineViewItem viewItem in TimeLineView) {
 
@@ -257,7 +265,6 @@ namespace TSWebServices
                     timeLineItem.Attachments  = attachments.GetAttachmentProxies();
 
                     timeLineItems.Add(timeLineItem);
-
                 } else {
                     TimeLineItem wcItem = new TimeLineItem();
                     WaterCoolerThread thread = new WaterCoolerThread();
@@ -266,32 +273,22 @@ namespace TSWebServices
                     WaterCoolerView wc = new WaterCoolerView(TSAuthentication.GetLoginUser());
                     wc.LoadMoreThreadsNoCountFilter(0, (int)viewItem.TicketNumber);
 
-                    if (wc.Any(d => d.MessageID == viewItem.RefID))
-                    {
+                    if (wc.Any(d => d.MessageID == viewItem.RefID)) {
                         WatercoolerMsg replies = new WatercoolerMsg(loginUser);
                         replies.LoadReplies(viewItem.RefID);
-
                         WatercoolerLikes likes = new WatercoolerLikes(loginUser);
                         likes.LoadByMessageID(viewItem.RefID);
-
                         wcItem.Likes = likes.Count();
-
                         wcItem.DidLike = (likes.Where(l => l.UserID == loginUser.UserID).Count() > 0);
-
                         List<WaterCoolerReply> wcReplies = new List<WaterCoolerReply>();
 
-                        foreach (WatercoolerMsgItem reply in replies)
-                        {
+                        foreach (WatercoolerMsgItem reply in replies) {
                             WaterCoolerReply replyItem = new WaterCoolerReply();
                             replyItem.WaterCoolerReplyProxy = reply.GetProxy();
-
                             WatercoolerLikes replyLikes = new WatercoolerLikes(loginUser);
                             replyLikes.LoadByMessageID(reply.MessageID);
-
                             replyItem.Likes = replyLikes.Count();
-
                             replyItem.DidLike = (replyLikes.Where(rl => rl.UserID == loginUser.UserID).Count() > 0);
-
                             wcReplies.Add(replyItem);
                         }
 
@@ -312,6 +309,10 @@ namespace TSWebServices
 
             return timeLineItems.ToArray();
         }
+
+
+
+
 
         [WebMethod]
         public TimeLineItem RequestUpdate(int ticketID)
@@ -954,7 +955,7 @@ namespace TSWebServices
 
             if (json != "nothing" && json != "negative") {
                 return json;
-            } else { 
+            } else {
                 return "negative";
             }
         }
