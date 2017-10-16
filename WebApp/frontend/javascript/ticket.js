@@ -4552,11 +4552,11 @@ function CreateTimeLineDelegates() {
         e.stopPropagation();
         var isVisible = $(this).data('visible');
         if (isVisible) {
-            $('li > div.timeline-panel > div.ticket-badge > div.bgcolor-green').closest('li').hide();
+            $('div.ticket-badge .bgcolor-green').parents('div.action').hide();
             $('.filter-public').addClass('bgcolor-darkgray');
             $('.filter-public').removeClass('bgcolor-green');
         } else {
-            $('li > div.timeline-panel > div.ticket-badge > div.bgcolor-green').closest('li').show();
+            $('div.ticket-badge .bgcolor-green').parents('div.action').show();
             $('.filter-public').removeClass('bgcolor-darkgray');
             $('.filter-public').addClass('bgcolor-green');
         }
@@ -4568,11 +4568,11 @@ function CreateTimeLineDelegates() {
         e.stopPropagation();
         var isVisible = $(this).data('visible');
         if (isVisible) {
-            $('li > div.timeline-panel > div.ticket-badge > div.bgcolor-orange').closest('li').hide();
+            $('div.ticket-badge .bgcolor-orange').parents('div.action').hide();
             $('.filter-private').addClass('bgcolor-darkgray');
             $('.filter-private').removeClass('bgcolor-orange');
         } else {
-            $('li > div.timeline-panel > div.ticket-badge > div.bgcolor-orange').closest('li').show();
+            $('div.ticket-badge .bgcolor-orange').parents('div.action').show();
             $('.filter-private').removeClass('bgcolor-darkgray');
             $('.filter-private').addClass('bgcolor-orange');
         }
@@ -4584,11 +4584,11 @@ function CreateTimeLineDelegates() {
         e.stopPropagation();
         var isVisible = $(this).data('visible');
         if (isVisible) {
-            $('li > div.timeline-panel > div.ticket-badge > div.bgcolor-blue').closest('li').hide();
+            $('div.ticket-badge .bgcolor-blue').parents('div.action').hide();
             $('.filter-wc').addClass('bgcolor-darkgray');
             $('.filter-wc').removeClass('bgcolor-blue');
         } else {
-            $('li > div.timeline-panel > div.ticket-badge > div.bgcolor-blue').closest('li').show();
+            $('div.ticket-badge .bgcolor-blue').parents('div.action').show();
             $('.filter-wc').removeClass('bgcolor-darkgray');
             $('.filter-wc').addClass('bgcolor-blue');
         }
