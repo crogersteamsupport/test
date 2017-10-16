@@ -71,7 +71,7 @@ namespace TeamSupport.Services
             //InitializeComponent(); 
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public RadComboBoxItemData[] GetUserOrOrganization(RadComboBoxContext context)
         {
             IDictionary<string, object> contextDictionary = (IDictionary<string, object>)context;
@@ -102,7 +102,7 @@ namespace TeamSupport.Services
             return list.ToArray();
         }
         /*
-        [WebMethod(true)]
+        [WebMethod]
         public RadComboBoxItemData[] GetOrganizationByLikeName(RadComboBoxContext context)
         {
           IDictionary<string, object> contextDictionary = (IDictionary<string, object>)context;
@@ -122,7 +122,7 @@ namespace TeamSupport.Services
           return list.ToArray();
         }*/
 
-        [WebMethod(true)]
+        [WebMethod]
         public RadComboBoxItemData[] GetUsers(RadComboBoxContext context)
         {
             IDictionary<string, object> contextDictionary = (IDictionary<string, object>)context;
@@ -156,7 +156,7 @@ namespace TeamSupport.Services
             return list.ToArray();
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public RadComboBoxItemData[] GetQuickTicket(RadComboBoxContext context)
         {
 
@@ -220,7 +220,7 @@ namespace TeamSupport.Services
         }
 
 
-        [WebMethod(true)]
+        [WebMethod]
         public RadComboBoxItemData[] GetTicketByDescription(RadComboBoxContext context)
         {
             Options options = new Options();
@@ -280,7 +280,7 @@ namespace TeamSupport.Services
             }
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public RadComboBoxItemData[] GetKBTicketByDescription(RadComboBoxContext context)
         {
             Options options = new Options();
@@ -343,7 +343,7 @@ namespace TeamSupport.Services
         }
 
 
-        [WebMethod(true)]
+        [WebMethod]
         public RadComboBoxItemData[] GetTicketTags(RadComboBoxContext context)
         {
             IDictionary<string, object> contextDictionary = (IDictionary<string, object>)context;
@@ -364,19 +364,19 @@ namespace TeamSupport.Services
             return list.ToArray();
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void UpdateUserPingTime()
         {
             Users.UpdateUserPingTime(UserSession.LoginUser, UserSession.LoginUser.UserID);
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void UpdateUserActivityTime()
         {
             Users.UpdateUserActivityTime(UserSession.LoginUser, UserSession.LoginUser.UserID);
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public IEnumerable GetReportNodes(RadTreeNodeData node, IDictionary context)
         {
             Reports _reports = new Reports(UserSession.LoginUser);
@@ -409,7 +409,7 @@ namespace TeamSupport.Services
             return list;
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public IEnumerable GetVersionNodes(RadTreeNodeData node, IDictionary context)
         {
             ProductVersions versions = new ProductVersions(UserSession.LoginUser);
@@ -426,7 +426,7 @@ namespace TeamSupport.Services
             return list;
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void SubscribeToTicket(int ticketID)
         {
             Tickets tickets = new Tickets(UserSession.LoginUser);
@@ -436,13 +436,13 @@ namespace TeamSupport.Services
                 tickets.AddSubscription(UserSession.LoginUser.UserID, ticketID);
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public bool IsSubscribedToTicket(int ticketID)
         {
             return Tickets.IsUserSubscribed(UserSession.LoginUser, UserSession.LoginUser.UserID, ticketID);
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void Subscribe(ReferenceType refType, int refID)
         {
             if (Subscriptions.IsUserSubscribed(UserSession.LoginUser, UserSession.LoginUser.UserID, refType, refID))
@@ -451,13 +451,13 @@ namespace TeamSupport.Services
                 Subscriptions.AddSubscription(UserSession.LoginUser, UserSession.LoginUser.UserID, refType, refID);
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public bool IsSubscribed(ReferenceType refType, int refID)
         {
             return Subscriptions.IsUserSubscribed(UserSession.LoginUser, UserSession.LoginUser.UserID, refType, refID);
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void RequestTicketUpdate(int ticketID)
         {
             TicketsViewItem ticket = TicketsView.GetTicketsViewItem(UserSession.LoginUser, ticketID);
@@ -468,7 +468,7 @@ namespace TeamSupport.Services
             ActionLogs.AddActionLog(UserSession.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public int GetTicketID(int ticketNumber)
         {
             Ticket ticket = Tickets.GetTicketByNumber(UserSession.LoginUser, ticketNumber);
@@ -478,7 +478,7 @@ namespace TeamSupport.Services
                 return -1;
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void TakeTicketOwnership(int ticketID)
         {
             Tickets tickets = new Tickets(UserSession.LoginUser);
@@ -492,47 +492,47 @@ namespace TeamSupport.Services
         }
 
 
-        [WebMethod(true)]
+        [WebMethod]
         public void SetUserSetting(string key, string value)
         {
             Settings.UserDB.WriteString(key, value);
             Users.UpdateUserActivityTime(UserSession.LoginUser, UserSession.LoginUser.UserID);
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void SetSessionSetting(string key, string value)
         {
             Settings.Session.WriteString(key, value);
             Users.UpdateUserActivityTime(UserSession.LoginUser, UserSession.LoginUser.UserID);
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public string GetUserSetting(string key, string defaultValue)
         {
             return Settings.UserDB.ReadString(key, defaultValue);
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public string GetSessionSetting(string key, string defaultValue)
         {
             return Settings.Session.ReadString(key, defaultValue);
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public string GetUserStatusText()
         {
             User user = Users.GetUser(UserSession.LoginUser, UserSession.LoginUser.UserID);
             return user.InOfficeComment;
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public bool GetUserAvailability()
         {
             User user = Users.GetUser(UserSession.LoginUser, UserSession.LoginUser.UserID);
             return user.InOffice;
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public string SetUserStatusText(string text)
         {
             User user = Users.GetUser(UserSession.LoginUser, UserSession.LoginUser.UserID);
@@ -548,7 +548,7 @@ namespace TeamSupport.Services
             return user.InOfficeComment;
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public bool ToggleUserAvailability()
         {
             User user = Users.GetUser(UserSession.LoginUser, UserSession.LoginUser.UserID);
@@ -565,7 +565,7 @@ namespace TeamSupport.Services
             return user.InOffice;
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public bool ToggleUserChat()
         {
             ChatUserSetting setting = ChatUserSettings.GetSetting(UserSession.LoginUser, UserSession.LoginUser.UserID);
@@ -574,7 +574,7 @@ namespace TeamSupport.Services
             return setting.IsAvailable;
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public bool CanEditReport(int reportID)
         {
             Report report = (Report)Reports.GetReport(UserSession.LoginUser, reportID);
@@ -588,14 +588,14 @@ namespace TeamSupport.Services
                     string.IsNullOrEmpty(report.Query);
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public bool IsFavoriteReport(int reportID)
         {
             Report report = (Report)Reports.GetReport(UserSession.LoginUser, reportID);
             return report.IsFavorite;
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void ToggleFavoriteReport(int reportID)
         {
             Report report = (Report)Reports.GetReport(UserSession.LoginUser, reportID);
@@ -606,7 +606,7 @@ namespace TeamSupport.Services
 
         #region Admin Methods
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeleteTicket(int ticketID)
         {
             if (!UserSession.CurrentUser.IsSystemAdmin) return;
@@ -616,7 +616,7 @@ namespace TeamSupport.Services
             ticket.Collection.Save();
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeleteAction(int actionID)
         {
             if (!UserSession.CurrentUser.IsSystemAdmin) return;
@@ -630,7 +630,7 @@ namespace TeamSupport.Services
             action.Collection.Save();
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeleteProduct(int productID)
         {
             if (!UserSession.CurrentUser.IsSystemAdmin) return;
@@ -644,7 +644,7 @@ namespace TeamSupport.Services
             }
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeleteVersion(int versionID)
         {
             if (!UserSession.CurrentUser.IsSystemAdmin) return;
@@ -658,7 +658,7 @@ namespace TeamSupport.Services
             }
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeleteProductFamily(int productFamilyID)
         {
             if (!UserSession.CurrentUser.IsSystemAdmin) return;
@@ -673,7 +673,7 @@ namespace TeamSupport.Services
         }
 
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeleteGroup(int groupID)
         {
             if (!UserSession.CurrentUser.IsSystemAdmin) return;
@@ -689,7 +689,7 @@ namespace TeamSupport.Services
             }
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeleteAttachment(int attachmentID)
         {
             //if (!UserSession.CurrentUser.IsSystemAdmin) return;
@@ -705,7 +705,7 @@ namespace TeamSupport.Services
             }
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeleteGroupUser(int groupID, int userID)
         {
             if (!UserSession.CurrentUser.IsSystemAdmin) return;
@@ -721,7 +721,7 @@ namespace TeamSupport.Services
             }
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeleteUser(int userID)
         {
             if (!UserSession.CurrentUser.IsSystemAdmin) return;
@@ -743,7 +743,7 @@ namespace TeamSupport.Services
 
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeleteTask(int taskID)
         {
             Task task = Tasks.GetTask(UserSession.LoginUser, taskID);
@@ -772,7 +772,7 @@ namespace TeamSupport.Services
             task.Collection.Save();
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeleteNote(int noteID)
         {
             Note note = Notes.GetNote(UserSession.LoginUser, noteID);
@@ -785,7 +785,7 @@ namespace TeamSupport.Services
             note.Collection.Save();
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeleteOrganization(int organizationID)
         {
             if (!UserSession.CurrentUser.IsSystemAdmin) return;
@@ -804,7 +804,7 @@ namespace TeamSupport.Services
             }
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeleteOrganizationProduct(int organizationProductID, bool bypass = true)
         {
             if (!UserSession.CurrentUser.IsSystemAdmin && bypass) return;
@@ -829,7 +829,7 @@ namespace TeamSupport.Services
             }
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeleteUserProduct(int userProductID)
         {
             if (!UserSession.CurrentUser.IsSystemAdmin) return;
@@ -844,7 +844,7 @@ namespace TeamSupport.Services
             }
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeleteTicketOrganization(int organizationID, int ticketID)
         {
             try
@@ -858,7 +858,7 @@ namespace TeamSupport.Services
             }
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeleteTicketContact(int userID, int ticketID)
         {
             try
@@ -872,7 +872,7 @@ namespace TeamSupport.Services
             }
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void AddTicketOrganization(string id, int ticketID)
         {
             try
@@ -892,7 +892,7 @@ namespace TeamSupport.Services
             }
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeleteReport(int reportID)
         {
             if (!UserSession.CurrentUser.IsSystemAdmin) return;
@@ -906,7 +906,7 @@ namespace TeamSupport.Services
 
         #endregion
 
-        [WebMethod(true)]
+        [WebMethod]
         public void AddRelatedTicket(int ticketID1, int ticketID2)
         {
             Ticket ticket1 = Tickets.GetTicket(UserSession.LoginUser, ticketID1);
@@ -926,7 +926,7 @@ namespace TeamSupport.Services
             }
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void AddParentTicket(int ticketID, int parentID)
         {
             if (ticketID == parentID) return;
@@ -937,7 +937,7 @@ namespace TeamSupport.Services
             child.Collection.Save();
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void AddChildTicket(int ticketID, int childID)
         {
             if (ticketID == childID) return;
@@ -948,7 +948,7 @@ namespace TeamSupport.Services
             child.Collection.Save();
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void RemoveRelatedTicket(int ticketID1, int ticketID2)
         {
             TicketRelationship item = TicketRelationships.GetTicketRelationship(UserSession.LoginUser, ticketID1, ticketID2);
@@ -959,7 +959,7 @@ namespace TeamSupport.Services
             }
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void RemoveParentTicket(int ticketID)
         {
             Ticket ticket = Tickets.GetTicket(UserSession.LoginUser, ticketID);
@@ -967,7 +967,7 @@ namespace TeamSupport.Services
             ticket.Collection.Save();
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void RemoveChildTicket(int childID)
         {
             Ticket ticket = Tickets.GetTicket(UserSession.LoginUser, childID);
@@ -975,7 +975,7 @@ namespace TeamSupport.Services
             ticket.Collection.Save();
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void AddTicketTag(int tagID, int ticketID)
         {
             Tag tag = Tags.GetTag(UserSession.LoginUser, tagID);
@@ -993,7 +993,7 @@ namespace TeamSupport.Services
             }
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void AddTicketTagByValue(int ticketID, string value)
         {
             value = value.Trim();
@@ -1012,35 +1012,35 @@ namespace TeamSupport.Services
         }
 
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeleteEmail(int emailID)
         {
             EmailAddresses emails = new EmailAddresses(UserSession.LoginUser);
             emails.DeleteFromDB(emailID);
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeletePhone(int phoneID)
         {
             PhoneNumbers phoneNumbers = new PhoneNumbers(UserSession.LoginUser);
             phoneNumbers.DeleteFromDB(phoneID);
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeleteAddress(int addressID)
         {
             Addresses addresses = new Addresses(UserSession.LoginUser);
             addresses.DeleteFromDB(addressID);
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public TicketProxy GetTicket(int ticketID)
         {
             Ticket ticket = Tickets.GetTicket(UserSession.LoginUser, ticketID);
             return ticket.GetProxy();
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public TicketProxy GetTicketByNumber(int ticketNumber)
         {
             Tickets tickets = new Tickets(UserSession.LoginUser);
@@ -1049,7 +1049,7 @@ namespace TeamSupport.Services
         }
 
 
-        [WebMethod(true)]
+        [WebMethod]
         public void SaveCustomFieldText(int refID, int fieldID, string value)
         {
             CustomValue customValue = CustomValues.GetValue(UserSession.LoginUser, fieldID, refID);
@@ -1057,7 +1057,7 @@ namespace TeamSupport.Services
             customValue.Collection.Save();
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void SaveCustomFieldNumber(int refID, int fieldID, int value)
         {
             CustomValue customValue = CustomValues.GetValue(UserSession.LoginUser, fieldID, refID);
@@ -1065,7 +1065,7 @@ namespace TeamSupport.Services
             customValue.Collection.Save();
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void SaveCustomFieldDate(int refID, int fieldID, DateTime? value)
         {
             DateTime? date;
@@ -1084,7 +1084,7 @@ namespace TeamSupport.Services
             customValue.Collection.Save();
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void SaveCustomFieldBool(int refID, int fieldID, bool value)
         {
             CustomValue customValue = CustomValues.GetValue(UserSession.LoginUser, fieldID, refID);

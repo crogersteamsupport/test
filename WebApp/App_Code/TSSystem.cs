@@ -96,7 +96,7 @@ namespace TSWebServices
             return setting.GetProxy();
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void SignOut()
         {
 

@@ -30,7 +30,7 @@ public partial class Frames_Chat : BaseFramePage
     }
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static UserInfoProxy GetUserInfo()
   {
     return UserSession.CurrentUser.Proxy;
@@ -169,14 +169,14 @@ public partial class Frames_Chat : BaseFramePage
     return new string[] { chatID.ToString(), i.ToString(), chatHtml, typers.ToString() };
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static int AcceptRequest(int chatRequestID)
   {
     int chatID = ChatRequests.AcceptRequest(UserSession.LoginUser, UserSession.LoginUser.UserID, chatRequestID, HttpContext.Current.Request.UserHostAddress);
     return chatID;
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static int[] GetActionID(int chatID)
   {
     List<int> result = new List<int>();
@@ -198,7 +198,7 @@ public partial class Frames_Chat : BaseFramePage
     return result.ToArray();
   }
   
-  [WebMethod(true)]
+  [WebMethod]
   public static int GetTicketID(int chatID)
   {
     Chat chat = Chats.GetChat(UserSession.LoginUser, chatID);
@@ -209,7 +209,7 @@ public partial class Frames_Chat : BaseFramePage
     return action.TicketID;
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static int AddTicket(int chatID, int ticketID)
   {
     Chat chat = Chats.GetChat(UserSession.LoginUser, chatID);
@@ -234,7 +234,7 @@ public partial class Frames_Chat : BaseFramePage
     return ticketID;
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static void SetCurrentChatID(int chatID)
   {
     ChatUserSetting setting = ChatUserSettings.GetSetting(UserSession.LoginUser, UserSession.LoginUser.UserID);
@@ -242,25 +242,25 @@ public partial class Frames_Chat : BaseFramePage
     setting.Collection.Save();
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static void RequestTransfer(int chatID, int userID)
   {
     ChatRequests.RequestTransfer(UserSession.LoginUser, chatID, userID);
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static void RequestInvite(int chatID, int userID)
   {
     ChatRequests.RequestInvite(UserSession.LoginUser, chatID, userID);
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static void SetTyping(int chatID)
   {
     ChatParticipants.UpdateTyping(UserSession.LoginUser, UserSession.LoginUser.UserID, ChatParticipantType.User, chatID);
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static void PostMessage(string message, int chatID)
   {
     Chat chat = Chats.GetChat(UserSession.LoginUser, chatID);
@@ -274,7 +274,7 @@ public partial class Frames_Chat : BaseFramePage
     Users.UpdateUserActivityTime(UserSession.LoginUser, UserSession.LoginUser.UserID);  
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static bool CloseChat(int chatID)
   {
     Chat chat = Chats.GetChat(UserSession.LoginUser, chatID);
@@ -283,7 +283,7 @@ public partial class Frames_Chat : BaseFramePage
     return true;
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static bool ToggleAvailable()
   {
     ChatUserSetting setting = ChatUserSettings.GetSetting(UserSession.LoginUser, UserSession.LoginUser.UserID);

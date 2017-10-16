@@ -163,7 +163,7 @@ public partial class Dialogs_OrganizationProduct : BaseDialogPage
     LoadVersions(int.Parse(cmbProducts.SelectedValue));
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static RadComboBoxItemData[] GetOrganization(RadComboBoxContext context)
   {
     IDictionary<string, object> contextDictionary = (IDictionary<string, object>)context;

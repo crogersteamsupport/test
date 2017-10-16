@@ -71,7 +71,7 @@ public partial class Chat_Chat : System.Web.UI.Page
     return result;
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static void PostMessage(int chatID, string message)
   {
     Chat chat = GetChat(chatID);
@@ -85,7 +85,7 @@ public partial class Chat_Chat : System.Web.UI.Page
 
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static void SetTyping(int chatID)
   {
     Chat chat = GetChat(chatID);

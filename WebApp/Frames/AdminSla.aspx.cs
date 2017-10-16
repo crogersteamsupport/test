@@ -24,7 +24,7 @@ public partial class Frames_AdminSla : BaseFramePage
     set { Settings.Session.WriteInt("SelectedAdminSlaLevelID", value); }
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static RadComboBoxItemData[] GetComboLevels()
   {
     SlaLevels levels = new SlaLevels(UserSession.LoginUser);
@@ -42,7 +42,7 @@ public partial class Frames_AdminSla : BaseFramePage
     return data.ToArray();
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static void DeleteLevel(int slaLevelID)
   {
     SlaLevel level = SlaLevels.GetSlaLevel(UserSession.LoginUser, slaLevelID);
@@ -53,7 +53,7 @@ public partial class Frames_AdminSla : BaseFramePage
     }
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static void DeleteTrigger(int slaTriggerID)
   {
     SlaTrigger trigger = SlaTriggers.GetSlaTrigger(UserSession.LoginUser, slaTriggerID);
@@ -65,7 +65,7 @@ public partial class Frames_AdminSla : BaseFramePage
     }
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static string GetTriggersHtml(int slaLevelID, int ticketTypeID)
   {
     return GetTriggerTable(slaLevelID, ticketTypeID);
