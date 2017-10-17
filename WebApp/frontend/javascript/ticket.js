@@ -889,7 +889,6 @@ function SetupActionEditor(elem, action) {
                     var actionElement = CreateActionElement(_newAction, false);
                     actionElement.find('.ticket-action-number').text(_actionTotal);
                 } else {
-                    console.log('#action-file-upload:updateactionelement');
                     UpdateActionElement(_newAction, false);
                 }
                 _newAction = null;
@@ -4182,7 +4181,6 @@ function CreateHandleBarHelpers() {
             var output   = window.parent.Ts.Services.TicketPage.getPosition(ticketID, actionID, function (result) {
                 if (result != 'negative' && result != 'nothing') {
                     var data = jQuery.parseJSON(result);
-                    // console.log(data.position[0].position);
                     $('#action-number-' + actionID).text(data.position[0].position)
                 }
             });
