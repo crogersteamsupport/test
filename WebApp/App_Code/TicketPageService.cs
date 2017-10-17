@@ -247,6 +247,22 @@ namespace TSWebServices
             return processActions(TimeLineView);
         }
 
+        [WebMethod]
+        public TimeLineItem[] pullPinned (int ticketID) {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            TicketTimeLineView TimeLineView = new TicketTimeLineView(loginUser);
+
+            try {
+                TimeLineView.Pinned(ticketID);
+
+            } catch (Exception ex) {
+                ExceptionLogs.LogException(loginUser, ex, "pullPinned", "TicketPageService.pullPinned");
+                // return "negative";
+            }
+
+            return processActions(TimeLineView);
+
+        }
 
         private TimeLineItem[] processActions (TicketTimeLineView TimeLineView) {
 
@@ -259,10 +275,10 @@ namespace TSWebServices
                     Attachments attachments = new Attachments(loginUser);
                     attachments.LoadByActionID(viewItem.RefID);
 
-                    TimeLineItem timeLineItem = new TimeLineItem();
-                    timeLineItem.item         = viewItem.GetProxy();
-                    timeLineItem.item.Message = SanitizeMessage(timeLineItem.item.Message, loginUser);
-                    timeLineItem.Attachments  = attachments.GetAttachmentProxies();
+                    TimeLineItem timeLineItem  = new TimeLineItem();
+                    timeLineItem.item          = viewItem.GetProxy();
+                    timeLineItem.item.Message  = SanitizeMessage(timeLineItem.item.Message, loginUser);
+                    timeLineItem.Attachments   = attachments.GetAttachmentProxies();
 
                     timeLineItems.Add(timeLineItem);
                 } else {
@@ -309,10 +325,6 @@ namespace TSWebServices
 
             return timeLineItems.ToArray();
         }
-
-
-
-
 
         [WebMethod]
         public TimeLineItem RequestUpdate(int ticketID)
@@ -978,62 +990,44 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string PullReactions(int ticketID, int actionID)
-        {
+        public string PullReactions(int ticketID, int actionID) {
             TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             User author = Users.GetUser(loginUser, action.CreatorID);
-            if (author != null)
-            {
-                if (loginUser.OrganizationID == author.OrganizationID)
-                {
+            if (author != null) {
+                if (loginUser.OrganizationID == author.OrganizationID) {
                     string json1 = Actions.CountReactions(loginUser, ticketID, actionID);
                     string json2 = Actions.CheckReaction(loginUser, ticketID, actionID);
 
-                    if (json1 == "negative" || json2 == "negative")
-                    {
+                    if (json1 == "negative" || json2 == "negative") {
                         return "negative";
-                    }
-                    else if (json1 == "nothing" && json2 == "nothing")
-                    {
+                    } else if (json1 == "nothing" && json2 == "nothing") {
                         return "nothing";
-                    }
-                    else if (json1 != "nothing" && json2 != "nothing")
-                    {
+                    } else if (json1 != "nothing" && json2 != "nothing") {
                         return string.Format("[{0},{1}]", json1, json2);
-                    }
-                    else if (json1 != "nothing")
-                    {
+                    } else if (json1 != "nothing") {
                         return json1;
-                    }
-                    else if (json2 != "nothing")
-                    {
+                    } else if (json2 != "nothing") {
                         return json2;
-                    }
-                    else
-                    {
+                    } else {
                         return "negative";
                     }
-                }
-                else
-                {
+                } else {
                     return "hidden";
                 }
-            }
-            else
+            } else {
                 return "hidden";
+            }
         }
 
         [WebMethod]
-        public string PullUserList(int ticketID)
-        {
+        public string PullUserList(int ticketID) {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             return Actions.PullUserList(loginUser, ticketID);
         }
 
         [WebMethod]
-        public string ListReactions(int ticketID, int actionID)
-        {
+        public string ListReactions(int ticketID, int actionID) {
             TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             User user = TSAuthentication.GetUser(loginUser);
@@ -1042,8 +1036,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string UpdateReaction(int ticketID, int actionID, int value)
-        {
+        public string UpdateReaction(int ticketID, int actionID, int value) {
             string updateReaction = string.Empty;
             TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
             LoginUser loginUser = TSAuthentication.GetLoginUser();
@@ -1052,17 +1045,14 @@ namespace TSWebServices
 
             updateReaction = Actions.UpdateReaction(loginUser, receiverID, ticketID, actionID, value);
 
-            if (updateReaction == "positive" && value > 0 && action.CreatorID != loginUser.UserID)
-            {
+            if (updateReaction == "positive" && value > 0 && action.CreatorID != loginUser.UserID) {
                 EmailReaction(loginUser, receiverID, ticketID);
             }
             return updateReaction;
         }
 
-        private void EmailReaction(LoginUser loginUser, int receiverID, int ticketID)
-        {
-            try
-            {
+        private void EmailReaction(LoginUser loginUser, int receiverID, int ticketID) {
+            try {
                 EmailPosts posts   = new EmailPosts(TSAuthentication.GetLoginUser());
                 EmailPost post     = posts.AddNewEmailPost();
                 post.EmailPostType = EmailPostType.Reaction;

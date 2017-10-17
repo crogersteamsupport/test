@@ -450,7 +450,6 @@ function AddTicketProperty(item) {
 
 function SetupTicketProperties(order) {
     window.parent.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
-        console.log(info);
         if (info == null) {
             var url = window.location.href;
             if (url.indexOf('.') > -1) {
@@ -523,6 +522,7 @@ function SetupTicketProperties(order) {
         //get total number of actions so we can use it to number each action
         GetActionCount(function () {
             //create timeline now that we have a ticketID and a count
+            FetchPinned();
             FetchTimeLineItems(0);
         });
 
@@ -3997,10 +3997,23 @@ function openTicketWindow(ticketID) {
     window.parent.Ts.MainPage.openTicket(ticketID, true);
 }
 
+function FetchPinned() {
+    window.parent.Ts.Services.TicketPage.pullPinned(_ticketID, function (returned) {
+        if (returned.length > 0) {
+            var pinned   = returned;
+            var template = Handlebars.templates['action2'];
+            var html   = template(pinned[0]);
+            $(html).find('a').attr('target', '_blank');
+            $("#pinned-placeholder").html(html);
+        }
+    });
+}
+
 function FetchTimeLineItems(start) {
     _isLoading = true;
     $('.results-loading').show();
     window.parent.Ts.Services.TicketPage.GetTimeLineItems(_ticketID, start, function (TimeLineItems) {
+        console.log(TimeLineItems);
         _timeLine = TimeLineItems;
         if (TimeLineItems.length < 1) {
             $('.results-loading').hide();
@@ -4038,14 +4051,12 @@ function CreateActionElement(val, ShouldAppend) {
             val.WaterCoolerReplies[wc].WaterCoolerReplyProxy.Message = wcmsgtext.replace(/\n\r?/g, '<br />');
         }
     }
-
     if (_currDateSpan == null || _currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
         if (!val.item.IsPinned) {
             var dateSpan = '<div class="daystrip"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
             _currDateSpan = val.item.DateCreated;
         }
     }
-
     var html = _compiledActionTemplate(val);
     var actionElement = $(html);
     actionElement.find('a').attr('target', '_blank');
@@ -4056,12 +4067,10 @@ function CreateActionElement(val, ShouldAppend) {
         $('.action-placeholder').after(actionElement);
         $('.action-placeholder').after(dateSpan);
     }
-
     if (val.item.IsPinned) {
-        var actionCloned = $(actionElement).clone();
-        $("#pinned-placeholder").html(actionCloned);
+        // fvar actionCloned = $(actionElement).clone();
+        // $("#pinned-placeholder").html(actionCloned);
     }
-
     _isCreatingAction = false;
     return actionElement;
 }
