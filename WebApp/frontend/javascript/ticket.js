@@ -314,6 +314,8 @@ var loadTicket = function (ticketNumber, refresh) {
         SetDueDate(_ticketInfo.Ticket.DueDate);
 
         SetProduct(_ticketInfo.Ticket.ProductID);
+        SetVersion(_ticketInfo.Ticket.ReportedVersionID);
+        SetSolved(_ticketInfo.Ticket.SolvedVersionID);
         //var $select = $('#ticket-Versions').selectize();
         //var control = $select[0].selectize;
         //control.destroy();
@@ -5455,7 +5457,8 @@ var SetVersion = function (VersionID) {
     var selectField = $('#ticket-Versions');
     if (selectField.length > 0) {
         var selectize = $('#ticket-Versions')[0].selectize;
-        selectize.addItem(VersionID, false);
+        if (VersionID) selectize.addItem(VersionID, false);
+        else selectize.clear(true);
     }
 };
 
@@ -5463,9 +5466,8 @@ var SetSolved = function (ResolvedID) {
     var selectField = $('#ticket-Resolved');
     if (selectField.length > 0) {
         var selectize = $('#ticket-Resolved')[0].selectize;
-        selectize.addItem(ResolvedID, false);
-        //if (ResolvedID) selectize.addItem(ResolvedID, false);
-        //else selectize.clear(true);
+        if (ResolvedID) selectize.addItem(ResolvedID, false);
+        else selectize.clear(true);
     }
 };
 
