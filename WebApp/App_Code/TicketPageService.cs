@@ -248,38 +248,29 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public TimeLineItem[] pullPinned (int ticketID) {
+        public TimeLineItem[] getPinned (int ticketID) {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             TicketTimeLineView TimeLineView = new TicketTimeLineView(loginUser);
-
             try {
                 TimeLineView.Pinned(ticketID);
-
             } catch (Exception ex) {
                 ExceptionLogs.LogException(loginUser, ex, "pullPinned", "TicketPageService.pullPinned");
-                // return "negative";
             }
-
             return processActions(TimeLineView);
-
         }
 
         private TimeLineItem[] processActions (TicketTimeLineView TimeLineView) {
-
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<TimeLineItem> timeLineItems = new List<TimeLineItem>();
 
             foreach (TicketTimeLineViewItem viewItem in TimeLineView) {
-
                 if (!viewItem.IsWC) {
                     Attachments attachments = new Attachments(loginUser);
                     attachments.LoadByActionID(viewItem.RefID);
-
                     TimeLineItem timeLineItem  = new TimeLineItem();
                     timeLineItem.item          = viewItem.GetProxy();
                     timeLineItem.item.Message  = SanitizeMessage(timeLineItem.item.Message, loginUser);
                     timeLineItem.Attachments   = attachments.GetAttachmentProxies();
-
                     timeLineItems.Add(timeLineItem);
                 } else {
                     TimeLineItem wcItem = new TimeLineItem();
@@ -322,7 +313,6 @@ namespace TSWebServices
                     }
                 }
             }
-
             return timeLineItems.ToArray();
         }
 
@@ -960,11 +950,9 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string WatsonTicket (int ticketID) {
+        public string getPosition (int ticketID, int actionID) {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-
-            string json = Actions.WatsonPullTicket(loginUser, ticketID);
-
+            string json = Actions.getPosition(loginUser, ticketID, actionID);
             if (json != "nothing" && json != "negative") {
                 return json;
             } else {
@@ -973,18 +961,23 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string WatsonAction (int ticketID, int actionID)
-        {
+        public string WatsonTicket (int ticketID) {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-
-            string json = Actions.WatsonPullAction(loginUser, ticketID, actionID);
-
-            if (json != "nothing" && json != "negative")
-            {
+            string json = Actions.WatsonPullTicket(loginUser, ticketID);
+            if (json != "nothing" && json != "negative") {
                 return json;
+            } else {
+                return "negative";
             }
-            else
-            {
+        }
+
+        [WebMethod]
+        public string WatsonAction (int ticketID, int actionID) {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            string json = Actions.WatsonPullAction(loginUser, ticketID, actionID);
+            if (json != "nothing" && json != "negative") {
+                return json;
+            } else {
                 return "negative";
             }
         }
@@ -998,7 +991,6 @@ namespace TSWebServices
                 if (loginUser.OrganizationID == author.OrganizationID) {
                     string json1 = Actions.CountReactions(loginUser, ticketID, actionID);
                     string json2 = Actions.CheckReaction(loginUser, ticketID, actionID);
-
                     if (json1 == "negative" || json2 == "negative") {
                         return "negative";
                     } else if (json1 == "nothing" && json2 == "nothing") {

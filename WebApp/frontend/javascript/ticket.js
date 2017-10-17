@@ -56,6 +56,7 @@ var publisher;
 var screenSharingPublisher;
 var videoURL;
 var tokTimer;
+var pinning;
 
 var slaCheckTimer;
 var ticketWidget = null;
@@ -3998,11 +3999,12 @@ function openTicketWindow(ticketID) {
 }
 
 function FetchPinned() {
-    window.parent.Ts.Services.TicketPage.pullPinned(_ticketID, function (returned) {
+    window.parent.Ts.Services.TicketPage.getPinned(_ticketID, function (returned) {
         if (returned.length > 0) {
-            var pinned   = returned;
+            var pinned   = returned[0];
+            pinned.pinning = 'yes';
             var template = Handlebars.templates['action2'];
-            var html   = template(pinned[0]);
+            var html     = template(pinned);
             $(html).find('a').attr('target', '_blank');
             $("#pinned-placeholder").html(html);
         }
@@ -4013,7 +4015,6 @@ function FetchTimeLineItems(start) {
     _isLoading = true;
     $('.results-loading').show();
     window.parent.Ts.Services.TicketPage.GetTimeLineItems(_ticketID, start, function (TimeLineItems) {
-        console.log(TimeLineItems);
         _timeLine = TimeLineItems;
         if (TimeLineItems.length < 1) {
             $('.results-loading').hide();
@@ -4175,7 +4176,17 @@ function CreateHandleBarHelpers() {
     });
 
     Handlebars.registerHelper('ActionNumber', function () {
-        if (!_isCreatingAction) {
+        if (this.item.IsPinned && this.pinning) {
+            var ticketID = this.item.TicketID;
+            var actionID = this.item.RefID;
+            var output   = window.parent.Ts.Services.TicketPage.getPosition(ticketID, actionID, function (result) {
+                if (result != 'negative' && result != 'nothing') {
+                    var data = jQuery.parseJSON(result);
+                    // console.log(data.position[0].position);
+                    $('#action-number-' + actionID).text(data.position[0].position)
+                }
+            });
+        } else if (!_isCreatingAction) {
             _workingActionNumer = _workingActionNumer - 1;
             return _workingActionNumer + 1;
             // return _workingActionNumer;

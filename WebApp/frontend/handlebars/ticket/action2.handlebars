@@ -38,7 +38,7 @@
                     {{#if item.IsWC}}
                     <span class="number ticket-action-number">&nbsp;</span>
                     {{else}}
-                    <span class="number ticket-action-number">{{ActionNumber}}</span>
+                    <span id="action-number-{{item.RefID}}" class="number ticket-action-number">{{ActionNumber}}</span>
                     {{/if}}
                     <div class="ticket-badge">{{{TimeLineLabel}}} {{{WaterCoolerRelationships}}}</div>
                 </div>

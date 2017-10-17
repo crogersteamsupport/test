@@ -384,11 +384,11 @@ HAVING ax.TicketID = @TicketId";
             {
                 command.CommandText =
                 @"
-          SELECT 
-            a.* 
-          FROM 
-            Actions a 
-            JOIN Tickets t 
+          SELECT
+            a.*
+          FROM
+            Actions a
+            JOIN Tickets t
               ON a.TicketID = t.TicketID
             LEFT JOIN TicketStatuses ts
               ON t.TicketStatusID = ts.TicketStatusID
@@ -480,7 +480,7 @@ HAVING ax.TicketID = @TicketId";
             using (SqlCommand command = new SqlCommand())
             {
                 string sql = @"SELECT a.*
-FROM Actions a 
+FROM Actions a
 JOIN
 	(SELECT TicketID FROM Tickets WHERE ticketId IN (SELECT TicketID
 													FROM Actions
@@ -513,9 +513,9 @@ WHERE a.SalesForceID = @SalesForceID";
             {
                 command.CommandText =
                 @"
-          SELECT 
-            a.* 
-          FROM 
+          SELECT
+            a.*
+          FROM
             Actions a
             LEFT JOIN ActionLinkToJira j
               ON a.ActionID = j.ActionID
@@ -554,9 +554,9 @@ WHERE a.SalesForceID = @SalesForceID";
             {
                 command.CommandText =
                 @"
-          SELECT 
-            a.* 
-          FROM 
+          SELECT
+            a.*
+          FROM
             Actions a
             LEFT JOIN ActionLinkToTFS tfs
               ON a.ActionID = tfs.ActionID
@@ -588,8 +588,8 @@ WHERE a.SalesForceID = @SalesForceID";
                 connection.Open();
                 SqlCommand command = connection.CreateCommand();
                 command.CommandText = @"
-          SELECT 
-	          COUNT(*) 
+          SELECT
+	          COUNT(*)
           FROM
 	          Actions
           WHERE
@@ -850,14 +850,10 @@ WHERE a.SalesForceID = @SalesForceID";
             }
         }
 
-        public static string WatsonPullAction(LoginUser loginUser, int ticketID, int actionID)
-        {
-            try
-            {
-                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
-                {
-                    using (SqlCommand command = new SqlCommand())
-                    {
+        public static string WatsonPullAction(LoginUser loginUser, int ticketID, int actionID) {
+            try {
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString)) {
+                    using (SqlCommand command = new SqlCommand()) {
                         command.Connection = connection;
                         command.CommandType = CommandType.Text;
 
@@ -870,31 +866,45 @@ WHERE a.SalesForceID = @SalesForceID";
                         command.Parameters.AddWithValue("@ActionID", actionID);
                         connection.Open();
                         SqlDataReader reader = command.ExecuteReader();
-                        if (reader.HasRows && reader.Read())
-                        {
+                        if (reader.HasRows && reader.Read()) {
                             return reader.GetValue(0).ToString();
-                        }
-                        else
-                        {
+                        } else {
                             return "nothing";
                         }
                     }
                 }
-            }
-            catch (SqlException e)
-            {
+            } catch (SqlException e) {
                 return "negative";
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 return "negative";
             }
         }
 
-
+        public static string getPosition(LoginUser loginUser, int ticketID, int actionID) {
+            try {
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString)) {
+                    using (SqlCommand command = new SqlCommand()) {
+                        command.Connection = connection;
+                        command.CommandType = CommandType.Text;
+                        command.CommandText = "SELECT TOP 1 COUNT(ActionID) AS position FROM dbo.Actions WHERE TicketID = @TicketID AND ActionID <= @ActionID ";
+                        command.CommandText += "FOR JSON PATH, ROOT('position')";
+                        command.Parameters.AddWithValue("@TicketID", ticketID);
+                        command.Parameters.AddWithValue("@ActionID", actionID);
+                        connection.Open();
+                        SqlDataReader reader = command.ExecuteReader();
+                        if (reader.HasRows && reader.Read()) {
+                            return reader.GetValue(0).ToString();
+                        } else {
+                            return "nothing";
+                        }
+                    }
+                }
+            } catch (SqlException e) {
+                return "negative" + e;
+            } catch (Exception e) {
+                return "negative" + e;
+            }
+        }
 
     }
 }
-
-
-
