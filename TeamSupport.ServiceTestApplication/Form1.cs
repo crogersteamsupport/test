@@ -30,6 +30,7 @@ namespace TeamSupport.ServiceTestApplication
 	ServiceThreadPool<ReportSender> _reportSender;
         ServiceThreadPool<TokTranscoder> _tokTranscoder;
     ServiceThreadPool<TaskProcessor> _taskProcessor;
+	WebHooksPool _webHooksProcessor;
     
     public Form1()
     {
@@ -64,6 +65,7 @@ namespace TeamSupport.ServiceTestApplication
 	  if (_reportSender != null) _reportSender.Stop();
             if (_tokTranscoder != null) _tokTranscoder.Stop();
       if (_taskProcessor != null) _taskProcessor.Stop();
+		if (_webHooksProcessor != null) _webHooksProcessor.Stop();
         }
 
     private void StartProcess(ServiceThread thread, Button button)
@@ -217,5 +219,10 @@ namespace TeamSupport.ServiceTestApplication
         {
             if (_taskProcessor == null || _taskProcessor.IsStopped) StartProcess(_taskProcessor = new ServiceThreadPool<TaskProcessor>("TaskProcessor"), sender as Button); else StopProcess(_taskProcessor, sender as Button);
         }
+
+		private void btnWebHooks_Click(object sender, EventArgs e)
+		{
+			if (_webHooksProcessor == null || _webHooksProcessor.IsStopped) StartProcess(_webHooksProcessor = new WebHooksPool(SystemUser.CRM), sender as Button); else StopProcess(_webHooksProcessor, sender as Button);
+		}
     }
 }

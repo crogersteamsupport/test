@@ -1,595 +1,483 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductFamily
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectProductFamily
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
 
 (
-  @ProductFamilyID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ProductFamilyID],
+    [AttachmentID],
     [OrganizationID],
-    [Name],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
     [Description],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [NeedsIndexing],
-    [ImportID],
-    [ImportFileID]
-  FROM [dbo].[ProductFamilies]
-  WHERE ([ProductFamilyID] = @ProductFamilyID)
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductFamily
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertProductFamily
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
 
 (
   @OrganizationID int,
-  @Name nvarchar(MAX),
-  @Description nvarchar(MAX),
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
-  @NeedsIndexing int,
-  @ImportID varchar(500),
-  @ImportFileID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ProductFamilies]
+  INSERT INTO [dbo].[Attachments]
   (
     [OrganizationID],
-    [Name],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
     [Description],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [NeedsIndexing],
-    [ImportID],
-    [ImportFileID])
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow])
   VALUES (
     @OrganizationID,
-    @Name,
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
     @Description,
     @DateCreated,
     @DateModified,
     @CreatorID,
     @ModifierID,
-    @NeedsIndexing,
-    @ImportID,
-    @ImportFileID)
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID,
+    @ProductFamilyID,
+    @SentToTFS,
+    @SentToSnow)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductFamily
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateProductFamily
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
 
 (
-  @ProductFamilyID int,
+  @AttachmentID int,
   @OrganizationID int,
-  @Name nvarchar(MAX),
-  @Description nvarchar(MAX),
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
   @DateModified datetime,
   @ModifierID int,
-  @NeedsIndexing int,
-  @ImportID varchar(500),
-  @ImportFileID int
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[ProductFamilies]
+  UPDATE [dbo].[Attachments]
   SET
     [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
     [Description] = @Description,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [ImportID] = @ImportID,
-    [ImportFileID] = @ImportFileID
-  WHERE ([ProductFamilyID] = @ProductFamilyID)
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID,
+    [ProductFamilyID] = @ProductFamilyID,
+    [SentToTFS] = @SentToTFS,
+    [SentToSnow] = @SentToSnow
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductFamily
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteProductFamily
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
 
 (
-  @ProductFamilyID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ProductFamilies]
-  WHERE ([ProductFamilyID] = @ProductFamilyID)
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductFamily
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectProductFamily
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
 
 (
-  @ProductFamilyID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ProductFamilyID],
+    [AttachmentID],
     [OrganizationID],
-    [Name],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
     [Description],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [NeedsIndexing],
-    [ImportID],
-    [ImportFileID]
-  FROM [dbo].[ProductFamilies]
-  WHERE ([ProductFamilyID] = @ProductFamilyID)
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductFamily
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertProductFamily
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
 
 (
   @OrganizationID int,
-  @Name nvarchar(MAX),
-  @Description nvarchar(MAX),
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
-  @NeedsIndexing int,
-  @ImportID varchar(500),
-  @ImportFileID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ProductFamilies]
+  INSERT INTO [dbo].[Attachments]
   (
     [OrganizationID],
-    [Name],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
     [Description],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [NeedsIndexing],
-    [ImportID],
-    [ImportFileID])
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow])
   VALUES (
     @OrganizationID,
-    @Name,
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
     @Description,
     @DateCreated,
     @DateModified,
     @CreatorID,
     @ModifierID,
-    @NeedsIndexing,
-    @ImportID,
-    @ImportFileID)
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID,
+    @ProductFamilyID,
+    @SentToTFS,
+    @SentToSnow)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductFamily
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateProductFamily
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
 
 (
-  @ProductFamilyID int,
+  @AttachmentID int,
   @OrganizationID int,
-  @Name nvarchar(MAX),
-  @Description nvarchar(MAX),
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
   @DateModified datetime,
   @ModifierID int,
-  @NeedsIndexing int,
-  @ImportID varchar(500),
-  @ImportFileID int
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[ProductFamilies]
+  UPDATE [dbo].[Attachments]
   SET
     [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
     [Description] = @Description,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [ImportID] = @ImportID,
-    [ImportFileID] = @ImportFileID
-  WHERE ([ProductFamilyID] = @ProductFamilyID)
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID,
+    [ProductFamilyID] = @ProductFamilyID,
+    [SentToTFS] = @SentToTFS,
+    [SentToSnow] = @SentToSnow
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductFamily
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteProductFamily
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
 
 (
-  @ProductFamilyID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ProductFamilies]
-  WHERE ([ProductFamilyID] = @ProductFamilyID)
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductFamily
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectProductFamily
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
 
 (
-  @ProductFamilyID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [ProductFamilyID],
+    [AttachmentID],
     [OrganizationID],
-    [Name],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
     [Description],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [NeedsIndexing],
-    [ImportID],
-    [ImportFileID]
-  FROM [dbo].[ProductFamilies]
-  WHERE ([ProductFamilyID] = @ProductFamilyID)
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductFamily
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertProductFamily
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
 
 (
   @OrganizationID int,
-  @Name nvarchar(MAX),
-  @Description nvarchar(MAX),
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
-  @NeedsIndexing int,
-  @ImportID varchar(500),
-  @ImportFileID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ProductFamilies]
+  INSERT INTO [dbo].[Attachments]
   (
     [OrganizationID],
-    [Name],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
     [Description],
     [DateCreated],
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [NeedsIndexing],
-    [ImportID],
-    [ImportFileID])
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow])
   VALUES (
     @OrganizationID,
-    @Name,
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
     @Description,
     @DateCreated,
     @DateModified,
     @CreatorID,
     @ModifierID,
-    @NeedsIndexing,
-    @ImportID,
-    @ImportFileID)
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID,
+    @ProductFamilyID,
+    @SentToTFS,
+    @SentToSnow)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductFamily
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateProductFamily
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
 
 (
-  @ProductFamilyID int,
+  @AttachmentID int,
   @OrganizationID int,
-  @Name nvarchar(MAX),
-  @Description nvarchar(MAX),
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
   @DateModified datetime,
   @ModifierID int,
-  @NeedsIndexing int,
-  @ImportID varchar(500),
-  @ImportFileID int
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[ProductFamilies]
+  UPDATE [dbo].[Attachments]
   SET
     [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
     [Description] = @Description,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [ImportID] = @ImportID,
-    [ImportFileID] = @ImportFileID
-  WHERE ([ProductFamilyID] = @ProductFamilyID)
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID,
+    [ProductFamilyID] = @ProductFamilyID,
+    [SentToTFS] = @SentToTFS,
+    [SentToSnow] = @SentToSnow
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductFamily
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteProductFamily
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
 
 (
-  @ProductFamilyID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ProductFamilies]
-  WHERE ([ProductFamilyID] = @ProductFamilyID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductFamily
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectProductFamily
-
-(
-  @ProductFamilyID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ProductFamilyID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [NeedsIndexing],
-    [ImportID],
-    [ImportFileID]
-  FROM [dbo].[ProductFamilies]
-  WHERE ([ProductFamilyID] = @ProductFamilyID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductFamily
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertProductFamily
-
-(
-  @OrganizationID int,
-  @Name nvarchar(MAX),
-  @Description nvarchar(MAX),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @NeedsIndexing int,
-  @ImportID varchar(500),
-  @ImportFileID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ProductFamilies]
-  (
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [NeedsIndexing],
-    [ImportID],
-    [ImportFileID])
-  VALUES (
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @NeedsIndexing,
-    @ImportID,
-    @ImportFileID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductFamily
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateProductFamily
-
-(
-  @ProductFamilyID int,
-  @OrganizationID int,
-  @Name nvarchar(MAX),
-  @Description nvarchar(MAX),
-  @DateModified datetime,
-  @ModifierID int,
-  @NeedsIndexing int,
-  @ImportID varchar(500),
-  @ImportFileID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ProductFamilies]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [ImportID] = @ImportID,
-    [ImportFileID] = @ImportFileID
-  WHERE ([ProductFamilyID] = @ProductFamilyID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductFamily
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteProductFamily
-
-(
-  @ProductFamilyID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ProductFamilies]
-  WHERE ([ProductFamilyID] = @ProductFamilyID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductFamily
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectProductFamily
-
-(
-  @ProductFamilyID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ProductFamilyID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [NeedsIndexing],
-    [ImportID],
-    [ImportFileID]
-  FROM [dbo].[ProductFamilies]
-  WHERE ([ProductFamilyID] = @ProductFamilyID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertProductFamily
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertProductFamily
-
-(
-  @OrganizationID int,
-  @Name nvarchar(MAX),
-  @Description nvarchar(MAX),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @NeedsIndexing int,
-  @ImportID varchar(500),
-  @ImportFileID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ProductFamilies]
-  (
-    [OrganizationID],
-    [Name],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [NeedsIndexing],
-    [ImportID],
-    [ImportFileID])
-  VALUES (
-    @OrganizationID,
-    @Name,
-    @Description,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @NeedsIndexing,
-    @ImportID,
-    @ImportFileID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateProductFamily
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateProductFamily
-
-(
-  @ProductFamilyID int,
-  @OrganizationID int,
-  @Name nvarchar(MAX),
-  @Description nvarchar(MAX),
-  @DateModified datetime,
-  @ModifierID int,
-  @NeedsIndexing int,
-  @ImportID varchar(500),
-  @ImportFileID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ProductFamilies]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [ImportID] = @ImportID,
-    [ImportFileID] = @ImportFileID
-  WHERE ([ProductFamilyID] = @ProductFamilyID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteProductFamily' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteProductFamily
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteProductFamily
-
-(
-  @ProductFamilyID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ProductFamilies]
-  WHERE ([ProductFamilyID] = @ProductFamilyID)
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 

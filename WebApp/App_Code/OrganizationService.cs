@@ -426,8 +426,50 @@ namespace TSWebServices
             if (!TSAuthentication.IsSystemAdmin) return null;
             CRMLinkTable table = new CRMLinkTable(TSAuthentication.GetLoginUser());
             table.LoadByOrganizationID(TSAuthentication.OrganizationID);
-            return table.GetCRMLinkTableItemProxies();
+			CRMLinkTableItemProxy[] crmLinks = table.GetCRMLinkTableItemProxies();
+
+			//Check if the ServiceNow integration is enabled, per Eric's request the SandBox (13679) account in NA1 will always have it enabled for now.
+			bool isSnowEnabled = SystemSettings.GetIsSnowEnabled() || TSAuthentication.OrganizationID == 13679;
+
+			//Build the whole webhook urls (if applicable)
+			foreach (CRMLinkTableItem crmlink in table)
+			{
+				if (crmlink.WebHookTokenId != null)
+				{
+					WebHooksTokenItem crmWebHookToken = WebHooksToken.GetWebHooksTokenItem(TSAuthentication.GetLoginUser(), (int)crmlink.WebHookTokenId);
+					IntegrationType integrationType = (IntegrationType)Enum.Parse(typeof(IntegrationType), crmlink.CRMType);
+
+					crmlink.WebHookTokenFullUrl = string.Format("{0}/WebHook/Integration/{1}/{2}/{3}", SystemSettings.GetAppUrl(), integrationType, TSAuthentication.OrganizationID, crmWebHookToken.Token);
+					if (crmLinks.Where(p => p.WebHookTokenId == crmlink.WebHookTokenId).Any())
+					{
+						CRMLinkTableItemProxy proxy = crmLinks.Where(p => p.WebHookTokenId == crmlink.WebHookTokenId).FirstOrDefault();
+						proxy.WebHookTokenFullUrl = crmlink.WebHookTokenFullUrl;
+					}
+				}
+
+				if (crmlink.CRMType == IntegrationType.ServiceNow.ToString())
+				{
+					CRMLinkTableItemProxy proxy = crmLinks.Where(p => p.CRMLinkID == crmlink.CRMLinkID).FirstOrDefault();
+					proxy.DisplayIntegrationPanel = isSnowEnabled;
+				}
+				else
+				{
+					CRMLinkTableItemProxy proxy = crmLinks.Where(p => p.CRMLinkID == crmlink.CRMLinkID).FirstOrDefault();
+					proxy.DisplayIntegrationPanel = true;
+				}
+			}
+
+			return crmLinks;
         }
+
+		[WebMethod]
+		public bool IsSnowEnabled()
+		{
+			if (!TSAuthentication.IsSystemAdmin) return false;
+			bool isSnowEnabled = SystemSettings.GetIsSnowEnabled() || TSAuthentication.OrganizationID == 13679;
+
+			return isSnowEnabled;
+		}
 
         [WebMethod]
         public CRMLinkTableItemProxy[] LoadOrgCrmLinks(int organizationID)
@@ -475,7 +517,8 @@ namespace TSWebServices
             string restrictedToTicketTypes,
             string excludedTicketStatuses,
             string jiraInstanceName,
-            bool useNetworkCredentials
+            bool useNetworkCredentials,
+			string webhookToken
             )
         {
             if (!TSAuthentication.IsSystemAdmin) return null;
@@ -527,23 +570,70 @@ namespace TSWebServices
             item.RestrictedToTicketTypes = restrictedToTicketTypes;
             item.ExcludedTicketStatusUpdate = excludedTicketStatuses;
             item.UseNetworkCredentials = useNetworkCredentials;
+			item.Collection.Save();
 
-            item.Collection.Save();
+			if (!string.IsNullOrEmpty(webhookToken) && item.CRMLinkID > 0)
+			{
+				Uri uri = new Uri(webhookToken);
 
-            if (item.CRMType == "TFS" && item.Active == true)
+				if (uri.Segments.Count() > 1)
+				{
+					webhookToken = uri.Segments[uri.Segments.Count() - 1];
+					WebHooksTokenItem crmWebHookToken = WebHooksToken.GetWebHooksTokenItem(TSAuthentication.GetLoginUser(), item.WebHookTokenId ?? 0);
+					bool updateTokenInCrm = false;
+
+					if (crmWebHookToken == null)
+					{
+						crmWebHookToken = (new WebHooksToken(TSAuthentication.GetLoginUser())).AddNewWebHooksTokenItem();
+						crmWebHookToken.OrganizationId = TSAuthentication.OrganizationID;
+						crmWebHookToken.Token = webhookToken;
+						crmWebHookToken.IsEnabled = true;
+						crmWebHookToken.CreatorId = TSAuthentication.UserID;
+						crmWebHookToken.Collection.Save();
+						updateTokenInCrm = true;
+					}
+					else if (crmWebHookToken.Token != webhookToken && crmWebHookToken.IsEnabled)
+					{
+						crmWebHookToken.Token = webhookToken;
+						crmWebHookToken.DateModified = DateTime.UtcNow;
+						crmWebHookToken.ModifierId = TSAuthentication.UserID;
+						crmWebHookToken.Collection.Save();
+						updateTokenInCrm = true;
+					}
+
+					if (updateTokenInCrm)
+					{
+						item.WebHookTokenId = crmWebHookToken.Id;
+						item.Collection.Save();
+					}
+				}
+			}
+
+			if (item.CRMType.ToLower() == IntegrationType.TFS.ToString().ToLower() && item.Active == true)
             {
-                AddTFSInTicketPageOrder(item.OrganizationID);
-            }
+				AddIntegrationInTicketPageOrder(item.OrganizationID, IntegrationType.TFS.ToString());
+            } else if (item.CRMType.ToLower() == IntegrationType.ServiceNow.ToString().ToLower() && item.Active == true)
+			{
+				AddIntegrationInTicketPageOrder(item.OrganizationID, IntegrationType.ServiceNow.ToString());
+			}
 
-            return item.GetProxy();
+			return item.GetProxy();
         }
 
-        private void AddTFSInTicketPageOrder(int organizationID)
+		[WebMethod]
+		public string GenerateWebHookToken(string type)
+		{
+			string token = HttpServerUtility.UrlTokenEncode(Guid.NewGuid().ToByteArray());
+			string fullUrl = string.Format("{0}/WebHook/Integration/{1}/{2}/{3}", SystemSettings.GetAppUrl(), type, TSAuthentication.OrganizationID, token);
+			return fullUrl;
+		}
+
+        private void AddIntegrationInTicketPageOrder(int organizationID, string type)
         {
             string customPageOrder = Settings.OrganizationDB.ReadString("TicketFieldsOrder", string.Empty);
-            if (customPageOrder != string.Empty && customPageOrder.IndexOf("TFS") < 0)
+            if (customPageOrder != string.Empty && customPageOrder.IndexOf(type) < 0)
             {
-                Settings.OrganizationDB.WriteString("TicketFieldsOrder", customPageOrder.Replace("]", ",{\"CatID\":\"TFS\",\"CatName\":\"TFS\",\"Disabled\":\"false\"}]"));
+                Settings.OrganizationDB.WriteString("TicketFieldsOrder", customPageOrder.Replace("]", ",{\"CatID\":\"" + type + "\",\"CatName\":\"" + type + "\",\"Disabled\":\"false\"}]"));
             }
 
         }

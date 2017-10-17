@@ -391,7 +391,8 @@ var loadTicket = function (ticketNumber, refresh) {
         AddInventory(_ticketInfo.Assets);
         LoadTicketHistory();
         SetupJiraFieldValues();
-        SetupTFSFieldValues();
+		SetupTFSFieldValues();
+		SetupSnowFieldValues();
         LoadGroups();
         LoadPlugins(info);
         console.log("_before calling getTicketViewing , loadticket");
@@ -1928,7 +1929,9 @@ function LoadTicketControls() {
     SetupJiraFields();
     SetupJiraFieldValues();
     SetupTFSFields();
-    SetupTFSFieldValues();
+	SetupTFSFieldValues();
+	SetupSnowFields();
+	SetupSnowFieldValues();
 };
 
 function AppendSelect(parent, data, type, id, name, isSelected) {
@@ -2013,7 +2016,8 @@ function SetupTicketPropertyEvents() {
 
                 AppenCustomValues(result[1]);
                 SetupJiraFieldValues();
-                SetupTFSFieldValues();
+				SetupTFSFieldValues();
+				SetupSnowFieldValues();
 
                 _ticketInfo.Ticket = result[2];
                 setSLAInfo();
@@ -4327,6 +4331,148 @@ function validateEmail(email) {
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
 }
+
+//click events and logic
+var SetupSnowFields = function () {
+	$('#newSnowIncident').click(function (e) {
+		e.preventDefault();
+		$('.ts-tfs-buttons-container').hide();
+		var errorMessage = "There was an error setting your ServiceNow Incident Number. Please contact TeamSupport.com";
+		window.parent.Ts.Services.Tickets.SetSyncWithSnow(_ticketID, function (result) {
+			if (result != null) {
+				var syncResult = JSON.parse(result);
+				if (syncResult.IsSuccessful === true) {
+					$('#incidentNumberValue').text('Pending...');
+					$('#incidentNumber').show();
+				}
+				else {
+					$('.ts-snow-buttons-container').show();
+					$('#incidentNumber').hide();
+					alert(syncResult.Error);
+				}
+			} else {
+				alert(errorMessage);
+			}
+		},
+			function (error) {
+				$('.ts-snow-buttons-container').show();
+				$('#incidentNumber').hide();
+				alert(errorMessage);
+			});
+	});
+
+	$('#existingSnowIncident').click(function (e) {
+		e.preventDefault();
+		$('.ts-snow-buttons-container').hide();
+		$('#enterIncident').show();
+		$('#incidentNumberInput').focus();
+	});
+
+	$('#cancelIncidentNumberButton').click(function (e) {
+		$('.ts-snow-buttons-container').show();
+		$('#enterIncident').hide();
+	});
+
+	$('#saveIncidentNumberButton').click(function (e) {
+		if ($.trim($('#incidentNumberInput').val()) === '') {
+			$('.ts-snow-buttons-container').show();
+			$('#enterIncident').hide();
+		}
+		else {
+			$('#incidentNumberValue').text($.trim($('#incidentNumberInput').val()));
+			$('#enterIncident').hide();
+			$('#incidentNumber').show();
+			var errorMessage = "There was an error setting your Incident Number. Please contact TeamSupport.com";
+
+			window.parent.Ts.Services.Tickets.SetSnowWorkItemID(_ticketID, $.trim($('#incidentNumberInput').val()), function (result) {
+				if (result != null) {
+					var syncResult = JSON.parse(result);
+					if (syncResult.IsSuccessful === false) {
+						$('.ts-snow-buttons-container').show();
+						$('#incidentNumber').hide();
+						alert(syncResult.Error);
+					}
+				} else {
+					alert(errorMessage);
+				}
+			},
+				function (error) {
+					$('.ts-snow-buttons-container').show();
+					$('#incidentNumber').hide();
+					alert(errorMessage);
+				});
+		}
+	});
+
+	$('#snowUnlink').click(function (e) {
+		var currentStatus = $("#incidentNumberValue").text().toLowerCase();
+		var confirmMessage = "Are you sure you want to " + ((currentStatus.indexOf("pending") > -1) ? "cancel" : "remove") + " link to ServiceNow?";
+
+		if (confirm(confirmMessage)) {
+			e.preventDefault();
+			window.parent.Ts.Services.Tickets.UnSetSyncWithSnow(_ticketID, function (result) {
+				if (result === true) {
+					$('.ts-snow-buttons-container').show();
+					$('#incidentNumber').hide();
+				}
+				else {
+					alert('There was an error setting your Incident Number. Please try again later');
+					$('.ts-snow-buttons-container').hide();
+					$('#incidentNumber').show();
+				}
+			},
+				function (error) {
+					alert('There was an error setting your Incident Number.');
+					$('.ts-snow-buttons-container').hide();
+					$('#incidentNumber').show();
+				});
+		}
+	});
+};
+
+//Load and display the proper ServiceNow fields/values
+var SetupSnowFieldValues = function () {
+	window.parent.Ts.Services.Admin.GetSnowCRMLinkTableRecordForTicket(_ticketID, function (result) {
+		if (result.length > 0) {
+			$('#ticket-snowfields').show();
+
+			if (_ticketInfo.LinkToSnow != null) {
+				if (!_ticketInfo.LinkToSnow.Number) {
+					$('#incidentNumberValue').text('Pending...');
+				}
+				else if (!_ticketInfo.LinkToSnow.URL) {
+					$('#incidentNumberValue').text(_ticketInfo.LinkToSnow.Number);
+					if (_ticketInfo.LinkToSnow.Number.indexOf('Error') > -1) {
+						$('#incidentNumberValue').closest('.form-group').addClass('fieldError');
+					}
+				}
+				else {
+					if ($(".snowLink").length) {
+						$(".snowLink").remove();
+					}
+
+					var snowLink = $('<a>')
+						.attr('href', _ticketInfo.LinkToSnow.URL)
+						.attr('target', '_blank')
+						.text(_ticketInfo.LinkToSnow.Number)
+						.addClass('snowLink control-label ticket-anchor ')
+						.prependTo($('#ticket-incident-container'));
+				}
+
+				$('#incidentNumberValue').show();
+				$('.ts-snow-buttons-container').hide();
+			}
+			else {
+				$('#ticket-snowfields').show();
+				$('#incidentNumber').hide();
+				$('.ts-snow-buttons-container').show();
+			}
+		}
+		else {
+			$('#ticket-snowfields').hide();
+		}
+	});
+};
 
 var getUrls = function (input) {
     var source = (input || '').toString();
