@@ -1543,6 +1543,7 @@ function SetupProductSection() {
 
     $('#ticket-Product').change(function (e) {
         var self = $(this);
+        if (!self.val()) { return; }
         var product = parent.Ts.Cache.getProduct(self.val());
         loadVersions(product);
         AppendProductMatchingCustomFields();
@@ -1562,7 +1563,6 @@ function SetupProductSection() {
                         if (!persistedData.Type) {
                             message += 'Type';
                         }
-
                         alert(message += '.');
                     }
                 });
