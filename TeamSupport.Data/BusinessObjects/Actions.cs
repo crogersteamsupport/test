@@ -900,9 +900,9 @@ WHERE a.SalesForceID = @SalesForceID";
                     }
                 }
             } catch (SqlException e) {
-                return "negative" + e;
+                return "negative";
             } catch (Exception e) {
-                return "negative" + e;
+                return "negative";
             }
         }
 
