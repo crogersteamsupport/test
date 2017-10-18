@@ -1183,6 +1183,7 @@ namespace TSWebServices
             return notes.GetNoteProxies();
         }
 
+        [System.Obsolete("Replaced with LoadAllTicketAlerts.")]
         [WebMethod]
         public NoteProxy LoadTicketAlerts(int ticketID)
         {
@@ -1242,6 +1243,7 @@ namespace TSWebServices
             return customers.ToArray();
         }
 
+        [System.Obsolete("Replaced with LoadAlerts.")]
         [WebMethod]
         public NoteProxy LoadUserAlert(int userID)
         {
@@ -1250,6 +1252,7 @@ namespace TSWebServices
         }
 
 
+        [System.Obsolete("Replaced with LoadAlerts.")]
         [WebMethod]
         public NoteProxy LoadAlert(int refID, ReferenceType refType)
         {
@@ -1360,6 +1363,7 @@ namespace TSWebServices
             }
         }
 
+        [System.Obsolete("Replaced with SnoozeAlertByID.")]
         [WebMethod]
         public void SnoozeAlert(int refID, ReferenceType refType)
         {
@@ -1387,6 +1391,7 @@ namespace TSWebServices
             }
         }
 
+        [System.Obsolete("Replaced with DismissAlertByID.")]
         [WebMethod]
         public void DismissAlert(int refID, ReferenceType refType)
         {
