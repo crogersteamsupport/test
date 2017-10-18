@@ -53,7 +53,7 @@ namespace TeamSupport.ServiceLibrary
                                 Organization organization = Organizations.GetOrganization(LoginUser, ticket.OrganizationID);
                                 SlaTrigger slaTrigger = SlaTriggers.GetSlaTrigger(LoginUser, slaTicket.SlaTriggerId);
 
-                                if (slaTrigger != null)
+                                if (slaTrigger == null)
                                 {
                                     Logs.WriteEventFormat("Trigger {0} not found.", slaTicket.SlaTriggerId);
                                 }
