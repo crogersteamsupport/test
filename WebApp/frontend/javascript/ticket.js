@@ -297,8 +297,11 @@ var loadTicket = function (ticketNumber, refresh) {
         $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
         $('#ticket-number-strip').text('#' + _ticketInfo.Ticket.TicketNumber);
         if (refresh != 0) {
-            window.parent.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
-                LoadTicketNotes(note);
+            window.parent.Ts.Services.Customers.LoadAllTicketAlerts(_ticketID, function (notes) {
+                for (var i = 0; i < notes.length; i++) {
+                    var note = notes[i];
+                    LoadTicketNotes(note);
+                }
             });
         }
 
@@ -512,8 +515,11 @@ function SetupTicketProperties(order) {
         //update ticket property controls with the values needed
         LoadTicketControls();
         //Get Ticket Notes for Customers associated with ticket
-        window.parent.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
-            LoadTicketNotes(note);
+        window.parent.Ts.Services.Customers.LoadAllTicketAlerts(_ticketID, function (notes) {
+            for (var i = 0; i < notes.length; i++) {
+                var note = notes[i];
+                LoadTicketNotes(note);
+            }
         });
 
         $('#frame-container').show();
@@ -1382,28 +1388,36 @@ function tickettimer() {
 
 function LoadTicketNotes(note) {
     if (note) {
-        $('#modalAlertMessage').html(note.Description);
-        $('#alertID').val(note.RefID);
-        $('#alertType').val(note.RefType);
+        var description = $('<div>').html(note.Description);
 
-        var buttons = {
-            "Close": function () {
-                $(this).dialog("close");
+        var buttons = [
+            {
+                text: "Close",
+                click: function () {
+                    $(this).dialog("close");
+                }
             },
-            "Snooze": function () {
-                window.parent.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
-                $(this).dialog("close");
+            {
+                text: "Snooze",
+                click: function () {
+                    _mainFrame.Ts.Services.Customers.SnoozeAlertByID($(this).data('noteId'), $(this).data('refType'));
+                    $(this).dialog("close");
+                }
             }
-        }
+        ]
 
         if (!window.parent.Ts.System.Organization.HideDismissNonAdmins || window.parent.Ts.System.User.IsSystemAdmin) {
-            buttons["Dismiss"] = function () {
-                window.parent.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
-                $(this).dialog("close");
-            }
+            buttons.push({
+                text: "Dismiss",
+                click: function () {
+                    _mainFrame.Ts.Services.Customers.DismissAlertByID($(this).data('noteId'), $(this).data('refType'));
+                    $(this).dialog("close");
+                }
+            });
         }
 
-        $("#dialog").dialog({
+        var alert = $('<div>').prop('title', 'Alert message').data('noteId', note.NoteID).data('refType', note.RefType).append(description).appendTo(document.body);
+        alert.dialog({
             resizable: false,
             width: 'auto',
             height: 'auto',
@@ -1916,12 +1930,18 @@ function SetupCustomerSection() {
                         AddCustomers(customers);
 
                         if (customerData.type == "u") {
-                            window.parent.Ts.Services.Customers.LoadAlert(value, window.parent.Ts.ReferenceTypes.Users, function (note) {
-                                LoadTicketNotes(note);
+                            window.parent.Ts.Services.Customers.LoadAlerts(value, window.parent.Ts.ReferenceTypes.Users, function (notes) {
+                                for (var i = 0; i < notes.length; i++) {
+                                    var note = notes[i];
+                                    LoadTicketNotes(note);
+                                }
                             });
                         } else {
-                            window.parent.Ts.Services.Customers.LoadAlert(value, window.parent.Ts.ReferenceTypes.Organizations, function (note) {
-                                LoadTicketNotes(note);
+                            window.parent.Ts.Services.Customers.LoadAlerts(value, window.parent.Ts.ReferenceTypes.Organizations, function (notes) {
+                                for (var i = 0; i < notes.length; i++) {
+                                    var note = notes[i];
+                                    LoadTicketNotes(note);
+                                }
                             });
                         }
 

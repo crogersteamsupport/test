@@ -136,23 +136,151 @@ namespace TeamSupport.Data
         }
 
         public void LoadbyIsAlert(ReferenceType refType, int refID, string orderBy = "DateModified")
+    {
+        using (SqlCommand command = new SqlCommand())
         {
-            using (SqlCommand command = new SqlCommand())
-            {
-                command.CommandText = @"SELECT n.*, u.FirstName + ' ' + u.LastName AS CreatorName
+            command.CommandText = @"SELECT n.*, u.FirstName + ' ' + u.LastName AS CreatorName
                                 FROM Notes n 
                                 LEFT JOIN Users u ON n.CreatorID = u.UserID 
                                 WHERE (n.RefID = @ReferenceID)
                                 AND n.isAlert = 1
                                 AND (n.RefType = @ReferenceType)
                                 ORDER BY n." + orderBy;
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@ReferenceType", refType);
+            command.Parameters.AddWithValue("@ReferenceID", refID);
+            Fill(command);
+        }
+    }
+
+        public void LoadByUserAndActiveAlert(ReferenceType refType, int refID, int userID, string orderBy = "DateModified")
+        {
+            // If loading contact alerts, include her company alerts too.
+            StringBuilder includeCompanyAlertsClause = new StringBuilder();
+            if (refType == ReferenceType.Users)
+            {
+                includeCompanyAlertsClause.Append(@"
+                OR
+                (
+                    n.RefType = 9
+                    AND n.RefID = (SELECT OrganizationID FROM Users WHERE UserID = @ReferenceID)
+                )");
+            }
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+                    SELECT
+                        n.*,
+                        u.FirstName + ' ' + u.LastName AS CreatorName
+                    FROM
+                        Notes n 
+                        LEFT JOIN Users u
+                            ON n.CreatorID = u.UserID 
+                        LEFT JOIN UserNoteSettings s
+                            ON n.NoteID = s.RefID
+                            AND n.RefType = s.RefType
+                            AND s.UserID = @UserID
+                    WHERE
+                        (
+                            (
+                                n.RefID = @ReferenceID
+                                AND n.RefType = @ReferenceType
+                            )
+                            " + includeCompanyAlertsClause.ToString() + @"
+                        )
+                        AND n.isAlert = 1
+                        AND 
+                        (
+                            s.UserID IS NULL
+                            OR 
+                            (
+                                s.IsDismissed = 0
+                                AND s.IsSnoozed = 0
+                            )
+                            OR
+                            (
+                                s.IsSnoozed = 1
+                                AND DATEADD(hour, 8, s.SnoozeTime) < GETDATE() 
+                            )
+                        )
+                    ORDER BY
+                        n." + orderBy;
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@ReferenceType", refType);
                 command.Parameters.AddWithValue("@ReferenceID", refID);
+                command.Parameters.AddWithValue("@UserID", userID);
                 Fill(command);
             }
         }
 
+        public void LoadByTicketUserAndActiveAlert(int ticketID, int userID, string orderBy = "DateModified")
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+                    SELECT
+                        n.*,
+                        u.FirstName + ' ' + u.LastName AS CreatorName
+                    FROM
+                        Notes n 
+                        LEFT JOIN Users u
+                            ON n.CreatorID = u.UserID 
+                        LEFT JOIN UserNoteSettings s
+                            ON n.NoteID = s.RefID
+                            AND n.RefType = s.RefType
+                            AND s.UserID = @UserID
+                    WHERE
+                        n.isAlert = 1
+                        AND
+                        (
+                            (
+                                n.RefType = 9
+                                AND n.RefID IN
+                                (
+                                    SELECT
+                                        OrganizationID
+                                    FROM
+                                        OrganizationTickets
+                                    WHERE
+                                        TicketID = @TicketID
+                                )
+                            )
+                            OR
+                            (
+                                n.RefType = 22
+                                AND n.RefID IN
+                                (
+                                    SELECT
+                                        UserID
+                                    FROM
+                                        UserTickets
+                                    WHERE
+                                        TicketID = @TicketID
+                                )
+                            )
+                        )
+                        AND 
+                        (
+                            s.UserID IS NULL
+                            OR 
+                            (
+                                s.IsDismissed = 0
+                                AND s.IsSnoozed = 0
+                            )
+                            OR
+                            (
+                                s.IsSnoozed = 1
+                                AND DATEADD(hour, 8, s.SnoozeTime) < GETDATE() 
+                            )
+                        )
+                    ORDER BY
+                        n." + orderBy;
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@TicketID", ticketID);
+                command.Parameters.AddWithValue("@UserID", userID);
+                Fill(command);
+            }
+        }
     }
 
 
