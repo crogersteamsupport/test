@@ -451,9 +451,9 @@ namespace TeamSupport.Data
             //3
             try
             {
-                //holidays might only have items if the sla is set to pause on holidays. See Run() 
-                if (IsValid && holidays != null && holidays.Where(p => p.StartDateUTC.Value.CompareTo(day.Date) == 0 || p.EndDateUTC.Value.CompareTo(day.Date) == 0).Any())
-                {
+				//holidays might only have items if the sla is set to pause on holidays. See Run() 
+				if (IsValid && holidays != null && holidays.Where(p => p.StartDateUTC.Value.Date.CompareTo(day.Date) == 0 || p.EndDateUTC.Value.Date.CompareTo(day.Date) == 0).Any())
+				{
                     IsValid = false;
                 }
             }
