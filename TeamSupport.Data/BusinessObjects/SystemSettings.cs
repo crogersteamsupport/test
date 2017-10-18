@@ -179,5 +179,12 @@ IF EXISTS(SELECT * FROM SystemSettings WHERE (SettingKey=@SettingKey))
         {
             return ReadString("PusherSecret", "119f91ed19272f096383");
         }
-    }
+
+		public static bool GetIsSnowEnabled()
+		{
+			string value = ReadString("EnableSnowIntegration", "false");
+			bool isSnowEnabled = bool.Parse(value);
+			return isSnowEnabled;
+		}
+	}
 }

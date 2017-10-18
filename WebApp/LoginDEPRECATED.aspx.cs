@@ -69,7 +69,7 @@ public partial class Login : System.Web.UI.Page
     return user.Email;
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static string[] SignIn(string email, string password, int organizationID, bool storeInfo,
     string browserName, string browserVersion, bool allowCookies, string platform, string userAgent,
     string height, string width, string pixelDepth, string language)

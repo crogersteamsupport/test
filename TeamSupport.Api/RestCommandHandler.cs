@@ -65,6 +65,7 @@ namespace TeamSupport.Api
 						if (command.Format == RestFormat.XML)
 						{
 							System.Xml.XmlDocument xmlDoc = Newtonsoft.Json.JsonConvert.DeserializeXmlNode(requestLimitError);
+                            xmlDoc.XmlResolver = null;
 							requestLimitError = xmlDoc.InnerXml;
 						}
 

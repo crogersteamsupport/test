@@ -107,6 +107,7 @@ namespace TeamSupport.WebUtils
       ticket = new FormsAuthenticationTicket(1, ticket.Name, DateTime.UtcNow, DateTime.UtcNow.AddSeconds(TimeOut), false, ticket.UserData, FormsAuthentication.FormsCookiePath);
       HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket));
       cookie.Domain = FormsAuthentication.CookieDomain;
+      cookie.HttpOnly = true;
       cookie.Expires = DateTime.UtcNow.AddYears(1);
       HttpContext.Current.Response.Cookies.Add(cookie);
     }
@@ -124,6 +125,7 @@ namespace TeamSupport.WebUtils
         FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1, user.DisplayName, DateTime.UtcNow, DateTime.UtcNow.AddSeconds(TimeOut), false, userData, FormsAuthentication.FormsCookiePath);
         string encTicket = FormsAuthentication.Encrypt(ticket);
         HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encTicket);
+        cookie.HttpOnly = true;
         cookie.Domain = FormsAuthentication.CookieDomain;
         cookie.Expires = DateTime.UtcNow.AddYears(1);
         HttpContext.Current.Response.Cookies.Add(cookie);
@@ -164,7 +166,12 @@ namespace TeamSupport.WebUtils
       return IsAuthenticated(user) && isBackdoor == IsBackdoor;
     }
 
-    public static bool IsAuthenticated(User user)
+    public static bool IsAuthenticated()
+    {
+            return Ticket != null && !Ticket.Expired;
+    }
+
+        public static bool IsAuthenticated(User user)
     {
       int length = UserData.Split('|').Length;
       return Ticket != null && !Ticket.Expired && user.UserID == UserID && user.OrganizationID == OrganizationID && length == 5;

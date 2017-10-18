@@ -138,7 +138,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
         combo.SelectedIndex = 0;
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public static OrganizationProxy GetOrganization()
     {
         Organization organization = Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
@@ -146,7 +146,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
         return result;
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public static AltEmail[] GetAltEmails()
     {
         EMailAlternateInbound items = new EMailAlternateInbound(UserSession.LoginUser);
@@ -169,7 +169,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
         return result.ToArray();
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public static AltEmail GetAltEmail(Guid id)
     {
         EMailAlternateInboundItem item = EMailAlternateInbound.GetItem(UserSession.LoginUser, id);
@@ -186,7 +186,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
         return result;
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public static void SaveAltEmail(string id, string description, int? groupID, int? ticketTypeID, int? productID, string sendingEmailAddress)
     {
         if (!UserSession.CurrentUser.IsSystemAdmin) return;
@@ -200,14 +200,14 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
         item.Collection.Save();
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public static void DeleteAltEmail(string id)
     {
         if (!UserSession.CurrentUser.IsSystemAdmin) return;
         EMailAlternateInbound.DeleteFromDB(UserSession.LoginUser, new Guid(id));
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public static void SaveEmailSettings(string reply, bool reqNew, bool reqKnown, bool changeStatus, bool addContacts, bool matchSubject, bool forceBccPrivate, bool needCustForTicketMatch, bool replyToAlternateEmailAddresses, bool addEmailViaTS, int? defaultPortalGroupID)
     {
         if (!UserSession.CurrentUser.IsSystemAdmin) return;
@@ -228,7 +228,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
         organization.Collection.Save();
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public static Template GetEmailTemplate(int emailTemplateID, int productFamilyID)
     {
         Template result = new Template();
@@ -260,7 +260,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
         return result;
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public static string GetBuiltBody(string header, string footer, string body)
     {
         EmailTemplate template = EmailTemplate.GetGlobalTemplate(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
@@ -269,7 +269,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
     }
 
 
-    [WebMethod(true)]
+    [WebMethod]
     public static void DeleteTemplate(int emailTemplateID, int productFamilyID)
     {
         if (!UserSession.CurrentUser.IsSystemAdmin) return;
@@ -284,7 +284,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
 
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public static void SaveEmailTemplate(int emailTemplateID, string subject, string header, string footer, string body, bool isHtml, bool useTemplate, int productFamilyID)
     {
         if (!UserSession.CurrentUser.IsSystemAdmin) return;
@@ -329,7 +329,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
         }
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public static PlaceHolders[] GetPlaceHolders(int emailTemplateID)
     {
         EmailTemplate template = EmailTemplates.GetEmailTemplate(UserSession.LoginUser, emailTemplateID);

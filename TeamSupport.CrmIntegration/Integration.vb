@@ -971,6 +971,7 @@ Namespace TeamSupport
                                 Using reader As New StreamReader(response.GetResponseStream())
 
                                     returnXML = New XmlDocument()
+                                    returnXML.XmlResolver = Nothing
                                     returnXML.LoadXml(reader.ReadToEnd())
                                 End Using
                             End If

@@ -316,8 +316,31 @@ var loadTicket = function (ticketNumber, refresh) {
         SetDueDate(_ticketInfo.Ticket.DueDate);
 
         SetProduct(_ticketInfo.Ticket.ProductID);
-        SetVersion(_ticketInfo.Ticket.ReportedVersionID);
-        SetSolved(_ticketInfo.Ticket.SolvedVersionID);
+        //var $select = $('#ticket-Versions').selectize();
+        //var control = $select[0].selectize;
+        //control.destroy();
+        //$('#ticket-Versions').empty();
+
+        //$select = $('#ticket-Resolved').selectize();
+        //control = $select[0].selectize;
+        //control.destroy();
+        //$('#ticket-Resolved').empty();
+
+        ////SetProduct(_ticketInfo.Ticket.ProductID);
+
+        //if (window.parent.Ts.System.Organization.ProductType == window.parent.Ts.ProductType.Express || window.parent.Ts.System.Organization.ProductType === window.parent.Ts.ProductType.HelpDesk) {
+        //    $('#ticket-Product').closest('.form-horizontal').remove();
+        //    $('#ticket-Resolved').closest('.form-horizontal').remove();
+        //    $('#ticket-Versions').closest('.form-horizontal').remove();
+        //} else {
+        //    SetupProductSection();
+        //}
+        //SetProduct(_ticketInfo.Ticket.ProductID);
+        //var $select = $('#ticket-Versions').selectize();
+        //var control = $select[0].selectize;
+        //control.destroy();
+        //$('#ticket-Versions').empty();
+        ////$('#ticket-Resolved').empty();
 
         SetAssignedUser(_ticketInfo.Ticket.UserID);
         SetGroup(_ticketInfo.Ticket.GroupID);
@@ -338,7 +361,8 @@ var loadTicket = function (ticketNumber, refresh) {
         AddInventory(_ticketInfo.Assets);
         LoadTicketHistory();
         SetupJiraFieldValues();
-        SetupTFSFieldValues();
+		SetupTFSFieldValues();
+		SetupSnowFieldValues();
         LoadGroups();
         LoadPlugins(info);
 
@@ -356,7 +380,6 @@ function LoadPlugins(info) {
                 try {
                     plugin.html(info.Plugins[i].Code);
                 } catch (e) {
-
                 }
             }
         }
@@ -364,7 +387,7 @@ function LoadPlugins(info) {
 }
 
 function CreateNewAction(actions) {
-    var firstAction = $(".ticket-action[data-iswc='false']").first();
+    var firstAction = $(".action[data-iswc='false']").first();
 
     var firstActionID = firstAction.data('id');
     if (firstActionID !== actions[0].Action.ActionID) {
@@ -415,8 +438,7 @@ function AddTicketProperty(item) {
     if (item.ItemID) {
         var html = '<div class="ticket-plugin" id="ticket-group-plugin-' + item.ItemID + '"></div>';
         $('#ticket-properties-area').append(html);
-    }
-    else {
+    } else {
         var hbrs = "ticket-group-" + item.CatID;
         var hbrs = hbrs.toLowerCase();
         var compiledTemplate = Handlebars.templates[hbrs];
@@ -432,6 +454,7 @@ function AddTicketProperty(item) {
 
 function SetupTicketProperties(order) {
     window.parent.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
+        console.log(info);
         if (info == null) {
             var url = window.location.href;
             if (url.indexOf('.') > -1) {
@@ -456,15 +479,14 @@ function SetupTicketProperties(order) {
         _ticketGroupID = info.Ticket.GroupID;
 
         window.parent.Ts.System.logAction('View Ticket');
-        window.parent.Ts.Services.Settings.SetMoxieManagerSessionVariables();
 
         if (info == null) alert('no ticket');
 
         jQuery.each(order, function (i, val) { if (val.Disabled == "false") AddTicketProperty(val); });
 
-        if (!window.parent.Ts.System.User.ChangeKbVisibility && !window.parent.Ts.System.User.IsSystemAdmin)
+        if (!window.parent.Ts.System.User.ChangeKbVisibility && !window.parent.Ts.System.User.IsSystemAdmin) {
             $('#action-new-KB').prop('disabled', true);
-
+        }
 
         if (window.parent.Ts.System.User.IsSystemAdmin || window.parent.Ts.System.User.UserID === _ticketInfo.UserID) {
             $('.ticket-menu-actions').append('<li><a id="Ticket-Delete">Delete</a></li>');
@@ -485,11 +507,11 @@ function SetupTicketProperties(order) {
 
         if (!window.parent.Ts.System.User.IsSystemAdmin && !window.parent.Ts.System.User.ChangeTicketVisibility) {
             $('#ticket-visible').prop('disabled', true);
-        };
+        }
 
         if (!window.parent.Ts.System.User.IsSystemAdmin && _ticketInfo.Ticket.IsKnowledgeBase && !window.parent.Ts.System.User.ChangeKbVisibility) {
             $('#ticket-visible').prop('disabled', true);
-        };
+        }
 
         //set the url for the copy paste button
         //var ticketURLLink = ""
@@ -1716,7 +1738,9 @@ function LoadTicketControls() {
     SetupJiraFields();
     SetupJiraFieldValues();
     SetupTFSFields();
-    SetupTFSFieldValues();
+	SetupTFSFieldValues();
+	SetupSnowFields();
+	SetupSnowFieldValues();
 }
 
 function AppendSelect(parent, data, type, id, name, isSelected) {
@@ -1801,7 +1825,8 @@ function SetupTicketPropertyEvents() {
 
                 AppenCustomValues(result[1]);
                 SetupJiraFieldValues();
-                SetupTFSFieldValues();
+				SetupTFSFieldValues();
+				SetupSnowFieldValues();
 
                 _ticketInfo.Ticket = result[2];
                 setSLAInfo();
@@ -3949,6 +3974,148 @@ function validateEmail(email) {
     return re.test(email);
 }
 
+//click events and logic
+var SetupSnowFields = function () {
+	$('#newSnowIncident').click(function (e) {
+		e.preventDefault();
+		$('.ts-tfs-buttons-container').hide();
+		var errorMessage = "There was an error setting your ServiceNow Incident Number. Please contact TeamSupport.com";
+		window.parent.Ts.Services.Tickets.SetSyncWithSnow(_ticketID, function (result) {
+			if (result != null) {
+				var syncResult = JSON.parse(result);
+				if (syncResult.IsSuccessful === true) {
+					$('#incidentNumberValue').text('Pending...');
+					$('#incidentNumber').show();
+				}
+				else {
+					$('.ts-snow-buttons-container').show();
+					$('#incidentNumber').hide();
+					alert(syncResult.Error);
+				}
+			} else {
+				alert(errorMessage);
+			}
+		},
+			function (error) {
+				$('.ts-snow-buttons-container').show();
+				$('#incidentNumber').hide();
+				alert(errorMessage);
+			});
+	});
+
+	$('#existingSnowIncident').click(function (e) {
+		e.preventDefault();
+		$('.ts-snow-buttons-container').hide();
+		$('#enterIncident').show();
+		$('#incidentNumberInput').focus();
+	});
+
+	$('#cancelIncidentNumberButton').click(function (e) {
+		$('.ts-snow-buttons-container').show();
+		$('#enterIncident').hide();
+	});
+
+	$('#saveIncidentNumberButton').click(function (e) {
+		if ($.trim($('#incidentNumberInput').val()) === '') {
+			$('.ts-snow-buttons-container').show();
+			$('#enterIncident').hide();
+		}
+		else {
+			$('#incidentNumberValue').text($.trim($('#incidentNumberInput').val()));
+			$('#enterIncident').hide();
+			$('#incidentNumber').show();
+			var errorMessage = "There was an error setting your Incident Number. Please contact TeamSupport.com";
+
+			window.parent.Ts.Services.Tickets.SetSnowWorkItemID(_ticketID, $.trim($('#incidentNumberInput').val()), function (result) {
+				if (result != null) {
+					var syncResult = JSON.parse(result);
+					if (syncResult.IsSuccessful === false) {
+						$('.ts-snow-buttons-container').show();
+						$('#incidentNumber').hide();
+						alert(syncResult.Error);
+					}
+				} else {
+					alert(errorMessage);
+				}
+			},
+				function (error) {
+					$('.ts-snow-buttons-container').show();
+					$('#incidentNumber').hide();
+					alert(errorMessage);
+				});
+		}
+	});
+
+	$('#snowUnlink').click(function (e) {
+		var currentStatus = $("#incidentNumberValue").text().toLowerCase();
+		var confirmMessage = "Are you sure you want to " + ((currentStatus.indexOf("pending") > -1) ? "cancel" : "remove") + " link to ServiceNow?";
+
+		if (confirm(confirmMessage)) {
+			e.preventDefault();
+			window.parent.Ts.Services.Tickets.UnSetSyncWithSnow(_ticketID, function (result) {
+				if (result === true) {
+					$('.ts-snow-buttons-container').show();
+					$('#incidentNumber').hide();
+				}
+				else {
+					alert('There was an error setting your Incident Number. Please try again later');
+					$('.ts-snow-buttons-container').hide();
+					$('#incidentNumber').show();
+				}
+			},
+				function (error) {
+					alert('There was an error setting your Incident Number.');
+					$('.ts-snow-buttons-container').hide();
+					$('#incidentNumber').show();
+				});
+		}
+	});
+};
+
+//Load and display the proper ServiceNow fields/values
+var SetupSnowFieldValues = function () {
+	window.parent.Ts.Services.Admin.GetSnowCRMLinkTableRecordForTicket(_ticketID, function (result) {
+		if (result.length > 0) {
+			$('#ticket-snowfields').show();
+
+			if (_ticketInfo.LinkToSnow != null) {
+				if (!_ticketInfo.LinkToSnow.Number) {
+					$('#incidentNumberValue').text('Pending...');
+				}
+				else if (!_ticketInfo.LinkToSnow.URL) {
+					$('#incidentNumberValue').text(_ticketInfo.LinkToSnow.Number);
+					if (_ticketInfo.LinkToSnow.Number.indexOf('Error') > -1) {
+						$('#incidentNumberValue').closest('.form-group').addClass('fieldError');
+					}
+				}
+				else {
+					if ($(".snowLink").length) {
+						$(".snowLink").remove();
+					}
+
+					var snowLink = $('<a>')
+						.attr('href', _ticketInfo.LinkToSnow.URL)
+						.attr('target', '_blank')
+						.text(_ticketInfo.LinkToSnow.Number)
+						.addClass('snowLink control-label ticket-anchor ')
+						.prependTo($('#ticket-incident-container'));
+				}
+
+				$('#incidentNumberValue').show();
+				$('.ts-snow-buttons-container').hide();
+			}
+			else {
+				$('#ticket-snowfields').show();
+				$('#incidentNumber').hide();
+				$('.ts-snow-buttons-container').show();
+			}
+		}
+		else {
+			$('#ticket-snowfields').hide();
+		}
+	});
+};
+
 var getUrls = function (input) {
     var source = (input || '').toString();
     var parentDiv = $('<div>').addClass('input-group-addon external-link')
@@ -4005,11 +4172,9 @@ function FetchTimeLineItems(start) {
             $('.results-done').show();
         } else {
             _compiledActionTemplate = Handlebars.templates['action2'];
-
             var isPublicFiltered  = $('.filter-public').hasClass('bgcolor-darkgray');
             var isPrivateFiltered = $('.filter-private').hasClass('bgcolor-darkgray');
             var isWCFiltered      = $('.filter-wc').hasClass('bgcolor-darkgray');
-
             for (i = 0; i < _timeLine.length; i++) {
                 var timeLineItem = _timeLine[i];
                 var actionElem   = CreateActionElement(timeLineItem, !timeLineItem.item.IsPinned);
@@ -4018,6 +4183,8 @@ function FetchTimeLineItems(start) {
                 } else if (isPrivateFiltered && !timeLineItem.item.IsVisibleOnPortal) {
                     actionElem.hide();
                 } else if (isWCFiltered && timeLineItem.item.IsWC) {
+                    actionElem.hide();
+                } else if (i === 0 && _timeLine[0].item.IsPinned) {
                     actionElem.hide();
                 }
             }
@@ -4047,19 +4214,17 @@ function CreateActionElement(val, ShouldAppend) {
     var html = _compiledActionTemplate(val);
     var actionElement = $(html);
     actionElement.find('a').attr('target', '_blank');
-    if (ShouldAppend) {
-        try {
-            $("#action-timeline").append(dateSpan);
-            $("#action-timeline").append(actionElement);
-        } catch (e) { }
+    if (ShouldAppend || val.item.IsPinned) {
+        $("#action-timeline").append(dateSpan);
+        $("#action-timeline").append(actionElement);
     } else {
-        if ($('.action.pinned').length) {
-            $('.action.pinned').after(actionElement);
-            $('.action.pinned').after(dateSpan);
-        } else {
-            $('.action-placeholder').after(actionElement);
-            $('.action-placeholder').after(dateSpan);
-        }
+        $('.action-placeholder').after(actionElement);
+        $('.action-placeholder').after(dateSpan);
+    }
+
+    if (val.item.IsPinned) {
+        var actionCloned = $(actionElement).clone();
+        $("#pinned-placeholder").html(actionCloned);
     }
 
     _isCreatingAction = false;
@@ -4284,11 +4449,15 @@ function CreateTimeLineDelegates() {
         e.preventDefault();
         e.stopPropagation();
 
-        var self = $(this);
-        var parentLI = self.closest('div.action');
-        var titleElement = $('.action-placeholder');
-        var Action = parentLI.data().action;
-        var isPinned = parentLI.hasClass('pinned');
+        var self     = $(this);
+        var nominee  = self.closest('div.action');
+        var Action   = nominee.data().action;
+        var whoFirst = $('#action-timeline div.action').first().data('id');
+        var isPinned = nominee.hasClass('pinned');
+
+        $(nominee).find('a.ticket-action-pinned').toggleClass('hidden');
+        $('.action-option-items').hide();
+
         if (isPinned) {
             self.get(0).lastChild.nodeValue = "Pin";
         } else {
@@ -4296,39 +4465,23 @@ function CreateTimeLineDelegates() {
         }
 
         if (window.parent.Ts.System.User.IsSystemAdmin || window.parent.Ts.System.User.UserCanPinAction) {
-            $('a.ticket-action-pinned').addClass('hidden');
             window.parent.Ts.System.logAction('Ticket - Action Pin Icon Clicked');
-            window.parent.Ts.Services.TicketPage.SetActionPinned(_ticketID, Action.RefID, !isPinned,
-            function (result) {
+            window.parent.Ts.Services.TicketPage.SetActionPinned(_ticketID, Action.RefID, !isPinned, function (result) {
                 if (result) {
-                    Action.IsPinned = result;
-                    parentLI.find('a.ticket-action-pinned').toggleClass('hidden');
-                    var pinnedAction = $('.pinned');
-                    var actionID = parseInt(pinnedAction.find('.ticket-action-number').text()) + 1;
-                    titleElement.after(parentLI.clone().addClass('pinned'));
-                    parentLI.insertBefore(titleElement);
-                    parentLI.remove();
-                    var InLineElement = $("label.ticket-action-number:contains('" + actionID + "')").closest('li');
-                    if (InLineElement.length > 0) {
-                        InLineElement.after(pinnedAction.clone().removeClass('pinned'));
-                    } else {
-                        titleElement.next().after(pinnedAction.clone().removeClass('pinned'));
+                    $('#pinned-placeholder').empty();
+                    $(nominee).find('a.action-option-pin span').text('Unpin');
+                    $(nominee).addClass('pinned');
+                    var cloned = $(nominee).clone();
+                    $("#pinned-placeholder").html(cloned);
+                    if (Action.RefID === whoFirst) {
+                        nominee.hide();
                     }
-                    pinnedAction.remove();
                 } else {
-                    parentLI.data().action.IsPinned = result;
-                    parentLI.find('a.ticket-action-pinned').toggleClass('hidden');
-                    var actionID = parseInt(parentLI.find('.ticket-action-number').text()) + 1;
-                    var InLineElement = $("label.ticket-action-number:contains('" + actionID + "')").closest('li');
-                    if (InLineElement.length > 0) {
-                        InLineElement.after(parentLI.clone().removeClass('pinned'));
-                    } else {
-                        titleElement.next().after(parentLI.clone().removeClass('pinned'));
-                    }
-                    $('a.ticket-action-pinned').addClass('hidden');
-                    parentLI.remove();
+                    $('#action-timeline div.pinned').removeClass('pinned').show();
+                    $('#pinned-placeholder').empty();
+                    $('a.action-option-pin span').text('Pin');
+                    $('a.ticket-action-pinned').toggleClass('hidden', true);
                 }
-
             }, function () {
                 alert('There was an error editing this action.');
             });
@@ -4338,35 +4491,16 @@ function CreateTimeLineDelegates() {
     $('#action-timeline').on('click', 'a.ticket-action-pinned', function (e) {
         e.preventDefault();
         e.stopPropagation();
-
-        console.log('unpinned.')
-
-        var self         = $(this);
-        var parentLI     = self.closest('div.action');
-        var action       = parentLI.data().action;
-        var titleElement = $('.action-placeholder');
-        var pinnedAction = $('.pinned');
-
-        console.log(pinnedAction);
-
+        var pinnedAction = $('#pinned-placeholder').find('.pinned').data('id');
         if (window.parent.Ts.System.User.IsSystemAdmin || window.parent.Ts.System.User.UserCanPinAction) {
             window.parent.Ts.System.logAction('Ticket - Action Pin Icon Clicked');
-            window.parent.Ts.Services.Tickets.SetActionPinned(_ticketID, action.RefID, false, function (result) {
-                console.log(result);
-                parentLI.data().action.IsPinned = result;
-                parentLI.find('a.ticket-action-pinned').toggleClass('hidden');
-
-                var actionID = parseInt(parentLI.find('.ticket-action-number').text()) + 1;
-
-                var InLineElement = $("label.ticket-action-number:contains('" + actionID + "')").closest('div.action');
-                if (InLineElement.length > 0) {
-                    InLineElement.after(parentLI.clone().removeClass('pinned'));
-                } else {
-                    titleElement.next().after(parentLI.clone().removeClass('pinned'));
-                }
-                $('a.ticket-action-pinned').addClass('hidden');
-                parentLI.remove();
-                pinnedAction.remove();
+            window.parent.Ts.Services.Tickets.SetActionPinned(_ticketID, pinnedAction, false, function (result) {
+                // $('div.action').show();
+                $('a.ticket-action-pinned').toggleClass('hidden', true);
+                $('a.action-option-pin span').text('Pin');
+                $('#pinned-placeholder').empty();
+                $('#action-timeline div.pinned').show();
+                $('#action-timeline div.pinned').removeClass('pinned');
             }, function () {
                 alert('There was an error editing this action.');
             });
@@ -5457,9 +5591,9 @@ var SetSeverity = function (SeverityID) {
 };
 
 var SetProduct = function (ProductID) {
-    var selectField = $('#ticket-product');
+    var selectField = $('#ticket-Product');
     if (selectField.length > 0) {
-        var selectize = $('#ticket-product')[0].selectize;
+        var selectize = $('#ticket-Product')[0].selectize;
         selectize.addItem(ProductID, false);
     }
 };
@@ -5468,8 +5602,7 @@ var SetVersion = function (VersionID) {
     var selectField = $('#ticket-Versions');
     if (selectField.length > 0) {
         var selectize = $('#ticket-Versions')[0].selectize;
-        if (VersionID) selectize.addItem(VersionID, false);
-        else selectize.clear(true);
+        selectize.addItem(VersionID, false);
     }
 };
 
@@ -5477,8 +5610,9 @@ var SetSolved = function (ResolvedID) {
     var selectField = $('#ticket-Resolved');
     if (selectField.length > 0) {
         var selectize = $('#ticket-Resolved')[0].selectize;
-        if (ResolvedID) selectize.addItem(ResolvedID, false);
-        else selectize.clear(true);
+        selectize.addItem(ResolvedID, false);
+        //if (ResolvedID) selectize.addItem(ResolvedID, false);
+        //else selectize.clear(true);
     }
 };
 
@@ -5538,6 +5672,12 @@ function pagewidth () {
 function SetupPusher() {
     var presenceChannel = null;
     var service = '/Services/DispatchService.asmx/';
+    if (top.Ts.TicketViewing != 0) {
+        var orgID = top.Ts.System.Organization.OrganizationID;
+        var presenceChannelName = 'presence-ticket-' + top.Ts.TicketViewing + '-org-' + orgID;
+        top.Ts.Pusher.unsubscribe(presenceChannelName);
+    }
+
     top.Ts.TicketViewing = _ticketNumber;
     top.Ts.Settings.System.read('PusherKey', '1', function (key) {
         var orgID = top.Ts.System.Organization.OrganizationID;
@@ -5549,26 +5689,22 @@ function SetupPusher() {
         presenceChannel.bind('pusher:subscription_succeeded', function (members) {
             try {
                 addUsersViewing(members);
-                console.log("sub succeeded");
             } catch (err) { }
         });
 
         presenceChannel.bind('pusher:member_added', function (member) {
             try {
-                console.log("add user viewing");
                 addUserViewing(member.id);
             } catch (err) { }
         });
 
         presenceChannel.bind('pusher:member_removed', function (member) {
             try {
-                console.log("removing user");
                 removeUserViewing(member.id);
             } catch (err) { }
         });
 
         presenceChannel.bind('ticketViewingRemove', function (data) {
-            console.log("ticketViewingRemove pusher");
             top.Ts.Pusher.unsubscribe(data.chan);
         });
     });
@@ -5611,7 +5747,6 @@ var removeUserViewing = function (userID) {
 }
 
 function Unsubscribe() {
-    console.log("in unsubscribe");
     var orgID = top.Ts.System.Organization.OrganizationID;
     var presenceChannelName = 'presence-ticket-' + _ticketNumber + '-org-' + orgID;
     top.Ts.Pusher.unsubscribe(presenceChannelName);

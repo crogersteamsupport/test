@@ -86,7 +86,11 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = @"
+                command.CommandType = CommandType.Text;
+
+                if (includeCompanyChildren)
+                {
+                    command.CommandText = $@"
             SELECT 
                 a.*
                 , (u.FirstName + ' ' + u.LastName) AS CreatorName 
@@ -95,7 +99,7 @@ namespace TeamSupport.Data
                 LEFT JOIN Users u 
                     ON u.UserID = a.CreatorID 
             WHERE 
-                RefType = @RefType
+                RefType = {(int)refType}
                 AND RefID IN
                 (
                     SELECT
@@ -109,14 +113,23 @@ namespace TeamSupport.Data
                         RelatedCustomerID = @RefID
                         AND @IncludeCompanyChildren = 1
                 )";
+
+                    command.Parameters.AddWithValue("@IncludeCompanyChildren", includeCompanyChildren);
+                }
+                else
+                {
+                    command.CommandText = $"SELECT a.*, (u.FirstName + ' ' + u.LastName) AS CreatorName FROM Attachments a LEFT JOIN Users u ON u.UserID = a.CreatorID WHERE (RefID = @RefID) AND (RefType = {(int)refType})";
+
+                }
+        
         if (orderBy != string.Empty)
         {
           command.CommandText += " ORDER BY " + orderBy;
         }
-        command.CommandType = CommandType.Text;
+        
         command.Parameters.AddWithValue("@RefID", refID);
-        command.Parameters.AddWithValue("@RefType", refType);
-        command.Parameters.AddWithValue("@IncludeCompanyChildren", includeCompanyChildren);
+        
+       
         Fill(command);
       }
     }
@@ -222,7 +235,50 @@ namespace TeamSupport.Data
       }
     }
 
-    public void TempLoadFix()
+		public void LoadForIntegration(int actionID, IntegrationType integration)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				string commandSql = string.Empty;
+				commandSql = @"
+            SELECT
+                a.*, 
+                (u.FirstName + ' ' + u.LastName) AS CreatorName 
+            FROM
+                Attachments a 
+            LEFT JOIN Users u 
+                ON u.UserID = a.CreatorID
+            WHERE
+                RefID = @RefID
+                AND RefType = 0 
+				{0}";
+
+				string integrationFilter = string.Empty;
+
+				switch (integration)
+				{
+					case IntegrationType.Jira:
+						integrationFilter = "AND SentToJira = 0";
+						break;
+					case IntegrationType.TFS:
+						integrationFilter = "AND SentToTFS = 0";
+						break;
+					case IntegrationType.ServiceNow:
+						integrationFilter = "AND SentToSnow = 0";
+						break;
+					default:
+						break;
+				}
+
+				commandSql = string.Format(commandSql, integrationFilter);
+				command.CommandText = commandSql;
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@RefID", actionID);
+				Fill(command);
+			}
+		}
+
+		public void TempLoadFix()
     {
       using (SqlCommand command = new SqlCommand())
       {

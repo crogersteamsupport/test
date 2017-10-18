@@ -505,6 +505,7 @@ namespace TeamSupport.Api
         private static XmlNode GetNode(RestCommand command, string field)
         {
             XmlDocument xml = new XmlDocument();
+            xml.XmlResolver = null;
             xml.LoadXml(command.Data);
             string query = "*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='ticket']" +
                             "/*[translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='{0}']";
@@ -539,6 +540,7 @@ namespace TeamSupport.Api
             string xml = string.Empty;
             //Add the tag nodes to each ticket object
             XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.XmlResolver = null;
             xmlDoc.LoadXml(ticketsXml);
 
             //Do we have paging?
@@ -573,6 +575,7 @@ namespace TeamSupport.Api
                         string tagXmlString = string.Empty;
                         tagXmlString = Tags.EndXmlWrite(writer);
                         XmlDocument xmlTag = new XmlDocument();
+                        xmlDoc.XmlResolver = null;
                         xmlTag.LoadXml(tagXmlString);
                         node.AppendChild(node.OwnerDocument.ImportNode(xmlTag.FirstChild.NextSibling, true));
                     }
@@ -595,6 +598,7 @@ namespace TeamSupport.Api
             string xml = string.Empty;
             //Add the tag nodes to each ticket object
             XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.XmlResolver = null;
             xmlDoc.LoadXml(ticketsXml);
 
             //Create a new node.

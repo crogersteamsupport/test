@@ -133,7 +133,7 @@ public partial class Frames_Reports : BaseFramePage
     }
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static string GetCsvUrl()
   {
     //'../dc/1078/reports/95'

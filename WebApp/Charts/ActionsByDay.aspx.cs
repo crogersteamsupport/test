@@ -15,7 +15,7 @@ public partial class Charts_ActionsByDay : BaseChartPage
         public int Count { get; set; }
     }
 
-    [WebMethod(true)]
+    [WebMethod]
     public static ActionCount[] GetData(DateTime start, DateTime end)
     {
         List<ActionCount> result = new List<ActionCount>();

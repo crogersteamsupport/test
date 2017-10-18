@@ -28,7 +28,7 @@ public partial class Frames_AdminTicketTemplates : System.Web.UI.Page
   {
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static OrganizationProxy GetOrganization()
   {
     Organization organization = Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
@@ -36,7 +36,7 @@ public partial class Frames_AdminTicketTemplates : System.Web.UI.Page
     return result;
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static ComboBoxItem[] GetTicketTypes(int ticketTemplateID)
   {
     TicketTypes ticketTypes = new TicketTypes(UserSession.LoginUser);
@@ -50,7 +50,7 @@ public partial class Frames_AdminTicketTemplates : System.Web.UI.Page
   
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static ComboBoxItem[] GetActionTypes(int ticketTemplateID)
   {
       ActionTypes actionTypes = new ActionTypes(UserSession.LoginUser);
@@ -65,7 +65,7 @@ public partial class Frames_AdminTicketTemplates : System.Web.UI.Page
 
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static ComboBoxItem[] GetTicketTemplates()
   {
     TicketTemplates templates = new TicketTemplates(UserSession.LoginUser);
@@ -94,13 +94,13 @@ public partial class Frames_AdminTicketTemplates : System.Web.UI.Page
     return result.ToArray();
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static TicketTemplateProxy GetTicketTemplate(int ticketTemplateID) 
   {
     return TicketTemplates.GetTicketTemplate(UserSession.LoginUser, ticketTemplateID).GetProxy();
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static int SaveTicketTemplate(int ticketTemplateID, int templateType, bool isEnabled, bool isPortal, int ticketTypeID, string value, string text)
   {
     if (!UserSession.CurrentUser.IsSystemAdmin) return -1;
@@ -124,7 +124,7 @@ public partial class Frames_AdminTicketTemplates : System.Web.UI.Page
     return template.TicketTemplateID;
   }
 
-  [WebMethod(true)]
+  [WebMethod]
   public static void DeleteTicketTemplate(int ticketTemplateID)
   {
     if (!UserSession.CurrentUser.IsSystemAdmin) return;

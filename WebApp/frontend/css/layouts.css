@@ -150,7 +150,10 @@
     outline:none;
     border:none !important;
     vertical-align:top;
-    width:100% !important;
+    /* width:100% !important; */
+}
+#sidebar .selectize-input input {
+    min-width:100px;
 }
 #sidebar .selectize-control.single .selectize-input:after {
     content:none;
@@ -184,9 +187,6 @@
     vertical-align:middle;
     /*text-decoration:underline;*/
 }
-
-
-
 #ticket-properties-area .hasError .form-label,
 #ticket-properties-area .hasError .form-label label {
     color:#a94442 !important;
@@ -195,4 +195,63 @@
 #ticket-properties-area .hasError .tagContainer {
     border:1px solid #a94442 !important;
     border-radius:5px;
+}
+
+#ticket-duedate-container {
+    margin:0px;
+    padding:0px;
+    min-height:30px;
+    width:160px;
+}
+#ticket-duedate-container a {
+    margin:0px;
+    padding:0px;
+    min-height:30px;
+    width:160px;
+    display:inline-block;
+    text-align:left;
+}
+#ticket-duedate-container .fa {
+    display:block;
+}
+
+
+
+
+
+.mce-i-awesome.fa-paste {
+    color:#5CB85C !important;
+}
+.mce-i-awesome.fa-book {
+    color:#3276B1 !important;
+}
+.mce-i-awesome.fa-ticket {
+    color:#FEC21E !important;
+}
+.mce-i-image {
+    color:#BA55D3 !important;
+}
+.mce-i-awesome.fa-dropbox {
+    color:#3d9ae8 !important;
+}
+.mce-i-awesome.fa-circle {
+    color:#D9534F !important;
+}
+.mce-path {
+    display:none !important;
+}
+.note-btn > .fa-paste {
+    color:#5CB85C !important;
+}
+.note-btn > .fa-book {
+    color:#3276B1 !important;
+}
+.note-btn > .fa-ticket {
+    color:#FEC21E !important;
+}
+.note-btn > .fa-image {
+    color:#BA55D3 !important;
+}
+.note-btn > .fa-dropbox {
+    color:#3d9ae8 !important;
 }

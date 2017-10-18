@@ -759,7 +759,7 @@ namespace TSWebServices
             }
         }
 
-        [WebMethod(true)]
+        [WebMethod]
         public void DeleteAssociation(int reminderID, int refID, ReferenceType refType)
         {
             try

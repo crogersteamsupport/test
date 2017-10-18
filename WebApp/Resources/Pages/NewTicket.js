@@ -2555,8 +2555,6 @@ The following steps will refresh your browser<br><br> \
 
   $('.ticket-rail a').addClass('ui-state-default ts-link');
 
-  top.Ts.Services.Settings.SetMoxieManagerSessionVariables();
-
   $('#rcdtok').click(function (e) {
       top.Ts.System.logAction('New Ticket - Video Recording Start Clicked');
       top.Ts.Services.Tickets.StartArchiving(sessionId, function (resultID) {

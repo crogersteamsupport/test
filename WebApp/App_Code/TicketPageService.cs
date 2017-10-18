@@ -103,6 +103,7 @@ namespace TSWebServices
 
             info.LinkToJira = GetLinkToJira(ticket.TicketID);
             info.LinkToTFS = GetLinkToTFS(ticket.TicketID);
+			info.LinkToSnow = GetLinkToSnow(ticket.TicketID);
 
             TicketStatuses ticketStatus = new TicketStatuses(TSAuthentication.GetLoginUser());
             ticketStatus.LoadByStatusIDs(TSAuthentication.OrganizationID, new int[] { ticket.TicketStatusID });
@@ -982,40 +983,45 @@ namespace TSWebServices
             TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             User author = Users.GetUser(loginUser, action.CreatorID);
-            if (loginUser.OrganizationID == author.OrganizationID)
+            if (author != null)
             {
-                string json1 = Actions.CountReactions(loginUser, ticketID, actionID);
-                string json2 = Actions.CheckReaction(loginUser, ticketID, actionID);
+                if (loginUser.OrganizationID == author.OrganizationID)
+                {
+                    string json1 = Actions.CountReactions(loginUser, ticketID, actionID);
+                    string json2 = Actions.CheckReaction(loginUser, ticketID, actionID);
 
-                if (json1 == "negative" || json2 == "negative")
-                {
-                    return "negative";
-                }
-                else if (json1 == "nothing" && json2 == "nothing")
-                {
-                    return "nothing";
-                }
-                else if (json1 != "nothing" && json2 != "nothing")
-                {
-                    return string.Format("[{0},{1}]", json1, json2);
-                }
-                else if (json1 != "nothing")
-                {
-                    return json1;
-                }
-                else if (json2 != "nothing")
-                {
-                    return json2;
+                    if (json1 == "negative" || json2 == "negative")
+                    {
+                        return "negative";
+                    }
+                    else if (json1 == "nothing" && json2 == "nothing")
+                    {
+                        return "nothing";
+                    }
+                    else if (json1 != "nothing" && json2 != "nothing")
+                    {
+                        return string.Format("[{0},{1}]", json1, json2);
+                    }
+                    else if (json1 != "nothing")
+                    {
+                        return json1;
+                    }
+                    else if (json2 != "nothing")
+                    {
+                        return json2;
+                    }
+                    else
+                    {
+                        return "negative";
+                    }
                 }
                 else
                 {
-                    return "negative";
+                    return "hidden";
                 }
             }
             else
-            {
                 return "hidden";
-            }
         }
 
         [WebMethod]
@@ -1413,7 +1419,9 @@ namespace TSWebServices
             public TicketLinkToJiraItemProxy LinkToJira { get; set; }
             [DataMember]
             public TicketLinkToTFSItemProxy LinkToTFS { get; set; }
-            [DataMember]
+			[DataMember]
+			public TicketLinkToSnowItemProxy LinkToSnow { get; set; }
+			[DataMember]
             public AttachmentProxy[] Attachments { get; set; }
             [DataMember]
             public bool IsSlaPaused { get; set; }
@@ -1604,7 +1612,29 @@ namespace TSWebServices
             return result;
         }
 
-        private UserInfo[] GetSubscribers(TicketsViewItem ticket)
+		private TicketLinkToSnowItemProxy GetLinkToSnow(int ticketID)
+		{
+			TicketLinkToSnowItemProxy result = null;
+
+			try
+			{
+				TicketLinkToSnow linkToSnow = new TicketLinkToSnow(TSAuthentication.GetLoginUser());
+				linkToSnow.LoadByTicketID(ticketID);
+
+				if (linkToSnow.Count > 0)
+				{
+					result = linkToSnow[0].GetProxy();
+				}
+			}
+			catch (Exception ex)
+			{
+				ExceptionLogs.LogException(LoginUser.Anonymous, ex, "ServiceNow getting data", "TicketPageService.GetLinkToSnow");
+			}
+
+			return result;
+		}
+
+		private UserInfo[] GetSubscribers(TicketsViewItem ticket)
         {
             UsersView users = new UsersView(ticket.Collection.LoginUser);
             users.LoadBySubscription(ticket.TicketID, ReferenceType.Tickets);
