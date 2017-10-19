@@ -1543,11 +1543,12 @@ function SetupProductSection() {
 
     $('#ticket-Product').change(function (e) {
         var self = $(this);
-        // if (!self.val()) { return; }
-        var product = parent.Ts.Cache.getProduct(self.val());
+        var productID = $('#ticket-Product').val();
+        var product = parent.Ts.Cache.getProduct(productID);
         loadVersions(product);
         AppendProductMatchingCustomFields();
         $('#ticket-Product').closest('.form-group').removeClass('hasError');
+        if (product === null) { return; }
         if (parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != product.ProductFamilyID) {
             _productFamilyID = product.ProductFamilyID;
             UpdateTicketGroups(function (persistedGroup) {
