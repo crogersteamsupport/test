@@ -1548,7 +1548,6 @@ function SetupProductSection() {
     $('#ticket-Product').change(function (e) {
         var self      = $(this);
         var productID = $('#ticket-Product').val();
-        console.log('product change triggered: ' + productID + ' / ' + prevProduct);
         var product   = parent.Ts.Cache.getProduct(productID);
         if (productID && productID !== prevProduct) {
             loadVersions(product);
@@ -1640,10 +1639,6 @@ function ReloadProductList() {
 };
 
 function loadVersions(product) {
-
-    var err = new Error();
-    console.log(err.stack);
-
     if ($('#ticket-Versions').length) {
         var selectizeVersion = $("#ticket-Versions")[0].selectize;
         selectizeVersion.clear(true);
