@@ -109,6 +109,7 @@ UserPage = function () {
     $('#userFontFamily').html(user.FontFamilyDescription);
     $('#userFontSize').html(user.FontSizeDescription);
     $('#userRestrictFromEditingAnyActions').html((user.RestrictUserFromEditingAnyActions == true ? 'Yes' : 'No'));
+    $('#userCanBulkMerge').html((user.CanBulkMerge == true ? 'Yes' : 'No'));
     $('#userDisableExporting').html((user.DisableExporting == true ? 'Yes' : 'No'));
     $('#userAllowToEditAnyAction').html((user.AllowUserToEditAnyAction == true ? 'Yes' : 'No'));
     $('#userCanPinAction').html((user.UserCanPinAction == true ? 'Yes' : 'No'));
@@ -268,6 +269,8 @@ UserPage = function () {
       $('#userCommunityVisibility').addClass('disabledlink');
       $('#userRestrictFromEditingAnyActions').removeClass('ui-state-default ts-link');
       $('#userRestrictFromEditingAnyActions').addClass('disabledlink');
+      $('#userCanBulkMerge').removeClass('ui-state-default ts-link');
+      $('#userCanBulkMerge').addClass('disabledlink');
       $('#userDisableExporting').removeClass('ui-state-default ts-link');
       $('#userDisableExporting').addClass('disabledlink');
       $('#userAllowToEditAnyAction').removeClass('ui-state-default ts-link');
@@ -880,6 +883,25 @@ UserPage = function () {
                 item.next().hide();
               });
         }
+      });
+
+    $('#userCanBulkMerge')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+          e.preventDefault();
+          var item = $(this);
+          if (isSysAdmin) {
+              item.next().show();
+              window.parent.parent.Ts.Services.Users.SetChangeCanBulkMerge(_user.UserID, (item.text() !== 'Yes'),
+                  function (result) {
+                      window.parent.parent.Ts.System.logAction('User Info - User Change Can Bulk Merge Changed');
+                      item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                  },
+                  function (error) {
+                      alert('There was an error saving the user change can bulk merge.');
+                      item.next().hide();
+                  });
+          }
       });
 
     $('#userDisableExporting')
@@ -1582,6 +1604,8 @@ UserPage = function () {
     $('#userDisableExporting').addClass('disabledlink');
     $('#userRestrictFromEditingAnyActions').removeClass('ui-state-default ts-link');
     $('#userRestrictFromEditingAnyActions').addClass('disabledlink');
+    $('#userCanBulkMerge').removeClass('ui-state-default ts-link');
+    $('#userCanBulkMerge').addClass('disabledlink');
     $('#userAllowToEditAnyAction').removeClass('ui-state-default ts-link');
     $('#userAllowToEditAnyAction').addClass('disabledlink');
     $('#userTicketVisibility').removeClass('ui-state-default ts-link');
