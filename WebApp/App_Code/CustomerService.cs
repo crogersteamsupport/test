@@ -1308,7 +1308,7 @@ namespace TSWebServices
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Notes notes = new Notes(loginUser);
             // Because somewhere the order is being changed we order newer to older so alerts are displayed older to newer.
-            notes.LoadByUserAndActiveAlert(refType, refID, loginUser.UserID, "DateModified DESC");
+            notes.LoadByUserAndActiveAlert(refType, refID, loginUser.UserID);
             return notes.GetNoteProxies();
         }
 

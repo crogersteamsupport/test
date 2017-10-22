@@ -153,7 +153,7 @@ namespace TeamSupport.Data
         }
     }
 
-        public void LoadByUserAndActiveAlert(ReferenceType refType, int refID, int userID, string orderBy = "DateModified")
+        public void LoadByUserAndActiveAlert(ReferenceType refType, int refID, int userID)
         {
             // If loading contact alerts, include her company alerts too.
             StringBuilder includeCompanyAlertsClause = new StringBuilder();
@@ -200,11 +200,9 @@ namespace TeamSupport.Data
                             OR
                             (
                                 s.IsSnoozed = 1
-                                AND DATEADD(hour, 8, s.SnoozeTime) < GETDATE() 
+                                AND s.SnoozeTime < DATEADD(HOUR, -8, GETDATE()) 
                             )
-                        )
-                    ORDER BY
-                        n." + orderBy;
+                        )";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@ReferenceType", refType);
                 command.Parameters.AddWithValue("@ReferenceID", refID);
@@ -213,7 +211,7 @@ namespace TeamSupport.Data
             }
         }
 
-        public void LoadByTicketUserAndActiveAlert(int ticketID, int userID, string orderBy = "DateModified")
+        public void LoadByTicketUserAndActiveAlert(int ticketID, int userID)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -270,11 +268,9 @@ namespace TeamSupport.Data
                             OR
                             (
                                 s.IsSnoozed = 1
-                                AND DATEADD(hour, 8, s.SnoozeTime) < GETDATE() 
+                                AND s.SnoozeTime < DATEADD(HOUR, -8, GETDATE()) 
                             )
-                        )
-                    ORDER BY
-                        n." + orderBy;
+                        )";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@TicketID", ticketID);
                 command.Parameters.AddWithValue("@UserID", userID);
