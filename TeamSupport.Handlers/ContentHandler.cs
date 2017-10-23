@@ -292,13 +292,10 @@ namespace TeamSupport.Handlers
 
             if (u.Count > 0)
             {
-                    System.TimeZoneInfo timezoneinfo = System.TimeZoneInfo.FindSystemTimeZoneById("UTC");
-                    iCalTimeZone timezone = iCalTimeZone.FromSystemTimeZone(timezoneinfo);
-                    iCal.AddTimeZone(timezone);
-                    iCal.AddChild(timezone);
-
-
-
+                System.TimeZoneInfo timezoneinfo = System.TimeZoneInfo.FindSystemTimeZoneById(u[0].TimeZoneID);
+                iCalTimeZone timezone = iCalTimeZone.FromSystemTimeZone(timezoneinfo);
+                iCal.AddTimeZone(timezone);
+                iCal.AddChild(timezone);
 
                 TeamSupport.Data.CalendarEvents events = new CalendarEvents(LoginUser.Anonymous);
                 events.LoadAll(organizationID, u[0].UserID);
