@@ -273,6 +273,26 @@ $(document).ready(function () {
     $('textarea.autogrow').autogrow();
 });
 
+
+$(document).on('click', '#ticket-tags .tag-item', function(e){
+    teamsupport.journal('Tag Clicked');
+    teamsupport.trace();
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var loadTicket = function (ticketNumber, refresh) {
     window.parent.Ts.Services.Tickets.GetTicketInfo(_ticketNumber, function (info) {
         _ticketInfo = info;
