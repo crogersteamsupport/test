@@ -23,7 +23,7 @@
 
     <body>
         <div>
-            <h1><a id="tipCompany" runat="server" href="#"></a></h1>
+            <div><a id="tipCompany" runat="server" href="#"></a></div>
             <div class="ui-widget-content ts-separator"></div>
             <dl id="tipProps" runat="server">
                 <dt>Email</dt>

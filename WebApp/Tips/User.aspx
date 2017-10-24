@@ -45,8 +45,8 @@
 
     <body>
         <div>
-            <h1><a id="tipName" runat="server" href="#"></a></h1>
-            <h2><span id="tipTitle" runat="server"></span><a id="tipCompany" runat="server" href="#"></a></h2>
+            <div><a id="tipName" runat="server" href="#"></a></div>
+            <div><span id="tipTitle" runat="server"></span><a id="tipCompany" runat="server" href="#"></a></div>
             <div class="ui-widget-content ts-separator"></div>
             <dl id="tipProps" runat="server">
                 <dt>Email</dt>
