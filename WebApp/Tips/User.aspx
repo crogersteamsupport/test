@@ -8,7 +8,8 @@
         <title></title>
         <style>
             #tipCompany,
-            #tipName {
+            #tipName,
+            #tipTitle {
                 font-size:14px;
             }
             .tip-customer-expired {
