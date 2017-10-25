@@ -67,6 +67,19 @@ namespace TeamSupport.ServiceLibrary
 				Logs.WriteEventFormat("WebHook Data: {0}", WebHook.BodyData);
 				Logs.WriteException(ex);
 				ExceptionLogs.LogException(LoginUser, ex, "Webhooks", "Error processing the webhook.");
+
+				//ToDo should we re-insert for later process a webhook that threw an in-process unhandled-exception while processing?
+				/*
+				 WebHooksPending reInserted = new WebHooksPending(LoginUser);
+				WebHooksPendingItem reInsertedItem = reInserted.AddNewWebHooksPendingItem();
+				reInsertedItem.RefId = WebHook.RefId;
+				reInsertedItem.RefType = WebHook.RefType;
+				reInsertedItem.Type = WebHook.Type;
+				reInsertedItem.BodyData = WebHook.BodyData;
+				reInsertedItem.Inbound = WebHook.Inbound;
+				reInsertedItem.IsProcessing = false;
+				reInserted.Save();
+				 */
 			}
 		}
 
