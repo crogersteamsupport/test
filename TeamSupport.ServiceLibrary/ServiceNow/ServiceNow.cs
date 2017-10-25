@@ -594,10 +594,18 @@ namespace TeamSupport.ServiceLibrary
 				{
 					ActionLinkToSnow actionLinkSynced = new ActionLinkToSnow(_loginUser);
 					actionLinkSynced.GetByActionAppID(singleAction.Value.Id);
+					bool addNewAction = false;
+
+					//is the existing action linked for this ticket?
+					if (actionLinkSynced.Any())
+					{
+						Data.Action ticketAction = Actions.GetActionByID(_loginUser, actionLinkSynced[0].ActionID);
+						addNewAction = ticketAction.TicketID != _ticket.TicketID;
+					}
 
 					//If this action wasn't added by the creation of the Incident previously then add, else ignore (skip) to avoid loops.
 					//Also check if this action wasn't the one sent from TS to ServiceNow already. <-- Should follow the format of the method BuildCommentBody
-					if ((actionLinkSynced == null || !actionLinkSynced.Any())
+					if ((actionLinkSynced == null || !actionLinkSynced.Any() || addNewAction)
 						&& !singleAction.Value.Value.Contains("TeamSupport ticket #" + _ticket.TicketNumber.ToString() + " comment #"))
 					{
 						Actions newActions = new Actions(_loginUser);
@@ -778,15 +786,19 @@ namespace TeamSupport.ServiceLibrary
 				if (ticketActions.Any())
 				{
 					Data.Action actionDescription = ticketActions.OrderBy(p => p.ActionID).Where(p => p.SystemActionTypeID == SystemActionType.Description).FirstOrDefault();
-					actionDescriptionId = actionDescription.ActionID;
 
-					if (actionDescription.IsVisibleOnPortal)
+					if (actionDescription != null)
 					{
-						dynamicBodyData.comments = BuildCommentBody(_ticket.TicketNumber.ToString(), actionDescription.Description, 1, actionDescription.CreatorID, isTicketDescription: true);
-					}
-					else
-					{
-						dynamicBodyData.work_notes = BuildCommentBody(_ticket.TicketNumber.ToString(), actionDescription.Description, 1, actionDescription.CreatorID, isTicketDescription: true);
+						actionDescriptionId = actionDescription.ActionID;
+
+						if (actionDescription.IsVisibleOnPortal)
+						{
+							dynamicBodyData.comments = BuildCommentBody(_ticket.TicketNumber.ToString(), actionDescription.Description, 1, actionDescription.CreatorID, isTicketDescription: true);
+						}
+						else
+						{
+							dynamicBodyData.work_notes = BuildCommentBody(_ticket.TicketNumber.ToString(), actionDescription.Description, 1, actionDescription.CreatorID, isTicketDescription: true);
+						}
 					}
 				}
 
