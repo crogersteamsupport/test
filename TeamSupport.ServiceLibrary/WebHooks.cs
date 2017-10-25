@@ -67,19 +67,6 @@ namespace TeamSupport.ServiceLibrary
 				Logs.WriteEventFormat("WebHook Data: {0}", WebHook.BodyData);
 				Logs.WriteException(ex);
 				ExceptionLogs.LogException(LoginUser, ex, "Webhooks", "Error processing the webhook.");
-
-				//ToDo should we re-insert for later process a webhook that threw an in-process unhandled-exception while processing?
-				/*
-				 WebHooksPending reInserted = new WebHooksPending(LoginUser);
-				WebHooksPendingItem reInsertedItem = reInserted.AddNewWebHooksPendingItem();
-				reInsertedItem.RefId = WebHook.RefId;
-				reInsertedItem.RefType = WebHook.RefType;
-				reInsertedItem.Type = WebHook.Type;
-				reInsertedItem.BodyData = WebHook.BodyData;
-				reInsertedItem.Inbound = WebHook.Inbound;
-				reInsertedItem.IsProcessing = false;
-				reInserted.Save();
-				 */
 			}
 		}
 
@@ -350,7 +337,9 @@ namespace TeamSupport.ServiceLibrary
 
 		public override void Run()
 		{
+			Logs.WriteEvent("WebHooksPool is running...", true);
 			int maxThreads = Settings.ReadInt("Max Worker Processes", 1);
+			Logs.WriteEventFormat("maxThreads: {0}, IsStopped: {1}, Threads count: {2}", maxThreads.ToString(), IsStopped.ToString(), _threads.Count.ToString());
 
 			if (_threads.Count > 0)
 			{
@@ -390,13 +379,7 @@ namespace TeamSupport.ServiceLibrary
 			//Load the pending webhooks to process
 			WebHooksPending webhooksPending = new WebHooksPending(LoginUser);
 			webhooksPending.LoadPending();
-
-			if (webhooksPending.Count > 0)
-			{
-				Logs.WriteEventFormat("maxThreads: {0}, IsStopped: {1}, Threads count: {2}", maxThreads.ToString(), IsStopped.ToString(), _threads.Count.ToString());
-				Logs.WriteEventFormat("WebHooksPool to process: {0}", webhooksPending.Count());
-			}
-
+			Logs.WriteEventFormat("WebHooksPool to process: {0}", webhooksPending.Count());
 			bool isAlreadyProcessingValue = false;
 
 			foreach (WebHooksPendingItem webhook in webhooksPending)

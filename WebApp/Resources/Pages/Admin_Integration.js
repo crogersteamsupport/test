@@ -285,6 +285,7 @@ AdminInt = function () {
 						if (rawFile.readyState === 4) {
 							if (rawFile.status === 200 || rawFile.status == 0) {
 								var allText = rawFile.responseText;
+								//alert(allText);
 								var textArea = document.querySelector("#businessRuleScript");
 								textArea.value = allText;
 							}
