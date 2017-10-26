@@ -101,6 +101,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime? PasswordCreatedUtc { get; set; }
     [DataMember] public int? ImportFileID { get; set; }
     [DataMember] public bool PortalLimitOrgChildrenTickets { get; set; }
+    [DataMember] public bool CanBulkMerge { get; set; }
           
   }
   
@@ -109,6 +110,7 @@ namespace TeamSupport.Data
     public UserProxy GetProxy()
     {
       UserProxy result = new UserProxy();
+      result.CanBulkMerge = this.CanBulkMerge;
       result.PortalLimitOrgChildrenTickets = this.PortalLimitOrgChildrenTickets;
       result.ImportFileID = this.ImportFileID;
       result.verificationCode = this.verificationCode;
