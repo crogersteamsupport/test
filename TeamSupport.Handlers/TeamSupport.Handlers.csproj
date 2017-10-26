@@ -152,6 +152,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChartHandler.cs" />
+    <Compile Include="WikiHandler.cs" />
     <Compile Include="HubHandler.cs" />
     <Compile Include="ContentHandler.cs">
       <SubType>Code</SubType>

@@ -56,6 +56,7 @@ var publisher;
 var screenSharingPublisher;
 var videoURL;
 var tokTimer;
+var pinning;
 
 var slaCheckTimer;
 var ticketWidget = null;
@@ -452,7 +453,6 @@ function AddTicketProperty(item) {
 
 function SetupTicketProperties(order) {
     window.parent.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
-        console.log(info);
         if (info == null) {
             var url = window.location.href;
             if (url.indexOf('.') > -1) {
@@ -525,6 +525,7 @@ function SetupTicketProperties(order) {
         //get total number of actions so we can use it to number each action
         GetActionCount(function () {
             //create timeline now that we have a ticketID and a count
+            FetchPinned();
             FetchTimeLineItems(0);
         });
 
@@ -890,7 +891,6 @@ function SetupActionEditor(elem, action) {
                     var actionElement = CreateActionElement(_newAction, false);
                     actionElement.find('.ticket-action-number').text(_actionTotal);
                 } else {
-                    console.log('#action-file-upload:updateactionelement');
                     UpdateActionElement(_newAction, false);
                 }
                 _newAction = null;
@@ -3999,6 +3999,19 @@ function openTicketWindow(ticketID) {
     window.parent.Ts.MainPage.openTicket(ticketID, true);
 }
 
+function FetchPinned() {
+    window.parent.Ts.Services.TicketPage.getPinned(_ticketID, function (returned) {
+        if (returned.length > 0) {
+            var pinned   = returned[0];
+            pinned.pinning = 'yes';
+            var template = Handlebars.templates['action2'];
+            var html     = template(pinned);
+            $(html).find('a').attr('target', '_blank');
+            $("#pinned-placeholder").html(html);
+        }
+    });
+}
+
 function FetchTimeLineItems(start) {
     _isLoading = true;
     $('.results-loading').show();
@@ -4040,14 +4053,12 @@ function CreateActionElement(val, ShouldAppend) {
             val.WaterCoolerReplies[wc].WaterCoolerReplyProxy.Message = wcmsgtext.replace(/\n\r?/g, '<br />');
         }
     }
-
     if (_currDateSpan == null || _currDateSpan.toDateString() !== val.item.DateCreated.toDateString()) {
         if (!val.item.IsPinned) {
             var dateSpan = '<div class="daystrip"><span class="daybadge">' + val.item.DateCreated.localeFormat(window.parent.Ts.Utils.getDatePattern()) + '</span><div>';
             _currDateSpan = val.item.DateCreated;
         }
     }
-
     var html = _compiledActionTemplate(val);
     var actionElement = $(html);
     actionElement.find('a').attr('target', '_blank');
@@ -4058,12 +4069,10 @@ function CreateActionElement(val, ShouldAppend) {
         $('.action-placeholder').after(actionElement);
         $('.action-placeholder').after(dateSpan);
     }
-
     if (val.item.IsPinned) {
-        var actionCloned = $(actionElement).clone();
-        $("#pinned-placeholder").html(actionCloned);
+        // fvar actionCloned = $(actionElement).clone();
+        // $("#pinned-placeholder").html(actionCloned);
     }
-
     _isCreatingAction = false;
     return actionElement;
 }
@@ -4168,7 +4177,16 @@ function CreateHandleBarHelpers() {
     });
 
     Handlebars.registerHelper('ActionNumber', function () {
-        if (!_isCreatingAction) {
+        if (this.item.IsPinned && this.pinning) {
+            var ticketID = this.item.TicketID;
+            var actionID = this.item.RefID;
+            var output   = window.parent.Ts.Services.TicketPage.getPosition(ticketID, actionID, function (result) {
+                if (result != 'negative' && result != 'nothing') {
+                    var data = jQuery.parseJSON(result);
+                    $('#action-number-' + actionID).text(data.position[0].position)
+                }
+            });
+        } else if (!_isCreatingAction) {
             _workingActionNumer = _workingActionNumer - 1;
             return _workingActionNumer + 1;
             // return _workingActionNumer;
