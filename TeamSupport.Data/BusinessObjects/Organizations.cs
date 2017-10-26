@@ -3048,6 +3048,7 @@ ORDER BY
                             newCustomValue.Value = loosingCompanyCustomValue.Value;
                             newCustomValue.CreatorID = loosingCompanyCustomValue.CreatorID;
                             newCustomValue.ModifierID = loosingCompanyCustomValue.ModifierID;
+							newCustomValue.OrganizationID = loginUser.OrganizationID;
                             saveNewCustomValues = true;
                         }
                     }
