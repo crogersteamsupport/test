@@ -31,7 +31,7 @@ namespace TeamSupport.Data
 
 					if (message.Message.Trim().IndexOf("<img ") != 0)
 					{
-						messageText = message.Message.Replace("<", "&lt;").Replace(">", "&gt;");//vv
+						messageText = message.Message.Replace("<", "&lt;").Replace(">", "&gt;");
 					}
 
                 if (message.IsNotification)
