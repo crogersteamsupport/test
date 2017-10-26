@@ -198,7 +198,7 @@ function createMessageElement(messageData, direction) {
 		displayMessage = messageData.Message;
 	}
 
-	if ((messageData.Message.trim().indexOf("/chatattachments/") != 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0)) {
+	if ((messageData.Message.trim().indexOf("/chatattachments/") > 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0)) {
 		displayMessage = messageData.Message;
 	}
 
