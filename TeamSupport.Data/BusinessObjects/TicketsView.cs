@@ -878,29 +878,119 @@ ORDER BY TicketNumber DESC";
             }
         }
 
-        public void LoadHubKBByID(int ticketID, int organizationID, int customerID, bool enableCustomerProductAssociation)
+        public void LoadHubKBByID(int ticketID, int organizationID, int customerID, bool enableCustomerSpecificKB, bool enableCustomerProductAssociation, bool enableAnonymousProductAssociation)
         {
             using (SqlCommand command = new SqlCommand())
             {
                 StringBuilder builder = new StringBuilder();
-                builder.Append(@"SELECT t.*
-																FROM TicketsView as T
-																WHERE 
-																	t.ticketid = @ticketID
-																	AND t.OrganizationID              = @OrganizationID 
-																	AND t.IsKnowledgeBase         = 1
-																	AND t.IsVisibleOnPortal         = 1");
+                builder.Append(@"Select t.*
+		                        FROM TicketsView as T
+		                        WHERE 
+		                        t.ticketid = @ticketID
+		                        AND t.OrganizationID              = @OrganizationID 
+		                        AND t.IsKnowledgeBase         = 1
+		                        AND t.IsVisibleOnPortal         = 1 ");
 
-                if (customerID > 0 && enableCustomerProductAssociation)
+                if (enableCustomerSpecificKB && ((customerID > 0 || enableAnonymousProductAssociation) && enableCustomerProductAssociation))
                 {
-                    builder.Append(@" AND(
-																T.ProductID IS NULL
-																												OR T.ProductID IN(
-																	SELECT productid
-																													FROM organizationproducts
-																													WHERE organizationid = @CustomerID
-																	)
-																)");
+                    builder.Append(@"
+                         AND (
+		                        (T.ProductID IS NULL
+		                        OR T.ProductID IN (
+			                        SELECT productid
+			                        FROM organizationproducts
+			                        WHERE organizationid = @CustomerID
+			                        ))
+		                        AND T.TicketID IN (
+			                        --Returns a list of all tickets NOT assigned to a customer within our organization
+			                        SELECT TicketID
+			                        FROM (
+				                        SELECT T.TicketID
+					                        ,T.NAME
+					                        ,T.DateModified
+					                        ,T.OrganizationID
+					                        ,OT.OrganizationID AS CustomerID
+				                        FROM dbo.TicketsView AS T
+				                        LEFT JOIN dbo.OrganizationTickets AS OT ON OT.TicketID = T.TicketID
+				                        WHERE OT.TicketID IS NULL
+					                        AND IsKnowledgeBase = 1
+					                        AND IsVisibleOnPortal = 1
+					                        AND T.TicketID = @ticketID
+					                        AND T.OrganizationID = @organizationID
+				                        ) AS UAT
+			                        )
+		                        )
+	                        --Tickets assigned to our customer - ALWAYS WANT THESE
+	                        OR T.TicketID in (
+			                        Select
+				                        T.TicketID
+			                        from dbo.TicketsView as T
+			                        inner join dbo.OrganizationTickets as OT
+				                        on OT.TicketID = T.TicketID
+			                        Where 
+				                        IsKnowledgeBase = 1 
+				                        AND T.OrganizationID = @organizationID
+				                        AND T.TicketID = @ticketID
+				                        AND OT.OrganizationID = @customerID
+	                        )
+                    ");
+                }
+                else if (enableCustomerSpecificKB)
+                {
+                    builder.Append(@"
+                        AND (
+		                    --Customer Specific Logic
+		                    T.TicketID IN (
+			                    --Returns a list of all tickets NOT assigned to an organization
+			                    SELECT TicketID
+			                    FROM (
+				                    SELECT T.TicketID
+					                    ,T.NAME
+					                    ,T.DateModified
+					                    ,T.OrganizationID
+					                    ,OT.OrganizationID AS CustomerID
+				                    FROM dbo.TicketsView AS T
+				                    LEFT JOIN dbo.OrganizationTickets AS OT 
+					                    ON OT.TicketID = T.TicketID
+				                    WHERE OT.TicketID IS NULL
+					                    AND IsKnowledgeBase = 1
+					                    AND IsVisibleOnPortal = 1
+					                    AND T.TicketID = @TicketID
+					                    AND T.OrganizationID = @organizationID
+				
+				                    UNION
+				
+				                    --Returns a list of tickets that ARE associated to our customer
+				                    SELECT T.TicketID
+					                    ,T.NAME
+					                    ,T.DateModified
+					                    ,T.OrganizationID
+					                    ,OT.OrganizationID AS CustomerID
+				                    FROM dbo.TicketsView AS T
+				                    INNER JOIN dbo.OrganizationTickets AS OT ON OT.TicketID = T.TicketID
+				                    WHERE IsKnowledgeBase = 1
+					                    AND T.OrganizationID = @organizationID
+					                    AND T.TicketID = @TicketID
+				                    ) AS W
+			                    WHERE 
+				                    CustomerID = @customerID
+				                    OR CustomerID IS NULL
+                            )
+                        )
+                   ");
+                }
+                else if ((customerID > 0 || enableAnonymousProductAssociation) && enableCustomerProductAssociation)
+                {
+                    builder.Append(@"
+                        AND (
+			                T.ProductID IS NULL
+			                OR T.ProductID IN (
+				                SELECT productid
+				                FROM organizationproducts
+				                WHERE organizationid = @CustomerID
+				            )
+                        )
+                    ");
                 }
                 builder.Append(@" ORDER BY t.DateModified desc");
 
