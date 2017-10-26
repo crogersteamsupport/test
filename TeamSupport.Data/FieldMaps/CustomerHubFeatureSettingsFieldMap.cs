@@ -39,6 +39,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("EnableTicketNameModification", "EnableTicketNameModification", false, false, false);
       _fieldMap.AddMap("KnowledgeBaseSortTypeID", "KnowledgeBaseSortTypeID", false, false, false);
       _fieldMap.AddMap("CommunitySortTypeID", "CommunitySortTypeID", false, false, false);
+      _fieldMap.AddMap("EnableAnonymousProductAssociation", "EnableAnonymousProductAssociation", false, false, false);
+      _fieldMap.AddMap("EnableCustomerSpecificKB", "EnableCustomerSpecificKB", false, false, false);
             
     }
   }

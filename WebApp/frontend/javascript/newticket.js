@@ -38,6 +38,9 @@ var tokTimer;
 var defaultTemplateText = "";
 
 
+var prevProduct;
+
+
 var getCustomers = function (request, response) {
     if (execGetCustomer) { execGetCustomer._executor.abort(); }
     execGetCustomer = parent.Ts.Services.TicketPage.GetUserOrOrganizationForTicket(request, function (result) { response(result); });
@@ -528,8 +531,7 @@ function SaveTicket() {
 
                 if ($('#ticket-status').length) {
                     info.TicketStatusID = $('#ticket-status').val();
-                }
-                else {
+                } else {
                     var statuses = parent.Ts.Cache.getTicketStatuses();
                     info.TicketStatusID = statuses[0].TicketStatusID;
                 }
@@ -1535,19 +1537,24 @@ function SetupProductSection() {
     LoadProductList(products);
 
     parent.Ts.Services.Organizations.IsProductRequired(function (result) {
-        if (result)
+        if (result) {
             $('#ticket-Product').closest('.form-group').addClass('hasError');
-        else
+        } else {
             $('#ticket-Product').closest('.form-group').removeClass('hasError');
+        }
     });
 
+
     $('#ticket-Product').change(function (e) {
-        var self = $(this);
+        var self      = $(this);
         var productID = $('#ticket-Product').val();
-        var product = parent.Ts.Cache.getProduct(productID);
-        loadVersions(product);
+        var product   = parent.Ts.Cache.getProduct(productID);
+        if (productID && productID !== prevProduct) {
+            loadVersions(product);
+        }
         AppendProductMatchingCustomFields();
         $('#ticket-Product').closest('.form-group').removeClass('hasError');
+        if (productID) { prevProduct = productID; }
         if (product === null) { return; }
         if (parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != product.ProductFamilyID) {
             _productFamilyID = product.ProductFamilyID;
@@ -1607,20 +1614,18 @@ function ReloadProductList() {
             if (organizationIDs.length < 1) {
                 var products = parent.Ts.Cache.getProducts();
                 LoadProductList(products);
-            }
-            else {
+            } else {
                 parent.Ts.Services.Tickets.GetCustomerProductIDs(parent.JSON.stringify(organizationIDs), function (productIDs) {
 
                     if (!productIDs || productIDs == null || productIDs.length < 1) {
                         var products = parent.Ts.Cache.getProducts();
                         LoadProductList(products);
-                    }
-                    else {
+                    } else {
                         var products = new Array();
                         for (var j = 0; j < productIDs.length; j++) {
                             var product = parent.Ts.Cache.getProduct(productIDs[j]);
                             products.push(product);
-                        };
+                        }
                         LoadProductList(products);
                     }
                 });
@@ -1639,16 +1644,13 @@ function loadVersions(product) {
         selectizeVersion.clear(true);
         selectizeVersion.clearOptions();
     }
-
     if ($('#ticket-Resolved').length) {
         var selectizeResolved = $("#ticket-Resolved")[0].selectize;
         selectizeResolved.clear(true);
         selectizeResolved.clearOptions();
     }
-
     if (product !== null) {
         var versions = product.Versions;
-
         for (var i = 0; i < versions.length; i++) {
             try {
                 selectizeVersion.addOption({ value: versions[i].ProductVersionID, text: versions[i].VersionNumber, data: versions[i] });
@@ -1695,10 +1697,12 @@ function SetupProductVersionsControl(product) {
     }
 
     parent.Ts.Services.Organizations.IsProductVersionRequired(function (result) {
-        if (result)
+        var hasValue = $('#ticket-Versions');
+        if (result && !hasValue) {
             $('#ticket-Versions').closest('.form-group').addClass('hasError');
-        else
+        } else {
             $('#ticket-Versions').closest('.form-group').removeClass('hasError');
+        }
     });
 }
 
