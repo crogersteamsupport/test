@@ -195,7 +195,7 @@ function createMessageElement(messageData, direction) {
 	var escapedMessage = messageData.Message;
 
 	if (messageData.Message.trim().indexOf("<img ") != 0
-		|| messageData.Message.trim().indexOf("<script ") > -1) {
+		&& messageData.Message.trim().indexOf("<script ") > -1) {
 		escapedMessage = $("<div>").text(messageData.Message).html();
 	}
 

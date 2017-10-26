@@ -256,7 +256,7 @@ $(document).ready(function () {
 				var escaped = messageData.Message;
 
 				if (messageData.Message.trim().indexOf("<img ") != 0
-					|| messageData.Message.trim().indexOf("<script ") > -1) {
+					&& messageData.Message.trim().indexOf("<script ") > -1) {
 					escaped = $("<div>").text(messageData.Message).html();
 				}
 
