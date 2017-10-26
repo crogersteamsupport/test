@@ -252,7 +252,13 @@ $(document).ready(function () {
             var chatUserLeft = ((messageData.CreatorID !== null) ? messageData.CreatorID.toString() : 'customer');
 
             if ((messageData.HasLeft && !$("#" + chatUserLeft + 'HasLeft').length > 0)
-                || (!messageData.HasLeft)) {
+				|| (!messageData.HasLeft)) {
+				var escaped = messageData.Message;
+
+				if (messageData.Message.trim().indexOf("<img ") != 0) {
+					escaped = $("<div>").text(messageData.Message).html();
+				}
+
                 var messageTemplate = $("#message-template").html();
                 var compiledTemplate = messageTemplate
                                         .replace('{{MessageDirection}}', 'left')
@@ -260,7 +266,7 @@ $(document).ready(function () {
                                         .replace('{{Avatar}}', (messageData.CreatorID !== null)
                                                                         ? '../../../dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.CreatorID + '/48/1470773158079'
                                                                         : '../images/blank_avatar.png')
-                                        .replace('{{Message}}', messageData.Message)
+                                        .replace('{{Message}}', escaped)
                                         .replace('{{Date}}', moment(messageData.DateCreated).format(dateFormat + ' hh:mm A'));
 
                 if (messageData.HasLeft) {
@@ -279,7 +285,13 @@ $(document).ready(function () {
                 }
             }
         }
-        else if (isAgentAcceptedInvitation && messageData != null && messageData.info != null && messageData.info.chatId != null && messageData.info.chatId == _activeChatID) {
+		else if (isAgentAcceptedInvitation && messageData != null && messageData.info != null && messageData.info.chatId != null && messageData.info.chatId == _activeChatID) {
+			var escaped = messageData.info.name;
+
+			if (messageData.Message.trim().indexOf("<img ") != 0) {
+				escaped = $("<div>").text(messageData.info.name).html();
+			}
+
             var messageTemplate = $("#message-template").html();
             var dateTimeString = new Date().toLocaleString();
             dateTimeString = dateTimeString.replace(",", "");
@@ -289,7 +301,7 @@ $(document).ready(function () {
                                     .replace('{{Avatar}}', (messageData.id !== null)
                                                                     ? '../../../dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.id + '/48/1470773158079'
                                                                     : '../images/blank_avatar.png')
-                                    .replace('{{Message}}', messageData.info.name + " has joined the chat.")
+                                    .replace('{{Message}}', escaped + " has joined the chat.")
                                     .replace('{{Date}}', dateTimeString);
 
             $('.media-list').append(compiledTemplate);
