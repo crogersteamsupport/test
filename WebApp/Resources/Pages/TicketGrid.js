@@ -1229,6 +1229,9 @@ TicketGrid = function (options) {
 		}
 		$('.ticket-action').prop('disabled', false);
 		$('.tickets-delete').prop('disabled', !mainFrame.Ts.System.User.IsSystemAdmin);
+		if (!mainFrame.Ts.System.User.CanBulkMerge) {
+		    $('.ticket-action-bulkmerge').hide();
+		}
 
 		function writeProp(name, val, colSpan) {
 			if (val == null || val == '') val = '[Unassigned]';
