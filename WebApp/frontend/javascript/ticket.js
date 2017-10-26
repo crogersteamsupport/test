@@ -1518,6 +1518,7 @@ function LoadTicketControls() {
                 render: {
                     option: function (item, escape) {
                         var optionlabel = item.text;
+                        console.log(item);
                         if (item.data.InOfficeMessage) optionlabel = optionlabel + ' - ' + item.data.InOfficeMessage;
 
                         if (item.data.IsSender && item.data.IsCreator) {
@@ -3692,6 +3693,7 @@ var SetupStatusField = function (StatusId) {
             },
             render: {
                 item: function (item, escape) {
+                    console.log(item);
                     if (item.data.IsClosed) {
                         return '<div data-value="' + escape(item.value) + '" data-item="' + escape(item.data) + '" data-selectable="" class="option"><s>' + escape(item.text) + '</s></div>';
                     } else {
