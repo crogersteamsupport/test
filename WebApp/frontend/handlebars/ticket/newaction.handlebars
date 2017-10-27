@@ -53,68 +53,73 @@
             <button id="canceltok" title="Cancel" class="btn btn-danger"><i class="fa fa-eject"></i></button>
         </div>
 
-        <div class="row action-new-toolbar">
-            <div>
-                <div class="ticket-action-form-timespent pull-left">
-                    <div class="form-group" style="width:210px;">
-                        <label for="action-new-date-started">Date Started:</label>
-                        <div class='input-group date'>
-                            <input id="action-new-date-started" type='text' class="form-control" />
-                            <span id="action-new-timer" class="input-group-addon" data-hasstarted="false">
+        <div id="new-action-toolbar">
+
+            <div class="flexbox">
+                <div class="flexpull" style="max-width:250px;">
+                    <p for="action-new-date-started">Date Started:</p>
+                    <div class='input-group date'>
+                        <input id="action-new-date-started" type='text' class="form-control" />
+                        <span id="action-new-timer" class="input-group-addon" data-hasstarted="false">
                             <span class="fa fa-clock-o color-red"></span>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="action-new-hours">Hours:</label>
-                        <div class="input-group spinner">
-                            <input id="action-new-hours" type="text" class="form-control" value="0">
-                            <div class="input-group-btn-vertical">
-                                <button class="btn btn-default"><i class="fa fa-caret-up"></i></button>
-                                <button class="btn btn-default"><i class="fa fa-caret-down"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="action-new-minutes">Minutes:</label>
-                        <div class="input-group spinner">
-                            <input id="action-new-minutes" type="text" class="form-control" value="0">
-                            <div class="input-group-btn-vertical">
-                                <button class="btn btn-default"><i class="fa fa-caret-up"></i></button>
-                                <button class="btn btn-default"><i class="fa fa-caret-down"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="action-new-type">Type:</label>
-                        <select id="action-new-type" class="form-control"></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="action-new-KB">KnowledgeBase:</label>
-                        <input id="action-new-KB" type="checkbox">
+                        </span>
                     </div>
                 </div>
+                <div class="flexpull">
+                    <p for="action-new-hours">Hours:</p>
+                    <div class="input-group spinner">
+                        <input id="action-new-hours" type="text" class="form-control" value="0">
+                        <div class="input-group-btn-vertical">
+                            <button class="btn btn-default"><i class="fa fa-caret-up"></i></button>
+                            <button class="btn btn-default"><i class="fa fa-caret-down"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="flexpull">
+                    <p for="action-new-minutes">Minutes:</p>
+                    <div class="input-group spinner">
+                        <input id="action-new-minutes" type="text" class="form-control" value="0">
+                        <div class="input-group-btn-vertical">
+                            <button class="btn btn-default"><i class="fa fa-caret-up"></i></button>
+                            <button class="btn btn-default"><i class="fa fa-caret-down"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="flexpull">
+                    <p for="action-new-type">Type:</p>
+                    <select id="action-new-type" class="form-control"></select>
+                </div>
+                <div class="flexpush">
+                    <p for="action-new-KB">KnowledgeBase:</p>
+                    <input id="action-new-KB" type="checkbox">
+                </div>
             </div>
-        </div>
-        <div class="row action-new-toolbar">
-            <div class="col-sm-6">
+
+            <div style="width:100%;">
                 <form id="action-file-upload" class="file-upload" action="Upload/Actions/555" method="POST" enctype="multipart/form-data" title="You can drag and drop your attachments here.">
                     <input type="file" name="file[]">
                     <a class="ts-link" href="#" title="You can drag and drop your attachments here.">Attach File >></a>
                 </form>
-
                 <ul class="upload-queue"></ul>
             </div>
-            <div class="col-sm-12">
-                <div id="action-save-alert" class="alert alert-danger" role="alert" style="display:none;">Please enter the time you worked on this action.</div>
-                <button id="action-new-cancel" type="button" class="btn btn-default pull-right">Cancel</button>
-                <div class="btn-group dropup action-save-group pull-right">
-                    <button id="action-new-save" type="button" class="btn btn-primary">Create</button>
-                    <button id="action-new-save-element" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="caret"></span> <span class="sr-only">Toggle Dropdown</span></button>
-                    <ul id="action-new-saveoptions" class="dropdown-menu" role="menu"></ul>
+
+            <div class="flexbox" style="width:100%;">
+                <div class="flexpush">
+                    <div id="action-save-alert" class="alert alert-danger" role="alert" style="display:none;">Please enter the time you worked on this action.</div>
+                </div>
+                <div class="flexpull">
+                    <div class="btn-group dropup action-save-group pull-right">
+                        <button id="action-new-save" type="button" class="btn btn-primary">Create</button>
+                        <button id="action-new-save-element" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="caret"></span> <span class="sr-only">Toggle Dropdown</span></button>
+                        <ul id="action-new-saveoptions" class="dropdown-menu" role="menu"></ul>
+                    </div>
+                </div>
+                <div class="flexpull">
+                    <button id="action-new-cancel" type="button" class="btn btn-default pull-right">Cancel</button>
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 

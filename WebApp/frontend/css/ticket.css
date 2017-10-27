@@ -584,11 +584,13 @@ button.ticket-option {
     margin-right:10px;
 }
 
-    /*New Action Styles*/
+
+
+
+
 .action-new-area,
 .watercooler-new-area {
-    -webkit-box-shadow:0 1px 6px rgba(0, 0, 0, 0.175);
-    box-shadow:0 1px 6px rgba(0, 0, 0, 0.175);
+    box-shadow:3px 3px 0px rgba(0, 0, 0, 0.1);
     border:1px solid #d4d4d4;
     margin-bottom:5px;
     background-color:white;
@@ -692,7 +694,7 @@ form.file-upload {
     margin-top:0em;
     padding-left:10px;
 }
-form.file-upload input {
+form.file-upload input {f
     position:absolute;
     top:0;
     right:0;
@@ -706,7 +708,7 @@ form.file-upload input {
     cursor:pointer;
     height:100%;
 }
-    :root form.file-upload input {
+:root form.file-upload input {
     height:auto;
 }
 .ui-progressbar-value {
