@@ -3174,8 +3174,7 @@ var AddCustomFieldEdit = function (field, parentContainer) {
     var formLabel      = $('<div>').addClass('form-label').text(field.Name).appendTo(labelContainer);
 
     var inputContainer = $('<div>').addClass('flex2 ticket-input-container').appendTo(groupContainer);
-    var inputGroupContainer = $('<div>').addClass('input-group').appendTo(inputContainer);
-    var input = $('<textarea>').addClass('form-control ticket-simple-textarea muted-placeholder autogrow fart').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputGroupContainer).after(getUrls(field.Value)).autogrow();
+    var input          = $('<textarea>').addClass('ticket-simple-textarea muted-placeholder autogrow fart').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputContainer).after(getUrls(field.Value)).autogrow();
 
     $('textarea.autogrow').autogrow();
 
