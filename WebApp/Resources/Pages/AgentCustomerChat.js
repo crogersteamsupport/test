@@ -149,11 +149,11 @@ $(document).ready(function () {
 
 			var displayMessage = $("<div>").text(chat.Description).html();
 
-			if (messageData.Message.trim().indexOf("<img ") == 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0) {
+			if (chat.Description.trim().indexOf("<img ") == 0 && chat.Description.trim().indexOf("<script ") < 0 && chat.Description.trim().indexOf(" onload=") < 0) {
 				displayMessage = chat.Description;
 			}
 
-			if ((messageData.Message.trim().indexOf("/chatattachments/") > 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0)) {
+			if ((chat.Description.trim().indexOf("/chatattachments/") > 0 && chat.Description.trim().indexOf("<script ") < 0 && chat.Description.trim().indexOf(" onload=") < 0)) {
 				displayMessage = chat.Description;
 			}
 
