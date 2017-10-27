@@ -973,7 +973,15 @@ namespace TSWebServices
             }
         }
 
-        public Organization GetAdminOrgTarget(int orgID)
+		[WebMethod]
+		public void AdminSetWatson(int orgID, bool value)
+		{
+			Organization org = GetAdminOrgTarget(orgID);
+			org.UseWatson = value;
+			org.Collection.Save();
+		}
+
+		public Organization GetAdminOrgTarget(int orgID)
         {
             if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return null;
             return Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);

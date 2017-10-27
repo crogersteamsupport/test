@@ -77,7 +77,9 @@
                     });
                     top.Ts.Services.Organizations.AdminGetStorageUsed(orgID, function (size) {
                         appendProperty('Storage Used', size + ' MB');
-                    });
+					});
+
+					appendProperty('Use Watson', '<a href="#" class="action-toggle-watson">' + org.UseWatson.toString() + '</a>');
 
                     showUsers(org);
 
@@ -102,7 +104,18 @@
                 top.Ts.Services.Organizations.AdminRebuildIndexes(org.OrganizationID, function () {
                     alert("Indexes are rebuilding.");
                 });
-            });
+			});
+
+			$('.org-props').on('click', '.action-toggle-watson', function (e) {
+				e.preventDefault();
+				var org = $('.org-info').data('o');
+				var item = $(this);
+				top.Ts.Services.Organizations.AdminSetWatson(org.OrganizationID, !org.UseWatson, function () {
+					org.UseWatson = !org.UseWatson;
+					item.text(org.UseWatson.toString());
+				});
+
+			});
 
             function showUsers(org) {
                 top.Ts.Services.Users.AdminGetUsers(org.OrganizationID, function (users) {
