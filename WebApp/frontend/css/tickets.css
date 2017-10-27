@@ -113,6 +113,11 @@
     margin-bottom:20px;
 }
 
+#ticket-properties-area h3 {
+    padding:0px;
+    margin-bottom:10px;
+}
+
 #ticket-properties-area hr {
     margin:2px 0px 10px;
     border-top:1px solid rgba(0,0,0,0.05);
@@ -145,7 +150,8 @@
     padding:0px;
 }
 #ticket-properties-area .tagContainer a,
-#ticket-properties-area .taskContainer a {
+#ticket-properties-area .taskContainer a,
+#ticket-properties-area .tag-item {
     font-size:12px;
     cursor:pointer;
 }
