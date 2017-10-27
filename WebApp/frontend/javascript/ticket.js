@@ -3152,10 +3152,7 @@ var appendMatchingParentValueFields = function (container, parentField) {
         for (var i = 0; i < fields.length; i++) {
             var field = fields[i];
             var div = $('<div>').addClass('').data('field', field);
-            //$('<label>').addClass('col-sm-4 control-label select-label').text(field.Name).appendTo(div);
-
             container.append(div);
-
             switch (field.FieldType) {
                 case window.parent.Ts.CustomFieldType.Text: AddCustomFieldEdit(field, div); break;
                 case window.parent.Ts.CustomFieldType.Date: AddCustomFieldDate(field, div); break;
@@ -3172,11 +3169,11 @@ var appendMatchingParentValueFields = function (container, parentField) {
 
 var AddCustomFieldEdit = function (field, parentContainer) {
     var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldEdit').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
-    var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+    var groupContainer = $('<div>').addClass('flexbox').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('flex1').appendTo(groupContainer);
+    var formLabel      = $('<div>').addClass('form-label').text(field.Name).appendTo(labelContainer);
 
-    var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
+    var inputContainer = $('<div>').addClass('flex2 ticket-input-container').appendTo(groupContainer);
     var inputGroupContainer = $('<div>').addClass('input-group').appendTo(inputContainer);
     var input = $('<textarea>').addClass('form-control ticket-simple-textarea muted-placeholder autogrow fart').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputGroupContainer).after(getUrls(field.Value)).autogrow();
 
@@ -3234,11 +3231,11 @@ var AddCustomFieldEdit = function (field, parentContainer) {
 var AddCustomFieldDate = function (field, parentContainer) {
     var date = field.Value == null ? null : window.parent.Ts.Utils.getMsDate(field.Value);
     var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldDate').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
-    var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+    var groupContainer = $('<div>').addClass('flexbox').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('flex1').appendTo(groupContainer);
+    var formLabel      = $('<div>').addClass('form-label').text(field.Name).appendTo(labelContainer);
 
-    var dateContainer = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
+    var dateContainer = $('<div>').addClass('flex2 ticket-input-container').attr('style','padding-top:3px;').appendTo(groupContainer);
     var dateLink = $('<a>').attr('href', '#').addClass('ticket-anchor ticket-nullable-link ticket-duedate-anchor').text((date === null ? 'unassigned' : date.localeFormat(window.parent.Ts.Utils.getDatePattern()))).appendTo(dateContainer);
 
     dateLink.click(function (e) {
@@ -3310,11 +3307,11 @@ var AddCustomFieldDate = function (field, parentContainer) {
 var AddCustomFieldDateTime = function (field, parentContainer) {
     var date = field.Value == null ? null : window.parent.Ts.Utils.getMsDate(field.Value);
     var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldDateTime').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
-    var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
-    var dateContainer  = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
-    var dateLink       = $('<a>').attr('href', '#').addClass('ticket-anchor ticket-nullable-link').text((date === null ? 'unassigned' : date.localeFormat(window.parent.Ts.Utils.getDateTimePattern()))).appendTo(dateContainer);
+    var groupContainer = $('<div>').addClass('flexbox').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('flex1').appendTo(groupContainer);
+    var formLabel      = $('<div>').addClass('form-label').text(field.Name).appendTo(labelContainer);
+    var dateContainer  = $('<div>').addClass('flex2 ticket-input-container').attr('style','padding-top:3px;').appendTo(groupContainer);
+    var dateLink       = $('<a>').attr('href','#').addClass('ticket-anchor ticket-nullable-link').text((date === null ? 'unassigned' : date.localeFormat(window.parent.Ts.Utils.getDateTimePattern()))).appendTo(dateContainer);
 
     dateLink.click(function (e) {
         e.preventDefault();
@@ -3384,10 +3381,10 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
 var AddCustomFieldTime = function (field, parentContainer) {
     var date = field.Value == null ? null : window.parent.Ts.Utils.getMsDate(field.Value);
     var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldTime').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
-    var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
-    var dateContainer  = $('<div>').addClass('col-sm-8 ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
+    var groupContainer = $('<div>').addClass('flexbox').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('flex1').appendTo(groupContainer);
+    var formLabel      = $('<div>').addClass('form-label').text(field.Name).appendTo(labelContainer);
+    var dateContainer  = $('<div>').addClass('flex2 ticket-input-container').attr('style','padding-top:3px;').appendTo(groupContainer);
     var dateLink       = $('<a>').attr('href', '#').addClass('ticket-anchor ticket-nullable-link ticket-duedate-anchor').text((date === null ? 'Unassigned' : date.localeFormat(window.parent.Ts.Utils.getTimePattern()))).appendTo(dateContainer);
 
     dateLink.click(function (e) {
@@ -3395,7 +3392,7 @@ var AddCustomFieldTime = function (field, parentContainer) {
         e.stopPropagation();
         var header     = $(this).hide();
         var container  = $('<div>').addClass('row').insertAfter(header);
-        var container1 = $('<div style="padding-right:0px;">').addClass('col-xs-10').appendTo(container);
+        var container1 = $('<div style="padding-right:0px;">').appendTo(container);
         var theinput   = $('<input type="text">').addClass('form-control').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getTimePattern())).datetimepicker({ pickDate: false }).appendTo(container1).focus();
 
         $('<i>').addClass('col-xs-1 fa fa-times').click(function (e) {
@@ -3457,11 +3454,11 @@ var AddCustomFieldTime = function (field, parentContainer) {
 
 var AddCustomFieldBool = function (field, parentContainer) {
     var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldBool').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
-    var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+    var groupContainer = $('<div>').addClass('flexbox').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('flex1').appendTo(groupContainer);
+    var formLabel      = $('<div>').addClass('form-label').text(field.Name).appendTo(labelContainer);
 
-    var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
+    var inputContainer = $('<div>').addClass('flex2 ticket-input-container').appendTo(groupContainer);
     var input = $('<input type="checkbox">').css('margin','5px').appendTo(inputContainer);
     var value = (field.Value === null || $.trim(field.Value) === '' || field.Value.toLowerCase() === 'false' || field.Value.toLowerCase() === '0' ? false : true);
     input.prop("checked", value);
@@ -3478,11 +3475,11 @@ var AddCustomFieldBool = function (field, parentContainer) {
 
 var AddCustomFieldNumber = function (field, parentContainer) {
     var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldNumber').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
-    var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+    var groupContainer = $('<div>').addClass('flexbox').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('flex1').appendTo(groupContainer);
+    var formLabel      = $('<div>').addClass('form-label').text(field.Name).appendTo(labelContainer);
 
-    var inputContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
+    var inputContainer = $('<div>').addClass('flex2 ticket-input-container').appendTo(groupContainer);
     var input = $('<input type="text">').addClass('form-control ticket-simple-input muted-placeholder').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputContainer).numeric();
 
     input.change(function (e) {
@@ -3529,11 +3526,11 @@ var AddCustomFieldNumber = function (field, parentContainer) {
 
 var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFields) {
     var formcontainer  = $('<div>').addClass('form-horizontal AddCustomFieldSelect').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm').data('field', field).appendTo(formcontainer);
-    var labelContainer = $('<div>').addClass('col-sm-4 form-label').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+    var groupContainer = $('<div>').addClass('flexbox').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('flex1').appendTo(groupContainer);
+    var formLabel      = $('<div>').addClass('form-label').text(field.Name).appendTo(labelContainer);
 
-    var selectContainer = $('<div>').addClass('col-sm-8 ticket-input-container').appendTo(groupContainer);
+    var selectContainer = $('<div>').addClass('flex2 ticket-input-container').appendTo(groupContainer);
     var select = $('<select>').addClass('hidden-select muted-placeholder').attr("placeholder", "Select Value").appendTo(selectContainer);
     var options = field.ListValues.split('|');
 
@@ -3605,7 +3602,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
 
 var SetupDueDateField = function (duedate) {
     var dateContainer = $('#ticket-duedate-container');
-    var dateLink = $('<a>').attr('href', '#').attr('id','ticket-duedate').addClass('control-label ticket-anchor ticket-nullable-link ticket-duedate-anchor').appendTo(dateContainer);
+    var dateLink = $('<a>').attr('href', '#').attr('id','ticket-duedate').addClass('ticket-anchor ticket-nullable-link ticket-duedate-anchor').appendTo(dateContainer);
 
     if (duedate !== null) {
         dateLink.text(duedate.localeFormat(window.parent.Ts.Utils.getDateTimePattern()));
@@ -3826,7 +3823,7 @@ var SetupJiraFieldValues = function () {
                     if ($(".jiraLink").length) {
                         $(".jiraLink").remove();
                     }
-                    var jiraLink = $('<a>').attr('href', _ticketInfo.LinkToJira.JiraLinkURL).attr('target', '_blank').attr('title', result + ' instance').text(_ticketInfo.LinkToJira.JiraKey).addClass('jiraLink control-label ticket-anchor').prependTo($('#ticket-jirakey-container'));
+                    var jiraLink = $('<a>').attr('href', _ticketInfo.LinkToJira.JiraLinkURL).attr('target', '_blank').attr('title', result + ' instance').text(_ticketInfo.LinkToJira.JiraKey).addClass('jiraLink ticket-anchor').prependTo($('#ticket-jirakey-container'));
                 }
 
                 $('#issueKey').show();
@@ -3955,7 +3952,7 @@ var SetupTFSFieldValues = function () {
                     if ($(".tfsLink").length) {
                         $(".tfsLink").remove();
                     }
-                    var tfsLink = $('<a>').attr('href', _ticketInfo.LinkToTFS.TFSURL).attr('target', '_blank').text(_ticketInfo.LinkToTFS.TFSTitle).addClass('tfsLink control-label ticket-anchor').prependTo($('#ticket-workItemTitle-container'));
+                    var tfsLink = $('<a>').attr('href', _ticketInfo.LinkToTFS.TFSURL).attr('target', '_blank').text(_ticketInfo.LinkToTFS.TFSTitle).addClass('tfsLink ticket-anchor').prependTo($('#ticket-workItemTitle-container'));
                 }
                 $('#workItemTitleValue').show();
                 $('.ts-tfs-buttons-container').hide();

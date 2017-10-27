@@ -173,3 +173,60 @@ div.action .wc-textarea .wc-textarea-send {
 	border-width: 24px;
 	margin-left: -24px;
 }
+
+
+
+
+
+
+div.ticket-badge {
+    -webkit-transition:box-shadow .218s ease,background-color .218s ease,max-width .218s step-end;
+    transition:box-shadow .218s ease,background-color .218s ease,max-width .218s step-end;
+    font-size:12px;
+}
+
+div.timeline-panel > div.ticket-badge {
+    margin:30px 0 0 0;
+    position:absolute;
+    right:0;
+    top:0;
+}
+
+div.ticket-badge > div {
+    float:right;
+    clear:both;
+    height:20px;
+    line-height:20px;
+}
+
+div.ticket-badge > div > span {
+    float:right;
+    height:20px;
+    margin-right:-4px;
+    padding-right:4px;
+    width:0;
+}
+
+div.ticket-badge > div > a {
+    -webkit-transition:opacity .218s ease,max-width .218s step-end,visibility .218s step-end;
+    transition:opacity .218s ease,max-width .218s step-end,visibility .218s step-end;
+    padding:0 7px;
+    cursor:pointer;
+    color:white;
+    font-size:small;
+    font-weight:bold;
+}
+
+div.ticket-badge > div > label {
+    -webkit-transition:opacity .218s ease,max-width .218s step-end,visibility .218s step-end;
+    transition:opacity .218s ease,max-width .218s step-end,visibility .218s step-end;
+    padding:0 10px;
+    color:white;
+    font-size:small;
+    font-weight:bold;
+}
+
+div.ticket-badge > div > a:hover,
+div.ticket-badge > div > a:focus {
+    color:white;
+}
