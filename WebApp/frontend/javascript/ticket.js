@@ -274,11 +274,6 @@ $(document).ready(function () {
 });
 
 
-$(document).on('click', '#ticket-tags .tag-item', function(e){
-    teamsupport.journal('Tag Clicked');
-    teamsupport.trace();
-});
-
 
 
 

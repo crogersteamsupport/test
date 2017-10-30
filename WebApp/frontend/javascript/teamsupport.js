@@ -61,3 +61,15 @@ $(document).on('click', '#file-browse', function (e) {
     e.stopPropagation();
     $('#file-input').trigger('click');
 });
+
+$(document).on('click','#ticket-tags .tag-item', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var tagid = $(this).attr('id');
+    teamsupport.journal('Tag Clicked: ' + tagid);
+    // teamsupport.journal(top.Ts.Utils.getIdFromElement('tagid', $(this)));
+    // teamsupport.trace();
+
+    top.Ts.System.logAction('Ticket - Tag Linked From Action');
+    top.Ts.MainPage.openTag(tagid);
+});
