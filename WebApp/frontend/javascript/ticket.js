@@ -5513,7 +5513,7 @@ function watson (ticketnumber) {
 }
 
 function ticketmenu () {
-    var width = $('#ticketpage').width();
+    var width = $('#menu-container').width();
     // $('#ticketmenu-container').css('width',width);
     if (width > 900) {
         $('#ticketmenu-actions-lg').show();
