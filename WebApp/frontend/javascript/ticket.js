@@ -324,8 +324,9 @@ var loadTicket = function (ticketNumber, refresh) {
         $('#ticket-visible').prop("checked", _ticketInfo.Ticket.IsVisibleOnPortal);
         $('#ticket-isKB').prop("checked", _ticketInfo.Ticket.IsKnowledgeBase);
         $('#ticket-KB-Category-RO').text(_ticketInfo.Ticket.KnowledgeBaseCategoryName);
-        if (_ticketInfo.Ticket.KnowledgeBaseCategoryID != null)
+        if (_ticketInfo.Ticket.KnowledgeBaseCategoryID != null) {
             SetKBCategory(_ticketInfo.Ticket.KnowledgeBaseCategoryID);
+        }
         SetCommunityCategory(_ticketInfo.Ticket.ForumCategory);
         SetDueDate(_ticketInfo.Ticket.DueDate);
 
@@ -4563,7 +4564,7 @@ function CreateTimeLineDelegates() {
 
     });
 
-    $('.frame-container').bind('scroll', function () {
+    $('#frame-container').on('scroll', function () {
         if ($(this).scrollTop() > 100) {
             $('.scrollup').fadeIn();
         } else {
