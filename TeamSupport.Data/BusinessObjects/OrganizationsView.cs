@@ -68,7 +68,7 @@ namespace TeamSupport.Data
 
 					if (includeCustomFields)
 					{
-						sql = InjectCustomFields(sql, "OrganizationID", ReferenceType.Organizations);
+						sql = InjectCustomFields(sql, "OrganizationsView.OrganizationID", ReferenceType.Organizations);
 					}
 
 					command.CommandText = sql;

@@ -147,10 +147,20 @@ $(document).ready(function () {
                 AcceptRequest(chat.ChatRequestID, innerString, parentEl);
             });
 
+			var displayMessage = $("<div>").text(chat.Description).html();
+
+			if (chat.Description.trim().indexOf("<img ") == 0 && chat.Description.trim().indexOf("<script ") < 0 && chat.Description.trim().indexOf(" onload=") < 0) {
+				displayMessage = chat.Description;
+			}
+
+			if ((chat.Description.trim().indexOf("/chatattachments/") > 0 && chat.Description.trim().indexOf("<script ") < 0 && chat.Description.trim().indexOf(" onload=") < 0)) {
+				displayMessage = chat.Description;
+			}
+
             $(this).html('<p class="userName">' + innerString + '</p>' +
                              '<p>Email:  ' + chat.InitiatorEmail + '</p>' +
                              '<p>Time:  ' + moment(chat.DateCreated).format(dateFormat + ' hh:mm A') + '</p>' +
-                             '<p>Message:  ' + chat.Description + '</p>')
+				'<p>Message:  ' + displayMessage + '</p>')
                              .append(acceptBtn)
                              .addClass('open-request');
         });
