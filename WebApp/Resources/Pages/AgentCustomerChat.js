@@ -147,10 +147,20 @@ $(document).ready(function () {
                 AcceptRequest(chat.ChatRequestID, innerString, parentEl);
             });
 
+			var displayMessage = $("<div>").text(chat.Description).html();
+
+			if (chat.Description.trim().indexOf("<img ") == 0 && chat.Description.trim().indexOf("<script ") < 0 && chat.Description.trim().indexOf(" onload=") < 0) {
+				displayMessage = chat.Description;
+			}
+
+			if ((chat.Description.trim().indexOf("/chatattachments/") > 0 && chat.Description.trim().indexOf("<script ") < 0 && chat.Description.trim().indexOf(" onload=") < 0)) {
+				displayMessage = chat.Description;
+			}
+
             $(this).html('<p class="userName">' + innerString + '</p>' +
                              '<p>Email:  ' + chat.InitiatorEmail + '</p>' +
                              '<p>Time:  ' + moment(chat.DateCreated).format(dateFormat + ' hh:mm A') + '</p>' +
-                             '<p>Message:  ' + chat.Description + '</p>')
+				'<p>Message:  ' + displayMessage + '</p>')
                              .append(acceptBtn)
                              .addClass('open-request');
         });
@@ -252,7 +262,17 @@ $(document).ready(function () {
             var chatUserLeft = ((messageData.CreatorID !== null) ? messageData.CreatorID.toString() : 'customer');
 
             if ((messageData.HasLeft && !$("#" + chatUserLeft + 'HasLeft').length > 0)
-                || (!messageData.HasLeft)) {
+				|| (!messageData.HasLeft)) {
+				var displayMessage = $("<div>").text(messageData.Message).html();
+
+				if (messageData.Message.trim().indexOf("<img ") == 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0) {
+					displayMessage = messageData.Message;
+				}
+
+				if ((messageData.Message.trim().indexOf("/chatattachments/") > 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0)) {
+					displayMessage = messageData.Message;
+				}
+
                 var messageTemplate = $("#message-template").html();
                 var compiledTemplate = messageTemplate
                                         .replace('{{MessageDirection}}', 'left')
@@ -260,7 +280,7 @@ $(document).ready(function () {
                                         .replace('{{Avatar}}', (messageData.CreatorID !== null)
                                                                         ? '../../../dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.CreatorID + '/48/1470773158079'
                                                                         : '../images/blank_avatar.png')
-                                        .replace('{{Message}}', messageData.Message)
+                                        .replace('{{Message}}', displayMessage)
                                         .replace('{{Date}}', moment(messageData.DateCreated).format(dateFormat + ' hh:mm A'));
 
                 if (messageData.HasLeft) {
@@ -279,7 +299,13 @@ $(document).ready(function () {
                 }
             }
         }
-        else if (isAgentAcceptedInvitation && messageData != null && messageData.info != null && messageData.info.chatId != null && messageData.info.chatId == _activeChatID) {
+		else if (isAgentAcceptedInvitation && messageData != null && messageData.info != null && messageData.info.chatId != null && messageData.info.chatId == _activeChatID) {
+			var displayMessage = messageData.info.name;
+
+			if (messageData.Message.trim().indexOf("<img ") != 0) {
+				displayMessage = $("<div>").text(messageData.info.name).html();
+			}
+
             var messageTemplate = $("#message-template").html();
             var dateTimeString = new Date().toLocaleString();
             dateTimeString = dateTimeString.replace(",", "");
@@ -289,7 +315,7 @@ $(document).ready(function () {
                                     .replace('{{Avatar}}', (messageData.id !== null)
                                                                     ? '../../../dc/' + chatInfoObject.OrganizationID + '/UserAvatar/' + messageData.id + '/48/1470773158079'
                                                                     : '../images/blank_avatar.png')
-                                    .replace('{{Message}}', messageData.info.name + " has joined the chat.")
+                                    .replace('{{Message}}', displayMessage + " has joined the chat.")
                                     .replace('{{Date}}', dateTimeString);
 
             $('.media-list').append(compiledTemplate);

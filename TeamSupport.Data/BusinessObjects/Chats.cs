@@ -27,18 +27,24 @@ namespace TeamSupport.Data
             {
                 string time = message.DateCreated.ToString("h:mm");
                 string timeFormat = includeTimeStamps ? time + ": " : "";
+					string messageText = message.Message;
+
+					if (message.Message.Trim().IndexOf("<img ") != 0)
+					{
+						messageText = message.Message.Replace("<", "&lt;").Replace(">", "&gt;");
+					}
 
                 if (message.IsNotification)
-                    builder.Append(string.Format("<p class=\"chat-notification\">{0}{1}<p>", includeTimeStamps ? time + ": " : "", message.Message));
+                    builder.Append(string.Format("<p class=\"chat-notification\">{0}{1}<p>", includeTimeStamps ? time + ": " : "", messageText));
                 else if (message.PosterType == ChatParticipantType.User)
                 {
                     if (message.PosterID == Collection.LoginUser.UserID)
-                        builder.Append(string.Format("<p class=\"chat-message-self\"><span class=\"chat-name\">{1}{0}: </span>{2}</p>", message.Row["PosterName"].ToString(), timeFormat, message.Message));
+                        builder.Append(string.Format("<p class=\"chat-message-self\"><span class=\"chat-name\">{1}{0}: </span>{2}</p>", message.Row["PosterName"].ToString(), timeFormat, messageText));
                     else
-                        builder.Append(string.Format("<p class=\"chat-message-user\"><span class=\"chat-name\">{1}{0}: </span>{2}</p>", message.Row["PosterName"].ToString(), timeFormat, message.Message));
+                        builder.Append(string.Format("<p class=\"chat-message-user\"><span class=\"chat-name\">{1}{0}: </span>{2}</p>", message.Row["PosterName"].ToString(), timeFormat, messageText));
                 }
                 else
-                    builder.Append(string.Format("<p class=\"chat-message-client\"><span class=\"chat-name\">{1}{0}: </span>{2}</p>", message.Row["PosterName"].ToString(), timeFormat, message.Message));
+                    builder.Append(string.Format("<p class=\"chat-message-client\"><span class=\"chat-name\">{1}{0}: </span>{2}</p>", message.Row["PosterName"].ToString(), timeFormat, messageText));
             }
             builder.Append("</div>");
             return builder.ToString();
