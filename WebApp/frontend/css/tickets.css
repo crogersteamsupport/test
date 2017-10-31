@@ -270,8 +270,8 @@ div.popover {
 
 
 
-#page-primary .spinner {
-    width:75px;
+#page-primary .results-loading {
+    text-align:center;
 }
 #page-primary .input-group-btn-vertical {
     position: relative;

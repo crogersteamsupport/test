@@ -220,6 +220,7 @@ $(window).resize(function(e) {
 
 $(document).ready(function () {
     pagewidth();
+    ticketmenu();
 
     _ticketNumber = window.parent.Ts.Utils.getQueryValue("TicketNumber", window);
 
@@ -449,6 +450,7 @@ function SetupTicketPage() {
 }
 
 function AddTicketProperty(item) {
+    teamsupport.journal(item);
     if (item.ItemID) {
         var html = '<div class="ticket-plugin" id="ticket-group-plugin-' + item.ItemID + '"></div>';
         $('#ticket-properties-area').append(html);
@@ -496,7 +498,11 @@ function SetupTicketProperties(order) {
 
         if (info == null) alert('no ticket');
 
-        jQuery.each(order, function (i, val) { if (val.Disabled == "false") AddTicketProperty(val); });
+        jQuery.each(order, function (i, val) {
+            if (val.Disabled == "false") {
+                AddTicketProperty(val);
+            }
+        });
 
         if (!window.parent.Ts.System.User.ChangeKbVisibility && !window.parent.Ts.System.User.IsSystemAdmin) {
             $('#action-new-KB').prop('disabled', true);
@@ -2318,9 +2324,9 @@ function SetupProductSection() {
 
         window.parent.Ts.Services.Organizations.IsProductRequired(function (result) {
             if (result && _ticketInfo.Ticket.ProductID == null) {
-                $('#ticket-Product').closest('.form-group').addClass('hasError');
+                $('#ticket-Product').closest('.form-horizontal').addClass('hasError');
             } else {
-                $('#ticket-Product').closest('.form-group').removeClass('hasError');
+                $('#ticket-Product').closest('.form-horizontal').removeClass('hasError');
             }
         });
 
@@ -2333,9 +2339,9 @@ function SetupProductSection() {
 
                     window.parent.Ts.Services.Organizations.IsProductRequired(function (IsRequired) {
                         if (IsRequired && (name == null || name == '')) {
-                            $('#ticket-Product').closest('.form-group').addClass('hasError');
+                            $('#ticket-Product').closest('.form-horizontal').addClass('hasError');
                         } else {
-                            $('#ticket-Product').closest('.form-group').removeClass('hasError');
+                            $('#ticket-Product').closest('.form-horizontal').removeClass('hasError');
                         }
                     });
 
