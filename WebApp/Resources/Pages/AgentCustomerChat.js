@@ -267,7 +267,7 @@ $(document).ready(function () {
 
 				if ((messageData.Message.trim().indexOf("<img ") == 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0)
 					|| (messageData.Message.trim().indexOf("/chatattachments/") > 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0)
-					|| (messageData.Message.trim().indexOf("<a target='_blank' href=") == 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0)) {
+					|| (messageData.Message.trim().indexOf('<a target="_blank" href=') == 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0)) {
 					displayMessage = messageData.Message;
 				}
 
