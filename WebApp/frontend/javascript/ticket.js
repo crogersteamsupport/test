@@ -298,8 +298,11 @@ var loadTicket = function (ticketNumber, refresh) {
         $('#ticket-number').text('Ticket #' + _ticketInfo.Ticket.TicketNumber);
         $('#ticket-number-strip').text('#' + _ticketInfo.Ticket.TicketNumber);
         if (refresh != 0) {
-            window.parent.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
-                LoadTicketNotes(note);
+            window.parent.Ts.Services.Customers.LoadAllTicketAlerts(_ticketID, function (notes) {
+                for (var i = 0; i < notes.length; i++) {
+                    var note = notes[i];
+                    LoadTicketNotes(note);
+                }
             });
         }
 
@@ -361,7 +364,8 @@ var loadTicket = function (ticketNumber, refresh) {
         AddInventory(_ticketInfo.Assets);
         LoadTicketHistory();
         SetupJiraFieldValues();
-        SetupTFSFieldValues();
+		SetupTFSFieldValues();
+		SetupSnowFieldValues();
         LoadGroups();
         LoadPlugins(info);
 
@@ -477,7 +481,6 @@ function SetupTicketProperties(order) {
         _ticketGroupID = info.Ticket.GroupID;
 
         window.parent.Ts.System.logAction('View Ticket');
-        window.parent.Ts.Services.Settings.SetMoxieManagerSessionVariables();
 
         if (info == null) alert('no ticket');
 
@@ -537,8 +540,11 @@ function SetupTicketProperties(order) {
         //update ticket property controls with the values needed
         LoadTicketControls();
         //Get Ticket Notes for Customers associated with ticket
-        window.parent.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
-            LoadTicketNotes(note);
+        window.parent.Ts.Services.Customers.LoadAllTicketAlerts(_ticketID, function (notes) {
+            for (var i = 0; i < notes.length; i++) {
+                var note = notes[i];
+                LoadTicketNotes(note);
+            }
         });
 
         $('#frame-container').show();
@@ -1406,28 +1412,36 @@ function tickettimer() {
 
 function LoadTicketNotes(note) {
     if (note) {
-        $('#modalAlertMessage').html(note.Description);
-        $('#alertID').val(note.RefID);
-        $('#alertType').val(note.RefType);
+        var description = $('<div>').html(note.Description);
 
-        var buttons = {
-            "Close": function () {
-                $(this).dialog("close");
+        var buttons = [
+            {
+                text: "Close",
+                click: function () {
+                    $(this).dialog("close");
+                }
             },
-            "Snooze": function () {
-                window.parent.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
-                $(this).dialog("close");
+            {
+                text: "Snooze",
+                click: function () {
+                    _mainFrame.Ts.Services.Customers.SnoozeAlertByID($(this).data('noteId'), $(this).data('refType'));
+                    $(this).dialog("close");
+                }
             }
-        }
+        ]
 
         if (!window.parent.Ts.System.Organization.HideDismissNonAdmins || window.parent.Ts.System.User.IsSystemAdmin) {
-            buttons["Dismiss"] = function () {
-                window.parent.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
-                $(this).dialog("close");
-            }
+            buttons.push({
+                text: "Dismiss",
+                click: function () {
+                    _mainFrame.Ts.Services.Customers.DismissAlertByID($(this).data('noteId'), $(this).data('refType'));
+                    $(this).dialog("close");
+                }
+            });
         }
 
-        $("#dialog").dialog({
+        var alert = $('<div>').prop('title', 'Alert message').data('noteId', note.NoteID).data('refType', note.RefType).append(description).appendTo(document.body);
+        alert.dialog({
             resizable: false,
             width: 'auto',
             height: 'auto',
@@ -1726,7 +1740,9 @@ function LoadTicketControls() {
     SetupJiraFields();
     SetupJiraFieldValues();
     SetupTFSFields();
-    SetupTFSFieldValues();
+	SetupTFSFieldValues();
+	SetupSnowFields();
+	SetupSnowFieldValues();
 }
 
 function AppendSelect(parent, data, type, id, name, isSelected) {
@@ -1811,7 +1827,8 @@ function SetupTicketPropertyEvents() {
 
                 AppenCustomValues(result[1]);
                 SetupJiraFieldValues();
-                SetupTFSFieldValues();
+				SetupTFSFieldValues();
+				SetupSnowFieldValues();
 
                 _ticketInfo.Ticket = result[2];
                 setSLAInfo();
@@ -1940,12 +1957,18 @@ function SetupCustomerSection() {
                         AddCustomers(customers);
 
                         if (customerData.type == "u") {
-                            window.parent.Ts.Services.Customers.LoadAlert(value, window.parent.Ts.ReferenceTypes.Users, function (note) {
-                                LoadTicketNotes(note);
+                            window.parent.Ts.Services.Customers.LoadAlerts(value, window.parent.Ts.ReferenceTypes.Users, function (notes) {
+                                for (var i = 0; i < notes.length; i++) {
+                                    var note = notes[i];
+                                    LoadTicketNotes(note);
+                                }
                             });
                         } else {
-                            window.parent.Ts.Services.Customers.LoadAlert(value, window.parent.Ts.ReferenceTypes.Organizations, function (note) {
-                                LoadTicketNotes(note);
+                            window.parent.Ts.Services.Customers.LoadAlerts(value, window.parent.Ts.ReferenceTypes.Organizations, function (notes) {
+                                for (var i = 0; i < notes.length; i++) {
+                                    var note = notes[i];
+                                    LoadTicketNotes(note);
+                                }
                             });
                         }
 
@@ -3952,6 +3975,148 @@ function validateEmail(email) {
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
 }
+
+//click events and logic
+var SetupSnowFields = function () {
+	$('#newSnowIncident').click(function (e) {
+		e.preventDefault();
+		$('.ts-tfs-buttons-container').hide();
+		var errorMessage = "There was an error setting your ServiceNow Incident Number. Please contact TeamSupport.com";
+		window.parent.Ts.Services.Tickets.SetSyncWithSnow(_ticketID, function (result) {
+			if (result != null) {
+				var syncResult = JSON.parse(result);
+				if (syncResult.IsSuccessful === true) {
+					$('#incidentNumberValue').text('Pending...');
+					$('#incidentNumber').show();
+				}
+				else {
+					$('.ts-snow-buttons-container').show();
+					$('#incidentNumber').hide();
+					alert(syncResult.Error);
+				}
+			} else {
+				alert(errorMessage);
+			}
+		},
+			function (error) {
+				$('.ts-snow-buttons-container').show();
+				$('#incidentNumber').hide();
+				alert(errorMessage);
+			});
+	});
+
+	$('#existingSnowIncident').click(function (e) {
+		e.preventDefault();
+		$('.ts-snow-buttons-container').hide();
+		$('#enterIncident').show();
+		$('#incidentNumberInput').focus();
+	});
+
+	$('#cancelIncidentNumberButton').click(function (e) {
+		$('.ts-snow-buttons-container').show();
+		$('#enterIncident').hide();
+	});
+
+	$('#saveIncidentNumberButton').click(function (e) {
+		if ($.trim($('#incidentNumberInput').val()) === '') {
+			$('.ts-snow-buttons-container').show();
+			$('#enterIncident').hide();
+		}
+		else {
+			$('#incidentNumberValue').text($.trim($('#incidentNumberInput').val()));
+			$('#enterIncident').hide();
+			$('#incidentNumber').show();
+			var errorMessage = "There was an error setting your Incident Number. Please contact TeamSupport.com";
+
+			window.parent.Ts.Services.Tickets.SetSnowWorkItemID(_ticketID, $.trim($('#incidentNumberInput').val()), function (result) {
+				if (result != null) {
+					var syncResult = JSON.parse(result);
+					if (syncResult.IsSuccessful === false) {
+						$('.ts-snow-buttons-container').show();
+						$('#incidentNumber').hide();
+						alert(syncResult.Error);
+					}
+				} else {
+					alert(errorMessage);
+				}
+			},
+				function (error) {
+					$('.ts-snow-buttons-container').show();
+					$('#incidentNumber').hide();
+					alert(errorMessage);
+				});
+		}
+	});
+
+	$('#snowUnlink').click(function (e) {
+		var currentStatus = $("#incidentNumberValue").text().toLowerCase();
+		var confirmMessage = "Are you sure you want to " + ((currentStatus.indexOf("pending") > -1) ? "cancel" : "remove") + " link to ServiceNow?";
+
+		if (confirm(confirmMessage)) {
+			e.preventDefault();
+			window.parent.Ts.Services.Tickets.UnSetSyncWithSnow(_ticketID, function (result) {
+				if (result === true) {
+					$('.ts-snow-buttons-container').show();
+					$('#incidentNumber').hide();
+				}
+				else {
+					alert('There was an error setting your Incident Number. Please try again later');
+					$('.ts-snow-buttons-container').hide();
+					$('#incidentNumber').show();
+				}
+			},
+				function (error) {
+					alert('There was an error setting your Incident Number.');
+					$('.ts-snow-buttons-container').hide();
+					$('#incidentNumber').show();
+				});
+		}
+	});
+};
+
+//Load and display the proper ServiceNow fields/values
+var SetupSnowFieldValues = function () {
+	window.parent.Ts.Services.Admin.GetSnowCRMLinkTableRecordForTicket(_ticketID, function (result) {
+		if (result.length > 0) {
+			$('#ticket-snowfields').show();
+
+			if (_ticketInfo.LinkToSnow != null) {
+				if (!_ticketInfo.LinkToSnow.Number) {
+					$('#incidentNumberValue').text('Pending...');
+				}
+				else if (!_ticketInfo.LinkToSnow.URL) {
+					$('#incidentNumberValue').text(_ticketInfo.LinkToSnow.Number);
+					if (_ticketInfo.LinkToSnow.Number.indexOf('Error') > -1) {
+						$('#incidentNumberValue').closest('.form-group').addClass('fieldError');
+					}
+				}
+				else {
+					if ($(".snowLink").length) {
+						$(".snowLink").remove();
+					}
+
+					var snowLink = $('<a>')
+						.attr('href', _ticketInfo.LinkToSnow.URL)
+						.attr('target', '_blank')
+						.text(_ticketInfo.LinkToSnow.Number)
+						.addClass('snowLink control-label ticket-anchor ')
+						.prependTo($('#ticket-incident-container'));
+				}
+
+				$('#incidentNumberValue').show();
+				$('.ts-snow-buttons-container').hide();
+			}
+			else {
+				$('#ticket-snowfields').show();
+				$('#incidentNumber').hide();
+				$('.ts-snow-buttons-container').show();
+			}
+		}
+		else {
+			$('#ticket-snowfields').hide();
+		}
+	});
+};
 
 var getUrls = function (input) {
     var source = (input || '').toString();

@@ -75,6 +75,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("AutoAssignCustomerWithAssetOnTickets", "AutoAssignCustomerWithAssetOnTickets", false, false, false);
       _fieldMap.AddMap("AutoAssociateCustomerToTicketBasedOnAssetAssignment", "AutoAssociateCustomerToTicketBasedOnAssetAssignment", false, false, false);
       _fieldMap.AddMap("NoAttachmentsInOutboundExcludeProductLine", "NoAttachmentsInOutboundExcludeProductLine", false, false, false);
+      _fieldMap.AddMap("UseWatson", "UseWatson", false, false, false);
             
     }
   }

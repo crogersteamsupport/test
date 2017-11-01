@@ -587,6 +587,7 @@ AND ot.TicketID = @TicketID
                     clonedTicketCustomValue.ModifierID = customValue.ModifierID;
                     clonedTicketCustomValue.DateCreated = customValue.DateCreatedUtc;
                     clonedTicketCustomValue.DateModified = customValue.DateModifiedUtc;
+					clonedTicketCustomValue.OrganizationID = loginUser.OrganizationID;
                 }
 
                 clonedCustomValues.BulkSave();
@@ -3346,11 +3347,12 @@ AND
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "UPDATE CustomValues SET RefID=@newticketID WHERE (RefID = @oldticketID)";
+                command.CommandText = "UPDATE CustomValues SET RefID=@newticketID, OrganizationID=@organizationID WHERE (RefID = @oldticketID)";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@newticketID", newticketID);
                 command.Parameters.AddWithValue("@oldticketID", oldticketID);
-                ExecuteNonQuery(command, "CustomValues");
+				command.Parameters.AddWithValue("@organizationID", LoginUser.OrganizationID);
+				ExecuteNonQuery(command, "CustomValues");
             }
 
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);

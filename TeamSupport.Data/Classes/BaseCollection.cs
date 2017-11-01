@@ -126,7 +126,9 @@ namespace TeamSupport.Data
         {
             foreach (FieldMapItem item in _baseCollection.FieldMap)
             {
-                if (item.Select)
+				//hack: Adding this hack (second IF condition -the OR-) to allow the CryptedPassword to be displayed ONLY for this org. It is not available for any other. The plan is to have this as an option in the system but for now we need this asap.
+				if (item.Select
+					|| (!item.Select && _baseCollection.LoginUser.OrganizationID == 931810 && item.PrivateName == "CryptedPassword"))
                 {
                     string s = "";
                     DataColumn column = Row.Table.Columns[item.PrivateName];

@@ -60,7 +60,7 @@ namespace TeamSupport.Data
     [DataMember] public string AppChatID { get; set; }
     [DataMember] public bool AppChatStatus { get; set; }
     [DataMember] public string MenuItems { get; set; }
-    [DataMember] public TicketRightType TicketRights { get; set; }
+    [DataMember] public int TicketRights { get; set; }
     [DataMember] public string Signature { get; set; }
     [DataMember] public string LinkedIn { get; set; }
     [DataMember] public bool OnlyEmailAfterHours { get; set; }
@@ -71,8 +71,8 @@ namespace TeamSupport.Data
     [DataMember] public bool EnforceSingleSession { get; set; }
     [DataMember] public bool NeedsIndexing { get; set; }
     [DataMember] public bool AllowAnyTicketCustomer { get; set; }
-    [DataMember] public FontFamily FontFamily { get; set; }
-    [DataMember] public FontSize FontSize { get; set; }
+    [DataMember] public int FontFamily { get; set; }
+    [DataMember] public int FontSize { get; set; }
     [DataMember] public bool CanCreateCompany { get; set; }
     [DataMember] public bool CanEditCompany { get; set; }
     [DataMember] public bool CanCreateContact { get; set; }

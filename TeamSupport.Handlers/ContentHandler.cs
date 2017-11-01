@@ -292,13 +292,11 @@ namespace TeamSupport.Handlers
 
             if (u.Count > 0)
             {
-                    System.TimeZoneInfo timezoneinfo = System.TimeZoneInfo.FindSystemTimeZoneById("UTC");
-                    iCalTimeZone timezone = iCalTimeZone.FromSystemTimeZone(timezoneinfo);
-                    iCal.AddTimeZone(timezone);
-                    iCal.AddChild(timezone);
-
-
-
+                System.TimeZoneInfo timezoneinfo = System.TimeZoneInfo.FindSystemTimeZoneById("UTC");
+                string tzid = u[0].TimeZoneID;
+                iCalTimeZone timezone = iCalTimeZone.FromSystemTimeZone(timezoneinfo);
+                iCal.AddTimeZone(timezone);
+                iCal.AddChild(timezone);
 
                 TeamSupport.Data.CalendarEvents events = new CalendarEvents(LoginUser.Anonymous);
                 events.LoadAll(organizationID, u[0].UserID);
@@ -309,20 +307,24 @@ namespace TeamSupport.Handlers
                     evt.Summary = calevent.Title;
                     evt.Description = calevent.Description;
                     evt.IsAllDay = calevent.AllDay;
-
+                    
                     if (calevent.AllDay)
                     {
-                        evt.Start = (iCalDateTime)calevent.StartDateUtc.Date;
+                        //evt.Start = (iCalDateTime)calevent.StartDateUtc.Date;
+                        evt.Start = new iCalDateTime(calevent.StartDateUtc.Date, tzid);
                         if (calevent.EndDateUtc != null)
                         {
                             DateTime dt = (DateTime)calevent.EndDateUtc;
-                            evt.End = (iCalDateTime)dt.Date;
+                            //evt.End = (iCalDateTime)dt.Date;
+                            evt.End = new iCalDateTime(dt.Date, tzid);
                         }
                     }
                     else
                     {
-                        evt.Start = (iCalDateTime)calevent.StartDateUtc;
-                        evt.End = (iCalDateTime)calevent.EndDateUtc;
+                        //evt.Start = (iCalDateTime)calevent.StartDateUtc;
+                        //evt.End = (iCalDateTime)calevent.EndDateUtc;
+                        evt.Start = new iCalDateTime(calevent.StartDateUtc, tzid);
+                        evt.End = new iCalDateTime((DateTime)calevent.EndDateUtc, tzid);
                     }
 
                 }
@@ -333,7 +335,9 @@ namespace TeamSupport.Handlers
                 {
                     DDay.iCal.Event evt = iCal.Create<DDay.iCal.Event>();
                     evt.Summary = ticket.Name;
-                    evt.Start = (iCalDateTime)ticket.DueDate;
+                    //evt.Start = (iCalDateTime)ticket.DueDate;
+                    evt.Start = new iCalDateTime((DateTime)ticket.DueDate, tzid);
+
                 }
 
                 Reminders reminders = new Reminders(LoginUser.Anonymous);
@@ -359,7 +363,8 @@ namespace TeamSupport.Handlers
                                 evt.Summary = "Contact Reminder: " + usr.FirstLastName;
                             break;
                     }
-                    evt.Start = (iCalDateTime)reminder.DueDate;
+                    //evt.Start = (iCalDateTime)reminder.DueDate;
+                    evt.Start = new iCalDateTime((DateTime)reminder.DueDate, tzid);
                 }
 
 

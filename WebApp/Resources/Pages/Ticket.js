@@ -2265,8 +2265,6 @@ function (error) {
     return false;
   });
 
-  top.Ts.Services.Settings.SetMoxieManagerSessionVariables();
-
   $('#alertSnooze').click(function (e) {
     top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
     $('#modalAlert').modal('hide');

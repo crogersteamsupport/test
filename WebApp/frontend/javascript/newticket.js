@@ -517,7 +517,6 @@ function SetupTicketProperties() {
 
     setInitialValue();
 
-    parent.Ts.Services.Settings.SetMoxieManagerSessionVariables();
 };
 
 function SaveTicket() {
@@ -1494,22 +1493,79 @@ function AddCustomers(customer) {
         if (customerdata.Contact !== null && customerdata.Company !== null) {
             label = '<span class="UserAnchor" data-userid="' + customerdata.UserID + '" data-placement="left">' + customerdata.Contact + '</span><br/><span class="OrgAnchor" data-orgid="' + customerdata.OrganizationID + '" data-placement="left">' + customerdata.Company + '</span>';
             var newelement = PrependTag(customerDiv, customerdata.UserID, label, customerdata, cssClasses);
+            LoadAlerts(window.parent.Ts.ReferenceTypes.Users, customerdata.UserID);
         }
         else if (customerdata.Contact !== null) {
             label = '<span class="UserAnchor" data-userid="' + customerdata.UserID + '" data-placement="left">' + customerdata.Contact + '</span>';
             var newelement = PrependTag(customerDiv, customerdata.UserID, label, customerdata, cssClasses);
             newelement.data('userid', customerdata.UserID).data('placement', 'left').data('ticketid', _ticketID);
+            LoadAlerts(window.parent.Ts.ReferenceTypes.Users, customerdata.UserID);
         }
         else if (customerdata.Company !== null) {
             label = '<span class="OrgAnchor" data-orgid="' + customerdata.OrganizationID + '" data-placement="left">' + customerdata.Company + '</span>';
             var newelement = PrependTag(customerDiv, customerdata.OrganizationID, label, customerdata, cssClasses);
             newelement.data('orgid', customerdata.OrganizationID).data('placement', 'left').data('ticketid', _ticketID);
+            LoadAlerts(window.parent.Ts.ReferenceTypes.Organizations, customerdata.OrganizationID);
         }
 
         ReloadProductList();
         SetDefaultSupportGroup(customerdata.OrganizationID);
     });
 };
+
+function LoadAlerts(refType, refID) {
+    window.parent.Ts.Services.Customers.LoadAlerts(refID, refType, function (notes) {
+        for (var i = 0; i < notes.length; i++) {
+            var note = notes[i];
+            LoadTicketNotes(note);
+        }
+    });
+}
+
+function LoadTicketNotes(note) {
+    if (note) {
+        var description = $('<div>').html(note.Description);
+
+        var buttons = [
+            {
+                text: "Close",
+                click: function () {
+                    $(this).dialog("close");
+                }
+            },
+            {
+                text: "Snooze",
+                click: function () {
+                    _mainFrame.Ts.Services.Customers.SnoozeAlertByID($(this).data('noteId'), $(this).data('refType'));
+                    $(this).dialog("close");
+                }
+            }
+        ]
+
+        if (!window.parent.Ts.System.Organization.HideDismissNonAdmins || window.parent.Ts.System.User.IsSystemAdmin) {
+            buttons.push({
+                text: "Dismiss",
+                click: function () {
+                    _mainFrame.Ts.Services.Customers.DismissAlertByID($(this).data('noteId'), $(this).data('refType'));
+                    $(this).dialog("close");
+                }
+            });
+        }
+
+        var alert = $('<div>').prop('title', 'Alert message').data('noteId', note.NoteID).data('refType', note.RefType).append(description).appendTo(document.body);
+        alert.dialog({
+            resizable: false,
+            width: 'auto',
+            height: 'auto',
+            modal: true,
+            create: function () {
+                $(this).css('max-width', '800px');
+            },
+            buttons: buttons
+        });
+
+    }
+}
 
 function SetDefaultSupportGroup(customerID) {
     parent.Ts.Services.Organizations.GetOrganization(customerID, function (customer) {

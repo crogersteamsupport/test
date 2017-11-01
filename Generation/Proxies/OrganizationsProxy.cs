@@ -114,6 +114,13 @@ namespace TeamSupport.Data
     [DataMember] public int DaysBeforePasswordExpire { get; set; }
     [DataMember] public int? ImportFileID { get; set; }
     [DataMember] public bool NoAttachmentsInOutboundEmail { get; set; }
+    [DataMember] public bool AutoAssignCustomerWithAssetOnTickets { get; set; }
+    [DataMember] public bool AutoAssociateCustomerToTicketBasedOnAssetAssignment { get; set; }
+    [DataMember] public bool RequireGroupAssignmentOnTickets { get; set; }
+    [DataMember] public bool AlertContactNoEmail { get; set; }
+    [DataMember] public bool DisableSupportLogin { get; set; }
+    [DataMember] public string NoAttachmentsInOutboundExcludeProductLine { get; set; }
+    [DataMember] public bool UseWatson { get; set; }
           
   }
   
@@ -122,6 +129,13 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.UseWatson = this.UseWatson;
+      result.NoAttachmentsInOutboundExcludeProductLine = this.NoAttachmentsInOutboundExcludeProductLine;
+      result.DisableSupportLogin = this.DisableSupportLogin;
+      result.AlertContactNoEmail = this.AlertContactNoEmail;
+      result.RequireGroupAssignmentOnTickets = this.RequireGroupAssignmentOnTickets;
+      result.AutoAssociateCustomerToTicketBasedOnAssetAssignment = this.AutoAssociateCustomerToTicketBasedOnAssetAssignment;
+      result.AutoAssignCustomerWithAssetOnTickets = this.AutoAssignCustomerWithAssetOnTickets;
       result.NoAttachmentsInOutboundEmail = this.NoAttachmentsInOutboundEmail;
       result.ImportFileID = this.ImportFileID;
       result.DaysBeforePasswordExpire = this.DaysBeforePasswordExpire;

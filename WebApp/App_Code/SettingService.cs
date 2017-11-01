@@ -78,26 +78,5 @@ namespace TSWebServices
       Settings.SystemDB.WriteString(key, value);
     }
 
-    [WebMethod(EnableSession = true)]
-    public void SetMoxieManagerSessionVariables()
-    {
-      if (Session["isLoggedIn"] == null)
-      {
-        Session["isLoggedIn"] = "true";
-        Session["user"] = UserSession.LoginUser.UserID.ToString();
-        string root = SystemSettings.ReadString(UserSession.LoginUser, "FilePath", "C:\\TSData");
-        root = Path.Combine(root, "WikiDocs\\" + UserSession.LoginUser.OrganizationID);
-
-
-        Directory.CreateDirectory(Path.Combine(root, "images"));
-        Directory.CreateDirectory(Path.Combine(root, "documents"));
-
-        Session["moxiemanager.filesystem.rootpath"] = root;
-        Session["moxiemanager.filesystem.local.wwwroot"] = root;
-        Session["moxiemanager.filesystem.local.urlprefix"] = "{proto}://{host}/Wiki/WikiDocs/" + UserSession.LoginUser.OrganizationID;
-      }
-    }
-
-
   }
 }

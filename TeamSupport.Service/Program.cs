@@ -43,7 +43,7 @@ namespace TeamSupport.Service
         case "TSCrmPool": result = new CrmPool(SystemUser.CRM); break;
         case "TSReminderProcessor": result = new ReminderProcessor(); break;
         case "TSImportProcessor": result = new ImportProcessor(); break;
-        case "TSWebHooks": result = new WebHooks(); break;
+        case "TSWebHooksProcessor": result = new WebHooksPool(SystemUser.CRM); break;
         case "TSCustomerInsights": result = new CustomerInsightsProcessor(); break;
         case "TSReportSender": result = new ServiceThreadPool<ReportSender>("ReportSender"); break;
         case "TokTranscoder": result = new ServiceThreadPool<TokTranscoder>("TokTranscoder"); break;

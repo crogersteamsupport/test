@@ -221,27 +221,39 @@ $(document).ready(function () {
     LoadReminderUsers();
     UpdateRecentView();
 
-    _mainFrame.Ts.Services.Customers.LoadAlert(organizationID, _mainFrame.Ts.ReferenceTypes.Organizations, function (note) {
-        if (note != null) {
-            $('#modalAlertMessage').html(note.Description);
+    _mainFrame.Ts.Services.Customers.LoadAlerts(organizationID, _mainFrame.Ts.ReferenceTypes.Organizations, function (notes) {
+        for (var i = 0; i < notes.length; i++) {
+            var note = notes[i];
+            var description = $('<div>').html(note.Description);
             //$('#modalAlert').modal('show');
-            var buttons = {
-                "Close": function () {
-                    $(this).dialog("close");
+            var buttons = [
+                {
+                    text:"Close",
+                    click:function () {
+                        $(this).dialog("close");
+                    }
                 },
-                "Snooze": function () {
-                    _mainFrame.Ts.Services.Customers.SnoozeAlert(organizationID, _mainFrame.Ts.ReferenceTypes.Organizations);
-                    $(this).dialog("close");
+                {
+                    text:"Snooze",
+                    click:function () {
+                        _mainFrame.Ts.Services.Customers.SnoozeAlertByID($(this).data('noteId'), _mainFrame.Ts.ReferenceTypes.Organizations);
+                        $(this).dialog("close");
+                    }
                 }
-            }
+            ]
 
             if (!_mainFrame.Ts.System.Organization.HideDismissNonAdmins || _mainFrame.Ts.System.User.IsSystemAdmin) {
-                buttons["Dismiss"] = function () {
-                    _mainFrame.Ts.Services.Customers.DismissAlert(organizationID, _mainFrame.Ts.ReferenceTypes.Organizations);
-                    $(this).dialog("close");
-                }
+                buttons.push({
+                    text:"Dismiss",
+                    click:function () {
+                        _mainFrame.Ts.Services.Customers.DismissAlertByID($(this).data('noteId'), _mainFrame.Ts.ReferenceTypes.Organizations);
+                        $(this).dialog("close");
+                    }
+                });
             }
-            $("#dialog").dialog({
+
+            var alert = $('<div>').prop('title', 'Alert message').data('noteId', note.NoteID).append(description).appendTo(document.body);
+            alert.dialog({
                 resizable: false,
                 width: 'auto',
                 height: 'auto',
