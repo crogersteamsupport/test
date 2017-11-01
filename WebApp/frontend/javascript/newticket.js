@@ -2033,7 +2033,6 @@ function createCustomFields() {
                         case parent.Ts.CustomFieldType.Boolean: AddCustomFieldBool(result[i], parentContainer); break;
                         case parent.Ts.CustomFieldType.Number: AddCustomFieldNumber(result[i], parentContainer); break;
                         case parent.Ts.CustomFieldType.PickList: AddCustomFieldSelect(result[i], parentContainer, true); break;
-                        default:
                     }
                 } catch (err) {
                     var errorString = '1001 NewTicket.js createCustomFields   FieldType: ' + result[i].FieldType + '  CustomFieldID: ' + result[i].CustomFieldID + ' ::  Exception Properties: ';
@@ -2507,32 +2506,25 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
         onItemAdd: function (value, $item) {
             if (field.IsRequired && field.IsFirstIndexSelect == true && (value == "" || field.ListValues.split("|")[0] == value)) {
                 groupContainer.addClass('hasError');
-}
-            else {
+            } else {
                 groupContainer.removeClass('hasError');
             }
-
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && field.IsFirstIndexSelect == true && value == "") {
                 groupContainer.addClass('hasCloseError');
                 alert("This field can not be cleared in a closed ticket");
                 return;
-            }
-            else {
+            } else {
                 groupContainer.removeClass('hasCloseError');
             }
-
             if (field.IsFirstIndexSelect == true && value == "" || (field.IsFirstIndexSelect == true && field.ListValues.split("|")[0] == value)) {
                 groupContainer.addClass('isEmpty');
-            }
-            else {
+            } else {
                 groupContainer.removeClass('isEmpty');
             }
             $('.' + field.CustomFieldID + 'children').remove();
             var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').insertAfter(formcontainer);
-
             appendMatchingParentValueFields(childrenContainer, field, value);
             appendTemplateText(value);
-
         },
         onDropdownClose: function ($dropdown) {
             $($dropdown).prev().find('input').blur();
