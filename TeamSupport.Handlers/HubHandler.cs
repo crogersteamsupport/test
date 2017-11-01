@@ -189,7 +189,9 @@ namespace TeamSupport.Handlers
 
         private List<KBSearchItem> GetKBResults(SearchResults results, LoginUser loginUser, int userID, int parentID, int hubID)
         {
-            bool enableCustomerProductAssociation = true;
+            bool enableCustomerSpecificKB = false;
+            bool enableCustomerProductAssociation = false;
+            bool enableAnonymousProductAssociation = false;
 
             List<KBSearchItem> items = new List<KBSearchItem>();
             int customerID = 0;
@@ -202,6 +204,8 @@ namespace TeamSupport.Handlers
             if (hubFeatureSettings.Any())
             {
                 enableCustomerProductAssociation = hubFeatureSettings[0].EnableCustomerProductAssociation;
+                enableAnonymousProductAssociation = hubFeatureSettings[0].EnableAnonymousProductAssociation;
+                enableCustomerSpecificKB = hubFeatureSettings[0].EnableCustomerSpecificKB;
             }
 
             for (int i = 0; i < results.Count; i++)
@@ -211,7 +215,7 @@ namespace TeamSupport.Handlers
                 if (ticketID > 0)
                 {
                     TicketsView ticketsViewHelper = new TicketsView(loginUser);
-                    ticketsViewHelper.LoadHubKBByID(ticketID, parentID, customerID, enableCustomerProductAssociation);
+                    ticketsViewHelper.LoadHubKBByID(ticketID, parentID, customerID, enableCustomerSpecificKB, enableCustomerProductAssociation, enableAnonymousProductAssociation);
 
                     if (ticketsViewHelper.Any())
                     {

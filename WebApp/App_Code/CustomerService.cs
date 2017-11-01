@@ -319,7 +319,7 @@ namespace TSWebServices
                     existingEmailPostsId.AddRange(existingEmailPosts.Select(p => p.EmailPostID).Distinct());
                     existingEmailPosts = new EmailPosts(loginUser);
                 }
-                
+
                 tix.Collection.AddContact(userID, tix.TicketID);
             }
 
@@ -1175,6 +1175,16 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public NoteProxy[] LoadAllTicketAlerts(int ticketID)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Notes notes = new Notes(loginUser);
+            notes.LoadByTicketUserAndActiveAlert(ticketID, loginUser.UserID);
+            return notes.GetNoteProxies();
+        }
+
+        [System.Obsolete("Replaced with LoadAllTicketAlerts.")]
+        [WebMethod]
         public NoteProxy LoadTicketAlerts(int ticketID)
         {
             TicketCustomer[] customers;
@@ -1233,6 +1243,7 @@ namespace TSWebServices
             return customers.ToArray();
         }
 
+        [System.Obsolete("Replaced with LoadAlerts.")]
         [WebMethod]
         public NoteProxy LoadUserAlert(int userID)
         {
@@ -1241,6 +1252,7 @@ namespace TSWebServices
         }
 
 
+        [System.Obsolete("Replaced with LoadAlerts.")]
         [WebMethod]
         public NoteProxy LoadAlert(int refID, ReferenceType refType)
         {
@@ -1291,6 +1303,68 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public NoteProxy[] LoadAlerts(int refID, ReferenceType refType)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            Notes notes = new Notes(loginUser);
+            // Because somewhere the order is being changed we order newer to older so alerts are displayed older to newer.
+            notes.LoadByUserAndActiveAlert(refType, refID, loginUser.UserID);
+            return notes.GetNoteProxies();
+        }
+
+        [WebMethod]
+        public void SnoozeAlertByID(int noteID, ReferenceType refType)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+            UserNoteSettings us = new UserNoteSettings(loginUser);
+            us.LoadByUserNoteID(loginUser.UserID, noteID, refType);
+
+            if (us.IsEmpty)
+            {
+                UserNoteSetting u = new UserNoteSettings(loginUser).AddNewUserNoteSetting();
+                u.RefID = noteID;
+                u.RefType = refType;
+                u.UserID = loginUser.UserID;
+                u.SnoozeTime = DateTime.Now;
+                u.IsSnoozed = true;
+                u.Collection.Save();
+            }
+            else
+            {
+                us[0].IsSnoozed = true;
+                us[0].SnoozeTime = DateTime.Now;
+                us[0].Collection.Save();
+            }
+        }
+
+        [WebMethod]
+        public void DismissAlertByID(int noteID, ReferenceType refType)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+            UserNoteSettings us = new UserNoteSettings(loginUser);
+            us.LoadByUserNoteID(loginUser.UserID, noteID, refType);
+
+            if (us.IsEmpty)
+            {
+                UserNoteSetting u = new UserNoteSettings(loginUser).AddNewUserNoteSetting();
+                u.RefID = noteID;
+                u.RefType = refType;
+                u.UserID = loginUser.UserID;
+                u.IsDismissed = true;
+                u.SnoozeTime = DateTime.Now;
+                u.Collection.Save();
+            }
+            else
+            {
+                us[0].IsDismissed = true;
+                us[0].Collection.Save();
+            }
+        }
+
+        [System.Obsolete("Replaced with SnoozeAlertByID.")]
+        [WebMethod]
         public void SnoozeAlert(int refID, ReferenceType refType)
         {
             Notes notes = new Notes(TSAuthentication.GetLoginUser());
@@ -1317,6 +1391,7 @@ namespace TSWebServices
             }
         }
 
+        [System.Obsolete("Replaced with DismissAlertByID.")]
         [WebMethod]
         public void DismissAlert(int refID, ReferenceType refType)
         {

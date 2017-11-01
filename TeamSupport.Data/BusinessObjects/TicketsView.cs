@@ -878,29 +878,90 @@ ORDER BY TicketNumber DESC";
             }
         }
 
-        public void LoadHubKBByID(int ticketID, int organizationID, int customerID, bool enableCustomerProductAssociation)
+        public void LoadHubKBByID(int ticketID, int organizationID, int customerID, bool enableCustomerSpecificKB, bool enableCustomerProductAssociation, bool enableAnonymousProductAssociation)
         {
             using (SqlCommand command = new SqlCommand())
             {
                 StringBuilder builder = new StringBuilder();
-                builder.Append(@"SELECT t.*
-																FROM TicketsView as T
-																WHERE 
-																	t.ticketid = @ticketID
-																	AND t.OrganizationID              = @OrganizationID 
-																	AND t.IsKnowledgeBase         = 1
-																	AND t.IsVisibleOnPortal         = 1");
 
-                if (customerID > 0 && enableCustomerProductAssociation)
+                if (enableCustomerSpecificKB && ((customerID > 0 || enableAnonymousProductAssociation) && enableCustomerProductAssociation))
                 {
-                    builder.Append(@" AND(
-																T.ProductID IS NULL
-																												OR T.ProductID IN(
-																	SELECT productid
-																													FROM organizationproducts
-																													WHERE organizationid = @CustomerID
-																	)
-																)");
+                    builder.Append(@"
+                        SELECT DISTINCT t.*
+                        FROM TicketsView AS T
+                        LEFT JOIN dbo.OrganizationTickets as OT
+	                        ON OT.TicketID = T.TicketID
+                        LEFT JOIN dbo.OrganizationProducts as OP
+	                        on OP.OrganizationID = @CustomerID
+                        WHERE 
+	                        t.TicketID = @ticketID
+	                        AND t.OrganizationID = @OrganizationID
+	                        AND t.IsKnowledgeBase = 1
+	                        AND t.IsVisibleOnPortal = 1
+	                        AND (
+		                        --Customer Match for sure includeded no matter what
+		                        OT.OrganizationID = @customerID
+		                        OR 
+                                (
+			                        --Tickets are assigned to no organization
+			                        OT.TicketID is null
+			                        AND (
+					                        --No product is associated to the ticket OR customer has the product in question
+					                        T.ProductID is null
+					                        OR OP.ProductID = T.ProductID
+				                        )
+		                        )
+	                        )
+                    ");
+                }
+                else if (enableCustomerSpecificKB)
+                {
+                    builder.Append(@"
+                        SELECT DISTINCT t.*
+                        FROM TicketsView AS T
+                        LEFT JOIN dbo.OrganizationTickets as OT
+	                        ON OT.TicketID = T.TicketID
+                        WHERE 
+	                        t.TicketID = @ticketID
+	                        AND t.OrganizationID = @OrganizationID
+	                        AND t.IsKnowledgeBase = 1
+	                        AND t.IsVisibleOnPortal = 1
+	                        AND 
+                                (
+		                            OT.OrganizationID = @customerID
+		                            OR OT.TicketID is null
+		                        )
+                   ");
+                }
+                else if ((customerID > 0 || enableAnonymousProductAssociation) && enableCustomerProductAssociation)
+                {
+                    builder.Append(@"
+                        SELECT DISTINCT t.*
+                        FROM TicketsView AS T
+                        LEFT JOIN dbo.OrganizationProducts as OP
+	                        on OP.OrganizationID = @CustomerID
+                        WHERE 
+	                        t.TicketID = @ticketID
+	                        AND t.OrganizationID = @OrganizationID
+	                        AND t.IsKnowledgeBase = 1
+	                        AND t.IsVisibleOnPortal = 1
+	                        AND 
+                                (
+					                T.ProductID is null
+					                OR OP.ProductID = T.ProductID
+	                            )
+                    ");
+                }
+                else {
+                    builder.Append(@"
+                        SELECT DISTINCT t.*
+                        FROM TicketsView AS T
+                        WHERE 
+	                        t.TicketID = @ticketID
+	                        AND t.OrganizationID = @OrganizationID
+	                        AND t.IsKnowledgeBase = 1
+	                        AND t.IsVisibleOnPortal = 1
+                    ");
                 }
                 builder.Append(@" ORDER BY t.DateModified desc");
 

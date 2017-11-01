@@ -61,41 +61,6 @@ $(document).ready(function () {
     GetUser();
     LoadHubs();
 
-    _mainFrame.Ts.Services.Customers.LoadUserAlert(userID, function (note) {
-        if (note != null) {
-            $('#modalAlertMessage').html(note.Description);
-            //$('#modalAlert').modal('show');
-            var buttons = {
-                "Close": function () {
-                    $(this).dialog("close");
-                },
-                "Snooze": function () {
-                    _mainFrame.Ts.Services.Customers.SnoozeAlert(note.RefID, _mainFrame.Ts.ReferenceTypes.Organizations);
-                    $(this).dialog("close");
-                }
-            }
-
-            if (!_mainFrame.Ts.System.Organization.HideDismissNonAdmins || _mainFrame.Ts.System.User.IsSystemAdmin) {
-                buttons["Dismiss"] = function () {
-                    _mainFrame.Ts.Services.Customers.DismissAlert(note.RefID, _mainFrame.Ts.ReferenceTypes.Organizations);
-                    $(this).dialog("close");
-                }
-            }
-            $("#dialog").dialog({
-                resizable: false,
-                width: 'auto',
-                height: 'auto',
-                create: function () {
-                    $(this).css('maxWidth', '800px');
-                },
-                modal: true,
-                buttons: buttons
-            });
-
-        }
-    });
-
-
     var isTSUser;
 
     $('body').layout({
@@ -1771,27 +1736,38 @@ $(document).ready(function () {
     }
     $('.userProperties p').toggleClass("editable");
 
-    _mainFrame.Ts.Services.Customers.LoadAlert(userID, _mainFrame.Ts.ReferenceTypes.Users, function (note) {
-        if (note != null) {
-            $('#modalAlertMessage').html(note.Description);
-            var buttons = {
-                "Close": function () {
-                    $(this).dialog("close");
+    _mainFrame.Ts.Services.Customers.LoadAlerts(userID, _mainFrame.Ts.ReferenceTypes.Users, function (notes) {
+        for (var i = 0; i < notes.length; i++) {
+            var note = notes[i];
+            var description = $('<div>').html(note.Description);
+            var buttons = [
+                {
+                    text: "Close",
+                    click: function () {
+                        $(this).dialog("close");
+                    }
                 },
-                "Snooze": function () {
-                    _mainFrame.Ts.Services.Customers.SnoozeAlert(userID, _mainFrame.Ts.ReferenceTypes.Users);
-                    $(this).dialog("close");
+                {
+                    text: "Snooze",
+                    click: function () {
+                        _mainFrame.Ts.Services.Customers.SnoozeAlertByID($(this).data('noteId'), _mainFrame.Ts.ReferenceTypes.Users);
+                        $(this).dialog("close");
+                    }
                 }
-            }
+            ]
 
             if (!_mainFrame.Ts.System.Organization.HideDismissNonAdmins || _mainFrame.Ts.System.User.IsSystemAdmin) {
-                buttons["Dismiss"] = function () {
-                    _mainFrame.Ts.Services.Customers.DismissAlert(userID, _mainFrame.Ts.ReferenceTypes.Users);
-                    $(this).dialog("close");
-                }
+                buttons.push({
+                    text: "Dismiss",
+                    click: function () {
+                        _mainFrame.Ts.Services.Customers.DismissAlertByID($(this).data('noteId'), _mainFrame.Ts.ReferenceTypes.Users);
+                        $(this).dialog("close");
+                    }
+                });
             }
 
-            $("#dialog").dialog({
+            var alert = $('<div>').prop('title', 'Alert message').data('noteId', note.NoteID).append(description).appendTo(document.body);
+            alert.dialog({
                 resizable: false,
                 width: 'auto',
                 height: 'auto',

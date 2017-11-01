@@ -587,6 +587,7 @@ AND ot.TicketID = @TicketID
                     clonedTicketCustomValue.ModifierID = customValue.ModifierID;
                     clonedTicketCustomValue.DateCreated = customValue.DateCreatedUtc;
                     clonedTicketCustomValue.DateModified = customValue.DateModifiedUtc;
+					clonedTicketCustomValue.OrganizationID = loginUser.OrganizationID;
                 }
 
                 clonedCustomValues.BulkSave();
@@ -1527,38 +1528,112 @@ AND ts.IsClosed = 0";
             }
         }
 
-        public void LoadKBByCategoryID(int categoryID, int organizationID, int customerID, int contactID, bool enforceCustomerProduct = true, int sortOrder = 0)
+        public void LoadKBByCategoryID(int? categoryID, int organizationID, int customerID, int contactID, bool enableCustomerSpecificKB, bool enableCustomerProductAssociation, bool enableAnonymousProductAssociation, int sortOrder = 0)
         {
             using (SqlCommand command = new SqlCommand())
             {
+                string isKnowledgeBaseClause = categoryID != null ? String.Format(" = {0} ", categoryID) : " IS NULL ";
+
                 StringBuilder builder = new StringBuilder();
-                builder.Append(@"SELECT t.TicketID, NAME
-																FROM Tickets as T
-																WHERE 
-																	t.OrganizationID              = @OrganizationID 
-																	AND t.IsKnowledgeBase         = 1
-																	AND t.IsVisibleOnPortal         = 1
-																	AND t.KnowledgeBaseCategoryID = @KnowledgeBaseCategoryID");
-                if (customerID > 0 && enforceCustomerProduct)
+
+                if (enableCustomerSpecificKB && ((customerID > 0 || enableAnonymousProductAssociation) && enableCustomerProductAssociation))
                 {
-                    builder.Append(@" AND(
-																						T.ProductID IS NULL
-																						OR T.ProductID IN(
-																								SELECT productid
-																								FROM organizationproducts
-																								WHERE organizationid = @CustomerID
-																							)");
-
-                    builder.Append("OR T.ProductID IN(SELECT ProductID FROM UserProducts WHERE UserID = @ContactID )");
-
-                    builder.Append(")");
+                    builder.Append(@"
+                        SELECT Distinct
+	                        t.TicketID
+                            ,t.Name
+	                        ,t.DateModified
+                        FROM Tickets AS T
+                        LEFT JOIN dbo.OrganizationTickets as OT
+	                        ON OT.TicketID = T.TicketID
+                        LEFT JOIN dbo.OrganizationProducts as OP
+	                        on OP.OrganizationID = @CustomerID
+                        WHERE 
+	                        t.OrganizationID = @OrganizationID
+                            AND t.IsKnowledgeBase = 1
+                            AND t.IsVisibleOnPortal = 1
+                            AND t.KnowledgeBaseCategoryID" + isKnowledgeBaseClause + @" 
+                            AND (
+			                        --Customer Match for sure included no matter what
+			                        OT.OrganizationID = @customerID
+			                        OR 
+                                    (
+				                        --Tickets are assigned to no organization
+				                        OT.TicketID IS NULL
+				                        AND (
+						                        --No product is associated to the ticket OR customer has the product in question
+						                        T.ProductID IS NULL
+						                        OR OP.ProductID = T.ProductID
+					                        )
+				                    )
+		                        )
+                    ");
+                }
+                else if (enableCustomerSpecificKB)
+                {
+                    builder.Append(@"
+                        SELECT Distinct
+	                        t.TicketID
+                            ,t.Name
+	                        ,t.DateModified
+                        FROM Tickets AS T
+                        LEFT JOIN dbo.OrganizationTickets as OT
+	                        ON OT.TicketID = T.TicketID
+                        WHERE 
+	                        t.OrganizationID = @OrganizationID
+                            AND t.IsKnowledgeBase = 1
+                            AND t.IsVisibleOnPortal = 1
+                            AND t.KnowledgeBaseCategoryID" + isKnowledgeBaseClause + @" 
+                            AND (
+		                        --Customer Match for sure included no matter what
+		                        OT.OrganizationID = @customerID
+		                        OR OT.TicketID IS NULL
+	                        )
+                   ");
+                }
+                else if ((customerID > 0 || enableAnonymousProductAssociation) && enableCustomerProductAssociation)
+                {
+                    builder.Append(@"
+                        SELECT Distinct
+	                        t.TicketID
+                            ,t.Name
+	                        ,t.DateModified
+                        FROM Tickets AS T
+                        LEFT JOIN dbo.OrganizationProducts as OP
+	                        on OP.OrganizationID = @CustomerID
+                        WHERE 
+	                        t.OrganizationID = @OrganizationID
+                            AND t.IsKnowledgeBase = 1
+                            AND t.IsVisibleOnPortal = 1
+                            AND t.KnowledgeBaseCategoryID" + isKnowledgeBaseClause + @"
+                            AND 
+		                        (
+			                        T.ProductID is null
+			                        OR OP.ProductID = T.ProductID
+		                        )
+                    ");
+                }
+                else {
+                    builder.Append(@"
+                        SELECT Distinct
+	                        t.TicketID
+                            ,t.Name
+	                        ,t.DateModified
+                        FROM Tickets AS T
+                        WHERE 
+	                        t.OrganizationID = @OrganizationID
+                            AND t.IsKnowledgeBase = 1
+                            AND t.IsVisibleOnPortal = 1
+                            AND t.KnowledgeBaseCategoryID" + isKnowledgeBaseClause
+                );
                 }
 
                 if (sortOrder == (int)SortType.LastModified)
                 {
                     builder.Append(@" ORDER BY t.DateModified desc");
                 }
-                else if (sortOrder == (int)SortType.Alphabetical) {
+                else if (sortOrder == (int)SortType.Alphabetical)
+                {
                     builder.Append(@" ORDER BY t.Name asc");
                 }
                 command.CommandText = builder.ToString();
@@ -1566,7 +1641,7 @@ AND ts.IsClosed = 0";
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
                 command.Parameters.AddWithValue("@CustomerID", customerID);
                 command.Parameters.AddWithValue("@ContactID", contactID);
-                command.Parameters.AddWithValue("@KnowledgeBaseCategoryID", categoryID);
+                if (categoryID != null) { command.Parameters.AddWithValue("@KnowledgeBaseCategoryID", categoryID); }
                 Fill(command, "Tickets");
             }
         }
@@ -1592,53 +1667,6 @@ AND ts.IsClosed = 0";
                 command.Parameters.AddWithValue("@CustomerID", customerID);
                 command.Parameters.AddWithValue("@ContactID", contactID);
                 command.Parameters.AddWithValue("@ForumCategoryID", forumCategoryID);
-                Fill(command, "Tickets");
-            }
-        }
-
-        public void LoadUncatogorizedKBs(int organizationID, int customerID, int contactID, bool enforceCustomerProduct = true, int sortOrder = 0)
-        {
-            using (SqlCommand command = new SqlCommand())
-            {
-                StringBuilder builder = new StringBuilder();
-                builder.Append(@"SELECT t.TicketID, NAME
-																FROM Tickets as T
-																WHERE 
-																	t.OrganizationID              = @OrganizationID 
-																	AND t.IsKnowledgeBase         = 1
-																	AND t.IsVisibleOnPortal         = 1
-																	AND t.KnowledgeBaseCategoryID IS NULL");
-                if (customerID > 0)
-                {
-                    builder.Append(@" AND(
-																						T.ProductID IS NULL
-																						OR T.ProductID IN(
-																								SELECT productid
-																								FROM organizationproducts
-																								WHERE organizationid = @CustomerID
-																							)");
-
-                    if (contactID > 0 && enforceCustomerProduct)
-                    {
-                        builder.Append("OR T.ProductID IN(SELECT ProductID FROM UserProducts WHERE UserID = @ContactID )");
-                    }
-                    builder.Append(")");
-                }
-
-                if (sortOrder == (int)SortType.LastModified)
-                {
-                    builder.Append(@" ORDER BY t.DateModified desc");
-                }
-                else if (sortOrder == (int)SortType.Alphabetical)
-                {
-                    builder.Append(@" ORDER BY t.Name asc");
-                }
-
-                command.CommandText = builder.ToString();
-                command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@OrganizationID", organizationID);
-                command.Parameters.AddWithValue("@CustomerID", customerID);
-                command.Parameters.AddWithValue("@ContactID", contactID);
                 Fill(command, "Tickets");
             }
         }
@@ -2919,25 +2947,70 @@ AND u.OrganizationID = @OrganizationID
             }
         }
 
-        public void LoadByPopularKnowledgeBase(int organizationID, int customerID, int top)
+        public void LoadByPopularKnowledgeBase(int organizationID, int customerID, bool enableCustomerSpecificKB, bool enableCustomerProductAssociation, bool enableAnonymousProductAssociation, int top)
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "SELECT TOP " + top.ToString() + @" tickets.*
-																FROM tickets as tickets
-																LEFT OUTER JOIN ticketratings ON tickets.ticketid = ticketratings.ticketid
-																WHERE tickets.organizationid = @OrganizationID
-																	AND tickets.isknowledgebase = 1
-																	AND tickets.isvisibleonportal = 1
-																	AND (
-																					tickets.ProductID IS NULL
-																					OR tickets.ProductID IN (
-																						SELECT productid
-																						FROM organizationproducts
-																						WHERE organizationid = @CustomerID
-																						)
-																				)
-																ORDER BY ticketratings.VIEWS DESC";
+                StringBuilder builder = new StringBuilder();
+                builder.Append(@"
+                        SELECT DISTINCT TOP " + top + @"
+                            t.TicketID
+                            ,t.Name
+                            ,t.DateModified
+                            ,ticketratings.VIEWS
+                        FROM TicketsView AS T
+                        LEFT JOIN dbo.OrganizationTickets as OT
+	                        ON OT.TicketID = T.TicketID
+                        LEFT JOIN dbo.OrganizationProducts as OP
+	                        on OP.OrganizationID = @CustomerID
+                        LEFT JOIN dbo.ticketratings ON T.TicketID = ticketratings.ticketid
+                        WHERE 
+	                        t.OrganizationID = @OrganizationID
+	                        AND t.IsKnowledgeBase = 1
+	                        AND t.IsVisibleOnPortal = 1 
+                ");
+
+                if (enableCustomerSpecificKB && ((customerID > 0 || enableAnonymousProductAssociation) && enableCustomerProductAssociation))
+                {
+                    builder.Append(@"
+                            AND (
+		                            --Customer Match for sure includeded no matter what
+		                            OT.OrganizationID = @customerID
+		                            OR 
+                                    (
+			                            --Tickets are assigned to no organization
+			                            OT.TicketID is null
+			                            AND (
+					                            --No product is associated to the ticket OR customer has the product in question
+					                            T.ProductID is null
+					                            OR OP.ProductID = T.ProductID
+				                            )
+		                            )
+	                            )
+                    ");
+                }
+                else if (enableCustomerSpecificKB)
+                {
+                    builder.Append(@"
+                            AND (
+		                            OT.OrganizationID = @customerID
+		                            OR OT.TicketID is null
+		                        )
+                   ");
+                }
+                else if ((customerID > 0 || enableAnonymousProductAssociation) && enableCustomerProductAssociation)
+                {
+                    builder.Append(@"
+                            AND (
+					                T.ProductID is null
+					                OR OP.ProductID = T.ProductID
+	                            )
+                    ");
+                }
+
+                builder.Append(@" ORDER BY ticketratings.VIEWS DESC");
+
+                command.CommandText = builder.ToString();
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
                 command.Parameters.AddWithValue("@CustomerID", customerID);
@@ -2945,24 +3018,68 @@ AND u.OrganizationID = @OrganizationID
             }
         }
 
-        public void LoadByRecentKnowledgeBase(int organizationID, int customerID, int top)
+        public void LoadByRecentKnowledgeBase(int organizationID, int customerID, bool enableCustomerSpecificKB, bool enableCustomerProductAssociation, bool enableAnonymousProductAssociation, int top)
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "SELECT TOP " + top.ToString() + @" tickets.*
-																FROM tickets as tickets
-																WHERE tickets.organizationid = @OrganizationID
-																	AND tickets.isknowledgebase = 1
-																	AND tickets.isvisibleonportal = 1
-																	AND (
-																					tickets.ProductID IS NULL
-																					OR tickets.ProductID IN (
-																						SELECT productid
-																						FROM organizationproducts
-																						WHERE organizationid = @CustomerID
-																						)
-																				)
-																ORDER BY tickets.DateModified DESC";
+                StringBuilder builder = new StringBuilder();
+                builder.Append(@"
+                        SELECT DISTINCT TOP " + top + @"
+                            t.TicketID
+                            ,t.Name
+                            ,t.DateModified
+                        FROM TicketsView AS T
+                        LEFT JOIN dbo.OrganizationTickets as OT
+	                        ON OT.TicketID = T.TicketID
+                        LEFT JOIN dbo.OrganizationProducts as OP
+	                        on OP.OrganizationID = @CustomerID
+                        WHERE 
+	                        t.OrganizationID = @OrganizationID
+	                        AND t.IsKnowledgeBase = 1
+	                        AND t.IsVisibleOnPortal = 1
+                ");
+
+                if (enableCustomerSpecificKB && ((customerID > 0 || enableAnonymousProductAssociation) && enableCustomerProductAssociation))
+                {
+                    builder.Append(@"
+                            AND (
+		                        --Customer Match for sure includeded no matter what
+		                        OT.OrganizationID = @customerID
+		                        OR 
+                                (
+			                        --Tickets are assigned to no organization
+			                        OT.TicketID is null
+			                        AND (
+					                        --No product is associated to the ticket OR customer has the product in question
+					                        T.ProductID is null
+					                        OR OP.ProductID = T.ProductID
+				                        )
+		                        )
+	                        )
+                    ");
+                }
+                else if (enableCustomerSpecificKB)
+                {
+                    builder.Append(@"
+                            AND (
+		                            OT.OrganizationID = @customerID
+		                            OR OT.TicketID is null
+		                        )
+                   ");
+                }
+                else if ((customerID > 0 || enableAnonymousProductAssociation) && enableCustomerProductAssociation)
+                {
+                    builder.Append(@"
+                            AND (
+					                T.ProductID is null
+					                OR OP.ProductID = T.ProductID
+	                            )
+                    ");
+                }
+
+                builder.Append(@" ORDER BY t.DateModified DESC");
+
+                command.CommandText = builder.ToString();
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
                 command.Parameters.AddWithValue("@CustomerID", customerID);
@@ -3230,11 +3347,12 @@ AND
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "UPDATE CustomValues SET RefID=@newticketID WHERE (RefID = @oldticketID)";
+                command.CommandText = "UPDATE CustomValues SET RefID=@newticketID, OrganizationID=@organizationID WHERE (RefID = @oldticketID)";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@newticketID", newticketID);
                 command.Parameters.AddWithValue("@oldticketID", oldticketID);
-                ExecuteNonQuery(command, "CustomValues");
+				command.Parameters.AddWithValue("@organizationID", LoginUser.OrganizationID);
+				ExecuteNonQuery(command, "CustomValues");
             }
 
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);

@@ -2131,6 +2131,7 @@ SET IDENTITY_INSERT Users Off
 							  newCustomValue.Value = loosingContactCustomValue.Value;
 							  newCustomValue.CreatorID = loosingContactCustomValue.CreatorID;
 							  newCustomValue.ModifierID = loosingContactCustomValue.ModifierID;
+							newCustomValue.OrganizationID = loginUser.OrganizationID;
 							  saveNewCustomValues = true;
 						  }
 					  }

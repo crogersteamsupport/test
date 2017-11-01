@@ -677,6 +677,18 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public bool SetChangeCanBulkMerge(int userID, bool value)
+        {
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+            if (!TSAuthentication.IsSystemAdmin) return !value;
+
+            user.CanBulkMerge = value;
+            user.Collection.Save();
+            return user.CanBulkMerge;
+        }
+
+        [WebMethod]
         public bool SetRestrictUserFromExportingData(int userID, bool value)
         {
           User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);

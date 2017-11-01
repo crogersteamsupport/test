@@ -153,17 +153,6 @@ namespace TeamSupport.Data
                 else return false;
             }
         }
-        public int OrganizationID
-        {
-            get
-            {
-                if (Row.Table.Columns.Contains("OrganizationID") && Row["OrganizationID"] != DBNull.Value)
-                {
-                    return (int)Row["OrganizationID"];
-                }
-                else return -1;
-            }
-        }
         public string Mask
         {
             get
@@ -775,13 +764,19 @@ ORDER BY cf.Position";
         partial void BeforeRowEdit(CustomValue newValue)
         {
             CustomValue oldValue = CustomValues.GetCustomValue(LoginUser, newValue.CustomValueID);
-            if (oldValue.Value == newValue.Value) return;
+			newValue.OrganizationID = LoginUser.OrganizationID;
+			if (oldValue.Value == newValue.Value) return;
             CustomField customField = CustomFields.GetCustomField(LoginUser, newValue.CustomFieldID);
             string format = "Changed {0} from '{1}' to '{2}'.";
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, customField.RefType, newValue.RefID, string.Format(format, customField.Name, oldValue.Value, newValue.Value));
         }
 
-        public static CustomValue GetValue(LoginUser loginUser, int customFieldID, int refID, bool createValue)
+		partial void BeforeRowInsert(CustomValue newValue)
+		{
+			newValue.OrganizationID = LoginUser.OrganizationID;
+		}
+
+		public static CustomValue GetValue(LoginUser loginUser, int customFieldID, int refID, bool createValue)
         {
             CustomValues values = new CustomValues(loginUser);
             values.LoadByFieldID(customFieldID, refID);
@@ -834,7 +829,7 @@ ORDER BY cf.Position";
             command.CommandText = @"
 IF EXISTS (SELECT * FROM CustomValues WHERE RefID = @RefID AND CustomFieldID=@CustomFieldID)
 BEGIN
-  UPDATE CustomValues SET CustomValue = @CustomValue WHERE RefID = @RefID AND CustomFieldID=@CustomFieldID
+  UPDATE CustomValues SET CustomValue = @CustomValue, OrganizationID = @OrganizationID WHERE RefID = @RefID AND CustomFieldID=@CustomFieldID
 END
 ELSE
 BEGIN
@@ -845,7 +840,8 @@ BEGIN
            ,[DateCreated]
            ,[DateModified]
            ,[CreatorID]
-           ,[ModifierID])
+           ,[ModifierID]
+			,OrganizationID)
      VALUES
            (@CustomFieldID
            ,@RefID
@@ -853,12 +849,14 @@ BEGIN
            ,GETUTCDATE()
            ,GETUTCDATE()
            ,-1
-           ,-1)
+           ,-1
+			,@OrganizationID)
 END";
 
             command.Parameters.AddWithValue("CustomFieldID", customFieldID);
             command.Parameters.AddWithValue("RefID", refID);
             command.Parameters.AddWithValue("CustomValue", value);
+			command.Parameters.AddWithValue("OrganizationID", loginUser.OrganizationID);
 
             SqlExecutor.ExecuteNonQuery(loginUser, command);
 

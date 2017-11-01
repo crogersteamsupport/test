@@ -163,8 +163,6 @@ function BuildWikiEditEvents() {
         }
     });
 
-    parent.Ts.Services.Settings.SetMoxieManagerSessionVariables();
-
     $('#Wiki-Comment-Modal').on('shown.bs.modal', function (e) {
         $("#Wiki-Update-Comment").focus();
     });

@@ -2124,7 +2124,103 @@ namespace TSWebServices
             return result;
         }
 
-        [WebMethod]
+		[WebMethod]
+		public string SetSnowWorkItemID(int ticketID, string tfsWorkItemID)
+		{
+			LoginUser loginUser = TSAuthentication.GetLoginUser();
+			string result = SetSyncWithSnow(loginUser, ticketID, tfsWorkItemID);
+
+			return result;
+		}
+
+		[WebMethod]
+		public string SetSyncWithSnow(int ticketID)
+		{
+			LoginUser loginUser = TSAuthentication.GetLoginUser();
+			string result = SetSyncWithSnow(loginUser, ticketID, null);
+
+			return result;
+		}
+
+		[WebMethod]
+		public bool UnSetSyncWithSnow(int ticketID)
+		{
+			bool result = false;
+
+			try
+			{
+				CRMLinkTable crmlink = new CRMLinkTable(TSAuthentication.GetLoginUser());
+				crmlink.LoadByOrganizationIDAndCRMType(TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).OrganizationID, "ServiceNow");
+
+				foreach (DataRow crmRow in crmlink.Table.Rows)
+				{
+					TicketLinkToSnow linkToSnow = new TicketLinkToSnow(TSAuthentication.GetLoginUser());
+					linkToSnow.LoadByTicketID(ticketID);
+
+					TicketLinkToSnowItemProxy ticketLinktoSnowProxy = GetLinkToSnow(ticketID);
+					int crmLinkId = int.Parse(crmRow["CRMLinkID"].ToString());
+
+					if (ticketLinktoSnowProxy != null
+						&& linkToSnow.Count > 0
+						&& ticketLinktoSnowProxy.CrmLinkID == linkToSnow[0].CrmLinkID
+						&& crmLinkId == ticketLinktoSnowProxy.CrmLinkID)
+					{
+						if (!string.IsNullOrEmpty(ticketLinktoSnowProxy.AppId) && !String.IsNullOrEmpty(ticketLinktoSnowProxy.Number))
+						{
+							string hostName = crmRow["HostName"].ToString();
+							string username = crmRow["Username"].ToString();
+							string password = crmRow["Password"].ToString();
+							string encodedCredentials = DataUtils.GetEncodedCredentials(username, password);
+
+							if (!hostName.EndsWith("/"))
+							{
+								hostName += "/";
+							}
+
+							string url = hostName + "api/now/table/incident/" + ticketLinktoSnowProxy.AppId;
+							dynamic dynamicBodyData = new ExpandoObject();
+							dynamicBodyData.u_url_teamsupport = string.Empty;
+
+							try
+							{
+								var request = (HttpWebRequest)WebRequest.Create(url);
+								request.Method = "PUT";
+								request.ContentType = "application/json";
+								request.Headers.Add("Authorization", "Basic " + encodedCredentials);
+								var writer = new StreamWriter(request.GetRequestStream());
+								writer.Write(JsonConvert.SerializeObject(dynamicBodyData));
+								writer.Close();
+								var response = (HttpWebResponse)request.GetResponse();
+								HttpStatusCode resultStatusCode = response.StatusCode;
+								Stream responseStream = response.GetResponseStream();
+
+								if (responseStream != null)
+								{
+									var streamReader = new StreamReader(responseStream);
+									streamReader.ReadToEnd();
+								}
+							}
+							catch (Exception ex)
+							{
+								//something happened with the httprequest. Delete the link in TS still.
+							}
+						}
+
+						linkToSnow.DeleteFromDB(ticketLinktoSnowProxy.Id);
+						result = true;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				result = false;
+				ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "UnSetSyncWithSnow");
+			}
+
+			return result;
+		}
+
+		[WebMethod]
         public bool Subscribe(int ticketID)
         {
             Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
@@ -3046,7 +3142,11 @@ WHERE t.TicketID = @TicketID
 						{
 							log.CreatorName = IntegrationType.TFS.ToString() + " Integration";
 						}
-                        break;
+						else if (log.OrganizationID == null && log.Description.ToLower().StartsWith("updated ticket with the incident"))
+						{
+							log.CreatorName = IntegrationType.ServiceNow.ToString() + " Integration";
+						}
+						break;
                 }
             }
 
@@ -3121,6 +3221,7 @@ WHERE t.TicketID = @TicketID
             info.Actions = actionInfos.ToArray();
             info.LinkToJira = GetLinkToJira(ticket.TicketID);
             info.LinkToTFS = GetLinkToTFS(ticket.TicketID);
+			info.LinkToSnow = GetLinkToSnow(ticket.TicketID);
 
             return info;
         }
@@ -4159,7 +4260,21 @@ WHERE t.TicketID = @TicketID
             return result;
         }
 
-        [WebMethod]
+		private TicketLinkToSnowItemProxy GetLinkToSnow(int ticketID)
+		{
+			TicketLinkToSnowItemProxy result = null;
+			TicketLinkToSnow linkToSnow = new TicketLinkToSnow(TSAuthentication.GetLoginUser());
+			linkToSnow.LoadByTicketID(ticketID);
+
+			if (linkToSnow.Count > 0)
+			{
+				result = linkToSnow[0].GetProxy();
+			}
+
+			return result;
+		}
+
+		[WebMethod]
         public CustomValueProxy[] GetParentValues(int ticketID)
         {
             Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
@@ -4404,7 +4519,53 @@ WHERE t.TicketID = @TicketID
             return JsonConvert.SerializeObject(result);
         }
 
-        [WebMethod]
+		private string SetSyncWithSnow(LoginUser loginUser, int ticketId, string incidentId)
+		{
+			dynamic result = new ExpandoObject();
+
+			TicketLinkToSnow ticketLinkToSnow = new TicketLinkToSnow(loginUser);
+			ticketLinkToSnow.LoadByTicketID(ticketId);
+
+			if (ticketLinkToSnow.Count == 0)
+			{
+				try
+				{
+					TicketLinkToSnowItem ticketLinkToSnowItem = ticketLinkToSnow.AddNewTicketLinkToSnowItem(ticketId);
+					ticketLinkToSnowItem.AppId = null;
+					ticketLinkToSnowItem.Number = incidentId;
+					ticketLinkToSnowItem.Sync = true;
+					ticketLinkToSnowItem.CreatorID = loginUser.UserID;
+					ticketLinkToSnowItem.CrmLinkID = CRMLinkTable.GetIdBy(loginUser.OrganizationID, IntegrationType.ServiceNow.ToString().ToLower(), loginUser);
+
+					if (ticketLinkToSnowItem.CrmLinkID != null && ticketLinkToSnowItem.CrmLinkID > 0)
+					{
+						ticketLinkToSnowItem.Collection.Save();
+						result.IsSuccessful = true;
+						result.Error = null;
+					}
+					else
+					{
+						result.IsSuccessful = false;
+						result.Error = "An active ServiceNow integration for this ticket was not found.";
+					}
+				}
+				catch (Exception ex)
+				{
+					result.IsSuccessful = false;
+					result.Error = ex.Message;
+					ExceptionLogs.LogException(loginUser, ex, "SetSyncWithSnow");
+				}
+			}
+			else
+			{
+				result.IsSuccessful = false;
+				result.Error = "A link setup for this ticket to ServiceNow is already set.";
+			}
+
+			return JsonConvert.SerializeObject(result);
+		}
+
+		[WebMethod]
         public SuggestedSolutions GetSuggestedSolutions(int ticketID, int firstItemIndex, int pageSize)
         {
             SuggestedSolutions result = new SuggestedSolutions();
@@ -4637,7 +4798,9 @@ WHERE t.TicketID = @TicketID
         public TicketLinkToJiraItemProxy LinkToJira { get; set; }
         [DataMember]
         public TicketLinkToTFSItemProxy LinkToTFS { get; set; }
-    }
+		[DataMember]
+		public TicketLinkToSnowItemProxy LinkToSnow { get; set; }
+	}
 
     [DataContract(Namespace = "http://teamsupport.com/")]
     public class NewTicketSaveInfo

@@ -64,7 +64,12 @@ AdminInt = function () {
         $('.int-tfs-update-status').prop('checked', false);
         $('#tfsExclusionTicketStatusList').hide();
         $('#tfsTicketStatusExceptionSpan').hide();
-        $('#tfsTicketStatusExceptionSpan').hide();
+		$('#tfsTicketStatusExceptionSpan').hide();
+
+		//ServiceNow
+		$('#snowExclusionTicketStatusList').hide();
+		$('#snowTicketStatusExceptionSpan').hide();
+		$('#snowTicketStatusExceptionSpan').hide();
 
         for (var i = 0; i < result.length; i++) {
             //On first load, just load the Default Jira instance.
@@ -81,7 +86,13 @@ AdminInt = function () {
 
         if (result.length == 0 || (result.length > 0 && !_anyJiraInstance)) {
             SetupInitialDefaultInstanceCreate();
-        }
+		}
+
+		window.parent.parent.Ts.Services.Organizations.IsSnowEnabled(function (result) {
+			if (!result) {
+				$('.int-list .servicenow').remove();
+			}
+		});
     });
 
     function loadPanel(element) {
@@ -89,163 +100,219 @@ AdminInt = function () {
         var item = element.data('link');
         if (item == null) return;
 
-        element.addClass('crmlinkid_' + item.CRMLinkID);
+		if ((item.CRMLinkID != null && item.DisplayIntegrationPanel) || item.CRMLinkID == null) {
+			element.addClass('crmlinkid_' + item.CRMLinkID);
 
-        element.find('.int-crm-instancename').val(item.InstanceName);
-        if (item.InstanceName == 'Default') {
-            element.find('.int-crm-instancename').attr('disabled', 'disabled');
-            _isDefaultJiraInstance = true;
-        } else {
-            element.find('.int-crm-instancename').removeAttr('disabled');
-            _isDefaultJiraInstance = false;
-        }
+			element.find('.int-crm-instancename').val(item.InstanceName);
+			if (item.InstanceName == 'Default') {
+				element.find('.int-crm-instancename').attr('disabled', 'disabled');
+				_isDefaultJiraInstance = true;
+			} else {
+				element.find('.int-crm-instancename').removeAttr('disabled');
+				_isDefaultJiraInstance = false;
+			}
 
-        element.find('.int-crm-host').val(item.HostName);
-        element.find('.int-crm-user').val(item.Username);
-        element.find('.int-crm-password').val(item.Password);
-        element.find('.int-crm-password-confirm').val(item.Password);
+			element.find('.int-crm-host').val(item.HostName);
+			element.find('.int-crm-user').val(item.Username);
+			element.find('.int-crm-password').val(item.Password);
+			element.find('.int-crm-password-confirm').val(item.Password);
 
-        element.find('.int-crm-use-network-credentials').prop('checked', item.UseNetworkCredentials);
+			element.find('.int-crm-use-network-credentials').prop('checked', item.UseNetworkCredentials);
 
-        element.find('.int-crm-token').val(item.SecurityToken1);
-        element.find('.int-crm-token-confirm').val(item.SecurityToken1);
-        element.find('.int-crm-tag').val(item.TypeFieldMatch);
-        element.find('.int-crm-project').val(item.DefaultProject);
-        if (item.Active) {
-            element.find('.int-crm-active').prop('checked', true);
-        }
-        else {
-            element.find('.int-crm-active').prop('checked', false);
-        }
-        if (item.PullCasesAsTickets) {
-            element.find('.int-crm-pull-cases-as-tickets').prop('checked', true);
-        }
-        else {
-            element.find('.int-crm-pull-cases-as-tickets').prop('checked', false);
-        }
-        if (item.PushTicketsAsCases) {
-            element.find('.int-crm-push-tickets-as-cases').prop('checked', true);
-        }
-        else {
-            element.find('.int-crm-push-tickets-as-cases').prop('checked', false);
-        }
-        if (item.SendBackTicketData) {
-            element.find('.int-crm-push-tickets-as-account-comments').prop('checked', true);
-        }
-        else {
-            element.find('.int-crm-push-tickets-as-account-comments').prop('checked', false);
-        }
-        if (item.PullCustomerProducts) {
-            element.find('.int-crm-pull-customer-products').prop('checked', true);
-        }
-        else {
-            element.find('.int-crm-pull-customer-products').prop('checked', false);
-        }
-        if (item.SendWelcomeEmail) {
-            element.find('.int-crm-email').prop('checked', true);
-        }
-        else {
-            element.find('.int-crm-email').prop('checked', false);
-        }
-        if (item.AllowPortalAccess) {
-            element.find('.int-crm-portal').prop('checked', true);
-        }
-        else {
-            element.find('.int-crm-portal').prop('checked', false);
-        }
-        if (item.UpdateStatus) {
-            if (item.CRMType == 'Jira') {
-                element.find('.int-crm-update-status').prop('checked', true);
-                loadOrganizationStatusesWithType(element);
-                element.find('#exclusionTicketStatusList').show();
-                element.find('#ticketStatusExceptionSpan').show();
-            } else if (item.CRMType == 'TFS') {
-                element.find('.int-tfs-update-status').prop('checked', true);
-                loadOrganizationStatusesWithType(element);
-                element.find('#tfsExclusionTicketStatusList').show();
-                element.find('#tfsTicketStatusExceptionSpan').show();
-            }
+			element.find('.int-crm-token').val(item.SecurityToken1);
+			element.find('.int-crm-token-confirm').val(item.SecurityToken1);
+			element.find('.int-crm-tag').val(item.TypeFieldMatch);
+			element.find('.int-crm-project').val(item.DefaultProject);
+			if (item.Active) {
+				element.find('.int-crm-active').prop('checked', true);
+			}
+			else {
+				element.find('.int-crm-active').prop('checked', false);
+			}
+			if (item.PullCasesAsTickets) {
+				element.find('.int-crm-pull-cases-as-tickets').prop('checked', true);
+			}
+			else {
+				element.find('.int-crm-pull-cases-as-tickets').prop('checked', false);
+			}
+			if (item.PushTicketsAsCases) {
+				element.find('.int-crm-push-tickets-as-cases').prop('checked', true);
+			}
+			else {
+				element.find('.int-crm-push-tickets-as-cases').prop('checked', false);
+			}
+			if (item.SendBackTicketData) {
+				element.find('.int-crm-push-tickets-as-account-comments').prop('checked', true);
+			}
+			else {
+				element.find('.int-crm-push-tickets-as-account-comments').prop('checked', false);
+			}
+			if (item.PullCustomerProducts) {
+				element.find('.int-crm-pull-customer-products').prop('checked', true);
+			}
+			else {
+				element.find('.int-crm-pull-customer-products').prop('checked', false);
+			}
+			if (item.SendWelcomeEmail) {
+				element.find('.int-crm-email').prop('checked', true);
+			}
+			else {
+				element.find('.int-crm-email').prop('checked', false);
+			}
+			if (item.AllowPortalAccess) {
+				element.find('.int-crm-portal').prop('checked', true);
+			}
+			else {
+				element.find('.int-crm-portal').prop('checked', false);
+			}
 
-        }
-        else {
-            if (item.CRMType == 'Jira') {
-                element.find('.int-crm-update-status').prop('checked', false);
-                element.find('#exclusionTicketStatusList').hide();
-                element.find('#ticketStatusExceptionSpan').hide();
-            } else if (item.CRMType == 'TFS') {
-                element.find('.int-tfs-update-status').prop('checked', false);
-                element.find('#tfsExclusionTicketStatusList').hide();
-                element.find('#tfsTicketStatusExceptionSpan').hide();
-            }
+			if (item.UpdateStatus) {
+				if (item.CRMType == 'Jira') {
+					element.find('.int-crm-update-status').prop('checked', true);
+					loadOrganizationStatusesWithType(element);
+					element.find('#exclusionTicketStatusList').show();
+					element.find('#ticketStatusExceptionSpan').show();
+				} else if (item.CRMType == 'TFS') {
+					element.find('.int-tfs-update-status').prop('checked', true);
+					loadOrganizationStatusesWithType(element);
+					element.find('#tfsExclusionTicketStatusList').show();
+					element.find('#tfsTicketStatusExceptionSpan').show();
+				} else if (item.CRMType == 'ServiceNow') {
+					element.find('.int-snow-update-status').prop('checked', true);
+					loadOrganizationStatusesWithType(element);
+					element.find('#snowExclusionTicketStatusList').show();
+					element.find('#snowTicketStatusExceptionSpan').show();
+				}
 
-        }
+			}
+			else {
+				if (item.CRMType == 'Jira') {
+					element.find('.int-crm-update-status').prop('checked', false);
+					element.find('#exclusionTicketStatusList').hide();
+					element.find('#ticketStatusExceptionSpan').hide();
+				} else if (item.CRMType == 'TFS') {
+					element.find('.int-tfs-update-status').prop('checked', false);
+					element.find('#tfsExclusionTicketStatusList').hide();
+					element.find('#tfsTicketStatusExceptionSpan').hide();
+				} else if (item.CRMType == 'ServiceNow') {
+					element.find('.int-snow-update-status').prop('checked', false);
+					element.find('#snowExclusionTicketStatusList').hide();
+					element.find('#snowTicketStatusExceptionSpan').hide();
+				}
+			}
 
-        element.find('.int-crm-update-type').prop('checked', item.UpdateTicketType);
+			element.find('.int-crm-update-type').prop('checked', item.UpdateTicketType);
 
-        if (item.MatchAccountsByName) {
-            element.find('.int-crm-match-accounts-by-name').prop('checked', true);
-        }
-        else {
-            element.find('.int-crm-match-accounts-by-name').prop('checked', false);
-        }
-        if (item.UseSandBoxServer) {
-            element.find('.int-crm-use-sandbox-server').prop('checked', true);
-        }
-        else {
-            element.find('.int-crm-use-sandbox-server').prop('checked', false);
-        }
-        if (item.AlwaysUseDefaultProjectKey) {
-            element.find('.int-crm-always-use-default-project-key').prop('checked', true);
-        }
-        else {
-            element.find('.int-crm-always-use-default-project-key').prop('checked', false);
-        }
+			if (item.MatchAccountsByName) {
+				element.find('.int-crm-match-accounts-by-name').prop('checked', true);
+			}
+			else {
+				element.find('.int-crm-match-accounts-by-name').prop('checked', false);
+			}
+			if (item.UseSandBoxServer) {
+				element.find('.int-crm-use-sandbox-server').prop('checked', true);
+			}
+			else {
+				element.find('.int-crm-use-sandbox-server').prop('checked', false);
+			}
+			if (item.AlwaysUseDefaultProjectKey) {
+				element.find('.int-crm-always-use-default-project-key').prop('checked', true);
+			}
+			else {
+				element.find('.int-crm-always-use-default-project-key').prop('checked', false);
+			}
 
-        if (item.IncludeIssueNonRequired) {
-            element.find('.int-crm-IncludeIssueNonRequired').prop('checked', true);
-        }
-        else {
-            element.find('.int-crm-IncludeIssueNonRequired').prop('checked', false);
-        }
+			if (item.IncludeIssueNonRequired) {
+				element.find('.int-crm-IncludeIssueNonRequired').prop('checked', true);
+			}
+			else {
+				element.find('.int-crm-IncludeIssueNonRequired').prop('checked', false);
+			}
 
-        if (item.RestrictedToTicketTypes) {
-            if (item.CRMType == 'Jira') {
-                element.find('.int-crm-ticket-types').prop('checked', false);
-                loadTicketTypes(element);
-                element.find('#restrictedTicketTypesList').show();
-            } else if (item.CRMType == 'TFS') {
-                element.find('.int-tfs-ticket-types').prop('checked', false);
-                loadTicketTypes(element);
-                element.find('#restrictedTicketTypesListTFS').show();
-            }
-        }
-        else {
-            if (item.CRMType == 'Jira') {
-                element.find('.int-crm-ticket-types').prop('checked', true);
-                element.find('#restrictedTicketTypesList').hide();
-            } else if (item.CRMType == 'TFS') {
-                element.find('.int-tfs-ticket-types').prop('checked', true);
-                element.find('#restrictedTicketTypesListTFS').hide();
-            }
-        }
+			if (item.RestrictedToTicketTypes) {
+				if (item.CRMType == 'Jira') {
+					element.find('.int-crm-ticket-types').prop('checked', false);
+					loadTicketTypes(element);
+					element.find('#restrictedTicketTypesList').show();
+				} else if (item.CRMType == 'TFS') {
+					element.find('.int-tfs-ticket-types').prop('checked', false);
+					loadTicketTypes(element);
+					element.find('#restrictedTicketTypesListTFS').show();
+				} else if (item.CRMType == 'ServiceNow') {
+					element.find('.int-snow-ticket-types').prop('checked', false);
+					loadTicketTypes(element);
+					element.find('#restrictedTicketTypesListSnow').show();
+				}
+			}
+			else {
+				if (item.CRMType == 'Jira') {
+					element.find('.int-crm-ticket-types').prop('checked', true);
+					element.find('#restrictedTicketTypesList').hide();
+				} else if (item.CRMType == 'TFS') {
+					element.find('.int-tfs-ticket-types').prop('checked', true);
+					element.find('#restrictedTicketTypesListTFS').hide();
+				} else if (item.CRMType == 'ServiceNow') {
+					element.find('.int-snow-ticket-types').prop('checked', true);
+					element.find('#restrictedTicketTypesListSnow').hide();
+				}
+			}
 
-        //ZohoReports
-        var zohoGrids = element.find('.int-zohoreports-grid');
-        zohoGrids.empty();
-        var selected = '" selected="selected">';
+			//ZohoReports
+			var zohoGrids = element.find('.int-zohoreports-grid');
+			zohoGrids.empty();
+			var selected = '" selected="selected">';
 
-        if (item.HostName != '' || item.HostName.indexOf('reportsapi.zoho.com') >= 0) {
-            zohoGrids.append('<option value="US"' + selected + 'US</option>');
-            zohoGrids.append('<option value="EU">EU</option>');
-        } else {
-            zohoGrids.append('<option value="US">US</option>');
-            zohoGrids.append('<option value="EU"'+ selected +'EU</option>');
-        }        
+			if (item.HostName != '' || item.HostName.indexOf('reportsapi.zoho.com') >= 0) {
+				zohoGrids.append('<option value="US"' + selected + 'US</option>');
+				zohoGrids.append('<option value="EU">EU</option>');
+			} else {
+				zohoGrids.append('<option value="US">US</option>');
+				zohoGrids.append('<option value="EU"' + selected + 'EU</option>');
+			}
 
-        $("#AddingInstanceLabel").hide();
-        $("#JiraInstacesListWrapper").show();
-        $("#NewInstance").show();
-    }
+			$("#AddingInstanceLabel").hide();
+			$("#JiraInstacesListWrapper").show();
+			$("#NewInstance").show();
+
+			element.find('.int-crm-webhook').val(item.WebHookTokenFullUrl);
+
+			if (item.CRMType == 'ServiceNow') {
+				var showModalButton = document.getElementById("btnBusinessRule");
+				showModalButton.onclick = function () {
+					var rawFile = new XMLHttpRequest();
+					rawFile.open("GET", "ServiceNowBusinessRule.txt", false);
+					rawFile.onreadystatechange = function () {
+						if (rawFile.readyState === 4) {
+							if (rawFile.status === 200 || rawFile.status == 0) {
+								var allText = rawFile.responseText;
+								var textArea = document.querySelector("#businessRuleScript");
+								textArea.value = allText;
+							}
+						}
+					}
+					rawFile.send(null);
+
+					$('#serviceNowBusinessRuleModal').modal();
+				};
+
+				var copyToClipboardButton = document.getElementById("copyBusinessRuleToClipboard");
+				copyToClipboardButton.onclick = function () {
+					var copyTextArea = document.querySelector("#businessRuleScript").select();
+
+					try {
+						var successful = document.execCommand('copy');
+					} catch (err) {
+						console.log("unable to copy to clipboard");
+					}
+
+					this.focus();
+				};
+			}
+		} else {
+			$(element).parent().remove();
+		}
+	}
+	
 
     $('#int-api-new').click(function (e) {
         e.preventDefault();
@@ -400,6 +467,11 @@ AdminInt = function () {
 
                 loadFields(element.find('.int-jira-map-tsfield'), element.find('.int-map-type').val());
                 break;
+				case 'ServiceNow':
+					if ($('.int-snow-map-field option').size() == 0) {
+						loadFields(element.find('.int-snow-map-field'), 17);
+					}
+					break;
             case 'TFS':
                 $('.int-map-type option').remove();
                 $('<option>')
@@ -741,7 +813,32 @@ AdminInt = function () {
         );
         window.parent.parent.Ts.System.logAction('Admin Integration - Jira Mapping Added');
         parent.find('.int-jira-map-crmfield').val('');
-    });
+	});
+
+	$('.snow-map-add').click(function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var parent = $('.snow-map-add').closest('.int-panel');
+		var crmField = parent.find('.int-snow-map-crmfield').val();
+		if (crmField === '') { alert('Please enter a field value.'); return; }
+
+		var tsField = parent.find('.int-snow-map-field option:selected').data('field');
+
+		window.parent.parent.Ts.Services.Organizations.SaveCrmLinkField(
+			parent.data('link').CRMLinkID,
+			tsField.ID,
+			tsField.IsCustom,
+			crmField,
+			17,
+			function (fields) {
+				loadMapFields(parent, fields);
+			}
+
+
+		);
+		window.parent.parent.Ts.System.logAction('Admin Integration - ServiceNow Mapping Added');
+		parent.find('.int-snow-map-crmfield').val('');
+	});
 
     $('.tfs-map-add').click(function (e) {
         e.preventDefault();
@@ -839,7 +936,8 @@ AdminInt = function () {
         else if (type.hasClass('zohoreports')) crmType = 'ZohoReports';
         else if (type.hasClass('hubspot')) crmType = 'HubSpot';
         else if (type.hasClass('slackwebhook')) crmType = 'SlackWebHook';
-        else if (type.hasClass('tfs')) crmType = 'TFS';
+		else if (type.hasClass('tfs')) crmType = 'TFS';
+		else if (type.hasClass('servicenow')) crmType = 'ServiceNow';
 
         var crmToken = parent.find('.int-crm-token').val();
 
@@ -930,6 +1028,8 @@ AdminInt = function () {
             updateTicketStatus = parent.find('.int-crm-update-status').prop('checked');
         } else if (crmType == "TFS") {
             updateTicketStatus = parent.find('.int-tfs-update-status').prop('checked');
+        } else if (crmType == "ServiceNow") {
+            updateTicketStatus = parent.find('.int-snow-update-status').prop('checked');
         }
 
         if (typeof updateTicketStatus == 'undefined') {
@@ -945,7 +1045,9 @@ AdminInt = function () {
                 exclusionTicketStatusList = parent.find('#exclusionTicketStatusList');
             } else if (crmType == "TFS") {
                 exclusionTicketStatusList = parent.find('#tfsExclusionTicketStatusList');
-            }
+			} else if (crmType == "ServiceNow") {
+				exclusionTicketStatusList = parent.find('#snowExclusionTicketStatusList');
+			}
 
             if (typeof exclusionTicketStatusList == 'undefined') {
                 excludedTicketStatuses = null;
@@ -975,7 +1077,9 @@ AdminInt = function () {
             useAllTicketTypes = parent.find('.int-crm-ticket-types').prop('checked');
         } else if (crmType == "TFS") {
             useAllTicketTypes = parent.find('.int-tfs-ticket-types').prop('checked');
-        }
+		} else if (crmType == "ServiceNow") {
+			useAllTicketTypes = parent.find('.int-snow-ticket-types').prop('checked');
+		}
 
         if (typeof useAllTicketTypes == 'undefined') {
             useAllTicketTypes = true;
@@ -992,7 +1096,9 @@ AdminInt = function () {
                 restrictedTicketTypesList = parent.find('#restrictedTicketTypesList');
             } else if (crmType == "TFS") {
                 restrictedTicketTypesList = parent.find('#restrictedTicketTypesListTFS');
-            }
+			} else if (crmType == "ServiceNow") {
+				restrictedTicketTypesList = parent.find('#restrictedTicketTypesListSnow');
+			}
 
             if (typeof restrictedTicketTypesList == 'undefined') {
                 restrictedToTicketTypes = null;
@@ -1023,7 +1129,13 @@ AdminInt = function () {
             updateTicketType = true;
         }
 
-        var linkID = parent.data('link') == undefined || (_isNewJiraInstance && crmType == 'Jira') ? -1 : parent.data('link').CRMLinkID;
+		var linkID = parent.data('link') == undefined || (_isNewJiraInstance && crmType == 'Jira') ? -1 : parent.data('link').CRMLinkID;
+
+		var webhookToken = parent.find('.int-crm-webhook').val();
+
+		if (webhookToken == undefined) {
+			webhookToken = null;
+		}
 
         window.parent.parent.Ts.Services.Organizations.SaveCrmLink(
               linkID,
@@ -1053,6 +1165,7 @@ AdminInt = function () {
               excludedTicketStatuses,
               jiraInstanceName,
               useNetworkCredentials,
+			  webhookToken,
               function (result) {
                   parent.data('link', result).find('.int-message').removeClass('ui-state-error').html('Your information was saved.').show().delay(1000).fadeOut('slow');
                   loadMaps(parent);
@@ -1084,7 +1197,31 @@ AdminInt = function () {
         }
 
         _isNewJiraInstance = false;
-    });
+	});
+
+	$('.int-type').delegate('.int-generate-token', 'click', function (e) {
+		e.preventDefault();
+		var panel = $(this).parents('.int-panel');
+		var typePanel = $(this).parents('.int-type');
+		var buttonObject = $(this);
+		var type;
+
+		if (typePanel.hasClass('servicenow')) {
+			type = 'servicenow';
+		}
+
+		window.parent.parent.Ts.Services.Organizations.GenerateWebHookToken(type,
+			function (result) {
+				var tokenField = panel.find('.int-crm-webhook');
+				tokenField.val(result);
+				onButtonClick(buttonObject);
+			},
+			function () {
+				parent.find('.int-message').addClass('ui-state-error').html('<div>There was an error generating the token, please try again.<div>').show();
+				parent.find('.int-action').show().find('.int-save').addClass('ui-state-active');
+			}
+		);
+	});
 
     var onChange = function (e) {
         var footer = $(this).parents('.int-panel').find('.int-footer');
@@ -1309,7 +1446,28 @@ AdminInt = function () {
         else {
             $('#restrictedTicketTypesListTFS').show();
         }
-    });
+	});
+
+	//ServiceNow
+	$('.int-snow-update-status').click(function (e) {
+		if ($(this).prop('checked')) {
+			$('#snowExclusionTicketStatusList').show();
+			$('#snowTicketStatusExceptionSpan').show();
+		}
+		else {
+			$('#snowExclusionTicketStatusList').hide();
+			$('#snowTicketStatusExceptionSpan').hide();
+		}
+	});
+
+	$('.int-snow-ticket-types').click(function (e) {
+		if ($(this).prop('checked')) {
+			$('#restrictedTicketTypesListSnow').hide();
+		}
+		else {
+			$('#restrictedTicketTypesListSnow').show();
+		}
+	});
 };
 
 AdminInt.prototype = {

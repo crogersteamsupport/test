@@ -166,7 +166,12 @@ namespace TeamSupport.WebUtils
       return IsAuthenticated(user) && isBackdoor == IsBackdoor;
     }
 
-    public static bool IsAuthenticated(User user)
+    public static bool IsAuthenticated()
+    {
+            return Ticket != null && !Ticket.Expired;
+    }
+
+        public static bool IsAuthenticated(User user)
     {
       int length = UserData.Split('|').Length;
       return Ticket != null && !Ticket.Expired && user.UserID == UserID && user.OrganizationID == OrganizationID && length == 5;

@@ -119,6 +119,7 @@ namespace TeamSupport.Data
     [DataMember] public bool AlertContactNoEmail { get; set; }
     [DataMember] public bool DisableSupportLogin { get; set; }
     [DataMember] public string NoAttachmentsInOutboundExcludeProductLine { get; set; }
+    [DataMember] public bool UseWatson { get; set; }
           
   }
   
@@ -127,6 +128,7 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.UseWatson = this.UseWatson;
       result.NoAttachmentsInOutboundExcludeProductLine = this.NoAttachmentsInOutboundExcludeProductLine;
       result.AlertContactNoEmail = this.AlertContactNoEmail;
       result.RequireGroupAssignmentOnTickets = this.RequireGroupAssignmentOnTickets;

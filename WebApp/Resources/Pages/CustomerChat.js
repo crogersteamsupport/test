@@ -192,8 +192,19 @@ function createMessageElement(messageData, direction) {
         }
     }
 
+	var displayMessage = $("<div>").text(messageData.Message).html();
+
+	if (messageData.Message.trim().indexOf("<img ") == 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0) {
+		displayMessage = messageData.Message;
+	}
+
+	if ((messageData.Message.trim().indexOf("/chatattachments/") > 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0)) {
+		displayMessage = messageData.Message;
+	}
+
+	var escapedCreator = $("<div>").text(messageData.CreatorDisplayName).html();
     $('#chat-body').append('<div class="answer ' + direction + '"> <div class="avatar"> <img src="'+ userAvatar +'" alt="User name">  </div>' +
-                        '<div class="name">' + messageData.CreatorDisplayName + '</div>  <div class="text' + hasLeftChatClass + '">' + messageData.Message + '</div> <div class="time">' + moment(messageData.DateCreated).format('MM/DD/YYYY hh:mm A') + '</div></div>');
+                        '<div class="name">' + escapedCreator + '</div>  <div class="text' + hasLeftChatClass + '">' + displayMessage + '</div> <div class="time">' + moment(messageData.DateCreated).format('MM/DD/YYYY hh:mm A') + '</div></div>');
 
     $('#typing').remove();
 

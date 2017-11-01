@@ -235,7 +235,50 @@ namespace TeamSupport.Data
       }
     }
 
-    public void TempLoadFix()
+		public void LoadForIntegration(int actionID, IntegrationType integration)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				string commandSql = string.Empty;
+				commandSql = @"
+            SELECT
+                a.*, 
+                (u.FirstName + ' ' + u.LastName) AS CreatorName 
+            FROM
+                Attachments a 
+            LEFT JOIN Users u 
+                ON u.UserID = a.CreatorID
+            WHERE
+                RefID = @RefID
+                AND RefType = 0 
+				{0}";
+
+				string integrationFilter = string.Empty;
+
+				switch (integration)
+				{
+					case IntegrationType.Jira:
+						integrationFilter = "AND SentToJira = 0";
+						break;
+					case IntegrationType.TFS:
+						integrationFilter = "AND SentToTFS = 0";
+						break;
+					case IntegrationType.ServiceNow:
+						integrationFilter = "AND SentToSnow = 0";
+						break;
+					default:
+						break;
+				}
+
+				commandSql = string.Format(commandSql, integrationFilter);
+				command.CommandText = commandSql;
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@RefID", actionID);
+				Fill(command);
+			}
+		}
+
+		public void TempLoadFix()
     {
       using (SqlCommand command = new SqlCommand())
       {

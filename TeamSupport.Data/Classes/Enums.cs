@@ -206,8 +206,9 @@ namespace TeamSupport.Data
         Jira = 8,
         Oracle = 9,
         HubSpot = 10,
-        TFS = 11
-    }
+        TFS = 11,
+		ServiceNow = 12
+	}
 
     public enum IntegrationObject : byte
     {
@@ -220,7 +221,19 @@ namespace TeamSupport.Data
         Credentials = 5
     }
 
-    public enum ReportType
+	public enum IntegrationOrientation : byte
+	{
+		[Description("in")]
+		IntoTeamSupport = 1,
+		[Description("out")]
+		OutToJira = 2,
+		[Description("out")]
+		OutToTFS = 3,
+		[Description("out")]
+		OutToServiceNow = 4
+	}
+
+	public enum ReportType
     {
         Table = 0,
         Chart = 1,
@@ -371,4 +384,10 @@ namespace TeamSupport.Data
         LastModified = 0,
         Alphabetical
     }
+
+	public enum WebHookType : byte
+	{
+		Unknown = 0,
+		Integration = 1
+	}
 }
