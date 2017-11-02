@@ -77,7 +77,13 @@
                     });
                     top.Ts.Services.Organizations.AdminGetStorageUsed(orgID, function (size) {
                         appendProperty('Storage Used', size + ' MB');
-					});
+                    });
+                    top.Ts.Services.Organizations.AdminGetEncryptData(orgID, function (value) {
+
+                        appendProperty('Use Encrypted Data', '<a href="#" class="action-toggle-encrypt">' + value.toString() + '</a>');
+                    });
+
+                    
 
 					appendProperty('Use Watson', '<a href="#" class="action-toggle-watson">' + org.UseWatson.toString() + '</a>');
 
@@ -116,6 +122,17 @@
 				});
 
 			});
+
+			$('.org-props').on('click', '.action-toggle-encrypt', function (e) {
+			    e.preventDefault();
+			    var org = $('.org-info').data('o');
+			    var item = $(this);
+			    top.Ts.Services.Organizations.AdminToggleEncryptData(org.OrganizationID, function (value) {
+			        item.text(value.toString());
+			    });
+
+			});
+			
 
             function showUsers(org) {
                 top.Ts.Services.Users.AdminGetUsers(org.OrganizationID, function (users) {
