@@ -79,10 +79,10 @@ namespace TeamSupport.Api
 
     public static string GetCustomerActions(RestCommand command, int ticketID)
     {
-      TicketsViewItem ticket = TicketsView.GetTicketsViewItem(command.LoginUser, ticketID);
+      TicketsViewItem ticket = TicketsView.GetTicketsViewItemByIdOrNumberForCustomer(command.LoginUser, (int)command.Organization.ParentID, ticketID);
       if (ticket.OrganizationID != command.Organization.ParentID || !ticket.GetIsCustomer(command.Organization.OrganizationID)) throw new RestException(HttpStatusCode.Unauthorized);
       ActionsView actions = new ActionsView(command.LoginUser);
-      actions.LoadByTicketID(ticketID);
+      actions.LoadByTicketID(ticket.TicketID);
 
       return actions.GetXml("Actions", "Action", true, command.Filters);
     }
