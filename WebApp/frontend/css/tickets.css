@@ -27,6 +27,19 @@ button:focus {
     width:100%;
 }
 
+#menu-container .ticket-source {
+    float: left;
+    height: 16px;
+    width: 16px;
+    margin-right: 5px;
+    position: relative;
+    top: 6px;
+}
+
+
+
+
+
 #frame-container {
     position:absolute !important;
     top:0px;
