@@ -200,7 +200,14 @@ button:focus {
     font-size:11px;
 }
 
-
+#ticket-properties-area .form-horizontal.hasError {
+    border-top:1px solid rgba(255,0,0,0.3);
+    border-bottom:1px solid rgba(255,0,0,0.3);
+    background-color:rgba(255,0,0,0.1);
+}
+#ticket-properties-area .form-horizontal.hasError .form-label {
+    font-weight: bold;
+}
 
 #ticket-SLAStatus {
     padding:0px;

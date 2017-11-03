@@ -398,9 +398,9 @@ function SetupTicketProperties() {
 
     if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
         if ($('#ticket-group').val() == "" || $('#ticket-group').val() == "-1")
-            $('#ticket-group').closest('.form-group').addClass('hasError');
+            $('#ticket-group').closest('.form-horizontal').addClass('hasError');
         else
-            $('#ticket-group').closest('.form-group').removeClass('hasError');
+            $('#ticket-group').closest('.form-horizontal').removeClass('hasError');
     }
 
     $('#ticket-group').change(function (e) {
@@ -409,11 +409,11 @@ function SetupTicketProperties() {
         if (_ticketGroupID == '-1') {
             _ticketGroupID = null;
             if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
-                $('#ticket-group').closest('.form-group').addClass('hasError');
+                $('#ticket-group').closest('.form-horizontal').addClass('hasError');
             }
         }
         else
-            $('#ticket-group').closest('.form-group').removeClass('hasError');
+            $('#ticket-group').closest('.form-horizontal').removeClass('hasError');
 
     });
 
@@ -713,17 +713,17 @@ function isFormValid(callback) {
                 var status = parent.Ts.Cache.getTicketStatus($('#ticket-status').val());
 
                 //Check if we need a product
-                product.closest('.form-group').removeClass('hasError');
+                product.closest('.form-horizontal').removeClass('hasError');
                 if (isProductRequired && (productID == -1 || productID == "")) {
-                    product.closest('.form-group').addClass('hasError');
+                    product.closest('.form-horizontal').addClass('hasError');
                     InsertCreateError("Product is a required field.");
                     result = false;
                 }
 
                 //See if we need a version
-                reportversion.closest('.form-group').removeClass('hasError');
+                reportversion.closest('.form-horizontal').removeClass('hasError');
                 if (isProductVersionRequired && (reportversionID == -1 || reportversionID == "")) {
-                    reportversion.closest('.form-group').addClass('hasError');
+                    reportversion.closest('.form-horizontal').addClass('hasError');
                     InsertCreateError("Product version is a required field.");
                     result = false;
                 }
@@ -824,12 +824,12 @@ function isFormValid(callback) {
                 //If custom required check if the ticket is a KB if not then see if we have at least one customer
                 if (requireNewTicketCustomer == "True" && $('#ticket-isKB').is(":checked") == false) {
                     if ($('#ticket-Customer > div.tag-item').length < 1) {
-                        $('#ticket-Customer').closest('.form-group').addClass('hasError');
+                        $('#ticket-Customer').closest('.form-horizontal').addClass('hasError');
                         InsertCreateError("A customer is required to create a ticket.")
                         result = false;
                     }
                     else {
-                        $('#ticket-Customer').closest('.form-group').removeClass('hasError');
+                        $('#ticket-Customer').closest('.form-horizontal').removeClass('hasError');
                     }
                 }
 
@@ -1366,7 +1366,7 @@ function SetupCustomerSection() {
                 'no_results': {}
             },
             onItemAdd: function (value, $item) {
-                $('#ticket-Customer').closest('.form-group').removeClass('hasError');
+                $('#ticket-Customer').closest('.form-horizontal').removeClass('hasError');
                 AddCustomers($item.data());
 
                 this.removeItem(value, true);
@@ -1447,7 +1447,7 @@ function SetupCustomerSection() {
                             $('.ticket-new-customer-last').val('');
                             $('.ticket-new-customer-company').val('');
                             $('.ticket-new-customer-phone').val('');
-                            $('#ticket-Customer').closest('.form-group').removeClass('hasError');
+                            $('#ticket-Customer').closest('.form-horizontal').removeClass('hasError');
                             $('#NewCustomerModal').modal('hide');
                         });
                     }
@@ -1459,7 +1459,7 @@ function SetupCustomerSection() {
                     $('.ticket-new-customer-last').val('');
                     $('.ticket-new-customer-company').val('');
                     $('.ticket-new-customer-phone').val('');
-                    $('#ticket-Customer').closest('.form-group').removeClass('hasError');
+                    $('#ticket-Customer').closest('.form-horizontal').removeClass('hasError');
                     $('#NewCustomerModal').modal('hide');
                 }
             }
@@ -1472,10 +1472,10 @@ function SetupCustomerSection() {
     parent.Ts.Settings.Organization.read('RequireNewTicketCustomer', false, function (requireNewTicketCustomer) {
         if (requireNewTicketCustomer == "True" && $('#ticket-isKB').is(":checked") == false) {
             if ($('#ticket-Customer > div.tag-item').length < 1) {
-                $('#ticket-Customer').closest('.form-group').addClass('hasError');
+                $('#ticket-Customer').closest('.form-horizontal').addClass('hasError');
             }
             else {
-                $('#ticket-Customer').closest('.form-group').removeClass('hasError');
+                $('#ticket-Customer').closest('.form-horizontal').removeClass('hasError');
             }
         }
     });
@@ -1599,9 +1599,9 @@ function SetupProductSection() {
 
     parent.Ts.Services.Organizations.IsProductRequired(function (result) {
         if (result) {
-            $('#ticket-Product').closest('.form-group').addClass('hasError');
+            $('#ticket-Product').closest('.form-horizontal').addClass('hasError');
         } else {
-            $('#ticket-Product').closest('.form-group').removeClass('hasError');
+            $('#ticket-Product').closest('.form-horizontal').removeClass('hasError');
         }
     });
 
@@ -1614,7 +1614,7 @@ function SetupProductSection() {
             loadVersions(product);
         }
         AppendProductMatchingCustomFields();
-        $('#ticket-Product').closest('.form-group').removeClass('hasError');
+        $('#ticket-Product').closest('.form-horizontal').removeClass('hasError');
         if (productID) { prevProduct = productID; }
         if (product === null) { return; }
         if (parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != product.ProductFamilyID) {
@@ -1726,7 +1726,7 @@ function SetupProductVersionsControl(product) {
         var $select = $("#ticket-Versions").selectize({
             onItemAdd: function (value, $item) {
                 var reportversion = $('#ticket-Versions');
-                reportversion.closest('.form-group').removeClass('hasError');
+                reportversion.closest('.form-horizontal').removeClass('hasError');
             },
             onDropdownClose: function ($dropdown) {
                 $($dropdown).prev().find('input').blur();
@@ -1760,9 +1760,9 @@ function SetupProductVersionsControl(product) {
     parent.Ts.Services.Organizations.IsProductVersionRequired(function (result) {
         var hasValue = $('#ticket-Versions');
         if (result && !hasValue) {
-            $('#ticket-Versions').closest('.form-group').addClass('hasError');
+            $('#ticket-Versions').closest('.form-horizontal').addClass('hasError');
         } else {
-            $('#ticket-Versions').closest('.form-group').removeClass('hasError');
+            $('#ticket-Versions').closest('.form-horizontal').removeClass('hasError');
         }
     });
 }
@@ -2182,10 +2182,10 @@ var AddCustomFieldEdit = function (field, parentContainer) {
         var value = input.val();
 
         if (field.IsRequired && (value === null || $.trim(value) === '')) {
-            groupContainer.addClass('hasError');
+            formcontainer.addClass('hasError');
         }
         else {
-            groupContainer.removeClass('hasError');
+            formcontainer.removeClass('hasError');
         }
         if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
             groupContainer.addClass('hasCloseError');
@@ -2212,7 +2212,7 @@ var AddCustomFieldEdit = function (field, parentContainer) {
     });
 
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
-        groupContainer.addClass('hasError');
+        formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
         groupContainer.addClass('hasCloseError');
@@ -2250,10 +2250,10 @@ var AddCustomFieldDate = function (field, parentContainer) {
             dateLink.text((value === null ? 'Unassigned' : value.localeFormat(parent.Ts.Utils.getDatePattern()))).show();
 
             if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                groupContainer.addClass('hasError');
+                formcontainer.addClass('hasError');
             }
             else {
-                groupContainer.removeClass('hasError');
+                formcontainer.removeClass('hasError');
             }
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
                 groupContainer.addClass('hasCloseErrory');
@@ -2273,7 +2273,7 @@ var AddCustomFieldDate = function (field, parentContainer) {
     });
 
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
-        groupContainer.addClass('hasError');
+        formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
         groupContainer.addClass('hasCloseError');
@@ -2315,10 +2315,10 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
             dateLink.text((value === null ? 'Unassigned' : value.localeFormat(parent.Ts.Utils.getDateTimePattern()))).show();
 
             if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                groupContainer.addClass('hasError');
+                formcontainer.addClass('hasError');
             }
             else {
-                groupContainer.removeClass('hasError');
+                formcontainer.removeClass('hasError');
             }
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
                 groupContainer.addClass('hasCloseErrory');
@@ -2338,7 +2338,7 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
     });
 
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
-        groupContainer.addClass('hasError');
+        formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
         groupContainer.addClass('hasCloseError');
@@ -2380,10 +2380,10 @@ var AddCustomFieldTime = function (field, parentContainer) {
             dateLink.text((value === null ? 'Unassigned' : value.localeFormat(parent.Ts.Utils.getTimePattern()))).show();
 
             if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                groupContainer.addClass('hasError');
+                formcontainer.addClass('hasError');
             }
             else {
-                groupContainer.removeClass('hasError');
+                formcontainer.removeClass('hasError');
             }
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
                 groupContainer.addClass('hasCloseErrory');
@@ -2403,7 +2403,7 @@ var AddCustomFieldTime = function (field, parentContainer) {
     });
 
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
-        groupContainer.addClass('hasError');
+        formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
         groupContainer.addClass('hasCloseError');
@@ -2446,10 +2446,10 @@ var AddCustomFieldNumber = function (field, parentContainer) {
         var value = input.val();
 
         if (field.IsRequired && (value === null || $.trim(value) === '')) {
-            groupContainer.addClass('hasError');
+            formcontainer.addClass('hasError');
         }
         else {
-            groupContainer.removeClass('hasError');
+            formcontainer.removeClass('hasError');
         }
         if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
             groupContainer.addClass('hasCloseError');
@@ -2468,7 +2468,7 @@ var AddCustomFieldNumber = function (field, parentContainer) {
     });
 
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
-        groupContainer.addClass('hasError');
+        formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
         groupContainer.addClass('hasCloseError');
@@ -2495,7 +2495,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
 
     if (field.Value == undefined || field.Value == "") {
         $('<option>').text("unassigned").val("").appendTo(select);
-        if (field.IsRequired) groupContainer.addClass('hasError');
+        if (field.IsRequired) formcontainer.addClass('hasError');
 
     }
     for (var i = 0; i < options.length; i++) {
@@ -2510,9 +2510,9 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
         allowEmptyOption: true,
         onItemAdd: function (value, $item) {
             if (field.IsRequired && field.IsFirstIndexSelect == true && (value == "" || field.ListValues.split("|")[0] == value)) {
-                groupContainer.addClass('hasError');
+                formcontainer.addClass('hasError');
             } else {
-                groupContainer.removeClass('hasError');
+                formcontainer.removeClass('hasError');
             }
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && field.IsFirstIndexSelect == true && value == "") {
                 groupContainer.addClass('hasCloseError');
@@ -2539,7 +2539,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
 
     var items = field.ListValues.split('|');
     if (field.IsRequired && ((field.IsFirstIndexSelect == true && (items[0] == field.Value || field.Value == null || $.trim(field.Value) === '')) || (field.Value == null || $.trim(field.Value) === ''))) {
-        groupContainer.addClass('hasError');
+        formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && ((field.IsFirstIndexSelect == true && (items[0] == field.Value || field.Value == null || $.trim(field.Value) === '')) || (field.Value == null || $.trim(field.Value) === ''))) {
         groupContainer.addClass('hasCloseError');
@@ -2659,9 +2659,9 @@ function setInitialValue() {
                     AppendProductMatchingCustomFields();
                     parent.Ts.Services.Organizations.IsProductRequired(function (IsRequired) {
                         if (IsRequired)
-                            $('#ticket-Product').closest('.form-group').addClass('hasError');
+                            $('#ticket-Product').closest('.form-horizontal').addClass('hasError');
                         else
-                            $('#ticket-Product').closest('.form-group').removeClass('hasError');
+                            $('#ticket-Product').closest('.form-horizontal').removeClass('hasError');
                     });
                     if (parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != product.ProductFamilyID) {
                         _productFamilyID = product.ProductFamilyID;

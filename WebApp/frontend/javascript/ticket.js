@@ -125,10 +125,10 @@ var isFormValid = function (callback) {
         //If custom required check if the ticket is a KB if not then see if we have at least one customer
         if (requireNewTicketCustomer == "True" && $('#ticket-isKB').is(":checked") == false) {
             if ($('#ticket-Customer > div.tag-item').length < 1) {
-                $('#ticket-Customer').closest('.form-group').addClass('hasError');
+                $('#ticket-Customer').closest('.form-horizontal').addClass('hasError');
                 result = false;
             } else {
-                $('#ticket-Customer').closest('.form-group').removeClass('hasError');
+                $('#ticket-Customer').closest('.form-horizontal').removeClass('hasError');
             }
         }
 
@@ -1586,9 +1586,9 @@ function LoadTicketControls() {
 
             if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
                 if ($('#ticket-group').val() == "") {
-                    $('#ticket-group').closest('.form-group').addClass('hasError');
+                    $('#ticket-group').closest('.form-horizontal').addClass('hasError');
                 } else {
-                    $('#ticket-group').closest('.form-group').removeClass('hasError');
+                    $('#ticket-group').closest('.form-horizontal').removeClass('hasError');
                 }
             }
         });
@@ -1812,11 +1812,11 @@ function SetupTicketPropertyEvents() {
         if (GroupID == '-1') {
             GroupID = null;
             if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
-                $('#ticket-group').closest('.form-group').addClass('hasError');
+                $('#ticket-group').closest('.form-horizontal').addClass('hasError');
             }
+        } else {
+            $('#ticket-group').closest('.form-horizontal').removeClass('hasError');
         }
-        else
-            $('#ticket-group').closest('.form-group').removeClass('hasError');
         if (GroupID !== ((_ticketGroupID !== null) ? _ticketGroupID.toString() : _ticketGroupID)) {
             window.parent.Ts.Services.Tickets.SetTicketGroup(_ticketID, GroupID, function (result) {
                 if (result !== null) {
@@ -1964,11 +1964,11 @@ function SetupCustomerSection() {
             create: function (input, callback) {
                 $('#NewCustomerModal').modal('show');
                 callback(null);
-                $('#ticket-Customers-Input').closest('.form-group').removeClass('hasError');
+                $('#ticket-Customers-Input').closest('.form-horizontal').removeClass('hasError');
             },
             onItemAdd: function (value, $item) {
                 if (this.settings.initData === false) {
-                    $('#ticket-Customers-Input').closest('.form-group').removeClass('hasError');
+                    $('#ticket-Customers-Input').closest('.form-horizontal').removeClass('hasError');
                     var customerData = $item.data();
 
                     window.parent.Ts.Services.Tickets.AddTicketCustomer(_ticketID, customerData.type, value, function (customers) {
@@ -2405,7 +2405,7 @@ function SetupProductSection() {
         $('#ticket-Versions').change(function (e) {
             window.parent.Ts.System.logAction('Ticket - Reported Version Changed');
             window.parent.Ts.Services.Tickets.SetReportedVersion(_ticketID, $(this).val(), function (result) {
-                $('#ticket-Versions').closest('.form-group').removeClass('hasError');
+                $('#ticket-Versions').closest('.form-horizontal').removeClass('hasError');
                 window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changereported", userFullName);
             },
             function (error) {
@@ -2416,7 +2416,7 @@ function SetupProductSection() {
         $('#ticket-Resolved').change(function (e) {
             window.parent.Ts.System.logAction('Ticket - Resolved Version Changed');
             window.parent.Ts.Services.Tickets.SetSolvedVersion(_ticketID, $(this).val(), function (result) {
-                $('#ticket-Resolved').closest('.form-group').removeClass('hasError');
+                $('#ticket-Resolved').closest('.form-horizontal').removeClass('hasError');
                 window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "changeresolved", userFullName);
             },
             function (error) {
@@ -2477,9 +2477,9 @@ function LoadGroups() {
         });
     }
     if ($('#ticket-group').val() == -1) {
-        $('#ticket-group').closest('.form-group').addClass('hasError');
+        $('#ticket-group').closest('.form-horizontal').addClass('hasError');
     } else {
-        $('#ticket-group').closest('.form-group').removeClass('hasError');
+        $('#ticket-group').closest('.form-horizontal').removeClass('hasError');
     }
 }
 
@@ -2588,9 +2588,9 @@ function SetProductVersionAndResolved(versionId, resolvedId) {
 
     window.parent.Ts.Services.Organizations.IsProductVersionRequired(function (IsProductVersionRequired) {
         if (IsProductVersionRequired && (versionId == null && resolvedId == null)) {
-            $('#ticket-Versions').closest('.form-group').addClass('hasError');
+            $('#ticket-Versions').closest('.form-horizontal').addClass('hasError');
         } else {
-            $('#ticket-Versions').closest('.form-group').removeClass('hasError');
+            $('#ticket-Versions').closest('.form-horizontal').removeClass('hasError');
         }
     });
 };
@@ -3207,9 +3207,9 @@ var AddCustomFieldEdit = function (field, parentContainer) {
         var value = input.val();
 
         if (field.IsRequired && (value === null || $.trim(value) === '')) {
-            groupContainer.addClass('hasError');
+            formcontainer.addClass('hasError');
         } else {
-            groupContainer.removeClass('hasError');
+            formcontainer.removeClass('hasError');
         }
         if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
             groupContainer.addClass('hasCloseError');
@@ -3234,16 +3234,16 @@ var AddCustomFieldEdit = function (field, parentContainer) {
     });
 
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
-        groupContainer.addClass('hasError');
+        formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
-        groupContainer.addClass('hasCloseError');
+        formcontainer.addClass('hasCloseError');
     }
     if (field.IsRequiredToClose) {
-        groupContainer.addClass('isRequiredToClose');
+        formcontainer.addClass('isRequiredToClose');
     }
     if (field.Value === null || $.trim(field.Value) === '') {
-        groupContainer.addClass('isEmpty');
+        formcontainer.addClass('isEmpty');
     }
 }
 
@@ -3278,9 +3278,9 @@ var AddCustomFieldDate = function (field, parentContainer) {
               }
 
               if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                  groupContainer.addClass('hasError');
+                  formcontainer.addClass('hasError');
               } else {
-                  groupContainer.removeClass('hasError');
+                  formcontainer.removeClass('hasError');
               }
               if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
                   groupContainer.addClass('hasCloseErrory');
@@ -3309,16 +3309,16 @@ var AddCustomFieldDate = function (field, parentContainer) {
     });
 
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
-        groupContainer.addClass('hasError');
+        formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
-        groupContainer.addClass('hasCloseError');
+        formcontainer.addClass('hasCloseError');
     }
     if (field.IsRequiredToClose) {
-        groupContainer.addClass('isRequiredToClose');
+        formcontainer.addClass('isRequiredToClose');
     }
     if (field.Value === null || $.trim(field.Value) === '') {
-        groupContainer.addClass('isEmpty');
+        formcontainer.addClass('isEmpty');
     }
 
 }
@@ -3353,9 +3353,9 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
                 value = window.parent.Ts.Utils.getMsDate(currDate);
             }
             if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                groupContainer.addClass('hasError');
+                formcontainer.addClass('hasError');
             } else {
-                groupContainer.removeClass('hasError');
+                formcontainer.removeClass('hasError');
             }
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
                 groupContainer.addClass('hasCloseErrory');
@@ -3384,16 +3384,16 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
     });
 
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
-        groupContainer.addClass('hasError');
+        formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
-        groupContainer.addClass('hasCloseError');
+        formcontainer.addClass('hasCloseError');
     }
     if (field.IsRequiredToClose) {
-        groupContainer.addClass('isRequiredToClose');
+        formcontainer.addClass('isRequiredToClose');
     }
     if (field.Value === null || $.trim(field.Value) === '') {
-        groupContainer.addClass('isEmpty');
+        formcontainer.addClass('isEmpty');
     }
 }
 
@@ -3427,9 +3427,9 @@ var AddCustomFieldTime = function (field, parentContainer) {
                 value = window.parent.Ts.Utils.getMsDate("1/1/1900 " + currDate);
             }
             if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                groupContainer.addClass('hasError');
+                formcontainer.addClass('hasError');
             } else {
-                groupContainer.removeClass('hasError');
+                formcontainer.removeClass('hasError');
             }
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
                 groupContainer.addClass('hasCloseErrory');
@@ -3458,7 +3458,7 @@ var AddCustomFieldTime = function (field, parentContainer) {
     });
 
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
-        groupContainer.addClass('hasError');
+        formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
         groupContainer.addClass('hasCloseError');
@@ -3505,9 +3505,9 @@ var AddCustomFieldNumber = function (field, parentContainer) {
         var value = input.val();
 
         if (field.IsRequired && (value === null || $.trim(value) === '')) {
-            groupContainer.addClass('hasError');
+            formcontainer.addClass('hasError');
         } else {
-            groupContainer.removeClass('hasError');
+            formcontainer.removeClass('hasError');
         }
         if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
             groupContainer.addClass('hasCloseError');
@@ -3530,7 +3530,7 @@ var AddCustomFieldNumber = function (field, parentContainer) {
     });
 
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
-        groupContainer.addClass('hasError');
+        formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
         groupContainer.addClass('hasCloseError');
@@ -3556,7 +3556,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
     if (field.Value == "") {
         $('<option>').text("unassigned").val("").appendTo(select);
         if (field.IsRequired) {
-            groupContainer.addClass('hasError');
+            formcontainer.addClass('hasError');
         }
     }
     for (var i = 0; i < options.length; i++) {
@@ -3568,9 +3568,9 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
         allowEmptyOption: true,
         onItemAdd: function (value, $item) {
             if (field.IsRequired && field.IsFirstIndexSelect == true && (value == "" || field.ListValues.split("|")[0] == value)) {
-                groupContainer.addClass('hasError');
+                formcontainer.addClass('hasError');
             } else {
-                groupContainer.removeClass('hasError');
+                formcontainer.removeClass('hasError');
             }
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && field.IsFirstIndexSelect == true && value == "") {
                 groupContainer.addClass('hasCloseError');
@@ -3602,7 +3602,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
 
     var items = field.ListValues.split('|');
     if (field.IsRequired && ((field.IsFirstIndexSelect == true && (items[0] == field.Value || field.Value == null || $.trim(field.Value) === '')) || (field.Value == null || $.trim(field.Value) === ''))) {
-        groupContainer.addClass('hasError');
+        formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && ((field.IsFirstIndexSelect == true && (items[0] == field.Value || field.Value == null || $.trim(field.Value) === '')) || (field.Value == null || $.trim(field.Value) === ''))) {
         groupContainer.addClass('hasCloseError');
