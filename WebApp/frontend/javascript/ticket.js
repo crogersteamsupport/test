@@ -2451,7 +2451,8 @@ function LoadProductList(products) {
             onDropdownClose: function ($dropdown) {
                 $($dropdown).prev().find('input').blur();
             },
-            closeAfterSelect: true
+            closeAfterSelect: true,
+            // placeholder: 'unassigned'
         });
 
         if (_ticketInfo.Ticket.ProductID == null) {
