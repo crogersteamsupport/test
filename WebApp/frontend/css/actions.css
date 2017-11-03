@@ -231,3 +231,9 @@ div.ticket-badge > div > a:hover,
 div.ticket-badge > div > a:focus {
     color:white;
 }
+
+
+
+.ticket-action-pinned {
+    color: #fb9915 !important;
+}
