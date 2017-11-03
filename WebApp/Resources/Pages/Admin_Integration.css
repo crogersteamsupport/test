@@ -1195,3 +1195,7 @@ button.close {
 .ui-combobox-input {
 	height: 10px !important;
 }
+
+.int-jiraInstances {
+	height: 10px;
+}

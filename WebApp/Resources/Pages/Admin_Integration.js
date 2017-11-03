@@ -1383,7 +1383,7 @@ AdminInt = function () {
                 }
             }
 
-            $('.int-jiraInstances').combobox({
+			$('#JiraInstances').combobox({
                 selected: function (e, ui) {
                     _selectedJiraInstance = $(this).val();
 
