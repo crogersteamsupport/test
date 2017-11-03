@@ -219,6 +219,11 @@ $(document).ready(function () {
 
 });
 
+$(document).on('click', '#link-file', function (e) {
+    teamsupport.journal('here');
+    $('#input-file').trigger('click');
+})
+
 function LoadTicketPageOrder() {
     parent.Ts.Services.TicketPage.GetTicketPageOrder("NewTicketFieldsOrder", function (order) {
         jQuery.each(order, function (i, val) { if (val.Disabled == "false") AddTicketProperty(val); });

@@ -276,15 +276,10 @@ $(document).ready(function () {
 
 
 
-
-
-
-
-
-
-
-
-
+$(document).on('click', '#link-file', function (e) {
+    teamsupport.journal('here');
+    $('#input-file').trigger('click');
+})
 
 
 

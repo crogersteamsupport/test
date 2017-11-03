@@ -384,30 +384,36 @@ div.popover {
 
 
 
-form.file-upload {
-    position:relative;
-    overflow:hidden;
-    direction:ltr;
-    cursor:pointer;
-    color:blue;
-    width:15em;
-    height:16px;
-    line-height:16px;
-    float:left;
-    margin-top:0em;
-    padding-left:10px;
+
+
+
+
+.upload-queue {
+    display:inline-block;
+    list-style:none;
+    padding: 10px;
+    margin-bottom:15px;
 }
-form.file-upload input {
-    position:absolute;
-    top:0;
-    right:0;
-    margin:0;
-    border:3px solid transparent;
-    opacity:0;
-    -ms-filter:'alpha(opacity=0)';
-    filter:alpha(opacity=0);
-    -o-transform:translate(-300px, -300px) scale(10);
-    -moz-transform:translate(-800px, 0) scale(10);
-    cursor:pointer;
-    height:100%;
+.upload-queue li {
+    padding: 0;
+    margin: 0;
+    clear:both;
+}
+
+#input-file {
+    display:none;
+}
+
+
+.upload-queue .ts-color-bg-accent { margin-bottom: .25em; padding: .25em .25em; float:left; }
+.upload-queue li .filename { line-height: 16px; float:left;}
+.upload-queue li .progress { height: 7px; width: 100px; float:left; margin: 4px .25em 0 1em; }
+.upload-queue li .ui-icon {
+    float: left;
+    padding: 0;
+    cursor: pointer;
+    margin-left: .25em;
+    background-position: -80px -128px;
+    width: 16px;
+    height: 16px;
 }
