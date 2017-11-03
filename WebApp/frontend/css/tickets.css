@@ -153,8 +153,9 @@ button:focus {
 
 
 #ticket-properties-area .form-horizontal {
-    min-height:40px;
-    margin-bottom:10px;
+    min-height:20px;
+    margin-bottom:25px;
+    padding:5px 0px;
 }
 #ticket-properties-area .tagContainer,
 #ticket-properties-area .taskContainer {
@@ -178,7 +179,7 @@ button:focus {
 
 
 #ticket-properties-area .selectize-input {
-    padding:0px 0px 5px;
+    padding:0px;
     border:none;
     background:none;
     box-shadow:none;
@@ -201,9 +202,9 @@ button:focus {
 }
 
 #ticket-properties-area .form-horizontal.hasError {
-    border-top:1px solid rgba(255,0,0,0.3);
-    border-bottom:1px solid rgba(255,0,0,0.3);
-    background-color:rgba(255,0,0,0.1);
+    border-top:1px solid rgba(255,0,0,0.2);
+    border-bottom:1px solid rgba(255,0,0,0.2);
+    background-color:rgba(255,0,0,0.05);
 }
 #ticket-properties-area .form-horizontal.hasError .form-label {
     font-weight: bold;
