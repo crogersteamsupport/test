@@ -312,7 +312,7 @@ label.error {
 
 
 .mce-tinymce .mce-panel { background: #fcfdfd; filter:none;}
-.mce-tinymce.mce-container { border: 0px solid #fcfdfd; }
+.mce-tinymce.mce-container { border: 1px solid rgba(0,0,0,0.1); }
 .mce-tinymce .mce-edit-area { border: 0px solid #fcfdfd;}
 .mce-tinymce .mce-toolbar-grp { padding-bottom: 5px;}
 .mce-tinymce .mce-btn { background: #f3f3f3; border-color: #dadada; box-shadow: none; filter:none;}

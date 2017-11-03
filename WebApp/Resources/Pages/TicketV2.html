@@ -3,42 +3,43 @@
     <head>
         <title></title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="../Css/jquery-ui-bs3.min.css" rel="stylesheet" type="text/css" />
-        <link href="../Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-        <link href="../Css/tsbs.css?1506975179" rel="stylesheet" type="text/css" />
+        <link href="../Css/jquery-ui-bs3.min.css" rel="stylesheet" type="text/css">
+        <link href="../Css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href="../Css/tsbs.css?1509720845" rel="stylesheet" type="text/css">
         <link href="../Css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css">
-        <link href="../Css/selectize.bootstrap3.css" rel="stylesheet" />
-        <link href="../Css/jquery.cluetip.css" rel="stylesheet" type="text/css" />
-        <link href="../Css/ts.editor.css" rel="stylesheet" />
-        <link href="../Css/prism.css" rel="stylesheet" />
-        <!--[if IE]><link href="../Css/tsbs-ie.css" rel="stylesheet" type="text/css" /><![endif]-->
+        <!--<link href="../Css/selectize.bootstrap3.css" rel="stylesheet">-->
+        <link href="/frontend/library/selectize/css/selectize.default.css?1509720845" rel="stylesheet" type="text/css">
+        <link href="../Css/jquery.cluetip.css" rel="stylesheet" type="text/css">
+        <link href="../Css/ts.editor.css" rel="stylesheet">
+        <link href="../Css/prism.css" rel="stylesheet">
+        <!--[if IE]><link href="../Css/tsbs-ie.css" rel="stylesheet" type="text/css"><![endif]-->
         <link href="../Css/tipTip.css" rel="stylesheet" type="text/css">
 
         <!-- BOOTSTRAP -->
-        <link rel="stylesheet" type="text/css" href="/frontend/bootstrap-3.3.7/css/bootstrap.min.css?1506975179">
+        <link rel="stylesheet" type="text/css" href="/frontend/bootstrap-3.3.7/css/bootstrap.min.css?1509720845">
 
         <!-- CUSTOM CSS -->
-        <link rel="stylesheet" type="text/css" href="/frontend/css/standards.css?1506975179">
-        <link rel="stylesheet" type="text/css" href="/frontend/css/ticket.css?1506975179">
-        <link rel="stylesheet" type="text/css" href="/frontend/css/action.css?1506975179">
+        <link rel="stylesheet" type="text/css" href="/frontend/css/standards.css?1509720845">
+        <link rel="stylesheet" type="text/css" href="/frontend/css/tickets.css?1509720845">
+        <link rel="stylesheet" type="text/css" href="/frontend/css/actions.css?1509720845">
 
-        <!--<script src="../Js/deployJava.js"  type="text/javascript"></script>-->
         <script src="../Js/Ts/ts.pendo.js"></script>
         <script src="../Js/browser.js" type="text/javascript"></script>
         <script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
         <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
         <script src="../Js/jquery.placeholder.js" type="text/javascript"></script>
-        <script src="/frontend/bootstrap-3.3.7/js/bootstrap.min.js?1506975179" type="text/javascript"></script>
+        <script src="/frontend/bootstrap-3.3.7/js/bootstrap.min.js" type="text/javascript"></script>
         <script src="../Js/moment.min.js" type="text/javascript"></script>
         <script src="../Js/bootstrap-datetimepicker.min.js"></script>
         <script src="../Js/respond.js" type="text/javascript"></script>
         <script src="../Js/jquery.cluetip.js" type="text/javascript"></script>
         <script src="../Js/Ts/ts.ui.hovers.js"></script>
         <script src="../Js/jquery.fileupload.js" type="text/javascript"></script>
-        <script src="/tinymce/tinymce.js?1506975179" type="text/javascript"></script>
+        <script src="/tinymce/tinymce.js?1509720845" type="text/javascript"></script>
         <script src="/tinymce/jquery.tinymce.min.js" type="text/javascript"></script>
         <script src="../Js/selectize.min.js"></script>
-        <script src="../Js/Ts/ts.editor.js?1506975179"></script>
+        <!-- <script src="/frontend/library/selectize/js/standalone/selectize.min.js?1509720845" type="text/javascript"></script> -->
+        <script src="../Js/Ts/ts.editor.js?1509720845"></script>
         <script src="../Js/jquery.numeric.js" type="text/javascript"></script>
         <script src="../Js/jquery.maskedinput.min.js" type="text/javascript"></script>
         <script src="../Js/jquery.jplayer.min.js" type="text/javascript"></script>
@@ -52,22 +53,22 @@
         <script src="../Js/jquery.tipTip.minified.js" type="text/javascript"></script>
         <script src="../../../tinymce/plugins/moxiemanager/js/moxman.loader.min.js"></script>
 
-        <!-- RESOURCE. -->
-        <script src="/frontend/javascript/teamsupport.js?1506975179" type="text/javascript"></script>
-        <script src="/frontend/javascript/ticket.js?1506975179" type="text/javascript"></script>
+        <!-- RESOURCES. -->
+        <script src="/frontend/javascript/teamsupport.js?1509720845" type="text/javascript"></script>
+        <script src="/frontend/javascript/ticket.js?1509720845" type="text/javascript"></script>
 
         <!-- HANDLEBARS. -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.runtime.js"></script>
-        <script src="/frontend/library/handlebars.js?1506975179" type="text/javascript"></script>
-        <script src="/frontend/handlebars/ticket.js?1506975179" type="text/javascript"></script>
+        <script src="/frontend/library/handlebars.js?1509720845" type="text/javascript"></script>
+        <script src="/frontend/handlebars/ticket.js?1509720845" type="text/javascript"></script>
 
     </head>
 
-    <body style="background-color:#eeeeee;">
+    <body id="body">
 
         <div class="ts-loading page-loading"></div>
 
-        <div id="ticketmenu-container" style="padding:10px;width:100%;">
+        <div id="menu-container">
             <div id="ticketmenu-buttons" class="flexbox flexalign" style="margin:0px 0px;space-between:10px;">
                 <div id="ticketmenu-actions-lg" class="flexcell" style="margin-right:10px;">
                     <div class="btn-group" role="group" aria-label="..." style="display:inline-block;">
@@ -131,22 +132,26 @@
             </div>
         </div>
 
-        <div id="frame-container" class="frame-container" style="width:100%;max-width:100%;display:none">
-            <div id="ticketpage" class="ticketpage flexbox" style="width:100%;max-width:100%;">
-                <div id="ticketpane" class="flexpush">
-                    <div id="ticket-content-wrapper" class="ticket-content-wrapper">
+        <div id="frame-container" style="top:50px;display:none">
+            <div id="page-container" class="ticketpage flexbox">
+                <div id="page-primary" class="flexpush">
+
+                    <div id="spacer-primary" class="ticket-content-wrapper">
                         <div id="ticket-timeline" class="ticket-timeline">
                             <div id="ticket-now-viewing" class="panel panel-default" style="display:none;margin-bottom:5px;">
                                 <p class="text-muted" style="margin:5px;">Chat With Others Viewing: <span id="ticket-viewing-users"></span></p>
                             </div>
                             <div id="action-timeline" class="timeline"></div>
                             <div class="timeline-done"></div>
-                            <div class="results-loading"><i class="fa fa-spinner fa-spin"></i></div>
+                            <div class="results-loading"><i class="fa fa-spinner fa-pulse fa-3x fa-fw" style="margin:50px;"></i></div>
                         </div>
                     </div>
+
                 </div>
-                <div id="sidebarpane" class="flexpull">
+                <div id="page-sidebar" class="flexpull">
+
                     <div id="ticket-properties-area" class="ticket-property-section" style="padding-bottom:50px;"></div>
+
                 </div>
             </div>
         </div>
@@ -159,8 +164,8 @@
 
     <div id="dialog" title="Alert Message">
         <div id="modalAlertMessage"></div>
-        <input type="hidden" id="alertType" />
-        <input type="hidden" id="alertID" />
+        <input type="hidden" id="alertType">
+        <input type="hidden" id="alertID">
     </div>
     <div id="ChromeInstallModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
@@ -215,7 +220,7 @@
                     </div>
                     <div class="form-group">
                         <label for="ticket-reminder-date">When do you want to be reminded?</label>
-                        <input id="ticket-reminder-date" type='text' class="form-control" />
+                        <input id="ticket-reminder-date" type='text' class="form-control">
                     </div>
                     <div class="form-group">
                         <label for="ticket-reminder-who">Who do you want to remind?</label>
@@ -249,7 +254,7 @@
                         <p>You can only choose one Ticket. If you'd like to merge more than two tickets together just go through the merge process again after the merge you are performing now is done.</p>
                     </div>
 
-                    <input type="text" id="Ticket-Merge-search" class="form-control" placeholder="Search for the ticket you want to merge ..." />
+                    <input type="text" id="Ticket-Merge-search" class="form-control" placeholder="Search for the ticket you want to merge ...">
 
                     <div class="ui-helper-hidden" id="dialog-ticketmerge-preview" style="padding-top: 10px;">
                         <div id="ticketmerge-preview-details">Here is some basic information about the ticket you have selected :</div>
@@ -372,7 +377,7 @@
                         <button class="btn btn-default btn-block ticket-association" data-isparent="false">Parent</button>
                         <button class="btn btn-default btn-block ticket-association" data-isparent="true">Child</button>
                     </div>
-                    <br />
+                    <br>
                     <div id="associate-success" class="alert alert-success" role="alert" style="display:none;">Ticket Associated!</div>
                     <div id="associate-error" class="alert alert-danger" role="alert" style="display:none;"></div>
                 </div>
@@ -390,7 +395,7 @@
                     <div class="form-group">
                         <div class="dialog-select-ticket2" title="Select a Ticket">
                             <p>Search a ticket number or description:</p>
-                            <input type="text" class="text ui-corner-all ui-widget-content" style="width:50%;" id="dialog-select-ticket2-input" />
+                            <input type="text" class="text ui-corner-all ui-widget-content" style="width:50%;" id="dialog-select-ticket2-input">
                         </div>
                     </div>
                     <p>Or select a suggested solution:</p>

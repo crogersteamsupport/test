@@ -23,18 +23,6 @@ input {
 
 
 
-#frame-container {
-    position:absolute !important;
-    top:50px;
-    bottom:0px;
-    padding-top:0px;
-    height: auto !important;
-    border: none;
-    overflow-x:hidden;
-    overflow-y:auto;
-    height:100%;
-
-}
 #ticketpage {
     border:none;
     overflow:auto;
@@ -71,11 +59,7 @@ input {
     right:30px;
     z-index:2000;
 }
-#ticketmenu-container {
-    background-color:rgba(255,255,255,0.8);
-    box-shadow: 0px 2px 0px rgba(0,0,0,0.1);
-    min-height:50px;
-}
+
 #ticketpane {
     width:100%;
 }
@@ -124,14 +108,7 @@ input {
 
 
 
-#ticket-properties-area {
-    padding-top:10px;
-    background-color:rgba(255,255,255,0.7);
-    width:300px;
-    padding-right:10px;
-    padding-left:10px;
-    margin-bottom:20px;
-}
+
 #ticket-properties-area .form-group {
     padding-top:0px;
     margin:0px;
@@ -172,15 +149,6 @@ input {
 
 
 
-
-#ticket-properties-area .selectize-input input {
-
-}
-
-
-#ticket-properties-area .selectize-control.single .selectize-input:after {
-    display:none;
-}
 
 
 
@@ -236,15 +204,8 @@ div.form-group input {
     background-color:transparent;
 }
 
-.form-group-sm .selectize-input {
-    font-size:12px;
-    padding:0px;
-    min-height:30px;
-    overflow:inherit;
-}
-.form-group-sm .selectize-input .item,
-.form-group-sm .selectize-input .option,
-.form-group-sm .selectize-input input,
+
+
 .form-group-sm .control-label {
     padding:5px !important;
     min-height:20px;
@@ -259,39 +220,13 @@ div.form-group input {
     font-weight:normal;
 }
 
-.form-horizontal .form-label {
-    padding:5px 5px 0px 5px;
-    text-align:left;
-    vertical-align:top;
-    font-size: 11px;
-    color:rgba(0,0,0,0.6);
-}
+
 
 .form-horizontal .form-input, .ticket-input-container {
     background-color:rgba(255,255,255,0.5);
     padding-left:5px;
     padding-right:0px;
     min-height:40px;
-}
-.selectize-input,
-.selectize-control.single .selectize-input.input-active {
-    cursor: text;
-    display: inline-block;
-    border-radius:0px;
-    text-align:left;
-    background-color:transparent;
-    padding:0px;
-    min-height:initial;
-}
-.selectize-input.full {
-    border-radius:0px;
-    text-align:left;
-    background-color: transparent;
-}
-.selectize-control {
-    font-size:12px;
-    font-weight:normal;
-    min-height:20px;
 }
 
 
@@ -606,57 +541,7 @@ button.ticket-option {
     top:-1px;
 }
 
-div.ticket-badge {
-    -webkit-transition:box-shadow .218s ease,background-color .218s ease,max-width .218s step-end;
-    transition:box-shadow .218s ease,background-color .218s ease,max-width .218s step-end;
-    font-size:12px;
-}
 
-div.timeline-panel > div.ticket-badge {
-    margin:30px 0 0 0;
-    position:absolute;
-    right:0;
-    top:0;
-}
-
-div.ticket-badge > div {
-    float:right;
-    clear:both;
-    height:20px;
-    line-height:20px;
-}
-
-div.ticket-badge > div > span {
-    float:right;
-    height:20px;
-    margin-right:-4px;
-    padding-right:4px;
-    width:0;
-}
-
-div.ticket-badge > div > a {
-    -webkit-transition:opacity .218s ease,max-width .218s step-end,visibility .218s step-end;
-    transition:opacity .218s ease,max-width .218s step-end,visibility .218s step-end;
-    padding:0 7px;
-    cursor:pointer;
-    color:white;
-    font-size:small;
-    font-weight:bold;
-}
-
-div.ticket-badge > div > label {
-    -webkit-transition:opacity .218s ease,max-width .218s step-end,visibility .218s step-end;
-    transition:opacity .218s ease,max-width .218s step-end,visibility .218s step-end;
-    padding:0 10px;
-    color:white;
-    font-size:small;
-    font-weight:bold;
-}
-
-div.ticket-badge > div > a:hover,
-div.ticket-badge > div > a:focus {
-    color:white;
-}
 .UserAnchor {
     cursor:pointer;
     display:inline-block;
@@ -699,11 +584,13 @@ div.ticket-badge > div > a:focus {
     margin-right:10px;
 }
 
-    /*New Action Styles*/
+
+
+
+
 .action-new-area,
 .watercooler-new-area {
-    -webkit-box-shadow:0 1px 6px rgba(0, 0, 0, 0.175);
-    box-shadow:0 1px 6px rgba(0, 0, 0, 0.175);
+    box-shadow:3px 3px 0px rgba(0, 0, 0, 0.1);
     border:1px solid #d4d4d4;
     margin-bottom:5px;
     background-color:white;
@@ -807,7 +694,7 @@ form.file-upload {
     margin-top:0em;
     padding-left:10px;
 }
-form.file-upload input {
+form.file-upload input {f
     position:absolute;
     top:0;
     right:0;
@@ -821,7 +708,7 @@ form.file-upload input {
     cursor:pointer;
     height:100%;
 }
-    :root form.file-upload input {
+:root form.file-upload input {
     height:auto;
 }
 .ui-progressbar-value {
@@ -1014,10 +901,7 @@ div.timeline-wc-response > .user-avatar {
 
 
 
-#ticket-properties-area > hr {
-    margin:4px -15px 4px -15px;
-    border-top:1px solid #D9D9D9;
-}
+
 #ticket-group-custom-fields > hr {
     margin:4px -15px 4px -15px;
     border-top:1px solid #D9D9D9;
@@ -1056,47 +940,32 @@ div.timeline-wc-response > .user-avatar {
 }
 
 
-.hidden-select > .selectize-input {
-    border:none;
-}
 
 
 
 
 
-.selectize-control.single .selectize-input:after {
-    display:none;
-}
-
-#ticket-properties-area .selectize-input input::-webkit-input-placeholder,
 #ticket-tag-Input::-webkit-input-placeholder {
     color:#428bca;
     opacity:1;
     /*text-decoration:underline;*/
 }
 
-#ticket-properties-area .selectize-input input:-moz-placeholder,
+
  #ticket-tag-Input:-moz-placeholder {
     /* Firefox 18- */
     color:#428bca;
     opacity:1;
 }
 
-#ticket-properties-area .selectize-input input::-moz-placeholder,
 #ticket-tag-Input::-moz-placeholder {
     /* Firefox 19+ */
     color:#428bca;
     opacity:1;
 }
 
-#ticket-properties-area .selectize-input > input {
-    cursor:pointer;
-}
 
-.muted-placeholder::-webkit-input-placeholder,
-.muted-placeholder .selectize-input input::-webkit-input-placeholder {
-    color:#D4D4D4 !important;
-}
+
 
 
 
@@ -1165,16 +1034,7 @@ div.timeline-wc-response > .user-avatar {
     font-style:italic;
     text-decoration:line-through;
 }
-.hasError label, .hasError .selectize-input {color:#cd0a0a !important;
-    font-weight:bold}
-.hasError .selectize-input {
-    border:1px solid #a94442 !important;
-}
 
-.fieldError label, .fieldError .selectize-input {color:#cd0a0a !important}
-.fieldError .selectize-input {
-    border:1px solid #a94442 !important;
-}
 
     /*.jiraLink {
     font-size:10px;
