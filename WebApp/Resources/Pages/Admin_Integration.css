@@ -1197,5 +1197,5 @@ button.close {
 }
 
 .int-jiraInstances {
-	height: 10px;
+	height: 10px !important;
 }
