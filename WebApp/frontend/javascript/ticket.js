@@ -274,16 +274,6 @@ $(document).ready(function () {
     $('textarea.autogrow').autogrow();
 });
 
-
-
-$(document).on('click', '#link-file', function (e) {
-    teamsupport.journal('here');
-    $('#input-file').trigger('click');
-})
-
-
-
-
 var loadTicket = function (ticketNumber, refresh) {
     window.parent.Ts.Services.Tickets.GetTicketInfo(_ticketNumber, function (info) {
         _ticketInfo = info;
@@ -1529,9 +1519,9 @@ function LoadTicketControls() {
                 render: {
                     option: function (item, escape) {
                         var optionlabel = item.text;
-                        console.log(item);
-                        if (item.data.InOfficeMessage) optionlabel = optionlabel + ' - ' + item.data.InOfficeMessage;
-
+                        if (item.data.InOfficeMessage) {
+                            optionlabel = optionlabel + ' - ' + item.data.InOfficeMessage;
+                        }
                         if (item.data.IsSender && item.data.IsCreator) {
                             return '<div data-value="' + escape(item.value) + '" data-selectable="" class="option">' + optionlabel + ' (Sender and Creator)</div>';
                         } else if (item.data.IsSender) {
@@ -3710,7 +3700,6 @@ var SetupStatusField = function (StatusId) {
             },
             render: {
                 item: function (item, escape) {
-                    console.log(item);
                     if (item.data.IsClosed) {
                         return '<div data-value="' + escape(item.value) + '" data-item="' + escape(item.data) + '" data-selectable="" class="option"><s>' + escape(item.text) + '</s></div>';
                     } else {
