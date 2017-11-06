@@ -219,10 +219,6 @@ $(document).ready(function () {
 
 });
 
-$(document).on('click', '#link-file', function (e) {
-    teamsupport.journal('here');
-    $('#input-file').trigger('click');
-})
 
 function LoadTicketPageOrder() {
     parent.Ts.Services.TicketPage.GetTicketPageOrder("NewTicketFieldsOrder", function (order) {
@@ -1080,50 +1076,34 @@ function update() {
 }
 
 function SetupUploadQueue() {
-    var element = $('.upload-area');
-    $('.file-upload').fileupload({
+    var element = $('#file-uploads');
+    $('#file-upload').fileupload({
         namespace: 'new_action',
         dropZone: element,
         add: function (e, data) {
             for (var i = 0; i < data.files.length; i++) {
-                var item = $('<li>')
-                .appendTo(element.find('.upload-queue'));
-
+                var item = $('<li>').appendTo(element.find('.upload-queue'));
                 data.context = item;
                 item.data('data', data);
 
-                var bg = $('<div>')
-                .appendTo(item);
+                var bg = $('<div>').appendTo(item);
 
-                $('<div>')
-                .text(data.files[i].name + '  (' + parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
-                .addClass('filename')
-                .appendTo(bg);
+                $('<div>').text(data.files[i].name + '  (' + parent.Ts.Utils.getSizeString(data.files[i].size) + ')').addClass('filename').appendTo(bg);
 
-                $('<div>')
-                .addClass('progress')
-                .hide()
-                .appendTo(bg);
+                $('<div>').addClass('progress').hide().appendTo(bg);
 
-                $('<span>')
-                .addClass('ui-icon ui-icon-close')
-                .click(function (e) {
+                $('<span>').addClass('ui-icon ui-icon-close').click(function (e) {
                     e.preventDefault();
                     $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
-                })
-                .appendTo(bg);
+                }).appendTo(bg);
 
                 //<span class="tagRemove" aria-hidden="true">×</span>
 
-                $('<span>')
-                .addClass('ui-icon ui-icon-cancel')
-                .hide()
-                .click(function (e) {
+                $('<span>').addClass('ui-icon ui-icon-cancel').hide().click(function (e) {
                     e.preventDefault();
                     var data = $(this).closest('li').data('data');
                     data.jqXHR.abort();
-                })
-                .appendTo(bg);
+                }).appendTo(bg);
             }
 
         },

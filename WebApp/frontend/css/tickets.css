@@ -381,11 +381,6 @@ div.popover {
 }
 
 
-
-
-
-
-
 .upload-queue {
     display:inline-block;
     list-style:none;
@@ -398,10 +393,9 @@ div.popover {
     clear:both;
 }
 
-#input-file {
+#file-input {
     display:none;
 }
-
 
 .upload-queue .ts-color-bg-accent { margin-bottom: .25em; padding: .25em .25em; float:left; }
 .upload-queue li .filename { line-height: 16px; float:left;}
