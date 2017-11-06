@@ -237,3 +237,52 @@ div.ticket-badge > div > a:focus {
 .ticket-action-pinned {
     color: #fb9915 !important;
 }
+
+
+
+.wcTooltip {
+    color:#3276B1;
+    margin-right:10px;
+}
+.wc-avatar {
+    border: medium none;
+    margin: 4px 0px 0px -58px;
+    height: 48px;
+}
+span.wc-option {
+    background-color: #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    float: left;
+    height: 35px;
+    line-height: 35px;
+    padding: 0 10px;
+    color: #428bca;
+    font-weight: bold;
+    margin-left: 10px;
+}
+div.wc-option-replyarea {
+    margin-left: 55px;
+    height: 35px;
+    line-height: 35px;
+    padding-left: 10px;
+    margin-right: 10px;
+    background-color: #fff;
+    border: 1px solid #d9d9d9;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+}
+div.wc-textarea {
+    margin-left: 55px;
+    margin-right: 10px;
+    margin-bottom: 40px;
+}
+
+.timeline-wc-reply {
+    border-bottom: 0px none;
+    margin: 0px;
+    min-height: 0px;
+    vertical-align: top;
+    padding: 0px 20px 16px 68px;
+}
