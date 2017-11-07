@@ -3984,7 +3984,7 @@ function validateEmail(email) {
 var SetupSnowFields = function () {
 	$('#newSnowIncident').click(function (e) {
 		e.preventDefault();
-		$('.ts-tfs-buttons-container').hide();
+		$('.ts-snow-buttons-container').hide();
 		var errorMessage = "There was an error setting your ServiceNow Incident Number. Please contact TeamSupport.com";
 		window.parent.Ts.Services.Tickets.SetSyncWithSnow(_ticketID, function (result) {
 			if (result != null) {

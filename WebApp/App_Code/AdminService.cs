@@ -499,7 +499,7 @@ namespace TSWebServices
 
 			List<CRMLinkTableItem> organizationSnowLinks = organizationLinks.Where(p => p.CRMType.ToLower() == Enums.GetDescription(IntegrationType.ServiceNow).ToLower() && p.Active).ToList();
 
-			if (organizationSnowLinks != null)
+			if (organizationSnowLinks != null && organizationSnowLinks.Count > 0)
 			{
 				if (string.IsNullOrEmpty(organizationSnowLinks[0].RestrictedToTicketTypes))
 				{
