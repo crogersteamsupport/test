@@ -220,7 +220,8 @@ var initEditor = function (element, shouldResize, init, postinit) {
                 	    _mainFrame.Ts.System.logAction('Ticket - Video Screen Recording Button Clicked');
                 		if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
                 			var dynamicPub = element.parent().find("#screenShare");
-                			element.parent().find("#recordScreenContainer").show();
+                			//element.parent().find("#recordScreenContainer").show();
+                            $("#recordScreenContainer").show();
                 			dynamicPub.show();
 
                 			var clonedScreen = $('#ourPubTest').clone();
