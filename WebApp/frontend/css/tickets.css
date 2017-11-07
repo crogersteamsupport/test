@@ -433,3 +433,12 @@ div.popover {
     width:150px;
     display: inline-block;
 }
+
+
+.ticket-viewer-avatar {
+    height: 16px;
+    width: 16px;
+    margin: 0px 5px;
+    top: -1px;
+    position: relative;
+}
