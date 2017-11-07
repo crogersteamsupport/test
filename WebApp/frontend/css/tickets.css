@@ -448,3 +448,10 @@ div.popover {
 .nonrequired-field-error-font {
     color: #cd0a0a !important;
 }
+
+
+
+
+.OT_publisher {
+    display:none;
+}
