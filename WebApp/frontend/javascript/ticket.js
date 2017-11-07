@@ -440,7 +440,6 @@ function SetupTicketPage() {
 }
 
 function AddTicketProperty(item) {
-    teamsupport.journal(item);
     if (item.ItemID) {
         var html = '<div class="ticket-plugin" id="ticket-group-plugin-' + item.ItemID + '"></div>';
         $('#ticket-properties-area').append(html);
