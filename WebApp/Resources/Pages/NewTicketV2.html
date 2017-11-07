@@ -80,10 +80,34 @@
                                 <textarea id="ticket-description"></textarea>
                             </div>
 
+                            <div id="screenRecordDiv">
+                                <div id="ourPubTest" style="position:absolute !important;z-index:-99;"></div>
+                                <div id="ourPubTest2" style="position:absolute;left:-9999px;"></div>
+                            </div>
+
+                            <div style="text-align:center;display:none;" id="recordScreenContainer">
+                                <div id="statusTextScreen"></div>
+                                <div id="tokScreenCountdown">0:00</div>
+                                <button id="rcdtokScreen" class="btn btn-primary" title="Record Screen"><i class="fa fa-video-camera"></i></button>
+                                <button id="muteTokScreen" class="btn btn-primary" title="Mute Audio"><i class="fa fa-microphone"></i></button>
+                                <button id="unmuteTokScreen" class="btn btn-danger" title="Record Audio"><i class="fa fa-microphone-slash"></i></button>
+                                <button id="stoptokScreen" class="btn btn-danger" title="Stop Screen Recording"><i class="fa fa-stop"></i></button>
+                                <button id="canceltokScreen" title="Cancel Screen Recording" class="btn btn-danger"><i class="fa fa-eject"></i></button>
+                            </div>
+
+                            <div style="text-align:center;display:none;" id="recordVideoContainer">
+                                <div id="statusText"></div>
+                                <div id="publisher"></div>
+                                <button id="rcdtok" class="btn btn-primary" title="Record"><i class="fa fa-video-camera"></i></button>
+                                <button id="stoptok" class="btn btn-danger" title="Stop"><i class="fa fa-stop"></i></button>
+                                <button id="inserttok" class="btn btn-success" title="Insert Video"><i class="fa fa-cloud-upload"></i></button>
+                                <button id="canceltok" title="Cancel" class="btn btn-danger"><i class="fa fa-eject"></i></button>
+                            </div>
+
                             <div class="spacer">
                                 <div class="flexbox">
                                     <div class="flex2" style="padding-right:5px;">
-                                        <label for="action-new-date-started">Date Started:</label>
+                                        <label for="action-new-date-started">Date Started</label>
                                         <div class='input-group date'>
                                             <input id="action-new-date-started" type='text' class="form-control">
                                             <span id="action-new-timer" class="input-group-addon" data-hasstarted="false">
@@ -92,7 +116,7 @@
                                         </div>
                                     </div>
                                     <div class="flex1" style="padding-right:5px;">
-                                        <label for="action-new-hours">Hours:</label>
+                                        <label for="action-new-hours">Hours</label>
                                         <div class="input-group spinner">
                                             <input id="action-new-hours" type="text" class="form-control" value="0">
                                             <div class="input-group-btn-vertical">
@@ -102,7 +126,7 @@
                                         </div>
                                     </div>
                                     <div class="flex1" style="padding-right:5px;">
-                                        <label for="action-new-minutes">Minutes:</label>
+                                        <label for="action-new-minutes">Minutes</label>
                                         <div class="input-group spinner">
                                             <input id="action-new-minutes" type="text" class="form-control" value="0">
                                             <div class="input-group-btn-vertical">
