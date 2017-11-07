@@ -237,6 +237,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
                 				if (!response.supported || response.extensionRegistered === false) {
                 					alert("This browser does not support screen sharing");
                 				} else if (response.extensionInstalled === false && BrowserDetect.browser != "Mozilla") {
+                                    teamsupport.tools.journal('here');
                                     teamsupport.tools.journal(response.extensionInstalled);
                 					// prompt to install the response.extensionRequired extension
 
