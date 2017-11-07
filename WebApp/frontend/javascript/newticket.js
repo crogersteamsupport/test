@@ -1246,18 +1246,14 @@ var SetupDueDateField = function (duedate) {
         e.preventDefault();
         e.stopPropagation();
         var header = $(this).hide();
-        var container = $('<div>')
-              .addClass('row')
-              .insertAfter(header);
-
-        var container1 = $('<div style="padding-right:0px;">').addClass('col-xs-10').appendTo(container);
+        var container = $('<div>').addClass('row').insertAfter(header);
+        var container1 = $('<div>').attr('id','duedate-input').addClass('col-xs-10').appendTo(container);
         var theinput = $('<input type="text">').val(duedate === undefined ? '' : duedate.localeFormat(parent.Ts.Utils.getDateTimePattern())).datetimepicker({ pickTime: true }).appendTo(container1).focus();
 
         $('<i>').addClass('fa fa-times').click(function (e) {
             $(this).closest('div').remove();
             header.show();
-        })
-        .insertAfter(container1);
+        }).insertAfter(container1);
 
 
         $('<i>').addClass('fa fa-check').click(function (e) {

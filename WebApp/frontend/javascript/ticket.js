@@ -3253,15 +3253,15 @@ var AddCustomFieldDate = function (field, parentContainer) {
         e.stopPropagation();
         var header = $(this).hide();
         var container = $('<div>').addClass('row').insertAfter(header);
-        var container1 = $('<div style="padding-right:0px;">').addClass('col-xs-10').appendTo(container);
-        var theinput = $('<input type="text">').addClass('form-control').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getDatePattern())).datetimepicker({ pickTime: false }).appendTo(container1).focus();
+        var container1 = $('<div>').attr('id','duedate-input').appendTo(container);
+        var theinput = $('<input type="text">').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getDatePattern())).datetimepicker({ pickTime: false }).appendTo(container1).focus();
 
-        $('<i>').addClass('col-xs-1 fa fa-times').click(function (e) {
+        $('<i>').addClass('fa fa-times').click(function (e) {
               $(this).closest('div').remove();
               header.show();
         }).insertAfter(container1);
 
-        $('<i>').addClass('col-xs-1 fa fa-check').click(function (e) {
+        $('<i>').addClass('fa fa-check').click(function (e) {
               var currDate = $(this).prev().find('input').val();
               var value = null;
               if (currDate !== '') {
@@ -3327,17 +3327,17 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
         e.preventDefault();
         e.stopPropagation();
         var header     = $(this).hide();
-        var container  = $('<div>').addClass('row').insertAfter(header);
-        var container1 = $('<div style="padding-right:0px;">').addClass('col-xs-10').appendTo(container);
-        var theinput   = $('<input type="text">').addClass('form-control').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getDateTimePattern())).datetimepicker({ pickTime: true }).appendTo(container1).focus();
+        var container  = $('<div>').insertAfter(header);
+        var container1 = $('<div>').attr('id','duedate-input').appendTo(container);
+        var theinput   = $('<input type="text">').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getDateTimePattern())).datetimepicker({ pickTime: true }).appendTo(container1).focus();
 
-        $('<i>').addClass('col-xs-1 fa fa-times').click(function (e) {
+        $('<i>').addClass('fa fa-times').click(function (e) {
             $(this).closest('div').remove();
             header.show();
             $('#customerEdit').removeClass("disabled");
         }).insertAfter(container1);
 
-        $('<i>').addClass('col-xs-1 fa fa-check').click(function (e) {
+        $('<i>').addClass('fa fa-check').click(function (e) {
             var currDate = $(this).prev().find('input').val();
             var value = null;
             if (currDate !== '') {
@@ -3402,16 +3402,16 @@ var AddCustomFieldTime = function (field, parentContainer) {
         e.stopPropagation();
         var header     = $(this).hide();
         var container  = $('<div>').addClass('row').insertAfter(header);
-        var container1 = $('<div style="padding-right:0px;">').appendTo(container);
-        var theinput   = $('<input type="text">').addClass('form-control').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getTimePattern())).datetimepicker({ pickDate: false }).appendTo(container1).focus();
+        var container1 = $('<div>').appendTo(container);
+        var theinput   = $('<input type="text">').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getTimePattern())).datetimepicker({ pickDate: false }).appendTo(container1).focus();
 
-        $('<i>').addClass('col-xs-1 fa fa-times').click(function (e) {
+        $('<i>').addClass('fa fa-times').click(function (e) {
             $(this).closest('div').remove();
             header.show();
             $('#customerEdit').removeClass("disabled");
         }).insertAfter(container1);
 
-        $('<i>').addClass('col-xs-1 fa fa-check').click(function (e) {
+        $('<i>').addClass('fa fa-check').click(function (e) {
             var currDate = $(this).prev().find('input').val();
             var value = null;
             if (currDate !== '') {
@@ -3490,7 +3490,7 @@ var AddCustomFieldNumber = function (field, parentContainer) {
     var formLabel      = $('<div>').addClass('form-label').text(field.Name).appendTo(labelContainer);
 
     var inputContainer = $('<div>').addClass('flex2 ticket-input-container').appendTo(groupContainer);
-    var input = $('<input type="text">').addClass('form-control ticket-simple-input muted-placeholder').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputContainer).numeric();
+    var input = $('<input type="text">').addClass('ticket-simple-input muted-placeholder').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputContainer).numeric();
 
     input.change(function (e) {
         var value = input.val();
@@ -3626,16 +3626,16 @@ var SetupDueDateField = function (duedate) {
         e.stopPropagation();
         var header     = $(this).hide();
         var container  = $('<div>').addClass('row').insertAfter(header);
-        var container1 = $('<div style="padding-right:0px;">').addClass('col-xs-10').appendTo(container);
-        var theinput   = $('<input type="text">').addClass('form-control').val('').datetimepicker({ pickTime: true }).appendTo(container1).focus();
+        var container1 = $('<div>').attr('id','duedate-input').appendTo(container);
+        var theinput   = $('<input type="text">').val('').datetimepicker({ pickTime: true }).appendTo(container1).focus();
 
-        $('<i>').addClass('col-xs-1 fa fa-times').click(function (e) {
+        $('<i>').addClass('fa fa-times').click(function (e) {
             $(this).closest('div').remove();
             header.show();
             $('#customerEdit').removeClass("disabled");
         }).insertAfter(container1);
 
-        $('<i>').addClass('col-xs-1 fa fa-check').click(function (e) {
+        $('<i>').addClass('fa fa-check').click(function (e) {
             var currDate = $(this).prev().find('input').val();
             var value = '';
             if (currDate !== '') {

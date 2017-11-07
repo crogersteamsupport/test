@@ -410,3 +410,26 @@ div.popover {
     width: 16px;
     height: 16px;
 }
+
+
+
+#ticket-duedate {
+    height:30px;
+    line-height:20px;
+}
+
+#ticket-duedate-container a {
+    margin: 0px;
+    padding: 0px;
+    min-height: 30px;
+    width: 160px;
+    display: inline-block;
+    text-align: left;
+    color:black;
+}
+
+#duedate-input {
+    margin:0px;
+    width:150px;
+    display: inline-block;
+}
