@@ -159,6 +159,8 @@ function publishTOKScreen() {
 
             // prompt to install the response.extensionRequired extension
 
+            alert('customerchattok');
+
             if (isChrome) {
                 $('#ChromeInstallModal').modal('show');
             }
@@ -393,11 +395,11 @@ function stopTOKStream(e) {
             screenSharingPublisher.destroy();
             screenSharingPublisher = undefined;
         }
-        
+
         session.disconnect();
         session = undefined;
     }
-    
+
     $('#tokStreamControls').hide();
     document.getElementById('agentVoiceMeter').value = 0;
     $('#agentVoiceMeter').hide();

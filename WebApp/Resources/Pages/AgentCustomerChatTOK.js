@@ -119,7 +119,7 @@ function publishTOKAudio(callback) {
         if (!isIE && !isEdge) {
             $('#subscriberMeter').show();
         }
-        
+
         $('#tokStatusText').text('Requesting Live Session...');
         $('#muteStream').show();
         $('#unmuteStream').hide();
@@ -174,6 +174,7 @@ function publishTOKScreen() {
         } else if (response.extensionInstalled === false && BrowserDetect.browser != "Mozilla") {
             // prompt to install the response.extensionRequired extension
 
+            alert('agentcustomerchattok');
             if (BrowserDetect.browser == "Chrome") {
                 $('#ChromeInstallModal').modal('show');
             }
