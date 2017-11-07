@@ -1251,7 +1251,7 @@ var SetupDueDateField = function (duedate) {
               .insertAfter(header);
 
         var container1 = $('<div style="padding-right:0px;">').addClass('col-xs-10').appendTo(container);
-        var theinput = $('<input type="text">').addClass('form-control').val(duedate === undefined ? '' : duedate.localeFormat(parent.Ts.Utils.getDateTimePattern())).datetimepicker({ pickTime: true }).appendTo(container1).focus();
+        var theinput = $('<input type="text">').val(duedate === undefined ? '' : duedate.localeFormat(parent.Ts.Utils.getDateTimePattern())).datetimepicker({ pickTime: true }).appendTo(container1).focus();
 
         $('<i>').addClass('fa fa-times').click(function (e) {
             $(this).closest('div').remove();
@@ -2221,7 +2221,7 @@ var AddCustomFieldDate = function (field, parentContainer) {
     dateLink.click(function (e) {
         e.preventDefault();
         $(this).hide();
-        var input = $('<input type="text">').addClass('form-control').val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getDatePattern())).datetimepicker({ pickTime: false }).appendTo(dateContainer).focus();
+        var input = $('<input type="text">').val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getDatePattern())).datetimepicker({ pickTime: false }).appendTo(dateContainer).focus();
 
         input.focusout(function (e) {
             var value = parent.Ts.Utils.getMsDate(input.val());
@@ -2281,12 +2281,7 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
     dateLink.click(function (e) {
         e.preventDefault();
         $(this).hide();
-        var input = $('<input type="text">')
-                        .addClass('form-control')
-                        .val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getDateTimePattern()))
-                        .datetimepicker()
-                        .appendTo(dateContainer)
-                        .focus();
+        var input = $('<input type="text">').val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getDateTimePattern())).datetimepicker().appendTo(dateContainer).focus();
 
         input.focusout(function (e) {
             var value = parent.Ts.Utils.getMsDate(input.val());
@@ -2296,22 +2291,19 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
 
             if (field.IsRequired && (value === null || $.trim(value) === '')) {
                 formcontainer.addClass('hasError');
-            }
-            else {
+            } else {
                 formcontainer.removeClass('hasError');
             }
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
                 groupContainer.addClass('hasCloseErrory');
                 alert("This field can not be cleared in a closed ticket");
                 return;
-            }
-            else {
+            } else {
                 groupContainer.removeClass('hasCloseErrory');
             }
             if (value === null || $.trim(value) === '') {
                 groupContainer.addClass('isEmpty');
-            }
-            else {
+            } else {
                 groupContainer.removeClass('isEmpty');
             }
         })
@@ -2346,12 +2338,7 @@ var AddCustomFieldTime = function (field, parentContainer) {
     dateLink.click(function (e) {
         e.preventDefault();
         $(this).hide();
-        var input = $('<input type="text">')
-                        .addClass('form-control')
-                        .val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getTimePattern()))
-                        .datetimepicker({ pickDate: false })
-                        .appendTo(dateContainer)
-                        .focus();
+        var input = $('<input type="text">').val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getTimePattern())).datetimepicker({ pickDate: false }).appendTo(dateContainer).focus();
 
         input.focusout(function (e) {
             var value = parent.Ts.Utils.getMsDate("1/1/1900 " + input.val());
@@ -2361,22 +2348,19 @@ var AddCustomFieldTime = function (field, parentContainer) {
 
             if (field.IsRequired && (value === null || $.trim(value) === '')) {
                 formcontainer.addClass('hasError');
-            }
-            else {
+            } else {
                 formcontainer.removeClass('hasError');
             }
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
                 groupContainer.addClass('hasCloseErrory');
                 alert("This field can not be cleared in a closed ticket");
                 return;
-            }
-            else {
+            } else {
                 groupContainer.removeClass('hasCloseErrory');
             }
             if (value === null || $.trim(value) === '') {
                 groupContainer.addClass('isEmpty');
-            }
-            else {
+            } else {
                 groupContainer.removeClass('isEmpty');
             }
         })
@@ -2415,12 +2399,12 @@ var AddCustomFieldNumber = function (field, parentContainer) {
     var formcontainer  = $('<div>').addClass('form-horizontal custom-field').data('field', field).appendTo(parentContainer);
     var groupContainer = $('<div>').addClass('flexbox').data('field', field).appendTo(formcontainer);
     var labelContainer = $('<div>').addClass('flex1').appendTo(groupContainer);
-    var formLabel      = $('<div>').addClass('from-label').text(field.Name).appendTo(labelContainer);
+    var formLabel      = $('<div>').addClass('form-label').text(field.Name).appendTo(labelContainer);
 
     if (field.ParentProductID) { groupContainer.addClass('product-dependent'); }
 
     var inputContainer = $('<div>').addClass('flex2').appendTo(groupContainer);
-    var input = $('<input type="text">').addClass('form-control ticket-simple-input').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputContainer).numeric();
+    var input = $('<input type="text">').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputContainer).numeric();
 
     input.change(function (e) {
         var value = input.val();
