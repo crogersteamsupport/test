@@ -173,8 +173,6 @@ function publishTOKScreen() {
             alert("This browser does not support screen sharing");
         } else if (response.extensionInstalled === false && BrowserDetect.browser != "Mozilla") {
             // prompt to install the response.extensionRequired extension
-
-            alert('agentcustomerchattok');
             if (BrowserDetect.browser == "Chrome") {
                 $('#ChromeInstallModal').modal('show');
             }

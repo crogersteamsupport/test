@@ -156,11 +156,7 @@ function publishTOKScreen() {
         } else if (response.extensionInstalled === false) {
             var isChrome = !!window.chrome && !!window.chrome.webstore;
             var isFirefox = typeof InstallTrigger !== 'undefined';
-
             // prompt to install the response.extensionRequired extension
-
-            alert('customerchattok');
-
             if (isChrome) {
                 $('#ChromeInstallModal').modal('show');
             }
