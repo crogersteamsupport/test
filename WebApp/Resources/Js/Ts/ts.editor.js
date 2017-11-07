@@ -237,15 +237,16 @@ var initEditor = function (element, shouldResize, init, postinit) {
                 				if (!response.supported || response.extensionRegistered === false) {
                 					alert("This browser does not support screen sharing");
                 				} else if (response.extensionInstalled === false && BrowserDetect.browser != "Mozilla") {
+                                    teamsupport.tools.journal(response.extensionInstalled);
                 					// prompt to install the response.extensionRequired extension
 
                 					if (BrowserDetect.browser == "Chrome") {
                 						$('#ChromeInstallModal').modal('show');
-                					}
-                					else if (BrowserDetect.browser == "Firefox") {
+                					} else if (BrowserDetect.browser == "Firefox") {
                 						$('#FireFoxInstallModal').modal('show');
                 					}
-											  		element.parent().find('#recordScreenContainer').hide();
+								    element.parent().find('#recordScreenContainer').hide();
+
                 				} else {
                 					// Screen sharing is available
                 				    _mainFrame.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
