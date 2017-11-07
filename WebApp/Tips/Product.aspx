@@ -8,7 +8,7 @@
 </head>
 <body>
   <div>
-    <h1><a id="tipName" runat="server" href="#"></a></h1>
+    <a id="tipName" runat="server" href="#"></a>
     <div class="ui-widget-content ts-separator"></div>
     <p id="tipDesc" runat="server"></p>
     <div class="ui-helper-clearfix"></div>

@@ -8,9 +8,12 @@
 </head>
 <body>
   <div>
-    <h1><span id="tipSla" runat="server" style="float:left; line-height:16px; margin-right: 3px;"></span><a id="tipNumber" runat="server" href="#" style="float:left; line-height:16px;"></a></h1>
+    <div>
+        <span id="tipSla" runat="server" style="float:left; line-height:16px; margin-right: 3px;"></span>
+        <a id="tipNumber" runat="server" href="#" style="float:left; line-height:16px;"></a>
+    </div>
     <div class="ui-helper-clearfix"></div>
-    <h2 id="tipName" runat="server" style="padding-top:.5em;"></h2>
+    <div id="tipName" runat="server" style="padding-top:.5em;"></div>
     <div class="ui-widget-content ts-separator"></div>
     <dl id="tipProps" runat="server"></dl>
     <div class="ui-helper-clearfix"></div>
