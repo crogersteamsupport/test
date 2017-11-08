@@ -470,7 +470,20 @@ div.popover {
 
 
 
+#ticket-now-viewing {
+    border-radius:0px;
+    box-shadow:1px 1px 0px rgba(0,0,0,0.1);
+}
 
 #ticket-now-viewing p {
     font-size:12px;
+}
+
+
+#ticket-title-container {
+    border-radius:0px;
+    box-shadow:1px 1px 0px rgba(0,0,0,0.1);
+}
+#ticket-title-input {
+    margin-bottom:5px !important;
 }
