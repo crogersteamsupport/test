@@ -41,31 +41,32 @@
 							<ul>
 								<li class="schedule-cond">
 									<label>Email Subject</label>
-									<input type="text" class="form-control schedule-email-subject"
-											data-title="Scheduling Report" data-placement="top" data-content="You must enter a email subject before moving on."
-											data-trigger="manual" required>
+									<input type="text" class="form-control schedule-email-subject" placeholder="Enter email subject…"
+											data-title="Scheduling Report" data-placement="top" data-trigger="manual">
+									<span class="scheduledReport-error-message">This field is required.</span>
 								</li>
 								<li class="schedule-cond">
                                     <div class="form-group">
                                         <label for="inputName" class="col-md-2 control-label">Email Body</label>
                                         <div class="col-md-10 schedule-email-body">
                                             <textarea class="form-control" id="email-body-editor"
-                                                      data-title="Scheduling Report" data-placement="top"
-                                                      data-content="You must enter a email body before moving on." data-trigger="manual" required></textarea>
+                                                      data-title="Scheduling Report" data-placement="top" data-trigger="manual"></textarea>
+											<span class="scheduledReport-error-message-nomargin">This field is required.</span>
                                         </div>
                                     </div>
                                 </li>
 								<li class="schedule-cond" style="clear: both;">
 									<label class="emailRecipients">Email Recipients</label>
 									<input type="text" class="form-control schedule-email-addresses" placeholder="Enter comma separated email addresses…"
-											data-title="Scheduling Report" data-placement="top" 
-											data-content="You must enter at least one email recipient before moving on." data-trigger="manual" required>
+											data-title="Scheduling Report" data-placement="top" data-trigger="manual">
+									<span class="scheduledReport-error-message">This field is required.</span>
 								</li>
 								<li class="schedule-cond">
 									<label>Start On</label>
                                     <input type="text" id="StartDateTimePicker" hidden="hidden" />
-                                    <input type="text" id="StartOn" class="form-control" placeholder="Start date..." required />
-                                    <input type="text" id="StartOnTime" class="form-control" placeholder="Start time..." required />
+                                    <input type="text" id="StartOn" class="form-control" placeholder="Start date..." />
+                                    <input type="text" id="StartOnTime" class="form-control" placeholder="Start time..." />
+									<span class="scheduledReport-error-message">This field is required.</span>
 								</li>
 								<li class="schedule-cond scheduleOptions">
 									<label class="frequencyLabel">Frequency</label>
