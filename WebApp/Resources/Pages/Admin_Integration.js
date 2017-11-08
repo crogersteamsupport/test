@@ -87,12 +87,6 @@ AdminInt = function () {
         if (result.length == 0 || (result.length > 0 && !_anyJiraInstance)) {
             SetupInitialDefaultInstanceCreate();
 		}
-
-		window.parent.parent.Ts.Services.Organizations.IsSnowEnabled(function (result) {
-			if (!result) {
-				$('.int-list .servicenow').remove();
-			}
-		});
     });
 
     function loadPanel(element) {
@@ -100,216 +94,212 @@ AdminInt = function () {
         var item = element.data('link');
         if (item == null) return;
 
-		if ((item.CRMLinkID != null && item.DisplayIntegrationPanel) || item.CRMLinkID == null) {
-			element.addClass('crmlinkid_' + item.CRMLinkID);
+		element.addClass('crmlinkid_' + item.CRMLinkID);
 
-			element.find('.int-crm-instancename').val(item.InstanceName);
-			if (item.InstanceName == 'Default') {
-				element.find('.int-crm-instancename').attr('disabled', 'disabled');
-				_isDefaultJiraInstance = true;
-			} else {
-				element.find('.int-crm-instancename').removeAttr('disabled');
-				_isDefaultJiraInstance = false;
-			}
-
-			element.find('.int-crm-host').val(item.HostName);
-			element.find('.int-crm-user').val(item.Username);
-			element.find('.int-crm-password').val(item.Password);
-			element.find('.int-crm-password-confirm').val(item.Password);
-
-			element.find('.int-crm-use-network-credentials').prop('checked', item.UseNetworkCredentials);
-
-			element.find('.int-crm-token').val(item.SecurityToken1);
-			element.find('.int-crm-token-confirm').val(item.SecurityToken1);
-			element.find('.int-crm-tag').val(item.TypeFieldMatch);
-			element.find('.int-crm-project').val(item.DefaultProject);
-			if (item.Active) {
-				element.find('.int-crm-active').prop('checked', true);
-			}
-			else {
-				element.find('.int-crm-active').prop('checked', false);
-			}
-			if (item.PullCasesAsTickets) {
-				element.find('.int-crm-pull-cases-as-tickets').prop('checked', true);
-			}
-			else {
-				element.find('.int-crm-pull-cases-as-tickets').prop('checked', false);
-			}
-			if (item.PushTicketsAsCases) {
-				element.find('.int-crm-push-tickets-as-cases').prop('checked', true);
-			}
-			else {
-				element.find('.int-crm-push-tickets-as-cases').prop('checked', false);
-			}
-			if (item.SendBackTicketData) {
-				element.find('.int-crm-push-tickets-as-account-comments').prop('checked', true);
-			}
-			else {
-				element.find('.int-crm-push-tickets-as-account-comments').prop('checked', false);
-			}
-			if (item.PullCustomerProducts) {
-				element.find('.int-crm-pull-customer-products').prop('checked', true);
-			}
-			else {
-				element.find('.int-crm-pull-customer-products').prop('checked', false);
-			}
-			if (item.SendWelcomeEmail) {
-				element.find('.int-crm-email').prop('checked', true);
-			}
-			else {
-				element.find('.int-crm-email').prop('checked', false);
-			}
-			if (item.AllowPortalAccess) {
-				element.find('.int-crm-portal').prop('checked', true);
-			}
-			else {
-				element.find('.int-crm-portal').prop('checked', false);
-			}
-
-			if (item.UpdateStatus) {
-				if (item.CRMType == 'Jira') {
-					element.find('.int-crm-update-status').prop('checked', true);
-					loadOrganizationStatusesWithType(element);
-					element.find('#exclusionTicketStatusList').show();
-					element.find('#ticketStatusExceptionSpan').show();
-				} else if (item.CRMType == 'TFS') {
-					element.find('.int-tfs-update-status').prop('checked', true);
-					loadOrganizationStatusesWithType(element);
-					element.find('#tfsExclusionTicketStatusList').show();
-					element.find('#tfsTicketStatusExceptionSpan').show();
-				} else if (item.CRMType == 'ServiceNow') {
-					element.find('.int-snow-update-status').prop('checked', true);
-					loadOrganizationStatusesWithType(element);
-					element.find('#snowExclusionTicketStatusList').show();
-					element.find('#snowTicketStatusExceptionSpan').show();
-				}
-
-			}
-			else {
-				if (item.CRMType == 'Jira') {
-					element.find('.int-crm-update-status').prop('checked', false);
-					element.find('#exclusionTicketStatusList').hide();
-					element.find('#ticketStatusExceptionSpan').hide();
-				} else if (item.CRMType == 'TFS') {
-					element.find('.int-tfs-update-status').prop('checked', false);
-					element.find('#tfsExclusionTicketStatusList').hide();
-					element.find('#tfsTicketStatusExceptionSpan').hide();
-				} else if (item.CRMType == 'ServiceNow') {
-					element.find('.int-snow-update-status').prop('checked', false);
-					element.find('#snowExclusionTicketStatusList').hide();
-					element.find('#snowTicketStatusExceptionSpan').hide();
-				}
-			}
-
-			element.find('.int-crm-update-type').prop('checked', item.UpdateTicketType);
-
-			if (item.MatchAccountsByName) {
-				element.find('.int-crm-match-accounts-by-name').prop('checked', true);
-			}
-			else {
-				element.find('.int-crm-match-accounts-by-name').prop('checked', false);
-			}
-			if (item.UseSandBoxServer) {
-				element.find('.int-crm-use-sandbox-server').prop('checked', true);
-			}
-			else {
-				element.find('.int-crm-use-sandbox-server').prop('checked', false);
-			}
-			if (item.AlwaysUseDefaultProjectKey) {
-				element.find('.int-crm-always-use-default-project-key').prop('checked', true);
-			}
-			else {
-				element.find('.int-crm-always-use-default-project-key').prop('checked', false);
-			}
-
-			if (item.IncludeIssueNonRequired) {
-				element.find('.int-crm-IncludeIssueNonRequired').prop('checked', true);
-			}
-			else {
-				element.find('.int-crm-IncludeIssueNonRequired').prop('checked', false);
-			}
-
-			if (item.RestrictedToTicketTypes) {
-				if (item.CRMType == 'Jira') {
-					element.find('.int-crm-ticket-types').prop('checked', false);
-					loadTicketTypes(element);
-					element.find('#restrictedTicketTypesList').show();
-				} else if (item.CRMType == 'TFS') {
-					element.find('.int-tfs-ticket-types').prop('checked', false);
-					loadTicketTypes(element);
-					element.find('#restrictedTicketTypesListTFS').show();
-				} else if (item.CRMType == 'ServiceNow') {
-					element.find('.int-snow-ticket-types').prop('checked', false);
-					loadTicketTypes(element);
-					element.find('#restrictedTicketTypesListSnow').show();
-				}
-			}
-			else {
-				if (item.CRMType == 'Jira') {
-					element.find('.int-crm-ticket-types').prop('checked', true);
-					element.find('#restrictedTicketTypesList').hide();
-				} else if (item.CRMType == 'TFS') {
-					element.find('.int-tfs-ticket-types').prop('checked', true);
-					element.find('#restrictedTicketTypesListTFS').hide();
-				} else if (item.CRMType == 'ServiceNow') {
-					element.find('.int-snow-ticket-types').prop('checked', true);
-					element.find('#restrictedTicketTypesListSnow').hide();
-				}
-			}
-
-			//ZohoReports
-			var zohoGrids = element.find('.int-zohoreports-grid');
-			zohoGrids.empty();
-			var selected = '" selected="selected">';
-
-			if (item.HostName != '' || item.HostName.indexOf('reportsapi.zoho.com') >= 0) {
-				zohoGrids.append('<option value="US"' + selected + 'US</option>');
-				zohoGrids.append('<option value="EU">EU</option>');
-			} else {
-				zohoGrids.append('<option value="US">US</option>');
-				zohoGrids.append('<option value="EU"' + selected + 'EU</option>');
-			}
-
-			$("#AddingInstanceLabel").hide();
-			$("#JiraInstacesListWrapper").show();
-			$("#NewInstance").show();
-
-			element.find('.int-crm-webhook').val(item.WebHookTokenFullUrl);
-
-			if (item.CRMType == 'ServiceNow') {
-				var showModalButton = document.getElementById("btnBusinessRule");
-				showModalButton.onclick = function () {
-					var rawFile = new XMLHttpRequest();
-					rawFile.open("GET", "ServiceNowBusinessRule.txt", false);
-					rawFile.onreadystatechange = function () {
-						if (rawFile.readyState === 4) {
-							if (rawFile.status === 200 || rawFile.status == 0) {
-								var allText = rawFile.responseText;
-								var textArea = document.querySelector("#businessRuleScript");
-								textArea.value = allText;
-							}
-						}
-					}
-					rawFile.send(null);
-
-					$('#serviceNowBusinessRuleModal').modal();
-				};
-
-				var copyToClipboardButton = document.getElementById("copyBusinessRuleToClipboard");
-				copyToClipboardButton.onclick = function () {
-					var copyTextArea = document.querySelector("#businessRuleScript").select();
-
-					try {
-						var successful = document.execCommand('copy');
-					} catch (err) {
-						console.log("unable to copy to clipboard");
-					}
-
-					this.focus();
-				};
-			}
+		element.find('.int-crm-instancename').val(item.InstanceName);
+		if (item.InstanceName == 'Default') {
+			element.find('.int-crm-instancename').attr('disabled', 'disabled');
+			_isDefaultJiraInstance = true;
 		} else {
-			$(element).parent().remove();
+			element.find('.int-crm-instancename').removeAttr('disabled');
+			_isDefaultJiraInstance = false;
+		}
+
+		element.find('.int-crm-host').val(item.HostName);
+		element.find('.int-crm-user').val(item.Username);
+		element.find('.int-crm-password').val(item.Password);
+		element.find('.int-crm-password-confirm').val(item.Password);
+
+		element.find('.int-crm-use-network-credentials').prop('checked', item.UseNetworkCredentials);
+
+		element.find('.int-crm-token').val(item.SecurityToken1);
+		element.find('.int-crm-token-confirm').val(item.SecurityToken1);
+		element.find('.int-crm-tag').val(item.TypeFieldMatch);
+		element.find('.int-crm-project').val(item.DefaultProject);
+		if (item.Active) {
+			element.find('.int-crm-active').prop('checked', true);
+		}
+		else {
+			element.find('.int-crm-active').prop('checked', false);
+		}
+		if (item.PullCasesAsTickets) {
+			element.find('.int-crm-pull-cases-as-tickets').prop('checked', true);
+		}
+		else {
+			element.find('.int-crm-pull-cases-as-tickets').prop('checked', false);
+		}
+		if (item.PushTicketsAsCases) {
+			element.find('.int-crm-push-tickets-as-cases').prop('checked', true);
+		}
+		else {
+			element.find('.int-crm-push-tickets-as-cases').prop('checked', false);
+		}
+		if (item.SendBackTicketData) {
+			element.find('.int-crm-push-tickets-as-account-comments').prop('checked', true);
+		}
+		else {
+			element.find('.int-crm-push-tickets-as-account-comments').prop('checked', false);
+		}
+		if (item.PullCustomerProducts) {
+			element.find('.int-crm-pull-customer-products').prop('checked', true);
+		}
+		else {
+			element.find('.int-crm-pull-customer-products').prop('checked', false);
+		}
+		if (item.SendWelcomeEmail) {
+			element.find('.int-crm-email').prop('checked', true);
+		}
+		else {
+			element.find('.int-crm-email').prop('checked', false);
+		}
+		if (item.AllowPortalAccess) {
+			element.find('.int-crm-portal').prop('checked', true);
+		}
+		else {
+			element.find('.int-crm-portal').prop('checked', false);
+		}
+
+		if (item.UpdateStatus) {
+			if (item.CRMType == 'Jira') {
+				element.find('.int-crm-update-status').prop('checked', true);
+				loadOrganizationStatusesWithType(element);
+				element.find('#exclusionTicketStatusList').show();
+				element.find('#ticketStatusExceptionSpan').show();
+			} else if (item.CRMType == 'TFS') {
+				element.find('.int-tfs-update-status').prop('checked', true);
+				loadOrganizationStatusesWithType(element);
+				element.find('#tfsExclusionTicketStatusList').show();
+				element.find('#tfsTicketStatusExceptionSpan').show();
+			} else if (item.CRMType == 'ServiceNow') {
+				element.find('.int-snow-update-status').prop('checked', true);
+				loadOrganizationStatusesWithType(element);
+				element.find('#snowExclusionTicketStatusList').show();
+				element.find('#snowTicketStatusExceptionSpan').show();
+			}
+
+		}
+		else {
+			if (item.CRMType == 'Jira') {
+				element.find('.int-crm-update-status').prop('checked', false);
+				element.find('#exclusionTicketStatusList').hide();
+				element.find('#ticketStatusExceptionSpan').hide();
+			} else if (item.CRMType == 'TFS') {
+				element.find('.int-tfs-update-status').prop('checked', false);
+				element.find('#tfsExclusionTicketStatusList').hide();
+				element.find('#tfsTicketStatusExceptionSpan').hide();
+			} else if (item.CRMType == 'ServiceNow') {
+				element.find('.int-snow-update-status').prop('checked', false);
+				element.find('#snowExclusionTicketStatusList').hide();
+				element.find('#snowTicketStatusExceptionSpan').hide();
+			}
+		}
+
+		element.find('.int-crm-update-type').prop('checked', item.UpdateTicketType);
+
+		if (item.MatchAccountsByName) {
+			element.find('.int-crm-match-accounts-by-name').prop('checked', true);
+		}
+		else {
+			element.find('.int-crm-match-accounts-by-name').prop('checked', false);
+		}
+		if (item.UseSandBoxServer) {
+			element.find('.int-crm-use-sandbox-server').prop('checked', true);
+		}
+		else {
+			element.find('.int-crm-use-sandbox-server').prop('checked', false);
+		}
+		if (item.AlwaysUseDefaultProjectKey) {
+			element.find('.int-crm-always-use-default-project-key').prop('checked', true);
+		}
+		else {
+			element.find('.int-crm-always-use-default-project-key').prop('checked', false);
+		}
+
+		if (item.IncludeIssueNonRequired) {
+			element.find('.int-crm-IncludeIssueNonRequired').prop('checked', true);
+		}
+		else {
+			element.find('.int-crm-IncludeIssueNonRequired').prop('checked', false);
+		}
+
+		if (item.RestrictedToTicketTypes) {
+			if (item.CRMType == 'Jira') {
+				element.find('.int-crm-ticket-types').prop('checked', false);
+				loadTicketTypes(element);
+				element.find('#restrictedTicketTypesList').show();
+			} else if (item.CRMType == 'TFS') {
+				element.find('.int-tfs-ticket-types').prop('checked', false);
+				loadTicketTypes(element);
+				element.find('#restrictedTicketTypesListTFS').show();
+			} else if (item.CRMType == 'ServiceNow') {
+				element.find('.int-snow-ticket-types').prop('checked', false);
+				loadTicketTypes(element);
+				element.find('#restrictedTicketTypesListSnow').show();
+			}
+		}
+		else {
+			if (item.CRMType == 'Jira') {
+				element.find('.int-crm-ticket-types').prop('checked', true);
+				element.find('#restrictedTicketTypesList').hide();
+			} else if (item.CRMType == 'TFS') {
+				element.find('.int-tfs-ticket-types').prop('checked', true);
+				element.find('#restrictedTicketTypesListTFS').hide();
+			} else if (item.CRMType == 'ServiceNow') {
+				element.find('.int-snow-ticket-types').prop('checked', true);
+				element.find('#restrictedTicketTypesListSnow').hide();
+			}
+		}
+
+		//ZohoReports
+		var zohoGrids = element.find('.int-zohoreports-grid');
+		zohoGrids.empty();
+		var selected = '" selected="selected">';
+
+		if (item.HostName != '' || item.HostName.indexOf('reportsapi.zoho.com') >= 0) {
+			zohoGrids.append('<option value="US"' + selected + 'US</option>');
+			zohoGrids.append('<option value="EU">EU</option>');
+		} else {
+			zohoGrids.append('<option value="US">US</option>');
+			zohoGrids.append('<option value="EU"' + selected + 'EU</option>');
+		}
+
+		$("#AddingInstanceLabel").hide();
+		$("#JiraInstacesListWrapper").show();
+		$("#NewInstance").show();
+
+		element.find('.int-crm-webhook').val(item.WebHookTokenFullUrl);
+
+		var showModalButton = document.getElementById("btnBusinessRule");
+		showModalButton.onclick = function () {
+			var rawFile = new XMLHttpRequest();
+			rawFile.open("GET", "ServiceNowBusinessRule.txt", false);
+			rawFile.onreadystatechange = function () {
+				if (rawFile.readyState === 4) {
+					if (rawFile.status === 200 || rawFile.status == 0) {
+						var allText = rawFile.responseText;
+						var textArea = document.querySelector("#businessRuleScript");
+						textArea.value = allText;
+					}
+				}
+			}
+			rawFile.send(null);
+
+			$('#serviceNowBusinessRuleModal').modal();
+		};
+
+		if (item.CRMType == 'ServiceNow') {
+			var copyToClipboardButton = document.getElementById("copyBusinessRuleToClipboard");
+			copyToClipboardButton.onclick = function () {
+				var copyTextArea = document.querySelector("#businessRuleScript").select();
+
+				try {
+					var successful = document.execCommand('copy');
+				} catch (err) {
+					console.log("unable to copy to clipboard");
+				}
+
+				this.focus();
+			};
 		}
 	}
 	
@@ -1383,7 +1373,7 @@ AdminInt = function () {
                 }
             }
 
-            $('.int-jiraInstances').combobox({
+			$('#JiraInstances').combobox({
                 selected: function (e, ui) {
                     _selectedJiraInstance = $(this).val();
 

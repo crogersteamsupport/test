@@ -60,12 +60,6 @@ namespace TeamSupport.Data
 			set;
 		}
 
-		public bool DisplayIntegrationPanel
-		{
-			get;
-			set;
-		}
-
 		#endregion
 
 	}

@@ -428,9 +428,6 @@ namespace TSWebServices
             table.LoadByOrganizationID(TSAuthentication.OrganizationID);
 			CRMLinkTableItemProxy[] crmLinks = table.GetCRMLinkTableItemProxies();
 
-			//Check if the ServiceNow integration is enabled, per Eric's request the SandBox (13679) account in NA1 will always have it enabled for now.
-			bool isSnowEnabled = SystemSettings.GetIsSnowEnabled() || TSAuthentication.OrganizationID == 13679;
-
 			//Build the whole webhook urls (if applicable)
 			foreach (CRMLinkTableItem crmlink in table)
 			{
@@ -446,30 +443,10 @@ namespace TSWebServices
 						proxy.WebHookTokenFullUrl = crmlink.WebHookTokenFullUrl;
 					}
 				}
-
-				if (crmlink.CRMType == IntegrationType.ServiceNow.ToString())
-				{
-					CRMLinkTableItemProxy proxy = crmLinks.Where(p => p.CRMLinkID == crmlink.CRMLinkID).FirstOrDefault();
-					proxy.DisplayIntegrationPanel = isSnowEnabled;
-				}
-				else
-				{
-					CRMLinkTableItemProxy proxy = crmLinks.Where(p => p.CRMLinkID == crmlink.CRMLinkID).FirstOrDefault();
-					proxy.DisplayIntegrationPanel = true;
-				}
 			}
 
 			return crmLinks;
         }
-
-		[WebMethod]
-		public bool IsSnowEnabled()
-		{
-			if (!TSAuthentication.IsSystemAdmin) return false;
-			bool isSnowEnabled = SystemSettings.GetIsSnowEnabled() || TSAuthentication.OrganizationID == 13679;
-
-			return isSnowEnabled;
-		}
 
         [WebMethod]
         public CRMLinkTableItemProxy[] LoadOrgCrmLinks(int organizationID)
