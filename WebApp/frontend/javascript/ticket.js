@@ -5680,16 +5680,16 @@ function maxwidth () {
     $('#action-timeline img').each(function() {
         var image = $(this).width();
         if (image > limit) {
-            $(this).css('max-width',limit).css('width',limit);
+            $(this).css('max-width', limit).css('width', limit);
         }
     });
 }
 
 function pagewidth () {
     var width = $(window).width();
-    $('#frame-container, #ticketpage').css('max-width',width);
-    $('#ticketpage').css('max-width',width);
-    $('#ticketpane').css('max-width',width - 310);
+    $('#frame-container, #page-container').css('max-width',width);
+    $('#page-container').css('max-width', width);
+    $('#page-primary').css('max-width', width - 310);
 }
 
 
