@@ -457,3 +457,9 @@ div.popover {
 .OT_publisher {
     display:none;
 }
+
+
+
+.mce-tinymce.mce-container {
+    border-bottom: 1px solid rgba(100,100,100,0.1) !important;
+}
