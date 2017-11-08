@@ -5688,8 +5688,8 @@ function maxwidth () {
 function pagewidth () {
     var width = $(window).width();
     $('#frame-container, #page-container').css('max-width',width);
-    $('#page-container').css('max-width', width);
-    $('#page-primary').css('max-width', width - 310);
+    $('#page-container').css('max-width', width).css('min-width', width);
+    $('#page-primary').css('max-width', width - 310).css('min-width', width - 310);
 }
 
 
