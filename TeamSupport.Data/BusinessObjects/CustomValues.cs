@@ -558,7 +558,7 @@ ORDER BY cf.Position";
             return null;
         }
 
-        public DataTable GetParentsAndChildrensByRefID(int organizationID, ReferenceType refType, int? auxID, int refID, int? parentProductID)
+        public DataTable GetParentsAndChildrenByRefID(int organizationID, ReferenceType refType, int? auxID, int refID, int? parentProductID)
         {
 
             DataTable parentCustomValues = GetParentsByReferenceType(organizationID, refType, auxID, refID, parentProductID);
@@ -654,6 +654,13 @@ ORDER BY cf.Position";
                 }
                 connection.Close();
             }
+
+            DataColumn conditionalColumn = new DataColumn("IsConditionalParent", typeof(bool))
+            {
+                DefaultValue = false
+            };
+
+            result.Columns.Add(conditionalColumn);
             return result;
         }
 
@@ -758,6 +765,12 @@ ORDER BY cf.Position";
                 childID = (int)children.Rows[i]["CustomFieldID"];
                 childValue = children.Rows[i]["CustomValue"].ToString();
                 GetChildrenByParentValue(organizationID, refType, auxID, refID, childID, childValue, productID, ref result);
+
+                DataRow dr = result.Select("CustomFieldID=" + parentID).FirstOrDefault(); // finds all rows with id==2 and selects first or null if haven't found any
+                if (dr != null)
+                {
+                    dr["IsConditionalParent"] = true;
+                }
             }
         }
 
