@@ -268,13 +268,15 @@ var initEditor = function (element, shouldResize, init, postinit) {
 											  'ourPubTest',
 											  { videoSource: 'screen' },
 											  function (error) {
-											  	if (error) {
-											  		if (BrowserDetect.browser == "Chrome") {
-											  			$('#ChromeInstallModal').modal('show');
-											  		}
-											  		else if (BrowserDetect.browser == "Firefox") {
-											  			$('#FireFoxInstallModal').modal('show');
-											  		}
+											      if (error) {
+											          if (error.code != 1500) {
+											              if (BrowserDetect.browser == "Chrome") {
+											                  $('#ChromeInstallModal').modal('show');
+											              }
+											              else if (BrowserDetect.browser == "Firefox") {
+											                  $('#FireFoxInstallModal').modal('show');
+											              }
+											          }
 											  		//alert('Screen Recording will not start because, ' + error.message);
 											  		element.parent().find('#recordScreenContainer').hide();
 											  		element.parent().find('#rcdtokScreen').hide();
