@@ -373,16 +373,26 @@ div.popover {
     min-height:100px;
     border-top:1px solid rgba(0,0,0,0.1);
 }
-#new-action-toolbar p {
+#new-action-toolbar p,
+#newticket-toolbar p {
     margin-bottom:2px;
     font-size:11px;
 }
 #new-action-toolbar .flexpull {
     padding-right:5px;
 }
-#new-action-toolbar input {
+#new-action-toolbar input,
+#newticket-toolbar input {
+    font-size:13px;
     border-radius:4px 0px 0px 4px !important;
+    max-height:34px;
 }
+
+#new-action-toolbar span,
+#newticket-toolbar span {
+    max-height:34px;
+}
+
 
 .upload-queue {
     display:inline-block;
@@ -456,4 +466,11 @@ div.popover {
 
 .OT_publisher {
     display:none;
+}
+
+
+
+
+#ticket-now-viewing p {
+    font-size:12px;
 }
