@@ -380,7 +380,9 @@ div.popover {
 #new-action-toolbar .flexpull {
     padding-right:5px;
 }
-
+#new-action-toolbar input {
+    border-radius:4px 0px 0px 4px !important;
+}
 
 .upload-queue {
     display:inline-block;
