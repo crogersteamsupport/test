@@ -471,6 +471,8 @@ div.popover {
 
 
 #ticket-now-viewing {
+    padding:2px 3px;
+    border:none;
     border-radius:0px;
     box-shadow:1px 1px 0px rgba(0,0,0,0.1);
 }
