@@ -3127,7 +3127,7 @@ var appendCategorizedCustomValues = function (fields) {
                 if (field.CustomFieldCategoryID == categories[j].CustomFieldCategoryID) {
                     if (isFirstFieldAdded) {
                         isFirstFieldAdded = false;
-                        var header = $('<label>').text(categories[j].Category).addClass('customFieldCategoryHeader');
+                        var header = $('<div>').text(categories[j].Category).addClass('customFieldCategoryHeader');
                         container.append($('<hr>')).append(header);
                     }
                     switch (field.FieldType) {
