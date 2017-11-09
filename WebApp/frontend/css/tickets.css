@@ -107,7 +107,7 @@ button:focus {
 }
 
 #ticket-properties-area {
-    padding:10px 10px 0px 0px;
+    padding:10px 0px 0px 0px;
     margin-bottom:20px;
 }
 
@@ -200,6 +200,18 @@ button:focus {
 #ticket-properties-area .form-horizontal.hasError .form-label {
     font-weight: bold;
 }
+
+#ticket-properties-area .form-horizontal.hasError input::-webkit-input-placeholder,
+#ticket-properties-area .form-horizontal.hasError input::-moz-placeholder,
+#ticket-properties-area .form-horizontal.hasError input:-moz-placeholder,
+#ticket-properties-area .form-horizontal.hasError input:-ms-input-placeholder {
+    border-bottom:1px solid black !important;
+    text-decoration: underline;
+}
+
+
+
+
 
 #ticket-properties-area .flex2 {
     max-width:205px;
