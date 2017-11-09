@@ -102,13 +102,14 @@ button:focus {
 
 #page-sidebar {
     background-color:rgba(255,255,255,1);
-    min-width:300px;
+    min-width:298px;
     border-left:2px solid rgba(150,150,150,0.1);
 }
 
 #ticket-properties-area {
     padding:10px 0px 0px 0px;
     margin-bottom:20px;
+    max-width:298px;
 }
 
 #ticket-properties-area h3 {
