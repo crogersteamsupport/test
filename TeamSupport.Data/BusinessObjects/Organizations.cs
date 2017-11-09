@@ -861,7 +861,98 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
                 UserSettings.WriteString(loginUser, "Dashboard", UserSettings.ReadString(loginUser, (int)sourceOrg.PrimaryUserID, "Dashboard"));
                 sourceOrg.Collection.Save();
 
-                EmailPosts.SendWelcomeNewSignup(loginUser, user.UserID, "");
+				// Copy Tasks. Only for Enterprise
+				if (productType == ProductType.Enterprise)
+				{
+					Tasks tasksSource = new Tasks(loginUser);
+					tasksSource.LoadByOrganizationID(sourceOrgID);
+
+					foreach (Task taskSource in tasksSource)
+					{
+						Task newTask = (new Tasks(loginUser)).AddNewTask();
+						newTask.ParentID = taskSource.ParentID;
+						newTask.OrganizationID = organization.OrganizationID;
+						newTask.Name = taskSource.Name;
+						newTask.Description = taskSource.Description;
+						newTask.UserID = user.UserID;
+						newTask.IsComplete = taskSource.IsComplete;
+
+						if (taskSource.DueDate.HasValue)
+						{
+							TimeSpan hours = taskSource.DueDate.Value - taskSource.DateCreated;
+							newTask.DueDate = DateTime.UtcNow.AddHours(hours.TotalHours);
+						}
+
+						newTask.DateCompleted = taskSource.DateCompleted;
+						newTask.Collection.Save();
+
+						TaskAssociations taskAssociationsSource = new TaskAssociations(loginUser);
+						taskAssociationsSource.LoadByTaskIDOnly(taskSource.TaskID);
+
+						foreach (TaskAssociation taskAssociationSource in taskAssociationsSource)
+						{
+							int? refId = null;
+
+							switch (taskAssociationSource.RefType)
+							{
+								case (int)ReferenceType.Tickets:
+									//Tickets newOrgTickets = new Tickets(loginUser);
+									//newOrgTickets.LoadByOrganizationID(organization.OrganizationID);
+
+									if (tktDests.Any())
+									{
+										refId = tktDests[0].TicketID;
+									}
+									break;
+								case (int)ReferenceType.Organizations:
+									if (compDsts.Any())
+									{
+										refId = compDsts[0].OrganizationID;
+									}
+									break;
+								default:
+									break;
+							}
+
+							if (refId != null)
+							{
+								TaskAssociation newTaskAssociation = (new TaskAssociations(loginUser)).AddNewTaskAssociation();
+								newTaskAssociation.TaskID = newTask.TaskID;
+								newTaskAssociation.RefID = (int)refId;
+								newTaskAssociation.RefType = taskAssociationSource.RefType;
+								newTaskAssociation.CreatorID = user.UserID;
+								newTaskAssociation.DateCreated = DateTime.Now;
+								newTaskAssociation.Collection.Save();
+							}
+						}
+
+						Reminders remindersSource = new Reminders(loginUser);
+						remindersSource.LoadByItemAll(ReferenceType.Tasks, taskSource.TaskID, taskSource.UserID);
+
+						foreach (Reminder reminderSource in remindersSource)
+						{
+							Reminder newReminder = (new Reminders(loginUser)).AddNewReminder();
+							newReminder.OrganizationID = organization.OrganizationID;
+							newReminder.RefType = ReferenceType.Tasks;
+							newReminder.RefID = newTask.TaskID;
+							newReminder.Description = reminderSource.Description;
+
+							TimeSpan hours = reminderSource.DueDate - reminderSource.DateCreated;
+							newReminder.DueDate = DateTime.UtcNow.AddHours(hours.TotalHours);
+
+							newReminder.UserID = user.UserID;
+							newReminder.IsDismissed = reminderSource.IsDismissed;
+							newReminder.HasEmailSent = reminderSource.HasEmailSent;
+							newReminder.CreatorID = user.UserID;
+							newReminder.Collection.Save();
+
+							newTask.ReminderID = newReminder.ReminderID;
+							newTask.Collection.Save();
+						}
+					}
+				}
+
+				EmailPosts.SendWelcomeNewSignup(loginUser, user.UserID, "");
                 EmailPosts.SendSignUpNotification(loginUser, user.UserID, url, referrer);
                 TeamSupportSync.SyncNewOrg(organization.OrganizationID, organization.Name, user.UserID, user.FirstName, user.LastName, user.Email, phoneNumber.Number, productType, signUpParams != null ? signUpParams.promo : "", potentialSeats, signUpParams != null ? signUpParams.hubspotutk : "", signUpParams != null ? signUpParams.gaSource : "", signUpParams != null ? signUpParams.gaCampaign : "");
 
