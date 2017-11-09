@@ -3252,7 +3252,7 @@ var AddCustomFieldDate = function (field, parentContainer) {
         e.stopPropagation();
         var header = $(this).hide();
         var container  = $('<div>').insertAfter(header);
-        var container1 = $('<div>').css('display','block').attr('id','duedate-input').appendTo(container);
+        var container1 = $('<div>').css('display','inline-block').attr('id','duedate-input').appendTo(container);
         var theinput   = $('<input type="text">').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getDatePattern())).datetimepicker({ pickTime: false }).appendTo(container1).focus();
 
         $('<i>').addClass('fa fa-times').click(function (e) {
@@ -3327,7 +3327,7 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
         e.stopPropagation();
         var header     = $(this).hide();
         var container  = $('<div>').insertAfter(header);
-        var container1 = $('<div>').css('display','block').attr('id','duedate-input').appendTo(container);
+        var container1 = $('<div>').css('display','inline-block').attr('id','duedate-input').appendTo(container);
         var theinput   = $('<input type="text">').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getDateTimePattern())).datetimepicker({ pickTime: true }).appendTo(container1).focus();
 
         $('<i>').addClass('fa fa-times').click(function (e) {
@@ -3401,7 +3401,7 @@ var AddCustomFieldTime = function (field, parentContainer) {
         e.stopPropagation();
         var header     = $(this).hide();
         var container  = $('<div>').insertAfter(header);
-        var container1 = $('<div>').css('display','block').appendTo(container);
+        var container1 = $('<div>').css('display','inline-block').appendTo(container);
         var theinput   = $('<input type="text">').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getTimePattern())).datetimepicker({ pickDate: false }).appendTo(container1).focus();
 
         $('<i>').addClass('fa fa-times').click(function (e) {
@@ -3625,7 +3625,7 @@ var SetupDueDateField = function (duedate) {
         e.stopPropagation();
         var header     = $(this).hide();
         var container  = $('<div>').insertAfter(header);
-        var container1 = $('<div>').css('display','block').attr('id','duedate-input').appendTo(container);
+        var container1 = $('<div>').css('display','inline-block').attr('id','duedate-input').appendTo(container);
         var theinput   = $('<input type="text">').val('').datetimepicker({ pickTime: true }).appendTo(container1).focus();
 
         $('<i>').addClass('fa fa-times').click(function (e) {
