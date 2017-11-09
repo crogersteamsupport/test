@@ -493,3 +493,10 @@ div.popover {
 #ticket-title-input {
     margin-bottom:5px !important;
 }
+
+
+#watson {
+    opacity: 0.7;
+    margin: 0px 50px 20px;
+    font-size:11px;
+}
