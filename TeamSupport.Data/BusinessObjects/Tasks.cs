@@ -55,7 +55,18 @@ namespace TeamSupport.Data
             }
         }
 
-        public void LoadIncompleteByParentID(int parentID)
+		public void LoadByOrganizationID(int orgId)
+		{
+			using (SqlCommand command = new SqlCommand())
+			{
+				command.CommandText = "SELECT * FROM Tasks WHERE OrganizationID = @OrganizationID";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@OrganizationID", orgId);
+				Fill(command);
+			}
+		}
+
+		public void LoadIncompleteByParentID(int parentID)
         {
             using (SqlCommand command = new SqlCommand())
             {
