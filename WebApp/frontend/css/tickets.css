@@ -201,6 +201,10 @@ button:focus {
     font-weight: bold;
 }
 
+#ticket-properties-area .flex2 {
+    max-width:205px;
+}
+
 #ticket-SLAStatus {
     padding:0px;
 }
