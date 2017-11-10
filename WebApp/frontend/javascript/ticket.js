@@ -2431,17 +2431,17 @@ function LoadProductList(products) {
                     return '<div data-ticketid="' + _ticketID + '" data-productid="' + escape(item.value) + '" data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" data-placement="left" class="option ProductAnchor">' + escape(item.text) + '</div>';
                 }
             },
-            plugins: {
-                'sticky_placeholder': {},
-                'no_results': {}
-            },
+            // plugins: {
+            //     'sticky_placeholder': {},
+            //     'no_results': {}
+            // },
             allowEmptyOption: true,
             loadThrottle: null,
             onDropdownClose: function ($dropdown) {
                 $($dropdown).prev().find('input').blur();
             },
             closeAfterSelect: true,
-            // placeholder: 'unassigned'
+            placeholder: 'unassigned'
         });
 
         if (_ticketInfo.Ticket.ProductID == null) {
