@@ -17,8 +17,8 @@
   <script src="../Js/jquery.layout.min.js" type="text/javascript"></script>
   <script src="../Js/jquery.ui.timepicker.js" type="text/javascript"></script>
   <script src="../Js/Ts/ts.utils.js" type="text/javascript"></script>
+  <script src="../js/bootstrap-modal.min.js"></script>
   <script src="Admin_Integration.js" type="text/javascript"></script>
-	<script src="/frontend/bootstrap-3.3.7/js/bootstrap.min.js?1500491158" type="text/javascript"></script>
 
   <title></title>
 </head>
@@ -117,7 +117,7 @@
           <input type="text" class="text ui-widget-content ui-corner-all int-crm-user"/>
           <label>Tag which identifies customer</label>
           <input type="text" class="text ui-widget-content ui-corner-all int-crm-tag"/>
-          <span class="label">Default SLA</span>
+          <label>Default SLA</label>
           <select class="int-defaultSla"></select>
           <div>&nbsp</div>
           <div class="checkboxes">
@@ -165,7 +165,7 @@
 			<div class="int-content-wrapper">
 			  <div>
 				<div class ="label-block jiraInstancesName">
-				  <span id="InstancesLabel" class="label">Instances</span>
+				  <label id="InstancesLabel">Instances</label>
 				  <div id="JiraInstacesListWrapper" class="ts-clearfix" style="float: left;">
 					<select id="JiraInstances" class="int-jiraInstances"></select>
 				  </div>
@@ -182,15 +182,15 @@
 		  				<h2>Custom Field Mapping (Optional)</h2>
 		  				<div>
 		  					<div class="label-block">
-                                        <span class="label">Mapping Type</span>
-                                        <select class="int-map-type"></select>
-                                    </div>
-                                    <div class="label-block">
-		  						<span class="label">Jira Field</span>
+                                <label>Mapping Type</label>
+                                <select class="int-map-type"></select>
+                            </div>
+                            <div class="label-block">
+		  						<label>Jira Field</label>
 		  						<input type="text" class="int-jira-map-crmfield text ui-widget-content ui-corner-all" style="width: 200px;" />
 		  					</div>
 		  					<div class="label-block">
-		  						<span class="label">TeamSupport Ticket Field</span>
+		  						<label>TeamSupport Ticket Field</label>
 		  						<select class="int-jira-map-tsfield"></select>
 		  					</div>
 		  					<div class="label-block">
@@ -229,7 +229,7 @@
 		  		<input type="password" class="text ui-widget-content ui-corner-all int-crm-password-confirm" />
 		  		<label>Default Project KEY</label>
 		  		<input type="text" class="text ui-widget-content ui-corner-all int-crm-project" />
-		  		<span class="label">Actions type to push to Jira as comments</span>
+		  		<span>Actions type to push to Jira as comments</span>
 		  		<select class="int-actionTypeToPush"></select>
 		  		<div>&nbsp</div>
 		  		<div class="checkboxes">
@@ -237,7 +237,7 @@
 		  			<label for="cb-jira-update-status" class="checkbox">Update TeamSupport Tickets Statuses</label>
 		  			
 			  		<div class="clearfix"></div>
-			  		<span id="ticketStatusExceptionSpan" class="label">Exclude the following</span>
+			  		<span id="ticketStatusExceptionSpan">Exclude the following</span>
 			  		<select id="exclusionTicketStatusList" class="int-crm-ticketStatusToExclude" multiple=multiple size="5"></select>
 					
 					<div class="clearfix"></div>
@@ -339,16 +339,16 @@
                 <h2>Custom Field Mapping (Optional)</h2>
                 <div>
                   <div class="label-block">
-                    <span class="label">Mapping Type</span>
-                                        <select class="int-map-type"></select>
+                    <label>Mapping Type</label>
+                    <select class="int-map-type"></select>
                   </div>
                   <div class="label-block">
-                    <span class="label">SalesForce Field</span>
+                    <label>SalesForce Field</label>
                     <input type="text" class="int-map-crmfield text ui-widget-content ui-corner-all"
                       style="width: 200px;" />
                   </div>
                   <div class="label-block">
-                    <span class="label">TeamSupport Field</span>
+                    <label>TeamSupport Field</label>
                     <select class="int-map-tsfield"></select>
                   </div>
                   <div class="label-block">
@@ -391,7 +391,7 @@
             <input type="password" class="text ui-widget-content ui-corner-all int-crm-token-confirm" />
             <label>Account Type to Link to TeamSupport</label>
             <input type="text" class="text ui-widget-content ui-corner-all int-crm-tag" />
-            <span class="label">Default SLA</span>
+            <label>Default SLA</label>
             <select class="int-defaultSla"></select>
             <div>&nbsp</div>
             <div class="checkboxes">
@@ -559,15 +559,15 @@
                                 <h2>Custom Field Mapping (Optional)</h2>
                                 <div>
                                     <div class="label-block">
-                                        <span class="label">Mapping Type</span>
+                                        <label>Mapping Type</label>
                                         <select class="int-map-type"></select>
                                     </div>
                                     <div class="label-block">
-                                        <span class="label">TFS Field</span>
+                                        <label>TFS Field</label>
                                         <input type="text" class="int-tfs-map-crmfield text ui-widget-content ui-corner-all" style="width: 200px;" />
                                     </div>
                                     <div class="label-block">
-                                        <span class="label">TeamSupport Field</span>
+                                        <label>TeamSupport Field</label>
                                         <select class="int-tfs-map-tsfield"></select>
                                     </div>
                                     <div class="label-block">
@@ -616,7 +616,7 @@
 
                         <label>Default Project Name</label>
                         <input type="text" class="text ui-widget-content ui-corner-all int-crm-project" />
-                        <span class="label">Actions type to push to TFS as comments</span>
+                        <label>Actions type to push to TFS as comments</label>
                         <select class="int-actionTypeToPush"></select>
                         <div>&nbsp</div>
                         <div class="checkboxes">
@@ -664,16 +664,16 @@
                 <h2>Custom Field Mapping (Optional)</h2>
                 <div>
                   <div class="label-block">
-                    <span class="label">Mapping Type</span>
-                                        <select class="int-zoho-map-type"></select>
+                    <label>Mapping Type</label>
+                    <select class="int-zoho-map-type"></select>
                   </div>
                   <div class="label-block">
-                    <span class="label">Zoho CRM Field</span>
+                    <label>Zoho CRM Field</label>
                     <input type="text" class="int-zoho-map-crmfield text ui-widget-content ui-corner-all"
                       style="width: 200px;" />
                   </div>
                   <div class="label-block">
-                    <span class="label">TeamSupport Field</span>
+                    <label>TeamSupport Field</label>
                     <select class="int-zoho-map-tsfield"></select>
                   </div>
                   <div class="label-block">
@@ -712,7 +712,7 @@
           <input type="password" class="text ui-widget-content ui-corner-all int-crm-token-confirm"/>
           <label>Account Type to Link to TeamSupport</label>
           <input type="text" class="text ui-widget-content ui-corner-all int-crm-tag"/>
-          <span class="label">Default SLA</span>
+          <label>Default SLA</label>
           <select class="int-defaultSla"></select>
           <div>&nbsp</div>
           <div class="checkboxes">
@@ -751,7 +751,7 @@
           <input type="password" class="text ui-widget-content ui-corner-all int-crm-token"/>
           <label>Confirm Zoho Reports Authentication Token</label>
           <input type="password" class="text ui-widget-content ui-corner-all int-crm-token-confirm"/>
-            <span class="label">Grid</span>
+            <label>Grid</label>
             <select class="int-zohoreports-grid"></select>
             <div class="clearfix"></div>
           <div class="checkboxes">

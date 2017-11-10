@@ -14,15 +14,18 @@ this.module = function(names, fn) {
 };
 
 this.module('teamsupport', function() {
-    // TEAMSUPPORT.JOURNAL
-    this.journal = function(e) {
-        console.log(e);
-    }
-    // TEAMSUPPORT.TRACE
-    this.trace = function() {
-        var err = new Error();
-        console.log(err.stack);
-    }
+
+    this.module('tools', function() {
+        // TEAMSUPPORT.JOURNAL
+        this.journal = function(e) {
+            console.log(e);
+        }
+        // TEAMSUPPORT.TRACE
+        this.trace = function() {
+            var err = new Error();
+            console.log(err.stack);
+        }
+    });
 });
 
 
@@ -66,10 +69,6 @@ $(document).on('click','#ticket-tags .tag-item', function (e) {
     e.preventDefault();
     e.stopPropagation();
     var tagid = $(this).attr('id');
-    teamsupport.journal('Tag Clicked: ' + tagid);
-    // teamsupport.journal(top.Ts.Utils.getIdFromElement('tagid', $(this)));
-    // teamsupport.trace();
-
     top.Ts.System.logAction('Ticket - Tag Linked From Action');
     top.Ts.MainPage.openTag(tagid);
 });

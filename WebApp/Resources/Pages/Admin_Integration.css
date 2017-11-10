@@ -1191,3 +1191,11 @@ button.close {
 .emptyDivider {
 	margin: 5px;
 }
+
+.ui-combobox-input {
+	height: 10px !important;
+}
+
+.int-jiraInstances {
+	height: 10px !important;
+}
