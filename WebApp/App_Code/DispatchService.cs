@@ -32,6 +32,12 @@ namespace TSWebServices
         Organization parentOrganization;
         string connString = ConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
 
+        public static bool GetUsePusher()
+        {
+            string val = SystemSettings.ReadString("UsePusher", "true").ToLower();
+            return val.IndexOf('t') > -1;
+        }
+
         public DispatchService()
         {
             options.Encrypted = true;
@@ -319,6 +325,8 @@ namespace TSWebServices
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public void getTicketViewing(string ticketID)
         {
+            if (!GetUsePusher()) return;
+
             LoginUser loginUser = new LoginUser(connString, TSAuthentication.GetLoginUser().UserID, TSAuthentication.GetLoginUser().OrganizationID, null);
             var result = pusher.Trigger("ticket-dispatch-" + TSAuthentication.GetLoginUser().OrganizationID, "getTicketViewing", ticketID);
             //Clients.Group(loginUser.OrganizationID.ToString(), Context.ConnectionId).getTicketViewing(ticketID);
@@ -329,6 +337,8 @@ namespace TSWebServices
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public void ticketViewingAdd(string ticketID, string userID)
         {
+            if (!GetUsePusher()) return;
+
             LoginUser loginUser = new LoginUser(connString, TSAuthentication.GetLoginUser().UserID, TSAuthentication.GetLoginUser().OrganizationID, null);
             var result = pusher.Trigger("ticket-dispatch-" + TSAuthentication.GetLoginUser().OrganizationID, "ticketViewingAdd", new { ticket = ticketID, user = userID });
             //Clients.Group(loginUser.OrganizationID.ToString(), Context.ConnectionId).ticketViewingAdd(ticketID, userID);
@@ -338,6 +348,8 @@ namespace TSWebServices
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public void ticketViewingRemove(string ticketNum, string userID)
         {
+            if (!GetUsePusher()) return;
+
             LoginUser loginUser = new LoginUser(connString, TSAuthentication.GetLoginUser().UserID, TSAuthentication.GetLoginUser().OrganizationID, null);
             string chanName = "presence-ticket-" + ticketNum + "-org-" + TSAuthentication.GetLoginUser().OrganizationID;
             var result = pusher.Trigger("presence-ticket-" + ticketNum + "-org-" + TSAuthentication.GetLoginUser().OrganizationID, "ticketViewingRemove", new { ticket = ticketNum, user = userID, chan = chanName });
@@ -348,6 +360,7 @@ namespace TSWebServices
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public void TicketUpdate(string ticketNum, string updateType, string modUser)
         {
+            if (!GetUsePusher()) return;
             LoginUser loginUser = new LoginUser(connString, -1, -1, null);
             loginUser = new LoginUser(connString, TSAuthentication.GetLoginUser().UserID, TSAuthentication.GetLoginUser().OrganizationID, null);
 
@@ -433,6 +446,8 @@ namespace TSWebServices
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public void RefreshSLA(string ticketNum)
         {
+            if (!GetUsePusher()) return;
+
             LoginUser loginUser = new LoginUser(connString, -1, -1, null);
             loginUser = new LoginUser(connString, TSAuthentication.GetLoginUser().UserID, TSAuthentication.GetLoginUser().OrganizationID, null);
             var result = pusher.Trigger("ticket-dispatch-" + TSAuthentication.GetLoginUser().OrganizationID, "ticketRefreshSla", ticketNum);
