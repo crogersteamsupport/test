@@ -3451,13 +3451,13 @@ var AddCustomFieldTime = function (field, parentContainer) {
         formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
-        groupContainer.addClass('hasCloseError');
+        formcontainer.addClass('hasCloseError');
     }
     if (field.IsRequiredToClose) {
-        groupContainer.addClass('isRequiredToClose');
+        formcontainer.addClass('isRequiredToClose');
     }
     if (field.Value === null || $.trim(field.Value) === '') {
-        groupContainer.addClass('isEmpty');
+        formcontainer.addClass('isEmpty');
     }
 }
 
@@ -3523,13 +3523,13 @@ var AddCustomFieldNumber = function (field, parentContainer) {
         formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
-        groupContainer.addClass('hasCloseError');
+        formcontainer.addClass('hasCloseError');
     }
     if (field.IsRequiredToClose) {
-        groupContainer.addClass('isRequiredToClose');
+        formcontainer.addClass('isRequiredToClose');
     }
     if (field.Value === null || $.trim(field.Value) === '') {
-        groupContainer.addClass('isEmpty');
+        formcontainer.addClass('isEmpty');
     }
 }
 
@@ -3595,13 +3595,13 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
         formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && ((field.IsFirstIndexSelect == true && (items[0] == field.Value || field.Value == null || $.trim(field.Value) === '')) || (field.Value == null || $.trim(field.Value) === ''))) {
-        groupContainer.addClass('hasCloseError');
+        formcontainer.addClass('hasCloseError');
     }
     if (field.IsRequiredToClose) {
-        groupContainer.addClass('isRequiredToClose');
+        formcontainer.addClass('isRequiredToClose');
     }
     if ((field.IsFirstIndexSelect == true && items[0] == field.Value) || field.Value == null || $.trim(field.Value) === '') {
-        groupContainer.addClass('isEmpty');
+        formcontainer.addClass('isEmpty');
     }
 
     $('.' + field.CustomFieldID + 'children').remove();
