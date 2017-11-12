@@ -3355,7 +3355,7 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
                 groupContainer.removeClass('hasCloseErrory');
             }
             if (value === null || $.trim(value) === '') {
-                  groupContainer.addClass('isEmpty');
+                groupContainer.addClass('isEmpty');
             } else {
                 groupContainer.removeClass('isEmpty');
             }
@@ -3672,6 +3672,7 @@ var SetupStatusField = function (StatusId) {
                 if (value !== _ticketCurrStatus.toString()) {
                     var status = window.parent.Ts.Cache.getTicketStatus(value);
                     teamsupport.tools.journal(status);
+                    teamsupport.tools.trace();
                     isFormValidToClose(status.IsClosed, function (isValid) {
                         if (isValid == true) {
                             window.parent.Ts.Services.Tickets.SetTicketStatus(_ticketID, value, function (result) {
