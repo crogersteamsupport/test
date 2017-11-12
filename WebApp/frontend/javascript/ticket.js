@@ -3273,11 +3273,11 @@ var AddCustomFieldDate = function (field, parentContainer) {
                   formcontainer.removeClass('hasError');
               }
               if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
-                  formcontainer.addClass('hasCloseErrory');
+                  formcontainer.addClass('hasCloseError');
                   alert("This field can not be cleared in a closed ticket");
                   return;
               } else {
-                  formcontainer.removeClass('hasCloseErrory');
+                  formcontainer.removeClass('hasCloseError');
               }
               if (value === null || $.trim(value) === '') {
                   formcontainer.addClass('isEmpty');
@@ -3310,7 +3310,6 @@ var AddCustomFieldDate = function (field, parentContainer) {
     if (field.Value === null || $.trim(field.Value) === '') {
         formcontainer.addClass('isEmpty');
     }
-
 }
 
 var AddCustomFieldDateTime = function (field, parentContainer) {
@@ -3348,11 +3347,11 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
                 formcontainer.removeClass('hasError');
             }
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
-                formcontainer.addClass('hasCloseErrory');
+                formcontainer.addClass('hasCloseError');
                 alert("This field can not be cleared in a closed ticket");
                 return;
             } else {
-                formcontainer.removeClass('hasCloseErrory');
+                formcontainer.removeClass('hasCloseError');
             }
             if (value === null || $.trim(value) === '') {
                 formcontainer.addClass('isEmpty');
@@ -3422,11 +3421,11 @@ var AddCustomFieldTime = function (field, parentContainer) {
                 formcontainer.removeClass('hasError');
             }
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
-                formcontainer.addClass('hasCloseErrory');
+                formcontainer.addClass('hasCloseError');
                 alert("This field can not be cleared in a closed ticket");
                 return;
             } else {
-                formcontainer.removeClass('hasCloseErrory');
+                formcontainer.removeClass('hasCloseError');
             }
             if (value === null || $.trim(value) === '') {
                 formcontainer.addClass('isEmpty');
