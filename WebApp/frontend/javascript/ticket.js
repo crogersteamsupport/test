@@ -3202,11 +3202,11 @@ var AddCustomFieldEdit = function (field, parentContainer) {
             formcontainer.removeClass('hasError');
         }
         if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
-            groupContainer.addClass('hasCloseError');
+            formcontainer.addClass('hasCloseError');
             alert("This field can not be cleared in a closed ticket");
             return;
         } else {
-            groupContainer.removeClass('hasCloseError');
+            formcontainer.removeClass('hasCloseError');
         }
         if (value === null || $.trim(value) === '') {
             formcontainer.addClass('isEmpty');
