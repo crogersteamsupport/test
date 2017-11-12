@@ -3671,6 +3671,7 @@ var SetupStatusField = function (StatusId) {
             onChange: function (value) {
                 if (value !== _ticketCurrStatus.toString()) {
                     var status = window.parent.Ts.Cache.getTicketStatus(value);
+                    teamsupport.tools.journal(status);
                     isFormValidToClose(status.IsClosed, function (isValid) {
                         if (isValid == true) {
                             window.parent.Ts.Services.Tickets.SetTicketStatus(_ticketID, value, function (result) {
