@@ -3196,6 +3196,7 @@ var AddCustomFieldEdit = function (field, parentContainer) {
     input.change(function (e) {
         var value = input.val();
 
+
         if (field.IsRequired && (value === null || $.trim(value) === '')) {
             formcontainer.addClass('hasError');
         } else {
@@ -3209,9 +3210,9 @@ var AddCustomFieldEdit = function (field, parentContainer) {
             groupContainer.removeClass('hasCloseError');
         }
         if (value === null || $.trim(value) === '') {
-            groupContainer.addClass('isEmpty');
+            formContainer.addClass('isEmpty');
         } else {
-            groupContainer.removeClass('isEmpty');
+            formContainer.removeClass('isEmpty');
         }
         window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
             groupContainer.data('field', result);
