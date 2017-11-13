@@ -88,27 +88,6 @@ button:focus {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #page-sidebar {
     background-color:rgba(255,255,255,1);
     min-width:300px;
@@ -169,8 +148,12 @@ button:focus {
 #ticket-properties-area .tagContainer a,
 #ticket-properties-area .taskContainer a,
 #ticket-properties-area .tag-item {
-    font-size:12px;
+    font-size: 12px;
     cursor:pointer;
+    background-color:#f4f6f8;
+    padding: 2px 3px;
+    margin-bottom: 2px;
+    border-radius: 2px;
 }
 #ticket-properties-area .tagContainer .glyphicon {
     font-size:11px;
