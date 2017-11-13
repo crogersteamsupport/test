@@ -92,6 +92,7 @@ div.action .specifics .title {
     font-size:14px;
 }
 div.action .specifics .details {
+    overflow-x: auto;
 }
 
 div.action .specifics .details img {
