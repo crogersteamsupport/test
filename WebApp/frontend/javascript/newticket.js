@@ -219,10 +219,6 @@ $(document).ready(function () {
 
 });
 
-$(document).on('click', '#link-file', function (e) {
-    teamsupport.journal('here');
-    $('#input-file').trigger('click');
-})
 
 function LoadTicketPageOrder() {
     parent.Ts.Services.TicketPage.GetTicketPageOrder("NewTicketFieldsOrder", function (order) {
@@ -1080,50 +1076,34 @@ function update() {
 }
 
 function SetupUploadQueue() {
-    var element = $('.upload-area');
-    $('.file-upload').fileupload({
+    var element = $('#file-uploads');
+    $('#file-upload').fileupload({
         namespace: 'new_action',
         dropZone: element,
         add: function (e, data) {
             for (var i = 0; i < data.files.length; i++) {
-                var item = $('<li>')
-                .appendTo(element.find('.upload-queue'));
-
+                var item = $('<li>').appendTo(element.find('.upload-queue'));
                 data.context = item;
                 item.data('data', data);
 
-                var bg = $('<div>')
-                .appendTo(item);
+                var bg = $('<div>').appendTo(item);
 
-                $('<div>')
-                .text(data.files[i].name + '  (' + parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
-                .addClass('filename')
-                .appendTo(bg);
+                $('<div>').text(data.files[i].name + '  (' + parent.Ts.Utils.getSizeString(data.files[i].size) + ')').addClass('filename').appendTo(bg);
 
-                $('<div>')
-                .addClass('progress')
-                .hide()
-                .appendTo(bg);
+                $('<div>').addClass('progress').hide().appendTo(bg);
 
-                $('<span>')
-                .addClass('ui-icon ui-icon-close')
-                .click(function (e) {
+                $('<span>').addClass('ui-icon ui-icon-close').click(function (e) {
                     e.preventDefault();
                     $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
-                })
-                .appendTo(bg);
+                }).appendTo(bg);
 
                 //<span class="tagRemove" aria-hidden="true">×</span>
 
-                $('<span>')
-                .addClass('ui-icon ui-icon-cancel')
-                .hide()
-                .click(function (e) {
+                $('<span>').addClass('ui-icon ui-icon-cancel').hide().click(function (e) {
                     e.preventDefault();
                     var data = $(this).closest('li').data('data');
                     data.jqXHR.abort();
-                })
-                .appendTo(bg);
+                }).appendTo(bg);
             }
 
         },
@@ -1266,18 +1246,14 @@ var SetupDueDateField = function (duedate) {
         e.preventDefault();
         e.stopPropagation();
         var header = $(this).hide();
-        var container = $('<div>')
-              .addClass('row')
-              .insertAfter(header);
-
-        var container1 = $('<div style="padding-right:0px;">').addClass('col-xs-10').appendTo(container);
-        var theinput = $('<input type="text">').addClass('form-control').val(duedate === undefined ? '' : duedate.localeFormat(parent.Ts.Utils.getDateTimePattern())).datetimepicker({ pickTime: true }).appendTo(container1).focus();
+        var container = $('<div>').addClass('row').insertAfter(header);
+        var container1 = $('<div>').attr('id','duedate-input').addClass('col-xs-10').appendTo(container);
+        var theinput = $('<input type="text">').val(duedate === undefined ? '' : duedate.localeFormat(parent.Ts.Utils.getDateTimePattern())).datetimepicker({ pickTime: true }).appendTo(container1).focus();
 
         $('<i>').addClass('fa fa-times').click(function (e) {
             $(this).closest('div').remove();
             header.show();
-        })
-        .insertAfter(container1);
+        }).insertAfter(container1);
 
 
         $('<i>').addClass('fa fa-check').click(function (e) {
@@ -2241,7 +2217,7 @@ var AddCustomFieldDate = function (field, parentContainer) {
     dateLink.click(function (e) {
         e.preventDefault();
         $(this).hide();
-        var input = $('<input type="text">').addClass('form-control').val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getDatePattern())).datetimepicker({ pickTime: false }).appendTo(dateContainer).focus();
+        var input = $('<input type="text">').val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getDatePattern())).datetimepicker({ pickTime: false }).appendTo(dateContainer).focus();
 
         input.focusout(function (e) {
             var value = parent.Ts.Utils.getMsDate(input.val());
@@ -2301,12 +2277,7 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
     dateLink.click(function (e) {
         e.preventDefault();
         $(this).hide();
-        var input = $('<input type="text">')
-                        .addClass('form-control')
-                        .val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getDateTimePattern()))
-                        .datetimepicker()
-                        .appendTo(dateContainer)
-                        .focus();
+        var input = $('<input type="text">').val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getDateTimePattern())).datetimepicker().appendTo(dateContainer).focus();
 
         input.focusout(function (e) {
             var value = parent.Ts.Utils.getMsDate(input.val());
@@ -2316,22 +2287,19 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
 
             if (field.IsRequired && (value === null || $.trim(value) === '')) {
                 formcontainer.addClass('hasError');
-            }
-            else {
+            } else {
                 formcontainer.removeClass('hasError');
             }
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
                 groupContainer.addClass('hasCloseErrory');
                 alert("This field can not be cleared in a closed ticket");
                 return;
-            }
-            else {
+            } else {
                 groupContainer.removeClass('hasCloseErrory');
             }
             if (value === null || $.trim(value) === '') {
                 groupContainer.addClass('isEmpty');
-            }
-            else {
+            } else {
                 groupContainer.removeClass('isEmpty');
             }
         })
@@ -2366,12 +2334,7 @@ var AddCustomFieldTime = function (field, parentContainer) {
     dateLink.click(function (e) {
         e.preventDefault();
         $(this).hide();
-        var input = $('<input type="text">')
-                        .addClass('form-control')
-                        .val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getTimePattern()))
-                        .datetimepicker({ pickDate: false })
-                        .appendTo(dateContainer)
-                        .focus();
+        var input = $('<input type="text">').val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getTimePattern())).datetimepicker({ pickDate: false }).appendTo(dateContainer).focus();
 
         input.focusout(function (e) {
             var value = parent.Ts.Utils.getMsDate("1/1/1900 " + input.val());
@@ -2381,22 +2344,19 @@ var AddCustomFieldTime = function (field, parentContainer) {
 
             if (field.IsRequired && (value === null || $.trim(value) === '')) {
                 formcontainer.addClass('hasError');
-            }
-            else {
+            } else {
                 formcontainer.removeClass('hasError');
             }
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
                 groupContainer.addClass('hasCloseErrory');
                 alert("This field can not be cleared in a closed ticket");
                 return;
-            }
-            else {
+            } else {
                 groupContainer.removeClass('hasCloseErrory');
             }
             if (value === null || $.trim(value) === '') {
                 groupContainer.addClass('isEmpty');
-            }
-            else {
+            } else {
                 groupContainer.removeClass('isEmpty');
             }
         })
@@ -2435,12 +2395,12 @@ var AddCustomFieldNumber = function (field, parentContainer) {
     var formcontainer  = $('<div>').addClass('form-horizontal custom-field').data('field', field).appendTo(parentContainer);
     var groupContainer = $('<div>').addClass('flexbox').data('field', field).appendTo(formcontainer);
     var labelContainer = $('<div>').addClass('flex1').appendTo(groupContainer);
-    var formLabel      = $('<div>').addClass('from-label').text(field.Name).appendTo(labelContainer);
+    var formLabel      = $('<div>').addClass('form-label').text(field.Name).appendTo(labelContainer);
 
     if (field.ParentProductID) { groupContainer.addClass('product-dependent'); }
 
     var inputContainer = $('<div>').addClass('flex2').appendTo(groupContainer);
-    var input = $('<input type="text">').addClass('form-control ticket-simple-input').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputContainer).numeric();
+    var input = $('<input type="text">').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputContainer).numeric();
 
     input.change(function (e) {
         var value = input.val();

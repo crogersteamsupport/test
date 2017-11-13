@@ -27,6 +27,19 @@ button:focus {
     width:100%;
 }
 
+#menu-container .ticket-source {
+    float: left;
+    height: 16px;
+    width: 16px;
+    margin-right: 5px;
+    position: relative;
+    top: 6px;
+}
+
+
+
+
+
 #frame-container {
     position:absolute !important;
     top:0px;
@@ -87,16 +100,20 @@ button:focus {
     display:none;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 62ee149b67d53b8097e1528a3757220807a2b691
 #page-sidebar {
     background-color:rgba(255,255,255,1);
-    min-width:300px;
+    min-width:298px;
     border-left:2px solid rgba(150,150,150,0.1);
 }
 
 #ticket-properties-area {
-    padding:10px 0px;
+    padding:10px 0px 0px 0px;
     margin-bottom:20px;
+    max-width:298px;
 }
 
 #ticket-properties-area h3 {
@@ -110,6 +127,7 @@ button:focus {
     border-bottom:1px solid rgba(255,255,255,0.5);
 }
 #ticket-properties-area input {
+    font-size:12px;
     border:none;
 }
 #ticket-properties-area textarea {
@@ -127,13 +145,12 @@ button:focus {
     vertical-align:top;
     font-size:11.5px;
     color:rgba(0,0,0,0.6);
-    font-weight:300;
 }
 
 
 #ticket-properties-area .form-horizontal {
     min-height:20px;
-    margin-bottom:25px;
+    margin-bottom:10px;
     padding:5px 0px;
 }
 #ticket-properties-area .tagContainer,
@@ -176,8 +193,12 @@ button:focus {
 #ticket-properties-area .selectize-input input {
     font-size:12px;
 }
+#ticket-properties-area .selectize-input .item {
+    max-width:205px;
+}
 #ticket-properties-area .selectize-dropdown {
     border:1px solid rgba(0,0,0,0.2);
+    max-width:190px;
 }
 #ticket-properties-area .selectize-dropdown .option {
     padding:2px;
@@ -191,6 +212,28 @@ button:focus {
 }
 #ticket-properties-area .form-horizontal.hasError .form-label {
     font-weight: bold;
+}
+
+
+#ticket-properties-area .form-horizontal.hasError input::-webkit-input-placeholder {
+    border-bottom:1px solid rgba(255,0,0,0.3) !important;
+}
+
+#ticket-properties-area .form-horizontal.hasError input::-moz-placeholder {
+    border-bottom:1px solid rgba(255,0,0,0.3) !important;
+}
+
+#ticket-properties-area .form-horizontal.hasError input::-ms-placeholder {
+    border-bottom:1px solid rgba(255,0,0,0.3) !important;
+}
+
+#ticket-properties-area .form-horizontal.hasError input::placeholder {
+    border-bottom:1px solid rgba(255,0,0,0.3) !important;
+}
+
+
+#ticket-properties-area .flex2 {
+    max-width:205px;
 }
 
 #ticket-SLAStatus {
@@ -365,18 +408,25 @@ div.popover {
     min-height:100px;
     border-top:1px solid rgba(0,0,0,0.1);
 }
-#new-action-toolbar p {
+#new-action-toolbar p,
+#newticket-toolbar p {
     margin-bottom:2px;
     font-size:11px;
 }
 #new-action-toolbar .flexpull {
     padding-right:5px;
 }
+#new-action-toolbar input,
+#newticket-toolbar input {
+    font-size:13px;
+    border-radius:4px 0px 0px 4px !important;
+    max-height:34px;
+}
 
-
-
-
-
+#new-action-toolbar span,
+#newticket-toolbar span {
+    max-height:34px;
+}
 
 
 .upload-queue {
@@ -391,10 +441,9 @@ div.popover {
     clear:both;
 }
 
-#input-file {
+#file-input {
     display:none;
 }
-
 
 .upload-queue .ts-color-bg-accent { margin-bottom: .25em; padding: .25em .25em; float:left; }
 .upload-queue li .filename { line-height: 16px; float:left;}
@@ -407,4 +456,85 @@ div.popover {
     background-position: -80px -128px;
     width: 16px;
     height: 16px;
+}
+
+
+
+#ticket-duedate {
+    height:30px;
+    line-height:20px;
+}
+
+#ticket-duedate-container a {
+    margin: 0px;
+    padding: 0px;
+    min-height: 30px;
+    width: 160px;
+    display: inline-block;
+    text-align: left;
+    color:black;
+}
+
+#duedate-input {
+    margin:0px;
+    width:150px;
+    display: inline-block;
+}
+
+
+.ticket-viewer-avatar {
+    height: 16px;
+    width: 16px;
+    margin: 0px 5px;
+    top: -1px;
+    position: relative;
+}
+
+
+
+.nonrequired-field-error-font {
+    color: #cd0a0a !important;
+}
+
+
+
+
+.OT_publisher {
+    display:none;
+}
+
+
+
+#ticket-now-viewing {
+    padding:2px 3px;
+    border:none;
+    border-radius:0px;
+    box-shadow:1px 1px 0px rgba(0,0,0,0.1);
+}
+
+#ticket-now-viewing p {
+    font-size:12px;
+}
+
+
+#ticket-title-container {
+    border-radius:0px;
+    box-shadow:1px 1px 0px rgba(0,0,0,0.1);
+}
+#ticket-title-input {
+    margin-bottom:5px !important;
+}
+
+
+#watson {
+    opacity: 0.7;
+    margin: 0px 0px 20px 40px;
+    font-size:11px;
+}
+
+
+
+
+.customFieldCategoryHeader {
+    padding-left:5px;
 }

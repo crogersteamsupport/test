@@ -269,25 +269,25 @@ AdminInt = function () {
 
 		element.find('.int-crm-webhook').val(item.WebHookTokenFullUrl);
 
-		var showModalButton = document.getElementById("btnBusinessRule");
-		showModalButton.onclick = function () {
-			var rawFile = new XMLHttpRequest();
-			rawFile.open("GET", "ServiceNowBusinessRule.txt", false);
-			rawFile.onreadystatechange = function () {
-				if (rawFile.readyState === 4) {
-					if (rawFile.status === 200 || rawFile.status == 0) {
-						var allText = rawFile.responseText;
-						var textArea = document.querySelector("#businessRuleScript");
-						textArea.value = allText;
+			var showModalButton = document.getElementById("btnBusinessRule");
+			showModalButton.onclick = function () {
+				var rawFile = new XMLHttpRequest();
+				rawFile.open("GET", "ServiceNowBusinessRule.txt", false);
+				rawFile.onreadystatechange = function () {
+					if (rawFile.readyState === 4) {
+						if (rawFile.status === 200 || rawFile.status == 0) {
+							var allText = rawFile.responseText;
+							var textArea = document.querySelector("#businessRuleScript");
+							textArea.value = allText;
+						}
 					}
 				}
-			}
-			rawFile.send(null);
+				rawFile.send(null);
 
-			$('#serviceNowBusinessRuleModal').modal();
-		};
+				$('#serviceNowBusinessRuleModal').modal();
+			};
 
-		if (item.CRMType == 'ServiceNow') {
+			if (item.CRMType == 'ServiceNow') {
 			var copyToClipboardButton = document.getElementById("copyBusinessRuleToClipboard");
 			copyToClipboardButton.onclick = function () {
 				var copyTextArea = document.querySelector("#businessRuleScript").select();

@@ -274,16 +274,6 @@ $(document).ready(function () {
     $('textarea.autogrow').autogrow();
 });
 
-
-
-$(document).on('click', '#link-file', function (e) {
-    teamsupport.journal('here');
-    $('#input-file').trigger('click');
-})
-
-
-
-
 var loadTicket = function (ticketNumber, refresh) {
     window.parent.Ts.Services.Tickets.GetTicketInfo(_ticketNumber, function (info) {
         _ticketInfo = info;
@@ -450,7 +440,6 @@ function SetupTicketPage() {
 }
 
 function AddTicketProperty(item) {
-    teamsupport.journal(item);
     if (item.ItemID) {
         var html = '<div class="ticket-plugin" id="ticket-group-plugin-' + item.ItemID + '"></div>';
         $('#ticket-properties-area').append(html);
@@ -1529,9 +1518,9 @@ function LoadTicketControls() {
                 render: {
                     option: function (item, escape) {
                         var optionlabel = item.text;
-                        console.log(item);
-                        if (item.data.InOfficeMessage) optionlabel = optionlabel + ' - ' + item.data.InOfficeMessage;
-
+                        if (item.data.InOfficeMessage) {
+                            optionlabel = optionlabel + ' - ' + item.data.InOfficeMessage;
+                        }
                         if (item.data.IsSender && item.data.IsCreator) {
                             return '<div data-value="' + escape(item.value) + '" data-selectable="" class="option">' + optionlabel + ' (Sender and Creator)</div>';
                         } else if (item.data.IsSender) {
@@ -3138,7 +3127,7 @@ var appendCategorizedCustomValues = function (fields) {
                 if (field.CustomFieldCategoryID == categories[j].CustomFieldCategoryID) {
                     if (isFirstFieldAdded) {
                         isFirstFieldAdded = false;
-                        var header = $('<label>').text(categories[j].Category).addClass('customFieldCategoryHeader');
+                        var header = $('<div>').text(categories[j].Category).addClass('customFieldCategoryHeader');
                         container.append($('<hr>')).append(header);
                     }
                     switch (field.FieldType) {
@@ -3195,7 +3184,7 @@ var AddCustomFieldEdit = function (field, parentContainer) {
     var formLabel      = $('<div>').addClass('form-label').text(field.Name).appendTo(labelContainer);
 
     var inputContainer = $('<div>').addClass('flex2 ticket-input-container').appendTo(groupContainer);
-    var input          = $('<textarea>').addClass('ticket-simple-textarea muted-placeholder autogrow fart').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputContainer).after(getUrls(field.Value)).autogrow();
+    var input          = $('<textarea>').addClass('ticket-simple-textarea muted-placeholder autogrow').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputContainer).after(getUrls(field.Value)).autogrow();
 
     $('textarea.autogrow').autogrow();
 
@@ -3262,16 +3251,16 @@ var AddCustomFieldDate = function (field, parentContainer) {
         e.preventDefault();
         e.stopPropagation();
         var header = $(this).hide();
-        var container = $('<div>').addClass('row').insertAfter(header);
-        var container1 = $('<div style="padding-right:0px;">').addClass('col-xs-10').appendTo(container);
-        var theinput = $('<input type="text">').addClass('form-control').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getDatePattern())).datetimepicker({ pickTime: false }).appendTo(container1).focus();
+        var container  = $('<div>').insertAfter(header);
+        var container1 = $('<div>').css('display','inline-block').attr('id','duedate-input').appendTo(container);
+        var theinput   = $('<input type="text">').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getDatePattern())).datetimepicker({ pickTime: false }).appendTo(container1).focus();
 
-        $('<i>').addClass('col-xs-1 fa fa-times').click(function (e) {
+        $('<i>').addClass('fa fa-times').click(function (e) {
               $(this).closest('div').remove();
               header.show();
         }).insertAfter(container1);
 
-        $('<i>').addClass('col-xs-1 fa fa-check').click(function (e) {
+        $('<i>').addClass('fa fa-check').click(function (e) {
               var currDate = $(this).prev().find('input').val();
               var value = null;
               if (currDate !== '') {
@@ -3337,17 +3326,17 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
         e.preventDefault();
         e.stopPropagation();
         var header     = $(this).hide();
-        var container  = $('<div>').addClass('row').insertAfter(header);
-        var container1 = $('<div style="padding-right:0px;">').addClass('col-xs-10').appendTo(container);
-        var theinput   = $('<input type="text">').addClass('form-control').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getDateTimePattern())).datetimepicker({ pickTime: true }).appendTo(container1).focus();
+        var container  = $('<div>').insertAfter(header);
+        var container1 = $('<div>').css('display','inline-block').attr('id','duedate-input').appendTo(container);
+        var theinput   = $('<input type="text">').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getDateTimePattern())).datetimepicker({ pickTime: true }).appendTo(container1).focus();
 
-        $('<i>').addClass('col-xs-1 fa fa-times').click(function (e) {
+        $('<i>').addClass('fa fa-times').click(function (e) {
             $(this).closest('div').remove();
             header.show();
             $('#customerEdit').removeClass("disabled");
         }).insertAfter(container1);
 
-        $('<i>').addClass('col-xs-1 fa fa-check').click(function (e) {
+        $('<i>').addClass('fa fa-check').click(function (e) {
             var currDate = $(this).prev().find('input').val();
             var value = null;
             if (currDate !== '') {
@@ -3411,17 +3400,17 @@ var AddCustomFieldTime = function (field, parentContainer) {
         e.preventDefault();
         e.stopPropagation();
         var header     = $(this).hide();
-        var container  = $('<div>').addClass('row').insertAfter(header);
-        var container1 = $('<div style="padding-right:0px;">').appendTo(container);
-        var theinput   = $('<input type="text">').addClass('form-control').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getTimePattern())).datetimepicker({ pickDate: false }).appendTo(container1).focus();
+        var container  = $('<div>').insertAfter(header);
+        var container1 = $('<div>').css('display','inline-block').appendTo(container);
+        var theinput   = $('<input type="text">').val(date === null ? '' : date.localeFormat(window.parent.Ts.Utils.getTimePattern())).datetimepicker({ pickDate: false }).appendTo(container1).focus();
 
-        $('<i>').addClass('col-xs-1 fa fa-times').click(function (e) {
+        $('<i>').addClass('fa fa-times').click(function (e) {
             $(this).closest('div').remove();
             header.show();
             $('#customerEdit').removeClass("disabled");
         }).insertAfter(container1);
 
-        $('<i>').addClass('col-xs-1 fa fa-check').click(function (e) {
+        $('<i>').addClass('fa fa-check').click(function (e) {
             var currDate = $(this).prev().find('input').val();
             var value = null;
             if (currDate !== '') {
@@ -3500,7 +3489,7 @@ var AddCustomFieldNumber = function (field, parentContainer) {
     var formLabel      = $('<div>').addClass('form-label').text(field.Name).appendTo(labelContainer);
 
     var inputContainer = $('<div>').addClass('flex2 ticket-input-container').appendTo(groupContainer);
-    var input = $('<input type="text">').addClass('form-control ticket-simple-input muted-placeholder').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputContainer).numeric();
+    var input = $('<input type="text">').addClass('ticket-simple-input muted-placeholder').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputContainer).numeric();
 
     input.change(function (e) {
         var value = input.val();
@@ -3635,17 +3624,17 @@ var SetupDueDateField = function (duedate) {
         e.preventDefault();
         e.stopPropagation();
         var header     = $(this).hide();
-        var container  = $('<div>').addClass('row').insertAfter(header);
-        var container1 = $('<div style="padding-right:0px;">').addClass('col-xs-10').appendTo(container);
-        var theinput   = $('<input type="text">').addClass('form-control').val('').datetimepicker({ pickTime: true }).appendTo(container1).focus();
+        var container  = $('<div>').insertAfter(header);
+        var container1 = $('<div>').css('display','inline-block').attr('id','duedate-input').appendTo(container);
+        var theinput   = $('<input type="text">').val('').datetimepicker({ pickTime: true }).appendTo(container1).focus();
 
-        $('<i>').addClass('col-xs-1 fa fa-times').click(function (e) {
+        $('<i>').addClass('fa fa-times').click(function (e) {
             $(this).closest('div').remove();
             header.show();
             $('#customerEdit').removeClass("disabled");
         }).insertAfter(container1);
 
-        $('<i>').addClass('col-xs-1 fa fa-check').click(function (e) {
+        $('<i>').addClass('fa fa-check').click(function (e) {
             var currDate = $(this).prev().find('input').val();
             var value = '';
             if (currDate !== '') {
@@ -3710,7 +3699,6 @@ var SetupStatusField = function (StatusId) {
             },
             render: {
                 item: function (item, escape) {
-                    console.log(item);
                     if (item.data.IsClosed) {
                         return '<div data-value="' + escape(item.value) + '" data-item="' + escape(item.data) + '" data-selectable="" class="option"><s>' + escape(item.text) + '</s></div>';
                     } else {
@@ -3996,7 +3984,7 @@ function validateEmail(email) {
 var SetupSnowFields = function () {
 	$('#newSnowIncident').click(function (e) {
 		e.preventDefault();
-		$('.ts-tfs-buttons-container').hide();
+		$('.ts-snow-buttons-container').hide();
 		var errorMessage = "There was an error setting your ServiceNow Incident Number. Please contact TeamSupport.com";
 		window.parent.Ts.Services.Tickets.SetSyncWithSnow(_ticketID, function (result) {
 			if (result != null) {
@@ -5692,16 +5680,16 @@ function maxwidth () {
     $('#action-timeline img').each(function() {
         var image = $(this).width();
         if (image > limit) {
-            $(this).css('max-width',limit).css('width',limit);
+            $(this).css('max-width', limit).css('width', limit);
         }
     });
 }
 
 function pagewidth () {
     var width = $(window).width();
-    $('#frame-container, #ticketpage').css('max-width',width);
-    $('#ticketpage').css('max-width',width);
-    $('#ticketpane').css('max-width',width - 310);
+    $('#frame-container, #page-container').css('max-width',width);
+    $('#page-container').css('max-width', width).css('min-width', width);
+    $('#page-primary').css('max-width', width - 310).css('min-width', width - 310);
 }
 
 

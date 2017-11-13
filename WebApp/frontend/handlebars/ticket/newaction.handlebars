@@ -1,6 +1,6 @@
 <div class="action-new">
 
-    <div class="panel panel-default" style="border:none;margin-bottom:5px;">
+    <div id="ticket-title-container" class="panel panel-default" style="border:none;margin-bottom:5px;">
         <p id="ticket-title-label" style="padding:10px 10px 10px; text-align:center !important;"></p>
         <div id="ticket-title-input-panel" style="padding:5px;position:relative;z-index:1;margin-bottom:10px;display:none;text-align:center;">
             <input id="ticket-title-input" type="text" class="form-control" placeholder="Enter name for ticket..." style="margin-bottom:5px;">
@@ -9,7 +9,7 @@
         </div>
     </div>
 
-    <div id="watson" style="opacity:0.7;"></div>
+    <div id="watson"></div>
 
     <div class="action-new-area" style="display:none;">
 
@@ -53,11 +53,13 @@
             <button id="canceltok" title="Cancel" class="btn btn-danger"><i class="fa fa-eject"></i></button>
         </div>
 
+
+
         <div id="new-action-toolbar">
 
             <div class="flexbox">
-                <div class="flex2" style="margin-right:5px;">
-                    <p for="action-new-date-started">Date Started:</p>
+                <div class="flexcell" style="width:200px;margin-right:5px;">
+                    <p for="action-new-date-started">Date Started</p>
                     <div class='input-group date'>
                         <input id="action-new-date-started" type='text' class="form-control" />
                         <span id="action-new-timer" class="input-group-addon" data-hasstarted="false">
@@ -65,8 +67,8 @@
                         </span>
                     </div>
                 </div>
-                <div class="flex1" style="margin-right:5px;">
-                    <p for="action-new-hours">Hours:</p>
+                <div class="flexcell" style="width:100px;margin-right:5px;">
+                    <p for="action-new-hours">Hours</p>
                     <div class="input-group spinner">
                         <input id="action-new-hours" type="text" class="form-control" value="0">
                         <div class="input-group-btn-vertical">
@@ -75,8 +77,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="flex1" style="margin-right:5px;">
-                    <p for="action-new-minutes">Minutes:</p>
+                <div class="flexcell" style="width:100px;margin-right:5px;">
+                    <p for="action-new-minutes">Minutes</p>
                     <div class="input-group spinner">
                         <input id="action-new-minutes" type="text" class="form-control" value="0">
                         <div class="input-group-btn-vertical">
@@ -85,28 +87,26 @@
                         </div>
                     </div>
                 </div>
-                <div class="flex2" style="margin-right:5px;">
-                    <p for="action-new-type">Type:</p>
+                <div class="flexcell" style="width:200px;margin-right:5px;">
+                    <p for="action-new-type">Type</p>
                     <select id="action-new-type" class="form-control"></select>
                 </div>
-                <div class="flex1">
-                    <p for="action-new-KB">KnowledgeBase:</p>
+                <div class="flexpush">
+                    <p for="action-new-KB">KB</p>
                     <input id="action-new-KB" type="checkbox">
                 </div>
             </div>
 
             <div class="flexbox" style="margin-top:20px;width:100%;">
-
                 <div class="flex4">
                     <div style="width:100%;">
                         <form id="action-file-upload" class="file-upload" action="Upload/Actions/555" method="POST" enctype="multipart/form-data" title="You can drag and drop your attachments here.">
-                        <a id="link-file" class="ts-link" href="#" title="You can drag and drop your attachments here.">Attach File? Click or Drop Here.</a>
-                        <input id="input-file" type="file" name="file[]">
+                        <a id="file-browse" class="ts-link" href="#" title="You can drag and drop your attachments here.">Attach File? Click or Drop Here.</a>
+                        <input id="file-input" type="file" name="file[]">
                         </form>
                         <ul class="upload-queue"></ul>
                     </div>
                 </div>
-
                 <div class="flex1" style="min-width:180px;">
                     <div class="flexbox" style="margin-top:20px;width:100%;">
                         <div class="flexpush" style="padding-right:5px;">
@@ -122,6 +122,8 @@
                     </div>
                 </div>
             </div>
+
+            <div id="action-save-alert" class="alert alert-danger" role="alert" style="display:none;"></div>
 
         </div>
     </div>
