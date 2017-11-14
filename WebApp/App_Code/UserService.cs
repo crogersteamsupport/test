@@ -1316,8 +1316,15 @@ namespace TSWebServices
         {
           if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
           User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+          LogAdminUserAction(string.Format("set {0} ({1}) IsActive to {3}", user.FirstLastName, user.UserID.ToString(), "IsActive", value.ToString()));
           user.IsActive = value;
           user.Collection.Save();
+        }
+
+        public void LogAdminUserAction(string description)
+        {
+            User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, TSAuthentication.UserID, String.Format("{0} performed admin action: {1}", user.FirstLastName, description));
         }
 
         [WebMethod]
@@ -1325,6 +1332,7 @@ namespace TSWebServices
         {
             if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            LogAdminUserAction(string.Format("set {0} ({1}) IsActive to {3}", user.FirstLastName, user.UserID.ToString(), "IsSystemAdmin", value.ToString()));
             user.IsSystemAdmin = value;
             user.Collection.Save();
         }
@@ -1334,6 +1342,7 @@ namespace TSWebServices
         {
             if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            LogAdminUserAction(string.Format("set {0} ({1}) IsActive to {3}", user.FirstLastName, user.UserID.ToString(), "IsFinanceAdmin", value.ToString()));
             user.IsFinanceAdmin = value;
             user.Collection.Save();
         }
