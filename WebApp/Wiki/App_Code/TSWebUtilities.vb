@@ -724,16 +724,17 @@ Public Class TSWebUtilities
 
 
 
-    Protected Sub SaveCustomField(ByVal TicketID As String, ByVal DataToStore As String, ByVal CustomFieldID As String)
+    Protected Sub SaveCustomField(ByVal TicketID As String, ByVal DataToStore As String, ByVal CustomFieldID As String, Optional OrganizationID As Integer = -1)
         'This will store the custom data for a given field
         Dim connection As New SqlConnection(ConfigurationManager.ConnectionStrings("TeamSupportConnectionString").ConnectionString)
         '*** Change to type Issues since that's the only ticket type you can create in the portal
-        Dim command As New SqlCommand("Insert into CustomValues (CustomFieldID, RefID, CustomValue, DateCreated, DateModified, CreatorID, ModifierID) Values(@CustomFieldID, @RefID, @CustomValue, GetUTCDate(), GetUTCDate(), -1, -1)", connection)
+        Dim command As New SqlCommand("Insert into CustomValues (CustomFieldID, RefID, CustomValue, DateCreated, DateModified, CreatorID, ModifierID, OrganizationID) Values(@CustomFieldID, @RefID, @CustomValue, GetUTCDate(), GetUTCDate(), -1, -1, @OrganizationID)", connection)
 
         connection.Open()
         command.Parameters.AddWithValue("@CustomFieldID", CustomFieldID)
         command.Parameters.AddWithValue("@RefID", TicketID)
         command.Parameters.AddWithValue("@CustomValue", DataToStore)
+		command.Parameters.AddWithValue("@OrganizationID", OrganizationID)
 
         command.ExecuteNonQuery()
         command.Connection.Close()
@@ -802,8 +803,8 @@ Public Class TSWebUtilities
                         End If
 
 
-                        'OK, we now have the data - Let's store it!
-                        SaveCustomField(TicketID, TempText, table.Rows(i)(0).ToString)
+						'OK, we now have the data - Let's store it!
+						SaveCustomField(TicketID, TempText, table.Rows(i)(0).ToString, OrganizationID)
 
 
                     Catch ex As Exception

@@ -27,11 +27,13 @@ namespace TeamSupport.Data
             {
                 string time = message.DateCreated.ToString("h:mm");
                 string timeFormat = includeTimeStamps ? time + ": " : "";
-					string messageText = message.Message;
+					string messageText = message.Message.Replace("<", "&lt;").Replace(">", "&gt;");
 
-					if (message.Message.Trim().IndexOf("<img ") != 0)
+					if ((message.Message.Trim().IndexOf("<img ") == 0 && message.Message.Trim().IndexOf("<script ") < 0 && message.Message.Trim().IndexOf(" onload=") < 0)
+						|| (message.Message.Trim().IndexOf("/chatattachments/") > 0 && message.Message.Trim().IndexOf("<script ") < 0 && message.Message.Trim().IndexOf(" onload=") < 0)
+						|| (message.Message.Trim().IndexOf("<a target=\"_blank\" href=") == 0 && message.Message.Trim().IndexOf("<script ") < 0 && message.Message.Trim().IndexOf(" onload=") < 0))
 					{
-						messageText = message.Message.Replace("<", "&lt;").Replace(">", "&gt;");
+						messageText = message.Message;
 					}
 
                 if (message.IsNotification)

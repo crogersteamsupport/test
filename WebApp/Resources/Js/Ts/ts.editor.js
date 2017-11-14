@@ -231,7 +231,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
                 			clonedVid.attr("id", "ourPubTest2Clone");
                 			//$('#ourPubTest2').after(clonedVid);
 
-                			OT.registerScreenSharingExtension('chrome', 'laehkaldepkacogpkokmimggbepafabg', 2);
+                			OT.registerScreenSharingExtension('chrome', 'dlbbnbankbgdoidhinoomgojjbdamofh', 2);
 
                 			OT.checkScreenSharingCapability(function (response) {
                 				if (!response.supported || response.extensionRegistered === false) {
