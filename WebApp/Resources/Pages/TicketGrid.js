@@ -14,8 +14,6 @@ var mainFrame = getMainFrame();
 $(document).ready(function () {
 	if (mainFrame.Ts.System.User.DisableExporting == true) { $('.tickets-export').remove(); }
 	if (!mainFrame.Ts.System.User.ChangeTicketVisibility && !mainFrame.Ts.System.User.IsSystemAdmin) { $('.ticket-action-visible').remove(); $('.ticket-action-nonvisible').remove(); }
-	console.log(mainFrame.Ts.System.User.ChangeTicketVisibility + ' / ' + mainFrame.Ts.System.User.IsSystemAdmin)
-
 	$('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: '.grid-ticket-toolbar', animation: false });
 
 	mainFrame.Ts.Services.Settings.ReadUserSetting('TicketGrid-Settings', '', function (result) {
@@ -23,10 +21,15 @@ $(document).ready(function () {
 		ticketGrid = new TicketGrid(options);
 
 		mainFrame.Ts.Services.Settings.ReadUserSetting('TicketGrid-sort-' + window.location.search, 'DateModified|false', function (result) {
-			var values = result.split('|');
-			ticketGrid._loader.setSort(values[0], values[1] === "true");
-			ticketGrid._grid.setSortColumn(values[0], values[1] === "true");
-			ticketGrid.refresh();
+		    var values = result.split('|');
+
+		    if (ticketGrid._loader)
+		        ticketGrid._loader.setSort(values[0], values[1] === "true");
+		    if (ticketGrid._grid)
+            {
+		        ticketGrid._grid.setSortColumn(values[0], values[1] === "true");
+		        ticketGrid.refresh();
+            }
 		});
 	});
 
@@ -146,6 +149,9 @@ TicketGrid = function (options) {
 	});
 
 	var layout = this._layout;
+
+	if (!layout.panes.center)
+	    return;
 
 	mainFrame.Ts.Services.Settings.ReadUserSetting('ShowTicketPreviewPane', null, function (result) {
 		if (result == "0") {
@@ -941,7 +947,7 @@ TicketGrid = function (options) {
 	$('.grid-ticket').toggleClass('grid-compact', self.options.isCompact == true);
 
 	$(layout.panes.center).disableSelection();
-	this._grid = new Slick.Grid(layout.panes.center, loader.data, removeViewColumns(addManColumns(getDefaultColumns())), gridOptions);
+    this._grid = new Slick.Grid(layout.panes.center, loader.data, removeViewColumns(addManColumns(getDefaultColumns())), gridOptions);
 	grid = this._grid;
 	grid.setSelectionModel(new Slick.RowSelectionModel());
 
