@@ -1409,7 +1409,6 @@ Namespace TeamSupport
 				Return result
 			End Function
 
-			'//vv Private Sub UpdateTicketWithWorkItemData(ByVal ticketID As Integer, ByVal workItem As JObject, ByVal newActionsTypeID As Integer, ByVal allStatuses As TicketStatuses, ByRef crmLinkError As CRMLinkError, ByRef crmlinkErrors As CRMLinkErrors, ByVal ticketLinkToTFSItem As TicketLinkToTFSItem)
 			Private Sub UpdateTicketWithWorkItemData(ByVal ticketID As Integer,
 													 ByVal workItem As WorkItem,
 													 ByVal newActionsTypeID As Integer,
