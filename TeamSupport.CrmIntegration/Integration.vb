@@ -5,6 +5,7 @@ Imports System.IO
 Imports System.Net
 Imports System.Text
 Imports Newtonsoft.Json
+Imports PusherServer
 
 Namespace TeamSupport
     Namespace CrmIntegration
@@ -1130,33 +1131,43 @@ Namespace TeamSupport
                 result.Collection.Save()
             End Sub
 
-            ''' <summary>
-            ''' updates the value of a custom field in TeamSupport
-            ''' </summary>
-            ''' <param name="customFieldID">the ID of the field to update</param>
-            ''' <param name="RefID">the ID of the object the field is linked to</param>
-            ''' <param name="Value">the value to set</param>
-            ''' <remarks></remarks>
-            Protected Sub UpdateCustomValue(ByVal customFieldID As Integer, ByVal RefID As Integer, ByVal Value As String)
-                Dim findCustom As New CustomValues(User)
-                Dim thisCustom As CustomValue
+			''' <summary>
+			''' updates the value of a custom field in TeamSupport
+			''' </summary>
+			''' <param name="customFieldID">the ID of the field to update</param>
+			''' <param name="RefID">the ID of the object the field is linked to</param>
+			''' <param name="Value">the value to set</param>
+			''' <remarks></remarks>
+			Protected Sub UpdateCustomValue(ByVal customFieldID As Integer, ByVal RefID As Integer, ByVal Value As String)
+				Dim findCustom As New CustomValues(User)
+				Dim thisCustom As CustomValue
 
-                findCustom.LoadByFieldID(customFieldID, RefID)
-                If findCustom.Count > 0 Then
-                    thisCustom = findCustom(0)
+				findCustom.LoadByFieldID(customFieldID, RefID)
+				If findCustom.Count > 0 Then
+					thisCustom = findCustom(0)
 
-                Else
-                    thisCustom = (New CustomValues(User)).AddNewCustomValue()
-                    thisCustom.CustomFieldID = customFieldID
-                    thisCustom.RefID = RefID
-                End If
+				Else
+					thisCustom = (New CustomValues(User)).AddNewCustomValue()
+					thisCustom.CustomFieldID = customFieldID
+					thisCustom.RefID = RefID
+				End If
 
-                If thisCustom IsNot Nothing AndAlso thisCustom.Value <> Value Then
-                    thisCustom.Value = Value
-                    thisCustom.Collection.Save()
-                End If
-            End Sub
-        End Class
+				If thisCustom IsNot Nothing AndAlso thisCustom.Value <> Value Then
+					thisCustom.Value = Value
+					thisCustom.Collection.Save()
+				End If
+			End Sub
+
+			Protected Sub SendPusherMessage(ByVal channelName As String, ByVal eventName As String, ByVal message As Object)
+				Dim options As PusherOptions = New PusherOptions()
+				options.Encrypted = True
+				Dim pusherKey As String = SystemSettings.GetPusherKey()
+				Dim pusherAppId As String = SystemSettings.GetPusherAppId()
+				Dim pusherSecret As String = SystemSettings.GetPusherSecret()
+				Dim Pusher As Pusher = New Pusher(pusherAppId, pusherKey, pusherSecret, options)
+				Dim result = Pusher.Trigger(channelName, eventName, message)
+			End Sub
+		End Class
 
         'to be deprecated in favor of integrationException (below)
         Public Enum IntegrationError
