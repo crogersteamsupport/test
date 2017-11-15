@@ -94,6 +94,9 @@ div.action .specifics .title {
 div.action .specifics .details span {
     word-wrap:break-word;
 }
+div.action .specifics .details {
+    overflow-x: auto;
+}
 div.action .specifics .details img {
     max-width:100% !important;
 }
