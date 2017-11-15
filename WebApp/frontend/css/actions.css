@@ -91,9 +91,9 @@ div.action .specifics .title {
     margin-bottom:20px;
     font-size:14px;
 }
-div.action .specifics .details {
+div.action .specifics .details span {
+    word-wrap:break-word;
 }
-
 div.action .specifics .details img {
     max-width:100% !important;
 }
@@ -114,7 +114,6 @@ div.action .wc-textarea textarea {
     background-color:white !important;
     border-radius:0px;
 }
-
 div.action .wc-textarea .wc-textarea-send {
     margin-top:10px;
     float:right;
@@ -122,15 +121,11 @@ div.action .wc-textarea .wc-textarea-send {
 }
 
 
-
-
-
 .daystrip {
     margin-bottom:15px;
     color:rgba(0,0,0,0.6);
     text-align:left;
 }
-
 .daybadge {
     font-family: 'Roboto' !important;
     margin:0px auto 0px;
@@ -144,10 +139,6 @@ div.action .wc-textarea .wc-textarea-send {
     display:inline-block;
     box-shadow:1px 1px 0px rgba(0,0,0,0.1);
 }
-
-
-
-
 .arrow_box {
 	position: relative;
 	border: 0px solid #c2e1f5;
