@@ -1159,13 +1159,17 @@ Namespace TeamSupport
 			End Sub
 
 			Protected Sub SendPusherMessage(ByVal channelName As String, ByVal eventName As String, ByVal message As Object)
-				Dim options As PusherOptions = New PusherOptions()
-				options.Encrypted = True
-				Dim pusherKey As String = SystemSettings.GetPusherKey()
-				Dim pusherAppId As String = SystemSettings.GetPusherAppId()
-				Dim pusherSecret As String = SystemSettings.GetPusherSecret()
-				Dim Pusher As Pusher = New Pusher(pusherAppId, pusherKey, pusherSecret, options)
-				Dim result = Pusher.Trigger(channelName, eventName, message)
+				Try
+					Dim options As PusherOptions = New PusherOptions()
+					options.Encrypted = True
+					Dim pusherKey As String = SystemSettings.GetPusherKey()
+					Dim pusherAppId As String = SystemSettings.GetPusherAppId()
+					Dim pusherSecret As String = SystemSettings.GetPusherSecret()
+					Dim Pusher As Pusher = New Pusher(pusherAppId, pusherKey, pusherSecret, options)
+					Dim result = Pusher.Trigger(channelName, eventName, message)
+				Catch ex As Exception
+					Log.Write(String.Format("SendPusherMessage. {0}", ex.Message))
+				End Try
 			End Sub
 		End Class
 
