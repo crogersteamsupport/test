@@ -1,5 +1,4 @@
 
-
 .btn {
     padding:5px 10px;
     font-size:12px;
@@ -7,17 +6,12 @@
     font-family:'Roboto';
 }
 
-
 input:focus,
 select:focus,
 textarea:focus,
 button:focus {
     outline:none;
 }
-
-
-
-
 
 #menu-container {
     background-color:rgba(255,255,255,0.8);
@@ -35,10 +29,6 @@ button:focus {
     position: relative;
     top: 6px;
 }
-
-
-
-
 
 #frame-container {
     position:absolute !important;
@@ -100,7 +90,6 @@ button:focus {
     display:none;
 }
 
-
 #page-sidebar {
     background-color:rgba(255,255,255,1);
     min-width:298px;
@@ -160,7 +149,9 @@ button:focus {
 }
 #ticket-properties-area a,
 #ticket-properties-area .tagContainer a,
-#ticket-properties-area .taskContainer a,
+#ticket-properties-area .taskContainer a {
+    cursor:pointer;
+}
 #ticket-properties-area .tag-item {
     font-size: 12px;
     cursor:pointer;
@@ -169,11 +160,11 @@ button:focus {
     margin-bottom: 2px;
     border-radius: 2px;
 }
+
 #ticket-properties-area .tagContainer .glyphicon {
     font-size:11px;
     margin-right:3px;
 }
-
 
 #ticket-properties-area .selectize-input {
     padding:0px;
