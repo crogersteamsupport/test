@@ -32,22 +32,6 @@ namespace TeamSupport.Handlers
       get { return false; }
     }
 
-    private string GetRevision(HttpContext context)
-    {
-      try
-      {
-        using (System.IO.StreamReader sr = new System.IO.StreamReader(context.Server.MapPath("~/revision.txt")))
-        {
-          String line = sr.ReadToEnd();
-          return line;
-        }
-      }
-      catch (Exception e)
-      {
-        return "0";
-      }
-    }
-
     private string GetVersion(HttpContext context)
     {
       try
@@ -116,7 +100,7 @@ namespace TeamSupport.Handlers
 
         update.RefreshID = int.Parse(SystemSettings.ReadString(LoginUser.Anonymous, "RefreshID", "-1"));
         update.ExpireTime = TSAuthentication.Ticket.Expiration.ToShortTimeString();
-        update.Version = GetVersion(context) + "." + GetRevision(context);
+        update.Version = GetVersion(context);
         update.MyUnreadTicketCount = Tickets.GetMyOpenUnreadTicketCount(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
       }
       catch (Exception ex)
