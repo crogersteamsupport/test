@@ -16,7 +16,20 @@ namespace TeamSupport.Data
       if (groups.IsEmpty) return null;
       else return groups[0].GroupID;
     }
-  }
+
+		public int TicketCount
+		{
+			get
+			{
+				if (Row.Table.Columns.Contains("TicketCount"))
+				{
+					return (int)Row["TicketCount"];
+				}
+				else return 0;
+			}
+
+		}
+	}
 
   public partial class Groups
   {
@@ -117,7 +130,7 @@ namespace TeamSupport.Data
 
     }
 
-    public void LoadByOrganizationIDForGrid(int organizationID, int userID)
+		public void LoadByOrganizationIDForGrid(int organizationID, int userID)
     {
       using (SqlCommand command = new SqlCommand())
       {

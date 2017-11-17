@@ -34,21 +34,12 @@ namespace TeamSupport.Data
     {
       GroupProxy result = new GroupProxy();
       result.ProductFamilyID = this.ProductFamilyID;
-      //result.ModifierID = this.ModifierID;
-      //result.CreatorID = this.CreatorID;
-      //result.ImportID = this.ImportID;
       result.Description = this.Description;
       result.Name = this.Name;
-      //result.OrganizationID = this.OrganizationID;
       result.GroupID = this.GroupID;
       
       Groups groups = new Groups(BaseCollection.LoginUser);
-      result.TicketCount = groups.GetGroupCount(this.GroupID);
-
-
-//      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
-      //result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
-       
+	  result.TicketCount = this.TicketCount;
        
       return result;
     }	
