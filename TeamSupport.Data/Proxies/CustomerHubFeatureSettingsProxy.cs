@@ -41,6 +41,7 @@ namespace TeamSupport.Data
     [DataMember] public int CommunitySortTypeID { get; set; }
     [DataMember] public bool EnableAnonymousProductAssociation { get; set; }
     [DataMember] public bool EnableCustomerSpecificKB { get; set; }
+    [DataMember] public bool EnableCustomFieldModification { get; set; }
           
   }
   
@@ -49,6 +50,7 @@ namespace TeamSupport.Data
     public CustomerHubFeatureSettingProxy GetProxy()
     {
       CustomerHubFeatureSettingProxy result = new CustomerHubFeatureSettingProxy();
+      result.EnableCustomFieldModification = this.EnableCustomFieldModification;
       result.EnableCustomerSpecificKB = this.EnableCustomerSpecificKB;
       result.EnableAnonymousProductAssociation = this.EnableAnonymousProductAssociation;
       result.CommunitySortTypeID = this.CommunitySortTypeID;

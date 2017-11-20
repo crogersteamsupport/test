@@ -168,93 +168,128 @@ WHERE EmailID IN (
       }
     }
 
-        public static void UnlockThread(LoginUser loginUser, int threadNumber)
-        {
-            Emails emails = new Emails(loginUser);
-
-            using (SqlCommand command = new SqlCommand())
-            {
-                command.CommandText = "UPDATE Emails SET LockProcessID = NULL WHERE IsWaiting=1 AND LockProcessID = @id";
-                command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("id", threadNumber);
-                emails.ExecuteNonQuery(command);
-            }
-        }
-
-        public static string EmailAddressToString(MailAddressCollection addresses)
+    public static void UnlockThread(LoginUser loginUser, int threadNumber)
     {
-      StringBuilder builder = new StringBuilder();
+        Emails emails = new Emails(loginUser);
 
-      foreach (MailAddress address in addresses)
-      {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "UPDATE Emails SET LockProcessID = NULL WHERE IsWaiting=1 AND LockProcessID = @id";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("id", threadNumber);
+            emails.ExecuteNonQuery(command);
+        }
+    }
+
+    public static string EmailAddressToString(MailAddressCollection addresses)
+    {
+        StringBuilder builder = new StringBuilder();
+
+        foreach (MailAddress address in addresses)
+        {
         if (builder.Length > 0) builder.Append("|");
         if (!string.IsNullOrEmpty(address.DisplayName))
         {
-          builder.Append(string.Format("\"{0}\" <{1}>", address.DisplayName, address.Address));
+            builder.Append(string.Format("\"{0}\" <{1}>", address.DisplayName, address.Address));
         }
         else
-	      {
-          builder.Append(address.Address);
-	      }
-      }
+	        {
+            builder.Append(address.Address);
+	        }
+        }
 
-      return builder.ToString();
+        return builder.ToString();
     }
 
-    public Email AddEmail(int organizationID, int? emailPostID, string description, MailMessage message, string[] attachmentFileNames, DateTime? timeToSend)
+    public Email AddEmail(int organizationID, string description, string subject, string body, bool isHtml, string from, string to, string cc = "", string bcc = "", string[] attachmentFileNames = null, DateTime? timeToSend = null)
     {
-      Email email = AddNewEmail();
-      
-      email.OrganizationID = organizationID;
-      email.Description = description;
-      email.FromAddress = message.From.ToString();
-      email.ToAddress = EmailAddressToString(message.To);
-      email.CCAddress = EmailAddressToString(message.CC);
-      email.BCCAddress = EmailAddressToString(message.Bcc);
-      email.Subject = message.Subject;
-      email.Body = message.Body;
-      email.IsHtml = message.IsBodyHtml;
-      email.DateSent = null;
-      email.LastFailedReason = "";
-      email.IsSuccess = false;
-      email.NextAttempt = timeToSend == null ? DateTime.UtcNow : (DateTime) timeToSend;
-      email.IsWaiting = !string.IsNullOrWhiteSpace(message.Body);
-      email.EmailPostID = emailPostID;
-      email.Attempts = 0;
+        Email email = AddNewEmail();
 
-      List<string> attachments = new List<string>();
-      int size = 0;
-      if (attachmentFileNames != null)
-      {
+        email.OrganizationID = organizationID;
+        email.Description = description;
+        email.FromAddress = from;
+        email.ToAddress = to;
+        email.CCAddress = cc;
+        email.BCCAddress = bcc;
+        email.Subject = subject;
+        email.Body = body;
+        email.IsHtml = isHtml;
+        email.DateSent = null;
+        email.LastFailedReason = "";
+        email.IsSuccess = false;
+        email.NextAttempt = timeToSend == null ? DateTime.UtcNow : (DateTime)timeToSend;
+        email.IsWaiting = !string.IsNullOrWhiteSpace(body);
+        email.Attempts = 0;
+
+        List<string> attachments = new List<string>();
+        int size = 0;
+        if (attachmentFileNames != null)
+        {
+            foreach (string fileName in attachmentFileNames)
+            {
+                if (File.Exists(fileName))
+                {
+                    attachments.Add(fileName);
+                    size = size + (int)((new FileInfo(fileName)).Length / 1024);
+                }
+            }
+        }
+        if (attachments.Count > 0) email.Attachments = string.Join(";", attachments.ToArray());
+        if (!string.IsNullOrWhiteSpace(email.Body))
+        {
+            size = size + (ASCIIEncoding.ASCII.GetByteCount(email.Body) / 1024);
+        }
+        email.Size = size;
+        return email;
+
+
+    }
+
+
+    public Email AddEmail(int organizationID, int? emailPostID, string description, MailMessage message, string[] attachmentFileNames = null, DateTime? timeToSend = null)
+    {
+        Email email = AddNewEmail();
+      
+        email.OrganizationID = organizationID;
+        email.Description = description;
+        email.FromAddress = message.From.ToString();
+        email.ToAddress = EmailAddressToString(message.To);
+        email.CCAddress = EmailAddressToString(message.CC);
+        email.BCCAddress = EmailAddressToString(message.Bcc);
+        email.Subject = message.Subject;
+        email.Body = message.Body;
+        email.IsHtml = message.IsBodyHtml;
+        email.DateSent = null;
+        email.LastFailedReason = "";
+        email.IsSuccess = false;
+        email.NextAttempt = timeToSend == null ? DateTime.UtcNow : (DateTime) timeToSend;
+        email.IsWaiting = !string.IsNullOrWhiteSpace(message.Body);
+        email.EmailPostID = emailPostID;
+        email.Attempts = 0;
+
+        List<string> attachments = new List<string>();
+        int size = 0;
+        if (attachmentFileNames != null)
+        {
         foreach (string fileName in attachmentFileNames)
         {
-          if (File.Exists(fileName))
-          {
+            if (File.Exists(fileName))
+            {
             attachments.Add(fileName);
             size = size + (int)((new FileInfo(fileName)).Length / 1024);
-          }
+            }
         }
-      }
-      if (attachments.Count > 0) email.Attachments = string.Join(";", attachments.ToArray());
-      if (!string.IsNullOrWhiteSpace(email.Body))
-      {
+        }
+        if (attachments.Count > 0) email.Attachments = string.Join(";", attachments.ToArray());
+        if (!string.IsNullOrWhiteSpace(email.Body))
+        {
         size = size + (ASCIIEncoding.ASCII.GetByteCount(email.Body) / 1024);
-      }
-      email.Size = size;
-      return email;
+        }
+        email.Size = size;
+        return email;
     }
 
-    public Email AddEmail(int organizationID, int? emailPostID, string description, MailMessage message, string[] attachmentFileNames)
-    {
-      return AddEmail(organizationID, emailPostID, description, message, null, null);
-    }
-
-    public Email AddEmail(int organizationID, int? emailPostID, string description, MailMessage message)
-    {
-      return AddEmail(organizationID, emailPostID, description, message, null, null);
-    }
-
-    public static Email AddEmail(LoginUser loginUser, int organizationID, int? emailPostID, string description, MailMessage message, string[] attachmentFileNames, DateTime? timeToSend)
+    public static Email AddEmail(LoginUser loginUser, int organizationID, int? emailPostID, string description, MailMessage message, string[] attachmentFileNames = null, DateTime? timeToSend = null)
     {
       Emails emails = new Emails(loginUser);
       Email email = emails.AddEmail(organizationID, emailPostID, description, message, attachmentFileNames, timeToSend);
@@ -262,16 +297,14 @@ WHERE EmailID IN (
       return email;
     }
 
-    public static Email AddEmail(LoginUser loginUser, int organizationID, int? emailPostID, string description, MailMessage message, string[] attachmentFileNames)
+    public static Email AddEmail(LoginUser loginUser, int organizationID, string description, string subject, string body, bool isHtml, string from, string to, string cc = "", string bcc = "", string[] attachmentFileNames = null, DateTime? timeToSend = null)
     {
-      return Emails.AddEmail(loginUser, organizationID, emailPostID, description, message, attachmentFileNames, null);
+            Emails emails = new Emails(loginUser);
+            Email email = emails.AddEmail(organizationID, description, subject, body, isHtml, from, to, cc, bcc, attachmentFileNames, timeToSend);
+            emails.Save();
+            return email;
+        }
+
     }
 
-    public static Email AddEmail(LoginUser loginUser, int organizationID, int? emailPostID, string description, MailMessage message)
-    {
-      return Emails.AddEmail(loginUser, organizationID, emailPostID, description, message, null, null);
-    }
-
-  }
-  
 }

@@ -6,6 +6,11 @@
 	var _returnTo = parent.Ts.Utils.getQueryValue('ReturnTo', window);
 	var _reportTypeOpened = parent.Ts.Utils.getQueryValue('ReportTypeOpened', window);
 
+	$('.schedule-email-subject').siblings('span').hide();
+	$('.schedule-email-body').children('span').hide();
+	$('.schedule-email-addresses').siblings('span').hide();
+	$('#StartOnTime').siblings('span').hide();
+
 	if (_editingScheduledId != undefined
 		&& _editingScheduledId != null
 		&& _editingScheduledId != "") {
@@ -113,15 +118,15 @@
 	});
 
 	$(".schedule-email-subject").blur(function () {
-		$(this).popover('hide').parent('.schedule-cond').removeClass('has-error');
-	});
-
-	$(".schedule-email-body").blur(function () {
-		$(this).popover('hide').parent('.schedule-cond').removeClass('has-error');
+		SetRequiredFields();
 	});
 
 	$(".schedule-email-addresses").blur(function () {
-		$(this).popover('hide').parent('.schedule-cond').removeClass('has-error');
+		SetRequiredFields();
+	});
+
+	$("#StartOnTime").change(function () {
+		SetRequiredFields();
 	});
 
 	$("#runNow").click(function (e) {
@@ -148,43 +153,84 @@
 		}
 	});
 
-	function ValidateSection(el) {
-
+	function SetRequiredFields() {
 		if ($('.schedule-email-subject').val() == '') {
-			$('.schedule-email-subject').popover('show').parent('.schedule-cond').addClass('has-error');
-			$('.schedule-email-subject').focus();
-			return false;
-		}
-		else {
-			$('.schedule-email-subject').popover('hide').parent('.schedule-cond').removeClass('has-error');
+			$('.schedule-email-subject').addClass('scheduledReport-error');
+		} else {
+			$('.schedule-email-subject').removeClass('scheduledReport-error');
 		}
 
 		if ($('#email-body-editor').val() == '') {
-		    $('#email-body-editor').popover('show').parent('.schedule-cond').addClass('has-error');
-		    $('#email-body-editor').focus();
-			return false;
-		}
-		else {
-		    $('#email-body-editor').popover('hide').parent('.schedule-cond').removeClass('has-error');
+			$('.mce-tinymce.mce-container.mce-panel').addClass('scheduledReport-error');
+		} else {
+			$('.mce-tinymce.mce-container.mce-panel').removeClass('scheduledReport-error');
 		}
 
 		if ($('.schedule-email-addresses').val() == '') {
-			$('.schedule-email-addresses').popover('show').parent('.schedule-cond').addClass('has-error');
-			$('.schedule-email-addresses').focus();
-			return false;
-		}
-		else {
-			$('.schedule-email-addresses').popover('hide').parent('.schedule-cond').removeClass('has-error');
+			$('.schedule-email-addresses').addClass('scheduledReport-error');
+		} else {
+			$('.schedule-email-addresses').removeClass('scheduledReport-error');
 		}
 
-		return null;
+		if ($('#StartOn').val() == '') {
+			$('#StartOn').addClass('scheduledReport-error');
+		} else {
+			$('#StartOn').removeClass('scheduledReport-error');
+		}
+
+		if ($('#StartOnTime').val() == '') {
+			$('#StartOnTime').addClass('scheduledReport-error');
+		} else {
+			$('#StartOnTime').removeClass('scheduledReport-error');
+		}
+	}
+
+	function ValidateSection(el) {
+		var isValid = null;
+		
+		if ($('.schedule-email-subject').val() == '') {
+			$('.schedule-email-subject').siblings('span').show();
+			isValid = false;
+		}
+		else {
+			$('.schedule-email-subject').siblings('span').hide();
+		}
+
+		if ($('#email-body-editor').val() == '') {
+			$('.schedule-email-body').children('span').show();
+			isValid = false;
+		}
+		else {
+			$('.schedule-email-body').children('span').hide();
+		}
+
+		if ($('.schedule-email-addresses').val() == '') {
+			$('.schedule-email-addresses').siblings('span').show();
+			isValid = false;
+		}
+		else {
+			$('.schedule-email-addresses').siblings('span').hide();
+		}
+	
+		if (($('#StartOn').val() == ''
+				|| $('#StartOnTime').val() == '')
+			&& !$("#runNow").hasClass('fa-check-square-o')) {
+			$('#StartOn').siblings('span').show();
+			isValid = false;
+		}
+		else {
+			$('#StartOn').siblings('span').hide();
+		}
+
+		return isValid;
 	}
 
 	function OnLoadSetup() {
 		$('#ReportTitleSpan').text(_reportIdToScheduleName);
 
 		if (_isEditing) {
-		    parent.Ts.Services.Reports.GetScheduledReport(_editingScheduledId, LoadReportData);
+			parent.Ts.Services.Reports.GetScheduledReport(_editingScheduledId, LoadReportData);
+			SetRequiredFields();
 		} else {
 			SetScheduleOptions(1);
 
@@ -198,6 +244,10 @@
 			});
 
 			initScheduledReportEditor($('#email-body-editor'), function (ed) {
+				SetRequiredFields();
+				ed.on('keyup', function (e) {
+					SetRequiredFields();
+				});
 			});
 		}
 
@@ -222,7 +272,8 @@
 	$('#StartDateTimePicker').change(function() {
 	    var thisDateTime = this.value;
 	    $('#StartOn').val(parent.Ts.Utils.getDateString(thisDateTime, true, false, false));
-	    $('#StartDateTimePicker').data("StartOnDate", thisDateTime);
+		$('#StartDateTimePicker').data("StartOnDate", thisDateTime);
+		SetRequiredFields();
 	});
 
 	$('#StartDateTimePicker').focusout(function() {

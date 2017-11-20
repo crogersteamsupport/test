@@ -219,6 +219,7 @@ $(document).ready(function () {
 
 });
 
+
 function LoadTicketPageOrder() {
     parent.Ts.Services.TicketPage.GetTicketPageOrder("NewTicketFieldsOrder", function (order) {
         jQuery.each(order, function (i, val) { if (val.Disabled == "false") AddTicketProperty(val); });
@@ -393,9 +394,9 @@ function SetupTicketProperties() {
 
     if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
         if ($('#ticket-group').val() == "" || $('#ticket-group').val() == "-1")
-            $('#ticket-group').closest('.form-group').addClass('hasError');
+            $('#ticket-group').closest('.form-horizontal').addClass('hasError');
         else
-            $('#ticket-group').closest('.form-group').removeClass('hasError');
+            $('#ticket-group').closest('.form-horizontal').removeClass('hasError');
     }
 
     $('#ticket-group').change(function (e) {
@@ -404,11 +405,11 @@ function SetupTicketProperties() {
         if (_ticketGroupID == '-1') {
             _ticketGroupID = null;
             if (window.parent.Ts.System.Organization.RequireGroupAssignmentOnTickets) {
-                $('#ticket-group').closest('.form-group').addClass('hasError');
+                $('#ticket-group').closest('.form-horizontal').addClass('hasError');
             }
         }
         else
-            $('#ticket-group').closest('.form-group').removeClass('hasError');
+            $('#ticket-group').closest('.form-horizontal').removeClass('hasError');
 
     });
 
@@ -708,17 +709,17 @@ function isFormValid(callback) {
                 var status = parent.Ts.Cache.getTicketStatus($('#ticket-status').val());
 
                 //Check if we need a product
-                product.closest('.form-group').removeClass('hasError');
+                product.closest('.form-horizontal').removeClass('hasError');
                 if (isProductRequired && (productID == -1 || productID == "")) {
-                    product.closest('.form-group').addClass('hasError');
+                    product.closest('.form-horizontal').addClass('hasError');
                     InsertCreateError("Product is a required field.");
                     result = false;
                 }
 
                 //See if we need a version
-                reportversion.closest('.form-group').removeClass('hasError');
+                reportversion.closest('.form-horizontal').removeClass('hasError');
                 if (isProductVersionRequired && (reportversionID == -1 || reportversionID == "")) {
-                    reportversion.closest('.form-group').addClass('hasError');
+                    reportversion.closest('.form-horizontal').addClass('hasError');
                     InsertCreateError("Product version is a required field.");
                     result = false;
                 }
@@ -819,12 +820,12 @@ function isFormValid(callback) {
                 //If custom required check if the ticket is a KB if not then see if we have at least one customer
                 if (requireNewTicketCustomer == "True" && $('#ticket-isKB').is(":checked") == false) {
                     if ($('#ticket-Customer > div.tag-item').length < 1) {
-                        $('#ticket-Customer').closest('.form-group').addClass('hasError');
+                        $('#ticket-Customer').closest('.form-horizontal').addClass('hasError');
                         InsertCreateError("A customer is required to create a ticket.")
                         result = false;
                     }
                     else {
-                        $('#ticket-Customer').closest('.form-group').removeClass('hasError');
+                        $('#ticket-Customer').closest('.form-horizontal').removeClass('hasError');
                     }
                 }
 
@@ -1075,50 +1076,34 @@ function update() {
 }
 
 function SetupUploadQueue() {
-    var element = $('.upload-area');
-    $('.file-upload').fileupload({
+    var element = $('#file-uploads');
+    $('#file-upload').fileupload({
         namespace: 'new_action',
         dropZone: element,
         add: function (e, data) {
             for (var i = 0; i < data.files.length; i++) {
-                var item = $('<li>')
-                .appendTo(element.find('.upload-queue'));
-
+                var item = $('<li>').appendTo(element.find('.upload-queue'));
                 data.context = item;
                 item.data('data', data);
 
-                var bg = $('<div>')
-                .appendTo(item);
+                var bg = $('<div>').appendTo(item);
 
-                $('<div>')
-                .text(data.files[i].name + '  (' + parent.Ts.Utils.getSizeString(data.files[i].size) + ')')
-                .addClass('filename')
-                .appendTo(bg);
+                $('<div>').text(data.files[i].name + '  (' + parent.Ts.Utils.getSizeString(data.files[i].size) + ')').addClass('filename').appendTo(bg);
 
-                $('<div>')
-                .addClass('progress')
-                .hide()
-                .appendTo(bg);
+                $('<div>').addClass('progress').hide().appendTo(bg);
 
-                $('<span>')
-                .addClass('ui-icon ui-icon-close')
-                .click(function (e) {
+                $('<span>').addClass('ui-icon ui-icon-close').click(function (e) {
                     e.preventDefault();
                     $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
-                })
-                .appendTo(bg);
+                }).appendTo(bg);
 
                 //<span class="tagRemove" aria-hidden="true">×</span>
 
-                $('<span>')
-                .addClass('ui-icon ui-icon-cancel')
-                .hide()
-                .click(function (e) {
+                $('<span>').addClass('ui-icon ui-icon-cancel').hide().click(function (e) {
                     e.preventDefault();
                     var data = $(this).closest('li').data('data');
                     data.jqXHR.abort();
-                })
-                .appendTo(bg);
+                }).appendTo(bg);
             }
 
         },
@@ -1261,18 +1246,14 @@ var SetupDueDateField = function (duedate) {
         e.preventDefault();
         e.stopPropagation();
         var header = $(this).hide();
-        var container = $('<div>')
-              .addClass('row')
-              .insertAfter(header);
-
-        var container1 = $('<div style="padding-right:0px;">').addClass('col-xs-10').appendTo(container);
-        var theinput = $('<input type="text">').addClass('form-control').val(duedate === undefined ? '' : duedate.localeFormat(parent.Ts.Utils.getDateTimePattern())).datetimepicker({ pickTime: true }).appendTo(container1).focus();
+        var container = $('<div>').addClass('row').insertAfter(header);
+        var container1 = $('<div>').attr('id','duedate-input').addClass('col-xs-10').appendTo(container);
+        var theinput = $('<input type="text">').val(duedate === undefined ? '' : duedate.localeFormat(parent.Ts.Utils.getDateTimePattern())).datetimepicker({ pickTime: true }).appendTo(container1).focus();
 
         $('<i>').addClass('fa fa-times').click(function (e) {
             $(this).closest('div').remove();
             header.show();
-        })
-        .insertAfter(container1);
+        }).insertAfter(container1);
 
 
         $('<i>').addClass('fa fa-check').click(function (e) {
@@ -1361,7 +1342,7 @@ function SetupCustomerSection() {
                 'no_results': {}
             },
             onItemAdd: function (value, $item) {
-                $('#ticket-Customer').closest('.form-group').removeClass('hasError');
+                $('#ticket-Customer').closest('.form-horizontal').removeClass('hasError');
                 AddCustomers($item.data());
 
                 this.removeItem(value, true);
@@ -1442,7 +1423,7 @@ function SetupCustomerSection() {
                             $('.ticket-new-customer-last').val('');
                             $('.ticket-new-customer-company').val('');
                             $('.ticket-new-customer-phone').val('');
-                            $('#ticket-Customer').closest('.form-group').removeClass('hasError');
+                            $('#ticket-Customer').closest('.form-horizontal').removeClass('hasError');
                             $('#NewCustomerModal').modal('hide');
                         });
                     }
@@ -1454,7 +1435,7 @@ function SetupCustomerSection() {
                     $('.ticket-new-customer-last').val('');
                     $('.ticket-new-customer-company').val('');
                     $('.ticket-new-customer-phone').val('');
-                    $('#ticket-Customer').closest('.form-group').removeClass('hasError');
+                    $('#ticket-Customer').closest('.form-horizontal').removeClass('hasError');
                     $('#NewCustomerModal').modal('hide');
                 }
             }
@@ -1467,10 +1448,10 @@ function SetupCustomerSection() {
     parent.Ts.Settings.Organization.read('RequireNewTicketCustomer', false, function (requireNewTicketCustomer) {
         if (requireNewTicketCustomer == "True" && $('#ticket-isKB').is(":checked") == false) {
             if ($('#ticket-Customer > div.tag-item').length < 1) {
-                $('#ticket-Customer').closest('.form-group').addClass('hasError');
+                $('#ticket-Customer').closest('.form-horizontal').addClass('hasError');
             }
             else {
-                $('#ticket-Customer').closest('.form-group').removeClass('hasError');
+                $('#ticket-Customer').closest('.form-horizontal').removeClass('hasError');
             }
         }
     });
@@ -1594,9 +1575,9 @@ function SetupProductSection() {
 
     parent.Ts.Services.Organizations.IsProductRequired(function (result) {
         if (result) {
-            $('#ticket-Product').closest('.form-group').addClass('hasError');
+            $('#ticket-Product').closest('.form-horizontal').addClass('hasError');
         } else {
-            $('#ticket-Product').closest('.form-group').removeClass('hasError');
+            $('#ticket-Product').closest('.form-horizontal').removeClass('hasError');
         }
     });
 
@@ -1609,7 +1590,7 @@ function SetupProductSection() {
             loadVersions(product);
         }
         AppendProductMatchingCustomFields();
-        $('#ticket-Product').closest('.form-group').removeClass('hasError');
+        $('#ticket-Product').closest('.form-horizontal').removeClass('hasError');
         if (productID) { prevProduct = productID; }
         if (product === null) { return; }
         if (parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != product.ProductFamilyID) {
@@ -1721,7 +1702,7 @@ function SetupProductVersionsControl(product) {
         var $select = $("#ticket-Versions").selectize({
             onItemAdd: function (value, $item) {
                 var reportversion = $('#ticket-Versions');
-                reportversion.closest('.form-group').removeClass('hasError');
+                reportversion.closest('.form-horizontal').removeClass('hasError');
             },
             onDropdownClose: function ($dropdown) {
                 $($dropdown).prev().find('input').blur();
@@ -1755,9 +1736,9 @@ function SetupProductVersionsControl(product) {
     parent.Ts.Services.Organizations.IsProductVersionRequired(function (result) {
         var hasValue = $('#ticket-Versions');
         if (result && !hasValue) {
-            $('#ticket-Versions').closest('.form-group').addClass('hasError');
+            $('#ticket-Versions').closest('.form-horizontal').addClass('hasError');
         } else {
-            $('#ticket-Versions').closest('.form-group').removeClass('hasError');
+            $('#ticket-Versions').closest('.form-horizontal').removeClass('hasError');
         }
     });
 }
@@ -2033,7 +2014,6 @@ function createCustomFields() {
                         case parent.Ts.CustomFieldType.Boolean: AddCustomFieldBool(result[i], parentContainer); break;
                         case parent.Ts.CustomFieldType.Number: AddCustomFieldNumber(result[i], parentContainer); break;
                         case parent.Ts.CustomFieldType.PickList: AddCustomFieldSelect(result[i], parentContainer, true); break;
-                        default:
                     }
                 } catch (err) {
                     var errorString = '1001 NewTicket.js createCustomFields   FieldType: ' + result[i].FieldType + '  CustomFieldID: ' + result[i].CustomFieldID + ' ::  Exception Properties: ';
@@ -2158,14 +2138,14 @@ function SetupActionTimers() {
 }
 
 var AddCustomFieldEdit = function (field, parentContainer) {
-    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm custom-field flexbox').data('field', field).appendTo(formcontainer);
-    var labelContainer = $('<div>').addClass('form-label flexpull').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+    var formcontainer  = $('<div>').addClass('form-horizontal custom-field').data('field', field).appendTo(parentContainer);
+    var groupContainer = $('<div>').addClass('flexbox').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('flex1').appendTo(groupContainer);
+    var formLabel      = $('<div>').addClass('form-label').text(field.Name).appendTo(labelContainer);
 
     if (field.ParentProductID) { groupContainer.addClass('product-dependent'); }
 
-    var inputContainer = $('<div>').addClass('flexpush form-input ticket-input-container').appendTo(groupContainer);
+    var inputContainer = $('<div>').addClass('flex2').appendTo(groupContainer);
     var inputGroupContainer = $('<div>').addClass('input-group').appendTo(inputContainer);
     var input = $('<input type="text">').addClass('ticket-simple-input').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputGroupContainer).after(getUrls(field.Value));
 
@@ -2178,10 +2158,10 @@ var AddCustomFieldEdit = function (field, parentContainer) {
         var value = input.val();
 
         if (field.IsRequired && (value === null || $.trim(value) === '')) {
-            groupContainer.addClass('hasError');
+            formcontainer.addClass('hasError');
         }
         else {
-            groupContainer.removeClass('hasError');
+            formcontainer.removeClass('hasError');
         }
         if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
             groupContainer.addClass('hasCloseError');
@@ -2208,7 +2188,7 @@ var AddCustomFieldEdit = function (field, parentContainer) {
     });
 
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
-        groupContainer.addClass('hasError');
+        formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
         groupContainer.addClass('hasCloseError');
@@ -2223,21 +2203,21 @@ var AddCustomFieldEdit = function (field, parentContainer) {
 
 var AddCustomFieldDate = function (field, parentContainer) {
     var date = field.Value == null ? null : parent.Ts.Utils.getMsDate(field.Value);
-    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm custom-field flexbox').data('field', field).appendTo(formcontainer);
-    var labelContainer = $('<div>').addClass('form-label flexpull').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+    var formcontainer  = $('<div>').addClass('form-horizontal custom-field').data('field', field).appendTo(parentContainer);
+    var groupContainer = $('<div>').addClass('flexbox').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('flex1').appendTo(groupContainer);
+    var formLabel      = $('<div>').addClass('form-label').text(field.Name).appendTo(labelContainer);
 
     if (field.ParentProductID) {
         groupContainer.addClass('product-dependent');
     }
-    var dateContainer = $('<div>').addClass('flexpush form-input ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
+    var dateContainer = $('<div>').addClass('flex2').attr('style','padding-top:3px;').appendTo(groupContainer);
     var dateLink = $('<a>').attr('href', '#').text((date === null ? 'unassigned' : date.localeFormat(parent.Ts.Utils.getDatePattern()))).addClass('control-label').appendTo(dateContainer);
 
     dateLink.click(function (e) {
         e.preventDefault();
         $(this).hide();
-        var input = $('<input type="text">').addClass('form-control').val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getDatePattern())).datetimepicker({ pickTime: false }).appendTo(dateContainer).focus();
+        var input = $('<input type="text">').val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getDatePattern())).datetimepicker({ pickTime: false }).appendTo(dateContainer).focus();
 
         input.focusout(function (e) {
             var value = parent.Ts.Utils.getMsDate(input.val());
@@ -2246,10 +2226,10 @@ var AddCustomFieldDate = function (field, parentContainer) {
             dateLink.text((value === null ? 'Unassigned' : value.localeFormat(parent.Ts.Utils.getDatePattern()))).show();
 
             if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                groupContainer.addClass('hasError');
+                formcontainer.addClass('hasError');
             }
             else {
-                groupContainer.removeClass('hasError');
+                formcontainer.removeClass('hasError');
             }
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
                 groupContainer.addClass('hasCloseErrory');
@@ -2269,7 +2249,7 @@ var AddCustomFieldDate = function (field, parentContainer) {
     });
 
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
-        groupContainer.addClass('hasError');
+        formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
         groupContainer.addClass('hasCloseError');
@@ -2284,25 +2264,20 @@ var AddCustomFieldDate = function (field, parentContainer) {
 
 var AddCustomFieldDateTime = function (field, parentContainer) {
     var date = field.Value == null ? null : parent.Ts.Utils.getMsDate(field.Value);
-    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm custom-field flexbox').data('field', field).appendTo(formcontainer);
-    var labelContainer = $('<div>').addClass('form-label flexpull').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+    var formcontainer  = $('<div>').addClass('form-horizonta custom-field ').data('field', field).appendTo(parentContainer);
+    var groupContainer = $('<div>').addClass('flexbox').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('flex1').appendTo(groupContainer);
+    var formLabel      = $('<div>').addClass('form-label').text(field.Name).appendTo(labelContainer);
 
     if (field.ParentProductID) { groupContainer.addClass('product-dependent'); }
 
-    var dateContainer = $('<div>').addClass('flexpush form-input ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
+    var dateContainer = $('<div>').addClass('flex2').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
     var dateLink = $('<a>').attr('href', '#').text((date === null ? 'unassigned' : date.localeFormat(parent.Ts.Utils.getDateTimePattern()))).addClass('control-label').appendTo(dateContainer);
 
     dateLink.click(function (e) {
         e.preventDefault();
         $(this).hide();
-        var input = $('<input type="text">')
-                        .addClass('form-control')
-                        .val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getDateTimePattern()))
-                        .datetimepicker()
-                        .appendTo(dateContainer)
-                        .focus();
+        var input = $('<input type="text">').val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getDateTimePattern())).datetimepicker().appendTo(dateContainer).focus();
 
         input.focusout(function (e) {
             var value = parent.Ts.Utils.getMsDate(input.val());
@@ -2311,30 +2286,27 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
             dateLink.text((value === null ? 'Unassigned' : value.localeFormat(parent.Ts.Utils.getDateTimePattern()))).show();
 
             if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                groupContainer.addClass('hasError');
-            }
-            else {
-                groupContainer.removeClass('hasError');
+                formcontainer.addClass('hasError');
+            } else {
+                formcontainer.removeClass('hasError');
             }
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
                 groupContainer.addClass('hasCloseErrory');
                 alert("This field can not be cleared in a closed ticket");
                 return;
-            }
-            else {
+            } else {
                 groupContainer.removeClass('hasCloseErrory');
             }
             if (value === null || $.trim(value) === '') {
                 groupContainer.addClass('isEmpty');
-            }
-            else {
+            } else {
                 groupContainer.removeClass('isEmpty');
             }
         })
     });
 
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
-        groupContainer.addClass('hasError');
+        formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
         groupContainer.addClass('hasCloseError');
@@ -2349,25 +2321,20 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
 
 var AddCustomFieldTime = function (field, parentContainer) {
     var date = field.Value == null ? null : parent.Ts.Utils.getMsDate(field.Value);
-    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm custom-field flexbox').data('field', field).appendTo(formcontainer);
-    var labelContainer = $('<div>').addClass('form-label flexpull').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+    var formcontainer  = $('<div>').addClass('form-horizontal custom-field').data('field', field).appendTo(parentContainer);
+    var groupContainer = $('<div>').addClass('flexbox').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('flex1').appendTo(groupContainer);
+    var formLabel      = $('<div>').addClass('form-label').text(field.Name).appendTo(labelContainer);
 
     if (field.ParentProductID) { groupContainer.addClass('product-dependent'); }
 
-    var dateContainer = $('<div>').addClass('flexpush form-input ticket-input-container').attr('style', 'padding-top: 3px;').appendTo(groupContainer);
+    var dateContainer = $('<div>').addClass('flex2').attr('style','padding-top:3px;').appendTo(groupContainer);
     var dateLink = $('<a>').attr('href', '#').text((date === null ? 'unassigned' : date.localeFormat(parent.Ts.Utils.getTimePattern()))).addClass('control-label').appendTo(dateContainer);
 
     dateLink.click(function (e) {
         e.preventDefault();
         $(this).hide();
-        var input = $('<input type="text">')
-                        .addClass('form-control')
-                        .val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getTimePattern()))
-                        .datetimepicker({ pickDate: false })
-                        .appendTo(dateContainer)
-                        .focus();
+        var input = $('<input type="text">').val(date === null ? '' : date.localeFormat(parent.Ts.Utils.getTimePattern())).datetimepicker({ pickDate: false }).appendTo(dateContainer).focus();
 
         input.focusout(function (e) {
             var value = parent.Ts.Utils.getMsDate("1/1/1900 " + input.val());
@@ -2376,30 +2343,27 @@ var AddCustomFieldTime = function (field, parentContainer) {
             dateLink.text((value === null ? 'Unassigned' : value.localeFormat(parent.Ts.Utils.getTimePattern()))).show();
 
             if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                groupContainer.addClass('hasError');
-            }
-            else {
-                groupContainer.removeClass('hasError');
+                formcontainer.addClass('hasError');
+            } else {
+                formcontainer.removeClass('hasError');
             }
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
                 groupContainer.addClass('hasCloseErrory');
                 alert("This field can not be cleared in a closed ticket");
                 return;
-            }
-            else {
+            } else {
                 groupContainer.removeClass('hasCloseErrory');
             }
             if (value === null || $.trim(value) === '') {
                 groupContainer.addClass('isEmpty');
-            }
-            else {
+            } else {
                 groupContainer.removeClass('isEmpty');
             }
         })
     });
 
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
-        groupContainer.addClass('hasError');
+        formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
         groupContainer.addClass('hasCloseError');
@@ -2413,14 +2377,14 @@ var AddCustomFieldTime = function (field, parentContainer) {
 }
 
 var AddCustomFieldBool = function (field, parentContainer) {
-    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm custom-field flexbox').data('field', field).appendTo(formcontainer);
-    var labelContainer = $('<div>').addClass('form-label flexpull').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+    var formcontainer  = $('<div>').addClass('form-horizontal custom-field').data('field', field).appendTo(parentContainer);
+    var groupContainer = $('<div>').addClass('flexbox').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('flex1').appendTo(groupContainer);
+    var formLabel      = $('<div>').addClass('form-label').text(field.Name).appendTo(labelContainer);
 
     if (field.ParentProductID) { groupContainer.addClass('product-dependent'); }
 
-    var inputContainer = $('<div>').addClass('flexpush form-input ticket-input-container').appendTo(groupContainer);
+    var inputContainer = $('<div>').addClass('flex2').appendTo(groupContainer);
     var inputDiv = $('<div>').addClass('checkbox ticket-checkbox').appendTo(inputContainer);
     var input = $('<input type="checkbox">').appendTo(inputDiv);
     var value = (field.Value === null || $.trim(field.Value) === '' || field.Value === 'False' ? false : true);
@@ -2428,24 +2392,24 @@ var AddCustomFieldBool = function (field, parentContainer) {
 };
 
 var AddCustomFieldNumber = function (field, parentContainer) {
-    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm custom-field flexbox').data('field', field).appendTo(formcontainer);
-    var labelContainer = $('<div>').addClass('form-label flexpull').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+    var formcontainer  = $('<div>').addClass('form-horizontal custom-field').data('field', field).appendTo(parentContainer);
+    var groupContainer = $('<div>').addClass('flexbox').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('flex1').appendTo(groupContainer);
+    var formLabel      = $('<div>').addClass('form-label').text(field.Name).appendTo(labelContainer);
 
     if (field.ParentProductID) { groupContainer.addClass('product-dependent'); }
 
-    var inputContainer = $('<div>').addClass('flexpush form-input ticket-input-container').appendTo(groupContainer);
-    var input = $('<input type="text">').addClass('form-control ticket-simple-input').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputContainer).numeric();
+    var inputContainer = $('<div>').addClass('flex2').appendTo(groupContainer);
+    var input = $('<input type="text">').attr("placeholder", "Enter Value").val(field.Value).appendTo(inputContainer).numeric();
 
     input.change(function (e) {
         var value = input.val();
 
         if (field.IsRequired && (value === null || $.trim(value) === '')) {
-            groupContainer.addClass('hasError');
+            formcontainer.addClass('hasError');
         }
         else {
-            groupContainer.removeClass('hasError');
+            formcontainer.removeClass('hasError');
         }
         if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
             groupContainer.addClass('hasCloseError');
@@ -2464,7 +2428,7 @@ var AddCustomFieldNumber = function (field, parentContainer) {
     });
 
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
-        groupContainer.addClass('hasError');
+        formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
         groupContainer.addClass('hasCloseError');
@@ -2478,20 +2442,20 @@ var AddCustomFieldNumber = function (field, parentContainer) {
 }
 
 var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFields) {
-    var formcontainer  = $('<div>').addClass('form-horizontal').appendTo(parentContainer);
-    var groupContainer = $('<div>').addClass('form-group form-group-sm custom-field flexbox').data('field', field).appendTo(formcontainer);
-    var labelContainer = $('<div>').addClass('form-label flexpull').appendTo(groupContainer);
-    var formLabel      = $('<label>').addClass('select-label').text(field.Name).appendTo(labelContainer);
+    var formcontainer  = $('<div>').addClass('form-horizontal custom-field').data('field', field).appendTo(parentContainer);
+    var groupContainer = $('<div>').addClass('flexbox').data('field', field).appendTo(formcontainer);
+    var labelContainer = $('<div>').addClass('flex1').appendTo(groupContainer);
+    var formLabel      = $('<div>').addClass('form-label').text(field.Name).appendTo(labelContainer);
 
     if (field.ParentProductID) { groupContainer.addClass('product-dependent'); }
 
-    var selectContainer = $('<div>').addClass('flexpush form-input ticket-input-container').appendTo(groupContainer);
+    var selectContainer = $('<div>').addClass('flex2').appendTo(groupContainer);
     var select = $('<select>').addClass('hidden-select').attr("placeholder", "Select Value").appendTo(selectContainer);
     var options = field.ListValues.split('|');
 
     if (field.Value == undefined || field.Value == "") {
         $('<option>').text("unassigned").val("").appendTo(select);
-        if (field.IsRequired) groupContainer.addClass('hasError');
+        if (field.IsRequired) formcontainer.addClass('hasError');
 
     }
     for (var i = 0; i < options.length; i++) {
@@ -2506,33 +2470,26 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
         allowEmptyOption: true,
         onItemAdd: function (value, $item) {
             if (field.IsRequired && field.IsFirstIndexSelect == true && (value == "" || field.ListValues.split("|")[0] == value)) {
-                groupContainer.addClass('hasError');
-}
-            else {
-                groupContainer.removeClass('hasError');
+                formcontainer.addClass('hasError');
+            } else {
+                formcontainer.removeClass('hasError');
             }
-
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && field.IsFirstIndexSelect == true && value == "") {
                 groupContainer.addClass('hasCloseError');
                 alert("This field can not be cleared in a closed ticket");
                 return;
-            }
-            else {
+            } else {
                 groupContainer.removeClass('hasCloseError');
             }
-
             if (field.IsFirstIndexSelect == true && value == "" || (field.IsFirstIndexSelect == true && field.ListValues.split("|")[0] == value)) {
                 groupContainer.addClass('isEmpty');
-            }
-            else {
+            } else {
                 groupContainer.removeClass('isEmpty');
             }
             $('.' + field.CustomFieldID + 'children').remove();
             var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children form-horizontal').insertAfter(formcontainer);
-
             appendMatchingParentValueFields(childrenContainer, field, value);
             appendTemplateText(value);
-
         },
         onDropdownClose: function ($dropdown) {
             $($dropdown).prev().find('input').blur();
@@ -2542,7 +2499,7 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
 
     var items = field.ListValues.split('|');
     if (field.IsRequired && ((field.IsFirstIndexSelect == true && (items[0] == field.Value || field.Value == null || $.trim(field.Value) === '')) || (field.Value == null || $.trim(field.Value) === ''))) {
-        groupContainer.addClass('hasError');
+        formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && ((field.IsFirstIndexSelect == true && (items[0] == field.Value || field.Value == null || $.trim(field.Value) === '')) || (field.Value == null || $.trim(field.Value) === ''))) {
         groupContainer.addClass('hasCloseError');
@@ -2584,11 +2541,8 @@ var appendMatchingParentValueFields = function (container, field, value) {
         parent.Ts.Services.CustomFields.GetParentValueMatchingCustomFields(field.CustomFieldID, value, productID, function (result) {
             for (var i = 0; i < result.length; i++) {
                 var field = result[i];
-                var div = $('<div>').addClass('form-group form-group-sm custom-field').data('field', field);
-                // $('<label>').addClass('col-sm-4 control-label select-label').text(field.Name).appendTo(div);
-
+                var div = $('<div>').addClass('custom-field').data('field', field);
                 container.append(div);
-
                 switch (field.FieldType) {
                     case parent.Ts.CustomFieldType.Text: AddCustomFieldEdit(field, div); break;
                     case parent.Ts.CustomFieldType.Date: AddCustomFieldDate(field, div); break;
@@ -2665,9 +2619,9 @@ function setInitialValue() {
                     AppendProductMatchingCustomFields();
                     parent.Ts.Services.Organizations.IsProductRequired(function (IsRequired) {
                         if (IsRequired)
-                            $('#ticket-Product').closest('.form-group').addClass('hasError');
+                            $('#ticket-Product').closest('.form-horizontal').addClass('hasError');
                         else
-                            $('#ticket-Product').closest('.form-group').removeClass('hasError');
+                            $('#ticket-Product').closest('.form-horizontal').removeClass('hasError');
                     });
                     if (parent.Ts.System.Organization.UseProductFamilies && _productFamilyID != product.ProductFamilyID) {
                         _productFamilyID = product.ProductFamilyID;

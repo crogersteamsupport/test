@@ -194,11 +194,9 @@ function createMessageElement(messageData, direction) {
 
 	var displayMessage = $("<div>").text(messageData.Message).html();
 
-	if (messageData.Message.trim().indexOf("<img ") == 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0) {
-		displayMessage = messageData.Message;
-	}
-
-	if ((messageData.Message.trim().indexOf("/chatattachments/") > 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0)) {
+	if ((messageData.Message.trim().indexOf("<img ") == 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0)
+		|| (messageData.Message.trim().indexOf("/chatattachments/") > 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0)
+		|| (messageData.Message.trim().indexOf('<a target="_blank" href=') == 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0)) {
 		displayMessage = messageData.Message;
 	}
 

@@ -142,6 +142,7 @@ div.action .wc-textarea .wc-textarea-send {
     background-color:white;
     border:0px solid rgba(0,0,0,0.1);
     display:inline-block;
+    box-shadow:1px 1px 0px rgba(0,0,0,0.1);
 }
 
 
@@ -172,4 +173,116 @@ div.action .wc-textarea .wc-textarea-send {
 	border-top-color: #EEEEEE;
 	border-width: 24px;
 	margin-left: -24px;
+}
+
+
+
+
+
+
+div.ticket-badge {
+    -webkit-transition:box-shadow .218s ease,background-color .218s ease,max-width .218s step-end;
+    transition:box-shadow .218s ease,background-color .218s ease,max-width .218s step-end;
+    font-size:12px;
+}
+
+div.timeline-panel > div.ticket-badge {
+    margin:30px 0 0 0;
+    position:absolute;
+    right:0;
+    top:0;
+}
+
+div.ticket-badge > div {
+    float:right;
+    clear:both;
+    height:20px;
+    line-height:20px;
+}
+
+div.ticket-badge > div > span {
+    float:right;
+    height:20px;
+    margin-right:-4px;
+    padding-right:4px;
+    width:0;
+}
+
+div.ticket-badge > div > a {
+    -webkit-transition:opacity .218s ease,max-width .218s step-end,visibility .218s step-end;
+    transition:opacity .218s ease,max-width .218s step-end,visibility .218s step-end;
+    padding:0 7px;
+    cursor:pointer;
+    color:white;
+    font-size:small;
+    font-weight:bold;
+}
+
+div.ticket-badge > div > label {
+    -webkit-transition:opacity .218s ease,max-width .218s step-end,visibility .218s step-end;
+    transition:opacity .218s ease,max-width .218s step-end,visibility .218s step-end;
+    padding:0 10px;
+    color:white;
+    font-size:small;
+    font-weight:bold;
+}
+
+div.ticket-badge > div > a:hover,
+div.ticket-badge > div > a:focus {
+    color:white;
+}
+
+
+
+.ticket-action-pinned {
+    color: #fb9915 !important;
+}
+
+
+
+.wcTooltip {
+    color:#3276B1;
+    margin-right:10px;
+}
+.wc-avatar {
+    border: medium none;
+    margin: 4px 0px 0px -58px;
+    height: 48px;
+}
+span.wc-option {
+    background-color: #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    float: left;
+    height: 35px;
+    line-height: 35px;
+    padding: 0 10px;
+    color: #428bca;
+    font-weight: bold;
+    margin-left: 10px;
+}
+div.wc-option-replyarea {
+    margin-left: 55px;
+    height: 35px;
+    line-height: 35px;
+    padding-left: 10px;
+    margin-right: 10px;
+    background-color: #fff;
+    border: 1px solid #d9d9d9;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+}
+div.wc-textarea {
+    margin-left: 55px;
+    margin-right: 10px;
+    margin-bottom: 40px;
+}
+
+.timeline-wc-reply {
+    border-bottom: 0px none;
+    margin: 0px;
+    min-height: 0px;
+    vertical-align: top;
+    padding: 0px 20px 16px 68px;
 }

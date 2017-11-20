@@ -148,7 +148,7 @@ function publishTOKScreen() {
     var clonedVid = $('#screenTwo').clone();
     clonedVid.attr("id", "screenOneClone");
 
-    OT.registerScreenSharingExtension('chrome', 'laehkaldepkacogpkokmimggbepafabg', 2);
+    OT.registerScreenSharingExtension('chrome', 'dlbbnbankbgdoidhinoomgojjbdamofh', 2);
 
     OT.checkScreenSharingCapability(function (response) {
         if (!response.supported || response.extensionRegistered === false) {
@@ -156,9 +156,7 @@ function publishTOKScreen() {
         } else if (response.extensionInstalled === false) {
             var isChrome = !!window.chrome && !!window.chrome.webstore;
             var isFirefox = typeof InstallTrigger !== 'undefined';
-
             // prompt to install the response.extensionRequired extension
-
             if (isChrome) {
                 $('#ChromeInstallModal').modal('show');
             }
@@ -393,11 +391,11 @@ function stopTOKStream(e) {
             screenSharingPublisher.destroy();
             screenSharingPublisher = undefined;
         }
-        
+
         session.disconnect();
         session = undefined;
     }
-    
+
     $('#tokStreamControls').hide();
     document.getElementById('agentVoiceMeter').value = 0;
     $('#agentVoiceMeter').hide();

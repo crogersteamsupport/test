@@ -428,9 +428,6 @@ namespace TSWebServices
             table.LoadByOrganizationID(TSAuthentication.OrganizationID);
 			CRMLinkTableItemProxy[] crmLinks = table.GetCRMLinkTableItemProxies();
 
-			//Check if the ServiceNow integration is enabled, per Eric's request the SandBox (13679) account in NA1 will always have it enabled for now.
-			bool isSnowEnabled = SystemSettings.GetIsSnowEnabled() || TSAuthentication.OrganizationID == 13679;
-
 			//Build the whole webhook urls (if applicable)
 			foreach (CRMLinkTableItem crmlink in table)
 			{
@@ -446,30 +443,10 @@ namespace TSWebServices
 						proxy.WebHookTokenFullUrl = crmlink.WebHookTokenFullUrl;
 					}
 				}
-
-				if (crmlink.CRMType == IntegrationType.ServiceNow.ToString())
-				{
-					CRMLinkTableItemProxy proxy = crmLinks.Where(p => p.CRMLinkID == crmlink.CRMLinkID).FirstOrDefault();
-					proxy.DisplayIntegrationPanel = isSnowEnabled;
-				}
-				else
-				{
-					CRMLinkTableItemProxy proxy = crmLinks.Where(p => p.CRMLinkID == crmlink.CRMLinkID).FirstOrDefault();
-					proxy.DisplayIntegrationPanel = true;
-				}
 			}
 
 			return crmLinks;
         }
-
-		[WebMethod]
-		public bool IsSnowEnabled()
-		{
-			if (!TSAuthentication.IsSystemAdmin) return false;
-			bool isSnowEnabled = SystemSettings.GetIsSnowEnabled() || TSAuthentication.OrganizationID == 13679;
-
-			return isSnowEnabled;
-		}
 
         [WebMethod]
         public CRMLinkTableItemProxy[] LoadOrgCrmLinks(int organizationID)
@@ -763,11 +740,18 @@ namespace TSWebServices
             result = result && !groups.IsEmpty;
             if (!result) throw new Exception("User is not an account administrator.");
         }
+        public void LogAdminUserAction(string description)
+        {
+            User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, TSAuthentication.UserID, String.Format("{0} performed admin action: {1}", user.FirstLastName, description));
+            Emails.AddEmail(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID, "Admin Change", "TeamSupport Admin Change", description, false, "system@teamsupport.com", "kjones@teamsupport.com");
+        }
 
         [WebMethod]
         public void AdminSetAllPortalUsers(int organizationID, bool sendEmails)
         {
             VerifyAccountAdmin();
+            LogAdminUserAction(string.Format("set all Portal users set for {0}, send emails={1}", organizationID.ToString(), sendEmails.ToString()));
             Organizations.SetAllPortalUsers(TSAuthentication.GetLoginUser(), organizationID, sendEmails, false);
         }
 
@@ -775,6 +759,7 @@ namespace TSWebServices
         public void AdminSetAllHubUsers(int organizationID, bool sendEmails)
         {
             VerifyAccountAdmin();
+            LogAdminUserAction(string.Format("set all Hub users set for {0} send emails={1}", organizationID.ToString(), sendEmails.ToString()));
             Organizations.SetAllPortalUsers(TSAuthentication.GetLoginUser(), organizationID, sendEmails, true);
         }
 
@@ -782,6 +767,7 @@ namespace TSWebServices
         public void AdminRebuildIndexes(int organizationID)
         {
             if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
+            LogAdminUserAction(string.Format("rebuilt indexes for {0}", organizationID.ToString()));
             Organizations.SetRebuildIndexes(TSAuthentication.GetLoginUser(), organizationID);
         }
 
@@ -868,6 +854,8 @@ namespace TSWebServices
         public void AdminRenameCompany(int orgID, string name)
         {
             VerifyAccountAdmin();
+            LogAdminUserAction(string.Format("renamed {0} to {1}", orgID.ToString(), name));
+
             Organization org = GetAdminOrgTarget(orgID);
             org.Name = name;
             org.Collection.Save();
@@ -878,6 +866,7 @@ namespace TSWebServices
         public void AdminUpdateSeats(int orgID, int count)
         {
             VerifyAccountAdmin();
+            LogAdminUserAction(string.Format("set seat count for {0} to {1}", orgID.ToString(), count.ToString()));
             Organization org = GetAdminOrgTarget(orgID);
             org.UserSeats = count;
             org.Collection.Save();
@@ -887,6 +876,8 @@ namespace TSWebServices
         public void AdminSetNextTicketNumber(int orgID, int number)
         {
             VerifyAccountAdmin();
+            LogAdminUserAction(string.Format("set next ticket number for {0} to {1}", orgID.ToString(), number.ToString()));
+
             Organization org = GetAdminOrgTarget(orgID);
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Ticket ticket = (new Tickets(loginUser)).AddNewTicket();
@@ -916,10 +907,32 @@ namespace TSWebServices
             action.Collection.Save();
         }
 
+
+        [WebMethod]
+        public bool AdminGetEncryptData(int orgID)
+        {
+            Organization org = GetAdminOrgTarget(orgID);
+            string value = OrganizationSettings.ReadString(TSAuthentication.GetLoginUser(), orgID, "UseEncryptedData", "False");
+            return bool.Parse(value);
+        }
+
+
+        [WebMethod]
+        public bool AdminToggleEncryptData(int orgID)
+        {
+            VerifyAccountAdmin();
+            bool value = !bool.Parse(OrganizationSettings.ReadString(TSAuthentication.GetLoginUser(), orgID, "UseEncryptedData", "False"));
+            LogAdminUserAction(string.Format("set encrypt data for {0} to {1}", orgID.ToString(), value.ToString()));
+            OrganizationSettings.WriteString(TSAuthentication.GetLoginUser(), orgID, "UseEncryptedData", value.ToString());
+            return value;
+        }
+
         [WebMethod]
         public void AdminUpdateProductType(int orgID, int productType)
         {
             VerifyAccountAdmin();
+            LogAdminUserAction(string.Format("set product type for {0} to {1}", orgID.ToString(), ((ProductType)productType).ToString()));
+
             Organization org = GetAdminOrgTarget(orgID);
             org.ProductType = (ProductType)productType;
             org.IsInventoryEnabled = org.ProductType == ProductType.Enterprise;
@@ -935,6 +948,8 @@ namespace TSWebServices
         public void AdminSetInventory(int orgID, bool value)
         {
             Organization org = GetAdminOrgTarget(orgID);
+            LogAdminUserAction(string.Format("sent inventory for {0} to {1}", orgID.ToString(), value.ToString()));
+
             org.IsInventoryEnabled = value;
             org.Collection.Save();
         }
@@ -943,6 +958,8 @@ namespace TSWebServices
         public void AdminSetApiCount(int orgID, int count)
         {
             VerifyAccountAdmin();
+            LogAdminUserAction(string.Format("set api count for {0} to {1}", orgID.ToString(), count.ToString()));
+
             Organization org = GetAdminOrgTarget(orgID);
             org.APIRequestLimit = count;
             org.Collection.Save();
@@ -952,6 +969,8 @@ namespace TSWebServices
         public void AdminEnable(int orgID, bool value)
         {
             VerifyAccountAdmin();
+            LogAdminUserAction(string.Format("set enabled {0} to {1}", orgID.ToString(), value.ToString()));
+
             Organization org = GetAdminOrgTarget(orgID);
             org.IsActive = value;
             org.IsAdvancedPortal = value;
@@ -977,7 +996,9 @@ namespace TSWebServices
 		public void AdminSetWatson(int orgID, bool value)
 		{
 			Organization org = GetAdminOrgTarget(orgID);
-			org.UseWatson = value;
+            LogAdminUserAction(string.Format("set Watson for {0} to {1}", orgID.ToString(), value.ToString()));
+
+            org.UseWatson = value;
 			org.Collection.Save();
 		}
 

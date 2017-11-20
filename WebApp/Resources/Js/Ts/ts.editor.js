@@ -220,7 +220,8 @@ var initEditor = function (element, shouldResize, init, postinit) {
                 	    _mainFrame.Ts.System.logAction('Ticket - Video Screen Recording Button Clicked');
                 		if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
                 			var dynamicPub = element.parent().find("#screenShare");
-                			element.parent().find("#recordScreenContainer").show();
+                			//element.parent().find("#recordScreenContainer").show();
+                            $("#recordScreenContainer").show();
                 			dynamicPub.show();
 
                 			var clonedScreen = $('#ourPubTest').clone();
@@ -230,21 +231,20 @@ var initEditor = function (element, shouldResize, init, postinit) {
                 			clonedVid.attr("id", "ourPubTest2Clone");
                 			//$('#ourPubTest2').after(clonedVid);
 
-                			OT.registerScreenSharingExtension('chrome', 'laehkaldepkacogpkokmimggbepafabg', 2);
+                			OT.registerScreenSharingExtension('chrome', 'dlbbnbankbgdoidhinoomgojjbdamofh', 2);
 
                 			OT.checkScreenSharingCapability(function (response) {
                 				if (!response.supported || response.extensionRegistered === false) {
                 					alert("This browser does not support screen sharing");
                 				} else if (response.extensionInstalled === false && BrowserDetect.browser != "Mozilla") {
                 					// prompt to install the response.extensionRequired extension
-
                 					if (BrowserDetect.browser == "Chrome") {
                 						$('#ChromeInstallModal').modal('show');
-                					}
-                					else if (BrowserDetect.browser == "Firefox") {
+                					} else if (BrowserDetect.browser == "Firefox") {
                 						$('#FireFoxInstallModal').modal('show');
                 					}
-											  		element.parent().find('#recordScreenContainer').hide();
+								    element.parent().find('#recordScreenContainer').hide();
+
                 				} else {
                 					// Screen sharing is available
                 				    _mainFrame.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
@@ -268,13 +268,15 @@ var initEditor = function (element, shouldResize, init, postinit) {
 											  'ourPubTest',
 											  { videoSource: 'screen' },
 											  function (error) {
-											  	if (error) {
-											  		if (BrowserDetect.browser == "Chrome") {
-											  			$('#ChromeInstallModal').modal('show');
-											  		}
-											  		else if (BrowserDetect.browser == "Firefox") {
-											  			$('#FireFoxInstallModal').modal('show');
-											  		}
+											      if (error) {
+											          if (error.code != 1500) {
+											              if (BrowserDetect.browser == "Chrome") {
+											                  $('#ChromeInstallModal').modal('show');
+											              }
+											              else if (BrowserDetect.browser == "Firefox") {
+											                  $('#FireFoxInstallModal').modal('show');
+											              }
+											          }
 											  		//alert('Screen Recording will not start because, ' + error.message);
 											  		element.parent().find('#recordScreenContainer').hide();
 											  		element.parent().find('#rcdtokScreen').hide();

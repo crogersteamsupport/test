@@ -119,7 +119,7 @@ function publishTOKAudio(callback) {
         if (!isIE && !isEdge) {
             $('#subscriberMeter').show();
         }
-        
+
         $('#tokStatusText').text('Requesting Live Session...');
         $('#muteStream').show();
         $('#unmuteStream').hide();
@@ -166,14 +166,13 @@ function publishTOKScreen() {
     clonedVid.attr("id", "screenOneClone");
 
 
-    OT.registerScreenSharingExtension('chrome', 'laehkaldepkacogpkokmimggbepafabg', 2);
+    OT.registerScreenSharingExtension('chrome', 'dlbbnbankbgdoidhinoomgojjbdamofh', 2);
 
     OT.checkScreenSharingCapability(function (response) {
         if (!response.supported || response.extensionRegistered === false) {
             alert("This browser does not support screen sharing");
         } else if (response.extensionInstalled === false && BrowserDetect.browser != "Mozilla") {
             // prompt to install the response.extensionRequired extension
-
             if (BrowserDetect.browser == "Chrome") {
                 $('#ChromeInstallModal').modal('show');
             }

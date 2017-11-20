@@ -169,6 +169,7 @@ AdminAuto = function () {
       gecko_spellcheck: true,
       convert_urls: true,
       relative_urls: false,
+      branding: false,
       content_css: "../Css/jquery-ui-latest.custom.css",
       body_class: "ui-widget",
       template_external_list_url: "tinymce/jscripts/template_list.js",

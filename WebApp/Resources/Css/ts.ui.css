@@ -199,7 +199,11 @@ label.ts-checkbox {display:block; margin-bottom: 5px; min-height: 20px; padding-
 .ts-icon { width: 16px; height: 16px; background-image: url(../images/ts_icons_normal.png); }
 .ui-state-disabled.ts-icon { background-image: url(../images/ts_icons_disabled.png); }
 .ui-state-hover .ts-icon, .ui-state-focus .ts-icon {background-image: url(../images/ts_icons_hover.png); }
-.ts-icon-none { background-position: 99999px 99999px; }
+.ts-icon-none {
+    background-image: none !important;
+    height:1px;
+    width:1px;
+}
 /*button icon element(s) */
 .ui-button-icon-only .ts-icon, .ui-button-text-icon-primary .ts-icon, .ui-button-text-icon-secondary .ts-icon, .ui-button-text-icons .ts-icon, .ui-button-icons-only .ts-icon { position: absolute; top: 50%; margin-top: -8px; }
 .ui-button-icon-only .ts-icon { left: 50%; margin-left: -8px; }
