@@ -607,12 +607,15 @@ ORDER BY cf.Position";
             cf.CustomFieldID,
             cf.IsRequiredToClose,
             cf.Mask,
-            cf.CustomFieldCategoryID
+            cf.CustomFieldCategoryID,
+            CASE WHEN cf2.CustomFieldID IS NULL THEN 0 ELSE 1 END AS IsConditionalParent
         FROM
             CustomFields cf
             LEFT JOIN CustomValues cv
                 ON cv.CustomFieldID = cf.CustomFieldID 
                 AND cv.RefID = @RefID
+            LEFT JOIN CustomFields cf2
+		        ON cf2.ParentCustomFieldID = cf.CustomFieldID
         WHERE
             cf.OrganizationID = @OrganizationID
             AND cf.IsVisibleOnPortal = 1
@@ -655,12 +658,6 @@ ORDER BY cf.Position";
                 connection.Close();
             }
 
-            DataColumn conditionalColumn = new DataColumn("IsConditionalParent", typeof(bool))
-            {
-                DefaultValue = false
-            };
-
-            result.Columns.Add(conditionalColumn);
             return result;
         }
 
@@ -693,12 +690,15 @@ ORDER BY cf.Position";
             cf.CustomFieldID,
             cf.IsRequiredToClose,
             cf.Mask,
-            cf.CustomFieldCategoryID
+            cf.CustomFieldCategoryID,
+            CASE WHEN cf2.CustomFieldID IS NULL THEN 0 ELSE 1 END AS IsConditionalParent
         FROM
             CustomFields cf
             LEFT JOIN CustomValues cv
                 ON cv.CustomFieldID = cf.CustomFieldID 
                 AND cv.RefID = @RefID
+            LEFT JOIN CustomFields cf2
+		        ON cf2.ParentCustomFieldID = cf.CustomFieldID
         WHERE
             cf.OrganizationID = @OrganizationID
             AND cf.IsVisibleOnPortal = 1
@@ -765,12 +765,6 @@ ORDER BY cf.Position";
                 childID = (int)children.Rows[i]["CustomFieldID"];
                 childValue = children.Rows[i]["CustomValue"].ToString();
                 GetChildrenByParentValue(organizationID, refType, auxID, refID, childID, childValue, productID, ref result);
-
-                DataRow dr = result.Select("CustomFieldID=" + parentID).FirstOrDefault(); // finds all rows with id==2 and selects first or null if haven't found any
-                if (dr != null)
-                {
-                    dr["IsConditionalParent"] = true;
-                }
             }
         }
 
