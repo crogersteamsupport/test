@@ -69,6 +69,10 @@ $(document).on('click','#ticket-tags .tag-item', function (e) {
     e.preventDefault();
     e.stopPropagation();
     var tagid = $(this).attr('id');
-    top.Ts.System.logAction('Ticket - Tag Linked From Action');
-    top.Ts.MainPage.openTag(tagid);
+    if ($(this).hasClass('tagRemove')) {
+        return;
+    } else {
+        top.Ts.System.logAction('Ticket - Tag Linked From Action');
+        top.Ts.MainPage.openTag(tagid);
+    }
 });
