@@ -969,7 +969,7 @@ TicketGrid = function (options) {
         enableCellNavigation: true,
         multiSelect: true,
         enableColumnReorder: true,
-        ExplicitInitialisation: true
+        explicitInitialization: true
     };
 
     $('.grid-ticket').toggleClass('grid-compact', self.options.isCompact == true);
