@@ -558,10 +558,10 @@ ORDER BY cf.Position";
             return null;
         }
 
-        public DataTable GetParentsAndChildrenByRefID(int organizationID, ReferenceType refType, int? auxID, int refID, int? parentProductID)
+        public DataTable GetParentsAndChildrenByRefID(int organizationID, int? auxID, int ticketID, int? parentProductID)
         {
 
-            DataTable parentCustomValues = GetParentsByReferenceType(organizationID, refType, auxID, refID, parentProductID);
+            DataTable parentCustomValues = GetParentsByReferenceType(organizationID, auxID, ticketID, parentProductID);
             DataTable result = parentCustomValues.Clone();
 
             int parentID = -1;
@@ -572,18 +572,19 @@ ORDER BY cf.Position";
                 result.ImportRow(parentCustomValues.Rows[i]);
                 parentID = (int)parentCustomValues.Rows[i]["CustomFieldID"];
                 parentValue = parentCustomValues.Rows[i]["CustomValue"].ToString();
-                GetChildrenByParentValue(organizationID, refType, auxID, refID, parentID, parentValue, parentProductID, ref result);
+                GetChildrenByParentValue(organizationID, auxID, ticketID, parentID, parentValue, parentProductID, ref result);
             }
 
             return result;
         }
 
-        private DataTable GetParentsByReferenceType(int organizationID, ReferenceType refType, int? auxID, int refID, int? parentProductID)
+        private DataTable GetParentsByReferenceType(int organizationID, int? auxID, int ticketID, int? parentProductID)
         {
             SqlCommand command = new SqlCommand();
 
             command.CommandText = @"
         SELECT 
+            Distinct 
             cv.CustomValueID, 
             cv.RefID, 
             cv.CustomValue, 
@@ -607,7 +608,8 @@ ORDER BY cf.Position";
             cf.CustomFieldID,
             cf.IsRequiredToClose,
             cf.Mask,
-            cf.CustomFieldCategoryID
+            cf.CustomFieldCategoryID,
+            CASE WHEN EXISTS(SELECT NULL FROM CustomFields cf2 WHERE cf2.ParentCustomFieldID = cf.CustomFieldID) THEN 1 ELSE 0 END As IsConditionalParent
         FROM
             CustomFields cf
             LEFT JOIN CustomValues cv
@@ -616,7 +618,7 @@ ORDER BY cf.Position";
         WHERE
             cf.OrganizationID = @OrganizationID
             AND cf.IsVisibleOnPortal = 1
-            AND cf.RefType = @RefType
+            AND cf.RefType = 17
             AND (cf.AuxID = @AuxID OR @AuxID < 0)
             AND cf.ParentCustomFieldID IS NULL 
             AND (cf.ParentProductID IS NULL OR cf.ParentProductID = @ParentProductID)
@@ -624,8 +626,7 @@ ORDER BY cf.Position";
             cf.CustomFieldCategoryID asc, cf.Position asc";
             command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue("@OrganizationID", organizationID);
-            command.Parameters.AddWithValue("@RefID", refID);
-            command.Parameters.AddWithValue("@RefType", (int)refType);
+            command.Parameters.AddWithValue("@RefID", ticketID);
             command.Parameters.AddWithValue("@AuxID", auxID ?? -1);
             command.Parameters.AddWithValue("@ParentProductID", parentProductID ?? -1);
 
@@ -655,21 +656,16 @@ ORDER BY cf.Position";
                 connection.Close();
             }
 
-            DataColumn conditionalColumn = new DataColumn("IsConditionalParent", typeof(bool))
-            {
-                DefaultValue = false
-            };
-
-            result.Columns.Add(conditionalColumn);
             return result;
         }
 
-        private void GetChildrenByParentValue(int organizationID, ReferenceType refType, int? auxID, int refID, int parentID, string parentValue, int? productID, ref DataTable result)
+        private void GetChildrenByParentValue(int organizationID, int? auxID, int ticketID, int parentID, string parentValue, int? productID, ref DataTable result)
         {
             SqlCommand command = new SqlCommand();
 
             command.CommandText = @"
         SELECT 
+            Distinct
             cv.CustomValueID, 
             cv.RefID, 
             cv.CustomValue, 
@@ -693,7 +689,8 @@ ORDER BY cf.Position";
             cf.CustomFieldID,
             cf.IsRequiredToClose,
             cf.Mask,
-            cf.CustomFieldCategoryID
+            cf.CustomFieldCategoryID,
+            CASE WHEN EXISTS(SELECT NULL FROM CustomFields cf2 WHERE cf2.ParentCustomFieldID = cf.CustomFieldID) THEN 1 ELSE 0 END As IsConditionalParent
         FROM
             CustomFields cf
             LEFT JOIN CustomValues cv
@@ -702,7 +699,7 @@ ORDER BY cf.Position";
         WHERE
             cf.OrganizationID = @OrganizationID
             AND cf.IsVisibleOnPortal = 1
-            AND cf.RefType = @RefType
+            AND cf.RefType = 17
             AND (cf.AuxID = @AuxID OR @AuxID < 0)
             AND cf.ParentCustomFieldID = @ParentID
             AND 
@@ -723,8 +720,7 @@ ORDER BY cf.Position";
             cf.Position";
             command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue("@OrganizationID", organizationID);
-            command.Parameters.AddWithValue("@RefID", refID);
-            command.Parameters.AddWithValue("@RefType", (int)refType);
+            command.Parameters.AddWithValue("@RefID", ticketID);
             command.Parameters.AddWithValue("@AuxID", auxID ?? -1);
             command.Parameters.AddWithValue("@ParentID", parentID);
             command.Parameters.AddWithValue("@ParentValue", parentValue);
@@ -764,32 +760,26 @@ ORDER BY cf.Position";
                 result.ImportRow(children.Rows[i]);
                 childID = (int)children.Rows[i]["CustomFieldID"];
                 childValue = children.Rows[i]["CustomValue"].ToString();
-                GetChildrenByParentValue(organizationID, refType, auxID, refID, childID, childValue, productID, ref result);
-
-                DataRow dr = result.Select("CustomFieldID=" + parentID).FirstOrDefault(); // finds all rows with id==2 and selects first or null if haven't found any
-                if (dr != null)
-                {
-                    dr["IsConditionalParent"] = true;
-                }
+                GetChildrenByParentValue(organizationID, auxID, ticketID, childID, childValue, productID, ref result);
             }
         }
 
         partial void BeforeRowEdit(CustomValue newValue)
         {
             CustomValue oldValue = CustomValues.GetCustomValue(LoginUser, newValue.CustomValueID);
-			newValue.OrganizationID = LoginUser.OrganizationID;
-			if (oldValue.Value == newValue.Value) return;
+            newValue.OrganizationID = LoginUser.OrganizationID;
+            if (oldValue.Value == newValue.Value) return;
             CustomField customField = CustomFields.GetCustomField(LoginUser, newValue.CustomFieldID);
             string format = "Changed {0} from '{1}' to '{2}'.";
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, customField.RefType, newValue.RefID, string.Format(format, customField.Name, oldValue.Value, newValue.Value));
         }
 
-		partial void BeforeRowInsert(CustomValue newValue)
-		{
-			newValue.OrganizationID = LoginUser.OrganizationID;
-		}
+        partial void BeforeRowInsert(CustomValue newValue)
+        {
+            newValue.OrganizationID = LoginUser.OrganizationID;
+        }
 
-		public static CustomValue GetValue(LoginUser loginUser, int customFieldID, int refID, bool createValue)
+        public static CustomValue GetValue(LoginUser loginUser, int customFieldID, int refID, bool createValue)
         {
             CustomValues values = new CustomValues(loginUser);
             values.LoadByFieldID(customFieldID, refID);
@@ -869,7 +859,7 @@ END";
             command.Parameters.AddWithValue("CustomFieldID", customFieldID);
             command.Parameters.AddWithValue("RefID", refID);
             command.Parameters.AddWithValue("CustomValue", value);
-			command.Parameters.AddWithValue("OrganizationID", loginUser.OrganizationID);
+            command.Parameters.AddWithValue("OrganizationID", loginUser.OrganizationID);
 
             SqlExecutor.ExecuteNonQuery(loginUser, command);
 
