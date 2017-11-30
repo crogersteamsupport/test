@@ -211,9 +211,10 @@
 		else {
 			$('.schedule-email-addresses').siblings('span').hide();
 		}
-
-		if ($('#StartOn').val() == ''
-			|| $('#StartOnTime').val() == '') {
+	
+		if (($('#StartOn').val() == ''
+				|| $('#StartOnTime').val() == '')
+			&& !$("#runNow").hasClass('fa-check-square-o')) {
 			$('#StartOn').siblings('span').show();
 			isValid = false;
 		}
