@@ -581,6 +581,9 @@ function CreateNewActionLI() {
             return false;
         } else {
             $(this).addClass('click-disabled');
+            $("a.action-option-edit").each(function () {
+                $(this).addClass('click-disabled');
+            });
         }
         var editor = $('#action-new-editor');
         if (_suggestedSolutionDefaultInput == '') {
@@ -615,6 +618,9 @@ function CreateNewActionLI() {
             return false;
         } else {
             $(this).addClass('click-disabled');
+            $("a.action-option-edit").each(function () {
+                $(this).addClass('click-disabled');
+            });
         }
         var editor = $('#action-new-editor');
         SetupActionEditor(editor);
@@ -4680,7 +4686,6 @@ function CreateTimeLineDelegates() {
         } else {
             $(this).addClass('click-disabled');
         }
-
         var self = $(this);
         var action = self.closest('div.action').data().action;
         var editor = $('#action-new-editor');
