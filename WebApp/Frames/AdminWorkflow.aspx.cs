@@ -19,14 +19,34 @@ public partial class Frames_AdminWorkflow : BaseFramePage
 
   public int SelectedTicketTypeIndex
   {
-    get { return Settings.Session.ReadInt("AdminWorkflowTicketTypeIndex", 0); }
-    set { Settings.Session.WriteInt("AdminWorkflowTicketTypeIndex", value); }
-  }
+		//get { return Settings.Session.ReadInt("AdminWorkflowTicketTypeIndex", 0); }
+		//set { Settings.Session.WriteInt("AdminWorkflowTicketTypeIndex", value); }
+		get
+		{
+			int index = 0;
+			int.TryParse(SelectedTicketTypeIndexHidden.Value, out index);
+			return index;
+		}
+		set
+		{
+			SelectedTicketTypeIndexHidden.Value = value.ToString();
+		}
+	}
 
   public int SelectedTicketStatusIndex
   {
-    get { return Settings.Session.ReadInt("AdminWorkflowStatusIndex", 0); }
-    set { Settings.Session.WriteInt("AdminWorkflowStatusIndex", value); }
+		//get { return Settings.Session.ReadInt("AdminWorkflowStatusIndex", 0); }
+		//set { Settings.Session.WriteInt("AdminWorkflowStatusIndex", value); }
+		get
+		{
+			int index = 0;
+			int.TryParse(SelectedTicketStatusIndexHidden.Value, out index);
+			return index;
+		}
+		set
+		{
+			SelectedTicketStatusIndexHidden.Value = value.ToString();
+		}
   }
 
   protected override void OnInit(EventArgs e)
@@ -34,7 +54,19 @@ public partial class Frames_AdminWorkflow : BaseFramePage
     base.OnInit(e);
 
     LoadTicketTypes();
-    if (cmbTicketTypes.Items.Count > 0)
+  }
+
+  protected override void OnLoad(EventArgs e)
+  {
+    base.OnLoad(e);
+
+    bool isAdmin = UserSession.CurrentUser.IsSystemAdmin;
+    gridNext.Columns[0].Visible = isAdmin;
+    gridNext.Columns[1].Visible = isAdmin;
+    gridNext.Columns[2].Visible = isAdmin;
+    lnkAddStatus.Visible = isAdmin;
+
+	if (cmbTicketTypes.Items.Count > 0)
     {
       cmbTicketTypes.SelectedIndex = SelectedTicketTypeIndex;
       LoadStatuses(int.Parse(cmbTicketTypes.SelectedValue));
@@ -48,18 +80,6 @@ public partial class Frames_AdminWorkflow : BaseFramePage
     {
       cmbStatuses.Items.Clear();
     }
-
-  }
-
-  protected override void OnLoad(EventArgs e)
-  {
-    base.OnLoad(e);
-
-    bool isAdmin = UserSession.CurrentUser.IsSystemAdmin;
-    gridNext.Columns[0].Visible = isAdmin;
-    gridNext.Columns[1].Visible = isAdmin;
-    gridNext.Columns[2].Visible = isAdmin;
-    lnkAddStatus.Visible = isAdmin;
 
     if (SelectedTicketTypeIndex != cmbTicketTypes.SelectedIndex)
     {
