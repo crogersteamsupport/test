@@ -52,9 +52,7 @@
                     } else {
                         req.abort();
                     }
-                } catch (err) {
-                    console.log(err);
-                }
+                } catch (err) { }
                 for (var i = req.fromPage; i <= req.toPage; i++) {
                     data[i * PAGESIZE] = undefined;
                 }
