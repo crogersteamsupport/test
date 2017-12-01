@@ -183,7 +183,7 @@ public partial class Frames_AdminWorkflow : BaseFramePage
 		TicketNextStatuses ticketNextStatuses = new TicketNextStatuses(UserSession.LoginUser);
 		TicketNextStatus ticketNextStatus = ticketNextStatuses.AddNewTicketNextStatus();
 		ticketNextStatus.CurrentStatusID = GetSelectedStatusID();
-		ticketNextStatus.NextStatusID = _nextStatusSelected;//vv
+		ticketNextStatus.NextStatusID = _nextStatusSelected;
 		ticketNextStatus.Position = ticketNextStatuses.GetMaxPosition(ticketNextStatus.CurrentStatusID) + 1;
 		ticketNextStatuses.Save();
 		LoadNextStatuses(GetSelectedStatusID());
