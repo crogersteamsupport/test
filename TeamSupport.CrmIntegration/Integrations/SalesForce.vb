@@ -3180,37 +3180,36 @@ Namespace TeamSupport
             End Sub
 
             Private Sub AssignCustomerToTicket(ByRef customer As SalesForceCustomer, ByRef ticket As Ticket, ByRef ticketValuesChanged As Boolean)
-
-                If customer.ContactID IsNot Nothing AndAlso customer.AccountID IsNot Nothing Then
-                    Dim contact As ContactsViewItem = Nothing
-                    Dim teamSupportUser As User = Nothing
-                    If CheckIfCustomerExistsInTicket(customer, ticket, contact) Then
-                        Dim existingContact As ContactsView = New ContactsView(User)
-                        existingContact.LoadSentToSalesForce(ticket.TicketID)
-                        If existingContact.Count > 0 Then
-                            If existingContact(0).UserID <> contact.UserID Then
-                                ticket.Collection.SetUserAsSentToSalesForce(contact.UserID, ticket.TicketID)
-                                Log.Write("Set existing in ticket userID: " + contact.UserID.ToString() + " as SentToSalesForce.")
-                                ticketValuesChanged = True
-                            End If
-                        Else
-                            ticket.Collection.SetUserAsSentToSalesForce(contact.UserID, ticket.TicketID)
-                            Log.Write("Set existing in ticket userID: " + contact.UserID.ToString() + " as SentToSalesForce.")
-                            ticketValuesChanged = True
-                        End If
-                    Else
-                        Dim organization As Organization = Nothing
-                        If CheckIfUserExistsInOrganization(customer, teamSupportUser, organization) Then
-                            ticket.Collection.AddContact(teamSupportUser.UserID, ticket.TicketID)
-                            ticket.Collection.SetUserAsSentToSalesForce(teamSupportUser.UserID, ticket.TicketID)
-                            Log.Write("Added in ticket userID: " + teamSupportUser.UserID.ToString() + " as SentToSalesForce.")
-                            ticketValuesChanged = True
-                        Else
-                            Log.Write("Contact was not set as customer in ticket because it does not exists in TeamSupport.")
-                        End If
-                    End If
-                ElseIf customer.AccountID IsNot Nothing Then
-                    Dim organization As Organization = Nothing
+				If Not String.IsNullOrEmpty(customer.ContactID) AndAlso Not String.IsNullOrEmpty(customer.AccountID) Then
+					Dim contact As ContactsViewItem = Nothing
+					Dim teamSupportUser As User = Nothing
+					If CheckIfCustomerExistsInTicket(customer, ticket, contact) Then
+						Dim existingContact As ContactsView = New ContactsView(User)
+						existingContact.LoadSentToSalesForce(ticket.TicketID)
+						If existingContact.Count > 0 Then
+							If existingContact(0).UserID <> contact.UserID Then
+								ticket.Collection.SetUserAsSentToSalesForce(contact.UserID, ticket.TicketID)
+								Log.Write("Set existing in ticket userID: " + contact.UserID.ToString() + " as SentToSalesForce.")
+								ticketValuesChanged = True
+							End If
+						Else
+							ticket.Collection.SetUserAsSentToSalesForce(contact.UserID, ticket.TicketID)
+							Log.Write("Set existing in ticket userID: " + contact.UserID.ToString() + " as SentToSalesForce.")
+							ticketValuesChanged = True
+						End If
+					Else
+						Dim organization As Organization = Nothing
+						If CheckIfUserExistsInOrganization(customer, teamSupportUser, organization) Then
+							ticket.Collection.AddContact(teamSupportUser.UserID, ticket.TicketID)
+							ticket.Collection.SetUserAsSentToSalesForce(teamSupportUser.UserID, ticket.TicketID)
+							Log.Write("Added in ticket userID: " + teamSupportUser.UserID.ToString() + " as SentToSalesForce.")
+							ticketValuesChanged = True
+						Else
+							Log.Write("Contact was not set as customer in ticket because it does not exists in TeamSupport.")
+						End If
+					End If
+				ElseIf customer.AccountID IsNot Nothing Then
+					Dim organization As Organization = Nothing
                     If CheckIfOrganizationExistsInTicket(customer, ticket, organization) Then
                         Dim existingOrganization As Organizations = New Organizations(User)
                         existingOrganization.LoadSentToSalesForce(ticket.TicketID)
