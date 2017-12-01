@@ -93,8 +93,6 @@
       </div>
       <div class="groupBodyWrapperDiv">
         <div class="groupBodyDiv">
-		<%--	<div id="divStatuses" class="types"></div>--%>
-
           <telerik:RadGrid ID="gridNext" runat="server" Width="100%" Height="100%" AutoGenerateColumns="False" GridLines="None" OnItemCommand="gridNext_ItemCommand" OnItemDataBound="gridNext_ItemDataBound" BorderWidth="0px" ShowHeader="False">
             <MasterTableView DataKeyNames="TicketNextStatusID" ClientDataKeyNames="TicketNextStatusID">
               <RowIndicatorColumn>
