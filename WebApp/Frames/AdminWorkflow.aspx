@@ -9,8 +9,35 @@
 		function OnClientSelectedTicketTypeIndexChanged(sender, eventArgs) {
 			document.getElementById('<%= SelectedTicketTypeIndexHidden.ClientID %>').value = sender._selectedIndex;
 		}
+
 		function OnClientSelectedTicketStatusIndexChanged(sender, eventArgs) {
 			document.getElementById('<%= SelectedTicketStatusIndexHidden.ClientID %>').value = sender._selectedIndex;
+		}
+
+		function MoveUp(id) {
+			PageMethods.MoveUp(id, function(result) {
+				if (result) {
+					__doPostBack('<%= SelectedTicketTypeIndexHidden.ClientID %>', '');
+				}
+			});
+		}
+
+		function MoveDown(id) {
+			PageMethods.MoveDown(id, function(result) {
+				if (result) {
+					__doPostBack('<%= SelectedTicketTypeIndexHidden.ClientID %>', '');
+				}
+			});
+		}
+
+		function Delete(id) {
+			if (confirm('Are you sure you would like to delete this next ticket status?')) {
+				PageMethods.Delete(id, function(result) {
+					if (result) {
+						__doPostBack('<%= SelectedTicketTypeIndexHidden.ClientID %>', '');
+					}
+				});
+			}
 		}
 	</script>
 </asp:Content>
@@ -66,7 +93,9 @@
       </div>
       <div class="groupBodyWrapperDiv">
         <div class="groupBodyDiv">
-          <telerik:RadGrid ID="gridNext" runat="server" Width="100%" Height="100%" AutoGenerateColumns="False" GridLines="None" OnItemCommand="gridNext_ItemCommand" BorderWidth="0px" ShowHeader="False">
+		<%--	<div id="divStatuses" class="types"></div>--%>
+
+          <telerik:RadGrid ID="gridNext" runat="server" Width="100%" Height="100%" AutoGenerateColumns="False" GridLines="None" OnItemCommand="gridNext_ItemCommand" OnItemDataBound="gridNext_ItemDataBound" BorderWidth="0px" ShowHeader="False">
             <MasterTableView DataKeyNames="TicketNextStatusID" ClientDataKeyNames="TicketNextStatusID">
               <RowIndicatorColumn>
                 <HeaderStyle Width="20px"></HeaderStyle>
