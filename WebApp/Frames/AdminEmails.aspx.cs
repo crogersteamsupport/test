@@ -90,13 +90,11 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
             }
 
             LoadEAICombos();
-
         }
     }
 
     private void LoadGroupTypes(int organizationID)
     {
-
         cmbDefaultGroup.Items.Clear();
 
         Groups groups = new Groups(UserSession.LoginUser);
@@ -208,7 +206,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
     }
 
     [WebMethod]
-    public static void SaveEmailSettings(string reply, bool reqNew, bool reqKnown, bool changeStatus, bool addContacts, bool matchSubject, bool forceBccPrivate, bool needCustForTicketMatch, bool replyToAlternateEmailAddresses, bool addEmailViaTS, int? defaultPortalGroupID)
+    public static void SaveEmailSettings(string reply, bool reqNew, bool reqKnown, bool changeStatus, bool addContacts, bool matchSubject, bool markSpam, bool forceBccPrivate, bool needCustForTicketMatch, bool replyToAlternateEmailAddresses, bool addEmailViaTS, int? defaultPortalGroupID)
     {
         if (!UserSession.CurrentUser.IsSystemAdmin) return;
 
@@ -219,6 +217,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
         organization.ChangeStatusIfClosed = changeStatus;
         organization.AddAdditionalContacts = addContacts;
         organization.MatchEmailSubject = matchSubject;
+        organization.MarkSpam = markSpam;
         organization.ForceBCCEmailsPrivate = forceBccPrivate;
         organization.NeedCustForTicketMatch = needCustForTicketMatch;
         organization.ReplyToAlternateEmailAddresses = replyToAlternateEmailAddresses;

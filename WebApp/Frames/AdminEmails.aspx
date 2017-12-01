@@ -59,6 +59,7 @@
         $('#cbChangeStatus')[0].checked = result.ChangeStatusIfClosed;
         $('#cbAssociatePeople')[0].checked = result.AddAdditionalContacts;
         $('#cbMatchSubject')[0].checked = result.MatchEmailSubject;
+        $('#cbMarkSpam')[0].checked = result.MarkSpam;
         $('#cbForceBccPrivate')[0].checked = result.ForceBCCEmailsPrivate;
         $('#cbNeedCustForTicketMatch')[0].checked = result.NeedCustForTicketMatch;
         $('#cbReplyToAlternateEmailAddresses')[0].checked = result.ReplyToAlternateEmailAddresses;
@@ -100,7 +101,7 @@
     }
 
       function saveEmailSettings() {
-        PageMethods.SaveEmailSettings($find('textReply').get_value(), $('#cbRequireNew')[0].checked, $('#cbRequireKnown')[0].checked, $('#cbChangeStatus')[0].checked, $('#cbAssociatePeople')[0].checked, $('#cbMatchSubject')[0].checked, $('#cbForceBccPrivate')[0].checked, $('#cbNeedCustForTicketMatch')[0].checked, $('#cbReplyToAlternateEmailAddresses')[0].checked, !$('#cbAddEmailViaTS')[0].checked, $find('cmbDefaultGroup').get_value());
+        PageMethods.SaveEmailSettings($find('textReply').get_value(), $('#cbRequireNew')[0].checked, $('#cbRequireKnown')[0].checked, $('#cbChangeStatus')[0].checked, $('#cbAssociatePeople')[0].checked, $('#cbMatchSubject')[0].checked, $('#cbMarkSpam')[0].checked, $('#cbForceBccPrivate')[0].checked, $('#cbNeedCustForTicketMatch')[0].checked, $('#cbReplyToAlternateEmailAddresses')[0].checked, !$('#cbAddEmailViaTS')[0].checked, $find('cmbDefaultGroup').get_value());
       $('#divSettingsButtons').hide();
       parent.parent.Ts.System.logAction('Admin Email - Email Settings Saved');
     }
