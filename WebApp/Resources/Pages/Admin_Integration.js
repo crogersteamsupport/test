@@ -897,8 +897,25 @@ AdminInt = function () {
             flag = true;
         }
 
+		var crmType = '';
+		var type = parent.parents('.int-type');
+
+		if (type.hasClass('batchbook')) crmType = 'Batchbook';
+		else if (type.hasClass('highrise')) crmType = 'Highrise';
+		else if (type.hasClass('jira')) crmType = 'Jira';
+		else if (type.hasClass('mailchimp')) crmType = 'MailChimp';
+		else if (type.hasClass('oracle')) crmType = 'Oracle';
+		else if (type.hasClass('salesforce')) crmType = 'Salesforce';
+		else if (type.hasClass('zohocrm')) crmType = 'ZohoCrm';
+		else if (type.hasClass('zohoreports')) crmType = 'ZohoReports';
+		else if (type.hasClass('hubspot')) crmType = 'HubSpot';
+		else if (type.hasClass('slackwebhook')) crmType = 'SlackWebHook';
+		else if (type.hasClass('tfs')) crmType = 'TFS';
+		else if (type.hasClass('servicenow')) crmType = 'ServiceNow';
+
+		//Only Jira has multiple instances
         var jiraInstanceName = "";
-        if (parent.find('#InstanceName').length > 0) {
+		if (parent.find('#InstanceName').length > 0 && crmType == 'Jira') {
             jiraInstanceName = parent.find('#InstanceName').val();
 
             if (jiraInstanceName == null || jiraInstanceName == "") {
@@ -913,21 +930,6 @@ AdminInt = function () {
         if (flag) return;
 
         parent.find('.int-action').hide();
-        var crmType = '';
-        var type = parent.parents('.int-type');
-
-        if (type.hasClass('batchbook')) crmType = 'Batchbook';
-        else if (type.hasClass('highrise')) crmType = 'Highrise';
-        else if (type.hasClass('jira')) crmType = 'Jira';
-        else if (type.hasClass('mailchimp')) crmType = 'MailChimp';
-        else if (type.hasClass('oracle')) crmType = 'Oracle';
-        else if (type.hasClass('salesforce')) crmType = 'Salesforce';
-        else if (type.hasClass('zohocrm')) crmType = 'ZohoCrm';
-        else if (type.hasClass('zohoreports')) crmType = 'ZohoReports';
-        else if (type.hasClass('hubspot')) crmType = 'HubSpot';
-        else if (type.hasClass('slackwebhook')) crmType = 'SlackWebHook';
-		else if (type.hasClass('tfs')) crmType = 'TFS';
-		else if (type.hasClass('servicenow')) crmType = 'ServiceNow';
 
         var crmToken = parent.find('.int-crm-token').val();
 
