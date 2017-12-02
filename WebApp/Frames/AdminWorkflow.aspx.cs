@@ -1,40 +1,61 @@
 ﻿using System;
-using System.Collections;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.HtmlControls;
+using System.Web.Services;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Xml.Linq;
 using TeamSupport.Data;
 using TeamSupport.WebUtils;
 using Telerik.Web.UI;
+using log4net;
 
 public partial class Frames_AdminWorkflow : BaseFramePage
 {
-
+	private static readonly ILog _log = LogManager.GetLogger("RollingLogFileAppenderApp");
+	private static int _nextStatusSelected = 0;
   public int SelectedTicketTypeIndex
   {
-    get { return Settings.Session.ReadInt("AdminWorkflowTicketTypeIndex", 0); }
-    set { Settings.Session.WriteInt("AdminWorkflowTicketTypeIndex", value); }
-  }
+		get
+		{
+			int index = 0;
+			int.TryParse(SelectedTicketTypeIndexHidden.Value, out index);
+			return index;
+		}
+		set
+		{
+			SelectedTicketTypeIndexHidden.Value = value.ToString();
+		}
+	}
 
   public int SelectedTicketStatusIndex
   {
-    get { return Settings.Session.ReadInt("AdminWorkflowStatusIndex", 0); }
-    set { Settings.Session.WriteInt("AdminWorkflowStatusIndex", value); }
+		get
+		{
+			int index = 0;
+			int.TryParse(SelectedTicketStatusIndexHidden.Value, out index);
+			return index;
+		}
+		set
+		{
+			SelectedTicketStatusIndexHidden.Value = value.ToString();
+		}
   }
 
   protected override void OnInit(EventArgs e)
   {
     base.OnInit(e);
-
+	log4net.Config.XmlConfigurator.ConfigureAndWatch(new System.IO.FileInfo(AppDomain.CurrentDomain.BaseDirectory + "logging.config"));
     LoadTicketTypes();
-    if (cmbTicketTypes.Items.Count > 0)
+  }
+
+  protected override void OnLoad(EventArgs e)
+  {
+    base.OnLoad(e);
+
+    bool isAdmin = UserSession.CurrentUser.IsSystemAdmin;
+    gridNext.Columns[0].Visible = isAdmin;
+    gridNext.Columns[1].Visible = isAdmin;
+    gridNext.Columns[2].Visible = isAdmin;
+    lnkAddStatus.Visible = isAdmin;
+
+	if (cmbTicketTypes.Items.Count > 0)
     {
       cmbTicketTypes.SelectedIndex = SelectedTicketTypeIndex;
       LoadStatuses(int.Parse(cmbTicketTypes.SelectedValue));
@@ -48,18 +69,6 @@ public partial class Frames_AdminWorkflow : BaseFramePage
     {
       cmbStatuses.Items.Clear();
     }
-
-  }
-
-  protected override void OnLoad(EventArgs e)
-  {
-    base.OnLoad(e);
-
-    bool isAdmin = UserSession.CurrentUser.IsSystemAdmin;
-    gridNext.Columns[0].Visible = isAdmin;
-    gridNext.Columns[1].Visible = isAdmin;
-    gridNext.Columns[2].Visible = isAdmin;
-    lnkAddStatus.Visible = isAdmin;
 
     if (SelectedTicketTypeIndex != cmbTicketTypes.SelectedIndex)
     {
@@ -118,13 +127,20 @@ public partial class Frames_AdminWorkflow : BaseFramePage
     TicketStatuses statuses = new TicketStatuses(UserSession.LoginUser);
     statuses.LoadNotNextStatuses(statusID);
 
+	string postBackControl = this.Request.Params["__EVENTTARGET"];
+
+	if (postBackControl.EndsWith("cmbNewStatus"))
+	{
+		int.TryParse(cmbNewStatus.SelectedValue, out _nextStatusSelected);
+	}
+
     cmbNewStatus.Items.Clear();
     cmbNewStatus.Items.Add(new RadComboBoxItem("[Select a status]", "-1"));
+
     foreach (TicketStatus status in statuses)
     {
       cmbNewStatus.Items.Add(new RadComboBoxItem(status.Name, status.TicketStatusID.ToString()));
     }
-
   }
 
   private void LoadNextStatuses(int ticketStatusID)
@@ -137,7 +153,8 @@ public partial class Frames_AdminWorkflow : BaseFramePage
     LoadAvailableStatuses(ticketStatusID);
   }
 
-  protected void gridNext_ItemCommand(object source, GridCommandEventArgs e)
+	//This does not seem to be working. I could not find a way to have this method fired by the RadGrid control, except only for the RowClick which does not help.
+	protected void gridNext_ItemCommand(object source, GridCommandEventArgs e)
   {
     if (e.CommandName == RadGrid.DeleteCommandName)
     {
@@ -161,13 +178,99 @@ public partial class Frames_AdminWorkflow : BaseFramePage
 
   protected void cmbNewStatus_SelectedIndexChanged(object o, RadComboBoxSelectedIndexChangedEventArgs e)
   {
-    if (cmbNewStatus.SelectedIndex < 1) return;
-    TicketNextStatuses ticketNextStatuses = new TicketNextStatuses(UserSession.LoginUser);
-    TicketNextStatus ticketNextStatus = ticketNextStatuses.AddNewTicketNextStatus();
-    ticketNextStatus.CurrentStatusID = GetSelectedStatusID();
-    ticketNextStatus.NextStatusID = int.Parse(cmbNewStatus.SelectedValue);
-    ticketNextStatus.Position = ticketNextStatuses.GetMaxPosition(ticketNextStatus.CurrentStatusID) + 1;
-    ticketNextStatuses.Save();
-    LoadNextStatuses(GetSelectedStatusID());
+	if (_nextStatusSelected > 0)
+	{
+		TicketNextStatuses ticketNextStatuses = new TicketNextStatuses(UserSession.LoginUser);
+		TicketNextStatus ticketNextStatus = ticketNextStatuses.AddNewTicketNextStatus();
+		ticketNextStatus.CurrentStatusID = GetSelectedStatusID();
+		ticketNextStatus.NextStatusID = _nextStatusSelected;
+		ticketNextStatus.Position = ticketNextStatuses.GetMaxPosition(ticketNextStatus.CurrentStatusID) + 1;
+		ticketNextStatuses.Save();
+		LoadNextStatuses(GetSelectedStatusID());
+	}
   }
+
+	protected void gridNext_ItemDataBound(object sender, GridItemEventArgs e)
+	{
+		if (e.Item is GridDataItem)
+		{
+			int nextStatusId = (int)e.Item.OwnerTableView.DataKeyValues[e.Item.ItemIndex]["TicketNextStatusID"];
+
+			GridDataItem dataItem = (GridDataItem)e.Item;
+			ImageButton deleteButton = (ImageButton)dataItem["columnDelete"].Controls[0];
+			deleteButton.Attributes.Add("onclick", string.Format("Delete('{0}');", nextStatusId));
+			ImageButton upButton = (ImageButton)dataItem["columnMoveUp"].Controls[0];
+			upButton.Attributes.Add("onclick", string.Format("MoveUp('{0}');", nextStatusId));
+			ImageButton downButton = (ImageButton)dataItem["columnMoveDown"].Controls[0];
+			downButton.Attributes.Add("onclick", string.Format("MoveDown('{0}');", nextStatusId));
+		}
+	}
+
+	[WebMethod]
+	public static bool MoveUp(int nextStatusId)
+	{
+		bool moved = false;
+
+		if (!UserSession.CurrentUser.IsSystemAdmin) return moved;
+
+
+		try
+		{
+			TicketNextStatuses statuses = new TicketNextStatuses(UserSession.LoginUser);
+			statuses.MovePositionUp(nextStatusId);
+			moved = true;
+		}
+		catch (Exception ex)
+		{
+			_log.ErrorFormat("AdminWorkflow.MoveUp: {0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace);
+			moved = false;
+		}
+		
+		
+		return moved;
+	}
+
+	[WebMethod]
+	public static bool MoveDown(int nextStatusId)
+	{
+		bool moved = false;
+
+		if (!UserSession.CurrentUser.IsSystemAdmin) return moved;
+
+		try
+		{
+			TicketNextStatuses statuses = new TicketNextStatuses(UserSession.LoginUser);
+			statuses.MovePositionDown(nextStatusId);
+			moved = true;
+		}
+		catch (Exception ex)
+		{
+			_log.ErrorFormat("AdminWorkflow.MoveDown: {0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace);
+			moved = false;
+		}
+
+		return moved;
+	}
+
+	[WebMethod]
+	public static bool Delete(int nextStatusId)
+	{
+		bool deleted = false;
+
+		if (!UserSession.CurrentUser.IsSystemAdmin) return deleted;
+
+		try
+		{
+			TicketNextStatuses statuses = new TicketNextStatuses(UserSession.LoginUser);
+			statuses.DeleteFromDB(nextStatusId);
+			deleted = true;
+		}
+		catch (Exception ex)
+		{
+			_log.ErrorFormat("AdminWorkflow.Delete: {0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace);
+			deleted = false;
+		}
+
+		return deleted;
+	}
 }
