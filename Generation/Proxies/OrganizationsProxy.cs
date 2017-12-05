@@ -38,7 +38,7 @@ namespace TeamSupport.Data
     [DataMember] public int? DefaultPortalGroupID { get; set; }
     [DataMember] public int? DefaultSupportGroupID { get; set; }
     [DataMember] public int? DefaultSupportUserID { get; set; }
-    [DataMember] public ProductType ProductType { get; set; }
+    [DataMember] public int ProductType { get; set; }
     [DataMember] public int? ParentID { get; set; }
     [DataMember] public Guid WebServiceID { get; set; }
     [DataMember] public Guid SystemEmailID { get; set; }
@@ -67,7 +67,6 @@ namespace TeamSupport.Data
     [DataMember] public string CultureName { get; set; }
     [DataMember] public bool TimedActionsRequired { get; set; }
     [DataMember] public bool? MatchEmailSubject { get; set; }
-    [DataMember] public bool? MarkSpam { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
     [DataMember] public string PrimaryInterest { get; set; }
@@ -96,8 +95,8 @@ namespace TeamSupport.Data
     [DataMember] public int AvgTimeToClose { get; set; }
     [DataMember] public int CustDisIndex { get; set; }
     [DataMember] public bool SlaInitRespAnyAction { get; set; }
-    [DataMember] public FontFamily FontFamily { get; set; }
-    [DataMember] public FontSize FontSize { get; set; }
+    [DataMember] public int FontFamily { get; set; }
+    [DataMember] public int FontSize { get; set; }
     [DataMember] public bool ShowGroupMembersFirstInTicketAssignmentList { get; set; }
     [DataMember] public bool UpdateTicketChildrenGroupWithParent { get; set; }
     [DataMember] public bool ReplyToAlternateEmailAddresses { get; set; }
@@ -122,14 +121,18 @@ namespace TeamSupport.Data
     [DataMember] public bool DisableSupportLogin { get; set; }
     [DataMember] public string NoAttachmentsInOutboundExcludeProductLine { get; set; }
     [DataMember] public bool UseWatson { get; set; }
-
+    [DataMember] public bool? MarkSpam { get; set; }
+    [DataMember] public int APIRequestMinuteLimit { get; set; }
+          
   }
-
+  
   public partial class Organization : BaseItem
   {
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.APIRequestMinuteLimit = this.APIRequestMinuteLimit;
+      result.MarkSpam = this.MarkSpam;
       result.UseWatson = this.UseWatson;
       result.NoAttachmentsInOutboundExcludeProductLine = this.NoAttachmentsInOutboundExcludeProductLine;
       result.DisableSupportLogin = this.DisableSupportLogin;
@@ -183,7 +186,6 @@ namespace TeamSupport.Data
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.MatchEmailSubject = this.MatchEmailSubject;
-      result.MarkSpam = this.MarkSpam;
       result.TimedActionsRequired = this.TimedActionsRequired;
       result.CultureName = this.CultureName;
       result.UseEuropeDate = this.UseEuropeDate;
@@ -232,17 +234,17 @@ namespace TeamSupport.Data
       result.Description = this.Description;
       result.Name = this.Name;
       result.OrganizationID = this.OrganizationID;
-
+       
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
       result.BusinessDayStart = DateTime.SpecifyKind(this.BusinessDayStartUtc, DateTimeKind.Utc);
       result.BusinessDayEnd = DateTime.SpecifyKind(this.BusinessDayEndUtc, DateTimeKind.Utc);
       result.LastIndexRebuilt = DateTime.SpecifyKind(this.LastIndexRebuiltUtc, DateTimeKind.Utc);
-
-      result.DateLastIndexed = this.DateLastIndexedUtc == null ? this.DateLastIndexedUtc : DateTime.SpecifyKind((DateTime)this.DateLastIndexedUtc, DateTimeKind.Utc);
-      result.SAExpirationDate = this.SAExpirationDateUtc == null ? this.SAExpirationDateUtc : DateTime.SpecifyKind((DateTime)this.SAExpirationDateUtc, DateTimeKind.Utc);
-
+       
+      result.DateLastIndexed = this.DateLastIndexedUtc == null ? this.DateLastIndexedUtc : DateTime.SpecifyKind((DateTime)this.DateLastIndexedUtc, DateTimeKind.Utc); 
+      result.SAExpirationDate = this.SAExpirationDateUtc == null ? this.SAExpirationDateUtc : DateTime.SpecifyKind((DateTime)this.SAExpirationDateUtc, DateTimeKind.Utc); 
+       
       return result;
-    }
+    }	
   }
 }
