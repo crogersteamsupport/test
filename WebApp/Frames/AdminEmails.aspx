@@ -24,7 +24,7 @@
     .dataTable td { border-top: solid 1px #A2B8CE; border-right: solid 1px #A2B8CE; padding: 10px 20px;}
     .dataTable img { cursor: pointer; }
     .dataTable th.headImage, .dataTable td.headImage { border-right: none; width: 16px; padding: 5px; }
-    
+
   </style>
 
   <script type="text/javascript" language="javascript">
@@ -44,7 +44,7 @@
       loadSettings();
       loadAltEmails();
     }
-    
+
     function getDomain()
     {
         return "@" + parent.parent.Ts.System.EmailDomain;
@@ -59,13 +59,14 @@
         $('#cbChangeStatus')[0].checked = result.ChangeStatusIfClosed;
         $('#cbAssociatePeople')[0].checked = result.AddAdditionalContacts;
         $('#cbMatchSubject')[0].checked = result.MatchEmailSubject;
+        $('#cbMarkSpam')[0].checked = result.MarkSpam;
         $('#cbForceBccPrivate')[0].checked = result.ForceBCCEmailsPrivate;
         $('#cbNeedCustForTicketMatch')[0].checked = result.NeedCustForTicketMatch;
         $('#cbReplyToAlternateEmailAddresses')[0].checked = result.ReplyToAlternateEmailAddresses;
         $('#cbAddEmailViaTS')[0].checked = !result.AddEmailViaTS;
         $find('cmbDefaultGroup').findItemByValue(result.DefaultPortalGroupID == null ? -1 : result.DefaultPortalGroupID).select();
         _organizationUseProductFamily = result.UseProductFamilies;
-        
+
         $('#divSettingsButtons').hide();
       });
     }
@@ -96,11 +97,11 @@
         html = html + '</tbody></table>';
         $('#divAltEmails').html(html);
       });
-    
+
     }
 
       function saveEmailSettings() {
-        PageMethods.SaveEmailSettings($find('textReply').get_value(), $('#cbRequireNew')[0].checked, $('#cbRequireKnown')[0].checked, $('#cbChangeStatus')[0].checked, $('#cbAssociatePeople')[0].checked, $('#cbMatchSubject')[0].checked, $('#cbForceBccPrivate')[0].checked, $('#cbNeedCustForTicketMatch')[0].checked, $('#cbReplyToAlternateEmailAddresses')[0].checked, !$('#cbAddEmailViaTS')[0].checked, $find('cmbDefaultGroup').get_value());
+        PageMethods.SaveEmailSettings($find('textReply').get_value(), $('#cbRequireNew')[0].checked, $('#cbRequireKnown')[0].checked, $('#cbChangeStatus')[0].checked, $('#cbAssociatePeople')[0].checked, $('#cbMatchSubject')[0].checked, $('#cbMarkSpam')[0].checked, $('#cbForceBccPrivate')[0].checked, $('#cbNeedCustForTicketMatch')[0].checked, $('#cbReplyToAlternateEmailAddresses')[0].checked, !$('#cbAddEmailViaTS')[0].checked, $find('cmbDefaultGroup').get_value());
       $('#divSettingsButtons').hide();
       parent.parent.Ts.System.logAction('Admin Email - Email Settings Saved');
     }
@@ -237,8 +238,8 @@
         wnd.add_close(fn);
       }
       wnd.show();
-    }    
-    
+    }
+
 
   </script>
 
@@ -275,6 +276,8 @@
           <p>When a Ticket is Closed and your Customer updates the ticket via an email, the status of the ticket will change to what you have set as the "email response" status (see <a target="_blank" href="https://help.teamsupport.com/1/en/topic/ticket-statuses">here</a> for more about ticket status).  If you do not want the status of the ticket to change under this scenario, uncheck this setting.</p>
           <asp:CheckBox ID="cbAssociatePeople" runat="server" CssClass="checkBox" Text="Associate additional people to ticket" />
           <p>Automatically associate additional people who are on the To and CC lines of an email to the ticket.</p>
+          <asp:CheckBox ID="cbMarkSpam" runat="server" CssClass="checkBox" Text="Mark emails that are identified as Spam" />
+          <p>Automatically mark emails identified as spam.</p>
           <asp:CheckBox ID="cbMatchSubject" runat="server" CssClass="checkBox" Text="Match subject to existing tickets." />
           <p>Attempt to match e-mail subject to existing ticket</p>
           <asp:CheckBox ID="cbForceBccPrivate" runat="server" CssClass="checkBox" Text="Force Emails on BCC line to be private." />
@@ -292,7 +295,7 @@
         </div>
       </div>
     </div>
-      
+
     <div class="panel">
       <div class="panel-caption">
         <span class="panel-title">Alternate Emails</span>
@@ -303,8 +306,8 @@
                 <span class="panel-caption-button-icon" style="background-image: url('../images/icons/add.png');"></span>
                 <span class="panel-caption-button-text">Add</span>
               </span>
-            </a>                  
-        </div>  
+            </a>
+        </div>
       </div>
       <div class="panel-body">
         <div id="divAltEmails">
@@ -312,8 +315,8 @@
 <p>The alternate email feature is designed to allow multiple company email address to be forwarded and routed to your TeamSupport account and have the tickets associated with a certain group, product (enterprise and bug tracker editions only) and also what type of ticket to be created (issues, bugs, etc).</p>
 <p>If your company has multiple support address that are used by your customers to contact you, you can add those here.  These may be addresses like "level1support@mycompany.com", or "escalation_team@mycompany.com".  Just click the Add icon and fill out the form.  Once you are done, you will see a dropbox email address in the grid above.  Simply forward your company's other support email addresses to these dropbox accounts to enforce the rules you have defined.</p>
       </div>
-    </div>      
-    
+    </div>
+
     <div class="panel">
       <div class="panel-caption">
         <span class="panel-title">Email Templates</span><div class="panel-caption-cap">
@@ -324,14 +327,14 @@
           <label for="cmbTemplate" class="text">Select an Email Template</label>
           <telerik:RadComboBox ID="cmbTemplate" runat="server" Width="250px" CssClass="text" OnClientSelectedIndexChanged="cmbTemplate_OnClientSelectedIndexChanged" OnClientSelectedIndexChanging="cmbTemplate_OnClientSelectedIndexChanging" OnClientLoad="cmbTemplate_OnClientLoad">
           </telerik:RadComboBox>
-            <telerik:RadComboBox 
-                ID="cmbProductFamily" 
-                runat="server" 
-                Width="250px" 
-                CssClass="ProductFamilyList" 
+            <telerik:RadComboBox
+                ID="cmbProductFamily"
+                runat="server"
+                Width="250px"
+                CssClass="ProductFamilyList"
                 Visible="false"
-                OnClientSelectedIndexChanged="cmbProductFamily_OnClientSelectedIndexChanged" 
-                OnClientSelectedIndexChanging="cmbProductFamily_OnClientSelectedIndexChanging" 
+                OnClientSelectedIndexChanged="cmbProductFamily_OnClientSelectedIndexChanged"
+                OnClientSelectedIndexChanging="cmbProductFamily_OnClientSelectedIndexChanging"
                 OnClientLoad="cmbProductFamily_OnClientLoad">
             </telerik:RadComboBox>
              &nbsp&nbsp <a class="ts-link" href="#" onclick="resetTemplate(); return false;">Reset to Default</a>
@@ -346,7 +349,7 @@
               <telerik:RadTextBox ID="textSubject" runat="server" Width="100%"></telerik:RadTextBox>
               <p>This will be the subject of your email.</p>
             </div>
-            
+
             <asp:CheckBox ID="cbIsHtml" runat="server" CssClass="checkBox" Text="Is the body HTML?" />
             <p>This will allow you to send either HTML or plain text emails.</p>
             <asp:CheckBox ID="cbUseTemplate" runat="server" CssClass="checkBox" Text="Use the global email template." />
@@ -380,7 +383,7 @@
       </div>
     </div>
   </div>
-  
+
   <telerik:RadWindow ID="wndAltEmail" runat="server" Width="360px" Height="450px"
     Animation="None" KeepInScreenBounds="True" VisibleStatusbar="False" VisibleTitlebar="True"
     OnClientPageLoad="" Title="Alternate Email" Behaviors="Close,Move" IconUrl="../images/icons/TeamSupportLogo16.png"
@@ -412,17 +415,17 @@
           </telerik:RadTextBox>
           <p></p>
         </fieldset>
-        
+
         <div style="float: right;">
           <asp:Button ID="btnOk" runat="server" Text="OK" OnClientClick="saveAltEmail(); $find('wndAltEmail').close(); return false;" />&nbsp
           <asp:Button ID="btnCancel" runat="server" Text="Cancel" OnClientClick="$find('wndAltEmail').close(); return false;" />
         </div>
       </div>
-      
+
     </ContentTemplate>
-  </telerik:RadWindow>  
+  </telerik:RadWindow>
   </form>
-  
+
   <script type="text/javascript" language="javascript">
     function deleteAltEmail(id) {
         if (!confirm('Are you sure you would like to delete ' + id + getDomain()+'?')) return;
@@ -432,7 +435,7 @@
 
       });
     }
-  
+
     function showAltEmailDialog(id) {
       if (id != null && id.length > 0) {
         PageMethods.GetAltEmail(id, function(result) {
@@ -476,5 +479,3 @@
   </script>
 </body>
 </html>
-
-
