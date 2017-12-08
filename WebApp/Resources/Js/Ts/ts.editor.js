@@ -21,6 +21,10 @@ var initEditor = function (element, shouldResize, init, postinit) {
         {
             resizePluginCode = 'autoresize';
         }
+        var baseContent = '';
+        var FontName = '';
+        var FontSize = '';
+
         var editorOptions = {
             branding: false,
             plugins: "paste link code textcolor image imagetools moxiemanager table lists codesample " + resizePluginCode,
@@ -53,26 +57,52 @@ var initEditor = function (element, shouldResize, init, postinit) {
             },
             images_upload_url: "/Services/UserService.asmx/SaveTinyMCEPasteImage",
             setup: function (ed) {
+                ed.on('BeforeSetContent', function (e) {
+                    if (e.content == '' && !e.initial) {
+                        setTimeout(function () {
+                            var content = '<p style="{0} {1}"></p>';
+                            if (FontSize != "")
+                                content = content.replace(/\{0\}/g, "font-size: " + FontSize + ";");
+                            else
+                                content = content.replace(/\{0\}/g, "");
+                            if (FontName != "")
+                                content = content.replace(/\{1\}/g, "font-family: " + FontName + ";");
+                            else
+                                content = content.replace(/\{1\}/g, "");
+                            ed.setContent(ed.getContent() + content);
+                        }, 10);
+                    }
+                });
+
                 ed.on('init', function (e) {
                     _mainFrame.Ts.System.refreshUser(function () {
                         if (_mainFrame.Ts.System.User.FontFamilyDescription != "Unassigned") {
                             ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily));
-                            ed.getBody().style.fontFamily = GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily);
+                            FontName = GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily);
                         }
                         else if (_mainFrame.Ts.System.Organization.FontFamily != "Unassigned") {
                             ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily));
-                            ed.getBody().style.fontFamily = GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily);
+                            FontName = GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily);
                         }
 
                         if (_mainFrame.Ts.System.User.FontSize != "0") {
                             ed.execCommand("FontSize", false, GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize));
-                            ed.getBody().style.fontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize);
+                            FontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize);
                         }
+                        else if (_mainFrame.Ts.System.Organization.FontSize != "0") {
+                            ed.execCommand("FontSize", false, GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize));
+                            FontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize);
+                        }
+                        var content = '<p style="{0} {1}"></p>';
+                        if (FontSize != "")
+                            content = content.replace(/\{0\}/g, "font-size: " + FontSize + ";");
                         else
-                            if (_mainFrame.Ts.System.Organization.FontSize != "0") {
-                                ed.execCommand("FontSize", false, GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize));
-                            ed.getBody().style.fontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize);
-                        }
+                            content = content.replace(/\{0\}/g, "");
+                        if (FontName != "")
+                            content = content.replace(/\{1\}/g, "font-family: " + FontName + ";");
+                        else
+                            content = content.replace(/\{1\}/g, "");
+                        ed.setContent(ed.getContent() + content);
 
                       if(postinit) postinit();
                       // ed.focus();
