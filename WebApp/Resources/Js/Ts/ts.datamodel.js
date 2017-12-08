@@ -46,9 +46,16 @@
 
         function ensureData(from, to, loadedCallback) {
             if (req) {
-                if (req.get_executor()) req.get_executor().abort(); else req.abort();
-                for (var i = req.fromPage; i <= req.toPage; i++)
+                try {
+                    if (req.get_executor()) {
+                        req.get_executor().abort();
+                    } else {
+                        req.abort();
+                    }
+                } catch (err) { }
+                for (var i = req.fromPage; i <= req.toPage; i++) {
                     data[i * PAGESIZE] = undefined;
+                }
             }
 
             if (from < 0) { from = 0; }

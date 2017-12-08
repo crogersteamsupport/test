@@ -205,20 +205,21 @@
                 var eData = picker.element.find('input').data();
             }
 
-            if (eData.pickdate !== undefined) picker.options.pickDate = eData.pickdate;
-            if (eData.picktime !== undefined) picker.options.pickTime = eData.picktime;
-            if (eData.useminutes !== undefined) picker.options.useMinutes = eData.useminutes;
-            if (eData.useseconds !== undefined) picker.options.useSeconds = eData.useseconds;
-            if (eData.minutestepping !== undefined) picker.options.minuteStepping = eData.minutestepping;
-            if (eData.startdate !== undefined) picker.options.startDate = eData.startdate;
-            if (eData.enddate !== undefined) picker.options.endDate = eData.enddate;
-            if (eData.collapse !== undefined) picker.options.collapse = eData.collapse;
-            if (eData.language !== undefined) picker.options.language = eData.language;
-            if (eData.defaultdate !== undefined) picker.options.defaultDate = eData.defaultdate;
-            if (eData.disableddates !== undefined) picker.options.disabledDates = eData.disableddates;
-            if (eData.enableddates !== undefined) picker.options.enabledDates = eData.enableddates;
-            if (eData.icons !== undefined) picker.options.icons = eData.icons;
-            if (eData.usestrict !== undefined) picker.options.useStrict = eData.usestrict;
+                if (eData.pickdate !== undefined) picker.options.pickDate = eData.pickdate;
+                if (eData.picktime !== undefined) picker.options.pickTime = eData.picktime;
+                if (eData.useminutes !== undefined) picker.options.useMinutes = eData.useminutes;
+                if (eData.useseconds !== undefined) picker.options.useSeconds = eData.useseconds;
+                if (eData.minutestepping !== undefined) picker.options.minuteStepping = eData.minutestepping;
+                if (eData.startdate !== undefined) picker.options.startDate = eData.startdate;
+                if (eData.enddate !== undefined) picker.options.endDate = eData.enddate;
+                if (eData.collapse !== undefined) picker.options.collapse = eData.collapse;
+                if (eData.language !== undefined) picker.options.language = eData.language;
+                if (eData.defaultdate !== undefined) picker.options.defaultDate = eData.defaultdate;
+                if (eData.disableddates !== undefined) picker.options.disabledDates = eData.disableddates;
+                if (eData.enableddates !== undefined) picker.options.enabledDates = eData.enableddates;
+                if (eData.icons !== undefined) picker.options.icons = eData.icons;
+                if (eData.usestrict !== undefined) picker.options.useStrict = eData.usestrict;
+
         },
 
         place = function () {

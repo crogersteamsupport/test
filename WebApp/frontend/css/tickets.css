@@ -1,5 +1,4 @@
 
-
 .btn {
     padding:5px 10px;
     font-size:12px;
@@ -7,17 +6,12 @@
     font-family:'Roboto';
 }
 
-
 input:focus,
 select:focus,
 textarea:focus,
 button:focus {
     outline:none;
 }
-
-
-
-
 
 #menu-container {
     background-color:rgba(255,255,255,0.8);
@@ -35,10 +29,6 @@ button:focus {
     position: relative;
     top: 6px;
 }
-
-
-
-
 
 #frame-container {
     position:absolute !important;
@@ -159,16 +149,22 @@ button:focus {
 }
 #ticket-properties-area a,
 #ticket-properties-area .tagContainer a,
-#ticket-properties-area .taskContainer a,
-#ticket-properties-area .tag-item {
-    font-size:12px;
+#ticket-properties-area .taskContainer a {
     cursor:pointer;
 }
+#ticket-properties-area .tag-item {
+    font-size: 12px;
+    cursor:pointer;
+    background-color:#f4f6f8;
+    padding: 2px 3px;
+    margin-bottom: 2px;
+    border-radius: 2px;
+}
+
 #ticket-properties-area .tagContainer .glyphicon {
     font-size:11px;
     margin-right:3px;
 }
-
 
 #ticket-properties-area .selectize-input {
     padding:0px;
@@ -197,8 +193,7 @@ button:focus {
     font-size:11px;
 }
 
-#ticket-properties-area .form-horizontal.hasError,
-#ticket-properties-area .form-horizontal.hasCloseError {
+#ticket-properties-area .form-horizontal.hasError {
     border-top:1px solid rgba(255,0,0,0.2);
     border-bottom:1px solid rgba(255,0,0,0.2);
     background-color:rgba(255,0,0,0.05);
@@ -530,18 +525,4 @@ div.popover {
 
 .customFieldCategoryHeader {
     padding-left:5px;
-}
-
-
-
-
-#NewCustomerModal input {
-    border-radius:3px !important;
-    border-color:#b8b8b8 !important;
-}
-#NewCustomerModal .selectize-input {
-    background:none;
-}
-#NewCustomerModal .selectize-input:after {
-    display:none;
 }

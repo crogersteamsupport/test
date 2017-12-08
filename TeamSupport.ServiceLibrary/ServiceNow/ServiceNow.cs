@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TeamSupport.Data;
+using PusherServer;
 
 namespace TeamSupport.ServiceLibrary
 {
@@ -60,11 +61,12 @@ namespace TeamSupport.ServiceLibrary
 						{
 							foreach(TicketLinkToSnowItem ticketLink in _ticketLinks)
 							{
+								bool refreshTicket = false;
 								_ticket = Tickets.GetTicket(_loginUser, ticketLink.TicketID);
 								_log.Write(string.Format("Ticket Number: {0}", _ticket.TicketNumber));
 								_crmErrors = new CRMLinkErrors(_loginUser);
 								_crmErrors.LoadByOperationAndObjectId(_ticket.OrganizationID, Enums.GetDescription(IntegrationType.ServiceNow), Enums.GetDescription(IntegrationOrientation.IntoTeamSupport), "ticket", _ticket.TicketID.ToString());
-								bool defaultFieldsUpdated = ProcessInboundDefaultFields(jsonObject, ticketLink);
+								bool defaultFieldsUpdated = ProcessInboundDefaultFields(jsonObject, ticketLink, ref refreshTicket);
 								bool customMappingsUpdated = ProcessInboundCustomMappings(jsonObject, ticketLink);
 
 								if (defaultFieldsUpdated || customMappingsUpdated)
@@ -73,7 +75,13 @@ namespace TeamSupport.ServiceLibrary
 									ActionLogs.AddActionLog(_loginUser, ActionLogType.Update, ReferenceType.Tickets, _ticket.TicketID, actionLogDescription);
 								}
 
-								ProcessInboundAction(jsonObject);
+								bool actionAdded = ProcessInboundAction(jsonObject);
+
+								if (refreshTicket || customMappingsUpdated || actionAdded)
+								{
+									string message = string.Format("{0} updated ticket {1}.", Enums.GetDescription(IntegrationType.ServiceNow), _ticket.TicketNumber);
+									SendPusherMessage("ticket-dispatch-" + _ticket.OrganizationID, "DisplayTicketUpdate", new { ticket = _ticket.TicketNumber.ToString(), update = message });
+								}
 							}
 						}
 						else
@@ -370,7 +378,7 @@ namespace TeamSupport.ServiceLibrary
 		/// Status, Type, Product. As of right now I still don't know what the equivalent in ServiceNow is for Type and Product.
 		/// </summary>
 		/// <param name="jObject"></param>
-		private bool ProcessInboundDefaultFields(JObject jObject, TicketLinkToSnowItem ticketLink)
+		private bool ProcessInboundDefaultFields(JObject jObject, TicketLinkToSnowItem ticketLink, ref bool refreshTicket)
 		{
 			bool wasUpdated = false;
 
@@ -388,16 +396,16 @@ namespace TeamSupport.ServiceLibrary
 				}
 				
 				if (updateStatus
-					&& statuses.Count > 0
+					&& statuses.Any()
 					&& _ticket.TicketStatusID != statuses[0].TicketStatusID
-					&& (excludedTicketStatusToUpdate.Count == 0
+					&& (!excludedTicketStatusToUpdate.Any()
 						|| !excludedTicketStatusToUpdate.Contains(_ticket.TicketStatusID)))
 				{
 					_ticket.TicketStatusID = statuses[0].TicketStatusID;
 					wasUpdated = true;
 					_log.ClearCrmLinkError(_ticket.TicketID.ToString(), "Status", _crmErrors);
 				}
-				else if (updateStatus && statuses.Any() && statuses.Count > 0 && _ticket.TicketStatusID != statuses[0].TicketStatusID && excludedTicketStatusToUpdate.Contains(_ticket.TicketStatusID))
+				else if (updateStatus && statuses.Any() && _ticket.TicketStatusID != statuses[0].TicketStatusID && excludedTicketStatusToUpdate.Contains(_ticket.TicketStatusID))
 				{
 					_log.Write(string.Format("The ticket status was not updated because the status id {0} is selected in the excluded status in the Integration settings.", _ticket.TicketStatusID));
 					_log.ClearCrmLinkError(_ticket.TicketID.ToString(), "Status", _crmErrors);
@@ -415,6 +423,7 @@ namespace TeamSupport.ServiceLibrary
 						newAction.Save();
 
 						AddActionLink(newAction[0].ActionID);
+						refreshTicket = true;
 					}
 				}
 				else if (statuses.Count == 0)
@@ -433,6 +442,7 @@ namespace TeamSupport.ServiceLibrary
 			if (wasUpdated)
 			{
 				_ticket.Collection.Save();
+				refreshTicket = true;
 			}
 
 			return wasUpdated;
@@ -563,8 +573,9 @@ namespace TeamSupport.ServiceLibrary
 		/// It should only be ONE action per request. So if one is found the other shouldn't.
 		/// </summary>
 		/// <param name="jObject">The jObject parsed from the json string received from ServiceSnow</param>
-		private void ProcessInboundAction(JObject jObject)
+		private bool ProcessInboundAction(JObject jObject)
 		{
+			bool wasActionAdded = false;
 			Dictionary<string, WorkNoteComment> actions = new Dictionary<string, WorkNoteComment>();
 			var expandoConverter = new Newtonsoft.Json.Converters.ExpandoObjectConverter();
 			JToken action = jObject.SelectProperty(_privateActionKey);
@@ -619,6 +630,7 @@ namespace TeamSupport.ServiceLibrary
 
 						AddActionLink(newActions[0].ActionID, singleAction.Value.Id);
 						_log.Write(string.Format("Action created. ActionId: {0}, ServiceNow comment Id: {1}. *This will in turn create an outbound webhook that should be ignored (maybe seen below this entry)", newActions[0].ActionID, singleAction.Value.Id));
+						wasActionAdded = true;
 					}
 					else if (actionLinkSynced.Any())
 					{
@@ -626,6 +638,8 @@ namespace TeamSupport.ServiceLibrary
 					}
 				}
 			}
+
+			return wasActionAdded;
 		}
 
 		/// <summary>
@@ -900,7 +914,11 @@ namespace TeamSupport.ServiceLibrary
 							_log.Write("Added comment indicating linked incident state.");
 						}
 
-						TeamSupportUrlCheckAndCreate(incidentObject, encodedCredentials, teamSupportUrl);						
+						TeamSupportUrlCheckAndCreate(incidentObject, encodedCredentials, teamSupportUrl);
+
+						//Send pusher message to refresh ticket
+						string message = string.Format("{0} updated ticket {1}.", Enums.GetDescription(IntegrationType.ServiceNow), _ticket.TicketNumber);
+						SendPusherMessage("ticket-dispatch-" + _ticket.OrganizationID, "DisplayTicketUpdate", new { ticket = _ticket.TicketNumber.ToString(), update = message });
 					}
 				}
 			}
@@ -1148,6 +1166,24 @@ namespace TeamSupport.ServiceLibrary
 			}
 
 			return hostName + path;
+		}
+
+		private void SendPusherMessage(string channelName, string eventName, object message)
+		{
+			try
+			{
+				PusherOptions options = new PusherOptions();
+				options.Encrypted = true;
+				string pusherKey = SystemSettings.GetPusherKey();
+				string pusherAppId = SystemSettings.GetPusherAppId();
+				string pusherSecret = SystemSettings.GetPusherSecret();
+				Pusher pusher = new Pusher(pusherAppId, pusherKey, pusherSecret, options);
+				var result = pusher.Trigger(channelName, eventName, message);
+			}
+			catch (Exception ex)
+			{
+				_log.Write(string.Format("SendPusherMessage. {0}", ex.Message));
+			}
 		}
 
 		//There are at this point AT LEAST two places with the following Log class duplicated (HubSpotSources/SyncLog.cs) and other more with something similar. We need to centralize this at some point!

@@ -5,6 +5,41 @@
   <style type="text/css">
     body{background:#fff;}
   </style>
+	<script language="javascript" type="text/javascript">
+		function OnClientSelectedTicketTypeIndexChanged(sender, eventArgs) {
+			document.getElementById('<%= SelectedTicketTypeIndexHidden.ClientID %>').value = sender._selectedIndex;
+		}
+
+		function OnClientSelectedTicketStatusIndexChanged(sender, eventArgs) {
+			document.getElementById('<%= SelectedTicketStatusIndexHidden.ClientID %>').value = sender._selectedIndex;
+		}
+
+		function MoveUp(id) {
+			PageMethods.MoveUp(id, function(result) {
+				if (result) {
+					__doPostBack('<%= SelectedTicketTypeIndexHidden.ClientID %>', '');
+				}
+			});
+		}
+
+		function MoveDown(id) {
+			PageMethods.MoveDown(id, function(result) {
+				if (result) {
+					__doPostBack('<%= SelectedTicketTypeIndexHidden.ClientID %>', '');
+				}
+			});
+		}
+
+		function Delete(id) {
+			if (confirm('Are you sure you would like to delete this next ticket status?')) {
+				PageMethods.Delete(id, function(result) {
+					if (result) {
+						__doPostBack('<%= SelectedTicketTypeIndexHidden.ClientID %>', '');
+					}
+				});
+			}
+		}
+	</script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
   <telerik:RadAjaxManager ID="RadAjaxManager1" runat="server" UpdatePanelsRenderMode="Inline">
@@ -29,7 +64,7 @@
       <div>
         Ticket Type:</div>
       <div>
-        <telerik:RadComboBox ID="cmbTicketTypes" runat="server" AutoPostBack="True">
+        <telerik:RadComboBox ID="cmbTicketTypes" runat="server" AutoPostBack="True" onclientselectedindexchanged="OnClientSelectedTicketTypeIndexChanged">
           <CollapseAnimation Type="OutQuint" Duration="200"></CollapseAnimation>
         </telerik:RadComboBox>
       </div>
@@ -38,7 +73,7 @@
       <div>
         Ticket Status:</div>
       <div>
-        <telerik:RadComboBox ID="cmbStatuses" runat="server" AutoPostBack="True">
+        <telerik:RadComboBox ID="cmbStatuses" runat="server" AutoPostBack="True" onclientselectedindexchanged="OnClientSelectedTicketStatusIndexChanged">
           <CollapseAnimation Type="OutQuint" Duration="200"></CollapseAnimation>
         </telerik:RadComboBox>
       </div>
@@ -58,7 +93,7 @@
       </div>
       <div class="groupBodyWrapperDiv">
         <div class="groupBodyDiv">
-          <telerik:RadGrid ID="gridNext" runat="server" Width="100%" Height="100%" AutoGenerateColumns="False" GridLines="None" OnItemCommand="gridNext_ItemCommand" BorderWidth="0px" ShowHeader="False">
+          <telerik:RadGrid ID="gridNext" runat="server" Width="100%" Height="100%" AutoGenerateColumns="False" GridLines="None" OnItemCommand="gridNext_ItemCommand" OnItemDataBound="gridNext_ItemDataBound" BorderWidth="0px" ShowHeader="False">
             <MasterTableView DataKeyNames="TicketNextStatusID" ClientDataKeyNames="TicketNextStatusID">
               <RowIndicatorColumn>
                 <HeaderStyle Width="20px"></HeaderStyle>
@@ -102,6 +137,7 @@
     </telerik:RadComboBox>
   </telerik:RadToolTip>
 </div>
-
+	<asp:HiddenField ID="SelectedTicketTypeIndexHidden" runat="server" Value="0" />
+	<asp:HiddenField ID="SelectedTicketStatusIndexHidden" runat="server" Value="0" />
 </asp:Content>
 

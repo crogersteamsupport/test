@@ -581,6 +581,9 @@ function CreateNewActionLI() {
             return false;
         } else {
             $(this).addClass('click-disabled');
+            $("a.action-option-edit").each(function () {
+                $(this).addClass('click-disabled');
+            });
         }
         var editor = $('#action-new-editor');
         if (_suggestedSolutionDefaultInput == '') {
@@ -615,6 +618,9 @@ function CreateNewActionLI() {
             return false;
         } else {
             $(this).addClass('click-disabled');
+            $("a.action-option-edit").each(function () {
+                $(this).addClass('click-disabled');
+            });
         }
         var editor = $('#action-new-editor');
         SetupActionEditor(editor);
@@ -2431,17 +2437,17 @@ function LoadProductList(products) {
                     return '<div data-ticketid="' + _ticketID + '" data-productid="' + escape(item.value) + '" data-value="' + escape(item.value) + '" data-type="' + escape(item.data) + '" data-selectable="" data-placement="left" class="option ProductAnchor">' + escape(item.text) + '</div>';
                 }
             },
-            // plugins: {
-            //     'sticky_placeholder': {},
-            //     'no_results': {}
-            // },
+            plugins: {
+                'sticky_placeholder': {},
+                'no_results': {}
+            },
             allowEmptyOption: true,
             loadThrottle: null,
             onDropdownClose: function ($dropdown) {
                 $($dropdown).prev().find('input').blur();
             },
             closeAfterSelect: true,
-            placeholder: 'unassigned'
+            // placeholder: 'unassigned'
         });
 
         if (_ticketInfo.Ticket.ProductID == null) {
@@ -3202,16 +3208,16 @@ var AddCustomFieldEdit = function (field, parentContainer) {
             formcontainer.removeClass('hasError');
         }
         if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
-            formcontainer.addClass('hasCloseError');
+            groupContainer.addClass('hasCloseError');
             alert("This field can not be cleared in a closed ticket");
             return;
         } else {
-            formcontainer.removeClass('hasCloseError');
+            groupContainer.removeClass('hasCloseError');
         }
         if (value === null || $.trim(value) === '') {
-            formcontainer.addClass('isEmpty');
+            groupContainer.addClass('isEmpty');
         } else {
-            formcontainer.removeClass('isEmpty');
+            groupContainer.removeClass('isEmpty');
         }
         window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
             groupContainer.data('field', result);
@@ -3273,16 +3279,16 @@ var AddCustomFieldDate = function (field, parentContainer) {
                   formcontainer.removeClass('hasError');
               }
               if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
-                  formcontainer.addClass('hasCloseError');
+                  groupContainer.addClass('hasCloseErrory');
                   alert("This field can not be cleared in a closed ticket");
                   return;
               } else {
-                  formcontainer.removeClass('hasCloseError');
+                  groupContainer.removeClass('hasCloseErrory');
               }
               if (value === null || $.trim(value) === '') {
-                  formcontainer.addClass('isEmpty');
+                  groupContainer.addClass('isEmpty');
               } else {
-                  formcontainer.removeClass('isEmpty');
+                  groupContainer.removeClass('isEmpty');
               }
 
               window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
@@ -3310,6 +3316,7 @@ var AddCustomFieldDate = function (field, parentContainer) {
     if (field.Value === null || $.trim(field.Value) === '') {
         formcontainer.addClass('isEmpty');
     }
+
 }
 
 var AddCustomFieldDateTime = function (field, parentContainer) {
@@ -3347,16 +3354,16 @@ var AddCustomFieldDateTime = function (field, parentContainer) {
                 formcontainer.removeClass('hasError');
             }
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
-                formcontainer.addClass('hasCloseError');
+                groupContainer.addClass('hasCloseErrory');
                 alert("This field can not be cleared in a closed ticket");
                 return;
             } else {
-                formcontainer.removeClass('hasCloseError');
+                groupContainer.removeClass('hasCloseErrory');
             }
             if (value === null || $.trim(value) === '') {
-                formcontainer.addClass('isEmpty');
+                  groupContainer.addClass('isEmpty');
             } else {
-                formcontainer.removeClass('isEmpty');
+                groupContainer.removeClass('isEmpty');
             }
 
             window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
@@ -3421,16 +3428,16 @@ var AddCustomFieldTime = function (field, parentContainer) {
                 formcontainer.removeClass('hasError');
             }
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
-                formcontainer.addClass('hasCloseError');
+                groupContainer.addClass('hasCloseErrory');
                 alert("This field can not be cleared in a closed ticket");
                 return;
             } else {
-                formcontainer.removeClass('hasCloseError');
+                groupContainer.removeClass('hasCloseErrory');
             }
             if (value === null || $.trim(value) === '') {
-                formcontainer.addClass('isEmpty');
+                groupContainer.addClass('isEmpty');
             } else {
-                formcontainer.removeClass('isEmpty');
+                groupContainer.removeClass('isEmpty');
             }
 
             window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
@@ -3450,13 +3457,13 @@ var AddCustomFieldTime = function (field, parentContainer) {
         formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
-        formcontainer.addClass('hasCloseError');
+        groupContainer.addClass('hasCloseError');
     }
     if (field.IsRequiredToClose) {
-        formcontainer.addClass('isRequiredToClose');
+        groupContainer.addClass('isRequiredToClose');
     }
     if (field.Value === null || $.trim(field.Value) === '') {
-        formcontainer.addClass('isEmpty');
+        groupContainer.addClass('isEmpty');
     }
 }
 
@@ -3499,16 +3506,16 @@ var AddCustomFieldNumber = function (field, parentContainer) {
             formcontainer.removeClass('hasError');
         }
         if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
-            formcontainer.addClass('hasCloseError');
+            groupContainer.addClass('hasCloseError');
             alert("This field can not be cleared in a closed ticket");
             return;
         } else {
-            formcontainer.removeClass('hasCloseError');
+            groupContainer.removeClass('hasCloseError');
         }
         if (value === null || $.trim(value) === '') {
-            formcontainer.addClass('isEmpty');;
+            groupContainer.addClass('isEmpty');;
         } else {
-            formcontainer.removeClass('isEmpty');
+            groupContainer.removeClass('isEmpty');
         }
         window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
             groupContainer.data('field', result);
@@ -3522,13 +3529,13 @@ var AddCustomFieldNumber = function (field, parentContainer) {
         formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
-        formcontainer.addClass('hasCloseError');
+        groupContainer.addClass('hasCloseError');
     }
     if (field.IsRequiredToClose) {
-        formcontainer.addClass('isRequiredToClose');
+        groupContainer.addClass('isRequiredToClose');
     }
     if (field.Value === null || $.trim(field.Value) === '') {
-        formcontainer.addClass('isEmpty');
+        groupContainer.addClass('isEmpty');
     }
 }
 
@@ -3562,16 +3569,16 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
                 formcontainer.removeClass('hasError');
             }
             if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && field.IsFirstIndexSelect == true && value == "") {
-                formcontainer.addClass('hasCloseError');
+                groupContainer.addClass('hasCloseError');
                 alert("This field can not be cleared in a closed ticket");
                 return;
             } else {
-                formcontainer.removeClass('hasCloseError');
+                groupContainer.removeClass('hasCloseError');
             }
             if (field.IsFirstIndexSelect == true && value == "") {
-                formcontainer.addClass('isEmpty');
+                groupContainer.addClass('isEmpty');
             } else {
-                formcontainer.removeClass('isEmpty');
+                groupContainer.removeClass('isEmpty');
             }
             window.parent.Ts.System.logAction('Ticket - Custom Value Set');
             window.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
@@ -3594,13 +3601,13 @@ var AddCustomFieldSelect = function (field, parentContainer, loadConditionalFiel
         formcontainer.addClass('hasError');
     }
     if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && ((field.IsFirstIndexSelect == true && (items[0] == field.Value || field.Value == null || $.trim(field.Value) === '')) || (field.Value == null || $.trim(field.Value) === ''))) {
-        formcontainer.addClass('hasCloseError');
+        groupContainer.addClass('hasCloseError');
     }
     if (field.IsRequiredToClose) {
-        formcontainer.addClass('isRequiredToClose');
+        groupContainer.addClass('isRequiredToClose');
     }
     if ((field.IsFirstIndexSelect == true && items[0] == field.Value) || field.Value == null || $.trim(field.Value) === '') {
-        formcontainer.addClass('isEmpty');
+        groupContainer.addClass('isEmpty');
     }
 
     $('.' + field.CustomFieldID + 'children').remove();
@@ -3670,8 +3677,6 @@ var SetupStatusField = function (StatusId) {
             onChange: function (value) {
                 if (value !== _ticketCurrStatus.toString()) {
                     var status = window.parent.Ts.Cache.getTicketStatus(value);
-                    teamsupport.tools.journal(status);
-                    teamsupport.tools.trace();
                     isFormValidToClose(status.IsClosed, function (isValid) {
                         if (isValid == true) {
                             window.parent.Ts.Services.Tickets.SetTicketStatus(_ticketID, value, function (result) {
@@ -4681,7 +4686,6 @@ function CreateTimeLineDelegates() {
         } else {
             $(this).addClass('click-disabled');
         }
-
         var self = $(this);
         var action = self.closest('div.action').data().action;
         var editor = $('#action-new-editor');
