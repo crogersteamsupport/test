@@ -205,7 +205,6 @@
                 var eData = picker.element.find('input').data();
             }
 
-            if (eData) {
                 if (eData.pickdate !== undefined) picker.options.pickDate = eData.pickdate;
                 if (eData.picktime !== undefined) picker.options.pickTime = eData.picktime;
                 if (eData.useminutes !== undefined) picker.options.useMinutes = eData.useminutes;
@@ -220,7 +219,7 @@
                 if (eData.enableddates !== undefined) picker.options.enabledDates = eData.enableddates;
                 if (eData.icons !== undefined) picker.options.icons = eData.icons;
                 if (eData.usestrict !== undefined) picker.options.useStrict = eData.usestrict;
-            }
+
         },
 
         place = function () {
