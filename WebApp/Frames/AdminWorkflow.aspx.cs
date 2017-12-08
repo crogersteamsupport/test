@@ -129,7 +129,7 @@ public partial class Frames_AdminWorkflow : BaseFramePage
 
 	string postBackControl = this.Request.Params["__EVENTTARGET"];
 
-	if (postBackControl.EndsWith("cmbNewStatus"))
+	if (!string.IsNullOrEmpty(postBackControl) && postBackControl.EndsWith("cmbNewStatus"))
 	{
 		int.TryParse(cmbNewStatus.SelectedValue, out _nextStatusSelected);
 	}
