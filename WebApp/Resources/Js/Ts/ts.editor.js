@@ -22,6 +22,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
             resizePluginCode = 'autoresize';
         }
         var editorOptions = {
+            cache_suffix: "?v=1513012903",
             branding: false,
             plugins: "paste link code textcolor image imagetools moxiemanager table lists codesample " + resizePluginCode,
         	toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox insertUser recordVideo recordScreenTok | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
