@@ -545,7 +545,7 @@ Namespace TeamSupport
 							ClearCrmLinkError(crmLinkError)
 
 							Dim message As String = String.Format("{0} updated ticket {1}.", Enums.GetDescription(IntegrationType.TFS), ticket.TicketNumber)
-							SendPusherMessage("ticket-dispatch-" + ticket.OrganizationID, "DisplayTicketUpdate", New With {.ticket = ticket.TicketNumber.ToString(), .update = message})
+							SendPusherMessage("ticket-dispatch-" + ticket.OrganizationID.ToString(), "DisplayTicketUpdate", New With {.ticket = ticket.TicketNumber.ToString(), .update = message})
 						Catch ex As Exception
 							AddLog(ex.ToString() + ex.StackTrace,
 								LogType.Report,
@@ -1369,7 +1369,7 @@ Namespace TeamSupport
 
 									If (ticket.Any()) Then
 										Dim message As String = String.Format("{0} updated ticket {1}.", Enums.GetDescription(IntegrationType.TFS), ticket(0).TicketNumber)
-										SendPusherMessage("ticket-dispatch-" + ticket(0).OrganizationID, "DisplayTicketUpdate", New With {.ticket = ticket(0).TicketNumber.ToString(), .update = message})
+										SendPusherMessage("ticket-dispatch-" + ticket(0).OrganizationID.ToString(), "DisplayTicketUpdate", New With {.ticket = ticket(0).TicketNumber.ToString(), .update = message})
 									End If
 								End If
 							Catch ex As Exception
