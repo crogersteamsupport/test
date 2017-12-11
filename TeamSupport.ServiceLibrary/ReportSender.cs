@@ -618,48 +618,60 @@ namespace TeamSupport.ServiceLibrary
                     {
                         try
                         {
-                            string zipFileName = reportAttachmentFile.Replace(".csv", ".zip");
+							float fileSizeMB = 0;
 
-                            if (File.Exists(zipFileName))
-                            {
-                                try
-                                {
-                                    File.Delete(zipFileName);
-                                }
-                                catch (IOException ioEx)
-                                {
-                                    DateTime zipFileNamesuffix = scheduledReport.NextRun != null ? (DateTime)scheduledReport.NextRun : DateTime.UtcNow;
-                                    zipFileName = zipFileName.Replace(".zip", string.Format("_{0}.zip", zipFileNamesuffix.ToString("yyyyMMddHHmm")));
-                                    Log("Previous zip file could not be deleted. Naming the new one: ");
-                                    Log(ioEx.Message + Environment.NewLine + ioEx.StackTrace);
-                                }
-                            }
+							if (File.Exists(reportAttachmentFile))
+							{
+								long fileSizeBytes = new FileInfo(reportAttachmentFile).Length;
+								fileSizeMB = (fileSizeBytes / 1024f) / 1024f;
+							}
 
-                            using (ZipArchive zip = ZipFile.Open(zipFileName, ZipArchiveMode.Create))
-                            {
-                                zip.CreateEntryFromFile(reportAttachmentFile, Path.GetFileName(reportAttachmentFile));
-                            }
+							//If the report is 2M or less, don't zip it.  If over 2M, zip it.
+							if (fileSizeMB > 2)
+							{
+								string zipFileName = reportAttachmentFile.Replace(".csv", ".zip");
 
-                            if (File.Exists(zipFileName))
-                            {
-                                Log("CSV File zipped", LogType.Both);
+								if (File.Exists(zipFileName))
+								{
+									try
+									{
+										File.Delete(zipFileName);
+									}
+									catch (IOException ioEx)
+									{
+										DateTime zipFileNamesuffix = scheduledReport.NextRun != null ? (DateTime)scheduledReport.NextRun : DateTime.UtcNow;
+										zipFileName = zipFileName.Replace(".zip", string.Format("_{0}.zip", zipFileNamesuffix.ToString("yyyyMMddHHmm")));
+										Log("Previous zip file could not be deleted. Naming the new one: ");
+										Log(ioEx.Message + Environment.NewLine + ioEx.StackTrace);
+									}
+								}
 
-                                try
-                                {
-                                    File.Delete(reportAttachmentFile);
-                                }
-                                catch (IOException ioEx)
-                                {
-                                    Log("CSV file could not be deleted.");
-                                    Log(ioEx.Message + Environment.NewLine + ioEx.StackTrace);
-                                }
+								using (ZipArchive zip = ZipFile.Open(zipFileName, ZipArchiveMode.Create))
+								{
+									zip.CreateEntryFromFile(reportAttachmentFile, Path.GetFileName(reportAttachmentFile));
+								}
 
-                                reportAttachmentFile = zipFileName;
-                            }
-                            else
-                            {
-                                Log("CSV zipped file was not found!");
-                            }
+								if (File.Exists(zipFileName))
+								{
+									Log("CSV File zipped", LogType.Both);
+
+									try
+									{
+										File.Delete(reportAttachmentFile);
+									}
+									catch (IOException ioEx)
+									{
+										Log("CSV file could not be deleted.");
+										Log(ioEx.Message + Environment.NewLine + ioEx.StackTrace);
+									}
+
+									reportAttachmentFile = zipFileName;
+								}
+								else
+								{
+									Log("CSV zipped file was not found!");
+								}
+							}
                         }
                         catch (Exception ex)
                         {
