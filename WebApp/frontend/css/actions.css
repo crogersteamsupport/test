@@ -95,8 +95,14 @@ div.action .specifics .details span {
     word-wrap:break-word;
 }
 div.action .specifics .details {
-    overflow-x: auto;
+    overflow-x:auto;
 }
+div.action .specifics .details,
+div.action .specifics .details p {
+    font-family:Helvetica;
+    font-size:12pt;
+}
+
 div.action .specifics .details img {
     max-width:100% !important;
 }
