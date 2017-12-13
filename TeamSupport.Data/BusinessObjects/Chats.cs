@@ -31,7 +31,7 @@ namespace TeamSupport.Data
 
 					if ((message.Message.Trim().IndexOf("<img ") == 0 && message.Message.Trim().IndexOf("<script ") < 0 && message.Message.Trim().IndexOf(" onload=") < 0)
 						|| (message.Message.Trim().IndexOf("/chatattachments/") > 0 && message.Message.Trim().IndexOf("<script ") < 0 && message.Message.Trim().IndexOf(" onload=") < 0)
-						|| (message.Message.Trim().IndexOf("<a target=\"_blank\" href=") == 0 && message.Message.Trim().IndexOf("<script ") < 0 && message.Message.Trim().IndexOf(" onload=") < 0))
+						|| (message.Message.Trim().IndexOf("<a target=\"_blank\" href=") >= 0 && message.Message.Trim().IndexOf("<script ") < 0 && message.Message.Trim().IndexOf(" onload=") < 0))
 					{
 						messageText = message.Message;
 					}
