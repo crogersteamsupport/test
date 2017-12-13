@@ -624,7 +624,6 @@ TicketGrid = function (options) {
     var data = [];
     this._loader = new TeamSupport.DataModel(getData, getItemMetadata);
     var loader = this._loader;
-    console.log(loader);
 
     function getData (from, to, sortcol, isdesc, callback) {
         var params = { "reportID":
