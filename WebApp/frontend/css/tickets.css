@@ -96,6 +96,10 @@ button:focus {
     border-left:2px solid rgba(150,150,150,0.1);
 }
 
+#ticket-title-label {
+    font-size:16px;
+}
+
 #ticket-properties-area {
     padding:10px 0px 0px 0px;
     margin-bottom:20px;
