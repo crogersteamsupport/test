@@ -76,7 +76,6 @@ namespace TeamSupport.Data
             return userID == null ? -1 : (int)userID;
         }
 
-		//vv
 		public static List<string> GetHTMLGlobalEventAttributes()
 		{
 			List<string> events = new List<string>
