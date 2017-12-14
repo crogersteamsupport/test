@@ -198,7 +198,7 @@ button:focus {
 }
 
 #ticket-properties-area .form-horizontal.hasError,
-#ticket-properties-area .form-horizontal.isRequiredToClose.isEmpty {
+#ticket-properties-area .form-horizontal.isRequiredToClose.hasCloseError {
     border-top:1px solid rgba(255,0,0,0.2);
     border-bottom:1px solid rgba(255,0,0,0.2);
     background-color:rgba(255,0,0,0.05);
