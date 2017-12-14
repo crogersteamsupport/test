@@ -13,9 +13,9 @@
             <a class="glyphicon glyphicon-pushpin TeamSupportBlue ticket-action-pinned hidden" aria-hidden="true"></a>
             {{/if}}
 
-            <a data-userid="{{item.CreatorID}}" data-ticketid="{{item.TicketID}}" data-name="{{item.CreatorName}}" class="TeamSupportBlue UserAnchor">{{item.CreatorName}}</a><br>
-            <div class="text-muted">{{item.MessageType}} added on {{FormatDateTime item.DateCreated}}</div><br />
-            <div class="text-muted">{{TimeSpent}} <span id="watson-{{item.RefID}}">{{Watson}}</span></div><br />
+            <div><a data-userid="{{item.CreatorID}}" data-ticketid="{{item.TicketID}}" data-name="{{item.CreatorName}}" class="TeamSupportBlue UserAnchor">{{item.CreatorName}}</a></div>
+            <div class="text-muted">{{item.MessageType}} added on {{FormatDateTime item.DateCreated}}</div>
+            <div class="text-muted">{{TimeSpent}} <span id="watson-{{item.RefID}}">{{Watson}}</span></div>
         </div>
         <div class="extras flexpull">
             <div class="flexbox">
