@@ -119,7 +119,7 @@ $(document).ready(function () {
                   .data('taskID', task.ParentID)
                   .text(task.TaskParentName + ' >')
                   .appendTo(parentName)
-                    
+
                 $('.header-nav').prepend(parentName);
 
                 $('.btn-toolbar').addClass('subtaskButtonsAdjustement');
@@ -238,6 +238,7 @@ $(document).ready(function () {
                             link.text(ellipseString(associations[i].TicketNumber + ': ' + associations[i].TicketName, 100));
                             link.attr('href', window.parent.parent.Ts.System.AppDomain + '?TicketID=' + associations[i].RefID);
                             link.attr('target', '_blank');
+                            link.attr('ticket', associations[i].TicketNumber);
                             link.attr('onclick', 'window.parent.parent.Ts.MainPage.openTicketByID(' + associations[i].RefID + '); return false;');
                             break;
                         case window.parent.parent.Ts.ReferenceTypes.Users:
@@ -302,7 +303,7 @@ $(document).ready(function () {
                 else {
                     displayName = subtasks[i].TaskID;
                 }
-                
+
                 var row = $('<tr>').appendTo('#tblSubtasks > tbody:last');
                 var checkBoxCel = $('<td>').appendTo(row);
                 var checkBoxInput = $('<input>')
@@ -334,7 +335,7 @@ $(document).ready(function () {
                 }
 
                 //$('<tr>').html('<td>' + subtasks[i].Name + '</td><td>' + subtasks[i].UserID + '</td><td>' + subtasks[i].DueDate.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '</td>')
-                
+
                 //$('#tblHistory tr:last').after('<tr><td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td></tr>');
             }
             //if (history.length == 50)
@@ -387,28 +388,30 @@ $(document).ready(function () {
     });
 
     $('#taskComplete').click(function (e) {
-        if ($(this).html() !== '<i class="fa fa-check"></i>')
-        {
+        if ($(this).html() !== '<i class="fa fa-check"></i>') {
             window.parent.parent.Ts.Services.Task.GetIncompleteSubtasks(_taskID, function (result) {
-                if (result)
-                {
+                if (result) {
                     alert('Please complete all the subtasks before completing this task.')
-                }
-                else
-                {
+                } else {
                     window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_taskID, true, function (result) {
                         top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
-                            $('#fieldComplete').text("Yes");
-                            $('#taskComplete').html("<i class='fa fa-check'></i>");
-                            $('#taskComplete').addClass("completedButton");
-                            $('#taskComplete').removeClass("emptyButton");
-                            $('#taskComplete').attr("data-original-title", "Uncomplete this task");
-                            $('#taskComplete').tooltip('fixTitle');
-                            $('#reminderDateGroup').hide();
-                            _completeCommentTaskID = _taskID;
-                            $('#modalTaskComment').modal('show');
-                            $('#fieldCompletionDate').html(result.DateCompleted == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(result.DateCompleted).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
-                            $('#fieldCompletionComment').text(!result.CompletionComment ? "None" : result.CompletionComment);
+                        $('#fieldComplete').text("Yes");
+                        $('#taskComplete').html("<i class='fa fa-check'></i>");
+                        $('#taskComplete').addClass("completedButton");
+                        $('#taskComplete').removeClass("emptyButton");
+                        $('#taskComplete').attr("data-original-title","Uncomplete this task");
+                        $('#taskComplete').tooltip('fixTitle');
+                        $('#reminderDateGroup').hide();
+                        _completeCommentTaskID = _taskID;
+                        $('#modalTaskComment').modal('show');
+                        $('#fieldCompletionDate').html(result.DateCompleted == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(result.DateCompleted).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
+                        $('#fieldCompletionComment').text(!result.CompletionComment ? "None" : result.CompletionComment);
+                        $('.associations').children('a').each(function () {
+                            var ticket = $(this).attr('ticket');
+                            if (ticket) {
+                                parent.document.getElementById('ticket-' + ticket).contentWindow.taskCheckBox(_taskID, true);
+                            }
+                        });
                     },
                     function (error) {
                         header.show();
@@ -420,9 +423,7 @@ $(document).ready(function () {
                 header.show();
                 alert('There was an error getting the subtasks.');
             });
-        }
-        else
-        {
+        } else {
             window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_taskID, false, function (result) {
                 top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
                 $('#fieldComplete').text("No");
@@ -433,10 +434,16 @@ $(document).ready(function () {
                 $('#taskComplete').tooltip('fixTitle');
                 $('#reminderDateGroup').show();
                 $('.completedData').hide();
+                $('.associations').children('a').each(function () {
+                    var ticket = $(this).attr('ticket');
+                    if (ticket) {
+                        parent.document.getElementById('ticket-' + ticket).contentWindow.taskCheckBox(_taskID, false);
+                    }
+                });
             },
             function (error) {
                 header.show();
-                alert('There was an error saving the task is complete.');
+                alert('There was an error saving the task as complete.');
             });
         }
     });

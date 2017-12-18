@@ -773,7 +773,7 @@ Ts.Pages.Main.prototype = {
 				if (pusherChatRequests == null || (pusherChatRequests != null && pusherChatRequests.connection.state == "disconnected")) {
 					pusherChatRequests = new Pusher(key);
 				}
-                
+
 				request_channel = pusherChatRequests.subscribe('chat-requests-' + chatGUID);
 
                 request_channel.bind('new-chat-request', function (data) {
@@ -1045,23 +1045,11 @@ Ts.Pages.Main.prototype = {
                     var ticketID = tab.getId();
                     div = $('.main-tab-content .main-ticket-' + ticketID);
                     if (div.length < 1) {
-                        div = $('<div>')
-              .addClass('main-tab-content-item main-tab-ticket main-ticket-' + ticketID)
-              .appendTo('.main-tab-content');
-
-                        $('<iframe>')
-              .attr('frameborder', 0)
-              .attr('scrolling', 'no')
-				  .attr('webkitallowfullscreen', '')
-				  .attr('mozallowfullscreen', '')
-				  .attr('allowfullscreen','')
-              .addClass('ticketIframe')
-              .appendTo(div)
-                      //.attr('src', 'vcr/1_9_0/Pages/Ticket.html?TicketNumber=' + ticketID);
-                      .attr('src', (mainFrame.Ts.System.User.IsClassicView) ? 'vcr/1_9_0/Pages/TicketV2.html?TicketNumber=' + ticketID : 'vcr/1_9_0/Pages/Ticket.html?TicketNumber=' + ticketID);
+                        div = $('<div>').addClass('main-tab-content-item main-tab-ticket main-ticket-' + ticketID).appendTo('.main-tab-content');
+                        $('<iframe>').attr('id', 'ticket-' + ticketID).attr('frameborder', 0).attr('scrolling','no').attr('webkitallowfullscreen', '').attr('mozallowfullscreen', '').attr('allowfullscreen','').addClass('ticketIframe').appendTo(div).attr('src', (mainFrame.Ts.System.User.IsClassicView) ? 'vcr/1_9_0/Pages/TicketV2.html?TicketNumber=' + ticketID : 'vcr/1_9_0/Pages/Ticket.html?TicketNumber=' + ticketID);
+                        //.attr('src', 'vcr/1_9_0/Pages/Ticket.html?TicketNumber=' + ticketID);
                     } else {
                         div.show();
-
                         try {
                             if (mainFrame.Ts.TicketViewing != 0) {
                                 if ($('.main-ticket-' + mainFrame.Ts.TicketViewing).length > 0) {
@@ -1073,9 +1061,7 @@ Ts.Pages.Main.prototype = {
                         } catch (err) { }
                     }
                     $('.main-info-content').load('vcr/1_9_0/PaneInfo/ticket.html');
-
                     break;
-
 
                 case Ts.Ui.Tabs.Tab.Type.NewTicket:
                     div = $('.main-tab-content .main-ticket-new');
