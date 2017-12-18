@@ -5783,10 +5783,9 @@ function Unsubscribe() {
 
 // id is the task id, status refers to the 'checked' property.
 function taskCheckBox(id,status) {
-    var target = $('#task-' + id);
     if (status) {
-        target.attr('checked', true);
+        document.getElementById('task-' + id).checked = true;
     } else {
-        target.attr('checked', false);
+        document.getElementById('task-' + id).checked = false;
     }
 }

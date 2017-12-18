@@ -409,7 +409,10 @@ $(document).ready(function () {
                         $('.associations').children('a').each(function () {
                             var ticket = $(this).attr('ticket');
                             if (ticket) {
-                                parent.document.getElementById('ticket-' + ticket).contentWindow.taskCheckBox(_taskID, true);
+                                var frame = parent.document.getElementById('ticket-' + ticket);
+                                if (frame) {
+                                    frame.contentWindow.taskCheckBox(_taskID, true);
+                                }
                             }
                         });
                     },
@@ -437,7 +440,10 @@ $(document).ready(function () {
                 $('.associations').children('a').each(function () {
                     var ticket = $(this).attr('ticket');
                     if (ticket) {
-                        parent.document.getElementById('ticket-' + ticket).contentWindow.taskCheckBox(_taskID, false);
+                        var frame = parent.document.getElementById('ticket-' + ticket);
+                        if (frame) {
+                            frame.contentWindow.taskCheckBox(_taskID, false);
+                        }
                     }
                 });
             },
