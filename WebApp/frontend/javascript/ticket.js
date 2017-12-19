@@ -3087,7 +3087,7 @@ function AddTasks(tasks) {
                 _TaskName += ' for ' + tasks[i].AssignedTo;
             }
             var reminderElem = PrependTask(tasksDiv, tasks[i].TaskID, _TaskName, tasks[i]);
-        };
+        }
     }
 }
 
@@ -5779,4 +5779,9 @@ function Unsubscribe() {
     var orgID = top.Ts.System.Organization.OrganizationID;
     var presenceChannelName = 'presence-ticket-' + _ticketNumber + '-org-' + orgID;
     top.Ts.Pusher.unsubscribe(presenceChannelName);
+}
+
+// id is the task id, status refers to the 'checked' property.
+function taskCheckBox(id,status = true) {
+    document.getElementById('task-' + id).checked = (status) ? true : false;
 }
