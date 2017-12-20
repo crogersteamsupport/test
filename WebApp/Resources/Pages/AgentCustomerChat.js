@@ -77,7 +77,7 @@ $(document).ready(function () {
 	SetupTOK();
 
 	parent.Ts.Services.Chat.GetHTMLGlobalEventAttributes(function (data) {
-		_eventsList = data.split(',');
+		_eventsList = data;
 	});
 
     function GetChatSettings(isInit) {
