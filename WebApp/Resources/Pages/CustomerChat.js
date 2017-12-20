@@ -214,7 +214,7 @@ function createMessageElement(messageData, direction) {
 
 	if ((messageData.Message.trim().indexOf("<img ") == 0 && !containsProhibitedText)
 		|| (messageData.Message.trim().indexOf("/chatattachments/") > 0 && !containsProhibitedText)
-		|| (messageData.Message.trim().indexOf('<a target="_blank" href=') >= 0 && !containsProhibitedText) {
+		|| (messageData.Message.trim().indexOf('<a target="_blank" href=') >= 0 && !containsProhibitedText)) {
 		displayMessage = messageData.Message;
 	}
 
