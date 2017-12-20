@@ -78,7 +78,7 @@ $(document).ready(function () {
 
 	IssueAjaxRequest("GetHTMLGlobalEventAttributes", null,
 		function (result) {
-			_eventsList = result.split(',');
+			_eventsList = result;
 		},
 		function (error) {
 			console.log(error)
