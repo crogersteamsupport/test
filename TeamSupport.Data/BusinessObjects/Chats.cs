@@ -23,18 +23,29 @@ namespace TeamSupport.Data
             }
 
             messages.LoadByChatID(ChatID);
+			List<string> eventsList = GetHTMLGlobalEventAttributes();
+
             foreach (ChatMessage message in messages)
             {
                 string time = message.DateCreated.ToString("h:mm");
                 string timeFormat = includeTimeStamps ? time + ": " : "";
-					string messageText = message.Message.Replace("<", "&lt;").Replace(">", "&gt;");
+				string messageText = message.Message.Replace("<", "&lt;").Replace(">", "&gt;");
 
-					if ((message.Message.Trim().IndexOf("<img ") == 0 && message.Message.Trim().IndexOf("<script ") < 0 && message.Message.Trim().IndexOf(" onload=") < 0)
-						|| (message.Message.Trim().IndexOf("/chatattachments/") > 0 && message.Message.Trim().IndexOf("<script ") < 0 && message.Message.Trim().IndexOf(" onload=") < 0)
-						|| (message.Message.Trim().IndexOf("<a target=\"_blank\" href=") == 0 && message.Message.Trim().IndexOf("<script ") < 0 && message.Message.Trim().IndexOf(" onload=") < 0))
-					{
-						messageText = message.Message;
-					}
+				bool containsProhibitedText = false;
+				int i = 0;
+
+				while (i < eventsList.Count && !containsProhibitedText)
+				{
+					containsProhibitedText = message.Message.Trim().IndexOf("<script ") >= 0 || message.Message.Trim().Contains(string.Format(" {0}=", eventsList[i]));
+					i++;
+				}
+
+				if ((message.Message.Trim().IndexOf("<img ") == 0 && !containsProhibitedText)
+					|| (message.Message.Trim().IndexOf("/chatattachments/") > 0 && !containsProhibitedText)
+					|| (message.Message.Trim().IndexOf("<a target=\"_blank\" href=") >= 0 && !containsProhibitedText))
+				{
+					messageText = message.Message;
+				}
 
                 if (message.IsNotification)
                     builder.Append(string.Format("<p class=\"chat-notification\">{0}{1}<p>", includeTimeStamps ? time + ": " : "", messageText));
@@ -64,6 +75,88 @@ namespace TeamSupport.Data
 
             return userID == null ? -1 : (int)userID;
         }
+
+		public static List<string> GetHTMLGlobalEventAttributes()
+		{
+			List<string> events = new List<string>
+			{
+				"onafterprint",
+				"onbeforeprint",
+				"onbeforeunload",
+				"onerror",
+				"onhashchange",
+				"onload",
+				"onmessage",
+				"onoffline",
+				"ononline",
+				"onpagehide",
+				"onpageshow",
+				"onpopstate",
+				"onresize",
+				"onstorage",
+				"onunload",
+				"onblur",
+				"onchange",
+				"oncontextmenu",
+				"onfocus",
+				"oninput",
+				"oninvalid",
+				"onreset",
+				"onsearch",
+				"onselect",
+				"onsubmit",
+				"onkeydown",
+				"onkeypress",
+				"onkeyup",
+				"onclick",
+				"ondblclick",
+				"onmousedown",
+				"onmousemove",
+				"onmouseout",
+				"onmouseover",
+				"onmouseup",
+				"onmousewheel",
+				"onwheel",
+				"ondrag",
+				"ondragend",
+				"ondragenter",
+				"ondragleave",
+				"ondragover",
+				"ondragstart",
+				"ondrop",
+				"onscroll",
+				"oncopy",
+				"oncut",
+				"onpaste",
+				"onabort",
+				"oncanplay",
+				"oncanplaythrough",
+				"oncuechange",
+				"ondurationchange",
+				"onemptied",
+				"onended",
+				"onerror",
+				"onloadeddata",
+				"onloadedmetadata",
+				"onloadstart",
+				"onpause",
+				"onplay",
+				"onplaying",
+				"onprogress",
+				"onratechange",
+				"onseeked",
+				"onseeking",
+				"onstalled",
+				"onsuspend",
+				"ontimeupdate",
+				"onvolumechange",
+				"onwaiting",
+				"onshow",
+				"ontoggle"
+			};
+
+			return events;
+		}
     }
 
     public partial class Chats
