@@ -20,14 +20,14 @@
 var gs_appkey = '319b0d10584c41368947a81e016d835d';
 
 growthscore.init(gs_appkey, {
-    emailid: 'USER_EMAIL (required)',
-    firstname: 'FIRST_NAME',
-    lastname: 'LAST_NAME',
+    // surveynow:true,
+    emailid: window.parent.Ts.System.User.UserID,
+    firstname: window.parent.Ts.System.User.FirstName,
+    lastname: window.parent.Ts.System.User.LastName,
     signupdate: 'SIGNUP_DATE (yyyy-mm-dd)',
     storeid: 'USER_STOREID (External ID)',
     attributes: {
-        "custom_1": "CUSTOM_1_VALUE",
-        "custom_2": "CUSTOM_2_VALUE"
+        "custom_1": window.parent.parent.Ts.System.Organization.Name
     }
 }, function(err, data) {
     //Handle Error Data

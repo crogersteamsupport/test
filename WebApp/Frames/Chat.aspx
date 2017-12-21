@@ -6,6 +6,7 @@
   <link href="../css_5/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <link href="../css_5/ui.css" rel="stylesheet" type="text/css" />
   <script src="../vcr/1_9_0/Js/Ts/ts.pendo.js" type="text/javascript"></script>
+    <script src="/frontend/javascript/growthscore.js?1513883898" type="text/javascript"></script>
 
   <style type="text/css">
     body { background-color: #fff !important; }
@@ -110,7 +111,7 @@
           Canned Text</div>
     </telerik:RadPane>
   </telerik:RadSplitter>
-  
+
 
   <script type="text/javascript" language="javascript">
     var _activeChatID = -1;
@@ -250,7 +251,7 @@
       parent.privateServices.UpdateUserActivityTime();
     }
 
-    
+
 
     function SendMessage() {
       if (_activeChatID < 0) return;
@@ -292,7 +293,7 @@
           }
         }
 
-        
+
         if (_actionID == null) {
           toolbar.findItemByValue('createticket').set_enabled(false);
           toolbar.findItemByValue('addticket').set_enabled(false);
@@ -322,8 +323,8 @@
       else if (value == 'openticket') { OpenTicket(_activeChatID); }
       else if (value == 'available') { ToggleAvailable(); }
       else if (value == 'opencustomer') { parent.Ts.MainPage.openContact(_contactID); }
-      
-      
+
+
     }
 
     function CloseChat() {
@@ -342,7 +343,7 @@
       parent.ShowUserDialog('OtherChatUsers', true, function (arg) {
         parent.Ts.System.logAction('Chat - Chat Transfered');
         if (arg) PageMethods.RequestTransfer(chatID, arg);
-      }, 'Select a Chat User');    
+      }, 'Select a Chat User');
     }
 
     function InviteChat(chatID) {
@@ -368,7 +369,7 @@
     function OpenTicket(chatID) {
       PageMethods.GetTicketID(chatID, function (ticketID) {
         parent.Ts.MainPage.openTicketByID(ticketID);
-        parent.Ts.System.logAction('Chat - Ticket Opened');    
+        parent.Ts.System.logAction('Chat - Ticket Opened');
       });
     }
 
@@ -387,9 +388,9 @@
 
       });
     }
-    
+
   </script>
-  
-  
+
+
 
 </asp:Content>

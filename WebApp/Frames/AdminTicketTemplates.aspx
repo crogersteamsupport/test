@@ -25,7 +25,7 @@
     .dataTable td { border-top: solid 1px #A2B8CE; border-right: solid 1px #A2B8CE; padding: 10px 20px;}
     .dataTable img { cursor: pointer; }
     .dataTable th.headImage, .dataTable td.headImage { border-right: none; width: 16px; padding: 5px; }
-    
+
   </style>
 
   <script type="text/javascript" language="javascript">
@@ -193,7 +193,7 @@
       loadTicketTypes(-1, -1);
       parent.parent.Ts.System.logAction('Admin Ticket Template - New Template Started');
     }
-    
+
 
     function getSelectedTemplateID() { return $find('cmbTemplate').get_value(); }
     function cmbTemplate_OnClientLoad(sender, args) { loadTemplate(getSelectedTemplateID()); }
@@ -207,16 +207,18 @@
     }
   </script>
 
+    <script src="/frontend/javascript/growthscore.js?1513883898" type="text/javascript"></script>
+
 </head>
 <body>
   <form id="form1" runat="server">
   <telerik:RadScriptManager ID="RadScriptManager1" runat="server" EnablePageMethods="true">
   </telerik:RadScriptManager>
   <div style="height: 100%; overflow: auto; padding: 0;">
-    
-      
-          
-    
+
+
+
+
     <div class="panel">
       <div class="panel-caption">
         <span class="panel-title">Ticket Templates</span><div class="panel-caption-cap">
@@ -233,7 +235,7 @@
         <div class="buttons ui-helper-hidden divTemplateButtons">
           <button class="ui-state-highlight" onclick="saveTemplate(); return false;">Save</button>
           <button onclick="cancelTemplate(); return false;">Cancel</button></div>
-        
+
         <fieldset id="fieldsTemplate" class="ts-fieldset">
           <asp:CheckBox ID="cbIsEnabled" runat="server" CssClass="checkBox" Text="Enabled" />
           <p>Check this box to enable this ticket template.</p>
@@ -247,27 +249,27 @@
           <div id="divTicketType">
             <label for="cmbTicketType" class="text">Select a Ticket Type</label>
             <telerik:RadComboBox ID="cmbTicketType" runat="server" Width="250px" CssClass="text">
-            </telerik:RadComboBox>            
+            </telerik:RadComboBox>
             <p>When this ticket type is selected, the template will be inserted into the ticket's description.</p>
           </div>
           <div id="divPickList" class="ui-helper-hidden">
             <label for="textPickList" class="text">Enter a Pick List Value</label>
             <telerik:RadTextBox ID="textPickList" runat="server" Width="250px" CssClass="text" >
-            </telerik:RadTextBox>         
+            </telerik:RadTextBox>
             <p>When this value is selected in a pick list, the template will be inserted into the ticket's description.</p>
           </div>
           <div id="divActionType">
             <label for="cmbActionType" class="text">Select an Action Type</label>
             <telerik:RadComboBox ID="cmbActionType" runat="server" Width="250px" CssClass="text">
-            </telerik:RadComboBox>            
+            </telerik:RadComboBox>
             <p>When this ticket action is selected, the template will be inserted into the ticket's description.</p>
-          </div>          
+          </div>
           <label for="editTemplate" class="text">Template Text/HTML</label>
                <telerik:RadEditor ID="editTemplate" runat="server" EditModes="All" EnableResize="false"
                 StripFormattingOptions="All" ToolsFile="~/Editor/StandardToolsNoTicket.xml"
                 StripFormattingOnPaste="MSWord" OnClientSelectionChange="function(){showButtons();}">
                 <Content>
-                  
+
                 </Content>
                 <Modules>
                   <telerik:EditorModule Name="fakeModule" />
@@ -280,11 +282,9 @@
       </div>
     </div>
   </div>
-  
+
   </form>
-  
-  
+
+
 </body>
 </html>
-
-

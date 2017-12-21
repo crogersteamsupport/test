@@ -77,6 +77,9 @@
 	}
 
   </style>
+
+    <script src="/frontend/javascript/growthscore.js?1513883898" type="text/javascript"></script>
+
 </head>
 <body>
 

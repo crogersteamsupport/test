@@ -20,11 +20,11 @@
   <script src="../js/bootstrap-modal.min.js"></script>
   <script src="Admin_Integration.js" type="text/javascript"></script>
 
-  <title></title>
+    <script src="/frontend/javascript/growthscore.js?1513883898" type="text/javascript"></script>
 </head>
 <body>
   <div class="ui-widget frame-content ts-color-bg-accent" style="position:relative;">
-  <button id="btnRefresh" style="display:none;">Refresh</button>        
+  <button id="btnRefresh" style="display:none;">Refresh</button>
     <ul class="int-list">
       <li class="int-type ts-api">
         <h1 class="collapsable"><span class="ui-icon ui-icon-triangle-1-e"/></span><img src="../Images/icons/TeamSupportLogo16.png" /><span>TeamSupport API</span></h1>
@@ -82,8 +82,8 @@
         <div class="int-panel">
         <h3>TeamSupport.com offers integration with BeanStalk, a hosted SVN source repository.</h3>
         <p>
-        Once configured, when a new version is “committed” to BeanStalk, the tickets which that version addresses will have a new action associated 
-        with them that shows the version of software the ticket was addressed in, and a link to view the actual changes in code which happened in that 
+        Once configured, when a new version is “committed” to BeanStalk, the tickets which that version addresses will have a new action associated
+        with them that shows the version of software the ticket was addressed in, and a link to view the actual changes in code which happened in that
         version (note that you will have to have a BeanStalk account to view the code).
         </p>
         <a href="https://help.teamsupport.com/1/en/topic/beanstalk" target="_blank" class="ui-state-default ts-link">Get Started >></a>
@@ -218,7 +218,7 @@
 		  	<div class="int-content-left">
 				<label>Instance Name</label>
 				<input id="InstanceName" type="text" class="text ui-widget-content ui-corner-all int-crm-instancename" />
-		  		
+
 				<label>Jira Host Name</label>
 		  		<input type="text" class="text ui-widget-content ui-corner-all int-crm-host" />
 		  		<label>Jira User Name</label>
@@ -235,11 +235,11 @@
 		  		<div class="checkboxes">
 		  			<input id="Checkbox1" type="checkbox" class="checkbox int-crm-update-status" />
 		  			<label for="cb-jira-update-status" class="checkbox">Update TeamSupport Tickets Statuses</label>
-		  			
+
 			  		<div class="clearfix"></div>
 			  		<span id="ticketStatusExceptionSpan">Exclude the following</span>
 			  		<select id="exclusionTicketStatusList" class="int-crm-ticketStatusToExclude" multiple=multiple size="5"></select>
-					
+
 					<div class="clearfix"></div>
 		  			<input id="Checkbox5" type="checkbox" class="checkbox int-crm-update-type" />
 		  			<label for="cb-jira-update-type" class="checkbox">Update TeamSupport Ticket Type</label>
@@ -295,8 +295,8 @@
         <p>
           <a target="_blank" href="http://help.nicereply.com/article/57-setup-integration-with-teamsupport">Get Started >></a>
         </p>
-      
-        
+
+
         </div>
       </li>
       <li class="int-type oracle">
