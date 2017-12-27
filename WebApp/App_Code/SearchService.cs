@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 using NewRelic.Api;
+using System.Dynamic;
 
 namespace TSWebServices
 {
@@ -1734,7 +1735,7 @@ SELECT
         }
 
         [WebMethod]
-        public string[] SearchAssets(string searchTerm, int from, int count, bool searchAssigned, bool searchWarehouse, bool searchJunkyard)
+        public string[] SearchAssetsOLD(string searchTerm, int from, int count, bool searchAssigned, bool searchWarehouse, bool searchJunkyard)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<string> resultItems = new List<string>();
@@ -1763,6 +1764,94 @@ SELECT
             //}
 
             return resultItems.ToArray();
+        }
+
+        [WebMethod]
+        public string[] SearchAssets(string searchTerm, int from, int count, bool searchAssigned, bool searchWarehouse, bool searchJunkyard)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            List<string> results = new List<string>();
+            SqlCommand command = new SqlCommand();
+
+            string pageQuery = @"
+WITH 
+q AS ({0}),
+r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY 
+    CASE 
+        WHEN [NAME] IS NULL THEN 1 
+        WHEN [NAME] = ''    THEN 2 
+        ELSE 3 
+    END DESC, 
+    [NAME] ASC) AS 'RowNum' FROM q)
+SELECT * INTO #X FROM r
+WHERE RowNum BETWEEN @From AND @To
+
+select  a.AssetID,
+        a.OrganizationID,
+        a.SerialNumber,
+        a.notes,
+        a.Name,
+        a.Location,
+        a.WarrantyExpiration,
+        p.Name as productName,
+        pv.VersionNumber
+FROM #X AS x
+LEFT join Assets a on a.AssetID = x.AssetID
+LEFT JOIN Products p ON p.ProductID = x.ProductID 
+Left Join ProductVersions pv on pv.ProductVersionID = x.ProductVersionID";
+
+            string assetQuery = @"
+SELECT 
+  a.Name as Name,
+  a.AssetID,
+  a.ProductID,
+  a.ProductVersionID
+  FROM Assets a WHERE a.OrganizationID = @OrganizationID
+";
+            if(!string.IsNullOrEmpty(searchTerm))
+            {
+                assetQuery += " and (contains(Name,@SearchTerm) or contains(a.notes,@SearchTerm) or contains(a.serialnumber,@SearchTerm) ) ";                command.Parameters.AddWithValue("@SearchTerm", string.Format("\"{0}*\"", searchTerm));            }
+
+            if (!searchAssigned || !searchWarehouse || !searchJunkyard)
+            {
+                if (searchAssigned)
+                {
+                    assetQuery += " and (Location=1)";
+                    if (searchWarehouse) assetQuery += " OR (Location=2) ";
+                    if (searchJunkyard) assetQuery += " OR (Location=3) ";
+                }
+                else if (searchWarehouse)
+                {
+                    assetQuery += " and (Location=2) ";
+                    if (searchJunkyard) assetQuery += "  or (Location=3) ";
+                }
+                else if (searchJunkyard)
+                {
+                    assetQuery += " and (Location=3) ";
+                }
+            }
+
+            command.CommandText = string.Format(pageQuery, assetQuery);
+            command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+            command.Parameters.AddWithValue("@From", from + 1);
+            command.Parameters.AddWithValue("@To", from + count);
+
+            DataTable table = SqlExecutor.ExecuteQuery(loginUser, command);
+
+            foreach (DataRow row in table.Rows)
+            {
+                dynamic assetSearch = new ExpandoObject();
+                assetSearch.assetID = row["assetID"];
+                assetSearch.serialNumber = row["serialNumber"];
+                assetSearch.notes = row["notes"];
+                assetSearch.name = row["name"];
+                assetSearch.location = row["location"];
+                assetSearch.warrantyExpiration = row["warrantyExpiration"];
+                assetSearch.productName = row["productName"];
+                assetSearch.productVersionNumber = row["VersionNumber"];
+                results.Add(JsonConvert.SerializeObject(assetSearch));
+            }
+            return results.ToArray();
         }
 
         [WebMethod]
