@@ -15,19 +15,25 @@ this.module = function(names, fn) {
 
 this.module('teamsupport', function() {
 
+    // TEAMSUPPORT.PAGE
+    this.module('page', function() {
+        this.data = new Object();
+    });
+
+    // TEAMSUPPORT.TOOLS
     this.module('tools', function() {
-        // TEAMSUPPORT.JOURNAL
+        // TEAMSUPPORT.TOOLS.JOURNAL
         this.journal = function(e) {
             console.log(e);
         }
-        // TEAMSUPPORT.TRACE
+        // TEAMSUPPORT.TOOLS.TRACE
         this.trace = function() {
             var err = new Error();
             console.log(err.stack);
         }
     });
-});
 
+});
 
 // AUTOGROW.
 $.fn.autogrow = function (e) {
@@ -37,9 +43,11 @@ $.fn.autogrow = function (e) {
         }
     });
 }
+
 $(document).on('input', 'textarea.autogrow', function (e) {
     $(this).autogrow();
 });
+
 $(document).ready(function() {
     // AUTOGROW.
     $('textarea.autogrow').autogrow();
@@ -49,6 +57,7 @@ $(document).ready(function() {
         e.preventDefault();
     });
 });
+
 // COPY TEXT TO CLIPBOARD.
 $(document).on('click', '#clipboard', function (e) {
     var text = $(this).data('copy');
@@ -59,6 +68,7 @@ $(document).on('click', '#clipboard', function (e) {
     $temp.remove();
     alert("Ticket URL has been copied.\n\n" + text);
 });
+
 $(document).on('click', '#file-browse', function (e) {
     e.preventDefault();
     e.stopPropagation();
