@@ -39,6 +39,31 @@ namespace TeamSupport.Data
           }
       }
 
+      public void LoadByCRMFieldNameAndTicketTypeID(int cRMLinkID, string cRMFieldName, int ticketTypeID) {
+
+          using (SqlCommand command = new SqlCommand())
+          {
+              command.CommandText = @"
+                SELECT
+                    clf.* 
+                FROM 
+                    CRMLinkFields clf
+                    JOIN CustomFields cf
+                        ON clf.CustomFieldID = cf.CustomFieldID
+                WHERE 
+                    clf.CRMLinkID = @CRMLinkID 
+                    AND clf.CRMObjectName = @objectType
+                    AND clf.CRMFieldName = @CRMFieldName
+                    AND cf.AuxID = @TicketTypeID";
+              command.CommandType = CommandType.Text;
+              command.Parameters.AddWithValue("@objectType", "Ticket");
+              command.Parameters.AddWithValue("@CRMLinkID", cRMLinkID);
+              command.Parameters.AddWithValue("@CRMFieldName", cRMFieldName);
+              command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
+              Fill(command, "CRMLinkFields");
+          }
+      }
+
       public void LoadByObjectTypeAndCustomFieldAuxID(string objType, int CRMLinkID, int customFieldAuxID)
       {
 

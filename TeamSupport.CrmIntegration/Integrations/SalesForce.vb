@@ -2801,6 +2801,8 @@ Namespace TeamSupport
                 Dim crmLinkError As CRMLinkError = Nothing
 
                 Dim isUpdate As Boolean = False
+                Dim allTicketCustomFields As New CustomFields(User)
+                allTicketCustomFields.LoadByReferenceType(CRMLinkRow.OrganizationID, ReferenceType.Tickets)
 
                 For Each casesBatch As QueryResult In casesToPullAsTickets
                     For Each caseToBring As sObject In casesBatch.records
@@ -2849,7 +2851,7 @@ Namespace TeamSupport
                             Dim ticketValuesChanged As Boolean = False
                             Dim isNotCollidingWithATicketToPush As Boolean = False
 
-                            AssignCaseValuesToTicket(ticket, caseToBring, ticketValuesChanged, isUpdate, ticketsToPushAsCases, isNotCollidingWithATicketToPush)
+                            AssignCaseValuesToTicket(ticket, caseToBring, ticketValuesChanged, isUpdate, ticketsToPushAsCases, isNotCollidingWithATicketToPush, allTicketCustomFields)
 
                             If ticketValuesChanged AndAlso isNotCollidingWithATicketToPush Then
                                 ticket.DateModifiedBySalesForceSync = DateTime.UtcNow
@@ -2963,7 +2965,8 @@ Namespace TeamSupport
               ByRef ticketValuesChanged As Boolean,
               ByVal isUpdate As Boolean,
               ByVal ticketsToPushAsCases As TicketsView,
-              ByRef isNotCollidingWithATicketToPush As Boolean)
+              ByRef isNotCollidingWithATicketToPush As Boolean,
+              ByRef allTicketCustomFields As CustomFields)
 
                 Dim customFields As New CRMLinkFields(User)
                 customFields.LoadByObjectType("Ticket", CRMLinkRow.CRMLinkID)
@@ -2998,6 +3001,14 @@ Namespace TeamSupport
                     If cRMLinkField IsNot Nothing Then
                         Try
                             If cRMLinkField.CustomFieldID IsNot Nothing Then
+                                'If the mapped custom field ticket type does not match the ticket update the cRMLinkField with the matching type mapping if such exists.
+                                Dim customField As CustomField = allTicketCustomFields.FindByCustomFieldID(cRMLinkField.CustomFieldID)
+                                If customField IsNot Nothing AndAlso customField.AuxID <> ticket.TicketTypeID Then
+                                    Dim rightTypeCRMLinkField As CRMLinkField = GetRightTicketTypeMapping(CRMLinkRow.CRMLinkID, caseField.LocalName, ticket.TicketTypeID)
+                                    If rightTypeCRMLinkField IsNot Nothing Then
+                                        cRMLinkField = rightTypeCRMLinkField
+                                    End If
+                                End If
                                 Dim translatedFieldValue As String = TranslateFieldValue(cRMLinkField.CustomFieldID, ticket.TicketID, value)
                                 Dim findCustom As New CustomValues(User)
                                 Dim thisCustom As CustomValue
@@ -3287,6 +3298,16 @@ Namespace TeamSupport
                     End Try
                 End If
             End Sub
+
+            Private Function GetRightTicketTypeMapping(ByRef cRMLinkID As Integer, ByRef cRMFieldName As String, ByRef ticketTypeID As Integer) As CRMLinkField
+                Dim result As CRMLinkField = Nothing
+                Dim rightTicketTypeMapping As CRMLinkFields = New CRMLinkFields(User)
+                rightTicketTypeMapping.LoadByCRMFieldNameAndTicketTypeID(cRMLinkID, cRMFieldName, ticketTypeID)
+                If rightTicketTypeMapping.Count > 0 Then
+                    result = rightTicketTypeMapping(0)
+                End If
+                Return result
+            End Function
 
             Private Sub AssignCustomerToTicket(ByRef customer As SalesForceCustomer, ByRef ticket As Ticket, ByRef ticketValuesChanged As Boolean)
 				If Not String.IsNullOrEmpty(customer.ContactID) AndAlso Not String.IsNullOrEmpty(customer.AccountID) Then
