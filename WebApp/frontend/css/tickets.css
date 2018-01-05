@@ -133,7 +133,6 @@ button:focus {
     color:rgba(0,0,0,0.6);
 }
 
-
 #ticket-properties-area .form-horizontal {
     min-height:20px;
     margin-bottom:10px;
@@ -202,7 +201,6 @@ button:focus {
     font-weight: bold;
 }
 
-
 #ticket-properties-area .form-horizontal.hasError input::-webkit-input-placeholder {
     border-bottom:1px solid rgba(255,0,0,0.3) !important;
 }
@@ -218,7 +216,6 @@ button:focus {
 #ticket-properties-area .form-horizontal.hasError input::placeholder {
     border-bottom:1px solid rgba(255,0,0,0.3) !important;
 }
-
 
 #ticket-properties-area .flex2 {
     max-width:205px;
@@ -241,18 +238,9 @@ button:focus {
     font-weight:normal !important;
 }
 
-
-
-
-
 div.popover {
     min-width:500px !important;
 }
-
-
-
-
-
 
 #action-add-public {
     padding:5px 10px;
@@ -277,7 +265,6 @@ div.popover {
     outline: none;
 }
 
-
 #ticketinfo {
     position:absolute;
     top:10px;
@@ -288,9 +275,6 @@ div.popover {
     font-size:20px;
     opacity:0.8;
 }
-
-
-
 
 #page-primary .results-loading {
     text-align:center;
@@ -327,13 +311,6 @@ div.popover {
 #page-primary .upload-area {
     margin:0px 0px 30px 20px;
 }
-
-
-
-
-
-
-
 
 .action-new-area,
 .watercooler-new-area {
@@ -390,7 +367,6 @@ div.popover {
     color:#3d9ae8 !important;
 }
 
-
 #new-action-toolbar {
     padding:10px;
     min-height:100px;
@@ -415,7 +391,6 @@ div.popover {
 #newticket-toolbar span {
     max-height:34px;
 }
-
 
 .upload-queue {
     display:inline-block;
@@ -446,8 +421,6 @@ div.popover {
     height: 16px;
 }
 
-
-
 #ticket-duedate {
     height:30px;
     line-height:20px;
@@ -469,7 +442,6 @@ div.popover {
     display: inline-block;
 }
 
-
 .ticket-viewer-avatar {
     height: 16px;
     width: 16px;
@@ -478,20 +450,13 @@ div.popover {
     position: relative;
 }
 
-
-
 .nonrequired-field-error-font {
     color: #cd0a0a !important;
 }
 
-
-
-
 .OT_publisher {
     display:none;
 }
-
-
 
 #ticket-now-viewing {
     padding:2px 3px;
@@ -504,7 +469,6 @@ div.popover {
     font-size:12px;
 }
 
-
 #ticket-title-container {
     border-radius:0px;
     box-shadow:1px 1px 0px rgba(0,0,0,0.1);
@@ -513,16 +477,17 @@ div.popover {
     margin-bottom:5px !important;
 }
 
-
 #watson {
     opacity: 0.7;
     margin: 0px 0px 20px 40px;
     font-size:11px;
 }
 
-
-
-
 .customFieldCategoryHeader {
     padding-left:5px;
+}
+
+.tag-error {
+    background-color:#fef1ec !important;
+    color:red !important;
 }
