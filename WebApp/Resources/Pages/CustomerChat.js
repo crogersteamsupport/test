@@ -10,6 +10,7 @@ var _isChatWindowPotentiallyHidden = false;
 var siteUrl;
 var _agentHasJoined = false;
 var _typingTimer;                //timer identifier
+var _eventsList;
 var isSubmittingAlready = false;
 
 $(document).ready(function () {
@@ -73,7 +74,16 @@ $(document).ready(function () {
         function (error) {
             console.log(error)
         }
-    );
+	);
+
+	IssueAjaxRequest("GetHTMLGlobalEventAttributes", null,
+		function (result) {
+			_eventsList = result;
+		},
+		function (error) {
+			console.log(error)
+		}
+	);
 
     //The order of the following 3 statements matter, do not change.
     SetupTOK();
@@ -194,9 +204,17 @@ function createMessageElement(messageData, direction) {
 
 	var displayMessage = $("<div>").text(messageData.Message).html();
 
-	if ((messageData.Message.trim().indexOf("<img ") == 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0)
-		|| (messageData.Message.trim().indexOf("/chatattachments/") > 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0)
-		|| (messageData.Message.trim().indexOf('<a target="_blank" href=') == 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0)) {
+	var containsProhibitedText = false;
+	var i = 0;
+
+	while (i < _eventsList.length && !containsProhibitedText) {
+		containsProhibitedText = messageData.Message.trim().indexOf("<script ") >= 0 || messageData.Message.trim().indexOf(" " + _eventsList[i] + "=") >= 0;
+		i++;
+	}
+
+	if ((messageData.Message.trim().indexOf("<img ") == 0 && !containsProhibitedText)
+		|| (messageData.Message.trim().indexOf("/chatattachments/") > 0 && !containsProhibitedText)
+		|| (messageData.Message.trim().indexOf('<a target="_blank" href=') >= 0 && !containsProhibitedText)) {
 		displayMessage = messageData.Message;
 	}
 
@@ -212,7 +230,7 @@ function createMessageElement(messageData, direction) {
             BlinkWindowTitle();
             NewChatMessageAlert();
         }
-    }
+	}
 }
 
 var presenceChannel;

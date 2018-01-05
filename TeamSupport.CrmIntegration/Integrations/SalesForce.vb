@@ -563,7 +563,8 @@ Namespace TeamSupport
                 Dim selectFieldsNotFound As List(Of String) = New List(Of String)
 
                 Try
-                    objDescription = Binding.describeSObject(sfObjectType)
+                    'objDescription = Binding.describeSObject(sfObjectType)
+                    objDescription = DescribeObject(sfObjectType)
                     For Each field As String In fieldsList
                         Dim found As Boolean = objDescription.fields.Where(Function(x) x.name.ToLower() = field.ToLower()).Any()
 
@@ -591,6 +592,23 @@ Namespace TeamSupport
                 End Try
 
                 Return selectFields
+            End Function
+
+            Private Function DescribeObject(ByRef objectType As String) As DescribeSObjectResult
+                Dim result As DescribeSObjectResult
+
+                Try
+                    result = Binding.describeSObject(objectType)
+                Catch ex As Exception
+                    If (ex.Message.Contains("INVALID_SESSION_ID")) Then
+                        Dim loginResult = login(Trim(CRMLinkRow.Username), Trim(CRMLinkRow.Password), Trim(CRMLinkRow.SecurityToken1))
+                        result = Binding.describeSObject(objectType)
+                    Else
+                        Throw ex
+                    End If
+                End Try
+
+                Return result
             End Function
 
             ''' <summary>
@@ -631,10 +649,12 @@ Namespace TeamSupport
                     Dim queryResult As QueryResult = Nothing
 
                     If itsFirstIteration Then
-                        queryResult = Binding.query(SFQuery)
+                        'queryResult = Binding.query(SFQuery)
+                        queryResult = GetQueryResults(SFQuery)
                         itsFirstIteration = False
                     Else
-                        queryResult = Binding.queryMore(result.Item(result.Count - 1).queryLocator)
+                        'queryResult = Binding.queryMore(result.Item(result.Count - 1).queryLocator)
+                        queryResult = GetQueryMoreResults(result.Item(result.Count - 1).queryLocator)
                     End If
 
                     done = queryResult.done
@@ -648,6 +668,40 @@ Namespace TeamSupport
                 Return result
             End Function
 
+            Private Function GetQueryResults(ByRef sfQuery As String) As QueryResult
+                Dim result As QueryResult
+
+                Try
+                    result = Binding.query(sfQuery)
+                Catch ex As Exception
+                    If (ex.Message.Contains("INVALID_SESSION_ID")) Then
+                        Dim loginResult = login(Trim(CRMLinkRow.Username), Trim(CRMLinkRow.Password), Trim(CRMLinkRow.SecurityToken1))
+                        result = Binding.query(sfQuery)
+                    Else
+                        Throw ex
+                    End If
+                End Try
+
+                Return result
+            End Function
+
+            Private Function GetQueryMoreResults(ByRef sfQueryLocator As String) As QueryResult
+                Dim result As QueryResult
+
+                Try
+                    result = Binding.queryMore(sfQueryLocator)
+                Catch ex As Exception
+                    If (ex.Message.Contains("INVALID_SESSION_ID")) Then
+                        Dim loginResult = login(Trim(CRMLinkRow.Username), Trim(CRMLinkRow.Password), Trim(CRMLinkRow.SecurityToken1))
+                        result = Binding.queryMore(sfQueryLocator)
+                    Else
+                        Throw ex
+                    End If
+                End Try
+
+                Return result
+            End Function
+
             Private Function GetBillingAddress(ByVal organizationId As String, ByRef hasFax As Boolean, ByRef objDescription As DescribeSObjectResult) As sObject()
                 Dim SFQuery As String = Nothing
                 Dim qr As QueryResult = Nothing
@@ -657,7 +711,8 @@ Namespace TeamSupport
                     Log.Write(String.Format("Attempting to find Billing Address {0} fax of OrganizationId: {1}", If(hasFax, "with", "without"), organizationId.ToString()))
                     SFQuery = String.Format("select BillingStreet, BillingCity, BillingState, BillingPostalCode, BillingCountry, Phone{0} from Account where ID = '{1}'", If(hasFax, ", Fax", ""), organizationId.ToString())
                     Log.Write("SF Query String = " + SFQuery)
-                    qr = Binding.query(SFQuery)
+                    'qr = Binding.query(SFQuery)
+                    qr = GetQueryResults(SFQuery)
                     Log.Write("qr.size = " + qr.size.ToString)
                 Catch ex As Exception
                     Log.Write("Error when attempting to bind the Query: " + ex.Message)
@@ -797,7 +852,8 @@ Namespace TeamSupport
                             End If
                         End If
 
-                        qr = Binding.query(query)
+                        'qr = Binding.query(query)
+                        qr = GetQueryResults(query)
                         done = False
                         Log.Write("SF Query String = " + query)
                         Log.Write("Found " + qr.size.ToString + " contact records.")
@@ -810,9 +866,11 @@ Namespace TeamSupport
                         'SystemModstamp or LastModifiedDate
                         'Note - Added second phone just so we have something in that space..
                         If Not ForceUpdate Then
-                            qr = Binding.query("select email, FirstName, LastName, Phone, MobilePhone, Title, IsDeleted, SystemModstamp, Account.ID, ID from Contact where SystemModStamp >= " + LastUpdate + IIf(TypeString = "all", String.Empty, " and (" + TypeString + ")"))
+                            'qr = Binding.query("select email, FirstName, LastName, Phone, MobilePhone, Title, IsDeleted, SystemModstamp, Account.ID, ID from Contact where SystemModStamp >= " + LastUpdate + IIf(TypeString = "all", String.Empty, " and (" + TypeString + ")"))
+                            qr = GetQueryResults("select email, FirstName, LastName, Phone, MobilePhone, Title, IsDeleted, SystemModstamp, Account.ID, ID from Contact where SystemModStamp >= " + LastUpdate + IIf(TypeString = "all", String.Empty, " and (" + TypeString + ")"))
                         Else
-                            qr = Binding.query("select email, FirstName, LastName, Phone, MobilePhone, Title, IsDeleted, SystemModstamp, Account.ID, ID from Contact where Account.ID = '" + AccountIDToUpdate + "'")
+                            'qr = Binding.query("select email, FirstName, LastName, Phone, MobilePhone, Title, IsDeleted, SystemModstamp, Account.ID, ID from Contact where Account.ID = '" + AccountIDToUpdate + "'")
+                            qr = GetQueryResults("select email, FirstName, LastName, Phone, MobilePhone, Title, IsDeleted, SystemModstamp, Account.ID, ID from Contact where Account.ID = '" + AccountIDToUpdate + "'")
                         End If
 
                         done = False
@@ -889,7 +947,8 @@ Namespace TeamSupport
                             If qr.done Then
                                 done = True
                             Else
-                                qr = Binding.queryMore(qr.queryLocator)
+                                'qr = Binding.queryMore(qr.queryLocator)
+                                qr = GetQueryMoreResults(qr.queryLocator)
                             End If
                         End While
 
@@ -925,7 +984,8 @@ Namespace TeamSupport
                         GetNewXmlElement("Body", NoteBody),
                         GetNewXmlElement("Title", Title)}
 
-                    Dim noteSave As SaveResult = Binding.create(New sObject() {note})(0)
+                    'Dim noteSave As SaveResult = Binding.create(New sObject() {note})(0)
+                    Dim noteSave As SaveResult = CreateObject(New sObject() {note})(0)
 
                     Success = noteSave.success
                 Catch ex As Exception
@@ -936,6 +996,23 @@ Namespace TeamSupport
                 End Try
 
                 Return Success
+            End Function
+
+            Private Function CreateObject(ByRef objectToCreate As sObject()) As SaveResult()
+                Dim result As SaveResult()
+
+                Try
+                    result = Binding.create(objectToCreate)
+                Catch ex As Exception
+                    If (ex.Message.Contains("INVALID_SESSION_ID")) Then
+                        Dim loginResult = login(Trim(CRMLinkRow.Username), Trim(CRMLinkRow.Password), Trim(CRMLinkRow.SecurityToken1))
+                        result = Binding.create(objectToCreate)
+                    Else
+                        Throw ex
+                    End If
+                End Try
+
+                Return result
             End Function
 
             Private Function GetNewXmlElement(ByVal Name As String, ByVal nodeValue As String) As System.Xml.XmlElement
@@ -975,7 +1052,8 @@ Namespace TeamSupport
                             queryString = "select Product__c, Expiration_Date__c, License_type__c, Status__c, Account__c from License__c where SystemModStamp >= " + SFLastUpdateTime + " ORDER BY Product__c" 'added order by 3/25/11
                         End If
 
-                        qr = Binding.query(queryString)
+                        'qr = Binding.query(queryString)
+                        qr = GetQueryResults(queryString)
 
                         done = False
 
@@ -1100,7 +1178,8 @@ Namespace TeamSupport
                             done = qr.done
 
                             If Not done Then
-                                qr = Binding.queryMore(qr.queryLocator)
+                                'qr = Binding.queryMore(qr.queryLocator)
+                                qr = GetQueryMoreResults(qr.queryLocator)
                             End If
 
                         End While
@@ -1352,7 +1431,8 @@ Namespace TeamSupport
                 Dim customFieldList As String = Nothing
 
                 If theseFields.Count > 0 Then
-                    Dim objDescription = Binding.describeSObject(objType)
+                    'Dim objDescription = Binding.describeSObject(objType)
+                    Dim objDescription = DescribeObject(objType)
 
                     For Each field As CRMLinkField In theseFields
                         If (
@@ -1684,7 +1764,8 @@ Namespace TeamSupport
                 Dim customFields As New CRMLinkFields(User)
                 customFields.LoadByObjectType("Ticket", CRMLinkRow.CRMLinkID)
 
-                For Each apiField As Field In Binding.describeSObject("Case").fields
+                'For Each apiField As Field In Binding.describeSObject("Case").fields
+                For Each apiField As Field In DescribeObject("Case").fields
                     Select Case apiField.name.Trim().ToLower()
                         Case "id", "accountid", "type", "status", "subject", "priority", "description", "closedate", "systemmodstamp"
                             AddCustomFieldToList(apiField.name, result)
@@ -1710,7 +1791,8 @@ Namespace TeamSupport
             Private Function GetFieldsListToGetCasesCommentsToBringAsTickets() As String
                 Dim result As String = Nothing
 
-                For Each apiField As Field In Binding.describeSObject("CaseComment").fields
+                'For Each apiField As Field In Binding.describeSObject("CaseComment").fields
+                For Each apiField As Field In DescribeObject("CaseComment").fields
                     Select Case apiField.name.Trim().ToLower()
                         Case "id", "parentid", "commentbody", "systemmodstamp"
                             AddCustomFieldToList(apiField.name, result)
@@ -1770,7 +1852,8 @@ Namespace TeamSupport
 
                             If isNewCase Then
                                 Try
-                                    Dim result As SaveResult = Binding.create(New sObject() {salesForceCase})(0)
+                                    'Dim result As SaveResult = Binding.create(New sObject() {salesForceCase})(0)
+                                    Dim result As SaveResult = CreateObject(New sObject() {salesForceCase})(0)
                                     If result.errors Is Nothing Then
                                         updateTicket(0).SalesForceID = result.id
                                         Dim caseNumber As String = GetCaseNumber(result.id)
@@ -1795,7 +1878,8 @@ Namespace TeamSupport
                                                                 isNotCollidingWithACaseToPull,
                                                                 numberOfCasesToPullAsTickets,
                                                                 impersonation)
-                                        result = Binding.create(New sObject() {salesForceCase})(0)
+                                        'result = Binding.create(New sObject() {salesForceCase})(0)
+                                        result = CreateObject(New sObject() {salesForceCase})(0)
                                         If result.errors Is Nothing Then
                                             updateTicket(0).SalesForceID = result.id
                                             Dim actionLogDescription As String = "Sent Ticket to SalesForce as new Case with ID: '" + result.id + "'."
@@ -1835,7 +1919,8 @@ Namespace TeamSupport
                                 End Try
                             Else
                                 Try
-                                    Dim result As SaveResult = Binding.update(New sObject() {salesForceCase})(0)
+                                    'Dim result As SaveResult = Binding.update(New sObject() {salesForceCase})(0)
+                                    Dim result As SaveResult = UpdateObject(New sObject() {salesForceCase})(0)
                                     If result.errors Is Nothing Then
                                         Dim caseNumber As String = GetCaseNumber(ticket.SalesForceID)
                                         Dim actionLogDescription As String = If(String.IsNullOrEmpty(caseNumber), String.Format("Updated SalesForce Case ID: '{0}' with ticket changes.", ticket.SalesForceID), String.Format("Updated SalesForce Case Number: '{0}' with ticket changes.", caseNumber))
@@ -1870,7 +1955,8 @@ Namespace TeamSupport
                                                                 isNotCollidingWithACaseToPull,
                                                                 numberOfCasesToPullAsTickets,
                                                                 impersonation)
-                                        result = Binding.update(New sObject() {salesForceCase})(0)
+                                        'result = Binding.update(New sObject() {salesForceCase})(0)
+                                        result = UpdateObject(New sObject() {salesForceCase})(0)
                                         If result.errors Is Nothing Then
                                             Dim caseNumber As String = GetCaseNumber(ticket.SalesForceID)
                                             Dim actionLogDescription As String = If(String.IsNullOrEmpty(caseNumber), String.Format("Updated SalesForce Case ID: '{0}' with ticket changes.", ticket.SalesForceID), String.Format("Updated SalesForce Case Number: '{0}' with ticket changes.", caseNumber))
@@ -1950,6 +2036,23 @@ Namespace TeamSupport
                 crmLinkErrors.Save()
             End Sub
 
+            Private Function UpdateObject(ByRef objectToUpdate As sObject()) As SaveResult()
+                Dim result As SaveResult()
+
+                Try
+                    result = Binding.update(objectToUpdate)
+                Catch ex As Exception
+                    If (ex.Message.Contains("INVALID_SESSION_ID")) Then
+                        Dim loginResult = login(Trim(CRMLinkRow.Username), Trim(CRMLinkRow.Password), Trim(CRMLinkRow.SecurityToken1))
+                        result = Binding.update(objectToUpdate)
+                    Else
+                        Throw ex
+                    End If
+                End Try
+
+                Return result
+            End Function
+
             Private Function GetSalesForceCaseData(
               ByVal ticket As TicketsViewItem,
               ByVal isNewCase As Boolean,
@@ -1967,7 +2070,8 @@ Namespace TeamSupport
                     isNotCollidingWithACaseToPull = True
                 End If
 
-                Dim caseObjectDescription = Binding.describeSObject("Case")
+                'Dim caseObjectDescription = Binding.describeSObject("Case")
+                Dim caseObjectDescription = DescribeObject("Case")
                 For Each field As Field In caseObjectDescription.fields
                     If Not isNotCollidingWithACaseToPull AndAlso field.name.Trim().ToLower() = "lastmodifieddate" Then
                         Dim dateModifiedOfCollidingCaseToPull As DateTime? = GetDateModifiedOfCollidingCaseToPull(casesToPullAsTickets, ticket.SalesForceID)
@@ -2398,7 +2502,8 @@ Namespace TeamSupport
                         pushSucceeded = True
                         If isNewCaseComment Then
                             Try
-                                Dim result As SaveResult = Binding.create(New sObject() {salesForceCaseComment})(0)
+                                'Dim result As SaveResult = Binding.create(New sObject() {salesForceCaseComment})(0)
+                                Dim result As SaveResult = CreateObject(New sObject() {salesForceCaseComment})(0)
                                 If result.errors Is Nothing Then
                                     action.SalesForceID = result.id
                                     Dim actionLogDescription As String = "Sent Action to SalesForce as new CaseComment with ID: '" + result.id + "'."
@@ -2421,7 +2526,8 @@ Namespace TeamSupport
                                     Log.Write("Attempting without impersonation...")
                                     impersonation = False
                                     salesForceCaseComment.Any = GetSalesForceCaseCommentData(action, isNewCaseComment, hasParentID, impersonation)
-                                    result = Binding.create(New sObject() {salesForceCaseComment})(0)
+                                    'result = Binding.create(New sObject() {salesForceCaseComment})(0)
+                                    result = CreateObject(New sObject() {salesForceCaseComment})(0)
                                     If result.errors Is Nothing Then
                                         action.SalesForceID = result.id
                                         Dim actionLogDescription As String = "Sent Action to SalesForce as new CaseComment with ID: '" + result.id + "'."
@@ -2468,7 +2574,8 @@ Namespace TeamSupport
                             End Try
                         Else
                             Try
-                                Dim result As SaveResult = Binding.update(New sObject() {salesForceCaseComment})(0)
+                                'Dim result As SaveResult = Binding.update(New sObject() {salesForceCaseComment})(0)
+                                Dim result As SaveResult = UpdateObject(New sObject() {salesForceCaseComment})(0)
                                 If result.errors Is Nothing Then
                                     Dim actionLogDescription As String = "Updated SalesForce CaseComment ID: '" + action.SalesForceID + "' with action changes."
                                     ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
@@ -2490,7 +2597,8 @@ Namespace TeamSupport
                                     Log.Write("Attempting without impersonation...")
                                     impersonation = False
                                     salesForceCaseComment.Any = GetSalesForceCaseCommentData(action, isNewCaseComment, hasParentID, impersonation)
-                                    result = Binding.update(New sObject() {salesForceCaseComment})(0)
+                                    'result = Binding.update(New sObject() {salesForceCaseComment})(0)
+                                    result = UpdateObject(New sObject() {salesForceCaseComment})(0)
                                     If result.errors Is Nothing Then
                                         action.SalesForceID = result.id
                                         Dim actionLogDescription As String = "Updated SalesForce CaseComment ID: '" + action.SalesForceID + "' with action changes."
@@ -2574,7 +2682,8 @@ Namespace TeamSupport
               ByVal impersonation As Boolean) As XmlElement()
                 Dim result As New List(Of XmlElement)
 
-                Dim caseCommentObjectDescription = Binding.describeSObject("CaseComment")
+                'Dim caseCommentObjectDescription = Binding.describeSObject("CaseComment")
+                Dim caseCommentObjectDescription = DescribeObject("CaseComment")
                 For Each field As Field In caseCommentObjectDescription.fields
                     Select Case field.name.Trim().ToLower()
                         Case "parentid"
@@ -2692,6 +2801,8 @@ Namespace TeamSupport
                 Dim crmLinkError As CRMLinkError = Nothing
 
                 Dim isUpdate As Boolean = False
+                Dim allTicketCustomFields As New CustomFields(User)
+                allTicketCustomFields.LoadByReferenceType(CRMLinkRow.OrganizationID, ReferenceType.Tickets)
 
                 For Each casesBatch As QueryResult In casesToPullAsTickets
                     For Each caseToBring As sObject In casesBatch.records
@@ -2740,7 +2851,7 @@ Namespace TeamSupport
                             Dim ticketValuesChanged As Boolean = False
                             Dim isNotCollidingWithATicketToPush As Boolean = False
 
-                            AssignCaseValuesToTicket(ticket, caseToBring, ticketValuesChanged, isUpdate, ticketsToPushAsCases, isNotCollidingWithATicketToPush)
+                            AssignCaseValuesToTicket(ticket, caseToBring, ticketValuesChanged, isUpdate, ticketsToPushAsCases, isNotCollidingWithATicketToPush, allTicketCustomFields)
 
                             If ticketValuesChanged AndAlso isNotCollidingWithATicketToPush Then
                                 ticket.DateModifiedBySalesForceSync = DateTime.UtcNow
@@ -2854,7 +2965,8 @@ Namespace TeamSupport
               ByRef ticketValuesChanged As Boolean,
               ByVal isUpdate As Boolean,
               ByVal ticketsToPushAsCases As TicketsView,
-              ByRef isNotCollidingWithATicketToPush As Boolean)
+              ByRef isNotCollidingWithATicketToPush As Boolean,
+              ByRef allTicketCustomFields As CustomFields)
 
                 Dim customFields As New CRMLinkFields(User)
                 customFields.LoadByObjectType("Ticket", CRMLinkRow.CRMLinkID)
@@ -2889,6 +3001,14 @@ Namespace TeamSupport
                     If cRMLinkField IsNot Nothing Then
                         Try
                             If cRMLinkField.CustomFieldID IsNot Nothing Then
+                                'If the mapped custom field ticket type does not match the ticket update the cRMLinkField with the matching type mapping if such exists.
+                                Dim customField As CustomField = allTicketCustomFields.FindByCustomFieldID(cRMLinkField.CustomFieldID)
+                                If customField IsNot Nothing AndAlso customField.AuxID <> ticket.TicketTypeID Then
+                                    Dim rightTypeCRMLinkField As CRMLinkField = GetRightTicketTypeMapping(CRMLinkRow.CRMLinkID, caseField.LocalName, ticket.TicketTypeID)
+                                    If rightTypeCRMLinkField IsNot Nothing Then
+                                        cRMLinkField = rightTypeCRMLinkField
+                                    End If
+                                End If
                                 Dim translatedFieldValue As String = TranslateFieldValue(cRMLinkField.CustomFieldID, ticket.TicketID, value)
                                 Dim findCustom As New CustomValues(User)
                                 Dim thisCustom As CustomValue
@@ -3179,38 +3299,47 @@ Namespace TeamSupport
                 End If
             End Sub
 
-            Private Sub AssignCustomerToTicket(ByRef customer As SalesForceCustomer, ByRef ticket As Ticket, ByRef ticketValuesChanged As Boolean)
+            Private Function GetRightTicketTypeMapping(ByRef cRMLinkID As Integer, ByRef cRMFieldName As String, ByRef ticketTypeID As Integer) As CRMLinkField
+                Dim result As CRMLinkField = Nothing
+                Dim rightTicketTypeMapping As CRMLinkFields = New CRMLinkFields(User)
+                rightTicketTypeMapping.LoadByCRMFieldNameAndTicketTypeID(cRMLinkID, cRMFieldName, ticketTypeID)
+                If rightTicketTypeMapping.Count > 0 Then
+                    result = rightTicketTypeMapping(0)
+                End If
+                Return result
+            End Function
 
-                If customer.ContactID IsNot Nothing AndAlso customer.AccountID IsNot Nothing Then
-                    Dim contact As ContactsViewItem = Nothing
-                    Dim teamSupportUser As User = Nothing
-                    If CheckIfCustomerExistsInTicket(customer, ticket, contact) Then
-                        Dim existingContact As ContactsView = New ContactsView(User)
-                        existingContact.LoadSentToSalesForce(ticket.TicketID)
-                        If existingContact.Count > 0 Then
-                            If existingContact(0).UserID <> contact.UserID Then
-                                ticket.Collection.SetUserAsSentToSalesForce(contact.UserID, ticket.TicketID)
-                                Log.Write("Set existing in ticket userID: " + contact.UserID.ToString() + " as SentToSalesForce.")
-                                ticketValuesChanged = True
-                            End If
-                        Else
-                            ticket.Collection.SetUserAsSentToSalesForce(contact.UserID, ticket.TicketID)
-                            Log.Write("Set existing in ticket userID: " + contact.UserID.ToString() + " as SentToSalesForce.")
-                            ticketValuesChanged = True
-                        End If
-                    Else
-                        Dim organization As Organization = Nothing
-                        If CheckIfUserExistsInOrganization(customer, teamSupportUser, organization) Then
-                            ticket.Collection.AddContact(teamSupportUser.UserID, ticket.TicketID)
-                            ticket.Collection.SetUserAsSentToSalesForce(teamSupportUser.UserID, ticket.TicketID)
-                            Log.Write("Added in ticket userID: " + teamSupportUser.UserID.ToString() + " as SentToSalesForce.")
-                            ticketValuesChanged = True
-                        Else
-                            Log.Write("Contact was not set as customer in ticket because it does not exists in TeamSupport.")
-                        End If
-                    End If
-                ElseIf customer.AccountID IsNot Nothing Then
-                    Dim organization As Organization = Nothing
+            Private Sub AssignCustomerToTicket(ByRef customer As SalesForceCustomer, ByRef ticket As Ticket, ByRef ticketValuesChanged As Boolean)
+				If Not String.IsNullOrEmpty(customer.ContactID) AndAlso Not String.IsNullOrEmpty(customer.AccountID) Then
+					Dim contact As ContactsViewItem = Nothing
+					Dim teamSupportUser As User = Nothing
+					If CheckIfCustomerExistsInTicket(customer, ticket, contact) Then
+						Dim existingContact As ContactsView = New ContactsView(User)
+						existingContact.LoadSentToSalesForce(ticket.TicketID)
+						If existingContact.Count > 0 Then
+							If existingContact(0).UserID <> contact.UserID Then
+								ticket.Collection.SetUserAsSentToSalesForce(contact.UserID, ticket.TicketID)
+								Log.Write("Set existing in ticket userID: " + contact.UserID.ToString() + " as SentToSalesForce.")
+								ticketValuesChanged = True
+							End If
+						Else
+							ticket.Collection.SetUserAsSentToSalesForce(contact.UserID, ticket.TicketID)
+							Log.Write("Set existing in ticket userID: " + contact.UserID.ToString() + " as SentToSalesForce.")
+							ticketValuesChanged = True
+						End If
+					Else
+						Dim organization As Organization = Nothing
+						If CheckIfUserExistsInOrganization(customer, teamSupportUser, organization) Then
+							ticket.Collection.AddContact(teamSupportUser.UserID, ticket.TicketID)
+							ticket.Collection.SetUserAsSentToSalesForce(teamSupportUser.UserID, ticket.TicketID)
+							Log.Write("Added in ticket userID: " + teamSupportUser.UserID.ToString() + " as SentToSalesForce.")
+							ticketValuesChanged = True
+						Else
+							Log.Write("Contact was not set as customer in ticket because it does not exists in TeamSupport.")
+						End If
+					End If
+				ElseIf customer.AccountID IsNot Nothing Then
+					Dim organization As Organization = Nothing
                     If CheckIfOrganizationExistsInTicket(customer, ticket, organization) Then
                         Dim existingOrganization As Organizations = New Organizations(User)
                         existingOrganization.LoadSentToSalesForce(ticket.TicketID)

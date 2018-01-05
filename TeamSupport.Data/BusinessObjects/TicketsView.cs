@@ -641,12 +641,49 @@ ORDER BY TicketNumber DESC";
                 Fill(command);
             }
         }
-        /// <summary>
-        /// Loads tickets that are associated with a customer's organizationid by ticket type
-        /// </summary>
-        /// <param name="organizationID"></param>
-        /// <param name="ticketTypeID"></param>
-        public void LoadByCustomerTicketTypeID(int organizationID, int ticketTypeID)
+
+		/// <summary>
+		/// Loads tickets that are associated with a customer's organizationid using Paging.
+		/// </summary>
+		/// <param name="organizationID"></param>
+		/// <param name="pageNumber"></param>
+		/// <param name="pageSize"></param>
+		public void LoadByCustomerID(int organizationID, NameValueCollection filters, int pageNumber = 1, int pageSize = 10, string orderBy = "TicketsView.TicketNumber")
+		{
+			string sql = @"WITH
+BaseQuery AS(
+	SELECT TotalRecords = COUNT(1) OVER(), TicketsView.TicketID FROM TicketsView LEFT JOIN OrganizationTickets ot ON ot.TicketID = TicketsView.TicketID WHERE ot.OrganizationID = @OrganizationID {0} ORDER BY {1}
+	OFFSET ((@PageNumber - 1) * @PageSize) ROWS FETCH NEXT @PageSize ROWS ONLY
+)
+
+SELECT BaseQuery.TotalRecords, TicketsView.* 
+FROM BaseQuery
+JOIN TicketsView
+ON BaseQuery.TicketID = TicketsView.TicketID
+LEFT JOIN OrganizationTickets ot
+ON ot.TicketID = TicketsView.TicketID 
+WHERE ot.OrganizationID = @OrganizationID {0}";
+
+			using (SqlCommand command = new SqlCommand())
+			{
+				SqlParameterCollection filterParameters = command.Parameters;
+				string whereClause = DataUtils.BuildWhereClausesFromFilters(this.LoginUser, this, organizationID, filters, ReferenceType.Tickets, "TicketID", null, ref filterParameters);
+				sql = string.Format(sql, whereClause, orderBy);
+				command.CommandText = sql;
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@OrganizationID", organizationID);
+				command.Parameters.AddWithValue("@PageNumber", pageNumber);
+				command.Parameters.AddWithValue("@PageSize", pageSize);
+				Fill(command);
+			}
+		}
+
+		/// <summary>
+		/// Loads tickets that are associated with a customer's organizationid by ticket type
+		/// </summary>
+		/// <param name="organizationID"></param>
+		/// <param name="ticketTypeID"></param>
+		public void LoadByCustomerTicketTypeID(int organizationID, int ticketTypeID)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -1185,7 +1222,7 @@ ORDER BY TicketNumber DESC";
 
         }
 
-        public static SqlCommand GetLoadRangeCommand(LoginUser loginUser, int from, int to, TicketLoadFilter filter)
+        public static SqlCommand GetLoadRangeCommand(LoginUser loginUser, int from, int to, TicketLoadFilter filter, string myTicketsFields = "")
         {
             SqlCommand command = new SqlCommand();
 
@@ -1277,8 +1314,18 @@ ORDER BY TicketNumber DESC";
         ,tv.DateModifiedBySalesForceSync
         ,tv.DueDate
         ,tv.ProductFamilyID";
-            StringBuilder where = new StringBuilder();
-            GetFilterWhereClause(loginUser, filter, command, where);
+
+		StringBuilder where = new StringBuilder();
+		
+		if (!string.IsNullOrEmpty(myTicketsFields))
+		{
+			fields = myTicketsFields;
+			GetFilterWhereClause(loginUser, filter, command, where, "MyTicketsView");
+		}
+		else
+		{
+			GetFilterWhereClause(loginUser, filter, command, where);
+		}
 
             string query = @"
 
@@ -1292,12 +1339,12 @@ ORDER BY TicketNumber DESC";
 
         SELECT Result.RowNum, Result.TotalRecords, {3}
         FROM #GridViewTickets AS Result
-        INNER JOIN UserTicketsView tv ON tv.TicketID = Result.TicketID
+        JOIN {4} tv ON tv.TicketID = Result.TicketID
         WHERE tv.ViewerID = @ViewerID
         ORDER BY Result.RowNum ASC
         ";
 
-            command.CommandText = string.Format(query, where.ToString(), sortFields, sort, fields);
+            command.CommandText = string.Format(query, where.ToString(), sortFields, sort, fields, string.IsNullOrEmpty(myTicketsFields) ? "UserTicketsView" : "MyTicketsView");
             command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue("@FromIndex", from + 1);
             command.Parameters.AddWithValue("@ToIndex", to + 1);
@@ -1328,11 +1375,11 @@ ORDER BY TicketNumber DESC";
         }
 
 
-        private static void GetFilterWhereClause(LoginUser loginUser, TicketLoadFilter filter, SqlCommand command, StringBuilder builder)
+        private static void GetFilterWhereClause(LoginUser loginUser, TicketLoadFilter filter, SqlCommand command, StringBuilder builder, string view = "UserTicketsView")
         {
-            builder.Append(" FROM UserTicketsView tv ");
+			builder.Append(" FROM " + view + " tv ");
 
-            if (filter.UserID != null && filter.GroupID != null && (filter.GroupID == -1 || filter.GroupID == -2))
+			if (filter.UserID != null && filter.GroupID != null && (filter.GroupID == -1 || filter.GroupID == -2))
             {
                 builder.Append(" INNER JOIN GroupUsers gu ON tv.GroupID = gu.GroupID");
             }

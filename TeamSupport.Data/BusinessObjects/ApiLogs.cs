@@ -38,6 +38,36 @@ WHERE
       }
     }
 
+        public static int GetLastMinuteRequestCount(LoginUser loginUser, int organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+                    SELECT
+                        COUNT(1)
+                    FROM
+	                    ApiLogs
+	                    JOIN 
+                        (
+                            SELECT
+                                organizationId
+					        FROM
+                                Organizations
+                            WHERE
+						        organizationId = @organizationId
+						        OR parentId = @organizationId
+                        ) AS Organizations
+		                    ON ApiLogs.organizationId = Organizations.organizationId
+                    WHERE
+	                    DateCreated > DATEADD(mi, -1, GETUTCDATE())
+                        AND ApiLogs.StatusCode <> 403";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+
+                ApiLogs apiLogs = new ApiLogs(loginUser);
+                return (int)apiLogs.ExecuteScalar(command);
+            }
+        }
     
   }
   

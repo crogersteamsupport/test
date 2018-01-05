@@ -4,10 +4,10 @@ var _intervalUpdateActiveChats = null;
 var isTOKEnabledForBrowser;
 var _isChatWindowActive = true;
 var _isChatWindowPotentiallyHidden = false;
+var _eventsList;
 var isSubmittingAlready = false;
 
 $(document).ready(function () {
-    //apiKey = "45228242";
     var chatInfoObject = {};
     var pusherKey = null;
     var contactID = null;
@@ -74,7 +74,11 @@ $(document).ready(function () {
 
     GetChatSettings(true);
     SetupToolbar();
-    SetupTOK();
+	SetupTOK();
+
+	parent.Ts.Services.Chat.GetHTMLGlobalEventAttributes(function (data) {
+		_eventsList = data;
+	});
 
     function GetChatSettings(isInit) {
         if (isInit) {
@@ -265,9 +269,17 @@ $(document).ready(function () {
 				|| (!messageData.HasLeft)) {
 				var displayMessage = $("<div>").text(messageData.Message).html();
 
-				if ((messageData.Message.trim().indexOf("<img ") == 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0)
-					|| (messageData.Message.trim().indexOf("/chatattachments/") > 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0)
-					|| (messageData.Message.trim().indexOf('<a target="_blank" href=') == 0 && messageData.Message.trim().indexOf("<script ") < 0 && messageData.Message.trim().indexOf(" onload=") < 0)) {
+				var containsProhibitedText = false;
+				var i = 0;
+
+				while (i < _eventsList.length && !containsProhibitedText) {
+					containsProhibitedText = messageData.Message.trim().indexOf("<script ") >= 0 || messageData.Message.trim().indexOf(" " + _eventsList[i] + "=") >= 0;
+					i++;
+				}
+
+				if ((messageData.Message.trim().indexOf("<img ") == 0 && !containsProhibitedText)
+					|| (messageData.Message.trim().indexOf("/chatattachments/") > 0 && !containsProhibitedText)
+					|| (messageData.Message.trim().indexOf('<a target="_blank" href=') >= 0 && !containsProhibitedText)) {
 					displayMessage = messageData.Message;
 				}
 

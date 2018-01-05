@@ -238,6 +238,12 @@ namespace TeamSupport.Data
                     DateTime fixedDateForDLS = TimeZoneInfo.ConvertTimeToUtc(new DateTime(NextRun.Value.Year, NextRun.Value.Month, NextRun.Value.Day, StartDateToCreatorTimeZone.Hour, StartDateToCreatorTimeZone.Minute, 0), tz);
 					Debug(string.Format("fixedDateForDLS = TimeZoneInfo.ConvertTimeToUtc(new DateTime(NextRun.Value.Year, NextRun.Value.Month, NextRun.Value.Day, StartDateToCreatorTimeZone.Hour, StartDateToCreatorTimeZone.Minute, 0), tz): {0}", fixedDateForDLS.ToString("MM/dd/yyyy HH:mm")));
 
+					//Last check to see if after converting to the right time zone and fixing for DLS the datetime is not ealier than the converted nextrun, if so add 1 day.
+					if (DateTime.Compare(fixedDateForDLS, nextRunToCreatorTimeZone) < 0)
+					{
+						fixedDateForDLS = fixedDateForDLS.AddDays(1);
+					}
+
 					NextRun = fixedDateForDLS;
 					Debug(string.Format("NextRun: {0}", NextRun.Value.ToString("MM/dd/yyyy HH:mm")));
                 }

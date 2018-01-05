@@ -37,9 +37,17 @@ namespace TSWebServices
             loginUser = TSAuthentication.GetLoginUser();
         }
 
-        #region ClientServices
+		[WebMethod]
+		[ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+		public string GetHTMLGlobalEventAttributes()
+		{
+			List<string> events = Chat.GetHTMLGlobalEventAttributes();
+			return JsonConvert.SerializeObject(events);
+		}
 
-        [WebMethod]
+		#region ClientServices
+
+		[WebMethod]
         public bool CheckChatStatus(string chatGuid)
         {
             Organization org = GetOrganization(chatGuid);

@@ -7,6 +7,7 @@ using System.Linq;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
+using System.Configuration;
 
 namespace WatsonToneAnalyzer
 {
@@ -25,7 +26,7 @@ namespace WatsonToneAnalyzer
             protected override void OnStart(string[] args)
             {
                 System.Timers.Timer timer = new System.Timers.Timer();
-                timer.Interval = 5000; // 10 seconds  
+                timer.Interval = Convert.ToDouble(ConfigurationManager.AppSettings.Get("WatsonInterval"));
                 timer.Elapsed += new System.Timers.ElapsedEventHandler(this.OnTimer);
                 timer.Start();
             }
