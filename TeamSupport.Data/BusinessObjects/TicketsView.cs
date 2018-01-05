@@ -641,12 +641,49 @@ ORDER BY TicketNumber DESC";
                 Fill(command);
             }
         }
-        /// <summary>
-        /// Loads tickets that are associated with a customer's organizationid by ticket type
-        /// </summary>
-        /// <param name="organizationID"></param>
-        /// <param name="ticketTypeID"></param>
-        public void LoadByCustomerTicketTypeID(int organizationID, int ticketTypeID)
+
+		/// <summary>
+		/// Loads tickets that are associated with a customer's organizationid using Paging.
+		/// </summary>
+		/// <param name="organizationID"></param>
+		/// <param name="pageNumber"></param>
+		/// <param name="pageSize"></param>
+		public void LoadByCustomerID(int organizationID, NameValueCollection filters, int pageNumber = 1, int pageSize = 10, string orderBy = "TicketsView.TicketNumber")
+		{
+			string sql = @"WITH
+BaseQuery AS(
+	SELECT TotalRecords = COUNT(1) OVER(), TicketsView.TicketID FROM TicketsView LEFT JOIN OrganizationTickets ot ON ot.TicketID = TicketsView.TicketID WHERE ot.OrganizationID = @OrganizationID {0} ORDER BY {1}
+	OFFSET ((@PageNumber - 1) * @PageSize) ROWS FETCH NEXT @PageSize ROWS ONLY
+)
+
+SELECT BaseQuery.TotalRecords, TicketsView.* 
+FROM BaseQuery
+JOIN TicketsView
+ON BaseQuery.TicketID = TicketsView.TicketID
+LEFT JOIN OrganizationTickets ot
+ON ot.TicketID = TicketsView.TicketID 
+WHERE ot.OrganizationID = @OrganizationID {0}";
+
+			using (SqlCommand command = new SqlCommand())
+			{
+				SqlParameterCollection filterParameters = command.Parameters;
+				string whereClause = DataUtils.BuildWhereClausesFromFilters(this.LoginUser, this, organizationID, filters, ReferenceType.Tickets, "TicketID", null, ref filterParameters);
+				sql = string.Format(sql, whereClause, orderBy);
+				command.CommandText = sql;
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@OrganizationID", organizationID);
+				command.Parameters.AddWithValue("@PageNumber", pageNumber);
+				command.Parameters.AddWithValue("@PageSize", pageSize);
+				Fill(command);
+			}
+		}
+
+		/// <summary>
+		/// Loads tickets that are associated with a customer's organizationid by ticket type
+		/// </summary>
+		/// <param name="organizationID"></param>
+		/// <param name="ticketTypeID"></param>
+		public void LoadByCustomerTicketTypeID(int organizationID, int ticketTypeID)
         {
             using (SqlCommand command = new SqlCommand())
             {
