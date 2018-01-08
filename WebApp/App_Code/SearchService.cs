@@ -1796,9 +1796,9 @@ select  a.AssetID,
         p.Name as productName,
         pv.VersionNumber
 FROM #X AS x
-LEFT join Assets a on a.AssetID = x.AssetID
+LEFT JOIN Assets a on a.AssetID = x.AssetID
 LEFT JOIN Products p ON p.ProductID = x.ProductID 
-Left Join ProductVersions pv on pv.ProductVersionID = x.ProductVersionID";
+Left JOIN ProductVersions pv on pv.ProductVersionID = x.ProductVersionID";
 
             string assetQuery = @"
 SELECT 
@@ -1810,7 +1810,7 @@ SELECT
 ";
             if(!string.IsNullOrEmpty(searchTerm))
             {
-                assetQuery += " and (contains(Name,@SearchTerm) or contains(a.notes,@SearchTerm) or contains(a.serialnumber,@SearchTerm) ) ";                command.Parameters.AddWithValue("@SearchTerm", string.Format("\"{0}*\"", searchTerm));            }
+                assetQuery += " and (CONTAINS(Name,@SearchTerm) or CONTAINS(a.notes,@SearchTerm) or CONTAINS(a.serialnumber,@SearchTerm) ) ";                command.Parameters.AddWithValue("@SearchTerm", string.Format("\"{0}*\"", searchTerm));            }
 
             if (!searchAssigned || !searchWarehouse || !searchJunkyard)
             {
