@@ -6,6 +6,7 @@ using System.Xml;
 using System.Data;
 using TeamSupport.Data;
 using System.Net;
+using System.Collections.Specialized;
 
 namespace TeamSupport.Api
 {
@@ -167,20 +168,60 @@ namespace TeamSupport.Api
         public static string GetTicketsByCustomerID(RestCommand command, int customerID, bool orderByDateCreated = false)
         {
             TicketsView tickets = new TicketsView(command.LoginUser);
-            if (orderByDateCreated)
-            {
-                tickets.LoadByCustomerID(customerID, "ot.DateCreated DESC");
-            }
-            else
-            {
-                tickets.LoadByCustomerID(customerID);
-            }
+			string orderBy = orderByDateCreated ? "ot.DateCreated DESC" : "TicketNumber";
+			string xml = "";
 
-            string xml = "";
-            xml = tickets.GetXml("Tickets", "Ticket", true, command.Filters);
-            xml = AddTagsToTickets(xml, command);
+			if (command.IsPaging)
+			{
+				try
+				{
+					//remove Paging parameters
+					NameValueCollection filters = new NameValueCollection();
 
-            return xml;
+					foreach (string key in command.Filters.AllKeys)
+					{
+						if (key.ToLower() != "pagenumber" && key.ToLower() != "pagesize")
+						{
+							filters.Add(key, command.Filters[key]);
+						}
+					}
+
+					tickets.LoadByCustomerID(customerID, filters, (int)command.PageNumber, (int)command.PageSize, orderBy);
+					XmlTextWriter writer = Tickets.BeginXmlWrite("Tickets");
+
+					foreach (DataRow row in tickets.Table.Rows)
+					{
+						int ticketId = (int)row["TicketID"];
+						Tags tags = new Tags(command.LoginUser);
+						tags.LoadByReference(ReferenceType.Tickets, ticketId);
+						tags = tags ?? new Tags(command.LoginUser);
+						tickets.WriteXml(writer, row, "Ticket", true, new NameValueCollection(), tags);
+					}
+
+					int totalRecords = 0;
+
+					if (tickets.Count > 0)
+					{
+						totalRecords = tickets[0].TotalRecords;
+					}
+
+					writer.WriteElementString("TotalRecords", totalRecords.ToString());
+					xml = Tickets.EndXmlWrite(writer);
+				}
+				catch (Exception ex)
+				{
+					ExceptionLogs.LogException(command.LoginUser, ex, "API", "RestTickets. GetTicketsByCustomerID(). Paging. SQL filtering generation failed.");
+					throw new RestException(HttpStatusCode.InternalServerError, "There was an error processing your request. Please contact TeamSupport.com", ex);
+				}
+			}
+			else
+			{
+				tickets.LoadByCustomerID(customerID, orderBy);
+				xml = tickets.GetXml("Tickets", "Ticket", true, command.Filters, command.IsPaging);
+				xml = AddTagsToTickets(xml, command);
+			}
+
+			return xml;
         }
 
         public static string GetTicketsByContactID(RestCommand command, int contactID, bool orderByDateCreated = false)
@@ -284,8 +325,9 @@ namespace TeamSupport.Api
         public static string GetCustomerTickets(RestCommand command)
         {
             TicketsView tickets = new TicketsView(command.LoginUser);
+			string xml = "";
 
-            if (command.Filters["TicketTypeID"] != null)
+			if (command.Filters["TicketTypeID"] != null)
             {
                 try
                 {
@@ -302,13 +344,59 @@ namespace TeamSupport.Api
             }
             else
             {
-                tickets.LoadByCustomerID(command.Organization.OrganizationID);
+				if (command.IsPaging)
+				{
+					try
+					{
+						//remove Paging parameters
+						NameValueCollection filters = new NameValueCollection();
+
+						foreach (string key in command.Filters.AllKeys)
+						{
+							if (key.ToLower() != "pagenumber" && key.ToLower() != "pagesize")
+							{
+								filters.Add(key, command.Filters[key]);
+							}
+						}
+
+						tickets.LoadByCustomerID(command.Organization.OrganizationID, command.Filters, (int)command.PageNumber, (int)command.PageSize);
+
+						XmlTextWriter writer = Tickets.BeginXmlWrite("Tickets");
+
+						foreach (DataRow row in tickets.Table.Rows)
+						{
+							int ticketId = (int)row["TicketID"];
+							Tags tags = new Tags(command.LoginUser);
+							tags.LoadByReference(ReferenceType.Tickets, ticketId);
+							tags = tags ?? new Tags(command.LoginUser);
+							tickets.WriteXml(writer, row, "Ticket", true, new NameValueCollection(), tags);
+						}
+
+						int totalRecords = 0;
+
+						if (tickets.Count > 0)
+						{
+							totalRecords = tickets[0].TotalRecords;
+						}
+
+						writer.WriteElementString("TotalRecords", totalRecords.ToString());
+						xml = Tickets.EndXmlWrite(writer);
+					}
+					catch (Exception ex)
+					{
+						ExceptionLogs.LogException(command.LoginUser, ex, "API", "RestTickets. GetCustomerTickets(). Paging. SQL filtering generation failed.");
+						throw new RestException(HttpStatusCode.InternalServerError, "There was an error processing your request. Please contact TeamSupport.com", ex);
+					}
+				}
+				else
+				{
+					tickets.LoadByCustomerID(command.Organization.OrganizationID);
+					xml = tickets.GetXml("Tickets", "Ticket", true, command.Filters, command.IsPaging);
+					xml = AddTagsToTickets(xml, command, true);
+				}
             }
 
-            string xml = string.Empty;
-            xml = tickets.GetXml("Tickets", "Ticket", true, command.Filters);
-            xml = AddTagsToTickets(xml, command, true);
-            return xml;
+			return xml;
         }
 
         public static string CreateCustomerTicket(RestCommand command)

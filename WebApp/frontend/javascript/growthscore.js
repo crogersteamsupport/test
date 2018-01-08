@@ -20,7 +20,7 @@
 var gs_appkey = '319b0d10584c41368947a81e016d835d';
 
 growthscore.init(gs_appkey, {
-    // surveynow:true,
+    surveynow:true,
     emailid: window.parent.Ts.System.User.UserID,
     firstname: window.parent.Ts.System.User.FirstName,
     lastname: window.parent.Ts.System.User.LastName,
