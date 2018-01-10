@@ -1,3 +1,4 @@
+using Microsoft.SqlServer.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -322,6 +323,85 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
+
+        public static List<SqlDataRecord> GetSearchResultsList(string searchTerm, LoginUser loginUser)
+        {
+            SqlMetaData recordIDColumn = new SqlMetaData("recordID", SqlDbType.Int);
+            SqlMetaData relevanceColumn = new SqlMetaData("relevance", SqlDbType.Int);
+
+            SqlMetaData[] columns = new SqlMetaData[] { recordIDColumn, relevanceColumn };
+
+            List<SqlDataRecord> result = new List<SqlDataRecord>();
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+                SELECT 
+				    pv.ProductVersionID,
+                    1 AS RANK
+                FROM
+                    dbo.ProductVersions pv
+                    JOIN dbo.Products p
+                        ON pv.ProductID = p.ProductID
+                WHERE 
+                    p.OrganizationID = @organizationID";
+
+                if (!string.IsNullOrWhiteSpace(searchTerm))
+                {
+            //        command.CommandText = @"
+            //        SELECT 
+				        //pv.ProductVersionID,
+            //            match.RANK
+            //        FROM
+            //            dbo.ProductVersions pv
+            //            INNER JOIN dbo.Products p
+            //                ON pv.ProductID = p.ProductID
+            //            INNER JOIN CONTAINSTABLE(ProductVersions, (VersionNumber, Description), @searchTerm) AS match
+            //                ON pv.ProductVersionID = match.[KEY]
+            //        WHERE 
+            //            p.OrganizationID = @organizationID";
+                    command.CommandText = @"
+                    SELECT 
+				        pv.ProductVersionID,
+                        match.RANK
+                    FROM
+                        dbo.ProductVersions pv
+                        INNER JOIN dbo.Products p
+                            ON pv.ProductID = p.ProductID
+                        INNER JOIN CONTAINSTABLE(ProductVersions, (Description), @searchTerm) AS match
+                            ON pv.ProductVersionID = match.[KEY]
+                    WHERE 
+                        p.OrganizationID = @organizationID";
+                }
+
+                command.CommandText += Products.GetProductFamiliesRightsClause(loginUser);
+
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@organizationID", loginUser.OrganizationID);
+                command.Parameters.AddWithValue("@userID", loginUser.UserID);
+                command.Parameters.AddWithValue("@searchTerm", string.Format("\"*{0}*\"", searchTerm));
+
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+                {
+                    connection.Open();
+                    SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+                    command.Connection = connection;
+                    command.Transaction = transaction;
+                    SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+
+                    while (reader.Read())
+                    {
+                        //crmLinkFieldId = (int?)reader["CrmFieldId"];
+                        SqlDataRecord record = new SqlDataRecord(columns);
+                        record.SetInt32(0, (int)reader["ProductVersionID"]);
+                        record.SetInt32(1, (int)reader["RANK"]);
+                        result.Add(record);
+                    }
+                }
+            }
+
+            return result;
+        }
   }
 
   public class ProductVersionsSearch
