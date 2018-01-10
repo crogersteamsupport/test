@@ -96,6 +96,10 @@ button:focus {
     border-left:2px solid rgba(150,150,150,0.1);
 }
 
+#ticket-title-label {
+    font-size:16px;
+}
+
 #ticket-properties-area {
     padding:10px 0px 0px 0px;
     margin-bottom:20px;
@@ -192,7 +196,8 @@ button:focus {
     font-size:11px;
 }
 
-#ticket-properties-area .form-horizontal.hasError {
+#ticket-properties-area .form-horizontal.hasError,
+#ticket-properties-area .form-horizontal.isRequiredToClose.hasCloseError {
     border-top:1px solid rgba(255,0,0,0.2);
     border-bottom:1px solid rgba(255,0,0,0.2);
     background-color:rgba(255,0,0,0.05);

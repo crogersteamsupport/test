@@ -9,7 +9,7 @@ div.action .header {
     border-bottom:1px solid rgba(0,0,0,0.1);
 }
 div.action .header .avatar {
-    padding:15px;
+    padding:15px 15px 15px;
     width:80px;
 }
 div.action .header .info {
@@ -95,8 +95,14 @@ div.action .specifics .details span {
     word-wrap:break-word;
 }
 div.action .specifics .details {
-    overflow-x: auto;
+    overflow-x:auto;
 }
+div.action .specifics .details,
+div.action .specifics .details p {
+    font-family:Helvetica;
+    font-size:12pt;
+}
+
 div.action .specifics .details img {
     max-width:100% !important;
 }
