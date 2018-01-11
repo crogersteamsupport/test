@@ -109,7 +109,7 @@
           .append(
             $('<div>')
               .addClass('pull-right')
-              .append($('<p>').text())
+              .append($('<p>').text(item.openTicketCount + ' open tickets'))
           );
 
         $('<td>').append(div).appendTo(el);
@@ -149,7 +149,7 @@
           .append(
             $('<div>')
               .addClass('pull-right')
-              .append($('<p>').text())
+              .append($('<p>').text(item.openTicketCount + ' open tickets'))
           );
 
         $('<td>').append(div).appendTo(el);

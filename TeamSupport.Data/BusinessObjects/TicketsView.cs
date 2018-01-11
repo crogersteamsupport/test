@@ -1239,8 +1239,30 @@ WHERE ot.OrganizationID = @OrganizationID {0}";
                     sort = string.Format("[StatusPosition] {0}, [Status] {0}, [TicketTypeName] {0}", (filter.SortAsc ? "ASC" : "DESC"));
                     break;
                 default:
-                    sortFields = string.Format("tv.[{0}]", sort);
-                    sort = string.Format("tv.[{0}] {1}", sort, (filter.SortAsc ? "ASC" : "DESC"));
+					if (string.IsNullOrEmpty(myTicketsFields))
+					{
+						sortFields = string.Format("tv.[{0}]", sort);
+						sort = string.Format("tv.[{0}] {1}", sort, (filter.SortAsc ? "ASC" : "DESC"));
+					}
+					else
+					{
+						if (sort.ToLower() == "customers")
+						{
+							sortFields = "dbo.GetTicketCustomers(tv.TicketID) AS Customers";
+							sort = string.Format("dbo.GetTicketCustomers(tv.TicketID) {0}", (filter.SortAsc ? "ASC" : "DESC"));
+						}
+						else if (sort.ToLower() == "contacts")
+						{
+							sortFields = "dbo.GetTicketContacts(tv.TicketID) AS Contacts";
+							sort = string.Format("dbo.GetTicketContacts(tv.TicketID) {0}", (filter.SortAsc ? "ASC" : "DESC"));
+						}
+						else
+						{
+							sortFields = string.Format("tv.[{0}]", sort);
+							sort = string.Format("tv.[{0}] {1}", sort, (filter.SortAsc ? "ASC" : "DESC"));
+						}
+					}
+					
                     break;
             }
 

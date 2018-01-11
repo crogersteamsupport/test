@@ -1540,20 +1540,15 @@ namespace TSWebServices
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<string> resultItems = new List<string>();
-            string[] results = new string[] { };
-
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return GetAllCompaniesAndContacts(from, count, searchCompanies, searchContacts, active, parentsOnly);
+            }
 
             if (searchCompanies || searchContacts)
             {
                 Stopwatch stopWatch = Stopwatch.StartNew();
-                if (string.IsNullOrWhiteSpace(searchTerm))
-                {
-                    results = GetAllCompaniesAndContacts(from, count, searchCompanies, searchContacts, active, parentsOnly);
-                }
-                else
-                {
-                    results = GetAllCompaniesAndContacts(from, count, searchCompanies, searchContacts, active, parentsOnly, searchTerm);
-                }
+                SearchResults results = GetCustomerSearchResults(loginUser, searchTerm, searchCompanies, searchContacts, 0, active, parentsOnly);
                 stopWatch.Stop();
                 NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchCompaniesAndContacts", stopWatch.ElapsedMilliseconds);
                 //Only record the custom parameter in NR if the search took longer than 3 seconds (I'm using this arbitrarily, seems appropiate)
@@ -1563,15 +1558,27 @@ namespace TSWebServices
                     NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchCompaniesAndContacts-Term", searchTerm);
                 }
 
+                int topLimit = from + count;
+                if (topLimit > results.Count)
+                {
+                    topLimit = results.Count;
+                }
+
                 stopWatch.Restart();
+                for (int i = from; i < topLimit; i++)
+                {
+                    results.GetNthDoc(i);
+                    if (results.CurrentItem.UserFields != null && results.CurrentItem.UserFields["JSON"] != null)
+                        resultItems.Add(results.CurrentItem.UserFields["JSON"].ToString());
+                }
                 stopWatch.Stop();
                 NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchCompaniesAndContactsPullData", stopWatch.ElapsedMilliseconds);
             }
 
-            return results;
+            return resultItems.ToArray();
         }
 
-        private string[] GetAllCompaniesAndContacts(int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly = false, string searchTerm = "")
+        private string[] GetAllCompaniesAndContacts(int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly = false)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<string> results = new List<string>();
@@ -1600,7 +1607,9 @@ SELECT
 	u.FirstName, 
 	u.LastName, 
 	u.Email, 
-	u.Title
+	u.Title,
+	(SELECT COUNT(*) FROM TicketsView t LEFT JOIN OrganizationTickets ot ON ot.TicketID = t.TicketID WHERE ot.OrganizationID = o.OrganizationID AND t.IsClosed = 0) AS OrgOpenTickets,
+	(SELECT COUNT(*) FROM TicketsView t LEFT JOIN UserTickets ut ON ut.TicketID = t.TicketID WHERE ut.UserID = u.UserID AND t.IsClosed = 0) AS ContactOpenTickets
 FROM #X AS x
 LEFT JOIN Organizations o ON o.OrganizationID = x.OrganizationID
 LEFT JOIN Users u ON u.UserID = x.UserID";
@@ -1627,14 +1636,6 @@ SELECT
   LEFT JOIN Organizations o ON u.OrganizationID = o.OrganizationID
   WHERE o.ParentID = @OrganizationID AND u.MarkDeleted=0
 ";
-
-            if (!string.IsNullOrEmpty(searchTerm))
-            {
-                contactQuery += " and (contains(o.name,@SearchTerm) or contains(u.firstname,@SearchTerm) or contains(u.lastname,@SearchTerm) or contains(u.email, @SearchTerm)) ";
-                companyQuery += " and (contains(o.name,@SearchTerm)) ";
-                command.Parameters.AddWithValue("@SearchTerm", string.Format("\"{0}*\"",searchTerm));
-            }
-
             User user = Users.GetUser(loginUser, loginUser.UserID);
             if (user.TicketRights == TicketRightType.Customers)
             {
@@ -1681,7 +1682,7 @@ SELECT
                     company.name = (string)row["Organization"];
                     company.organizationID = (int)row["OrganizationID"];
                     company.isPortal = (bool)row["HasPortalAccess"];
-                    company.openTicketCount = 0;// (int)row["OrgOpenTickets"];
+                    company.openTicketCount = (int)row["OrgOpenTickets"];
                     company.website = GetDBString(row["Website"]);
 
                     List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
@@ -1700,7 +1701,7 @@ SELECT
                     CustomerSearchContact contact = new CustomerSearchContact();
                     contact.organizationID = (int)row["OrganizationID"];
                     contact.isPortal = (bool)row["IsPortalUser"];
-                    contact.openTicketCount = 0;// (int)row["ContactOpenTickets"];
+                    contact.openTicketCount = (int)row["ContactOpenTickets"];
 
                     contact.userID = (int)row["UserID"];
                     contact.fName = GetDBString(row["FirstName"]);
