@@ -56,18 +56,14 @@ $(document).ready(function () {
         window.parent.parent.Ts.Services.Task.GetTask(_taskID, function (task) {
             if (_isAdmin || task.CreatorID == window.parent.parent.Ts.System.User.UserID) {
                 $('#taskDelete').show();
-            }
-            else {
+            } else {
                 $('#taskDelete').hide();
             }
-
             if (task.Name) {
                 $('#Name').text(ellipseString(task.Name, 73));
-            }
-            else if (task.Description) {
+            } else if (task.Description) {
                 $('#Name').text(ellipseString(task.Description, 73));
-            }
-            else {
+            } else {
                 $('#Name').text(task.TaskID);
             }
 
@@ -83,54 +79,41 @@ $(document).ready(function () {
                 $('#taskComplete').removeClass("emptyButton");
                 $('#taskComplete').attr("data-original-title", "Uncomplete this task");
                 $('#taskComplete').tooltip('fixTitle');
-
                 $('#reminderDateGroup').hide();
                 $('.completedData').show();
                 $('#fieldCompletionDate').html(task.DateCompleted == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.DateCompleted).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
                 $('#fieldCompletionComment').text(!task.CompletionComment ? "None" : task.CompletionComment);
-            }
-            else {
+            } else {
                 $('#fieldComplete').text("No");
                 $('#taskComplete').html("Mark Completed");
                 $('#taskComplete').addClass("emptyButton");
                 $('#taskComplete').removeClass("completedButton");
                 $('#taskComplete').attr("data-original-title", "Complete this task");
                 $('#taskComplete').tooltip('fixTitle');
-
                 $('#reminderDateGroup').show();
                 $('.completedData').hide();
             }
             $('#fieldDueDate').html(task.DueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.DueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearDueDate" class="col-xs-1 fa fa-times clearDate"></i>');
             $('#fieldReminder').html(task.ReminderDueDate == null ? "None" : window.parent.parent.Ts.Utils.getMsDate(task.ReminderDueDate).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()) + '<i id="clearReminderDate" class="col-xs-1 fa fa-times clearDate"></i>');
-
             $('#fieldCreator').text(task.Creator);
             $('#fieldDateCreated').text(window.parent.parent.Ts.Utils.getMsDate(task.DateCreated).localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()));
             $('#fieldDescription').html(task.Description != null && task.Description != "" ? task.Description : "Empty");
 
-            if (task.ParentID)
-            {
+            if (task.ParentID) {
                 $('#subtasksDiv').hide();
-                var parentName = $('<h6>')
-                    .addClass('parentName');
-
-                $('<a>')
-                  .attr('href', '#')
-                  .addClass('parentLink')
-                  .data('taskID', task.ParentID)
-                  .text(task.TaskParentName + ' >')
-                  .appendTo(parentName)
-
+                var parentName = $('<h6>').addClass('parentName');
+                $('<a>').attr('href', '#').addClass('parentLink').data('taskID', task.ParentID).text(task.TaskParentName + ' >').appendTo(parentName)
                 $('.header-nav').prepend(parentName);
-
                 $('.btn-toolbar').addClass('subtaskButtonsAdjustement');
             }
+
+            teamsupport.page.data = { id:task.TaskID, parent:task.ParentID };
         });
     }
 
     function initAssociationControls() {
         $("#attachmentinput").show();
         $(".arrow-up").css('left', '7px');
-
         $("#ticketinput").hide();
         $("#userinput").hide();
         $("#customerinput").hide();
@@ -415,6 +398,13 @@ $(document).ready(function () {
                                 }
                             }
                         });
+
+                        if (teamsupport.page.data.parent) {
+                            var frame = parent.document.getElementById('iframe-o-' + teamsupport.page.data.parent);
+                            if (frame) {
+                                frame.contentWindow.taskCheckBox(_taskID, true);
+                            }
+                        }
                     },
                     function (error) {
                         header.show();
@@ -446,6 +436,13 @@ $(document).ready(function () {
                         }
                     }
                 });
+
+                if (teamsupport.page.data.parent) {
+                    var frame = parent.document.getElementById('iframe-o-' + teamsupport.page.data.parent);
+                    if (frame) {
+                        frame.contentWindow.taskCheckBox(_taskID, false);
+                    }
+                }
             },
             function (error) {
                 header.show();
@@ -629,17 +626,14 @@ $(document).ready(function () {
     });
 
     $('#fieldComplete').click(function (e) {
-        if (!$(this).hasClass('editable'))
+        if (!$(this).hasClass('editable')) {
             return false;
-        if ($(this).text() !== 'Yes')
-        {
+        }
+        if ($(this).text() !== 'Yes') {
             window.parent.parent.Ts.Services.Task.GetIncompleteSubtasks(_taskID, function (result) {
-                if (result)
-                {
+                if (result) {
                     alert('Please complete all the subtasks before completing this task.')
-                }
-                else
-                {
+                } else {
                     window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_taskID, ($(this).text() !== 'Yes'), function (result) {
                         top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
                         $('#fieldComplete').text("Yes");
@@ -659,9 +653,7 @@ $(document).ready(function () {
                 header.show();
                 alert('There was an error getting the subtasks.');
             });
-        }
-        else
-        {
+        } else {
             window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(_taskID, ($(this).text() !== 'Yes'), function (result) {
                 top.Ts.System.logAction('Task Detail - Toggle TaskIsCompleted');
                 $('#fieldComplete').text("No");
@@ -927,21 +919,21 @@ $(document).ready(function () {
 
     $('#tblSubtasks').on('click', '.subtaskCheckBox', function (e) {
         e.preventDefault();
-
         var id = $(this).data('taskID');
 
         if ($(this).is(':checked')) {
             parent.Ts.System.logAction('Task Detail Page - Complete Subtask');
             _completeCommentTaskID = id;
             $('#modalTaskComment').modal('show');
-        }
-        else {
+        } else {
             parent.Ts.System.logAction('Task Detail Page - Uncomplete Subtask');
         }
 
         window.parent.parent.Ts.Services.Task.SetTaskIsCompleted(id, $(this).is(':checked'), function (result) {
-            if (result.Value) {
-                $('#st' + id).prop('checked', true);
+            document.getElementById('st' + id).checked = (result.Value) ? true : false;
+            var frame = parent.document.getElementById('iframe-o-' + id);
+            if (frame) {
+                frame.contentDocument.location.reload(true);
             }
         },
         function (error) {
@@ -949,6 +941,7 @@ $(document).ready(function () {
             alert('There was an error saving the subtask is complete.');
         });
     });
+
 
     $('#tblSubtasks').on('click', '.tasklink', function (e) {
         e.preventDefault();
@@ -1456,14 +1449,14 @@ $(document).ready(function () {
     })
 });
 
-
-TaskDetailPage = function () {
-
-};
+TaskDetailPage = function () { };
 
 TaskDetailPage.prototype = {
     constructor: TaskDetailPage,
-    refresh: function () {
-
-    }
+    refresh: function () { }
 };
+
+// id is the task id, status refers to the 'checked' property.
+function taskCheckBox(id, status) {
+    document.getElementById('st' + id).checked = (status) ? true : false;
+}
