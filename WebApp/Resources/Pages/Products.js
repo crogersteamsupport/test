@@ -136,24 +136,24 @@
         var div = $('<div>')
           .addClass('productinfo');
 
-        if (!item.productVersionID) {
-            parent.Ts.Services.Products.GetProductOpenTicketCount(item.productID, function (count) {
-                div.append(
-                    $('<div>')
-                    .addClass('pull-right')
-                    .append($('<p>').text(count + ' open tickets'))
-                );
-            });
-        }
-        else {
-            parent.Ts.Services.Products.GetProductVersionOpenTicketCount(item.productVersionID, function (count) {
-                div.append(
-                    $('<div>')
-                    .addClass('pull-right')
-                    .append($('<p>').text(count + ' open tickets'))
-                );
-            });
-        }
+        //if (!item.productVersionID) {
+        //    parent.Ts.Services.Products.GetProductOpenTicketCount(item.productID, function (count) {
+        //        div.append(
+        //            $('<div>')
+        //            .addClass('pull-right')
+        //            .append($('<p>').text(count + ' open tickets'))
+        //        );
+        //    });
+        //}
+        //else {
+        //    parent.Ts.Services.Products.GetProductVersionOpenTicketCount(item.productVersionID, function (count) {
+        //        div.append(
+        //            $('<div>')
+        //            .addClass('pull-right')
+        //            .append($('<p>').text(count + ' open tickets'))
+        //        );
+        //    });
+        //}
 
         $('<td>').append(div).appendTo(el);
 
