@@ -20,14 +20,15 @@
   <script src="reports_edit.js" type="text/javascript"></script>
   <script src="ReportFilters.js" type="text/javascript"></script>
   <script src="ReportCharts.js" type="text/javascript"></script>
+  <script src="/frontend/javascript/growthscore.js?1515087127" type="text/javascript"></script>
   <title>Edit Report</title>
   <style>
     body { background-color: #fff; }
-    
+
     .report-section { display: none; }
     .action-save { display: none; }
     .action-cancel { float: right; }
-    
+
     .form-actions { text-align: center; }
     .report-type ul { list-style: none outside none; margin: 0 20px; padding: 10px 0; }
     .report-charttype ul { list-style: none outside none; margin: 0 20px; padding: 10px 0; }
@@ -39,13 +40,13 @@
     li.ui-sortable-helper { cursor: url(../cursors/grab.cur), move !important; }
     .wrap { padding-bottom: 30px; }
     .reports-header { font-size: 18px; padding: 20px 0 10px 10px; color: #555; margin-right: 25px; }
-    
+
     .summary-fields li { padding: 5px 0; }
     .summary-fields li .form-control { display: inline-block; }
     .summary-fields li input, .summary-fields li select { width: 175px; }
     .summary-fields li .summary-calc-val1, .summary-fields li .summary-calc-val2 { width: 75px; }
     .summary-fields li .summary-calc-comp { width: 150px; }
-    
+
     .summary-fields li a { opacity: 0; filter: alpha(opacity=0); padding-left: 10px; transition: opacity .25s ease-in-out; -moz-transition: opacity .25s ease-in-out; -webkit-transition: opacity .25s ease-in-out; }
     .summary-fields li:hover a { opacity: 0.5; filter: alpha(opacity=50); }
     .summary-fields li:first-child a { display: none; }
@@ -54,8 +55,8 @@
     .chart-summary-desc-fields .summary-fields li:nth-child(2) a { display: none; }
     .chart-display label { margin-right: 10px;}
     .filter-field, .filter-comp { margin-right: 15px; }
-    
-    
+
+
   </style>
 </head>
 <body>
