@@ -348,18 +348,6 @@ namespace TeamSupport.Data
 
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
-            //        command.CommandText = @"
-            //        SELECT 
-				        //pv.ProductVersionID,
-            //            match.RANK
-            //        FROM
-            //            dbo.ProductVersions pv
-            //            INNER JOIN dbo.Products p
-            //                ON pv.ProductID = p.ProductID
-            //            INNER JOIN CONTAINSTABLE(ProductVersions, (VersionNumber, Description), @searchTerm) AS match
-            //                ON pv.ProductVersionID = match.[KEY]
-            //        WHERE 
-            //            p.OrganizationID = @organizationID";
                     command.CommandText = @"
                     SELECT 
 				        pv.ProductVersionID,
@@ -368,7 +356,7 @@ namespace TeamSupport.Data
                         dbo.ProductVersions pv
                         INNER JOIN dbo.Products p
                             ON pv.ProductID = p.ProductID
-                        INNER JOIN CONTAINSTABLE(ProductVersions, (Description), @searchTerm) AS match
+                        INNER JOIN CONTAINSTABLE(ProductVersions, (VersionNumber, Description), @searchTerm) AS match
                             ON pv.ProductVersionID = match.[KEY]
                     WHERE 
                         p.OrganizationID = @organizationID";
