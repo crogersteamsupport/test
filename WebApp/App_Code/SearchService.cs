@@ -1607,9 +1607,7 @@ SELECT
 	u.FirstName, 
 	u.LastName, 
 	u.Email, 
-	u.Title,
-	(SELECT COUNT(*) FROM TicketsView t LEFT JOIN OrganizationTickets ot ON ot.TicketID = t.TicketID WHERE ot.OrganizationID = o.OrganizationID AND t.IsClosed = 0) AS OrgOpenTickets,
-	(SELECT COUNT(*) FROM TicketsView t LEFT JOIN UserTickets ut ON ut.TicketID = t.TicketID WHERE ut.UserID = u.UserID AND t.IsClosed = 0) AS ContactOpenTickets
+	u.Title
 FROM #X AS x
 LEFT JOIN Organizations o ON o.OrganizationID = x.OrganizationID
 LEFT JOIN Users u ON u.UserID = x.UserID";
@@ -1682,7 +1680,7 @@ SELECT
                     company.name = (string)row["Organization"];
                     company.organizationID = (int)row["OrganizationID"];
                     company.isPortal = (bool)row["HasPortalAccess"];
-                    company.openTicketCount = (int)row["OrgOpenTickets"];
+                    company.openTicketCount = 0;// (int)row["OrgOpenTickets"];
                     company.website = GetDBString(row["Website"]);
 
                     List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
@@ -1701,7 +1699,7 @@ SELECT
                     CustomerSearchContact contact = new CustomerSearchContact();
                     contact.organizationID = (int)row["OrganizationID"];
                     contact.isPortal = (bool)row["IsPortalUser"];
-                    contact.openTicketCount = (int)row["ContactOpenTickets"];
+                    contact.openTicketCount = 0;// (int)row["ContactOpenTickets"];
 
                     contact.userID = (int)row["UserID"];
                     contact.fName = GetDBString(row["FirstName"]);

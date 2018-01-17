@@ -83,7 +83,7 @@ namespace TSWebServices
                     ExceptionLogs.LogException(LoginUser.Anonymous, ex, "ChatService.CheckChatStatus");
                 }
             }
-            
+
             return areOperatorsAvailable;
         }
 
@@ -203,7 +203,7 @@ namespace TSWebServices
             {
                 ExceptionLogs.LogException(LoginUser.Anonymous, ex, "ChatService.MissedChat");
             }
-            
+
             ChatClient client = ChatClients.GetChatClient(LoginUser.Anonymous, request.RequestorID);
 
             Ticket ticket = (new Tickets(LoginUser.Anonymous)).AddNewTicket();
@@ -305,7 +305,7 @@ namespace TSWebServices
             string attachmentHTML = "";
 
             if (attachment.FileType.StartsWith("image/"))
-                attachmentHTML = string.Format("<img src='" + SystemSettings.GetAppUrl() + "/dc/{0}/chatattachments/{1}/{2}' class='img-responsive' alt='{3}'>", attachment.OrganizationID, chatID, attachmentID, attachment.FileName);
+                attachmentHTML = string.Format("<img src='" + SystemSettings.GetAppUrl() + "/dc/{0}/chatattachments/{1}/{2}' alt='{3}'>", attachment.OrganizationID, chatID, attachmentID, attachment.FileName);
             else
                 attachmentHTML = string.Format("<a target='_blank' href='" + SystemSettings.GetAppUrl() + "/dc/{0}/chatattachments/{1}/{2}'>{3}</a>", attachment.OrganizationID, chatID, attachmentID, attachment.FileName);
 
@@ -522,8 +522,8 @@ namespace TSWebServices
             string attachmentHTML = "";
 
             if (attachment.FileType.StartsWith("image/"))
-                attachmentHTML = string.Format("<img src='" + SystemSettings.GetAppUrl() + "/dc/{0}/chatattachments/{1}/{2}' class='img-responsive' alt='{3}'>", TSAuthentication.OrganizationID, chatID, attachmentID, attachment.FileName);
-            else 
+                attachmentHTML = string.Format("<img src='" + SystemSettings.GetAppUrl() + "/dc/{0}/chatattachments/{1}/{2}' alt='{3}'>", TSAuthentication.OrganizationID, chatID, attachmentID, attachment.FileName);
+            else
                 attachmentHTML = string.Format("<a target='_blank' href='" + SystemSettings.GetAppUrl() + "/dc/{0}/chatattachments/{1}/{2}'>{3}</a>", TSAuthentication.OrganizationID, chatID, attachmentID, attachment.FileName);
 
             ChatMessage chatMessage = (new ChatMessages(loginUser)).AddNewChatMessage();
@@ -688,14 +688,14 @@ namespace TSWebServices
                         StringBuilder builder = new StringBuilder();
 
                         builder.Append(@"
-                            DECLARE @TempItems 
+                            DECLARE @TempItems
                             TABLE
-                            ( 
+                            (
                               ID        int IDENTITY,
-                              TicketID  int 
+                              TicketID  int
                             )
 
-                            INSERT INTO @TempItems 
+                            INSERT INTO @TempItems
                             (
                               TicketID
                             )
@@ -714,15 +714,15 @@ namespace TSWebServices
                                 , t.Name
                                 , dbo.uspGetTags(17, t.TicketID) AS Tags
 	                            , kbc.CategoryName AS KnowledgeBaseCategoryName
-                            FROM 
-                                @TempItems ti 
+                            FROM
+                                @TempItems ti
                                 JOIN Tickets t
                                     ON ti.TicketID = t.TicketID
                                 LEFT JOIN KnowledgeBaseCategories kbc
                                     ON t.KnowledgeBaseCategoryID = kbc.CategoryID
                             WHERE
                                 ti.ID BETWEEN @FromIndex AND @toIndex
-                            ORDER BY 
+                            ORDER BY
                                 ti.ID"
                         );
                         command.CommandText = builder.ToString();
@@ -1067,7 +1067,7 @@ namespace TSWebServices
                 OrganizationID = request.OrganizationID;
                 InitiatorUserID = initiator.UserID;
                 DateCreated = request.DateCreated;
-                InitiatorMessage = (initiator.Title != null) 
+                InitiatorMessage = (initiator.Title != null)
                 ?   string.Format("{0} {1} - {2}, {3} ({4})", initiator.FirstName, initiator.LastName, initiator.Title, initiator.CompanyName, initiator.Email)
                 :   string.Format("{0} {1}, {2} ({3})", initiator.FirstName, initiator.LastName, initiator.CompanyName, initiator.Email);
 
