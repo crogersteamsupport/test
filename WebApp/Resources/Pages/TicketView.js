@@ -759,7 +759,7 @@ TicketGrid = function (options) {
     };
 
     var floatFormatter = function (row, cell, value, columnDef, dataContext) {
-        return value;
+        return (value) ? value : '';
     };
 
     var emailFormatter = function (row, cell, value, columnDef, dataContext) {
