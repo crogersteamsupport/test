@@ -90,6 +90,7 @@ namespace TSWebServices
 	tv.GroupName,
 	tv.GroupID,
 	tv.TicketTypeName,
+	tv.TicketTypeID,
 	tv.UserName,
 	tv.[Status],
 	tv.IsClosed,
@@ -188,7 +189,8 @@ namespace TSWebServices
                         item.Status = reader["Status"] as string;
                         item.UserName = reader["UserName"] as string;
                         item.TicketTypeName = reader["TicketTypeName"] as string;
-                        item.GroupName = reader["GroupName"] as string;
+						item.TicketTypeID = reader["TicketTypeID"] as int? ?? -1;
+						item.GroupName = reader["GroupName"] as string;
                         item.SolvedVersion = reader["SolvedVersion"] as string;
                         item.ReportedVersion = reader["ReportedVersion"] as string;
                         item.ProductName = reader["ProductName"] as string;
