@@ -71,6 +71,25 @@ namespace TeamSupport.Api
 
 						throw new RestException(HttpStatusCode.Forbidden, requestLimitError);
 					}
+                    else
+                    {
+                        int apiRequestMinuteLimit = command.IsCustomerOnly ? Organizations.GetOrganization(_loginUser, companyId).APIRequestMinuteLimit : _organization.APIRequestMinuteLimit;
+                        int apiRequestLastMinuteCount = ApiLogs.GetLastMinuteRequestCount(_loginUser, companyId);
+
+                        if (apiRequestLastMinuteCount > apiRequestMinuteLimit)
+                        {
+                            string requestLimitErrorPerMinute = "{ \"Error\": \"You have exceeded your minute API request limit of " + apiRequestMinuteLimit.ToString() + ".\"}";
+
+                            if (command.Format == RestFormat.XML)
+                            {
+                                System.Xml.XmlDocument xmlDoc = Newtonsoft.Json.JsonConvert.DeserializeXmlNode(requestLimitErrorPerMinute);
+                                xmlDoc.XmlResolver = null;
+                                requestLimitErrorPerMinute = xmlDoc.InnerXml;
+                            }
+
+                            throw new RestException(HttpStatusCode.Forbidden, requestLimitErrorPerMinute);
+                        }
+                    }
 
                     processor.Process();
 

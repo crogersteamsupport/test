@@ -109,8 +109,8 @@ namespace TeamSupport.Data
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = @"
-SELECT ISNULL(SUM(a.TimeSpent), 0)  
-FROM Actions a 
+SELECT ISNULL(SUM(a.TimeSpent), 0)
+FROM Actions a
 INNER JOIN Tickets t ON a.TicketID = t.TicketID
 INNER JOIN OrganizationTickets ot ON a.TicketID = ot.TicketID
 WHERE ot.OrganizationID = @OrganizationID
@@ -464,6 +464,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
                 organization.ChangeStatusIfClosed = sourceOrg.ChangeStatusIfClosed;
                 organization.AddAdditionalContacts = sourceOrg.AddAdditionalContacts;
                 organization.MatchEmailSubject = sourceOrg.MatchEmailSubject;
+                organization.MarkSpam = sourceOrg.MarkSpam;
                 organization.IsPublicArticles = sourceOrg.IsPublicArticles;
                 organization.UseForums = sourceOrg.UseForums;
                 organization.UseEuropeDate = sourceOrg.UseEuropeDate;
@@ -1896,11 +1897,11 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = @"SELECT o.* 
-																FROM Organizations o 
-																WHERE ((o.ParentID = 1) OR (o.ParentID is null)) 
+                command.CommandText = @"SELECT o.*
+																FROM Organizations o
+																WHERE ((o.ParentID = 1) OR (o.ParentID is null))
 																AND o.IsActive = 1
-																AND EXISTS(SELECT * FROM Users u WHERE (u.MarkDeleted = 0) AND (u.Email = @Email) AND u.OrganizationID = o.OrganizationID) 
+																AND EXISTS(SELECT * FROM Users u WHERE (u.MarkDeleted = 0) AND (u.Email = @Email) AND u.OrganizationID = o.OrganizationID)
 																ORDER BY o.Name";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@Email", email);
@@ -2013,10 +2014,10 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
             using (SqlCommand command = new SqlCommand())
             {
                 StringBuilder text = new StringBuilder(@"
-                WITH orderedrecords as( SELECT *, ROW_NUMBER() OVER (ORDER BY Name) AS 'RowNumber' 
-                FROM Organizations 
-                WHERE (ParentID = @ParentID) 
-                AND (@ActiveOnly = 0 OR IsActive = 1) 
+                WITH orderedrecords as( SELECT *, ROW_NUMBER() OVER (ORDER BY Name) AS 'RowNumber'
+                FROM Organizations
+                WHERE (ParentID = @ParentID)
+                AND (@ActiveOnly = 0 OR IsActive = 1)
                 AND (@UseFilter=0 OR (OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = @UserID)))
                 ");
                 if (name.Trim() != "")
@@ -2047,10 +2048,10 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
             using (SqlCommand command = new SqlCommand())
             {
                 StringBuilder text = new StringBuilder(@"
-SELECT TOP (@MaxRows) * 
-FROM Organizations 
-WHERE (ParentID = @ParentID) 
-AND (@ActiveOnly = 0 OR IsActive = 1) 
+SELECT TOP (@MaxRows) *
+FROM Organizations
+WHERE (ParentID = @ParentID)
+AND (@ActiveOnly = 0 OR IsActive = 1)
 AND (@UseFilter=0 OR (OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = @UserID)))
 ");
                 if (name.Trim() != "")
@@ -2112,12 +2113,12 @@ AND (@UseFilter=0 OR (OrganizationID IN (SELECT OrganizationID FROM UserRightsOr
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "SELECT TOP " + top.ToString() + @" o.*, 
+                command.CommandText = "SELECT TOP " + top.ToString() + @" o.*,
                                   (
-                                    SELECT COUNT(*) FROM Tickets t 
-                                    INNER JOIN OrganizationTickets ot 
-	                                  ON ot.TicketID = t.TicketID 
-                                    WHERE (ot.OrganizationID = o.OrganizationID) 
+                                    SELECT COUNT(*) FROM Tickets t
+                                    INNER JOIN OrganizationTickets ot
+	                                  ON ot.TicketID = t.TicketID
+                                    WHERE (ot.OrganizationID = o.OrganizationID)
 	                                  AND (t.DateModified >= @DateModified)
                                   ) AS TicketCount
                                 FROM Organizations o
@@ -2195,8 +2196,8 @@ AND (@UseFilter=0 OR (OrganizationID IN (SELECT OrganizationID FROM UserRightsOr
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText =
-        @"  SELECT * FROM Organizations o  
-    WHERE o.ParentID = 1 
+        @"  SELECT * FROM Organizations o
+    WHERE o.ParentID = 1
     AND o.IsActive = 1
     AND o.IsRebuildingIndex=0
     AND DATEDIFF(day, o.LastIndexRebuilt, GETUTCDATE()) > @DaysOld
@@ -2217,9 +2218,9 @@ AND (@UseFilter=0 OR (OrganizationID IN (SELECT OrganizationID FROM UserRightsOr
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText =
-        @"SELECT o.* FROM Organizations o 
-LEFT JOIN OrganizationTickets ot ON ot.OrganizationID = o.OrganizationID 
-WHERE ot.TicketID = @TicketID 
+        @"SELECT o.* FROM Organizations o
+LEFT JOIN OrganizationTickets ot ON ot.OrganizationID = o.OrganizationID
+WHERE ot.TicketID = @TicketID
 ORDER BY o.Name";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@TicketID", ticketID);
@@ -2236,9 +2237,9 @@ ORDER BY o.Name";
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText =
-        @"SELECT o.* FROM Organizations o 
-LEFT JOIN OrganizationTickets ot ON ot.OrganizationID = o.OrganizationID 
-WHERE ot.TicketID = @TicketID 
+        @"SELECT o.* FROM Organizations o
+LEFT JOIN OrganizationTickets ot ON ot.OrganizationID = o.OrganizationID
+WHERE ot.TicketID = @TicketID
 AND ot.OrganizationID NOT IN (SELECT u.OrganizationID FROM UserTickets ut LEFT JOIN Users u ON u.UserID = ut.UserID WHERE TicketID = @TicketID AND u.MarkDeleted=0)
 ORDER BY o.Name";
                 command.CommandType = CommandType.Text;
@@ -2790,10 +2791,10 @@ ORDER BY
                 {
                     command.CommandText = @"
 			 UPDATE
-				Users 
+				Users
 			 SET
 				OrganizationID = @winningOrganizationID
-				, NeedsIndexing = 1 
+				, NeedsIndexing = 1
 			 WHERE
 				OrganizationID = @losingOrganizationID";
                     command.CommandType = CommandType.Text;
@@ -2813,13 +2814,13 @@ ORDER BY
             {
                 command.CommandText = @"
 			 UPDATE
-				l 
+				l
 			 SET
 				l.OrganizationID = @winningOrganizationID
 			FROM
 				OrganizationTickets l
 				LEFT JOIN OrganizationTickets w
-					ON l.TicketID = w.TicketID	
+					ON l.TicketID = w.TicketID
 					AND w.OrganizationID = @winningOrganizationID
 			WHERE
 				l.OrganizationID = @losingOrganizationID
@@ -2840,12 +2841,12 @@ ORDER BY
             {
                 command.CommandText = @"
 			 UPDATE
-				Notes 
+				Notes
 			 SET
 				RefID = @winningOrganizationID
-				, NeedsIndexing = 1 
+				, NeedsIndexing = 1
 			 WHERE
-				RefID = @losingOrganizationID 
+				RefID = @losingOrganizationID
 				AND RefType = 9";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@winningOrganizationID", winningOrganizationID);
@@ -2895,14 +2896,14 @@ ORDER BY
             {
                 command.CommandText = @"
 			 UPDATE
-				l 
+				l
 			 SET
-				l.OrganizationID = @winningOrganizationID 
+				l.OrganizationID = @winningOrganizationID
 			 FROM
 				OrganizationProducts l
 				LEFT JOIN OrganizationProducts w
 					ON l.ProductID = w.ProductID
-					AND 
+					AND
 					(
 						(l.ProductVersionID IS NULL AND w.ProductVersionID IS NULL)
 						OR	l.ProductVersionID = w.ProductVersionID
@@ -2927,9 +2928,9 @@ ORDER BY
             {
                 command.CommandText = @"
 			 UPDATE
-				AssetHistory 
+				AssetHistory
 			 SET
-				ShippedTo = @winningOrganizationID 
+				ShippedTo = @winningOrganizationID
 			 WHERE
 				ShippedTo = @losingOrganizationID
 				AND RefType = 9
@@ -2944,9 +2945,9 @@ ORDER BY
             {
                 command.CommandText = @"
 			 UPDATE
-				AssetHistory 
+				AssetHistory
 			 SET
-				ShippedFrom = @winningOrganizationID 
+				ShippedFrom = @winningOrganizationID
 			 WHERE
 				ShippedFrom = @losingOrganizationID
 				AND RefType = 9
@@ -2968,7 +2969,7 @@ ORDER BY
             {
                 command.CommandText = @"
 			 UPDATE
-				l 
+				l
 			 SET
 				l.AttachmentID = @winningOrganizationID
 			 FROM
@@ -2996,9 +2997,9 @@ ORDER BY
             {
                 command.CommandText = @"
 			 UPDATE
-				AgentRatings 
+				AgentRatings
 			 SET
-				CompanyID = @winningOrganizationID 
+				CompanyID = @winningOrganizationID
 			 WHERE
 				CompanyID = @losingOrganizationID
 				AND OrganizationID = @parentOrganizationID";
@@ -3019,14 +3020,14 @@ ORDER BY
             {
                 command.CommandText = @"
 			 UPDATE
-				l 
+				l
 			 SET
-				l.RefID = @winningOrganizationID 
+				l.RefID = @winningOrganizationID
 			 FROM
 				CalendarRef l
 				LEFT JOIN CalendarRef w
 					ON l.CalendarID = w.CalendarID
-					AND w.RefID = @winningOrganizationID  
+					AND w.RefID = @winningOrganizationID
 			 WHERE
 				l.RefID = @losingOrganizationID
 				AND l.RefType = 2
@@ -3165,7 +3166,7 @@ ORDER BY
             {
                 command.CommandText = @"
 			 DELETE
-				RecentlyViewedItems 
+				RecentlyViewedItems
 			 WHERE
 				RefID = @losingOrganizationID
 				AND RefType = 1";
@@ -3180,9 +3181,9 @@ ORDER BY
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = @"
-        SELECT 
-            AVG(CustDisIndex) 
-        FROM 
+        SELECT
+            AVG(CustDisIndex)
+        FROM
             Organizations o
         WHERE
             o.OrganizationID IN
@@ -3356,12 +3357,12 @@ ORDER BY
                     SELECT
                         o.*
                     FROM
-                        Organizations o 
+                        Organizations o
                         JOIN TaskAssociations ta
                             ON ta.RefType = 9
-                            AND ta.RefID = o.OrganizationID 
+                            AND ta.RefID = o.OrganizationID
                     WHERE
-                        ta.TaskID = @TaskID 
+                        ta.TaskID = @TaskID
                     ORDER BY
                         o.Name";
                 command.CommandType = CommandType.Text;

@@ -38,7 +38,7 @@ namespace TeamSupport.Data
     [DataMember] public int? DefaultPortalGroupID { get; set; }
     [DataMember] public int? DefaultSupportGroupID { get; set; }
     [DataMember] public int? DefaultSupportUserID { get; set; }
-    [DataMember] public ProductType ProductType { get; set; }
+    [DataMember] public int ProductType { get; set; }
     [DataMember] public int? ParentID { get; set; }
     [DataMember] public Guid WebServiceID { get; set; }
     [DataMember] public Guid SystemEmailID { get; set; }
@@ -95,8 +95,8 @@ namespace TeamSupport.Data
     [DataMember] public int AvgTimeToClose { get; set; }
     [DataMember] public int CustDisIndex { get; set; }
     [DataMember] public bool SlaInitRespAnyAction { get; set; }
-    [DataMember] public FontFamily FontFamily { get; set; }
-    [DataMember] public FontSize FontSize { get; set; }
+    [DataMember] public int FontFamily { get; set; }
+    [DataMember] public int FontSize { get; set; }
     [DataMember] public bool ShowGroupMembersFirstInTicketAssignmentList { get; set; }
     [DataMember] public bool UpdateTicketChildrenGroupWithParent { get; set; }
     [DataMember] public bool ReplyToAlternateEmailAddresses { get; set; }
@@ -121,6 +121,8 @@ namespace TeamSupport.Data
     [DataMember] public bool DisableSupportLogin { get; set; }
     [DataMember] public string NoAttachmentsInOutboundExcludeProductLine { get; set; }
     [DataMember] public bool UseWatson { get; set; }
+    [DataMember] public bool? MarkSpam { get; set; }
+    [DataMember] public int APIRequestMinuteLimit { get; set; }
           
   }
   
@@ -129,6 +131,8 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.APIRequestMinuteLimit = this.APIRequestMinuteLimit;
+      result.MarkSpam = this.MarkSpam;
       result.UseWatson = this.UseWatson;
       result.NoAttachmentsInOutboundExcludeProductLine = this.NoAttachmentsInOutboundExcludeProductLine;
       result.DisableSupportLogin = this.DisableSupportLogin;

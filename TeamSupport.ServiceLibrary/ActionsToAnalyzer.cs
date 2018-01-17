@@ -30,13 +30,9 @@ public class ActionsToAnalyzer
                 {
                     SqlDataReader reader;
                     //enters the GET querry from the action table and saves the response 
-
-
-                    String SQLCommandText = ConfigurationManager.AppSettings.Get("SQLSelectFromActions");
-                    
-                    //SQLCommandText = "SELECT top 1 a.[ActionID], a.[TicketID],a.[Description],  t.[CreatorID], a.[CreatorID], u.[OrganizationID], (CASE WHEN (Select [OrganizationID] From Users where userid = t.[CreatorID] ) = u.[OrganizationID] THEN 0 ELSE 1 END ) as [IsAgent] FROM Actions a INNER JOIN Users u ON a.[CreatorID] = u.[UserID] INNER JOIN Organizations o ON o.[OrganizationID] = u.[OrganizationID] INNER JOIN Tickets t ON a.[TicketID] = t.[TicketID] WHERE  a.[IsVisibleOnPortal] = 0 AND t.[IsVisibleOnPortal] = 0 AND ( SELECT [ProductType] FROM Organizations where OrganizationId in (Select [OrganizationID] From Users where userid = t.[CreatorID] ) ) =2 AND a.[CreatorID] != -1 AND ActionID > (SELECT Max([ActionID]) from [ActionSentiments]) ORDER BY [ActionID] Asc";                 
-                    cmd.CommandText = SQLCommandText;
-                    cmd.CommandType = CommandType.Text;
+                    cmd.CommandText = "dbo.ActionsGetForWatson";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@ActionsBatchSize", ConfigurationManager.AppSettings.Get("ActionsBatchSize"));
                     cmd.Connection = sqlConnection1;
                     sqlConnection1.Open();
                     

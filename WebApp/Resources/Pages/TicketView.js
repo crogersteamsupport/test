@@ -1,19 +1,15 @@
-﻿
-
-var ticketGrid = null;
+﻿var ticketGrid = null;
 var mainFrame = getMainFrame();
 
 $(document).ready(function () {
     if (mainFrame.Ts.System.User.DisableExporting == true) { $('.tickets-export').remove(); }
 
     $('.reports-edit').hide();
-
     $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: '.grid-ticket-toolbar', animation: false });
 
     mainFrame.Ts.Services.Settings.ReadUserSetting('TicketGrid-Settings', '', function (result) {
         var options = result == '' ? new Object() : JSON.parse(result);
         ticketGrid = new TicketGrid(options);
-
         mainFrame.Ts.Services.Settings.ReadUserSetting('TicketGrid-sort-' + window.location.search, 'hiddenDateModified|false', function (result) {
             var values = result.split('|');
             ticketGrid._loader.setSort(values[0], values[1] === "true");
@@ -26,7 +22,6 @@ $(document).ready(function () {
 function onShow() {
     ticketGrid.refresh();
 }
-
 
 TicketGrid = function (options) {
     var ticketLoadFilter = mainFrame.Ts.Utils.queryToTicketFilter(window);
@@ -135,7 +130,6 @@ TicketGrid = function (options) {
             loadingIndicator.remove();
             loadingIndicator = null;
         }
-
         var vp = grid.getViewport();
         loader.clear();
         loader.ensureData(vp.top, vp.bottom, function () {
@@ -143,17 +137,14 @@ TicketGrid = function (options) {
         });
     }
 
-
     $('.tickets-new').click(function (e) {
         e.preventDefault();
         mainFrame.Ts.MainPage.newTicket();
         mainFrame.Ts.System.logAction('Ticket Grid - New Ticket');
     });
 
-
     $('.tickets-own').click(function (e) {
         e.preventDefault();
-
         var ids = getSelectedIDs();
         if (ids.length > 1) {
             self.showLoadingIndicator();
@@ -168,13 +159,11 @@ TicketGrid = function (options) {
     });
     $('.tickets-request').click(function (e) {
         e.preventDefault();
-
         var ids = getSelectedIDs();
         if (ids.length > 1) {
             mainFrame.Ts.Services.Tickets.RequestUpdate(JSON.stringify(ids), function () { alert('You have requested an update for ' + ids.length + ' selected tickets.'); });
             mainFrame.Ts.System.logAction('Ticket Grid - Request Update');
-        }
-        else {
+        } else {
             var ticket = getActiveTicket();
             mainFrame.Ts.Services.Tickets.RequestUpdate(ticket.TicketID, function () { alert('You have requested an update for Ticket ' + ticket.TicketNumber + '.'); });
             mainFrame.Ts.System.logAction('Ticket Grid - Request Update');
@@ -408,12 +397,10 @@ TicketGrid = function (options) {
     	$('#dialog-due-date').modal('hide');
     	self.showLoadingIndicator();
     	var ids = getSelectedIDs();
-
     	var currDate = $('#bulkAssignDueDate').val();
 
     	if (currDate !== '') {
     		var formattedDate = mainFrame.Ts.Utils.getMsDate(moment(currDate, dateFormat + ' hh:mm A').format('MM/DD/YYYY hh:mm A'))
-
     		mainFrame.Ts.Services.Tickets.SetTicketsDueDate(JSON.stringify(ids), formattedDate, function () {
     			mainFrame.Ts.System.logAction('Ticket Grid - Updated due date');
     			refreshGrid();
@@ -444,14 +431,11 @@ TicketGrid = function (options) {
         var cell = grid.getActiveCell();
         if (cell) {
             grid.setSelectedRows([cell.row]);
-        }
-        else {
+        } else {
             grid.setSelectedRows([]);
         }
-
         previewActiveTicket();
     }
-
 
     $('.tickets-export').click(function (e) {
         e.preventDefault();
@@ -472,8 +456,7 @@ TicketGrid = function (options) {
                     deselectRows();
                 });
             }
-        }
-        else {
+        } else {
             var ticket = getActiveTicket();
             if (confirm('Are you sure you would like to delete Ticket ' + ticket.TicketNumber + '?')) {
                 mainFrame.Ts.System.logAction('Ticket Grid - Delete Ticket');
@@ -490,7 +473,6 @@ TicketGrid = function (options) {
             if (ticket) selectedRowIds.push(ticket.hiddenTicketID);
         }
         return selectedRowIds;
-
     }
 
     $('.tickets-refresh').click(function (e) {
@@ -508,7 +490,6 @@ TicketGrid = function (options) {
     		else {
     			layout.hide("south");
     		}
-
     	});
     	mainFrame.Ts.System.logAction('Ticket Grid - Hid View Pane');
     });
@@ -587,7 +568,6 @@ TicketGrid = function (options) {
     $('.tickets-default-columns').click(function (e) {
         e.preventDefault();
         _lastDialogColumnNo = 0;
-
         $('.dialog-columns-forcefit input').prop('checked', false);
         $('.dialog-columns-list div.checkbox').remove();
 
@@ -606,7 +586,6 @@ TicketGrid = function (options) {
                     break;
                 }
             }
-
             if (flag == false) { addDialogColumn(allColumns[i], false); }
         }
     });
@@ -636,20 +615,16 @@ TicketGrid = function (options) {
         if ((mainFrame.Ts.System.User.IsSystemAdmin != false || report.CreatorID == mainFrame.Ts.System.User.UserID) && report.ReportType != 3 && report.OrganizationID != null) {
             $('.reports-edit').show();
         }
-
         if (report.OrganizationID == null && (mainFrame.Ts.System.User.UserID == 34 || mainFrame.Ts.System.User.UserID == 43 || mainFrame.Ts.System.User.UserID == 47) && report.ReportType != 3) {
             $('.reports-edit').show();
         }
-
-
     });
-
 
     var data = [];
     this._loader = new TeamSupport.DataModel(getData, getItemMetadata);
     var loader = this._loader;
 
-    function getData(from, to, sortcol, isdesc, callback) {
+    function getData (from, to, sortcol, isdesc, callback) {
         var params = { "reportID":
         _reportID,
             "from": from,
@@ -668,9 +643,7 @@ TicketGrid = function (options) {
             success: callback,
             error: function (xhr, status, error) { }
         });
-
         return req;
-
     }
 
     function getItemMetadata(index, data) {
@@ -683,22 +656,19 @@ TicketGrid = function (options) {
         if (ticket) {
             if (hasViolation) {
                 result = result + ' ticket-grid-row-violated';
-            }
-            else if (hasWarning) {
+            } else if (hasWarning) {
                 result = result + ' ticket-grid-row-warning';
             }
-
             if (ticket['hiddenDueDate'] && ticket['hiddenDueDate'] < (new Date())) { result = result + ' ticket-grid-row-pastdue'; }
             if (ticket['hiddenIsRead'] && ticket['hiddenIsRead'] === true) { result = result + ' ticket-grid-row-read'; } else { result = result + ' ticket-grid-row-unread'; }
             if (ticket['hiddenUserID'] == mainFrame.Ts.System.User.UserID) { result = result + ' ticket-grid-row-mine'; } else { result = result + ' ticket-grid-row-notmine'; }
             if (ticket['hiddenIsClosed'] == true) { result = result + ' ticket-grid-row-closed'; } else { result = result + ' ticket-grid-row-open'; }
-
         }
         return { cssClasses: result };
     }
 
-
     var slaTicketColumnFormatter = function (row, cell, value, columnDef, dataContext) {
+        if (!dataContext) { return ''; }
         var min = dataContext["SlaViolationTime"];
         if (min) {
             if (min < 0)
@@ -710,50 +680,51 @@ TicketGrid = function (options) {
     };
 
     var dueDateTicketColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        var date = dataContext["DueDate"];
+        var date = (dataContext != undefined) ? dataContext["DueDate"] : null;
         if (date) {
             var formattedDate = mainFrame.Ts.Utils.getDateString(date, true, true, false);
             return '<span class="ticket-grid-cell-duedate-text">' + formattedDate + '</span>';
-        }
-        else {
+        } else {
             return '';
         }
     };
-
 
     var openTicketColumnFormatter = function (row, cell, value, columnDef, dataContext) {
         return '<i class="fa fa-external-link-square color-green" title="Click to open this ticket"></i>';
     };
 
     var isReadColumnFormatter = function (row, cell, value, columnDef, ticket) {
-        return value == false ? '<i class="fa fa-circle color-blue" title="Click to mark this ticket as read"></i>' : '<i class="fa fa-circle color-lightgray" title="Click to mark this ticket as unread"></i>'
+        return (value) ? '<i class="fa fa-circle color-lightgray" title="Click to mark this ticket as unread"></i>' : '<i class="fa fa-circle color-blue" title="Click to mark this ticket as read"></i>';
     };
 
     var isFlaggedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        return value == false ? '<i class="fa fa-flag color-lightgray" title="Click to flag this ticket for follow up"></i>' : '<i class="fa fa-flag color-red" title="Click to unflag this ticket"></i>'
+        return (value) ? '<i class="fa fa-flag color-red" title="Click to unflag this ticket"></i>' : '<i class="fa fa-flag color-lightgray" title="Click to flag this ticket for follow up"></i>';
     };
 
     var isEnqueuedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        return value == false ? '<i class="ts-text-icon bgcolor-lightgray color-white" title="Click to add this ticket to your queue">Q</i>' : '<i class="ts-text-icon bgcolor-green color-white" title="Click to remove this ticket from your queue">Q</i>';
+        return (value) ? '<i class="ts-text-icon bgcolor-green color-white" title="Click to remove this ticket from your queue">Q</i>' :'<i class="ts-text-icon bgcolor-lightgray color-white" title="Click to add this ticket to your queue">Q</i>';
     };
 
     var isSubscribedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        return value == false ? '<i class="fa fa-rss color-lightgray" title="Click to subscribe to this ticket"></i>' : '<i class="fa fa-rss color-amber" title="Click to unsubscribe to this ticket"></i>'
+        return (value) ? '<i class="fa fa-rss color-amber" title="Click to unsubscribe to this ticket"></i>' : '<i class="fa fa-rss color-lightgray" title="Click to subscribe to this ticket"></i>';
     };
 
     var dateTicketColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        var date = dataContext[columnDef.id];
+        var date = (dataContext != undefined) ? dataContext[columnDef.id] : null;
         if (date) {
             return date.localeFormat(mainFrame.Ts.Utils.getDateTimePattern());
-        }
-        else {
+        } else {
             return '';
         }
     };
 
     var ticketSourceColumnFormatter = function (row, cell, value, columnDef, ticket) {
-        var style = "background: transparent url('../" + mainFrame.Ts.Utils.getTicketSourceIcon(value) + "');"
-        return '<span class="ts-icon" style="' + style + '" title="Ticket Source: ' + value + '"></span>'
+        if (value) {
+            var style = "background: transparent url('../" + mainFrame.Ts.Utils.getTicketSourceIcon(value) + "');"
+            return '<span class="ts-icon" style="' + style + '" title="Ticket Source: ' + value + '"></span>'
+        } else {
+            return '';
+        }
     };
 
     var checkedFormatter = function (row, cell, value, columnDef, ticket) {
@@ -765,11 +736,19 @@ TicketGrid = function (options) {
     };
 
     var linkFormatter = function (row, cell, value, columnDef, ticket) {
-        return '<a href="#" class="cell-link" data-id="' + columnDef.id + '" data-row="' + row + '">' + ticket[columnDef.id] + '</a>'
+        if (ticket) {
+            return '<a href="#" class="cell-link" data-id="' + columnDef.id + '" data-row="' + row + '">' + ticket[columnDef.id] + '</a>'
+        } else {
+            return '';
+        }
     };
 
     var bitFormatter = function (row, cell, value, columnDef, dataContext) {
-        return dataContext[columnDef.id] == true ? "True" : "False";
+        if (dataContext) {
+            return dataContext[columnDef.id] == true ? "True" : "False";
+        } else {
+            return '';
+        }
     };
 
     var stringFormatter = function (row, cell, value, columnDef, dataContext) {
@@ -779,22 +758,35 @@ TicketGrid = function (options) {
     };
 
     var floatFormatter = function (row, cell, value, columnDef, dataContext) {
-        return value;
+        return (value) ? value : '';
     };
 
     var emailFormatter = function (row, cell, value, columnDef, dataContext) {
-        return '<a href="mailto:' + dataContext[columnDef.id] + '">' + dataContext[columnDef.id] + '</a>';
+        if (dataContext) {
+            return '<a href="mailto:' + dataContext[columnDef.id] + '">' + dataContext[columnDef.id] + '</a>';
+        } else {
+            return '';
+        }
     };
 
     var ticketNumberFormatter = function (row, cell, value, columnDef, dataContext) {
-        return '<a href="#" onclick="mainFrame.Ts.MainPage.openTicket(' + dataContext[columnDef.id] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
+        if (dataContext) {
+            return '<a href="#" onclick="mainFrame.Ts.MainPage.openTicket(' + dataContext[columnDef.id] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
+        } else {
+            return '';
+        }
     }
 
     var companyFormatter = function (row, cell, value, columnDef, dataContext) {
-        return '<a href="#" onclick="mainFrame.Ts.MainPage.openCustomerByName(\'' + dataContext[columnDef.id] + '\', true); return false;">' + dataContext[columnDef.id] + '</a>';
+        if (dataContext) {
+            return '<a href="#" onclick="mainFrame.Ts.MainPage.openCustomerByName(\'' + dataContext[columnDef.id] + '\', true); return false;">' + dataContext[columnDef.id] + '</a>';
+        } else {
+            return '';
+        }
     }
 
     var openFormatter = function (row, cell, value, columnDef, dataContext) {
+        if (!dataContext) { return ''; }
         if (columnDef.openField == "TicketID") {
             return '<a href="#" onclick="mainFrame.Ts.MainPage.openTicketByID(' + dataContext["hiddenTicketID"] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
         } else if (columnDef.openField == "OrganizationID") {
@@ -806,40 +798,40 @@ TicketGrid = function (options) {
     };
 
     var dateFormatter = function (row, cell, value, columnDef, dataContext) {
+        if (!dataContext) { return ''; }
         var date = dataContext[columnDef.id];
         return date ? mainFrame.Ts.Utils.getDateString(date, true, true, false) : '';
     };
 
     function getAllColumns() {
         return [
-
-  	{ id: "openButton", name: "Open Ticket", maxWidth: 24, formatter: openTicketColumnFormatter, unselectable: true, resizable: false, sortable: false, cssClass: 'ticket-grid-cell-sla', headerCssClass: 'no-header-name' },
-    { id: "IsRead", name: "Read", field: "IsRead", maxWidth: 24, sortable: true, formatter: isReadColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
-    { id: "IsFlagged", name: "Flagged", field: "IsFlagged", maxWidth: 24, sortable: true, formatter: isFlaggedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
-    { id: "IsSubscribed", name: "Subscribed", field: "IsSubscribed", maxWidth: 24, sortable: true, formatter: isSubscribedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
-    { id: "IsEnqueued", name: "Enqueued", field: "IsEnqueued", maxWidth: 24, sortable: true, formatter: isEnqueuedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
-    { id: "TicketNumber", name: "Number", field: "TicketNumber", width: 75, sortable: true, cssClass: 'ticket-grid-cell-ticketnumber', formatter: linkFormatter },
-    { id: "TicketTypeName", name: "Type", field: "TicketTypeName", width: 125, sortable: true },
-    { id: "Name", name: "Name", field: "Name", width: 200, sortable: true },
-    { id: "UserName", name: "Assigned To", field: "UserName", width: 125, sortable: true },
-    { id: "Status", name: "Status", field: "Status", width: 125, sortable: true },
-    { id: "Severity", name: "Severity", field: "Severity", width: 125, sortable: true },
-    { id: "Customers", name: "Customers", field: "Customers", width: 125, sortable: true },
-    { id: "Contacts", name: "Contacts", field: "Contacts", width: 125, sortable: true },
-    { id: "GroupName", name: "Group", field: "GroupName", width: 125, sortable: true },
-    { id: "DateModified", name: "Last Modified", field: "DateModified", width: 150, sortable: true, formatter: dateTicketColumnFormatter },
-    { id: "DaysOpened", name: "Days Opened", field: "DaysOpened", width: 100, sortable: true },
-    { id: "ProductName", name: "Product", field: "ProductName", width: 150, sortable: true },
-    { id: "CategoryName", name: "Forum Category", field: "CategoryName", width: 150, sortable: true },
-    { id: "ReportedVersion", name: "Reported", field: "ReportedVersion", width: 100, sortable: true },
-    { id: "SolvedVersion", name: "Resolved", field: "SolvedVersion", width: 100, sortable: true },
-    { id: "DateCreated", name: "Date Opened", field: "DateCreated", width: 150, sortable: true, formatter: dateTicketColumnFormatter },
-    { id: "DueDate", name: "Due Date", field: "DueDate", width: 150, sortable: true, formatter: dueDateTicketColumnFormatter },
-    { id: "IsClosed", name: "Closed", field: "IsClosed", width: 75, sortable: true },
-    { id: "CloserName", name: "Closed By", field: "CloserName", width: 125, sortable: true },
-    { id: "SlaViolationTime", name: "SLA Violation Time", field: "SlaViolationTime", width: 125, sortable: true, formatter: slaTicketColumnFormatter },
-    { id: "TicketSource", name: "Ticket Source", field: "TicketSource", maxWidth: 24, sortable: true, formatter: ticketSourceColumnFormatter, headerCssClass: 'no-header-name' }
-	];
+            { id: "openButton", name: "Open Ticket", maxWidth: 24, formatter: openTicketColumnFormatter, unselectable: true, resizable: false, sortable: false, cssClass: 'ticket-grid-cell-sla', headerCssClass: 'no-header-name' },
+            { id: "IsRead", name: "Read", field: "IsRead", maxWidth: 24, sortable: true, formatter: isReadColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
+            { id: "IsFlagged", name: "Flagged", field: "IsFlagged", maxWidth: 24, sortable: true, formatter: isFlaggedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
+            { id: "IsSubscribed", name: "Subscribed", field: "IsSubscribed", maxWidth: 24, sortable: true, formatter: isSubscribedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
+            { id: "IsEnqueued", name: "Enqueued", field: "IsEnqueued", maxWidth: 24, sortable: true, formatter: isEnqueuedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
+            { id: "TicketNumber", name: "Number", field: "TicketNumber", width: 75, sortable: true, cssClass: 'ticket-grid-cell-ticketnumber', formatter: linkFormatter },
+            { id: "TicketTypeName", name: "Type", field: "TicketTypeName", width: 125, sortable: true },
+            { id: "Name", name: "Name", field: "Name", width: 200, sortable: true },
+            { id: "UserName", name: "Assigned To", field: "UserName", width: 125, sortable: true },
+            { id: "Status", name: "Status", field: "Status", width: 125, sortable: true },
+            { id: "Severity", name: "Severity", field: "Severity", width: 125, sortable: true },
+            { id: "Customers", name: "Customers", field: "Customers", width: 125, sortable: true },
+            { id: "Contacts", name: "Contacts", field: "Contacts", width: 125, sortable: true },
+            { id: "GroupName", name: "Group", field: "GroupName", width: 125, sortable: true },
+            { id: "DateModified", name: "Last Modified", field: "DateModified", width: 150, sortable: true, formatter: dateTicketColumnFormatter },
+            { id: "DaysOpened", name: "Days Opened", field: "DaysOpened", width: 100, sortable: true },
+            { id: "ProductName", name: "Product", field: "ProductName", width: 150, sortable: true },
+            { id: "CategoryName", name: "Forum Category", field: "CategoryName", width: 150, sortable: true },
+            { id: "ReportedVersion", name: "Reported", field: "ReportedVersion", width: 100, sortable: true },
+            { id: "SolvedVersion", name: "Resolved", field: "SolvedVersion", width: 100, sortable: true },
+            { id: "DateCreated", name: "Date Opened", field: "DateCreated", width: 150, sortable: true, formatter: dateTicketColumnFormatter },
+            { id: "DueDate", name: "Due Date", field: "DueDate", width: 150, sortable: true, formatter: dueDateTicketColumnFormatter },
+            { id: "IsClosed", name: "Closed", field: "IsClosed", width: 75, sortable: true },
+            { id: "CloserName", name: "Closed By", field: "CloserName", width: 125, sortable: true },
+            { id: "SlaViolationTime", name: "SLA Violation Time", field: "SlaViolationTime", width: 125, sortable: true, formatter: slaTicketColumnFormatter },
+            { id: "TicketSource", name: "Ticket Source", field: "TicketSource", maxWidth: 24, sortable: true, formatter: ticketSourceColumnFormatter, headerCssClass: 'no-header-name' }
+        ];
     }
     this.getAllColumns = getAllColumns;
 
@@ -917,16 +909,14 @@ TicketGrid = function (options) {
             column.headerCssClass = 'no-header-name';
             column.width = 15;
             column.isFirst = true;
-        }
-        else if (low == 'isenqueued') {
+        } else if (low == 'isenqueued') {
             column.formatter = isEnqueuedColumnFormatter;
             column.unselectable = true;
             column.resizeable = false;
             column.headerCssClass = 'no-header-name';
             column.width = 15;
             column.isFirst = true;
-        }
-        else if (low == "openbutton") {
+        } else if (low == "openbutton") {
             column.formatter = openTicketColumnFormatter;
             column.unselectable = true;
             column.resizeable = false;
@@ -934,8 +924,7 @@ TicketGrid = function (options) {
             column.width = 15;
             column.isFirst = true;
             column.cssClass = 'ticket-grid-cell-sla';
-        }
-        else if (low == 'ticketnumber') {
+        } else if (low == 'ticketnumber') {
             column.formatter = linkFormatter;
             column.cssClass = 'ticket-grid-cell-ticketnumber';
         } else if (low == 'duedate') {
@@ -979,7 +968,11 @@ TicketGrid = function (options) {
     grid = this._grid;
     grid.setSelectionModel(new Slick.RowSelectionModel());
 
-    if (ticketLoadFilter.IsClosed && ticketLoadFilter.IsClosed == 'true') { $('.grid-ticket').addClass('grid-closed'); } else { $('.grid-ticket').addClass('grid-notclosed'); }
+    if (ticketLoadFilter.IsClosed && ticketLoadFilter.IsClosed == 'true') {
+        $('.grid-ticket').addClass('grid-closed');
+    } else {
+        $('.grid-ticket').addClass('grid-notclosed');
+    }
 
     if (ticketLoadFilter.IsEnqueued) {
         $('.grid-ticket').addClass('grid-queue');
@@ -1008,10 +1001,8 @@ TicketGrid = function (options) {
             mainFrame.Ts.Services.Tickets.MoveUserQueueTickets(JSON.stringify(ids), loader.data.length == args.insertBefore ? -1 : loader.data[args.insertBefore].TicketID, ticketLoadFilter.ViewerID, function () {
                 refreshGrid();
                 deselectRows();
-
             });
         });
-
 
         grid.registerPlugin(moveRowsPlugin);
         grid.onDragInit.subscribe(function (e, dd) {
@@ -1020,7 +1011,6 @@ TicketGrid = function (options) {
         });
 
     }
-
 
     grid.onViewportChanged.subscribe(function (e, args) {
         var vp = grid.getViewport();
@@ -1042,7 +1032,6 @@ TicketGrid = function (options) {
         );
     }
 
-
     function saveColumns() {
         var columns = grid.getColumns();
         self._report.Settings.Columns = new Array();
@@ -1054,7 +1043,6 @@ TicketGrid = function (options) {
             item.width = columns[i].width;
             self._report.Settings.Columns.push(item);
         }
-
         saveUserSettings();
     }
 
@@ -1089,36 +1077,30 @@ TicketGrid = function (options) {
                 if (ids.length > 1) {
                     self.showLoadingIndicator();
                     mainFrame.Ts.Services.Tickets.SetTicketReads(data, setRead, function () { refreshGrid(); deselectRows(); });
-                }
-                else {
+                } else {
                     ticket.IsRead = setRead;
                     mainFrame.Ts.Services.Tickets.SetTicketRead(ticket.hiddenTicketID, ticket.IsRead, function () {
                         mainFrame.Ts.MainPage.updateMyOpenTicketReadCount();
                     });
                     if (ticket.IsRead) {
                         $('.slick-row[row="' + row + '"]').addClass('ticket-grid-row-read');
-                    }
-                    else {
+                    } else {
                         $('.slick-row[row="' + row + '"]').removeClass('ticket-grid-row-read');
                     }
                     grid.invalidateRow(row);
                     grid.updateRow(row);
                     grid.render();
-
                 }
-
                 mainFrame.Ts.System.logAction('Ticket Grid - Changed Read Status');
                 e.stopPropagation();
                 e.stopImmediatePropagation();
-
                 return true;
             case "IsFlagged":
                 var setIsFlagged = !ticket.IsFlagged;
                 if (ids.length > 1) {
                     self.showLoadingIndicator();
                     mainFrame.Ts.Services.Tickets.SetTicketFlags(data, setIsFlagged, function () { refreshGrid(); deselectRows(); });
-                }
-                else {
+                } else {
                     ticket.IsFlagged = setIsFlagged;
                     mainFrame.Ts.Services.Tickets.SetTicketFlag(ticket.hiddenTicketID, ticket.IsFlagged, function () {
                         grid.invalidateRow(row);
@@ -1126,7 +1108,6 @@ TicketGrid = function (options) {
                         grid.render();
                     });
                 }
-
                 mainFrame.Ts.System.logAction('Ticket Grid - Changed Flagged Status');
                 e.stopPropagation();
                 e.stopImmediatePropagation();
@@ -1154,8 +1135,7 @@ TicketGrid = function (options) {
                 if (ids.length > 1) {
                     self.showLoadingIndicator();
                     mainFrame.Ts.Services.Tickets.SetTicketSubcribes(data, setIsSubscribed, function () { refreshGrid(); deselectRows(); });
-                }
-                else {
+                } else {
                     ticket.IsSubscribed = setIsSubscribed;
                     mainFrame.Ts.Services.Tickets.SetSubscribed(ticket.hiddenTicketID, ticket.IsSubscribed, null, function () {
                         grid.invalidateRow(row);
@@ -1177,7 +1157,6 @@ TicketGrid = function (options) {
                 return true;
             case "checked":
                 var rows = grid.getSelectedRows();
-
                 for (var i = 0; i < rows.length; i++) {
                     if (rows[i] == row) {
                         if (rows.length == 1) return;
@@ -1207,7 +1186,6 @@ TicketGrid = function (options) {
                 e.stopImmediatePropagation();
                 return true;
             default:
-
         }
         return false;
     });
@@ -1231,8 +1209,7 @@ TicketGrid = function (options) {
             var vp = grid.getViewport();
             loader.ensureData(vp.top, vp.bottom, self.hideLoadingIndicator);
             clearPreview();
-        }
-        else {
+        } else {
             previewTicket(ticket);
         }
     });
@@ -1247,8 +1224,7 @@ TicketGrid = function (options) {
             var vp = grid.getViewport();
             loader.ensureData(vp.top, vp.bottom, self.hideLoadingIndicator);
             clearPreview();
-        }
-        else {
+        } else {
             previewTicket(ticket);
         }
     }
@@ -1296,7 +1272,7 @@ TicketGrid = function (options) {
             var timLoading = setTimeout(function () { preview[0].contentWindow.writeHtml('<div class="ticket-preview-loading ts-loading"></div>'); timLoading = null; }, 500);
             mainFrame.Ts.Services.Tickets.GetContactsAndCustomers(ticket.TicketID, function (customers) {
                 if (customers.length > 0) {
-                    html = html + '<tr>'
+                    html = html + '<tr>';
                     var s = '';
                     for (var i = 0; i < customers.length; i++) {
                         if (i !== 0) s = s + ', ';
@@ -1318,19 +1294,12 @@ TicketGrid = function (options) {
                         html = html + '<div>';
                         if (actions[i].CreatorName) html = html + '<span class="ticket-preview-action-author">' + actions[i].CreatorName + '</span> - ';
                         html = html + '<span class="ticket-preview-action-date">' + actions[i].DateCreated.localeFormat(mainFrame.Sys.CultureInfo.CurrentCulture.dateTimeFormat.FullDateTimePattern) + '</span></div>';
-
-
-
-
                         html = html + '</div>';
                     }
                     html = html + '</div></div></div>';
                     if (preview[0].contentWindow.writeHtml) preview[0].contentWindow.writeHtml(html);
-
                 });
-
             });
-
         });
     }
 
@@ -1350,12 +1319,15 @@ TicketGrid = function (options) {
         if (self._currentTicket == null) {
             self._currentTicket = getActiveTicket();
             previewTicket(self._currentTicket);
-            if (self._currentTicket == null) mainFrame.Ts.MainPage.addDebugStatus('null'); else mainFrame.Ts.MainPage.addDebugStatus(self._currentTicket.TicketNumber);
+            if (self._currentTicket == null) {
+                mainFrame.Ts.MainPage.addDebugStatus('null');
+            } else {
+                mainFrame.Ts.MainPage.addDebugStatus(self._currentTicket.TicketNumber);
+            }
         }
     });
 
 };
-
 
 TicketGrid.prototype = {
     constructor: TicketGrid,
@@ -1371,11 +1343,9 @@ TicketGrid.prototype = {
                     self._grid.setOptions({ forceFitColumns: false });
                 }
 
-
                 $('.grid-ticket').toggleClass('grid-compact', self.options.isCompact == true);
                 self._grid.setOptions({ rowHeight: (self.options.isCompact == true ? 24 : 32) });
-            }
-            else {
+            } else {
                 self._grid.setOptions({ forceFitColumns: true });
                 self._grid.autosizeColumns();
             }
@@ -1394,15 +1364,12 @@ TicketGrid.prototype = {
             openCol.IsCustomField = false;
             newColumns.push(self.createColumnObject(openCol));
 
-
             if (self._report.Settings.Columns) {
                 for (var i = 0; i < self._report.Settings.Columns.length; i++) {
                     if (self._report.Settings.Columns[i].id == 'checked') {
-                    }
-                    else {
+                    } else {
                         for (var a = 0; a < repCols.length; a++) {
                             var repCol = repCols[a];
-
                             if (repCol.Name == self._report.Settings.Columns[i].id) {
                                 repCols.splice(a, 1);
                                 repCol.width = self._report.Settings.Columns[i].width;
@@ -1430,17 +1397,15 @@ TicketGrid.prototype = {
 
 };
 
-
-
-
 // fix for missing indexOf in IE8
 if (!Array.prototype.indexOf) {
     Array.prototype.indexOf = function (elt /*, from*/) {
         var len = this.length >>> 0;
         var from = Number(arguments[1]) || 0;
         from = (from < 0) ? Math.ceil(from) : Math.floor(from);
-        if (from < 0) from += len;
-
+        if (from < 0) {
+            from += len;
+        }
         for (; from < len; from++) {
             if (from in this && this[from] === elt) return from;
         }
