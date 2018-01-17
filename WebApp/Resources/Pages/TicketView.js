@@ -568,7 +568,6 @@ TicketGrid = function (options) {
     $('.tickets-default-columns').click(function (e) {
         e.preventDefault();
         _lastDialogColumnNo = 0;
-
         $('.dialog-columns-forcefit input').prop('checked', false);
         $('.dialog-columns-list div.checkbox').remove();
 
