@@ -669,6 +669,7 @@ TicketGrid = function (options) {
     }
 
     var slaTicketColumnFormatter = function (row, cell, value, columnDef, dataContext) {
+        if (!dataContext) { return ''; }
         var min = dataContext["SlaViolationTime"];
         if (min) {
             if (min < 0)
@@ -694,19 +695,19 @@ TicketGrid = function (options) {
     };
 
     var isReadColumnFormatter = function (row, cell, value, columnDef, ticket) {
-        return value == false ? '<i class="fa fa-circle color-blue" title="Click to mark this ticket as read"></i>' : '<i class="fa fa-circle color-lightgray" title="Click to mark this ticket as unread"></i>'
+        return (value) ? '<i class="fa fa-circle color-lightgray" title="Click to mark this ticket as unread"></i>' : '<i class="fa fa-circle color-blue" title="Click to mark this ticket as read"></i>';
     };
 
     var isFlaggedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        return value == false ? '<i class="fa fa-flag color-lightgray" title="Click to flag this ticket for follow up"></i>' : '<i class="fa fa-flag color-red" title="Click to unflag this ticket"></i>'
+        return (value) ? '<i class="fa fa-flag color-red" title="Click to unflag this ticket"></i>' : '<i class="fa fa-flag color-lightgray" title="Click to flag this ticket for follow up"></i>';
     };
 
     var isEnqueuedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        return value == false ? '<i class="ts-text-icon bgcolor-lightgray color-white" title="Click to add this ticket to your queue">Q</i>' : '<i class="ts-text-icon bgcolor-green color-white" title="Click to remove this ticket from your queue">Q</i>';
+        return (value) ? '<i class="ts-text-icon bgcolor-green color-white" title="Click to remove this ticket from your queue">Q</i>' :'<i class="ts-text-icon bgcolor-lightgray color-white" title="Click to add this ticket to your queue">Q</i>';
     };
 
     var isSubscribedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        return value == false ? '<i class="fa fa-rss color-lightgray" title="Click to subscribe to this ticket"></i>' : '<i class="fa fa-rss color-amber" title="Click to unsubscribe to this ticket"></i>'
+        return (value) ? '<i class="fa fa-rss color-amber" title="Click to unsubscribe to this ticket"></i>' : '<i class="fa fa-rss color-lightgray" title="Click to subscribe to this ticket"></i>';
     };
 
     var dateTicketColumnFormatter = function (row, cell, value, columnDef, dataContext) {
@@ -719,8 +720,12 @@ TicketGrid = function (options) {
     };
 
     var ticketSourceColumnFormatter = function (row, cell, value, columnDef, ticket) {
-        var style = "background: transparent url('../" + mainFrame.Ts.Utils.getTicketSourceIcon(value) + "');"
-        return '<span class="ts-icon" style="' + style + '" title="Ticket Source: ' + value + '"></span>'
+        if (value) {
+            var style = "background: transparent url('../" + mainFrame.Ts.Utils.getTicketSourceIcon(value) + "');"
+            return '<span class="ts-icon" style="' + style + '" title="Ticket Source: ' + value + '"></span>'
+        } else {
+            return '';
+        }
     };
 
     var checkedFormatter = function (row, cell, value, columnDef, ticket) {
@@ -732,7 +737,7 @@ TicketGrid = function (options) {
     };
 
     var linkFormatter = function (row, cell, value, columnDef, ticket) {
-        if (ticket != undefined) {
+        if (ticket) {
             return '<a href="#" class="cell-link" data-id="' + columnDef.id + '" data-row="' + row + '">' + ticket[columnDef.id] + '</a>'
         } else {
             return '';
@@ -740,7 +745,7 @@ TicketGrid = function (options) {
     };
 
     var bitFormatter = function (row, cell, value, columnDef, dataContext) {
-        if (dataContext != undefined) {
+        if (dataContext) {
             return dataContext[columnDef.id] == true ? "True" : "False";
         } else {
             return '';
@@ -758,7 +763,7 @@ TicketGrid = function (options) {
     };
 
     var emailFormatter = function (row, cell, value, columnDef, dataContext) {
-        if (dataContext != undefined) {
+        if (dataContext) {
             return '<a href="mailto:' + dataContext[columnDef.id] + '">' + dataContext[columnDef.id] + '</a>';
         } else {
             return '';
@@ -766,7 +771,7 @@ TicketGrid = function (options) {
     };
 
     var ticketNumberFormatter = function (row, cell, value, columnDef, dataContext) {
-        if (dataContext != undefined) {
+        if (dataContext) {
             return '<a href="#" onclick="mainFrame.Ts.MainPage.openTicket(' + dataContext[columnDef.id] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
         } else {
             return '';
@@ -774,10 +779,15 @@ TicketGrid = function (options) {
     }
 
     var companyFormatter = function (row, cell, value, columnDef, dataContext) {
-        return '<a href="#" onclick="mainFrame.Ts.MainPage.openCustomerByName(\'' + dataContext[columnDef.id] + '\', true); return false;">' + dataContext[columnDef.id] + '</a>';
+        if (dataContext) {
+            return '<a href="#" onclick="mainFrame.Ts.MainPage.openCustomerByName(\'' + dataContext[columnDef.id] + '\', true); return false;">' + dataContext[columnDef.id] + '</a>';
+        } else {
+            return '';
+        }
     }
 
     var openFormatter = function (row, cell, value, columnDef, dataContext) {
+        if (!dataContext) { return ''; }
         if (columnDef.openField == "TicketID") {
             return '<a href="#" onclick="mainFrame.Ts.MainPage.openTicketByID(' + dataContext["hiddenTicketID"] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
         } else if (columnDef.openField == "OrganizationID") {
@@ -789,6 +799,7 @@ TicketGrid = function (options) {
     };
 
     var dateFormatter = function (row, cell, value, columnDef, dataContext) {
+        if (!dataContext) { return ''; }
         var date = dataContext[columnDef.id];
         return date ? mainFrame.Ts.Utils.getDateString(date, true, true, false) : '';
     };
