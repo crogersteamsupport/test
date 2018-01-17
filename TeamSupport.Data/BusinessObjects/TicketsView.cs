@@ -1222,7 +1222,7 @@ WHERE ot.OrganizationID = @OrganizationID {0}";
 
         }
 
-        public static SqlCommand GetLoadRangeCommand(LoginUser loginUser, int from, int to, TicketLoadFilter filter, string myTicketsFields = "")
+        public static SqlCommand GetLoadRangeCommand(LoginUser loginUser, int from, int to, TicketLoadFilter filter)
         {
             SqlCommand command = new SqlCommand();
 
@@ -1336,18 +1336,8 @@ WHERE ot.OrganizationID = @OrganizationID {0}";
         ,tv.DateModifiedBySalesForceSync
         ,tv.DueDate
         ,tv.ProductFamilyID";
-
-		StringBuilder where = new StringBuilder();
-		
-		if (!string.IsNullOrEmpty(myTicketsFields))
-		{
-			fields = myTicketsFields;
-			GetFilterWhereClause(loginUser, filter, command, where, "MyTicketsView");
-		}
-		else
-		{
-			GetFilterWhereClause(loginUser, filter, command, where);
-		}
+            StringBuilder where = new StringBuilder();
+            GetFilterWhereClause(loginUser, filter, command, where);
 
             string query = @"
 
@@ -1361,12 +1351,12 @@ WHERE ot.OrganizationID = @OrganizationID {0}";
 
         SELECT Result.RowNum, Result.TotalRecords, {3}
         FROM #GridViewTickets AS Result
-        JOIN {4} tv ON tv.TicketID = Result.TicketID
+        INNER JOIN UserTicketsView tv ON tv.TicketID = Result.TicketID
         WHERE tv.ViewerID = @ViewerID
         ORDER BY Result.RowNum ASC
         ";
 
-            command.CommandText = string.Format(query, where.ToString(), sortFields, sort, fields, string.IsNullOrEmpty(myTicketsFields) ? "UserTicketsView" : "MyTicketsView");
+            command.CommandText = string.Format(query, where.ToString(), sortFields, sort, fields);
             command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue("@FromIndex", from + 1);
             command.Parameters.AddWithValue("@ToIndex", to + 1);
@@ -1397,11 +1387,11 @@ WHERE ot.OrganizationID = @OrganizationID {0}";
         }
 
 
-        private static void GetFilterWhereClause(LoginUser loginUser, TicketLoadFilter filter, SqlCommand command, StringBuilder builder, string view = "UserTicketsView")
+        private static void GetFilterWhereClause(LoginUser loginUser, TicketLoadFilter filter, SqlCommand command, StringBuilder builder)
         {
-			builder.Append(" FROM " + view + " tv ");
+            builder.Append(" FROM UserTicketsView tv ");
 
-			if (filter.UserID != null && filter.GroupID != null && (filter.GroupID == -1 || filter.GroupID == -2))
+            if (filter.UserID != null && filter.GroupID != null && (filter.GroupID == -1 || filter.GroupID == -2))
             {
                 builder.Append(" INNER JOIN GroupUsers gu ON tv.GroupID = gu.GroupID");
             }
