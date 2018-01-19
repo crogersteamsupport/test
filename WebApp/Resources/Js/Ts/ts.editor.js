@@ -83,7 +83,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
                         }
                         else if (_mainFrame.Ts.System.Organization.FontFamily != "Unassigned") {
                             ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily));
-                            FontName = GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily);
+                            FontName = GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily);
                         }
 
                         if (_mainFrame.Ts.System.User.FontSize != "0") {
@@ -92,7 +92,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
                         }
                         else if (_mainFrame.Ts.System.Organization.FontSize != "0") {
                             ed.execCommand("FontSize", false, GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize));
-                            FontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize);
+                            FontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize);
                         }
                         var content = '<p style="{0} {1}"></p>';
                         if (FontSize != "")
