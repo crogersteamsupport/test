@@ -9,7 +9,24 @@
     form.file-upload { position: relative; overflow: hidden; direction: ltr; cursor: pointer; color: #333; width: 15em; height: 16px; line-height: 16px; float:left; margin-top: 0em; }
     form.file-upload input { position: absolute; top: 0; right: 0; margin: 0; border: 300px solid transparent; opacity: 0; -ms-filter: 'alpha(opacity=0)'; filter: alpha(opacity=0); -o-transform: translate(-300px, -300px) scale(10); -moz-transform: translate(-800px, 0) scale(10); cursor: pointer; height: 100%; }
 
-    .user-name-value { line-height: 16px;/* float:left;*/ clear:both; padding: 0 0 .5em 0; width: 90%}
+
+.ts-section {
+    background-color:rgba(200,200,200,0.1);
+}
+.title {
+    margin-bottom:10px;
+    font-size:14px;
+    font-weight:bold;
+}
+.user-name-value {
+    line-height:16px;
+    clear:both;
+    padding:5px;
+    border-top:1px solid rgba(100,100,100,0.1);
+}
+
+
+
     .property {  font-weight:bold; float:left; white-space:nowrap; width: 150px; margin-right: 1em}
     .property-wide {  font-weight:bold; float:left; white-space:nowrap; width: 350px; margin-right: 1em}
     .user-name-value .value, #userPhoneList .value {  float:left;  /*margin-left: .5em;*/}
