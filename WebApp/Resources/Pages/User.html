@@ -16,7 +16,7 @@
 
         <link href="../Css/intlTelInput.css" rel="stylesheet" type="text/css">
 
-        <link href="User.css?1516307574" rel="stylesheet" type="text/css">
+        <link href="User.css?1516307575" rel="stylesheet" type="text/css">
         <link href="/frontend/css/flexbox.css?1516307558" rel="stylesheet" type="text/css">
 
         <script src="../Js/Ts/ts.pendo.js" type="text/javascript"></script>
@@ -31,7 +31,7 @@
         <script src="../../../tinymce/tinymce.min.js?1512863055" type="text/javascript"></script>
         <script src="../../../tinymce/jquery.tinymce.min.js?1512863055" type="text/javascript"></script>
         <script src="../Js/jquery.maskedinput.min.js" type="text/javascript"></script>
-        <script src="User.js" type="text/javascript"></script>
+        <script src="User.js?1516307558" type="text/javascript"></script>
         <script src="../Js/intlTelInput.min.js" type="text/javascript"></script>
         <script src="/frontend/javascript/growthscore.js?1515087127" type="text/javascript"></script>
 
@@ -44,7 +44,7 @@
             </div>
 
             <div class="ui-helper-hidden">
-                <div>
+                <div style="margin-bottom:50px;">
                     <!--<span class="ts-icon ts-icon-edit user-profile-edit" title="Edit user profile."></span>-->
                     <div id="divActionForm" style="display:none;" class="fleft">
                         <textarea class="userSignatureText" style="width: 100%; height: 50px;"></textarea>
@@ -132,7 +132,6 @@
                         </div>
 
                         <div id="twoFactorDiv" style="display:none;">
-                            <div class="line"></div>
                             <div class="user-name-value">
                                 <span class="property">Two Factor Authentication</span>
                                 <span class="value"><a id="userTwoFactorCell" class="ui-state-default ts-link" href="#">+ Cell Phone</a></span>
@@ -354,28 +353,34 @@
                 </div>
 
                 <div class="ts-section ui-helper-hidden" id="divMenuItems">
-                    <div>User Menu Items</div>
-                    <ul id="ulMenuItems">
-                        <li id="mniDashboard"><label class="checkbox"><input type="checkbox">Dashboard</label></li>
-                        <li id="mniMyTickets"><label class="checkbox"><input type="checkbox">My Tickets</label></li>
-                        <li id="mniTickets"><label class="checkbox"><input type="checkbox">All Tickets</label></li>
-                        <ul id="ulTicketTypes"></ul>
-                        <li id="mniTasks"><label class="checkbox"><input type="checkbox">Tasks</label></li>
-                        <li id="mniTicketTags"><label class="checkbox"><input type="checkbox">Ticket Tags</label></li>
-                        <li id="mniKB"><label class="checkbox"><input type="checkbox">Knowledge Base</label></li>
-                        <li id="mniForum"><label class="checkbox"><input type="checkbox">Community</label></li>
-                        <li id="mniWiki"><label class="checkbox"><input type="checkbox">Wiki</label></li>
-                        <li id="mniSearch"><label class="checkbox"><input type="checkbox">Search</label></li>
-                        <li id="mniChat"><label class="checkbox"><input type="checkbox">Customer Chat</label></li>
-                        <li id="mniWC2"><label class="checkbox"><input type="checkbox">Water Cooler</label></li>
-                        <li id="mniUsers"><label class="checkbox"><input type="checkbox">Users</label></li>
-                        <li id="mniGroups"><label class="checkbox"><input type="checkbox">Groups</label></li>
-                        <li id="mniCustomers"><label class="checkbox"><input type="checkbox">Customers</label></li>
-                        <li id="mniProducts"><label class="checkbox"><input type="checkbox">Products</label></li>
-                        <li id="mniInventory"><label class="checkbox"><input type="checkbox">Inventory</label></li>
-                        <li id="mniReports"><label class="checkbox"><input type="checkbox">Reports</label></li>
-                        <li id="mniAdmin"><label class="checkbox"><input type="checkbox">Admin</label></li>
-                    </ul>
+                    <div class="title">Sidebar Menu Display</div>
+                    <div class="flexbox wrap" id="ulMenuItems">
+                        <div class="flex">
+                            <div id="mniDashboard"><label class="checkbox"><input type="checkbox">Dashboard</label></div>
+                            <div id="mniAdmin"><label class="checkbox"><input type="checkbox">Admin</label></div>
+                            <div id="mniWC2"><label class="checkbox"><input type="checkbox">Water Cooler</label></div>
+                            <div id="mniSearch"><label class="checkbox"><input type="checkbox">Search</label></div>
+                            <div id="mniTasks"><label class="checkbox"><input type="checkbox">Tasks</label></div>
+                            <div id="mniUsers"><label class="checkbox"><input type="checkbox">Users</label></div>
+                            <div id="mniGroups"><label class="checkbox"><input type="checkbox">Groups</label></div>
+                            <div id="mniCustomers"><label class="checkbox"><input type="checkbox">Customers</label></div>
+                            <div id="mniProducts"><label class="checkbox"><input type="checkbox">Products</label></div>
+                            <div id="mniInventory"><label class="checkbox"><input type="checkbox">Inventory</label></div>
+                            <div id="mniReports"><label class="checkbox"><input type="checkbox">Reports</label></div>
+                        </div>
+                        <div class="flex">
+                            <div id="mniMyTickets"><label class="checkbox"><input type="checkbox">My Tickets</label></div>
+                            <div id="mniTickets"><label class="checkbox"><input type="checkbox">All Tickets</label></div>
+                            <div id="ulTicketTypes" style="padding-left:10px;"></div>
+                            <div id="mniTicketTags"><label class="checkbox"><input type="checkbox">Ticket Tags</label></div>
+                        </div>
+                        <div class="flex">
+                            <div id="mniChat"><label class="checkbox"><input type="checkbox">Customer Chat</label></div>
+                            <div id="mniKB"><label class="checkbox"><input type="checkbox">Knowledge Base</label></div>
+                            <div id="mniForum"><label class="checkbox"><input type="checkbox">Community</label></div>
+                            <div id="mniWiki"><label class="checkbox"><input type="checkbox">Wiki</label></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
