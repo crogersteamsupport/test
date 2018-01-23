@@ -1770,25 +1770,173 @@ SELECT
             try
             {
                 List<string> resultItems = new List<string>();
-                if (string.IsNullOrWhiteSpace(searchTerm))
+                string engine = "FTS";
+                switch (engine)
                 {
-                    searchTerm = "xfirstword";
-                }
+                    //https://dtsearch.com/
+                    case "DTS":
+                        if (string.IsNullOrWhiteSpace(searchTerm))
+                        {
+                            searchTerm = "xfirstword";
+                        }
 
-                SearchResults results = GetProductsSearchResults(loginUser, searchTerm, 0, searchProducts, searchProductVersions);
-                int topLimit = from + count;
-                if (topLimit > results.Count)
-                {
-                    topLimit = results.Count;
-                }
+                        SearchResults results = GetProductsSearchResults(loginUser, searchTerm, 0, searchProducts, searchProductVersions);
+                        int topLimit = from + count;
+                        if (topLimit > results.Count)
+                        {
+                            topLimit = results.Count;
+                        }
 
-                for (int i = from; i < topLimit; i++)
-                {
-                    results.GetNthDoc(i);
-                    if (results.CurrentItem.UserFields["JSON"] != null)
-                        resultItems.Add(results.CurrentItem.UserFields["JSON"].ToString());
-                }
+                        for (int i = from; i < topLimit; i++)
+                        {
+                            results.GetNthDoc(i);
+                            if (results.CurrentItem.UserFields["JSON"] != null)
+                                resultItems.Add(results.CurrentItem.UserFields["JSON"].ToString());
+                        }
+                        break;
+                    //https://docs.microsoft.com/en-us/sql/relational-databases/search/full-text-search
+                    case "FTS":
+                        StringBuilder productsQuery = new StringBuilder();
+                        StringBuilder versionsQuery = new StringBuilder();
+                        SqlCommand command = new SqlCommand();
 
+                        if (searchProducts)
+                        {
+                            List<SqlDataRecord> tfsProductsResultsList = Products.GetSearchResultsList(searchTerm, loginUser);
+
+                            if (tfsProductsResultsList.Count > 0)
+                            {
+                                productsQuery.Append(@"
+                                    SELECT
+                                        p.ProductID
+                                        , 13
+                                        , fprt.relevance
+                                        , p.DateModified
+                                    FROM
+                                        dbo.Products p
+                                        JOIN @ftsProductsResultsTable fprt
+                                            ON p.ProductID = fprt.recordID
+                                ");
+
+                                SqlParameter ftsProductsResultsTable = new SqlParameter("@ftsProductsResultsTable", SqlDbType.Structured);
+                                ftsProductsResultsTable.TypeName = "dtSearch_results_tbltype";
+                                ftsProductsResultsTable.Value = tfsProductsResultsList;
+                                command.Parameters.Add(ftsProductsResultsTable);
+                            }
+                        }
+
+                        if (searchProductVersions)
+                        {
+                            List<SqlDataRecord> tfsProductVersionsResultsList = ProductVersions.GetSearchResultsList(searchTerm, loginUser);
+
+                            if (tfsProductVersionsResultsList.Count > 0)
+                            {
+                                versionsQuery.Append(@"
+                                    SELECT
+                                        pv.ProductVersionID
+                                        , 14
+                                        , fpvrt.relevance
+                                        , pv.DateModified
+                                    FROM
+                                        dbo.ProductVersions pv
+                                        JOIN @ftsProductVersionsResultsTable fpvrt
+                                            ON pv.ProductVersionID = fpvrt.recordID
+                                ");
+
+                                if (productsQuery.Length > 0)
+                                {
+                                    versionsQuery.AppendLine("UNION");
+                                }
+
+                                SqlParameter ftsProductVersionsResultsTable = new SqlParameter("@ftsProductVersionsResultsTable", SqlDbType.Structured);
+                                ftsProductVersionsResultsTable.TypeName = "dtSearch_results_tbltype";
+                                ftsProductVersionsResultsTable.Value = tfsProductVersionsResultsList;
+                                command.Parameters.Add(ftsProductVersionsResultsTable);
+                            }
+                        }
+
+                        if (productsQuery.Length > 0 || versionsQuery.Length > 0)
+                        {
+                            string query = @"
+                                DECLARE @TempItems 
+                                TABLE
+                                ( 
+                                  ID            int IDENTITY, 
+                                  recordID      int, 
+                                  source        int, 
+                                  relevance     int, 
+                                  DateModified  datetime 
+                                )
+
+                                INSERT INTO @TempItems 
+                                (
+                                  recordID, 
+                                  source, 
+                                  relevance, 
+                                  DateModified 
+                                ) 
+                                {0}
+                                {1}
+        
+                                SET @resultsCount = @@RowCount
+
+                                SELECT
+                                  p.productID,
+                                  p.name,
+                                  p.Name AS productName,
+                                  p.description,
+                                  pv.productVersionID,
+                                  pv.versionNumber,
+                                  pv.releaseDate,
+                                  pv.isReleased,
+                                  pvs.Name AS versionStatus
+                                FROM 
+                                  @TempItems ti 
+                                  LEFT JOIN dbo.Products p
+                                    ON ti.source = 13
+                                    AND ti.recordID = p.ProductID
+                                  LEFT JOIN dbo.ProductVersions pv
+                                    ON ti.source = 14
+                                    AND ti.recordID = pv.ProductVersionID
+                                  LEFT JOIN dbo.ProductVersionStatuses pvs
+                                    ON pv.ProductVersionStatusID = pvs.ProductVersionStatusID
+                                WHERE 
+                                  ti.ID BETWEEN @FromIndex AND @toIndex
+                                ORDER BY 
+                                  ti.relevance DESC
+                                FOR JSON PATH";
+
+                            command.CommandText = string.Format(query, versionsQuery.ToString(), productsQuery.ToString());
+                            command.CommandType = CommandType.Text;
+
+                            SqlParameter resultsCount = new SqlParameter("@resultsCount", SqlDbType.Int)
+                            {
+                                Direction = ParameterDirection.Output
+                            };
+                            command.Parameters.Add(resultsCount);
+
+                            command.Parameters.AddWithValue("@FromIndex", from + 1);
+                            command.Parameters.AddWithValue("@ToIndex", from + count);
+
+                            using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+                            {
+                                command.Connection = connection;
+                                connection.Open();
+                                var reader = command.ExecuteReader();
+                                StringBuilder resultItemsBuilder = new StringBuilder();
+                                while (reader.Read())
+                                {
+                                    resultItemsBuilder.Append(reader.GetValue(0).ToString());
+                                }
+                                Newtonsoft.Json.Linq.JArray resultItemsJArray = Newtonsoft.Json.Linq.JArray.Parse(resultItemsBuilder.ToString());
+                                for (int j = 0; j < resultItemsJArray.Count; j++)
+                                {
+                                    resultItems.Add(resultItemsJArray[j].ToString());
+                                }
+                            }
+                        }
+                        break;
+                }
                 return resultItems.ToArray();
             }
             catch (Exception ex)

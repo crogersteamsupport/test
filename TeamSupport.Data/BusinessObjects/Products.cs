@@ -1,3 +1,4 @@
+using Microsoft.SqlServer.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -501,6 +502,86 @@ namespace TeamSupport.Data
           Fill(command);
         }
       }
+
+        public static List<SqlDataRecord> GetSearchResultsList(string searchTerm, LoginUser loginUser)
+        {
+            SqlMetaData recordIDColumn = new SqlMetaData("recordID", SqlDbType.Int);
+            SqlMetaData relevanceColumn = new SqlMetaData("relevance", SqlDbType.Int);
+
+            SqlMetaData[] columns = new SqlMetaData[] { recordIDColumn, relevanceColumn };
+
+            List<SqlDataRecord> result = new List<SqlDataRecord>();
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                if (!string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    command.CommandText = @"
+                    SELECT 
+				        p.ProductID,
+                        match.RANK
+                    FROM
+                        dbo.Products p
+                        INNER JOIN CONTAINSTABLE(Products, (Name, Description), @searchTerm) AS match
+                            ON p.ProductID = match.[KEY]
+                    WHERE 
+                        p.OrganizationID = @organizationID";
+                }
+                else
+                {
+                    command.CommandText = @"
+                    SELECT 
+				        p.ProductID,
+                        1 AS RANK
+                    FROM
+                        Products p
+                    WHERE 
+                        p.OrganizationID = @organizationID";
+                }
+
+                command.CommandText += GetProductFamiliesRightsClause(loginUser);
+
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@organizationID", loginUser.OrganizationID);
+                command.Parameters.AddWithValue("@userID", loginUser.UserID);
+                command.Parameters.AddWithValue("@searchTerm", string.Format("\"*{0}*\"", searchTerm));
+
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+                {
+                    connection.Open();
+                    SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+                    command.Connection = connection;
+                    command.Transaction = transaction;
+                    SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+
+                    while (reader.Read())
+                    {
+                        SqlDataRecord record = new SqlDataRecord(columns);
+                        record.SetInt32(0, (int)reader["ProductID"]);
+                        record.SetInt32(1, (int)(reader["RANK"]));
+                        result.Add(record);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public static string GetProductFamiliesRightsClause(LoginUser loginUser)
+        {
+            StringBuilder result = new StringBuilder();
+
+            User user = Users.GetUser(loginUser, loginUser.UserID);
+            if ((ProductFamiliesRightType)user.ProductFamiliesRights != ProductFamiliesRightType.AllFamilies)
+            {
+                Organization organization = Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
+                if (organization.UseProductFamilies)
+                {
+                    result.Append(" AND p.ProductFamilyID IN (SELECT ProductFamilyID FROM UserRightsProductFamilies WHERE UserID = @userID)");
+                }
+            }
+            return result.ToString();
+        }
   }
 
   public class ProductSearch
