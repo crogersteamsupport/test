@@ -105,7 +105,7 @@
         ).appendTo(el);
 
         var div = $('<div>')
-          .addClass('peopleinfo')
+          .addClass('peopleinfo');
           //.append(
           //  $('<div>')
           //    .addClass('pull-right')
@@ -145,7 +145,7 @@
         ).appendTo(el);
 
         var div = $('<div>')
-          .addClass('peopleinfo')
+          .addClass('peopleinfo');
           //.append(
           //  $('<div>')
           //    .addClass('pull-right')
