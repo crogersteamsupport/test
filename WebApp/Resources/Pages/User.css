@@ -1,4 +1,4 @@
-﻿
+
 #ts-user-rail,#userProfile{float:left;}
 #ts-user-rail{margin-right:2em;}
 
@@ -12,6 +12,7 @@
 
 .ts-section {
     background-color:rgba(200,200,200,0.1);
+    box-shadow:1px 1px 0px rgba(0,0,0,0.1);
 }
 .title {
     margin-bottom:10px;

@@ -108,24 +108,24 @@ UserPage = function () {
     $('#userTimeZone').html(user.timeZoneDisplay == null ? 'None' : user.timeZoneDisplay);
     $('#userFontFamily').html(user.FontFamilyDescription);
     $('#userFontSize').html(user.FontSizeDescription);
-    $('#userRestrictFromEditingAnyActions').html((user.RestrictUserFromEditingAnyActions == true ? 'Yes' : 'No'));
-    $('#userCanBulkMerge').html((user.CanBulkMerge == true ? 'Yes' : 'No'));
-    $('#userDisableExporting').html((user.DisableExporting == true ? 'Yes' : 'No'));
-    $('#userAllowToEditAnyAction').html((user.AllowUserToEditAnyAction == true ? 'Yes' : 'No'));
-    $('#userCanPinAction').html((user.UserCanPinAction == true ? 'Yes' : 'No'));
-    $('#userTicketVisibility').html((user.ChangeTicketVisibility == true ? 'Yes' : 'No'));
-    $('#userCommunityVisibility').html((user.CanChangeCommunityVisibility == true ? 'Yes' : 'No'));
-    $('#userCanCreateCompany').html((user.CanCreateCompany == true ? 'Yes' : 'No'));
-    $('#userCanEditCompany').html((user.CanEditCompany == true ? 'Yes' : 'No'));
-    $('#userCanCreateContacts').html((user.CanCreateContact == true ? 'Yes' : 'No'));
-    $('#userCanEditContacts').html((user.CanEditContact == true ? 'Yes' : 'No'));
-    $('#userCanCreateAssets').html((user.CanCreateAsset == true ? 'Yes' : 'No'));
-    $('#userCanEditAssets').html((user.CanEditAsset == true ? 'Yes' : 'No'));
-    $('#userCanCreateProducts').html((user.CanCreateProducts == true ? 'Yes' : 'No'));
-    $('#userCanEditProducts').html((user.CanEditProducts == true ? 'Yes' : 'No'));
-    $('#userCanCreateVersions').html((user.CanCreateVersions == true ? 'Yes' : 'No'));
-    $('#userCanEditVersions').html((user.CanEditVersions == true ? 'Yes' : 'No'));
-    $('#userKBVisibility').html((user.ChangeKbVisibility == true ? 'Yes' : 'No'));
+    $('#userRestrictFromEditingAnyActions').html((user.RestrictUserFromEditingAnyActions == true ? 'Enabled' : 'Disabled'));
+    $('#userCanBulkMerge').html((user.CanBulkMerge == true ? 'Enabled' : 'Disabled'));
+    $('#userDisableExporting').html((user.DisableExporting == true ? 'Enabled' : 'Disabled'));
+    $('#userAllowToEditAnyAction').html((user.AllowUserToEditAnyAction == true ? 'Enabled' : 'Disabled'));
+    $('#userCanPinAction').html((user.UserCanPinAction == true ? 'Enabled' : 'Disabled'));
+    $('#userTicketVisibility').html((user.ChangeTicketVisibility == true ? 'Enabled' : 'Disabled'));
+    $('#userCommunityVisibility').html((user.CanChangeCommunityVisibility == true ? 'Enabled' : 'Disabled'));
+    $('#userCanCreateCompany').html((user.CanCreateCompany == true ? 'Enabled' : 'Disabled'));
+    $('#userCanEditCompany').html((user.CanEditCompany == true ? 'Enabled' : 'Disabled'));
+    $('#userCanCreateContacts').html((user.CanCreateContact == true ? 'Enabled' : 'Disabled'));
+    $('#userCanEditContacts').html((user.CanEditContact == true ? 'Enabled' : 'Disabled'));
+    $('#userCanCreateAssets').html((user.CanCreateAsset == true ? 'Enabled' : 'Disabled'));
+    $('#userCanEditAssets').html((user.CanEditAsset == true ? 'Enabled' : 'Disabled'));
+    $('#userCanCreateProducts').html((user.CanCreateProducts == true ? 'Enabled' : 'Disabled'));
+    $('#userCanEditProducts').html((user.CanEditProducts == true ? 'Enabled' : 'Disabled'));
+    $('#userCanCreateVersions').html((user.CanCreateVersions == true ? 'Enabled' : 'Disabled'));
+    $('#userCanEditVersions').html((user.CanEditVersions == true ? 'Enabled' : 'Disabled'));
+    $('#userKBVisibility').html((user.ChangeKbVisibility == true ? 'Enabled' : 'Disabled'));
     $('#userTicketRights').html(userRightsToString(user.TicketRights)).data('o', user.TicketRights);
     $('#userProductFamiliesRights').html(userProductFamiliesRightsToString(user.ProductFamiliesRights)).data('o', user.ProductFamiliesRights);
     if (window.parent.parent.Ts.System.Organization.UseProductFamilies && window.parent.parent.Ts.System.User.IsSystemAdmin) {
@@ -134,22 +134,22 @@ UserPage = function () {
       window.parent.parent.Ts.Services.Users.GetUserProductFamilies(_user.UserID, appendProductFamilies);
     }
 
-    $('#userRightsAllTicketCustomers').html((user.AllowAnyTicketCustomer == true ? 'Yes' : 'No'));
+    $('#userRightsAllTicketCustomers').html((user.AllowAnyTicketCustomer == true ? 'Enabled' : 'Disabled'));
     if (user.TicketRights == 3) $('#userRightsAllTicketCustomers').closest('div').show();
 
     $('#divCustomerContainer').toggle(user.TicketRights == 3 && isSysAdmin == true);
     $('#userLastLogin').text(user.LastLogin.toDateString());
-    $('#userActive').text((user.IsActive == true ? 'Yes' : 'No'));
-    $('#userEmailNotify').text((user.ReceiveTicketNotifications == true ? 'Yes' : 'No'));
-    $('#userSubscribeTickets').text((user.SubscribeToNewTickets == true ? 'Yes' : 'No'));
-    $('#userSubscribeActions').text((user.SubscribeToNewActions == true ? 'Yes' : 'No'));
-    $('#userAutoSubscribe').text((user.DoNotAutoSubscribe == true ? 'Yes' : 'No'));
-    $('#userGroupNotify').text((user.ReceiveAllGroupNotifications == true ? 'Yes' : 'No'));
-    $('#userUnassignedGroupNotify').text((user.ReceiveUnassignedGroupEmails == true ? 'Yes' : 'No'));
-    $('#userEmailAfterHours').text((user.OnlyEmailAfterHours == true ? 'Yes' : 'No'));
+    $('#userActive').text((user.IsActive == true ? 'Enabled' : 'Disabled'));
+    $('#userEmailNotify').text((user.ReceiveTicketNotifications == true ? 'Enabled' : 'Disabled'));
+    $('#userSubscribeTickets').text((user.SubscribeToNewTickets == true ? 'Enabled' : 'Disabled'));
+    $('#userSubscribeActions').text((user.SubscribeToNewActions == true ? 'Enabled' : 'Disabled'));
+    $('#userAutoSubscribe').text((user.DoNotAutoSubscribe == true ? 'Enabled' : 'Disabled'));
+    $('#userGroupNotify').text((user.ReceiveAllGroupNotifications == true ? 'Enabled' : 'Disabled'));
+    $('#userUnassignedGroupNotify').text((user.ReceiveUnassignedGroupEmails == true ? 'Enabled' : 'Disabled'));
+    $('#userEmailAfterHours').text((user.OnlyEmailAfterHours == true ? 'Enabled' : 'Disabled'));
     $('#userDateFormat').text(user.CultureDisplay);
-    $('#userSysAdmin').text((user.IsSystemAdmin == true ? 'Yes' : 'No'));
-    $('#chatUser').text((user.IsChatUser == true ? 'Yes' : 'No'));
+    $('#userSysAdmin').text((user.IsSystemAdmin == true ? 'Enabled' : 'Disabled'));
+    $('#chatUser').text((user.IsChatUser == true ? 'Enabled' : 'Disabled'));
     $('#activatedOn').text(user.ActivatedOn.toDateString());
     $('#userInfo').html((user.UserInformation == '' ? 'No Additional Information' : user.UserInformation.replace(/\n\r?/g, '<br />')));
     if (user.verificationPhoneNumber !== null && user.verificationPhoneNumber !== "") $('#userTwoFactorCell').text(user.verificationPhoneNumber);
@@ -668,10 +668,10 @@ UserPage = function () {
 
         if (isSysAdmin) {
           item.next().show();
-          window.parent.parent.Ts.Services.Users.SetIsActive(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetIsActive(_user.UserID, (item.text() !== 'Enabled'),
           function (result) {
             window.parent.parent.Ts.System.logAction('User Info - User Active State Changed');
-            item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+            item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
             alert('There was an error saving the user active status.');
@@ -686,10 +686,10 @@ UserPage = function () {
         e.preventDefault();
         var item = $(this);
         item.next().show();
-        window.parent.parent.Ts.Services.Users.SetEmailNotify(_user.UserID, (item.text() !== 'Yes'),
+        window.parent.parent.Ts.Services.Users.SetEmailNotify(_user.UserID, (item.text() !== 'Enabled'),
           function (result) {
             window.parent.parent.Ts.System.logAction('User Info - User Email Notifications Changed');
-            item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+            item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
             alert('There was an error saving the user email notification status.');
@@ -704,10 +704,10 @@ UserPage = function () {
         e.preventDefault();
         var item = $(this);
         item.next().show();
-        window.parent.parent.Ts.Services.Users.SetSubscribeTickets(_user.UserID, (item.text() !== 'Yes'),
+        window.parent.parent.Ts.Services.Users.SetSubscribeTickets(_user.UserID, (item.text() !== 'Enabled'),
           function (result) {
             window.parent.parent.Ts.System.logAction('User Info - User Ticket Subscription Setting Changed');
-            item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+            item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
             alert('There was an error saving the user ticket subscription status.');
@@ -721,10 +721,10 @@ UserPage = function () {
         e.preventDefault();
         var item = $(this);
         item.next().show();
-        window.parent.parent.Ts.Services.Users.SetSubscribeActions(_user.UserID, (item.text() !== 'Yes'),
+        window.parent.parent.Ts.Services.Users.SetSubscribeActions(_user.UserID, (item.text() !== 'Enabled'),
           function (result) {
             window.parent.parent.Ts.System.logAction('User Info - User Action Subscription Changed');
-            item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+            item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
             alert('There was an error saving the user ticket action subscription status.');
@@ -738,10 +738,10 @@ UserPage = function () {
         e.preventDefault();
         var item = $(this);
         item.next().show();
-        window.parent.parent.Ts.Services.Users.SetAutoSubscribe(_user.UserID, (item.text() !== 'Yes'),
+        window.parent.parent.Ts.Services.Users.SetAutoSubscribe(_user.UserID, (item.text() !== 'Enabled'),
           function (result) {
             window.parent.parent.Ts.System.logAction('User Info - User Auto Subscribe Changed');
-            item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+            item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
             alert('There was an error saving the user auto subscribe status.');
@@ -758,10 +758,10 @@ UserPage = function () {
     //      e.preventDefault();
     //      var item = $(this);
     //      item.next().show();
-    //      window.parent.parent.Ts.Services.Users.SetUseClassicTicketPage(_user.UserID, (item.text() == 'Yes'),
+    //      window.parent.parent.Ts.Services.Users.SetUseClassicTicketPage(_user.UserID, (item.text() == 'Enabled'),
     //      function (result) {
     //        window.parent.parent.Ts.System.logAction('User Info - User Changed Ticket Page Version');
-    //        item.text((result === false ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+    //        item.text((result === false ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
     //      },
     //      function (error) {
     //        alert('There was an error saving the user auto subscribe status.');
@@ -776,10 +776,10 @@ UserPage = function () {
           e.preventDefault();
           var item = $(this);
           item.next().show();
-          window.parent.parent.Ts.Services.Users.SetUseClassicTicketPage(_user.UserID, (item.text() == 'No'),
+          window.parent.parent.Ts.Services.Users.SetUseClassicTicketPage(_user.UserID, (item.text() == 'Disabled'),
           function (result) {
             window.parent.parent.Ts.System.logAction('User Info - User Changed Ticket Page Version');
-            item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+            item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
             alert('There was an error saving the user auto subscribe status.');
@@ -793,10 +793,10 @@ UserPage = function () {
         e.preventDefault();
         var item = $(this);
         item.next().show();
-        window.parent.parent.Ts.Services.Users.SetGroupNotify(_user.UserID, (item.text() !== 'Yes'),
+        window.parent.parent.Ts.Services.Users.SetGroupNotify(_user.UserID, (item.text() !== 'Enabled'),
           function (result) {
             window.parent.parent.Ts.System.logAction('User Info - Group Notification Changed');
-            item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+            item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
             alert('There was an error saving the user group notification subscription status.');
@@ -810,10 +810,10 @@ UserPage = function () {
         e.preventDefault();
         var item = $(this);
         item.next().show();
-        window.parent.parent.Ts.Services.Users.SetUnassignedGroupNotify(_user.UserID, (item.text() !== 'Yes'),
+        window.parent.parent.Ts.Services.Users.SetUnassignedGroupNotify(_user.UserID, (item.text() !== 'Enabled'),
           function (result) {
             window.parent.parent.Ts.System.logAction('User Info - Group Unassigned Notification Changed');
-            item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+            item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
             alert('There was an error saving the user group unassigned notification subscription status.');
@@ -827,10 +827,10 @@ UserPage = function () {
         e.preventDefault();
         var item = $(this);
         item.next().show();
-        window.parent.parent.Ts.Services.Users.SetOnlyEmailAfterHours(_user.UserID, (item.text() !== 'Yes'),
+        window.parent.parent.Ts.Services.Users.SetOnlyEmailAfterHours(_user.UserID, (item.text() !== 'Enabled'),
           function (result) {
             window.parent.parent.Ts.System.logAction('User Info - Only Email After Hours Changed');
-            item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+            item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
             alert('There was an error saving the Only Email After Hours status.');
@@ -846,10 +846,10 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          window.parent.parent.Ts.Services.Users.SetSysAdmin(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetSysAdmin(_user.UserID, (item.text() !== 'Enabled'),
           function (result) {
             window.parent.parent.Ts.System.logAction('User Info - User System Admin Status Changed');
-            item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+            item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
             alert('There was an error saving the user system admin status.');
@@ -866,11 +866,11 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          window.parent.parent.Ts.Services.Users.SetRestrictUserFromEditingAnyActions(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetRestrictUserFromEditingAnyActions(_user.UserID, (item.text() !== 'Enabled'),
               function (result) {
                 window.parent.parent.Ts.System.logAction('User Info - User Change Restrict User From Editing Any Actions Changed');
-                item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
-                if (result === true && $('#userAllowToEditAnyAction').text() == 'Yes') {
+                item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                if (result === true && $('#userAllowToEditAnyAction').text() == 'Enabled') {
                   $('#userAllowToEditAnyAction').click();
                 }
               },
@@ -888,10 +888,10 @@ UserPage = function () {
           var item = $(this);
           if (isSysAdmin) {
               item.next().show();
-              window.parent.parent.Ts.Services.Users.SetChangeCanBulkMerge(_user.UserID, (item.text() !== 'Yes'),
+              window.parent.parent.Ts.Services.Users.SetChangeCanBulkMerge(_user.UserID, (item.text() !== 'Enabled'),
                   function (result) {
                       window.parent.parent.Ts.System.logAction('User Info - User Change Can Bulk Merge Changed');
-                      item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                      item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
                       alert('There was an error saving the user change can bulk merge.');
@@ -907,10 +907,10 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          window.parent.parent.Ts.Services.Users.SetRestrictUserFromExportingData(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetRestrictUserFromExportingData(_user.UserID, (item.text() !== 'Enabled'),
           function (result) {
             window.parent.parent.Ts.System.logAction('User Info - User Change Restrict User From Exporting Changed');
-            item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+            item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
             alert('There was an error saving the user change restrict user from exporting data.');
@@ -926,11 +926,11 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          window.parent.parent.Ts.Services.Users.SetAllowUserToEditAnyAction(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetAllowUserToEditAnyAction(_user.UserID, (item.text() !== 'Enabled'),
               function (result) {
                 window.parent.parent.Ts.System.logAction('User Info - User Change Allow User To Edit Any Action Changed');
-                item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
-                if (result === true && $('#userRestrictFromEditingAnyActions').text() == 'Yes') {
+                item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                if (result === true && $('#userRestrictFromEditingAnyActions').text() == 'Enabled') {
                   $('#userRestrictFromEditingAnyActions').click();
                 }
               },
@@ -948,10 +948,10 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          window.parent.parent.Ts.Services.Users.SetUserCanPinAction(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetUserCanPinAction(_user.UserID, (item.text() !== 'Enabled'),
               function (result) {
                 window.parent.parent.Ts.System.logAction('User Info - User Can Pin Action Changed');
-                item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
               },
               function (error) {
                 alert('There was an error saving the user can pin action.');
@@ -967,10 +967,10 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          window.parent.parent.Ts.Services.Users.SetChangeTicketVisibility(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeTicketVisibility(_user.UserID, (item.text() !== 'Enabled'),
               function (result) {
                 window.parent.parent.Ts.System.logAction('User Info - User Change Ticket Visibility Changed');
-                item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
               },
               function (error) {
                 alert('There was an error saving the user change ticket visibility.');
@@ -986,10 +986,10 @@ UserPage = function () {
       var item = $(this);
       if (isSysAdmin) {
         item.next().show();
-        window.parent.parent.Ts.Services.Users.SetChangeCommunityVisibility(_user.UserID, (item.text() !== 'Yes'),
+        window.parent.parent.Ts.Services.Users.SetChangeCommunityVisibility(_user.UserID, (item.text() !== 'Enabled'),
             function (result) {
               window.parent.parent.Ts.System.logAction('User Info - User Change Ticket Community Changed');
-              item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+              item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
             },
             function (error) {
               alert('There was an error saving the user change community visibility.');
@@ -1005,10 +1005,10 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          window.parent.parent.Ts.Services.Users.SetChangeCanCreateCompany(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeCanCreateCompany(_user.UserID, (item.text() !== 'Enabled'),
                   function (result) {
                     window.parent.parent.Ts.System.logAction('User Info - User Change Can Create Company Changed');
-                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                    item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
                     alert('There was an error saving the user change to can create company.');
@@ -1024,10 +1024,10 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          window.parent.parent.Ts.Services.Users.SetChangeCanEditCompany(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeCanEditCompany(_user.UserID, (item.text() !== 'Enabled'),
                   function (result) {
                     window.parent.parent.Ts.System.logAction('User Info - User Change Can Edit Company Changed');
-                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                    item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
                     alert('There was an error saving the user change to can edit company.');
@@ -1043,10 +1043,10 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          window.parent.parent.Ts.Services.Users.SetChangeCanCreateContacts(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeCanCreateContacts(_user.UserID, (item.text() !== 'Enabled'),
                   function (result) {
                     window.parent.parent.Ts.System.logAction('User Info - User Change Can Create Contacts Changed');
-                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                    item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
                     alert('There was an error saving the user change to can create contacts.');
@@ -1062,10 +1062,10 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          window.parent.parent.Ts.Services.Users.SetChangeCanEditContacts(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeCanEditContacts(_user.UserID, (item.text() !== 'Enabled'),
                   function (result) {
                     window.parent.parent.Ts.System.logAction('User Info - User Change Can Edit Contacts Changed');
-                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                    item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
                     alert('There was an error saving the user change to can edit contacts.');
@@ -1082,10 +1082,10 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          window.parent.parent.Ts.Services.Users.SetChangeCanCreateAssets(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeCanCreateAssets(_user.UserID, (item.text() !== 'Enabled'),
                   function (result) {
                     window.parent.parent.Ts.System.logAction('User Info - User Change Can Create Assets Changed');
-                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                    item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
                     alert('There was an error saving the user change to can create assets.');
@@ -1101,10 +1101,10 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          window.parent.parent.Ts.Services.Users.SetChangeCanEditAssets(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeCanEditAssets(_user.UserID, (item.text() !== 'Enabled'),
                   function (result) {
                     window.parent.parent.Ts.System.logAction('User Info - User Change Can Edit Assets Changed');
-                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                    item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
                     alert('There was an error saving the user change to can edit assets.');
@@ -1121,10 +1121,10 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          window.parent.parent.Ts.Services.Users.SetChangeCanCreateProducts(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeCanCreateProducts(_user.UserID, (item.text() !== 'Enabled'),
                   function (result) {
                     window.parent.parent.Ts.System.logAction('User Info - User Change Can Create Products Changed');
-                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                    item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
                     alert('There was an error saving the user change to can create products.');
@@ -1140,10 +1140,10 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          window.parent.parent.Ts.Services.Users.SetChangeCanEditProducts(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeCanEditProducts(_user.UserID, (item.text() !== 'Enabled'),
                   function (result) {
                     window.parent.parent.Ts.System.logAction('User Info - User Change Can Edit Products Changed');
-                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                    item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
                     alert('There was an error saving the user change to can edit products.');
@@ -1159,10 +1159,10 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          window.parent.parent.Ts.Services.Users.SetChangeCanCreateVersions(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeCanCreateVersions(_user.UserID, (item.text() !== 'Enabled'),
                   function (result) {
                     window.parent.parent.Ts.System.logAction('User Info - User Change Can Create Versions Changed');
-                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                    item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
                     alert('There was an error saving the user change to can create versions.');
@@ -1178,10 +1178,10 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          window.parent.parent.Ts.Services.Users.SetChangeCanEditVersions(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeCanEditVersions(_user.UserID, (item.text() !== 'Enabled'),
                   function (result) {
                     window.parent.parent.Ts.System.logAction('User Info - User Change Can Edit Versions Changed');
-                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                    item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
                     alert('There was an error saving the user change to can edit versions.');
@@ -1197,10 +1197,10 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          window.parent.parent.Ts.Services.Users.SetChangeKbVisibility(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChangeKbVisibility(_user.UserID, (item.text() !== 'Enabled'),
               function (result) {
                 window.parent.parent.Ts.System.logAction('User Info - User Change Knowledgebase Visibility Changed');
-                item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
               },
               function (error) {
                 alert('There was an error saving the user change knowledgebase visibility.');
@@ -1216,15 +1216,15 @@ UserPage = function () {
         var item = $(this);
         if (isSysAdmin) {
           item.next().show();
-          window.parent.parent.Ts.Services.Users.SetChatUser(_user.UserID, (item.text() !== 'Yes'),
+          window.parent.parent.Ts.Services.Users.SetChatUser(_user.UserID, (item.text() !== 'Enabled'),
           function (result) {
             if (result == 'error') {
-              item.text('No').next().hide().next().show().delay(800).fadeOut(400);
+              item.text('Disabled').next().hide().next().show().delay(800).fadeOut(400);
               alert("You have exceeded your chat licenses.  Please purchase more seats to add additional chat users.");
             }
             else {
               window.parent.parent.Ts.System.logAction('User Info - User Chat User Status Changed');
-              item.text((result == "True" ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+              item.text((result == "True" ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
             }
           },
           function (error) {
@@ -1332,10 +1332,10 @@ UserPage = function () {
           var item = $(this);
           if (isSysAdmin) {
             item.next().show();
-            window.parent.parent.Ts.Services.Users.SetAllowAnyTicketCustomer(_user.UserID, (item.text() !== 'Yes'),
+            window.parent.parent.Ts.Services.Users.SetAllowAnyTicketCustomer(_user.UserID, (item.text() !== 'Enabled'),
               function (result) {
                 window.parent.parent.Ts.System.logAction('User Info - User Changed AllowAnyTicketCustomer');
-                item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
               },
               function (error) {
                 alert('There was an error saving the user allow any ticket customer to be assigned.');
@@ -2218,7 +2218,7 @@ UserPage = function () {
             $('.ticket-cutstom-edit').prev().show().next().remove();
 
             var parent = $(this).parent();
-            var value = $(this).text() === 'No' || $(this).text() === 'False' ? true : false;
+            var value = $(this).text() === 'Disabled' || $(this).text() === 'False' ? true : false;
             parent.find('img').show();
             window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
               parent.find('img').hide().next().show().delay(800).fadeOut(400);
