@@ -129,9 +129,9 @@ UserPage = function () {
     $('#userTicketRights').html(userRightsToString(user.TicketRights)).data('o', user.TicketRights);
     $('#userProductFamiliesRights').html(userProductFamiliesRightsToString(user.ProductFamiliesRights)).data('o', user.ProductFamiliesRights);
     if (window.parent.parent.Ts.System.Organization.UseProductFamilies && window.parent.parent.Ts.System.User.IsSystemAdmin) {
-      $('#userProductFamiliesRights').closest('div').show();
-      $('#divProductFamiliesContainer').toggle(user.ProductFamiliesRights == 1);
-      window.parent.parent.Ts.Services.Users.GetUserProductFamilies(_user.UserID, appendProductFamilies);
+        $('#userProductFamiliesRights').closest('.ui-helper-hidden').show();
+        $('#divProductFamiliesContainer').toggle(user.ProductFamiliesRights == 1);
+        window.parent.parent.Ts.Services.Users.GetUserProductFamilies(_user.UserID, appendProductFamilies);
     }
 
     $('#userRightsAllTicketCustomers').html((user.AllowAnyTicketCustomer == true ? 'Enabled' : 'Disabled'));
@@ -1246,13 +1246,10 @@ UserPage = function () {
           var select = $('<select>').appendTo(container);
 
           for (var i = 0; i < 2; i++) {
-            var option = $('<option>')
-              .text(userProductFamiliesRightsToString(i))
-              .data('type', i)
-              .appendTo(select);
+            var option = $('<option>').text(userProductFamiliesRightsToString(i)).data('type', i).appendTo(select);
 
             if (value == i) {
-              option.attr('selected', 'selected');
+                option.attr('selected', 'selected');
             }
           }
 
@@ -1291,17 +1288,13 @@ UserPage = function () {
           var select = $('<select>').appendTo(container);
 
           for (var i = 0; i < 4; i++) {
-            var option = $('<option>')
-              .text(userRightsToString(i))
-              .data('type', i)
-              .appendTo(select);
-
+            var option = $('<option>').text(userRightsToString(i)).data('type', i).appendTo(select);
             if (value == i) {
-              option.attr('selected', 'selected');
+                option.attr('selected', 'selected');
             }
-          }
+        }
 
-          select.combobox({
+        select.combobox({
             selected: function (e, ui) {
               parent.show().find('img').show();
               var type = $(ui.item).data('type');
