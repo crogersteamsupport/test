@@ -1234,24 +1234,21 @@ UserPage = function () {
         }
       });
 
-    $('#userProductFamiliesRights')
-        .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
-        .click(function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          removeComboBoxes();
-          var value = $(this).data('o');
-          var parent = $(this).parent().hide();
-          var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
-          var select = $('<select>').appendTo(container);
+    $('#userProductFamiliesRights').after('<img src="../Images/loading/loading_small2.gif"><span class="ts-icon ts-icon-saved"></span>').click(function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        removeComboBoxes();
+        var value = $(this).data('o');
+        var sibling = $(this).hide();
+        var container = $('<div>').addClass('ticket-combobox').insertAfter(sibling);
+        var select = $('<select>').appendTo(container);
 
-          for (var i = 0; i < 2; i++) {
+        for (var i = 0; i < 2; i++) {
             var option = $('<option>').text(userProductFamiliesRightsToString(i)).data('type', i).appendTo(select);
-
             if (value == i) {
                 option.attr('selected', 'selected');
             }
-          }
+        }
 
           select.combobox({
             selected: function (e, ui) {
