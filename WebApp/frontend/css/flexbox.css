@@ -4,6 +4,7 @@ div.flexbox {
     display:flex;
     display:-webkit-flex;
 }
+
 div.flexbox .row {
     flex-direction:row;
 }
@@ -21,7 +22,7 @@ div.flexbox.align {
 div.flexbox.justify {
     justify-content:center;
 }
-div.flex,
+
 div.flex.push,
 div.flexpush {
     flex:auto;
@@ -30,13 +31,96 @@ div.flexpush {
 div.flex.full {
     flex:0 0 100%;
 }
-div.flex.pull,
-div.flex1 { flex:1;-webkit-flex:1; }
-div.flex2 { flex:2;-webkit-flex:2; }
-div.flex3 { flex:3;-webkit-flex:3; }
-div.flex4 { flex:4;-webkit-flex:4; }
-div.flex5 { flex:5;-webkit-flex:5; }
-div.flex6 { flex:6;-webkit-flex:6; }
-div.flex7 { flex:7;-webkit-flex:7; }
-div.flex8 { flex:8;-webkit-flex:8; }
-div.flex9 { flex:9;-webkit-flex:9; }
+div.flexbox .flex.pull {
+    flex:0 1 !important;
+}
+div.flexbox .flex.nowrap {
+    white-space:nowrap !important;
+}
+div.flexbox .flex.basis {
+    flex-basis: auto !important;
+}
+
+
+
+div.flex1 {
+    flex:1;
+    -webkit-flex:1;
+}
+div.flex2 {
+    flex:2;
+    -webkit-flex:2;
+}
+div.flex3 {
+    flex:3;
+    -webkit-flex:3;
+}
+div.flex4 {
+    flex:4;
+    -webkit-flex:4;
+}
+div.flex5 {
+    flex:5;
+    -webkit-flex:5;
+}
+div.flex6 {
+    flex:6;
+    -webkit-flex:6;
+}
+div.flex7 {
+    flex:7;
+    -webkit-flex:7;
+}
+div.flex8 {
+    flex:8;
+    -webkit-flex:8;
+}
+div.flex9 {
+    flex:9;
+    -webkit-flex:9;
+}
+
+
+
+div.flexbox .flex.basis200 {
+    flex:0 0 200px;
+    flex-grow:0;
+    flex-shrink:0;
+    flex-basis:200px !important;
+    -webkit-flex-basis:200px;
+}
+div.flexbox .flex.basis300 {
+    flex:0 0 300px;
+    flex-grow:0;
+    flex-shrink:0;
+    flex-basis:300px !important;
+    -webkit-flex-basis:300px;
+}
+div.flexbox .flex.basis400 {
+    flex:0 0 400px;
+    flex-grow:0;
+    flex-shrink:0;
+    flex-basis:400px !important;
+    -webkit-flex-basis:400px;
+}
+div.flexbox .flex.basis500 {
+    flex:0 0 500px;
+    flex-grow:0;
+    flex-shrink:0;
+    flex-basis:500px !important;
+    -webkit-flex-basis:500px;
+}
+div.flexbox .flex.basis600 {
+    flex:0 0 600px;
+    flex-grow:0;
+    flex-shrink:0;
+    flex-basis:00px !important;
+    -webkit-flex-basis:600px;
+}
+div.flexbox .flex.basis600 {
+    flex:0 0 600px;
+    flex-grow:0;
+    flex-shrink:0;
+    flex-basis:00px !important;
+    -webkit-flex-basis:600px;
+}
