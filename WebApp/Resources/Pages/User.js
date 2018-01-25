@@ -1133,8 +1133,8 @@ UserPage = function() {
             e.stopPropagation();
             removeComboBoxes();
             var value = $(this).data('o');
-            var parent = $(this).parent().hide();
-            var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
+            var sibling = $(this).hide();
+            var container = $('<div>').addClass('ticket-combobox').insertAfter(sibling);
             var select = $('<select>').appendTo(container);
 
             for (var i = 0; i < 4; i++) {
@@ -1191,9 +1191,10 @@ UserPage = function() {
             e.stopPropagation();
             removeComboBoxes();
             var value = $(this).text();
-            var parent = $(this).parent().hide();
-            var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
+            var sibling = $(this).hide();
+            var container = $('<div>').addClass('ticket-combobox').insertAfter(sibling);
             var select = $('<select>').appendTo(container);
+
 
             var tz = window.parent.parent.Ts.Cache.getTimeZones();
             for (var i = 0; i < tz.length; i += 2) {
@@ -1234,8 +1235,8 @@ UserPage = function() {
             e.stopPropagation();
             removeComboBoxes();
             var value = $(this).text();
-            var parent = $(this).parent().hide();
-            var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
+            var sibling = $(this).hide();
+            var container = $('<div>').addClass('ticket-combobox').insertAfter(sibling);
             var select = $('<select>').appendTo(container);
 
             var families = window.parent.parent.Ts.Cache.getFontFamilies();
@@ -1277,8 +1278,8 @@ UserPage = function() {
             e.stopPropagation();
             removeComboBoxes();
             var value = $(this).text();
-            var parent = $(this).parent().hide();
-            var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
+            var sibling = $(this).hide();
+            var container = $('<div>').addClass('ticket-combobox').insertAfter(sibling);
             var select = $('<select>').appendTo(container);
 
             var sizes = window.parent.parent.Ts.Cache.getFontSizes();
@@ -1320,8 +1321,8 @@ UserPage = function() {
             e.stopPropagation();
             removeComboBoxes();
             var value = $(this).text();
-            var parent = $(this).parent().hide();
-            var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
+            var sibling = $(this).hide();
+            var container = $('<div>').addClass('ticket-combobox').insertAfter(sibling);
             var select = $('<select>').appendTo(container);
 
             var culture = window.parent.parent.Ts.Cache.getCultures();
