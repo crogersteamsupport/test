@@ -799,11 +799,11 @@ namespace TSWebServices
             if (hubHelper.Count() > 1)
             {
                 CustomerHubCustomViews.DeleteByCustomerHubID(loginUser, hubID);
-                CustomerHubs.DeleteByCustomerHubID(loginUser, hubID);
                 CustomerHubAuthentication.DeleteByCustomerHubID(loginUser, hubID);
                 CustomerHubAuthentication.DeleteByCustomerHubID(loginUser, hubID);
                 CustomerHubDisplaySettings.DeleteByCustomerHubID(loginUser, hubID);
                 CustomerHubFeatureSettings.DeleteByCustomerHubID(loginUser, hubID);
+                CustomerHubs.DeleteByCustomerHubID(loginUser, hubID);
             }
 
         }
