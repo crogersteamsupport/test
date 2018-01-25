@@ -149,7 +149,7 @@ UserPage = function() {
         $('#userEmailNotify').text((user.ReceiveTicketNotifications == true ? 'Enabled' : 'Disabled'));
         $('#userSubscribeTickets').text((user.SubscribeToNewTickets == true ? 'Enabled' : 'Disabled'));
         $('#userSubscribeActions').text((user.SubscribeToNewActions == true ? 'Enabled' : 'Disabled'));
-        $('#userAutoSubscribe').text((user.DoNotAutoSubscribe == true ? 'Enabled' : 'Disabled'));
+        $('#userAutoSubscribe').text((user.DoNotAutoSubscribe == true ? 'Disabled' : 'Enabled'));
         $('#userGroupNotify').text((user.ReceiveAllGroupNotifications == true ? 'Enabled' : 'Disabled'));
         $('#userUnassignedGroupNotify').text((user.ReceiveUnassignedGroupEmails == true ? 'Enabled' : 'Disabled'));
         $('#userEmailAfterHours').text((user.OnlyEmailAfterHours == true ? 'Disabled' : 'Enabled'));
@@ -642,7 +642,7 @@ UserPage = function() {
             e.preventDefault();
             var item = $(this);
             item.next().show();
-            window.parent.parent.Ts.Services.Users.SetAutoSubscribe(_user.UserID, (item.text() !== 'Enabled'),
+            window.parent.parent.Ts.Services.Users.SetAutoSubscribe(_user.UserID, (item.text() !== 'Disabled'),
                 function(result) {
                     window.parent.parent.Ts.System.logAction('User Info - User Auto Subscribe Changed');
                     item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
