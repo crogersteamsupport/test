@@ -1,3 +1,15 @@
+
+body.white,
+div.white {
+    background-color:white !important;
+}
+body .bg-curiousblue {
+    background-color: #2C9ECF !important;
+}
+body .bg-bluewood {
+    background-color: #33485e !important;
+}
+
 /* SPACING */
 .space5  { padding:5px; }
 .space10 { padding:10px; }
