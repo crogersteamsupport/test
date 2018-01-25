@@ -1,0 +1,12 @@
+/* SPACING */
+.space5  { padding:5px; }
+.space10 { padding:10px; }
+.space15 { padding:15px; }
+.space20 { padding:20px; }
+
+.mgn-btm-10 {
+    margin-bottom:10px;
+}
+.mgn-btm-20 {
+    margin-bottom:20px;
+}

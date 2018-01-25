@@ -2,6 +2,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+
+        <link href="/frontend/css/core/body.css?1516307559" rel="stylesheet" type="text/css">
+        <link href="/frontend/css/core/flexbox.css?1516307559" rel="stylesheet" type="text/css">
+
         <link href="../Css/font-awesome.min.css" rel="stylesheet" type="text/css">
         <link href="../Css/standards.css" rel="stylesheet" type="text/css">
         <link href="../Css/frame.css" rel="stylesheet" type="text/css">
@@ -13,11 +17,8 @@
       	<link href="../Css/ts.editor.css" rel="stylesheet">
         <!--[if IE 7]><link href="vcr/1_7_9/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css"><![endif]-->
         <!--[if IE 8]><link href="vcr/1_7_9/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css"><![endif]-->
-
         <link href="../Css/intlTelInput.css" rel="stylesheet" type="text/css">
-
         <link href="User.css?1516307581" rel="stylesheet" type="text/css">
-        <link href="/frontend/css/flexbox.css?1516307559" rel="stylesheet" type="text/css">
 
         <script src="../Js/Ts/ts.pendo.js" type="text/javascript"></script>
         <script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
@@ -367,31 +368,33 @@
 
                 <div class="ts-section ui-helper-hidden" id="divMenuItems">
                     <div class="title">Sidebar Menu Display</div>
-                    <div class="flexbox wrap" id="ulMenuItems">
-                        <div class="flex">
-                            <div id="mniDashboard"><label class="checkbox"><input type="checkbox">Dashboard</label></div>
-                            <div id="mniAdmin"><label class="checkbox"><input type="checkbox">Admin</label></div>
-                            <div id="mniWC2"><label class="checkbox"><input type="checkbox">Water Cooler</label></div>
-                            <div id="mniSearch"><label class="checkbox"><input type="checkbox">Search</label></div>
-                            <div id="mniTasks"><label class="checkbox"><input type="checkbox">Tasks</label></div>
-                            <div id="mniUsers"><label class="checkbox"><input type="checkbox">Users</label></div>
-                            <div id="mniGroups"><label class="checkbox"><input type="checkbox">Groups</label></div>
-                            <div id="mniCustomers"><label class="checkbox"><input type="checkbox">Customers</label></div>
-                            <div id="mniProducts"><label class="checkbox"><input type="checkbox">Products</label></div>
-                            <div id="mniInventory"><label class="checkbox"><input type="checkbox">Inventory</label></div>
-                            <div id="mniReports"><label class="checkbox"><input type="checkbox">Reports</label></div>
-                        </div>
-                        <div class="flex">
-                            <div id="mniMyTickets"><label class="checkbox"><input type="checkbox">My Tickets</label></div>
-                            <div id="mniTickets"><label class="checkbox"><input type="checkbox">All Tickets</label></div>
-                            <div id="ulTicketTypes" style="padding-left:10px;"></div>
-                            <div id="mniTicketTags"><label class="checkbox"><input type="checkbox">Ticket Tags</label></div>
-                        </div>
-                        <div class="flex">
-                            <div id="mniChat"><label class="checkbox"><input type="checkbox">Customer Chat</label></div>
-                            <div id="mniKB"><label class="checkbox"><input type="checkbox">Knowledge Base</label></div>
-                            <div id="mniForum"><label class="checkbox"><input type="checkbox">Community</label></div>
-                            <div id="mniWiki"><label class="checkbox"><input type="checkbox">Wiki</label></div>
+                    <div class="space10">
+                        <div class="flexbox wrap" id="ulMenuItems">
+                            <div class="flex basis200">
+                                <div id="mniDashboard"><label class="checkbox"><input type="checkbox">Dashboard</label></div>
+                                <div id="mniAdmin"><label class="checkbox"><input type="checkbox">Admin</label></div>
+                                <div id="mniWC2"><label class="checkbox"><input type="checkbox">Water Cooler</label></div>
+                                <div id="mniSearch"><label class="checkbox"><input type="checkbox">Search</label></div>
+                                <div id="mniTasks"><label class="checkbox"><input type="checkbox">Tasks</label></div>
+                                <div id="mniUsers"><label class="checkbox"><input type="checkbox">Users</label></div>
+                                <div id="mniGroups"><label class="checkbox"><input type="checkbox">Groups</label></div>
+                                <div id="mniCustomers"><label class="checkbox"><input type="checkbox">Customers</label></div>
+                                <div id="mniProducts"><label class="checkbox"><input type="checkbox">Products</label></div>
+                                <div id="mniInventory"><label class="checkbox"><input type="checkbox">Inventory</label></div>
+                                <div id="mniReports"><label class="checkbox"><input type="checkbox">Reports</label></div>
+                            </div>
+                            <div class="flex basis200">
+                                <div id="mniMyTickets"><label class="checkbox"><input type="checkbox">My Tickets</label></div>
+                                <div id="mniTickets"><label class="checkbox"><input type="checkbox">All Tickets</label></div>
+                                <div id="ulTicketTypes" style="padding-left:10px;"></div>
+                                <div id="mniTicketTags"><label class="checkbox"><input type="checkbox">Ticket Tags</label></div>
+                            </div>
+                            <div class="flex basis200">
+                                <div id="mniChat"><label class="checkbox"><input type="checkbox">Customer Chat</label></div>
+                                <div id="mniKB"><label class="checkbox"><input type="checkbox">Knowledge Base</label></div>
+                                <div id="mniForum"><label class="checkbox"><input type="checkbox">Community</label></div>
+                                <div id="mniWiki"><label class="checkbox"><input type="checkbox">Wiki</label></div>
+                            </div>
                         </div>
                     </div>
                 </div>
