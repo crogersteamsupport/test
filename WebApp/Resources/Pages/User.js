@@ -152,7 +152,7 @@ UserPage = function() {
         $('#userAutoSubscribe').text((user.DoNotAutoSubscribe == true ? 'Enabled' : 'Disabled'));
         $('#userGroupNotify').text((user.ReceiveAllGroupNotifications == true ? 'Enabled' : 'Disabled'));
         $('#userUnassignedGroupNotify').text((user.ReceiveUnassignedGroupEmails == true ? 'Enabled' : 'Disabled'));
-        $('#userEmailAfterHours').text((user.OnlyEmailAfterHours == true ? 'Enabled' : 'Disabled'));
+        $('#userEmailAfterHours').text((user.OnlyEmailAfterHours == true ? 'Disabled' : 'Enabled'));
         $('#userDateFormat').text(user.CultureDisplay);
         $('#userSysAdmin').text((user.IsSystemAdmin == true ? 'Enabled' : 'Disabled'));
         $('#chatUser').text((user.IsChatUser == true ? 'Enabled' : 'Disabled'));
@@ -723,7 +723,7 @@ UserPage = function() {
             e.preventDefault();
             var item = $(this);
             item.next().show();
-            window.parent.parent.Ts.Services.Users.SetOnlyEmailAfterHours(_user.UserID, (item.text() !== 'Enabled'),
+            window.parent.parent.Ts.Services.Users.SetOnlyEmailAfterHours(_user.UserID, (item.text() !== 'Disabled'),
                 function(result) {
                     window.parent.parent.Ts.System.logAction('User Info - Only Email After Hours Changed');
                     item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
