@@ -1859,6 +1859,16 @@ SELECT
 
                         if (productsQuery.Length > 0 || versionsQuery.Length > 0)
                         {
+                            StringBuilder orderByClause = new StringBuilder();
+                            if (!string.IsNullOrWhiteSpace(searchTerm))
+                            {
+                                orderByClause.Append("p.name, pv.versionNumber");
+                            }
+                            else
+                            {
+                                orderByClause.Append("ti.relevance DESC");
+                            }
+
                             string query = @"
                                 DECLARE @TempItems 
                                 TABLE
@@ -1905,7 +1915,7 @@ SELECT
                                 WHERE 
                                   ti.ID BETWEEN @FromIndex AND @toIndex
                                 ORDER BY 
-                                  ti.relevance DESC
+                                  " + orderByClause.ToString() + @"
                                 FOR JSON PATH";
 
                             command.CommandText = string.Format(query, versionsQuery.ToString(), productsQuery.ToString());
