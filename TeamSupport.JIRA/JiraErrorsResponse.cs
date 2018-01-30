@@ -47,12 +47,20 @@ namespace TeamSupport.JIRA
 				string content = reader.ReadToEnd();
 				reader.Close();
 
-				errorsResponse = JsonConvert.DeserializeObject<JiraErrorsResponse>(content);
+				try
+				{
+					errorsResponse = JsonConvert.DeserializeObject<JiraErrorsResponse>(content);
 
-                if (errorsResponse != null && errorsResponse.Errors != null)
-                {
-                    errorsResponse.Errors.CustomFields = GetCustomFieldsErrors(content);
-                }
+					if (errorsResponse != null && errorsResponse.Errors != null)
+					{
+						errorsResponse.Errors.CustomFields = GetCustomFieldsErrors(content);
+					}
+				}
+				catch (Exception ex)
+				{
+					List<string> error = new List<string>() { ex.Message, content };
+					errorsResponse.ErrorMessages = error.ToArray();
+				}
 			}
 
 			return errorsResponse;

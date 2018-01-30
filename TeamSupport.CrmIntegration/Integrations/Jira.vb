@@ -561,13 +561,15 @@ Namespace TeamSupport
                         Catch webEx As WebException
                             Dim invalidJiraKey As String = String.Empty
 
-                            If ticketLinkToJira.JiraKey.ToLower().Contains("http") _
-                            Or ticketLinkToJira.JiraKey.ToLower().Contains(":") _
-                            Or ticketLinkToJira.JiraKey.ToLower().Contains("/") Then
-                                invalidJiraKey = "The JiraKey entered is not valid or does not exist in Jira."
-                            End If
+							If ticketLinkToJira.JiraKey.ToLower().Contains("http") _
+							Or ticketLinkToJira.JiraKey.ToLower().Contains(":") _
+							Or ticketLinkToJira.JiraKey.ToLower().Contains("/") _
+							Or ticketLinkToJira.JiraKey.ToLower().Contains("[") _
+							Or ticketLinkToJira.JiraKey.ToLower().Contains("]") Then
+								invalidJiraKey = "The JiraKey entered is not valid or does not exist in Jira."
+							End If
 
-                            If (String.IsNullOrEmpty(invalidJiraKey)) Then
+							If (String.IsNullOrEmpty(invalidJiraKey)) Then
                                 Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
 
                                 If (jiraErrors IsNot Nothing AndAlso jiraErrors.HasErrors) Then
