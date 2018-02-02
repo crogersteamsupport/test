@@ -1950,11 +1950,11 @@ SELECT
                             StringBuilder orderByClause = new StringBuilder();
                             if (!string.IsNullOrWhiteSpace(searchTerm))
                             {
-                                orderByClause.Append("p.name, pv.versionNumber");
+                                orderByClause.Append("ti.relevance DESC");
                             }
                             else
                             {
-                                orderByClause.Append("ti.relevance DESC");
+                                orderByClause.Append("p.name, pv.versionNumber");
                             }
 
                             string query = @"
