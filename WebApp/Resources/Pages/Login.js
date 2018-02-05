@@ -5,6 +5,7 @@ var returnURL = '/default.aspx';
 var orgCookie = null;
 
 $(document).ready(function() {
+    ticketnum = top.Ts.Utils.getQueryValue("TicketNumber", window);
     returnURL = top.Ts.Utils.getQueryValue("ReturnUrl", window);
     if (returnURL == null) returnURL = '/default.aspx';
     var newSignUpID = top.Ts.Utils.getQueryValue("SignUpID", window);
