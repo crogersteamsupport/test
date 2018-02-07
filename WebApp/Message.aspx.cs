@@ -18,7 +18,6 @@ public partial class Message : System.Web.UI.Page {
 
     protected void Page_Load(object sender, EventArgs e) {
         if (Request["Message"] != null) _message = Request["Message"];
-        // if (Request["ReturnUrl"] != null) _returnUrl = Request["ReturnUrl"];
         _returnUrl = "/";
 
         pnlContinue.Visible = _returnUrl != "";
