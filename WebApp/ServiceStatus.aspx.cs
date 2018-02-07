@@ -37,7 +37,7 @@ public partial class ServiceStatus : System.Web.UI.Page
             
             AddStatusRow(rowBuilder, service.Row["Name"].ToString(), isGood, (DateTime)service.Row["HealthTime"], service.HealthMaxMinutes);
 
-            if (timeSinceCheck > service.HealthMaxMinutes)
+            if (timeSinceCheck > service.HealthMaxMinutes && service.AutoStart)
             {
                 failures.Add(GetServiceObject(service.AssemblyName, service.NameSpace));
             }
@@ -209,7 +209,7 @@ AND (
  * SQL to update Servcies table with assembly and name space fields (Service name and host)
  * 
 declare  @pod varchar(10)
-select @pod = 'na3'
+select @pod = 'beta'
 
 update services set NameSpace = @pod + '-svc01'
 update services set NameSpace = @pod + '-idx01' where Name like '%index%'
@@ -228,6 +228,10 @@ update services set AssemblyName = 'TSReportSender' where AssemblyName like '%re
 update services set AssemblyName = 'TSSlaProcessor' where AssemblyName like '%slaproc%'
 update services set AssemblyName = 'TSTaskProcessor' where AssemblyName like '%taskproc%'
 
+update Services set AutoStart=1
+update Services set AutoStart=0
+where name like '%email%' or name like '%index%' or name like '%tok%'
 
 select * from services order by name
+
  */
