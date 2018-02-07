@@ -42,6 +42,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("EnableAnonymousProductAssociation", "EnableAnonymousProductAssociation", false, false, false);
       _fieldMap.AddMap("EnableCustomerSpecificKB", "EnableCustomerSpecificKB", false, false, false);
       _fieldMap.AddMap("EnableCustomFieldModification", "EnableCustomFieldModification", false, false, false);
+      _fieldMap.AddMap("EnableProductFamilyFiltering", "EnableProductFamilyFiltering", false, false, false);
             
     }
   }
