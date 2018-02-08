@@ -9,7 +9,7 @@
     setInterval(tryLogin, 20000);
 
     function tryLogin() {
-    	window.location = location.protocol + '//' + location.host + '/Login.aspx';
+    	window.location = location.protocol + '//' + location.host + '/login';
     }
   </script>
 </asp:Content>
@@ -22,4 +22,3 @@
   <br />
   <br />
 </asp:Content>
-

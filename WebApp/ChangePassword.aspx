@@ -21,7 +21,7 @@
             $('#divAlert').html(result).show('fast');
           }
           else {
-            window.location = 'Message.aspx?ReturnUrl=Login.aspx&Message=password_changed'
+            window.location = 'Message.aspx?ReturnUrl=/login&Message=password_changed'
           }
         });
       });
@@ -53,5 +53,5 @@
   </div>
   </div>
   <input class="sessionid" type="hidden" runat="server" id="fieldSessionID" />
-  
+
 </asp:Content>
