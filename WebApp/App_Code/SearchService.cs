@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 using NewRelic.Api;
+using System.Dynamic;
 
 namespace TSWebServices
 {
@@ -1607,9 +1608,7 @@ SELECT
 	u.FirstName, 
 	u.LastName, 
 	u.Email, 
-	u.Title,
-	(SELECT COUNT(*) FROM TicketsView t LEFT JOIN OrganizationTickets ot ON ot.TicketID = t.TicketID WHERE ot.OrganizationID = o.OrganizationID AND t.IsClosed = 0) AS OrgOpenTickets,
-	(SELECT COUNT(*) FROM TicketsView t LEFT JOIN UserTickets ut ON ut.TicketID = t.TicketID WHERE ut.UserID = u.UserID AND t.IsClosed = 0) AS ContactOpenTickets
+	u.Title
 FROM #X AS x
 LEFT JOIN Organizations o ON o.OrganizationID = x.OrganizationID
 LEFT JOIN Users u ON u.UserID = x.UserID";
@@ -1682,7 +1681,7 @@ SELECT
                     company.name = (string)row["Organization"];
                     company.organizationID = (int)row["OrganizationID"];
                     company.isPortal = (bool)row["HasPortalAccess"];
-                    company.openTicketCount = (int)row["OrgOpenTickets"];
+                    company.openTicketCount = 0;// (int)row["OrgOpenTickets"];
                     company.website = GetDBString(row["Website"]);
 
                     List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
@@ -1701,7 +1700,7 @@ SELECT
                     CustomerSearchContact contact = new CustomerSearchContact();
                     contact.organizationID = (int)row["OrganizationID"];
                     contact.isPortal = (bool)row["IsPortalUser"];
-                    contact.openTicketCount = (int)row["ContactOpenTickets"];
+                    contact.openTicketCount = 0;// (int)row["ContactOpenTickets"];
 
                     contact.userID = (int)row["UserID"];
                     contact.fName = GetDBString(row["FirstName"]);
@@ -1734,7 +1733,7 @@ SELECT
         }
 
         [WebMethod]
-        public string[] SearchAssets(string searchTerm, int from, int count, bool searchAssigned, bool searchWarehouse, bool searchJunkyard)
+        public string[] SearchAssetsOLD(string searchTerm, int from, int count, bool searchAssigned, bool searchWarehouse, bool searchJunkyard)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<string> resultItems = new List<string>();
@@ -1766,31 +1765,277 @@ SELECT
         }
 
         [WebMethod]
+        public string[] SearchAssets(string searchTerm, int from, int count, bool searchAssigned, bool searchWarehouse, bool searchJunkyard)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            List<string> results = new List<string>();
+            SqlCommand command = new SqlCommand();
+
+            string pageQuery = @"
+WITH 
+q AS ({0}),
+r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY 
+    CASE 
+        WHEN [NAME] IS NULL THEN 1 
+        WHEN [NAME] = ''    THEN 2 
+        ELSE 3 
+    END DESC, 
+    [NAME] ASC) AS 'RowNum' FROM q)
+SELECT * INTO #X FROM r
+WHERE RowNum BETWEEN @From AND @To
+
+select  a.AssetID,
+        a.OrganizationID,
+        a.SerialNumber,
+        a.notes,
+        a.Name,
+        a.Location,
+        a.WarrantyExpiration,
+        p.Name as productName,
+        pv.VersionNumber
+FROM #X AS x
+LEFT JOIN Assets a on a.AssetID = x.AssetID
+LEFT JOIN Products p ON p.ProductID = x.ProductID 
+Left JOIN ProductVersions pv on pv.ProductVersionID = x.ProductVersionID";
+
+            string assetQuery = @"
+SELECT 
+  a.Name as Name,
+  a.AssetID,
+  a.ProductID,
+  a.ProductVersionID
+  FROM Assets a WHERE a.OrganizationID = @OrganizationID
+";
+            if(!string.IsNullOrEmpty(searchTerm))
+            {
+                assetQuery += " and (CONTAINS(Name,@SearchTerm) or CONTAINS(a.notes,@SearchTerm) or CONTAINS(a.serialnumber,@SearchTerm) ) ";                command.Parameters.AddWithValue("@SearchTerm", string.Format("\"{0}*\"", searchTerm));            }
+
+            if (!searchAssigned || !searchWarehouse || !searchJunkyard)
+            {
+                if (searchAssigned)
+                {
+                    assetQuery += " and (Location=1)";
+                    if (searchWarehouse) assetQuery += " OR (Location=2) ";
+                    if (searchJunkyard) assetQuery += " OR (Location=3) ";
+                }
+                else if (searchWarehouse)
+                {
+                    assetQuery += " and (Location=2) ";
+                    if (searchJunkyard) assetQuery += "  or (Location=3) ";
+                }
+                else if (searchJunkyard)
+                {
+                    assetQuery += " and (Location=3) ";
+                }
+            }
+
+            command.CommandText = string.Format(pageQuery, assetQuery);
+            command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+            command.Parameters.AddWithValue("@From", from + 1);
+            command.Parameters.AddWithValue("@To", from + count);
+
+            DataTable table = SqlExecutor.ExecuteQuery(loginUser, command);
+
+            foreach (DataRow row in table.Rows)
+            {
+                dynamic assetSearch = new ExpandoObject();
+                assetSearch.assetID = row["assetID"];
+                assetSearch.serialNumber = row["serialNumber"];
+                assetSearch.notes = row["notes"];
+                assetSearch.name = row["name"];
+                assetSearch.location = row["location"];
+                assetSearch.warrantyExpiration = row["warrantyExpiration"];
+                assetSearch.productName = row["productName"];
+                assetSearch.productVersionNumber = row["VersionNumber"];
+                results.Add(JsonConvert.SerializeObject(assetSearch));
+            }
+            return results.ToArray();
+        }
+
+        [WebMethod]
         public string[] SearchProducts(string searchTerm, int from, int count, bool searchProducts, bool searchProductVersions)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             try
             {
                 List<string> resultItems = new List<string>();
-                if (string.IsNullOrWhiteSpace(searchTerm))
+                string engine = "FTS";
+                switch (engine)
                 {
-                    searchTerm = "xfirstword";
-                }
+                    //https://dtsearch.com/
+                    case "DTS":
+                        if (string.IsNullOrWhiteSpace(searchTerm))
+                        {
+                            searchTerm = "xfirstword";
+                        }
 
-                SearchResults results = GetProductsSearchResults(loginUser, searchTerm, 0, searchProducts, searchProductVersions);
-                int topLimit = from + count;
-                if (topLimit > results.Count)
-                {
-                    topLimit = results.Count;
-                }
+                        SearchResults results = GetProductsSearchResults(loginUser, searchTerm, 0, searchProducts, searchProductVersions);
+                        int topLimit = from + count;
+                        if (topLimit > results.Count)
+                        {
+                            topLimit = results.Count;
+                        }
 
-                for (int i = from; i < topLimit; i++)
-                {
-                    results.GetNthDoc(i);
-                    if (results.CurrentItem.UserFields["JSON"] != null)
-                        resultItems.Add(results.CurrentItem.UserFields["JSON"].ToString());
-                }
+                        for (int i = from; i < topLimit; i++)
+                        {
+                            results.GetNthDoc(i);
+                            if (results.CurrentItem.UserFields["JSON"] != null)
+                                resultItems.Add(results.CurrentItem.UserFields["JSON"].ToString());
+                        }
+                        break;
+                    //https://docs.microsoft.com/en-us/sql/relational-databases/search/full-text-search
+                    case "FTS":
+                        StringBuilder productsQuery = new StringBuilder();
+                        StringBuilder versionsQuery = new StringBuilder();
+                        SqlCommand command = new SqlCommand();
 
+                        if (searchProducts)
+                        {
+                            List<SqlDataRecord> tfsProductsResultsList = Products.GetSearchResultsList(searchTerm, loginUser);
+
+                            if (tfsProductsResultsList.Count > 0)
+                            {
+                                productsQuery.Append(@"
+                                    SELECT
+                                        p.ProductID
+                                        , 13
+                                        , fprt.relevance
+                                        , p.DateModified
+                                    FROM
+                                        dbo.Products p
+                                        JOIN @ftsProductsResultsTable fprt
+                                            ON p.ProductID = fprt.recordID
+                                ");
+
+                                SqlParameter ftsProductsResultsTable = new SqlParameter("@ftsProductsResultsTable", SqlDbType.Structured);
+                                ftsProductsResultsTable.TypeName = "dtSearch_results_tbltype";
+                                ftsProductsResultsTable.Value = tfsProductsResultsList;
+                                command.Parameters.Add(ftsProductsResultsTable);
+                            }
+                        }
+
+                        if (searchProductVersions)
+                        {
+                            List<SqlDataRecord> tfsProductVersionsResultsList = ProductVersions.GetSearchResultsList(searchTerm, loginUser);
+
+                            if (tfsProductVersionsResultsList.Count > 0)
+                            {
+                                versionsQuery.Append(@"
+                                    SELECT
+                                        pv.ProductVersionID
+                                        , 14
+                                        , fpvrt.relevance
+                                        , pv.DateModified
+                                    FROM
+                                        dbo.ProductVersions pv
+                                        JOIN @ftsProductVersionsResultsTable fpvrt
+                                            ON pv.ProductVersionID = fpvrt.recordID
+                                ");
+
+                                if (productsQuery.Length > 0)
+                                {
+                                    versionsQuery.AppendLine("UNION");
+                                }
+
+                                SqlParameter ftsProductVersionsResultsTable = new SqlParameter("@ftsProductVersionsResultsTable", SqlDbType.Structured);
+                                ftsProductVersionsResultsTable.TypeName = "dtSearch_results_tbltype";
+                                ftsProductVersionsResultsTable.Value = tfsProductVersionsResultsList;
+                                command.Parameters.Add(ftsProductVersionsResultsTable);
+                            }
+                        }
+
+                        if (productsQuery.Length > 0 || versionsQuery.Length > 0)
+                        {
+                            StringBuilder orderByClause = new StringBuilder();
+                            if (!string.IsNullOrWhiteSpace(searchTerm))
+                            {
+                                orderByClause.Append("ti.relevance DESC");
+                            }
+                            else
+                            {
+                                orderByClause.Append("p.name, pv.versionNumber");
+                            }
+
+                            string query = @"
+                                DECLARE @TempItems 
+                                TABLE
+                                ( 
+                                  ID            int IDENTITY, 
+                                  recordID      int, 
+                                  source        int, 
+                                  relevance     int, 
+                                  DateModified  datetime 
+                                )
+
+                                INSERT INTO @TempItems 
+                                (
+                                  recordID, 
+                                  source, 
+                                  relevance, 
+                                  DateModified 
+                                ) 
+                                {0}
+                                {1}
+        
+                                SET @resultsCount = @@RowCount
+
+                                SELECT
+                                  p.productID,
+                                  p.name,
+                                  p.Name AS productName,
+                                  p.description,
+                                  pv.productVersionID,
+                                  pv.versionNumber,
+                                  pv.releaseDate,
+                                  pv.isReleased,
+                                  pvs.Name AS versionStatus
+                                FROM 
+                                  @TempItems ti 
+                                  LEFT JOIN dbo.Products p
+                                    ON ti.source = 13
+                                    AND ti.recordID = p.ProductID
+                                  LEFT JOIN dbo.ProductVersions pv
+                                    ON ti.source = 14
+                                    AND ti.recordID = pv.ProductVersionID
+                                  LEFT JOIN dbo.ProductVersionStatuses pvs
+                                    ON pv.ProductVersionStatusID = pvs.ProductVersionStatusID
+                                WHERE 
+                                  ti.ID BETWEEN @FromIndex AND @toIndex
+                                ORDER BY 
+                                  " + orderByClause.ToString() + @"
+                                FOR JSON PATH";
+
+                            command.CommandText = string.Format(query, versionsQuery.ToString(), productsQuery.ToString());
+                            command.CommandType = CommandType.Text;
+
+                            SqlParameter resultsCount = new SqlParameter("@resultsCount", SqlDbType.Int)
+                            {
+                                Direction = ParameterDirection.Output
+                            };
+                            command.Parameters.Add(resultsCount);
+
+                            command.Parameters.AddWithValue("@FromIndex", from + 1);
+                            command.Parameters.AddWithValue("@ToIndex", from + count);
+
+                            using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+                            {
+                                command.Connection = connection;
+                                connection.Open();
+                                var reader = command.ExecuteReader();
+                                StringBuilder resultItemsBuilder = new StringBuilder();
+                                while (reader.Read())
+                                {
+                                    resultItemsBuilder.Append(reader.GetValue(0).ToString());
+                                }
+                                Newtonsoft.Json.Linq.JArray resultItemsJArray = Newtonsoft.Json.Linq.JArray.Parse(resultItemsBuilder.ToString());
+                                for (int j = 0; j < resultItemsJArray.Count; j++)
+                                {
+                                    resultItems.Add(resultItemsJArray[j].ToString());
+                                }
+                            }
+                        }
+                        break;
+                }
                 return resultItems.ToArray();
             }
             catch (Exception ex)
