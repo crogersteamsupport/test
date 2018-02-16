@@ -106,11 +106,11 @@
 
         var div = $('<div>')
           .addClass('peopleinfo')
-          .append(
-            $('<div>')
-              .addClass('pull-right')
-              .append($('<p>').text(item.openTicketCount + ' open tickets'))
-          );
+          //.append(
+          //  $('<div>')
+          //    .addClass('pull-right')
+          //    .append($('<p>').text(item.openTicketCount + ' open tickets'))
+          //);
 
         $('<td>').append(div).appendTo(el);
 
@@ -146,11 +146,11 @@
 
         var div = $('<div>')
           .addClass('peopleinfo')
-          .append(
-            $('<div>')
-              .addClass('pull-right')
-              .append($('<p>').text(item.openTicketCount + ' open tickets'))
-          );
+          //.append(
+          //  $('<div>')
+          //    .addClass('pull-right')
+          //    .append($('<p>').text(item.openTicketCount + ' open tickets'))
+          //);
 
         $('<td>').append(div).appendTo(el);
 
