@@ -102,7 +102,9 @@ div.action .specifics .details p {
     font-family:Helvetica;
     font-size:12pt;
 }
-
+div.action .specifics .details p {
+    margin:0px;
+}
 div.action .specifics .details img {
     max-width:100% !important;
 }
