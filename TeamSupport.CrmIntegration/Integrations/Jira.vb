@@ -423,11 +423,16 @@ Namespace TeamSupport
                     Dim updateTicketFlag As Boolean = False
                     Dim sendCustomMappingFields As Boolean = False
                     Dim issueFields As JObject = Nothing
+                    Dim ticketTypeName As String = ticket.TicketTypeName
+                    Dim mappedTicketType As CRMLinkField = ticketTypeMappings.FindByTSFieldName(ticket.TicketTypeName)
+                    If mappedTicketType IsNot Nothing Then
+                        ticketTypeName = mappedTicketType.CRMFieldName
+                    End If
 
                     Try
                         crmLinkError = crmLinkErrors.FindUnclearedByObjectIDAndFieldName(ticket.TicketID, String.Empty)
                         jiraProjectKey = GetProjectKey(ticket, crmLinkErrors)
-                        issueFields = GetIssueFields(ticket, jiraProjectKey, crmLinkError, Orientation.OutToJira, ticketTypeMappings)
+                        issueFields = GetIssueFields(ticket, jiraProjectKey, crmLinkError, Orientation.OutToJira, ticketTypeName)
                     Catch webEx As WebException
                         Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
 
@@ -469,7 +474,7 @@ Namespace TeamSupport
 
                             Dim actionDescriptionId As Integer
                             ticketData = New StringBuilder()
-                            ticketData.Append(GetTicketData(ticket, issueFields, jiraProjectKey, actionDescriptionId, customMappingFields, crmLinkErrors, ticketTypeMappings))
+                            ticketData.Append(GetTicketData(ticket, issueFields, jiraProjectKey, actionDescriptionId, customMappingFields, crmLinkErrors, ticketTypeName))
                             issue = GetAPIJObject(URI, "POST", ticketData.ToString())
                             'The create issue response does not include status and we need it to initialize the synched ticket. So, we do a GET on the recently created issue.
                             URI = _baseURI + "/issue/" + issue("key").ToString()
@@ -561,13 +566,15 @@ Namespace TeamSupport
                         Catch webEx As WebException
                             Dim invalidJiraKey As String = String.Empty
 
-                            If ticketLinkToJira.JiraKey.ToLower().Contains("http") _
-                            Or ticketLinkToJira.JiraKey.ToLower().Contains(":") _
-                            Or ticketLinkToJira.JiraKey.ToLower().Contains("/") Then
-                                invalidJiraKey = "The JiraKey entered is not valid or does not exist in Jira."
-                            End If
+							If ticketLinkToJira.JiraKey.ToLower().Contains("http") _
+							Or ticketLinkToJira.JiraKey.ToLower().Contains(":") _
+							Or ticketLinkToJira.JiraKey.ToLower().Contains("/") _
+							Or ticketLinkToJira.JiraKey.ToLower().Contains("[") _
+							Or ticketLinkToJira.JiraKey.ToLower().Contains("]") Then
+								invalidJiraKey = "The JiraKey entered is not valid or does not exist in Jira."
+							End If
 
-                            If (String.IsNullOrEmpty(invalidJiraKey)) Then
+							If (String.IsNullOrEmpty(invalidJiraKey)) Then
                                 Dim jiraErrors As JiraErrorsResponse = JiraErrorsResponse.Get(webEx)
 
                                 If (jiraErrors IsNot Nothing AndAlso jiraErrors.HasErrors) Then
@@ -1043,24 +1050,20 @@ Namespace TeamSupport
                                         ByRef actionDescriptionId As Integer,
                                         ByRef customMappingFields As CRMLinkFields,
                                         ByRef crmLinkErrors As CRMLinkErrors,
-                                        ByRef ticketTypeMappings As CRMLinkFields) As String
+                                        ByRef ticketTypeName As String) As String
                 Dim result As StringBuilder = New StringBuilder()
                 Dim customField As StringBuilder = New StringBuilder()
                 customField = BuildRequiredFields(ticket, fields, customMappingFields, crmLinkErrors)
                 result.Append("{")
                 result.Append("""fields"":{")
                 result.Append("""summary"":""" + DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(ticket.Name))) + """,")
-                Dim ticketTypeName As String = ticket.TicketTypeName
-                Dim mappedTicketType As CRMLinkField = ticketTypeMappings.FindByTSFieldName(ticket.TicketTypeName)
-                If mappedTicketType IsNot Nothing Then
-                    ticketTypeName = mappedTicketType.CRMFieldName
-                End If
-                result.Append("""issuetype"":{""name"":""" + ticketTypeName + """},")
-                If customField.ToString().Trim().Length > 0 Then
-                    result.Append(customField.ToString() + ",")
-                End If
+				result.Append("""issuetype"":{""name"":""" + ticketTypeName + """},")
 
-                result.Append("""project"":{""key"":""" + jiraProjectKey + """},")
+				If customField.ToString().Trim().Length > 0 Then
+					result.Append(customField.ToString() + ",")
+				End If
+
+				result.Append("""project"":{""key"":""" + jiraProjectKey + """},")
                 Dim actionDescription As Action = Actions.GetTicketDescription(User, ticket.TicketID)
                 actionDescriptionId = actionDescription.ActionID
                 Dim addLines As Boolean = True
@@ -1076,31 +1079,15 @@ Namespace TeamSupport
                                         ByVal jiraProjectKey As String,
                                         ByRef crmLinkError As CRMLinkError,
                                         ByVal orientation As Orientation,
-                                        ByRef ticketTypeMappings As CRMLinkFields) As JObject
-                Dim issueTypeName As String = ticket.TicketTypeName
-                Dim mappedTicketType As CRMLinkField = ticketTypeMappings.FindByTSFieldName(ticket.TicketTypeName)
-                If mappedTicketType IsNot Nothing Then
-                    issueTypeName = mappedTicketType.CRMFieldName
-                End If
+                                        ByVal issueTypeName As String) As JObject
                 Dim addTypeFieldsToList As Boolean = True
                 Dim result As JObject = Nothing
 
                 issueTypeName = Replace(issueTypeName, " ", "+")
                 jiraProjectKey = Replace(jiraProjectKey, " ", "+")
+				addTypeFieldsToList = True
 
-                '//vv
-                'If (_issueTypeFieldsList IsNot Nothing AndAlso _
-                '	 _issueTypeFieldsList.Any() AndAlso _
-                '	_issueTypeFieldsList.Count > 0 AndAlso _
-                '	_issueTypeFieldsList.Where(Function (p) p.Key.IssueType = issueTypeName.ToLower() AndAlso p.Key.Project = jiraProjectKey.ToLower()).Any) Then
-                '	result = _issueTypeFieldsList.Where(Function (p) p.Key.IssueType = issueTypeName.ToLower() AndAlso p.Key.Project = jiraProjectKey.ToLower()).Select(Function(p) p.Value).FirstOrDefault()
-                '	addTypeFieldsToList = False
-                'End If
-
-                '//vv
-                addTypeFieldsToList = True
-
-                If (addTypeFieldsToList) Then
+				If (addTypeFieldsToList) Then
                     Dim URI As String = _baseURI +
                                     "/issue/createmeta?projectKeys=" +
                                     jiraProjectKey.ToUpper() +
@@ -1134,9 +1121,8 @@ Namespace TeamSupport
                                 OperationType.Unknown)
                             AddLog("Type was not found in list of project types. If an exception ahead, chances are it was caused by missing type.")
                         Else
-                            '//vv _issueTypeFieldsList.Add(New IssueTypeFields With { .IssueType = issueTypeName.ToLower(), .Project = jiraProjectKey.ToLower() }, result)
-                            ClearCrmLinkError(crmLinkError)
-                        End If
+							ClearCrmLinkError(crmLinkError)
+						End If
                     Catch ex As Exception
                         AddLog(String.Format("Exception rised attempting to get createmeta.{0}{1}{0}{2}{0}{3}", Environment.NewLine, ex.Message, "URI: " + URI, "Type: " + issueTypeName))
                         Throw New Exception("project mismatch")
@@ -1819,45 +1805,46 @@ Namespace TeamSupport
                 updateTicket.LoadByTicketID(ticketID)
 
                 If updateTicket.Count > 0 AndAlso updateTicket(0).OrganizationID = CRMLinkRow.OrganizationID Then
-                    Dim ticketTypeId As Integer = 0
-                    Dim customFields As New CRMLinkFields(User)
+					Dim newTicketType As TicketType
+					Dim customFields As New CRMLinkFields(User)
                     Dim allTypes As TicketTypes = New TicketTypes(User)
                     Dim ticketLinkToJira As TicketLinkToJira = New TicketLinkToJira(User)
-
-                    ticketLinkToJira.LoadByTicketID(updateTicket(0).TicketID)
+					Dim issueTypeName As String = String.Empty
+					ticketLinkToJira.LoadByTicketID(updateTicket(0).TicketID)
                     allTypes.LoadByOrganizationID(CRMLinkRow.OrganizationID)
 
                     For Each field As KeyValuePair(Of String, JToken) In CType(issue("fields"), JObject)
                         If field.Key.Trim().ToLower() = "issuetype" Then
-                            Dim issueTypeName As String = GetFieldValue(field)
-                            Dim mappedTicketType As CRMLinkField = ticketTypeMappings.FindByCRMFieldName(issueTypeName)
-                            If mappedTicketType IsNot Nothing Then
-                                issueTypeName = mappedTicketType.TSFieldName
-                            End If
-                            Dim ticketType As TicketType = allTypes.FindByName(issueTypeName)
+							issueTypeName = GetFieldValue(field)
+							Dim mappedTicketType As CRMLinkField = ticketTypeMappings.FindByCRMFieldName(issueTypeName)
 
-                            If ticketType IsNot Nothing Then
-                                ticketTypeId = allTypes.FindByName(issueTypeName).TicketTypeID
-                                customFields.LoadByObjectTypeAndCustomFieldAuxID(GetDescription(ObjectType.Ticket), CRMLinkRow.CRMLinkID, ticketTypeId)
-                            End If
+							If mappedTicketType IsNot Nothing Then
+								newTicketType = allTypes.FindByName(mappedTicketType.TSFieldName)
+							Else
+								newTicketType = allTypes.FindByName(issueTypeName)
+							End If
+
+							If newTicketType IsNot Nothing Then
+								customFields.LoadByObjectTypeAndCustomFieldAuxID(GetDescription(ObjectType.Ticket), CRMLinkRow.CRMLinkID, newTicketType.TicketTypeID)
+							End If
 
                             Exit For
                         End If
                     Next
-
-                    If ticketTypeId = 0 Then
-                        customFields.LoadByObjectTypeAndCustomFieldAuxID(GetDescription(ObjectType.Ticket), CRMLinkRow.CRMLinkID, updateTicket(0).TicketTypeID)
-                    End If
 
                     Dim ticketValuesChanged = False
                     Dim issueStatusChangedNotUpdatedInTicket = False
                     Dim ticketView As TicketsView = New TicketsView(User)
                     ticketView.LoadByTicketID(ticketID)
                     Dim jiraProjectKey As String = GetProjectKey(ticketView(0), crmLinkErrors)
-                    Dim issueFields As JObject = GetIssueFields(ticketView(0), jiraProjectKey, crmLinkError, Orientation.IntoTeamSupport, ticketTypeMappings)
-                    Dim ticketsFieldMap As Tickets = New Tickets(User)
+					Dim issueFields As JObject = GetIssueFields(ticketView(0), jiraProjectKey, crmLinkError, Orientation.IntoTeamSupport, issueTypeName)
+					Dim ticketsFieldMap As Tickets = New Tickets(User)
 
-                    For Each field As KeyValuePair(Of String, JToken) In CType(issue("fields"), JObject)
+					If newTicketType Is Nothing Then
+						customFields.LoadByObjectTypeAndCustomFieldAuxID(GetDescription(ObjectType.Ticket), CRMLinkRow.CRMLinkID, updateTicket(0).TicketTypeID)
+					End If
+
+					For Each field As KeyValuePair(Of String, JToken) In CType(issue("fields"), JObject)
                         Dim value As String = Nothing
                         Dim cRMLinkField As CRMLinkField = customFields.FindByCRMFieldName(GetFieldNameByKey(field.Key.ToString(), issueFields))
                         Dim crmLinkCustomFieldError As CRMLinkError = Nothing
@@ -1957,14 +1944,13 @@ Namespace TeamSupport
                             Select Case field.Key.Trim().ToLower()
                                 Case "issuetype"
                                     Dim currentType As TicketType = allTypes.FindByTicketTypeID(updateTicket(0).TicketTypeID)
-                                    Dim newType As TicketType = allTypes.FindByName(value)
-                                    Dim updateType As Boolean = CRMLinkRow.UpdateTicketType
+									Dim updateType As Boolean = CRMLinkRow.UpdateTicketType
 
-                                    If updateType AndAlso newType IsNot Nothing AndAlso newType.TicketTypeID <> currentType.TicketTypeID Then
-                                        updateTicket(0).TicketTypeID = newType.TicketTypeID
-                                        ticketValuesChanged = True
-                                    End If
-                                Case "project"
+									If updateType AndAlso newTicketType IsNot Nothing AndAlso newTicketType.TicketTypeID <> currentType.TicketTypeID Then
+										updateTicket(0).TicketTypeID = newTicketType.TicketTypeID
+										ticketValuesChanged = True
+									End If
+								Case "project"
                                     Dim allProducts As Products = New Products(User)
                                     allProducts.LoadByOrganizationID(CRMLinkRow.OrganizationID)
                                     Dim newProduct As Product = allProducts.FindByName(value)
@@ -1982,7 +1968,13 @@ Namespace TeamSupport
                                     End If
                                 Case "status"
                                     Dim currentStatus As TicketStatus = allStatuses.FindByTicketStatusID(updateTicket(0).TicketStatusID)
-                                    Dim newStatus As TicketStatus = allStatuses.FindByName(value, updateTicket(0).TicketTypeID)
+                                    Dim newStatus As TicketStatus
+
+									If newTicketType IsNot Nothing Then
+										newStatus = allStatuses.FindByName(value, newTicketType.TicketTypeID)
+									Else
+										newStatus = allStatuses.FindByName(value, updateTicket(0).TicketTypeID)
+                                    End If
                                     Dim isCurrentStatusExcluded As Boolean = False
 
                                     If (Not String.IsNullOrEmpty(CRMLinkRow.ExcludedTicketStatusUpdate)) Then

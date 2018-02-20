@@ -22,7 +22,6 @@ using TidyNet;
 using ImageResizer;
 using System.Net;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Diagnostics;
 using OpenTokSDK;
@@ -75,94 +74,7 @@ namespace TSWebServices
             {
                 connection.Open();
                 if (filter == null) filter = new TicketLoadFilter();
-
-				string fields = @"
-	tv.ViewerID,
-	tv.IsSubscribed,
-	tv.IsEnqueued, 
-	tv.IsRead,
-	tv.IsFlagged,
-	tv.QueuePosition,
-	tv.TicketID,
-	tv.ProductName,
-	tv.ReportedVersion,
-	tv.SolvedVersion,
-	tv.GroupName,
-	tv.GroupID,
-	tv.TicketTypeName,
-	tv.UserName,
-	tv.[Status],
-	tv.IsClosed,
-	tv.Severity,
-	tv.TicketNumber,
-	tv.UserID,
-	tv.OrganizationID,
-	tv.[Name],
-	tv.DateModified,
-	tv.DateCreated,
-	tv.DateClosed,
-	tv.DaysOpened,
-	tv.SlaViolationTime,
-	tv.TicketSource,
-	tv.ForumCategory,
-	tv.DueDate";
-
-				//Do the following check to see if we should add the Contacts and/or Customers, since they are pulled using a Scalar Function in the SELECT, we could do a tiny performance improvement there.
-				string ticketGridColumnsString = Settings.UserDB.ReadString("TicketGrid-Columns", null);
-				bool includeCustomers = false;
-				bool includeContacts = false;
-
-				if (!string.IsNullOrEmpty(ticketGridColumnsString))
-				{
-					try
-					{
-						dynamic ticketGridColumns = JObject.Parse(ticketGridColumnsString);
-
-						foreach (var t in ticketGridColumns.columns)
-						{
-							if (t.id.Value.ToLower() == "customers")
-							{
-								includeCustomers = true;
-							}
-
-							if (t.id.Value.ToLower() == "contacts")
-							{
-								includeContacts = true;
-							}
-						}
-					}
-					catch(Exception ex)
-					{
-						includeCustomers = true;
-						includeContacts = true;
-						ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "TicketService.GetTicketRange");
-					}
-				}
-				else
-				{
-					includeCustomers = true;
-					includeContacts = true;
-				}
-
-				if (includeContacts)
-				{
-					fields += ",dbo.GetTicketContacts(tv.TicketID) AS Contacts";
-				}
-				else
-				{
-					fields += ",'' AS Contacts";
-				}
-
-				if (includeCustomers)
-				{
-					fields += ",dbo.GetTicketCustomers(tv.TicketID) AS Customers";
-				}
-				else
-				{
-					fields += ",'' AS Customers";
-				}
-
-				SqlCommand command = TicketsView.GetLoadRangeCommand(loginUser, from, to, filter, fields);
+                SqlCommand command = TicketsView.GetLoadRangeCommand(loginUser, from, to, filter);
                 command.Connection = connection;
                 SqlDataReader reader = command.ExecuteReader();
 
@@ -172,23 +84,51 @@ namespace TSWebServices
                     while (reader.Read())
                     {
                         TicketsViewItemProxy item = new TicketsViewItemProxy();
-
+                        item.SalesForceID = reader["SalesForceID"] as string;
+                        item.KnowledgeBaseCategoryName = reader["KnowledgeBaseCategoryName"] as string;
+                        item.KnowledgeBaseCategoryID = reader["KnowledgeBaseCategoryID"] as int?;
+                        item.CategoryName = reader["CategoryName"] as string;
                         item.ForumCategory = reader["ForumCategory"] as int?;
                         item.TicketSource = reader["TicketSource"] as string;
                         item.Customers = reader["Customers"] as string;
                         item.Contacts = reader["Contacts"] as string;
+                        item.SlaWarningHours = reader["SlaWarningHours"] as decimal?;
+                        item.SlaViolationHours = reader["SlaViolationHours"] as decimal?;
+                        item.SlaWarningTime = reader["SlaWarningTime"] as int?;
                         item.SlaViolationTime = reader["SlaViolationTime"] as int?;
+                        item.Tags = reader["Tags"] as string;
+                        item.HoursSpent = reader["HoursSpent"] as decimal?;
+                        item.ModifierName = reader["ModifierName"] as string;
+                        item.CreatorName = reader["CreatorName"] as string;
+                        item.CloserName = reader["CloserName"] as string;
                         item.DaysOpened = reader["DaysOpened"] as int?;
+                        item.DaysClosed = reader["DaysClosed"] as int? ?? 0;
+                        item.CloserID = reader["CloserID"] as int?;
+                        item.CreatorID = reader["CreatorID"] as int? ?? -1;
+                        item.ModifierID = reader["ModifierID"] as int? ?? -1;
+                        item.ParentID = reader["ParentID"] as int?;
                         item.Name = reader["Name"] as string;
                         item.OrganizationID = reader["OrganizationID"] as int? ?? loginUser.OrganizationID;
+                        item.TicketSeverityID = reader["TicketSeverityID"] as int? ?? -1;
+                        item.TicketTypeID = reader["TicketTypeID"] as int? ?? -1;
+                        item.TicketStatusID = reader["TicketStatusID"] as int? ?? -1;
                         item.UserID = reader["UserID"] as int? ?? -1;
+                        item.GroupID = reader["GroupID"] as int? ?? -1;
+                        item.ProductID = reader["ProductID"] as int? ?? -1;
+                        item.SolvedVersionID = reader["SolvedVersionID"] as int?;
+                        item.ReportedVersionID = reader["ReportedVersionID"] as int?;
+                        item.IsKnowledgeBase = reader["IsKnowledgeBase"] as bool? ?? false;
+                        item.IsVisibleOnPortal = reader["IsVisibleOnPortal"] as bool? ?? false;
                         item.TicketNumber = reader["TicketNumber"] as int? ?? -1;
                         item.Severity = reader["Severity"] as string;
                         item.IsClosed = reader["IsClosed"] as bool? ?? false;
+                        item.SeverityPosition = reader["SeverityPosition"] as int?;
+                        item.StatusPosition = reader["StatusPosition"] as int?;
                         item.Status = reader["Status"] as string;
                         item.UserName = reader["UserName"] as string;
                         item.TicketTypeName = reader["TicketTypeName"] as string;
-                        item.GroupName = reader["GroupName"] as string;
+						item.TicketTypeID = reader["TicketTypeID"] as int? ?? -1;
+						item.GroupName = reader["GroupName"] as string;
                         item.SolvedVersion = reader["SolvedVersion"] as string;
                         item.ReportedVersion = reader["ReportedVersion"] as string;
                         item.ProductName = reader["ProductName"] as string;
@@ -197,6 +137,9 @@ namespace TSWebServices
                         item.DateModified = DateTime.SpecifyKind(reader["DateModified"] as DateTime? ?? DateTime.MinValue, DateTimeKind.Utc);
                         item.DateCreated = DateTime.SpecifyKind(reader["DateCreated"] as DateTime? ?? DateTime.MinValue, DateTimeKind.Utc);
 
+                        item.DateModifiedBySalesForceSync = GetReaderNullableDate(reader["DateModifiedBySalesForceSync"]);
+                        item.SlaWarningDate = GetReaderNullableDate(reader["SlaWarningDate"]);
+                        item.SlaViolationDate = GetReaderNullableDate(reader["SlaViolationDate"]);
                         item.DateClosed = GetReaderNullableDate(reader["DateClosed"]);
                         item.DueDate = GetReaderNullableDate(reader["DueDate"]);
 

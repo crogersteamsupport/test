@@ -73,8 +73,24 @@ namespace TeamSupport.ServiceLibrary
             SqlCommand command = new SqlCommand();
             command.CommandText = "UPDATE Organizations SET IsIndexLocked = 0 WHERE OrganizationID = @OrganizationID";
             command.Parameters.AddWithValue("OrganizationID", organizationID);
-            SqlExecutor.ExecuteNonQuery(LoginUser, command);
-            LogVerbose("Unlocked index for " + organizationID.ToString());
+            int attempts = 0;
+            while (attempts < 3)
+            {
+                try
+                {
+                    SqlExecutor.ExecuteNonQuery(LoginUser, command);
+                    LogVerbose("Unlocked index for " + organizationID.ToString());
+                    break;
+                }
+                catch (Exception e)
+                {
+                    attempts++;
+                    if (attempts == 3)
+                    {
+                        throw;
+                    }
+                }
+            }
         }
 
         private void UnmarkIndexRebuild(int organizationID)
@@ -130,15 +146,15 @@ namespace TeamSupport.ServiceLibrary
                         continue;
                     }
 
-                    _isVerbose = Settings.ReadBool("VerboseLogging", false);
-                    int idToLog = Settings.ReadInt("VerboseLoggingOrg", 0);
-                    if (_isVerbose && idToLog > 0)
-                    {
-                        _isVerbose = organization.OrganizationID == idToLog;
-                    }
-
                     try
                     {
+                        _isVerbose = Settings.ReadBool("VerboseLogging", false);
+                        int idToLog = Settings.ReadInt("VerboseLoggingOrg", 0);
+                        if (_isVerbose && idToLog > 0)
+                        {
+                            _isVerbose = organization.OrganizationID == idToLog;
+                        }
+
                         ProcessOrganization(organization, isRebuilder);
                     }
                     finally
