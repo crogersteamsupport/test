@@ -27,6 +27,8 @@ namespace TeamSupport.Data
             MatchAllTerms = true;
         }
         [DataMember]
+        public int? ProductFamilyID { get; set; }
+        [DataMember]
         public int? TicketTypeID { get; set; }
         [DataMember]
         public int? ProductID { get; set; }
@@ -1594,6 +1596,7 @@ WHERE ot.OrganizationID = @OrganizationID {0}";
         private static void GetHubFilterWhereClause(LoginUser loginUser, int UserID, int OrganizationID, TicketLoadFilter filter, SqlCommand command, StringBuilder builder)
         {
             builder.Append(" FROM TicketsView tv WHERE (tv.OrganizationID = @OrganizationID)");
+            AddTicketParameter("ProductFamilyID", filter.ProductFamilyID, false, builder, command);
             AddTicketParameter("TicketTypeID", filter.TicketTypeID, false, builder, command);
             if (filter.TicketStatusID != null) AddTicketParameter("TicketStatusID", filter.TicketStatusID, false, builder, command);
             else AddTicketParameter("IsClosed", filter.IsClosed, false, builder, command);
