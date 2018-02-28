@@ -33,7 +33,11 @@ namespace TeamSupport.Api
 
 						//Make sure the DTDs references are removed.
 						XmlDocumentType XDType = xmlData.DocumentType;
-						xmlData.RemoveChild(XDType);
+
+						if (XDType != null)
+						{
+							xmlData.RemoveChild(XDType);
+						}
 
 						_command.Data = xmlData.InnerXml;
                     }

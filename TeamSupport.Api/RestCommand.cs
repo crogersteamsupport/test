@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
+using System.Xml;
 using System.Text;
 using System.Web;
 using System.Net;
@@ -156,11 +156,16 @@ namespace TeamSupport.Api
 			content = (new UTF8Encoding()).GetString(bytes);
 			
 			//create an XMLDocument then back to string. We want to do this to make sure the DTDs references are removed.
-			System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
+			XmlDocument doc = new XmlDocument();
 			doc.XmlResolver = null;
 			doc.LoadXml(content);
-			System.Xml.XmlDocumentType XDType = doc.DocumentType;
-			doc.RemoveChild(XDType);
+			XmlDocumentType XDType = doc.DocumentType;
+
+			if (XDType != null)
+			{
+				doc.RemoveChild(XDType);
+			}
+
 			content = doc.InnerXml;
         }
       }
