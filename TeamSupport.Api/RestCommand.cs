@@ -141,20 +141,30 @@ namespace TeamSupport.Api
 
     public string ExtractData(HttpContext context)
     {
+	  string content = "";
+
       if (context.Request.InputStream != null)
       {
-        System.IO.Stream stream = context.Request.InputStream;
-        stream.Seek(0, System.IO.SeekOrigin.Begin);
+        Stream stream = context.Request.InputStream;
+        stream.Seek(0, SeekOrigin.Begin);
         int length = Convert.ToInt32(stream.Length);
         Byte[] bytes = new Byte[length];
         stream.Read(bytes, 0, length);
 
         if (bytes.Length > 0)
         {
-          return (new UTF8Encoding()).GetString(bytes);
+			content = (new UTF8Encoding()).GetString(bytes);
+			
+			//create an XMLDocument then back to string. We want to do this to make sure the DTDs references are removed.
+			System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
+			doc.XmlResolver = null;
+			doc.LoadXml(content);
+			System.Xml.XmlDocumentType XDType = doc.DocumentType;
+			doc.RemoveChild(XDType);
+			content = doc.InnerXml;
         }
       }
-      return "";
+      return content;
     }
 
 	public int? _pageNumber;
