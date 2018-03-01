@@ -3394,8 +3394,6 @@ ORDER BY
                 command.Parameters.AddWithValue("@LooseOrgID", losingOrganizationID);
                 command.CommandTimeout = 120;
                 ExecuteNonQuery(command);
-                //command.ExecuteNonQuery();
-
             }
         }
     }

@@ -2052,9 +2052,5 @@ SET IDENTITY_INSERT Users Off
 			  }
 		  }
 
-        public void ContactsMergeSproc()
-        {
-
-        }
 	 }
 }
