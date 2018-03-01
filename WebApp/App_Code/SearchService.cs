@@ -1541,20 +1541,15 @@ namespace TSWebServices
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<string> resultItems = new List<string>();
-            string[] results = new string[] { };
-
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return GetAllCompaniesAndContacts(from, count, searchCompanies, searchContacts, active, parentsOnly);
+            }
 
             if (searchCompanies || searchContacts)
             {
                 Stopwatch stopWatch = Stopwatch.StartNew();
-                if (string.IsNullOrWhiteSpace(searchTerm))
-                {
-                    results = GetAllCompaniesAndContacts(from, count, searchCompanies, searchContacts, active, parentsOnly);
-                }
-                else
-                {
-                    results = GetAllCompaniesAndContacts(from, count, searchCompanies, searchContacts, active, parentsOnly, searchTerm);
-                }
+                SearchResults results = GetCustomerSearchResults(loginUser, searchTerm, searchCompanies, searchContacts, 0, active, parentsOnly);
                 stopWatch.Stop();
                 NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchCompaniesAndContacts", stopWatch.ElapsedMilliseconds);
                 //Only record the custom parameter in NR if the search took longer than 3 seconds (I'm using this arbitrarily, seems appropiate)
@@ -1564,15 +1559,27 @@ namespace TSWebServices
                     NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchCompaniesAndContacts-Term", searchTerm);
                 }
 
+                int topLimit = from + count;
+                if (topLimit > results.Count)
+                {
+                    topLimit = results.Count;
+                }
+
                 stopWatch.Restart();
+                for (int i = from; i < topLimit; i++)
+                {
+                    results.GetNthDoc(i);
+                    if (results.CurrentItem.UserFields != null && results.CurrentItem.UserFields["JSON"] != null)
+                        resultItems.Add(results.CurrentItem.UserFields["JSON"].ToString());
+                }
                 stopWatch.Stop();
                 NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchCompaniesAndContactsPullData", stopWatch.ElapsedMilliseconds);
             }
 
-            return results;
+            return resultItems.ToArray();
         }
 
-        private string[] GetAllCompaniesAndContacts(int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly = false, string searchTerm = "")
+        private string[] GetAllCompaniesAndContacts(int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly = false)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<string> results = new List<string>();
@@ -1628,14 +1635,6 @@ SELECT
   LEFT JOIN Organizations o ON u.OrganizationID = o.OrganizationID
   WHERE o.ParentID = @OrganizationID AND u.MarkDeleted=0
 ";
-
-            if (!string.IsNullOrEmpty(searchTerm))
-            {
-                contactQuery += " and (contains(o.name,@SearchTerm) or contains(u.firstname,@SearchTerm) or contains(u.lastname,@SearchTerm) or contains(u.email, @SearchTerm)) ";
-                companyQuery += " and (contains(o.name,@SearchTerm)) ";
-                command.Parameters.AddWithValue("@SearchTerm", string.Format("\"{0}*\"",searchTerm));
-            }
-
             User user = Users.GetUser(loginUser, loginUser.UserID);
             if (user.TicketRights == TicketRightType.Customers)
             {
@@ -1949,6 +1948,16 @@ SELECT
 
                         if (productsQuery.Length > 0 || versionsQuery.Length > 0)
                         {
+                            StringBuilder orderByClause = new StringBuilder();
+                            if (!string.IsNullOrWhiteSpace(searchTerm))
+                            {
+                                orderByClause.Append("ti.relevance DESC");
+                            }
+                            else
+                            {
+                                orderByClause.Append("p.name, pv.versionNumber");
+                            }
+
                             string query = @"
                                 DECLARE @TempItems 
                                 TABLE
@@ -1995,7 +2004,7 @@ SELECT
                                 WHERE 
                                   ti.ID BETWEEN @FromIndex AND @toIndex
                                 ORDER BY 
-                                  ti.relevance DESC
+                                  " + orderByClause.ToString() + @"
                                 FOR JSON PATH";
 
                             command.CommandText = string.Format(query, versionsQuery.ToString(), productsQuery.ToString());

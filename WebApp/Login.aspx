@@ -16,7 +16,7 @@
   <link href="vcr/1_9_0/Pages/Login.css" rel="stylesheet" type="text/css" />
   <script src="vcr/1_9_0/Js/jquery-latest.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/bootstrap3.min.js" type="text/javascript"></script>
-  <script src="vcr/1_9_0/Pages/Login.js" type="text/javascript"></script>
+  <script src="vcr/1_9_0/Pages/Login.js?1517848257" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/Ts/ts.utils.js"></script>
 </head>
 <body>

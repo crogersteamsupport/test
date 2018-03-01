@@ -135,7 +135,7 @@ namespace TeamSupport.Handlers
             {
                 case "search/kb": ProcessKBSearch(context, parentID, userID, searchTerm, customerHubID); break;
                 case "search/wiki": ProcessWikiSearch(context, parentID, userID, searchTerm); break;
-                case "search/ticket": ProcessTicketSearch(context, parentID, userID, searchTerm); break;
+                case "search/ticket": ProcessTicketSearch(context, parentID, userID, searchTerm, customerHubID); break;
                 default:
                     break;
             }
@@ -272,14 +272,14 @@ namespace TeamSupport.Handlers
             return items;
         }
 
-        private void ProcessTicketSearch(HttpContext context, int parentID, int userID, string searchTerm)
+        private void ProcessTicketSearch(HttpContext context, int parentID, int userID, string searchTerm, int customerHubID)
         {
             SearchResults ticketResults = TicketsView.GetHubSearchTicketResults(searchTerm, LoginUser.Anonymous, parentID);
-            List<TicketSearchItem> result = GetTicketResults(ticketResults, LoginUser.Anonymous, userID, parentID);
+            List<TicketSearchItem> result = GetTicketResults(ticketResults, LoginUser.Anonymous, userID, parentID, customerHubID);
             WriteJson(context, result);
         }
 
-        private List<TicketSearchItem> GetTicketResults(SearchResults results, LoginUser loginUser, int contactID, int parentID)
+        private List<TicketSearchItem> GetTicketResults(SearchResults results, LoginUser loginUser, int contactID, int parentID, int customerHubID)
         {
 
             List<TicketSearchItem> items = new List<TicketSearchItem>();
@@ -307,6 +307,21 @@ namespace TeamSupport.Handlers
             filters.IsVisibleOnPortal = true;
             filters.ForumCategoryID = null;
 
+            if (customerHubID != -1)
+            {
+                CustomerHubFeatureSettings hubFeatureSettings = new CustomerHubFeatureSettings(loginUser);
+                hubFeatureSettings.LoadByCustomerHubID(customerHubID);
+
+                if (hubFeatureSettings.Any() && hubFeatureSettings[0].EnableProductFamilyFiltering)
+                {
+                    CustomerHubs customerHub = new CustomerHubs(loginUser);
+                    customerHub.LoadByCustomerHubID(customerHubID);
+                    if (customerHub.Any())
+                    {
+                        filters.ProductFamilyID = customerHub[0].ProductFamilyID;
+                    }
+                }
+            }
 
             TicketsView ticketsViewHelper = new TicketsView(loginUser);
             ticketsViewHelper.LoadHubtickets(loginUser, contactID, parentID, filters, null, 0, 100000000);

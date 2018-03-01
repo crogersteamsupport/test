@@ -453,6 +453,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
                 organization.UserSeats = 100;
                 organization.ChatSeats = 999999;
                 organization.APIRequestLimit = 5000;
+				organization.APIRequestMinuteLimit = 1200;
                 organization.CultureName = "en-US";
                 organization.PromoCode = "";
                 organization.PrimaryInterest = "";
