@@ -1809,7 +1809,9 @@ SELECT
 ";
             if(!string.IsNullOrEmpty(searchTerm))
             {
-                assetQuery += " and (CONTAINS(Name,@SearchTerm) or CONTAINS(a.notes,@SearchTerm) or CONTAINS(a.serialnumber,@SearchTerm) ) ";                command.Parameters.AddWithValue("@SearchTerm", string.Format("\"{0}*\"", searchTerm));            }
+                assetQuery += " and (CONTAINS(Name,@SearchTerm) or CONTAINS(a.notes,@SearchTerm) or CONTAINS(a.serialnumber,@SearchTerm) ) ";
+                command.Parameters.AddWithValue("@SearchTerm", string.Format("\"{0}*\"", searchTerm));
+            }
 
             if (!searchAssigned || !searchWarehouse || !searchJunkyard)
             {

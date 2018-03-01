@@ -3898,68 +3898,22 @@ SELECT
             Organization loosingCompany = Organizations.GetOrganization(loginUser, losingOrganizationID);
             string lossingCompanyNameForHistoryEntries = loosingCompany.Name + " (" + loosingCompany.OrganizationID.ToString() + ")";
             String errLocation = "";
-
+         
             try
             {
+                //Merge Contacts - runs sp Org_MergeContacts_Updates
                 company.Collection.MergeUpdateContacts(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-            }
-            catch (Exception e)
-            {
-                ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
-                log.ExceptionName = "Merge Exception " + e.Source;
-                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-                log.Collection.Save();
-                errLocation = string.Format("Error merging company contacts. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-            }
-
-            try
-            {
-                company.Collection.MergeUpdateTickets(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-            }
-            catch (Exception e)
-            {
-                ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
-                log.ExceptionName = "Merge Exception " + e.Source;
-                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-                log.Collection.Save();
-                errLocation = string.Format("Error merging company tickets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-            }
-
-            try
-            {
-                company.Collection.MergeUpdateNotes(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-            }
-            catch (Exception e)
-            {
-                ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
-                log.ExceptionName = "Merge Exception " + e.Source;
-                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-                log.Collection.Save();
-
-                errLocation = string.Format("Error merging company notes. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-            }
-
-            try
-            {
+            
                 company.Collection.MergeUpdateFiles(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-            }
-            catch (Exception e)
-            {
-                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-                log.ExceptionName = "Merge Exception " + e.Source;
-                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-                log.Collection.Save();
 
-                errLocation = string.Format("Error merging company files. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-            }
+                //Company Merge - runs sp Org_MergeCompanies_Updates
+                company.Collection.CompanyMergeSproc(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
 
-            try
-            {
-                company.Collection.MergeUpdateProducts(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
+                company.NeedsIndexing = true;
+                company.Collection.Save();
+
+                return errLocation;
+
             }
             catch (Exception e)
             {
@@ -3968,228 +3922,9 @@ SELECT
                 log.Message = e.Message.Replace(Environment.NewLine, "<br />");
                 log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
                 log.Collection.Save();
-
-                errLocation = string.Format("Error merging company products. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-            }
-
-            try
-            {
-                company.Collection.MergeUpdateAssets(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-            }
-            catch (Exception e)
-            {
-                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-                log.ExceptionName = "Merge Exception " + e.Source;
-                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-                log.Collection.Save();
-
-                errLocation = string.Format("Error merging company assets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-            }
-
-            try
-            {
-                company.Collection.MergeUpdateWaterCoolerMessages(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-            }
-            catch (Exception e)
-            {
-                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-                log.ExceptionName = "Merge Exception " + e.Source;
-                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-                log.Collection.Save();
-
-                errLocation = string.Format("Error merging company water cooler messages. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-            }
-
-            try
-            {
-                company.Collection.MergeUpdateRatings(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-            }
-            catch (Exception e)
-            {
-                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-                log.ExceptionName = "Merge Exception " + e.Source;
-                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-                log.Collection.Save();
-
-                errLocation = string.Format("Error merging company ratings. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-            }
-
-            try
-            {
-                company.Collection.MergeUpdateCalendar(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-            }
-            catch (Exception e)
-            {
-                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-                log.ExceptionName = "Merge Exception " + e.Source;
-                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-                log.Collection.Save();
-
-                errLocation = string.Format("Error merging company calendar events. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-            }
-
-            try
-            {
-                company.Collection.MergeUpdateCustomValues(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-            }
-            catch (Exception e)
-            {
-                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-                log.ExceptionName = "Merge Exception " + e.Source;
-                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-                log.Collection.Save();
-
-                errLocation = string.Format("Error merging company custom values. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-            }
-
-            try
-            {
-                PhoneNumbers winnerOrganizationPhoneNumbers = new PhoneNumbers(loginUser);
-                winnerOrganizationPhoneNumbers.LoadByID(winningOrganizationID, ReferenceType.Organizations);
-                PhoneNumbers loserOrganizationPhoneNumbers = new PhoneNumbers(loginUser);
-                loserOrganizationPhoneNumbers.LoadByID(losingOrganizationID, ReferenceType.Organizations);
-
-                if (winnerOrganizationPhoneNumbers.Count == 0 && loserOrganizationPhoneNumbers.Count > 0)
-                {
-                    for (int i = 0; i < loserOrganizationPhoneNumbers.Count; i++)
-                    {
-                        PhoneNumber phoneNumber = loserOrganizationPhoneNumbers[i];
-                        phoneNumber.RefID = winningOrganizationID;
-                        phoneNumber.RefType = ReferenceType.Organizations;
-                        phoneNumber.Extension = loserOrganizationPhoneNumbers[i].Extension;
-                        phoneNumber.Number = loserOrganizationPhoneNumbers[i].Number;
-                        phoneNumber.PhoneTypeID = loserOrganizationPhoneNumbers[i].PhoneTypeID;
-                        loserOrganizationPhoneNumbers.Save();
-                    }
-
-                    string description = "Merged '" + lossingCompanyNameForHistoryEntries + "' Phone Numbers.";
-                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
-                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.PhoneNumbers, winningOrganizationID, description);
-                }
-            }
-            catch (Exception e)
-            {
-                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-                log.ExceptionName = "Merge Exception " + e.Source;
-                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-                log.Collection.Save();
-
-                errLocation = string.Format("Error merging organization phone numbers. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-            }
-
-            try
-            {
-                Addresses winnerOrganizationAddresses = new Addresses(loginUser);
-                winnerOrganizationAddresses.LoadByID(winningOrganizationID, ReferenceType.Organizations);
-                Addresses loserOrganizationAddresses = new Addresses(loginUser);
-                loserOrganizationAddresses.LoadByID(losingOrganizationID, ReferenceType.Organizations);
-
-                if (((winnerOrganizationAddresses.Count > 0
-                        && winnerOrganizationAddresses.Count(p => p.Description != null
-                                                                    && !string.IsNullOrEmpty(p.Description)) == 0)
-                        || winnerOrganizationAddresses.Count == 0)
-                    && loserOrganizationAddresses.Count > 0)
-                {
-                    for (int i = 0; i < loserOrganizationAddresses.Count; i++)
-                    {
-                        Address address = loserOrganizationAddresses[i];
-                        address.RefID = winningOrganizationID;
-                        address.RefType = ReferenceType.Organizations;
-                        address.Addr1 = loserOrganizationAddresses[i].Addr1;
-                        address.Addr2 = loserOrganizationAddresses[i].Addr2;
-                        address.Addr3 = loserOrganizationAddresses[i].Addr3;
-                        address.City = loserOrganizationAddresses[i].City;
-                        address.Country = loserOrganizationAddresses[i].Country;
-                        address.Description = loserOrganizationAddresses[i].Description;
-                        address.State = loserOrganizationAddresses[i].State;
-                        address.Zip = loserOrganizationAddresses[i].Zip;
-                        loserOrganizationAddresses.Save();
-                    }
-
-                    string description = "Merged '" + lossingCompanyNameForHistoryEntries + "' Addresses.";
-                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
-                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.PhoneNumbers, winningOrganizationID, description);
-                }
-            }
-            catch (Exception e)
-            {
-                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-                log.ExceptionName = "Merge Exception " + e.Source;
-                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-                log.Collection.Save();
-
-                errLocation = string.Format("Error merging organization addresses. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-            }
-
-            try
-            {
-                List<int> winnerOrganizationSubscriptions = Subscriptions.GetByOrganizationId(loginUser, winningOrganizationID);
-                List<int> loserOrganizationSubscriptions = Subscriptions.GetByOrganizationId(loginUser, losingOrganizationID);
-
-                if (winnerOrganizationSubscriptions.Count == 0 && loserOrganizationSubscriptions.Count > 0)
-                {
-                    for (int i = 0; i < loserOrganizationSubscriptions.Count; i++)
-                    {
-                        Subscriptions.SetByOrganizationId(loginUser, winningOrganizationID, losingOrganizationID);
-                    }
-
-                    string description = "Merged '" + lossingCompanyNameForHistoryEntries + "' Subscriptions.";
-                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
-                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.PhoneNumbers, winningOrganizationID, description);
-                }
-            }
-            catch (Exception e)
-            {
-                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-                log.ExceptionName = "Merge Exception " + e.Source;
-                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-                log.Collection.Save();
-
-                errLocation = string.Format("Error merging organization subscriptions. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-            }
-
-            try
-            {
-                company.Collection.DeleteRecentlyViewItems(losingOrganizationID);
-            }
-            catch (Exception e)
-            {
-                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-                log.ExceptionName = "Merge Exception " + e.Source;
-                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-                log.Collection.Save();
-
-                errLocation = string.Format("Error deleting company from recently viewed items. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-            }
-
-            try
-            {
-                company.Collection.DeleteFromDB(losingOrganizationID);
-            }
-            catch (Exception e)
-            {
-                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-                log.ExceptionName = "Merge Exception " + e.Source;
-                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-                log.Collection.Save();
-
-                errLocation = string.Format("Error deleting losing company from database. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-            }
-
-            company.NeedsIndexing = true;
-            company.Collection.Save();
-
-            return errLocation;
+                errLocation=string.Format("Error merging companies. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
+                return errLocation;                
+            }              
         }
 
         [WebMethod]
