@@ -2801,8 +2801,6 @@ ORDER BY
                         command.Parameters.AddWithValue("@LooseOrgID", losingOrganizationID);
                         command.Parameters.AddWithValue("@LoginUserID", loginUser.UserID);
                         ExecuteNonQuery(command);
-                        //command.ExecuteNonQuery();
-                        //Fill(command);
 
                         string description = "Merged '" + companyName + "' contacts.";
                         ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
@@ -2817,9 +2815,9 @@ ORDER BY
                     log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
                     log.Collection.Save();
 
-                    throw;                    
+                    throw;
                 }
-            }           
+            }
         }
 
         public void MergeUpdateTickets(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
