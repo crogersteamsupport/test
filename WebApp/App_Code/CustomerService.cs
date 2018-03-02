@@ -3909,8 +3909,13 @@ SELECT
                 //Company Merge - runs sp Org_MergeCompanies_Updates
                 company.Collection.CompanyMergeSproc(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
 
+                string description = "Merged '" + lossingCompanyNameForHistoryEntries + "' tickets, notes, files, products, assets, WaterCoolerMessages, agent ratings, calendar events, custom values, phone numbers, adresses, and subscriptions.";
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
+
                 company.NeedsIndexing = true;
                 company.Collection.Save();
+
+               
 
                 return errLocation;
 
