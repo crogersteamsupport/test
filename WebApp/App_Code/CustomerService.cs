@@ -3913,9 +3913,7 @@ SELECT
                 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
 
                 company.NeedsIndexing = true;
-                company.Collection.Save();
-
-               
+                company.Collection.Save();               
 
                 return errLocation;
 
