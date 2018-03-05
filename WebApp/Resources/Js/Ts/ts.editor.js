@@ -104,9 +104,10 @@ var initEditor = function (element, shouldResize, init, postinit) {
                         else
                             content = content.replace(/\{1\}/g, "");
                         ed.setContent(ed.getContent() + content);
+                        ed.focus();
 
-                      if(postinit) postinit();
-                      // ed.focus();
+                        if (postinit) postinit();
+                         
                     });
                     _insertedKBTicketID = null;
                 });
@@ -321,7 +322,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
 													  screenSharingPublisher,
 													  function (error) {
 													  	if (error) {
-													  		alert('Screen Recording will not statrt because, ' + error.message);
+													  		alert('Screen Recording will not start because, ' + error.message);
 													  		element.parent().find('#recordScreenContainer').hide();
 													  		element.parent().find('#rcdtokScreen').hide();
 													  		element.parent().find('#canceltokScreen').hide();
@@ -591,7 +592,8 @@ var initScheduledReportEditor = function (element, init, postinit) {
                     else if (_mainFrame.Ts.System.Organization.FontSize != "0") {
                         ed.execCommand("FontSize", false, _mainFrame.Ts.System.Organization.FontSizeDescription);
                     }
-
+                    ed.focus();
+                    
                     if (postinit) postinit();
                 });
             });
