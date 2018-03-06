@@ -135,11 +135,11 @@ namespace TeamSupport.Api
 
 
       _filters = context.Request.QueryString;
-      _data = ExtractData(_context);
+      _data = ExtractData(_context, _format);
     }
 
 
-    public string ExtractData(HttpContext context)
+    public string ExtractData(HttpContext context, RestFormat restFormat)
     {
 	  string content = "";
 
@@ -154,25 +154,44 @@ namespace TeamSupport.Api
         if (bytes.Length > 0)
         {
 			content = (new UTF8Encoding()).GetString(bytes);
-			
-			//create an XMLDocument then back to string. We want to do this to make sure the DTDs references are removed.
-			XmlDocument doc = new XmlDocument();
-			doc.XmlResolver = null;
-			doc.LoadXml(content);
-			XmlDocumentType XDType = doc.DocumentType;
-
-			if (XDType != null)
-			{
-				doc.RemoveChild(XDType);
-			}
-
-			content = doc.InnerXml;
+            formatSafeContent(content, restFormat);
         }
       }
       return content;
     }
 
-	public int? _pageNumber;
+    private void formatSafeContent(string content, RestFormat restFormat)
+    {
+        switch (restFormat)
+        {
+            case RestFormat.XML:
+                formatXMLContent(content);
+                break;
+            case RestFormat.JSON:
+                break;
+            case RestFormat.XHTML:
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void formatXMLContent(string content) {
+        //create an XMLDocument then back to string. We want to do this to make sure the DTDs references are removed.
+        XmlDocument doc = new XmlDocument();
+        doc.XmlResolver = null;
+        doc.LoadXml(content);
+        XmlDocumentType XDType = doc.DocumentType;
+
+        if (XDType != null)
+        {
+            doc.RemoveChild(XDType);
+        }
+
+        content = doc.InnerXml;
+    }
+
+    public int? _pageNumber;
 	public int? PageNumber
 	{
 		get
