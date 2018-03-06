@@ -141,42 +141,49 @@ namespace TeamSupport.Api
 
     public string ExtractData(HttpContext context, RestFormat restFormat)
     {
-	  string content = "";
+        string content = "";
 
-      if (context.Request.InputStream != null)
-      {
-        Stream stream = context.Request.InputStream;
-        stream.Seek(0, SeekOrigin.Begin);
-        int length = Convert.ToInt32(stream.Length);
-        Byte[] bytes = new Byte[length];
-        stream.Read(bytes, 0, length);
-
-        if (bytes.Length > 0)
+        if (context.Request.InputStream != null)
         {
-			content = (new UTF8Encoding()).GetString(bytes);
-            formatSafeContent(content, restFormat);
+            Stream stream = context.Request.InputStream;
+            stream.Seek(0, SeekOrigin.Begin);
+            int length = Convert.ToInt32(stream.Length);
+            Byte[] bytes = new Byte[length];
+            stream.Read(bytes, 0, length);
+
+            if (bytes.Length > 0)
+            {
+                content = FormatSafeContent((new UTF8Encoding()).GetString(bytes), restFormat);
+            }
         }
-      }
-      return content;
+
+        return content;
     }
 
-    private void formatSafeContent(string content, RestFormat restFormat)
+    private string FormatSafeContent(string content, RestFormat restFormat)
     {
+        string safeContent = "";
+
         switch (restFormat)
         {
             case RestFormat.XML:
-                formatXMLContent(content);
+                safeContent = FormatXMLContent(content);
                 break;
             case RestFormat.JSON:
+                safeContent = content;
                 break;
             case RestFormat.XHTML:
+                safeContent = content;
                 break;
             default:
+                safeContent = content;
                 break;
         }
+        
+        return safeContent;
     }
 
-    private void formatXMLContent(string content) {
+    private string FormatXMLContent(string content) {
         //create an XMLDocument then back to string. We want to do this to make sure the DTDs references are removed.
         XmlDocument doc = new XmlDocument();
         doc.XmlResolver = null;
@@ -188,7 +195,7 @@ namespace TeamSupport.Api
             doc.RemoveChild(XDType);
         }
 
-        content = doc.InnerXml;
+        return doc.InnerXml;
     }
 
     public int? _pageNumber;
