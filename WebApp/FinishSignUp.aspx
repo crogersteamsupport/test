@@ -14,7 +14,7 @@
             $('#divAlert').show('fast');
           }
           else {
-            window.location = 'Login.aspx'
+            window.location = '/login'
           }
         });
       });
