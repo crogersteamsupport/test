@@ -159,6 +159,10 @@ AdminInt = function () {
 			element.find('.int-crm-portal').prop('checked', false);
 		}
 
+		if (item.CRMType == 'Jira') {
+			loadActionTypes(element);
+		}
+
 		if (item.UpdateStatus) {
 			if (item.CRMType == 'Jira') {
 				element.find('.int-crm-update-status').prop('checked', true);

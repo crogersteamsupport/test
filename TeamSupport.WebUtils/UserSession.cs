@@ -72,7 +72,7 @@ namespace TeamSupport.WebUtils
                     HttpContext.Current.Response.Cookies.Clear();
                     FormsAuthentication.SignOut();
                     HttpContext.Current.Session.Abandon();
-                    HttpContext.Current.Response.Redirect("~/Login.aspx");
+                    HttpContext.Current.Response.Redirect("~/login");
 
                 }
 

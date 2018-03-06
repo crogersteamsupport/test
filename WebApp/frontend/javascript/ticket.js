@@ -4728,7 +4728,9 @@ function CreateTimeLineDelegates() {
         if (_isLoading == true) return;
         if ($('.results-done').is(':visible')) return;
 
-        if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+        //console.log($(this).scrollTop() + ' / ' + $(this).innerHeight() + ' / ' + $(this)[0].scrollHeight);
+
+        if ($(this).scrollTop() + $(this).innerHeight() + 4 >= $(this)[0].scrollHeight) {
             var count = $('#action-timeline > div.action[data-id]').length;
             FetchTimeLineItems($('#action-timeline > div.action[data-id]').length + 1);
         }

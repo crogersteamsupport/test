@@ -68,16 +68,35 @@ namespace TeamSupport.Handlers
                     }
                 }
 
-                string path = HttpUtility.UrlDecode(builder.ToString().TrimEnd('\\'));
-                string root = SystemSettings.ReadString("FilePath", "");
-                string fileName = Path.Combine(root, path);
-                FileInfo info = new FileInfo(fileName);
-                context.Response.ContentType = DataUtils.MimeTypeFromFileName(fileName);
-                context.Response.AddHeader("Content-Length", info.Length.ToString());
-                context.Response.WriteFile(fileName);
+				bool allowAttachmentViewing = false;
+				int organizationId = 0;
 
+				//See above for how the Wiki url is supposed to look like, based on that the following check of the Segments
+				if (context.Request.Url.Segments.Any()
+					&& context.Request.Url.Segments.Length > 3
+					&& int.TryParse(context.Request.Url.Segments[3].TrimEnd('/'), out organizationId))
+				{
+					Organization organization = Organizations.GetOrganization(LoginUser.Anonymous, organizationId);
+					allowAttachmentViewing = organizationId == TSAuthentication.OrganizationID || organization.AllowUnsecureAttachmentViewing;
+				}
 
-            }
+				if (allowAttachmentViewing)
+				{
+					string path = HttpUtility.UrlDecode(builder.ToString().TrimEnd('\\'));
+					string root = SystemSettings.ReadString("FilePath", "");
+					string fileName = Path.Combine(root, path);
+					FileInfo info = new FileInfo(fileName);
+					context.Response.ContentType = DataUtils.MimeTypeFromFileName(fileName);
+					context.Response.AddHeader("Content-Length", info.Length.ToString());
+					context.Response.WriteFile(fileName);
+				}
+				else
+				{
+					context.Response.Write("Unauthorized");
+					context.Response.ContentType = "text/html";
+					return;
+				}
+			}
             catch (Exception ex)
             {
                 context.Response.ContentType = "text/html";
