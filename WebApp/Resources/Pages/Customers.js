@@ -54,6 +54,8 @@
                 appendSearchResults(items);
             }
 
+        }, function (error) {
+            console.log(error);
         });
     }
 
@@ -157,7 +159,7 @@
         if (item.userID) {
           appendContact(div, item);
         }
-        else {          
+        else {
           appendCompany(div, item);
         }
       }

@@ -458,7 +458,9 @@ function AddTicketProperty(item) {
 };
 
 function SetupTicketProperties(order) {
+    alert('here we go');
     window.parent.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
+        console.log(info);
         if (info == null) {
             var url = window.location.href;
             if (url.indexOf('.') > -1) {

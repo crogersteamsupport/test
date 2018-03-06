@@ -65,17 +65,17 @@ namespace TSWebServices
                 newticket.Collection.Save();
             }
 
-            //check if outside resource change ticket type and to modify the status
+            // check if outside resource change ticket type and to modify the status
             TicketStatuses statuses = new TicketStatuses(ticket.Collection.LoginUser);
             statuses.LoadAvailableTicketStatuses(info.Ticket.TicketTypeID, null);
 
-            if (!statuses.Any(a => a.TicketStatusID == info.Ticket.TicketStatusID))
-            {
+            if (!statuses.Any(a => a.TicketStatusID == info.Ticket.TicketStatusID)) {
                 info.Ticket.TicketStatusID = statuses[0].TicketStatusID;
                 ticket.TicketStatusID = info.Ticket.TicketStatusID;
-                Ticket newticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
-                newticket.TicketStatusID = ticket.TicketStatusID;
-                newticket.Collection.Save();
+                info.Faults.status = "invalid";
+                // Ticket newticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
+                // newticket.TicketStatusID = ticket.TicketStatusID;
+                // newticket.Collection.Save();
             }
 
             if (info.Ticket.CategoryName != null && info.Ticket.ForumCategory != null)
