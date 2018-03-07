@@ -50,14 +50,18 @@ namespace TSWebServices
             TicketPageInfo info = new TicketPageInfo();
             info.Ticket = ticket.GetProxy();
 
-            if (info.Ticket.Name.ToLower() == "<no subject>")
+            info.faults = null;
+            dynamic faults = new ExpandoObject();
+            // faults = null;
+
+            if (info.Ticket.Name.ToLower() == "<no subject>") {
                 info.Ticket.Name = "";
+            }
 
             TicketTypes types = new TicketTypes(ticket.Collection.LoginUser);
             types.LoadAllPositions(TSAuthentication.OrganizationID);
 
-            if (!types.Any(a => a.TicketTypeID == info.Ticket.TicketTypeID))
-            {
+            if (!types.Any(a => a.TicketTypeID == info.Ticket.TicketTypeID)) {
                 info.Ticket.TicketTypeID = types[0].TicketTypeID;
                 ticket.TicketTypeID = info.Ticket.TicketTypeID;
                 Ticket newticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
@@ -72,7 +76,7 @@ namespace TSWebServices
             if (!statuses.Any(a => a.TicketStatusID == info.Ticket.TicketStatusID)) {
                 info.Ticket.TicketStatusID = statuses[0].TicketStatusID;
                 ticket.TicketStatusID = info.Ticket.TicketStatusID;
-                info.Faults.status = "invalid";
+                faults.status = "invalid";
                 // Ticket newticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
                 // newticket.TicketStatusID = ticket.TicketStatusID;
                 // newticket.Collection.Save();
@@ -127,6 +131,11 @@ namespace TSWebServices
             catch (Exception)
             {
 
+            }
+
+            if (faults != null)
+            {
+                info.faults = faults;
             }
 
             return info;
@@ -1416,6 +1425,8 @@ namespace TSWebServices
             public PluginProxy[] Plugins { get; set; }
             [DataMember]
             public List<TaskDTO> Tasks { get; set; }
+            [DataMember]
+            public object faults { get; set; }
         }
 
         [DataContract]
