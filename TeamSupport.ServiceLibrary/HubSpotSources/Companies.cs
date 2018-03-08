@@ -62,7 +62,7 @@ namespace TeamSupport.ServiceLibrary
             {
               Logs.Write(string.Format("Error deleting the company {0}. Might or might not be deleted, verify.{1}{2}{1}{2}", companyId, Environment.NewLine, ex.Message, ex.StackTrace));
             }
-            
+
             return wasDeleted;
         }
 
@@ -72,6 +72,32 @@ namespace TeamSupport.ServiceLibrary
 
             JObject jsonString = Call(subpath: subPath, contentType: "application/json", log: log);
             HubSpotObject.Company.RootObject hubspotObject = JsonConvert.DeserializeObject<HubSpotObject.Company.RootObject>(jsonString.ToString());
+
+            return hubspotObject;
+        }
+
+        public HubSpotObject.Companies.RootObject GetAllPaged(string portalId = "", string count = "", string offset = "") {
+            var subPath = "companies/recent/modified";
+            Dictionary<string, string> optionalParameters = new Dictionary<string,string>();
+
+            if (!string.IsNullOrEmpty(portalId)) {
+                optionalParameters.Add("portalId", portalId);
+            }
+
+            if (!string.IsNullOrEmpty(count)) {
+                optionalParameters.Add("count", count);
+            }
+
+            if (!string.IsNullOrEmpty(offset)) {
+                optionalParameters.Add("offset", offset);
+            }
+
+            if (!optionalParameters.Any() || optionalParameters.Count == 0) {
+                optionalParameters = null;
+            }
+
+            JObject jsonString = Call(subpath: subPath, optionalParams: optionalParameters, contentType: "application/json");
+            HubSpotObject.Companies.RootObject hubspotObject = JsonConvert.DeserializeObject<HubSpotObject.Companies.RootObject>(jsonString.ToString());
 
             return hubspotObject;
         }

@@ -72,7 +72,7 @@ Namespace TeamSupport
 							processCount = 1
 						End If
 
-						hubspotCompanies = hubspotApi.GetAllRecentlyModified(count:=maxCount, offset:=offset)
+						hubspotCompanies = hubspotApi.GetAllPaged(count:=maxCount, offset:=offset)
 						offset = hubspotCompanies.offset
 
 						For Each company As Objects.Companies.Result In hubspotCompanies.results
