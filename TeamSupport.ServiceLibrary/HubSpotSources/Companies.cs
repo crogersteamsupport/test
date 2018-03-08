@@ -77,7 +77,7 @@ namespace TeamSupport.ServiceLibrary
         }
 
         public HubSpotObject.Companies.RootObject GetAllPaged(string portalId = "", string count = "", string offset = "") {
-            var subPath = "companies/recent/modified";
+            var subPath = "companies/paged";
             Dictionary<string, string> optionalParameters = new Dictionary<string,string>();
 
             if (!string.IsNullOrEmpty(portalId)) {
