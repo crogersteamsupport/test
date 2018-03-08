@@ -135,44 +135,70 @@ namespace TeamSupport.Api
 
 
       _filters = context.Request.QueryString;
-      _data = ExtractData(_context);
+      _data = ExtractData(_context, _format);
     }
 
 
-    public string ExtractData(HttpContext context)
+    public string ExtractData(HttpContext context, RestFormat restFormat)
     {
-	  string content = "";
+        string content = "";
 
-      if (context.Request.InputStream != null)
-      {
-        Stream stream = context.Request.InputStream;
-        stream.Seek(0, SeekOrigin.Begin);
-        int length = Convert.ToInt32(stream.Length);
-        Byte[] bytes = new Byte[length];
-        stream.Read(bytes, 0, length);
-
-        if (bytes.Length > 0)
+        if (context.Request.InputStream != null)
         {
-			content = (new UTF8Encoding()).GetString(bytes);
-			
-			//create an XMLDocument then back to string. We want to do this to make sure the DTDs references are removed.
-			XmlDocument doc = new XmlDocument();
-			doc.XmlResolver = null;
-			doc.LoadXml(content);
-			XmlDocumentType XDType = doc.DocumentType;
+            Stream stream = context.Request.InputStream;
+            stream.Seek(0, SeekOrigin.Begin);
+            int length = Convert.ToInt32(stream.Length);
+            Byte[] bytes = new Byte[length];
+            stream.Read(bytes, 0, length);
 
-			if (XDType != null)
-			{
-				doc.RemoveChild(XDType);
-			}
-
-			content = doc.InnerXml;
+            if (bytes.Length > 0)
+            {
+                content = FormatSafeContent((new UTF8Encoding()).GetString(bytes), restFormat);
+            }
         }
-      }
-      return content;
+
+        return content;
     }
 
-	public int? _pageNumber;
+    private string FormatSafeContent(string content, RestFormat restFormat)
+    {
+        string safeContent = "";
+
+        switch (restFormat)
+        {
+            case RestFormat.XML:
+                safeContent = FormatXMLContent(content);
+                break;
+            case RestFormat.JSON:
+                safeContent = content;
+                break;
+            case RestFormat.XHTML:
+                safeContent = content;
+                break;
+            default:
+                safeContent = content;
+                break;
+        }
+        
+        return safeContent;
+    }
+
+    private string FormatXMLContent(string content) {
+        //create an XMLDocument then back to string. We want to do this to make sure the DTDs references are removed.
+        XmlDocument doc = new XmlDocument();
+        doc.XmlResolver = null;
+        doc.LoadXml(content);
+        XmlDocumentType XDType = doc.DocumentType;
+
+        if (XDType != null)
+        {
+            doc.RemoveChild(XDType);
+        }
+
+        return doc.InnerXml;
+    }
+
+    public int? _pageNumber;
 	public int? PageNumber
 	{
 		get
