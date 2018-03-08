@@ -1,0 +1,118 @@
+
+/* MODALS. */
+
+#modal {
+    display:none;
+    position:fixed;
+    z-index:3000;
+    top:50px;
+    left:50%;
+    bottom:auto;
+    margin:0px auto;
+    width:600px;
+    background-color:white;
+    box-shadow:3px 3px 0px rgba(0,0,0,0.1);
+    overflow:visible;
+    transform: translateX(-50%);
+}
+
+@media screen and (max-width:600px) {
+    #modal {
+        top:0px;
+        left:0px;
+        bottom:0px;
+        right:0px;
+        transform:none;
+        width:100%;
+    }
+}
+
+
+
+
+
+
+
+#modal-content {
+    padding:30px;
+}
+#modal-body {
+    line-height:20px;
+}
+
+#modal-close:hover {
+    opacity:0.8;
+    cursor:pointer;
+}
+#modal-close:active {
+    opacity:1;
+    cursor:pointer;
+}
+#modal .title {
+    text-align:center;
+    margin:0px auto 30px;
+    font-size:20px;
+}
+#modal .buttons {
+    text-align:center;
+}
+
+
+
+
+#modal .fa.close {
+    position:absolute;
+    z-index:3001;
+    top:10px;
+    right:10px;
+    font-size:20px;
+    opacity:0.3;
+    color:black;
+}
+
+
+
+
+
+#modal .container {
+    margin:auto;
+    padding:20px 0px;
+    width:100%;
+    max-width:700px;
+    background-color:white;
+    box-shadow:1px 1px 0px rgba(0,0,0,0.1);
+}
+#modal .container .title {
+    vertical-align:middle;
+    line-height:35px;
+    font-size:16px;
+    font-weight:bold;
+}
+#modal .container .strip {
+    padding:10px 20px;
+}
+#modal .container .strip.buttons {
+    padding:20px 20px 0px !important;
+    text-align:right;
+}
+#modal .container .cellular {
+    padding:0px 10px;
+}
+#modal .container .cell {
+    padding:10px;
+}
+#modal .container .label {
+    vertical-align:middle;
+    line-height:35px;
+    font-size:11px;
+}
+#modal .container .has-error {
+    background-color:rgba(251,190,204,0.3);
+}
+#modal .container .checkbox {
+    padding:5px 0px 0px;
+}
+#modal .container span.fa {
+    font-size:18px;
+    opacity:0.7;
+}
