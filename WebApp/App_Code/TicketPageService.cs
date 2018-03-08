@@ -64,6 +64,7 @@ namespace TSWebServices
             if (!types.Any(a => a.TicketTypeID == info.Ticket.TicketTypeID)) {
                 info.Ticket.TicketTypeID = types[0].TicketTypeID;
                 ticket.TicketTypeID = info.Ticket.TicketTypeID;
+                faults.type = "invalid";
                 Ticket newticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
                 newticket.TicketTypeID = ticket.TicketTypeID;
                 newticket.Collection.Save();
