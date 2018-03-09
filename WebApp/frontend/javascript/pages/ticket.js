@@ -171,8 +171,7 @@ Selectize.define('no_results', function (options) {
 
         return function () {
             original.apply(self, arguments);
-            this.hasOptions ? this.$empty_results_container.hide() :
-                this.displayEmptyResultsMessage();
+            this.hasOptions ? this.$empty_results_container.hide() : this.displayEmptyResultsMessage();
         }
     })();
 
