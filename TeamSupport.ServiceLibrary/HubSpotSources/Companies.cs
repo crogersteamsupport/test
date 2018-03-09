@@ -80,22 +80,14 @@ namespace TeamSupport.ServiceLibrary
             var subPath = "companies/paged";
             Dictionary<string, string> optionalParameters = new Dictionary<string,string>();
 
-            optionalParameters.Add("properties", "name");
-            optionalParameters.Add("properties", "address");
-            optionalParameters.Add("properties", "address2");
-            optionalParameters.Add("properties", "city");
-            optionalParameters.Add("properties", "state");
-            optionalParameters.Add("properties", "zip");
-            optionalParameters.Add("properties", "country");
-            optionalParameters.Add("properties", "phone");
-            optionalParameters.Add("properties", "fax");
+			optionalParameters.Add("properties", "name&properties=address&properties=address2&properties=city&properties=state&properties=zip&properties=country&properties=phone&properties=fax&properties=lifecyclestage&properties=hs_lastmodifieddate");
 
             if (!string.IsNullOrEmpty(portalId)) {
                 optionalParameters.Add("portalId", portalId);
             }
 
             if (!string.IsNullOrEmpty(count)) {
-                optionalParameters.Add("count", count);
+                optionalParameters.Add("limit", count);
             }
 
             if (!string.IsNullOrEmpty(offset)) {

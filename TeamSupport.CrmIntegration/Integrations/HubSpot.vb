@@ -60,8 +60,16 @@ Namespace TeamSupport
 					Dim hubspotCompanies As Objects.Companies.RootObject = New Objects.Companies.RootObject()
 					Dim companySyncData As New List(Of CompanyData)()
 					Dim processCount As Integer = 0
+					Dim getAll As Boolean = False
+					Dim isFirstCall As Boolean = True
 
 					Log.Write(String.Format("Get and process only Companies in the lifecycle ""Customer"""))
+
+					hubspotCompanies = hubspotApi.GetAllRecentlyModified(count:=maxCount, offset:=offset)
+
+					If (hubspotCompanies.total > 10000) Then
+						getAll = True
+					End If
 
 					Do
 						processCount = processCount + 1
@@ -72,43 +80,66 @@ Namespace TeamSupport
 							processCount = 1
 						End If
 
-						hubspotCompanies = hubspotApi.GetAllPaged(count:=maxCount, offset:=offset)
+						If (getAll) Then
+							hubspotCompanies = hubspotApi.GetAllPaged(count:=maxCount, offset:=offset) '//vv new
+						ElseIf (Not isFirstCall) Then
+							hubspotCompanies = hubspotApi.GetAllRecentlyModified(count:=maxCount, offset:=offset)
+						End If
+
+						isFirstCall = False
 						offset = hubspotCompanies.offset
 
-						For Each company As Objects.Companies.Result In hubspotCompanies.results
-							If Processor.IsStopped Then
-								Return False
+						If (hubspotCompanies.results IsNot Nothing OrElse hubspotCompanies.companies IsNot Nothing) Then
+							If (getAll) Then
+								hubspotCompanies.results = hubspotCompanies.companies
 							End If
 
-							'Get only the Companies that are the "Customer" lifecycle
-							If (company.properties.lifecyclestage IsNot Nothing AndAlso Not String.IsNullOrEmpty(company.properties.lifecyclestage.value) AndAlso company.properties.lifecyclestage.value.ToLower() = "customer") Then
-								Dim modifiedValue As Long = company.properties.hs_lastmodifieddate.timestamp
-								Dim beginTicks As Long = New Date(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks
-								Dim modifiedDate As Date = New Date(beginTicks + modifiedValue * 10000)
-
-								If CRMLinkRow.LastLink Is Nothing OrElse modifiedDate.AddMinutes(30) > CRMLinkRow.LastLink Then
-									Dim thisCustomer As New CompanyData()
-
-									With thisCustomer
-										.AccountID = company.companyId
-										.AccountName = If(company.properties.name IsNot Nothing, company.properties.name.value, String.Empty)
-										.Street = If(company.properties.address IsNot Nothing, company.properties.address.value, String.Empty)
-										.Street2 = If(company.properties.address2 IsNot Nothing, company.properties.address2.value, String.Empty)
-										.City = If(company.properties.city IsNot Nothing, company.properties.city.value, String.Empty)
-										.State = If(company.properties.state IsNot Nothing, company.properties.state.value, String.Empty)
-										.Zip = If(company.properties.zip IsNot Nothing, company.properties.zip.value, String.Empty)
-										.Country = If(company.properties.country IsNot Nothing, company.properties.country.value, String.Empty)
-										.Phone = If(company.properties.phone IsNot Nothing, company.properties.phone.value, String.Empty)
-										.Fax = If(company.properties.fax IsNot Nothing, company.properties.fax.value, String.Empty)
-									End With
-
-									companySyncData.Add(thisCustomer)
+							For Each company As Objects.Companies.Result In hubspotCompanies.results
+								If Processor.IsStopped Then
+									Return False
 								End If
-							Else
-								Log.Write(String.Format("Company {0} ({1}) not processed, is in lifecycle ""{2}""", company.properties.name.value, company.companyId.ToString(), If(company.properties.lifecyclestage IsNot Nothing, company.properties.lifecyclestage.value, "")))
-							End If
-						Next
-					Loop While hubspotCompanies.hasMore
+
+								Try
+									'Get only the Companies that are the "Customer" lifecycle
+									If (company.properties.lifecyclestage IsNot Nothing AndAlso Not String.IsNullOrEmpty(company.properties.lifecyclestage.value) AndAlso company.properties.lifecyclestage.value.ToLower() = "customer") Then
+										Dim modifiedValue As Long = company.properties.hs_lastmodifieddate.timestamp
+										Dim beginTicks As Long = New Date(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks
+										Dim modifiedDate As Date = New Date(beginTicks + modifiedValue * 10000)
+
+										If CRMLinkRow.LastLink Is Nothing OrElse modifiedDate.AddMinutes(30) > CRMLinkRow.LastLink Then
+											Dim thisCustomer As New CompanyData()
+
+											With thisCustomer
+												.AccountID = company.companyId
+												.AccountName = If(company.properties.name IsNot Nothing, company.properties.name.value, String.Empty)
+												.Street = If(company.properties.address IsNot Nothing, company.properties.address.value, String.Empty)
+												.Street2 = If(company.properties.address2 IsNot Nothing, company.properties.address2.value, String.Empty)
+												.City = If(company.properties.city IsNot Nothing, company.properties.city.value, String.Empty)
+												.State = If(company.properties.state IsNot Nothing, company.properties.state.value, String.Empty)
+												.Zip = If(company.properties.zip IsNot Nothing, company.properties.zip.value, String.Empty)
+												.Country = If(company.properties.country IsNot Nothing, company.properties.country.value, String.Empty)
+												.Phone = If(company.properties.phone IsNot Nothing, company.properties.phone.value, String.Empty)
+												.Fax = If(company.properties.fax IsNot Nothing, company.properties.fax.value, String.Empty)
+											End With
+
+											companySyncData.Add(thisCustomer)
+										End If
+									Else
+										Log.Write(String.Format("Company {0} ({1}) not processed, is in lifecycle ""{2}""", company.properties.name.value, company.companyId.ToString(), If(company.properties.lifecyclestage IsNot Nothing, company.properties.lifecyclestage.value, "")))
+									End If
+								Catch ex As Exception
+									If (Not company Is Nothing) Then
+										Log.Write(String.Format("Company {0} not processed, one of the required properties was not found in the incoming data from Hubspot.", company.companyId.ToString()))
+									Else
+										Log.Write("A company was not processed, the 'company' object seems to be null.")
+									End If
+								End Try
+							Next
+						Else
+							Log.Write("hubspotCompanies.results Is Nothing. This could potentially be due to Hubspot not returning more than 10000 records with the current endpoint anymore. See: https://integrate.hubspot.com/t/cannot-fetch-more-than-10-000-records-for-endpoint/1671/2")
+							Exit Do
+						End If
+					Loop While hubspotCompanies.hasMore OrElse hubspotCompanies.hasMorePaged
 
 					Log.Write(companySyncData.Count.ToString() + " accounts found to update.")
 
