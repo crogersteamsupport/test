@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace TeamSupport.ServiceLibrary.HubSpotSources.Objects
 {
@@ -22,7 +23,7 @@ namespace TeamSupport.ServiceLibrary.HubSpotSources.Objects
       public object sourceId { get; set; }
       public List<Version> versions { get; set; }
     }
-    
+
     public class Properties
     {
       public ObjectValue name { get; set; }
@@ -76,7 +77,10 @@ namespace TeamSupport.ServiceLibrary.HubSpotSources.Objects
     public class RootObject
     {
       public List<Result> results { get; set; }
+	  public List<Result> companies { get; set; }
       public bool hasMore { get; set; }
+	  [JsonProperty("has-more")]
+	  public bool hasMorePaged { get; set; }
       public int offset { get; set; }
       public int total { get; set; }
     }
