@@ -1,3 +1,8 @@
+// CLOSE MODAL.
+$(document).on('click tap', '#overlay, .fa.close, #btn-cancel', function(e) {
+    teamsupport.modals.overlay.hide();
+    $('#modal').empty().slideToggle('fast');
+});
 
 teamsupport.module('modals', function() {
 

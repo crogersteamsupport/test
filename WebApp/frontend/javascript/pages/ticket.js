@@ -458,6 +458,9 @@ function AddTicketProperty(item) {
 
 function SetupTicketProperties(order) {
     alert('here we go');
+
+    teamsupport.modals.overlay.show();
+
     window.parent.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
         console.log(info);
         if (info == null) {
