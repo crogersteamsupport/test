@@ -1500,7 +1500,8 @@ namespace TSWebServices
             List<string> resultItems = new List<string>();
             if (string.IsNullOrWhiteSpace(searchTerm))
             {
-                return GetAllCompaniesAndContacts(from, count, searchCompanies, searchContacts, active);
+                //return GetAllCompaniesAndContacts(from, count, searchCompanies, searchContacts, active);
+                return GetAllCompaniesAndContacts(searchTerm, from, count, searchCompanies, searchContacts, active, true);
             }
 
             if (searchCompanies || searchContacts)
@@ -1541,45 +1542,124 @@ namespace TSWebServices
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<string> resultItems = new List<string>();
-            if (string.IsNullOrWhiteSpace(searchTerm))
-            {
-                return GetAllCompaniesAndContacts(from, count, searchCompanies, searchContacts, active, parentsOnly);
-            }
+            //if (string.IsNullOrWhiteSpace(searchTerm))
+            //{
+                //return GetAllCompaniesAndContacts_OLD(from, count, searchCompanies, searchContacts, active, parentsOnly);
+                return GetAllCompaniesAndContacts(searchTerm, from, count, searchCompanies, searchContacts, active, parentsOnly);
+            //}
 
-            if (searchCompanies || searchContacts)
-            {
-                Stopwatch stopWatch = Stopwatch.StartNew();
-                SearchResults results = GetCustomerSearchResults(loginUser, searchTerm, searchCompanies, searchContacts, 0, active, parentsOnly);
-                stopWatch.Stop();
-                NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchCompaniesAndContacts", stopWatch.ElapsedMilliseconds);
-                //Only record the custom parameter in NR if the search took longer than 3 seconds (I'm using this arbitrarily, seems appropiate)
-                if (stopWatch.ElapsedMilliseconds > 500)
-                {
-                    NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchCompaniesAndContacts-OrgId", TSAuthentication.GetOrganization(loginUser).OrganizationID);
-                    NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchCompaniesAndContacts-Term", searchTerm);
-                }
+            //if (searchCompanies || searchContacts)
+            //{
+            //    Stopwatch stopWatch = Stopwatch.StartNew();
+            //    SearchResults results = GetCustomerSearchResults(loginUser, searchTerm, searchCompanies, searchContacts, 0, active, parentsOnly);
+            //    stopWatch.Stop();
+            //    NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchCompaniesAndContacts", stopWatch.ElapsedMilliseconds);
+            //    //Only record the custom parameter in NR if the search took longer than 3 seconds (I'm using this arbitrarily, seems appropiate)
+            //    if (stopWatch.ElapsedMilliseconds > 500)
+            //    {
+            //        NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchCompaniesAndContacts-OrgId", TSAuthentication.GetOrganization(loginUser).OrganizationID);
+            //        NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchCompaniesAndContacts-Term", searchTerm);
+            //    }
 
-                int topLimit = from + count;
-                if (topLimit > results.Count)
-                {
-                    topLimit = results.Count;
-                }
+            //    int topLimit = from + count;
+            //    if (topLimit > results.Count)
+            //    {
+            //        topLimit = results.Count;
+            //    }
 
-                stopWatch.Restart();
-                for (int i = from; i < topLimit; i++)
-                {
-                    results.GetNthDoc(i);
-                    if (results.CurrentItem.UserFields != null && results.CurrentItem.UserFields["JSON"] != null)
-                        resultItems.Add(results.CurrentItem.UserFields["JSON"].ToString());
-                }
-                stopWatch.Stop();
-                NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchCompaniesAndContactsPullData", stopWatch.ElapsedMilliseconds);
-            }
+            //    stopWatch.Restart();
+            //    for (int i = from; i < topLimit; i++)
+            //    {
+            //        results.GetNthDoc(i);
+            //        if (results.CurrentItem.UserFields != null && results.CurrentItem.UserFields["JSON"] != null)
+            //            resultItems.Add(results.CurrentItem.UserFields["JSON"].ToString());
+            //    }
+            //    stopWatch.Stop();
+            //    NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchCompaniesAndContactsPullData", stopWatch.ElapsedMilliseconds);
+            //}
 
-            return resultItems.ToArray();
+            //return resultItems.ToArray();
         }
+        private string[] GetAllCompaniesAndContacts(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly = false)
+        {
 
-        private string[] GetAllCompaniesAndContacts(int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly = false)
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            List<string> results = new List<string>();
+
+            //Clean searchterm
+            searchTerm = searchTerm.Replace("\"", "").Replace("'", "");
+            if (!String.IsNullOrEmpty(searchTerm))
+                searchTerm = "\"" + searchTerm + "\"";
+
+            SqlCommand command = new SqlCommand();
+
+            command.CommandText = "CustomerSearch";
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("@FromIndex", from + 1);
+            command.Parameters.AddWithValue("@ToIndex", from + count);
+            command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+            command.Parameters.AddWithValue("@UserID", loginUser.UserID);
+            command.Parameters.AddWithValue("@SearchTerm",  searchTerm);
+            command.Parameters.AddWithValue("@IncludeCompanies", searchCompanies);
+            command.Parameters.AddWithValue("@IncludeContacts", searchContacts);
+            command.Parameters.AddWithValue("@ActiveOnly", active);
+            command.Parameters.AddWithValue("@ParentsOnly", parentsOnly);
+
+
+            DataTable table = SqlExecutor.ExecuteQuery(loginUser, command);
+            
+            foreach (DataRow row in table.Rows)
+            {
+                if (row["UserID"] == DBNull.Value)
+                {
+                    CustomerSearchCompany company = new CustomerSearchCompany();
+                    company.name = (string)row["Organization"];
+                    company.organizationID = (int)row["OrganizationID"];
+                    company.isPortal = (bool)row["HasPortalAccess"];
+                    company.openTicketCount = 0;// (int)row["OrgOpenTickets"];
+                    company.website = GetDBString(row["Website"]);
+
+                    List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
+                    PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
+                    foreach (PhoneNumber number in phoneNumbers)
+                    {
+                        phones.Add(new CustomerSearchPhone(number));
+                    }
+                    company.phones = phones.ToArray();
+
+                    results.Add(JsonConvert.SerializeObject(company));
+                }
+                else
+                {
+                    CustomerSearchContact contact = new CustomerSearchContact();
+                    contact.organizationID = (int)row["OrganizationID"];
+                    contact.isPortal = (bool)row["IsPortalUser"];
+                    contact.openTicketCount = 0;// (int)row["ContactOpenTickets"];
+
+                    contact.userID = (int)row["UserID"];
+                    contact.fName = GetDBString(row["FirstName"]);
+                    contact.lName = GetDBString(row["LastName"]);
+                    contact.email = GetDBString(row["Email"]);
+                    contact.title = GetDBString(row["Title"]);
+                    contact.organization = GetDBString(row["Organization"]);
+
+                    List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
+                    PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
+                    foreach (PhoneNumber number in phoneNumbers)
+                    {
+                        phones.Add(new CustomerSearchPhone(number));
+                    }
+                    contact.phones = phones.ToArray();
+                    results.Add(JsonConvert.SerializeObject(contact));
+                }
+
+            }
+
+            return results.ToArray();
+
+        }
+        private string[] GetAllCompaniesAndContacts_OLD(int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly = false)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<string> results = new List<string>();
