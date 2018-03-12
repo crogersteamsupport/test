@@ -2783,30 +2783,41 @@ ORDER BY
                         User winningOrganizationMatchingContact = winningOrganizationContacts.FindByEmail(losingOrganizationContact.Email);
                         if (winningOrganizationMatchingContact != null)
                         {
-                            string mergeContactErrLocation = winningOrganizationMatchingContact.Collection.MergeContacts(winningOrganizationMatchingContact, losingOrganizationContact, loginUser);
+                            //As is, if error on merging files on any of the contacts happen.  It is being logged, but process continues
+                            string mergeContactErrLocation = winningOrganizationMatchingContact.Collection.MergeContactsFiles(winningOrganizationMatchingContact, losingOrganizationContact, loginUser);
                         }
                     }
                 }
 
-                using (SqlCommand command = new SqlCommand())
+                //Merge contacts SP Org_MergeCompanies_Updates.  Loops through matched contacts and updates pertaining tables.
+                //Then updates all contacts orgid from loosing to winning org id.
+                try
                 {
-                    command.CommandText = @"
-			 UPDATE
-				Users
-			 SET
-				OrganizationID = @winningOrganizationID
-				, NeedsIndexing = 1
-			 WHERE
-				OrganizationID = @losingOrganizationID";
-                    command.CommandType = CommandType.Text;
-                    command.Parameters.AddWithValue("@winningOrganizationID", winningOrganizationID);
-                    command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);
-                    ExecuteNonQuery(command, "OrganizationContacts");
+                    using (SqlCommand command = new SqlCommand())
+                    {
+                        command.CommandText = "Org_MergeContacts_Updates";
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@WinOrgID", winningOrganizationID);
+                        command.Parameters.AddWithValue("@LooseOrgID", losingOrganizationID);
+                        command.Parameters.AddWithValue("@LoginUserID", loginUser.UserID);
+                        ExecuteNonQuery(command);
+
+                        string description = "Merged '" + companyName + "' contacts.";
+                        ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
+                        ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Contacts, winningOrganizationID, description);
+                    }
+                }
+                catch (Exception e)
+                {
+                    ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+                    log.ExceptionName = "Merge Update Contact Exception " + e.Source;
+                    log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                    log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                    log.Collection.Save();
+
+                    throw;
                 }
             }
-            string description = "Merged '" + companyName + "' contacts.";
-            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
-            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Contacts, winningOrganizationID, description);
         }
 
         public void MergeUpdateTickets(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
@@ -3369,6 +3380,19 @@ ORDER BY
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@TaskID", taskID);
                 Fill(command, "Organizations,OrganizationTickets");
+            }
+        }
+
+        public void CompanyMergeSproc(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "Org_MergeCompanies_Updates";
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@WinOrgID", winningOrganizationID);
+                command.Parameters.AddWithValue("@LooseOrgID", losingOrganizationID);
+                command.CommandTimeout = 120;
+                ExecuteNonQuery(command);
             }
         }
     }
