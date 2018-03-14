@@ -1807,7 +1807,7 @@ SELECT
 
         }
 
-        [WebMethod]
+        //[WebMethod]
         public string[] SearchAssets_OLD(string searchTerm, int from, int count, bool searchAssigned, bool searchWarehouse, bool searchJunkyard)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
