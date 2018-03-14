@@ -1557,50 +1557,7 @@ namespace TSWebServices
 
             return resultItems;
         }
-
-        //Left in code for new relic references. 
-        //[WebMethod]
-        //public string[] SearchCompaniesAndContacts2(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly)
-        //{
-        //    LoginUser loginUser = TSAuthentication.GetLoginUser();
-        //    List<string> resultItems = new List<string>();
-        //if (string.IsNullOrWhiteSpace(searchTerm))
-        //{
-        //return GetAllCompaniesAndContacts_OLD(from, count, searchCompanies, searchContacts, active, parentsOnly);                
-        //}
-
-        //if (searchCompanies || searchContacts)
-        //{
-        //    Stopwatch stopWatch = Stopwatch.StartNew();
-        //    SearchResults results = GetCustomerSearchResults(loginUser, searchTerm, searchCompanies, searchContacts, 0, active, parentsOnly);
-        //    stopWatch.Stop();
-        //    NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchCompaniesAndContacts", stopWatch.ElapsedMilliseconds);
-        //    //Only record the custom parameter in NR if the search took longer than 3 seconds (I'm using this arbitrarily, seems appropiate)
-        //    if (stopWatch.ElapsedMilliseconds > 500)
-        //    {
-        //        NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchCompaniesAndContacts-OrgId", TSAuthentication.GetOrganization(loginUser).OrganizationID);
-        //        NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchCompaniesAndContacts-Term", searchTerm);
-        //    }
-
-        //    int topLimit = from + count;
-        //    if (topLimit > results.Count)
-        //    {
-        //        topLimit = results.Count;
-        //    }
-
-        //    stopWatch.Restart();
-        //    for (int i = from; i < topLimit; i++)
-        //    {
-        //        results.GetNthDoc(i);
-        //        if (results.CurrentItem.UserFields != null && results.CurrentItem.UserFields["JSON"] != null)
-        //            resultItems.Add(results.CurrentItem.UserFields["JSON"].ToString());
-        //    }
-        //    stopWatch.Stop();
-        //    NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchCompaniesAndContactsPullData", stopWatch.ElapsedMilliseconds);
-        //}
-
-        //return resultItems.ToArray();
-        // }
+        
         private string[] GetAllCompaniesAndContacts(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly = false)
         {
 
