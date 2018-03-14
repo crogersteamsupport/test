@@ -78,20 +78,20 @@ var initEditor = function (element, shouldResize, init, postinit) {
                 ed.on('init', function (e) {
                     _mainFrame.Ts.System.refreshUser(function () {
                         if (_mainFrame.Ts.System.User.FontFamilyDescription != "Unassigned") {
-                            //var res = ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily));
+                            var res = ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily));
                             FontName = GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily);
                         }
                         else if (_mainFrame.Ts.System.Organization.FontFamily != "Unassigned") {
-                            //var res = ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily));
+                            var res = ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily));
                             FontName = GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily);
                         }
 
                         if (_mainFrame.Ts.System.User.FontSize != "0") {
-                            //var res = ed.execCommand("FontSize", false, GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize));
+                            var res = ed.execCommand("FontSize", false, GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize));
                             FontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize);
                         }
                         else if (_mainFrame.Ts.System.Organization.FontSize != "0") {
-                            //var res = ed.execCommand("FontSize", false, GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize));
+                            var res = ed.execCommand("FontSize", false, GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize));
                             FontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize);
                         }
                         var content = '<p style="{0} {1}"></p>';
