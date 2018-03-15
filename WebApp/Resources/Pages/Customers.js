@@ -54,8 +54,6 @@
                 appendSearchResults(items);
             }
 
-        }, function (error) {
-            console.log(error);
         });
     }
 
