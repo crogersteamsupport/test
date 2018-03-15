@@ -457,9 +457,6 @@ function AddTicketProperty(item) {
 };
 
 function SetupTicketProperties(order) {
-
-    // MARKER1
-
     window.parent.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
         console.log(info);
         if (info == null) {
@@ -469,10 +466,8 @@ function SetupTicketProperties(order) {
             }
             window.location = url + 'NoTicketAccess.html';
             return;
-        } else {
-
+        } else if (info.faults.length > 0) {
             invalidStatus(info.Ticket.TicketStatusID);
-
         }
         _ticketInfo = info;
         _ticketID = info.Ticket.TicketID;
@@ -3680,7 +3675,7 @@ var SetupStatusField = function (StatusId) {
 
     _ticketCurrStatus = StatusId;
     if ($('#ticket-status').length) {
-        $("#ticket-status, #invalidStatus").selectize({
+        $("#ticket-status").selectize({
             onDropdownClose: function ($dropdown) {
                 $($dropdown).prev().find('input').blur();
             },
@@ -5802,20 +5797,32 @@ function taskCheckBox(id,status) {
     document.getElementById('task-' + id).checked = (status) ? true : false;
 }
 
+
+
+
+
+
+
+
+
 // Invalid Ticket Status.
 function invalidStatus (StatusId) {
     teamsupport.modals.overlay.show();
     $('#modal').html(Handlebars.templates['invalid']);
     teamsupport.modals.modal.show('#modal');
-
-
     var statuses = window.parent.Ts.Cache.getNextStatuses(StatusId);
     $.each(statuses, function(key, status) {
-      console.log(key);
-      $('<option>').text(status.Name).attr('choice', status.TicketStatusID).appendTo('#newStatus');
+        console.log(key);
+        $('<option>').text(status.Name).attr('value', status.TicketStatusID).appendTo('#newStatus');
     });
-
-
-    // $("#invalidStatus").html(copy);
-    // var template = Handlebars.templates[hbrs];
 }
+
+$(document).on('click', '#updateStatus', function (e) {
+    var newStatus = $('#newStatus').val();
+    alert('Update Status: ' + _ticketID + ' / ' + newStatus);
+    window.parent.Ts.Services.Tickets.SetTicketStatus(_ticketID, newStatus, function (result) {
+        if (result !== null) {
+            parent.document.getElementById(window.frameElement.id).contentDocument.location.reload(true);
+        }
+    });
+});

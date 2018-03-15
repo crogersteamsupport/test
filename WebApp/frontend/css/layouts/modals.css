@@ -25,10 +25,6 @@
     }
 }
 
-
-#modal .buttons {
-    text-align:center;
-}
 #modal .fa.close {
     position:absolute;
     z-index:3001;
@@ -52,8 +48,13 @@
     padding:30px;
     line-height:20px;
 }
+#modal .buttons {
+    margin-top:30px;
+    text-align:center;
+}
 #modal .center {
-    margin:0px auto;
+    margin-left:auto;
+    margin-right:auto;
     text-align:center;
 }
 

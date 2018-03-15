@@ -75,15 +75,6 @@ $(document).on('click tap', '#overlay, .fa.close, #btn-cancel', function(e) {
 });
 
 
-
-
-
-
-
-
-
-
-
 // AUTOGROW.
 $.fn.autogrow = function (e) {
     return this.each(function (e) {
