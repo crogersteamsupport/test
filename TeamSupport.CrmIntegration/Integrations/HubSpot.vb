@@ -341,8 +341,9 @@ Namespace TeamSupport
 								description = HtmlUtility.StripHTML(action.Description)
 							End If
 
-							Dim noteBody As String = String.Format("A ticket has been created for this organization entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}{3}{4}",
-												  thisTicket.Name, thisTicket.TicketID, description, Environment.NewLine, If(authorName IsNot Nothing, "Created by " & authorName, ""))
+							Dim teamSupportUrl As String = SystemSettings.GetAppUrl()
+							Dim noteBody As String = String.Format("A ticket has been created for this organization entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: {5}/Ticket.aspx?ticketid={1}{3}{4}",
+												  thisTicket.Name, thisTicket.TicketID, description, Environment.NewLine, If(authorName IsNot Nothing, "Created by " & authorName, ""), teamSupportUrl)
 
 							Dim hubSpotApi As Engagements = New Engagements(apiKey:=hapiKey, logPath:=_crmLogPath)
 
