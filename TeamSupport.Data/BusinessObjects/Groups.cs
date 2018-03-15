@@ -254,5 +254,32 @@ namespace TeamSupport.Data
       }
     }
 
-  }
+        public void LoadByCustomerHubID(int customerHubID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+                    SELECT
+	                    g.*
+                    FROM
+	                    CustomerHubs h
+	                    JOIN Groups g
+		                    ON h.OrganizationID = g.OrganizationID
+                    WHERE
+	                    h.CustomerHubID = @CustomerHubID
+	                    AND 
+	                    (
+		                    h.ProductFamilyID IS NULL
+		                    OR g.ProductFamilyID IS NULL
+		                    OR h.ProductFamilyID = g.ProductFamilyID
+	                    )
+                    ORDER BY
+	                    g.Name";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@CustomerHubID", customerHubID);
+                Fill(command);
+            }
+        }
+
+    }
 }

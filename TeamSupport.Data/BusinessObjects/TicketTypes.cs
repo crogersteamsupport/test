@@ -47,7 +47,35 @@ namespace TeamSupport.Data
 			}
 		}
 
-		public void LoadByOrganizationID(int organizationID, ProductType productType)
+        public void LoadHubTypesByCustomerHubID(int customerHubID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+                    SELECT
+	                    tt.*
+                    FROM
+	                    CustomerHubs h
+	                    JOIN TicketTypes tt
+		                    ON h.OrganizationID = tt.OrganizationID
+                    WHERE
+	                    h.CustomerHubID = @CustomerHubID
+	                    AND tt.isVisibleOnPortal = 1
+	                    AND 
+	                    (
+		                    h.ProductFamilyID IS NULL
+		                    OR tt.ProductFamilyID IS NULL
+		                    OR h.ProductFamilyID = tt.ProductFamilyID
+	                    )
+                    ORDER BY
+	                    tt.Position";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@CustomerHubID", customerHubID);
+                Fill(command);
+            }
+        }
+
+        public void LoadByOrganizationID(int organizationID, ProductType productType)
     {
       LoadByOrganizationID(organizationID);
     }

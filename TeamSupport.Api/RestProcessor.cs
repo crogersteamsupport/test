@@ -30,7 +30,16 @@ namespace TeamSupport.Api
                         XmlDocument xmlData = new XmlDocument();
                         xmlData.XmlResolver = null;
                         xmlData = JsonConvert.DeserializeXmlNode(_command.Data);
-                        _command.Data = xmlData.InnerXml;
+
+						//Make sure the DTDs references are removed.
+						XmlDocumentType XDType = xmlData.DocumentType;
+
+						if (XDType != null)
+						{
+							xmlData.RemoveChild(XDType);
+						}
+
+						_command.Data = xmlData.InnerXml;
                     }
                 }
 
