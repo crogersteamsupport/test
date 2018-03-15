@@ -1683,6 +1683,49 @@ namespace TSWebServices
             List<string> results = new List<string>();
             SqlCommand command = new SqlCommand();
 
+            //Clean searchterm
+            searchTerm = searchTerm.Replace("\"", "").Replace("'", "");
+            if (!String.IsNullOrEmpty(searchTerm))
+                searchTerm = "\"" + searchTerm + "\"";          
+            
+            
+            command.CommandText = "AssetsSearch";
+            command.CommandType = CommandType.StoredProcedure;
+            
+            command.Parameters.AddWithValue("@FromIndex", from + 1);
+            command.Parameters.AddWithValue("@ToIndex", from + count);
+            command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);           
+            command.Parameters.AddWithValue("@SearchTerm", searchTerm);
+            command.Parameters.AddWithValue("@IncludeAssigned", searchAssigned);
+            command.Parameters.AddWithValue("@IncludeWarehouse", searchWarehouse);
+            command.Parameters.AddWithValue("@IncludeJunkyard", searchJunkyard);
+                   
+            
+            DataTable table = SqlExecutor.ExecuteQuery(loginUser, command);
+            foreach (DataRow row in table.Rows)
+            {
+                dynamic assetSearch = new ExpandoObject();
+                assetSearch.assetID = row["assetID"];
+                assetSearch.serialNumber = row["serialNumber"];
+                assetSearch.notes = row["notes"];
+                assetSearch.name = row["name"];
+                assetSearch.location = row["location"];
+                assetSearch.warrantyExpiration = row["warrantyExpiration"];
+                assetSearch.productName = row["productName"];
+                assetSearch.productVersionNumber = row["VersionNumber"];
+                results.Add(JsonConvert.SerializeObject(assetSearch));
+            }
+            return results.ToArray();
+
+        }
+
+        //[WebMethod]
+        public string[] SearchAssets_OLD(string searchTerm, int from, int count, bool searchAssigned, bool searchWarehouse, bool searchJunkyard)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            List<string> results = new List<string>();
+            SqlCommand command = new SqlCommand();
+
             string pageQuery = @"
 WITH 
 q AS ({0}),
