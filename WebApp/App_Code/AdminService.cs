@@ -809,6 +809,41 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public List<string> GetHubRedirectList()
+        {
+            CustomerHubs hubs = new CustomerHubs(TSAuthentication.GetLoginUser());
+            hubs.LoadByOrganizationID(TSAuthentication.OrganizationID);
+            List<string> results = new List<string>();
+
+            if (hubs.Any())
+            {
+                foreach (var hub in hubs)
+                {
+                    if (string.IsNullOrWhiteSpace(hub.CNameURL))
+                    {
+                        results.Add(string.Format("{0}.{1}", hub.PortalName, SystemSettings.GetHubURL()));
+                    }
+                    else
+                    {
+                        results.Add(string.Format("{0}", hub.CNameURL));
+                    }
+                }
+            }
+            else
+            {
+                bool success = MigratePortalSettings(TSAuthentication.OrganizationID, TSAuthentication.GetLoginUser());
+                if (success)
+                {
+                    CustomerHubs hubs2 = new CustomerHubs(TSAuthentication.GetLoginUser());
+                    hubs2.LoadByOrganizationID(TSAuthentication.OrganizationID);
+                    results.Add(string.Format("{0}.{1}", hubs2[0].PortalName, SystemSettings.GetHubURL()));
+                }
+            }
+            return results;
+        }
+
+
+        [WebMethod]
         public string GetHubURLwithCName()
         {
             CustomerHubs hubs = new CustomerHubs(TSAuthentication.GetLoginUser());

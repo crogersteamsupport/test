@@ -315,6 +315,7 @@ namespace TSWebServices
             option.RequestAccess = proxy.RequestAccess;
             option.RequestGroup = proxy.RequestGroup;
             option.RequestType = proxy.RequestType;
+            option.PortalForward = proxy.PortalForward;
 
             option.Collection.Save();
 
