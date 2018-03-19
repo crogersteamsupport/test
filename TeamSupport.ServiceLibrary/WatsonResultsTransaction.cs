@@ -58,6 +58,9 @@ namespace WatsonToneAnalyzer
                 actionToAnalyze.DeleteOnSubmit(_db);
                 _db.SubmitChanges();
 
+                //if (callback != null)
+                //    callback(sentiment);  // calculate metrics for Ticket, User, CDI, etc...
+
                 // Success!
                 _transaction.Commit();
             }
