@@ -76,9 +76,6 @@ namespace TSWebServices
                 info.Ticket.TicketStatusID = statuses[0].TicketStatusID;
                 ticket.TicketStatusID = info.Ticket.TicketStatusID;
                 faults.status = "invalid";
-                // Ticket newticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
-                // newticket.TicketStatusID = ticket.TicketStatusID;
-                // newticket.Collection.Save();
             }
 
             if (info.Ticket.CategoryName != null && info.Ticket.ForumCategory != null)
