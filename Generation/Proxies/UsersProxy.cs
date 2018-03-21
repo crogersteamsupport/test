@@ -86,6 +86,7 @@ namespace TeamSupport.Data
     [DataMember] public bool CanChangeCommunityVisibility { get; set; }
     [DataMember] public bool FilterInactive { get; set; }
     [DataMember] public bool DisableExporting { get; set; }
+    [DataMember] public bool DisablePublic { get; set; }
     [DataMember] public bool CanCreateProducts { get; set; }
     [DataMember] public bool CanEditProducts { get; set; }
     [DataMember] public bool CanCreateVersions { get; set; }
@@ -102,9 +103,9 @@ namespace TeamSupport.Data
     [DataMember] public int? ImportFileID { get; set; }
     [DataMember] public bool PortalLimitOrgChildrenTickets { get; set; }
     [DataMember] public bool CanBulkMerge { get; set; }
-          
+
   }
-  
+
   public partial class User : BaseItem
   {
     public UserProxy GetProxy()
@@ -125,6 +126,7 @@ namespace TeamSupport.Data
       result.CanEditProducts = this.CanEditProducts;
       result.CanCreateProducts = this.CanCreateProducts;
       result.DisableExporting = this.DisableExporting;
+      result.DisablePublic = this.DisablePublic;
       result.FilterInactive = this.FilterInactive;
       result.CanChangeCommunityVisibility = this.CanChangeCommunityVisibility;
       result.CanEditAsset = this.CanEditAsset;
@@ -190,19 +192,19 @@ namespace TeamSupport.Data
       result.FirstName = this.FirstName;
       result.Email = this.Email;
       result.UserID = this.UserID;
-       
+
       result.LastLogin = DateTime.SpecifyKind(this.LastLoginUtc, DateTimeKind.Utc);
       result.LastActivity = DateTime.SpecifyKind(this.LastActivityUtc, DateTimeKind.Utc);
       result.ActivatedOn = DateTime.SpecifyKind(this.ActivatedOnUtc, DateTimeKind.Utc);
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
-       
-      result.PasswordCreatedUtc = this.PasswordCreatedUtcUtc == null ? this.PasswordCreatedUtcUtc : DateTime.SpecifyKind((DateTime)this.PasswordCreatedUtcUtc, DateTimeKind.Utc); 
-      result.verificationCodeExpiration = this.verificationCodeExpirationUtc == null ? this.verificationCodeExpirationUtc : DateTime.SpecifyKind((DateTime)this.verificationCodeExpirationUtc, DateTimeKind.Utc); 
-      result.DeactivatedOn = this.DeactivatedOnUtc == null ? this.DeactivatedOnUtc : DateTime.SpecifyKind((DateTime)this.DeactivatedOnUtc, DateTimeKind.Utc); 
-      result.LastPing = this.LastPingUtc == null ? this.LastPingUtc : DateTime.SpecifyKind((DateTime)this.LastPingUtc, DateTimeKind.Utc); 
-       
+
+      result.PasswordCreatedUtc = this.PasswordCreatedUtcUtc == null ? this.PasswordCreatedUtcUtc : DateTime.SpecifyKind((DateTime)this.PasswordCreatedUtcUtc, DateTimeKind.Utc);
+      result.verificationCodeExpiration = this.verificationCodeExpirationUtc == null ? this.verificationCodeExpirationUtc : DateTime.SpecifyKind((DateTime)this.verificationCodeExpirationUtc, DateTimeKind.Utc);
+      result.DeactivatedOn = this.DeactivatedOnUtc == null ? this.DeactivatedOnUtc : DateTime.SpecifyKind((DateTime)this.DeactivatedOnUtc, DateTimeKind.Utc);
+      result.LastPing = this.LastPingUtc == null ? this.LastPingUtc : DateTime.SpecifyKind((DateTime)this.LastPingUtc, DateTimeKind.Utc);
+
       return result;
-    }	
+    }
   }
 }
