@@ -579,6 +579,9 @@ function CreateNewActionLI() {
         e.stopPropagation();
         if ($(this).hasClass('click-disabled')) {
             return false;
+        } else if (window.parent.Ts.System.User.DisablePublic) {
+            alert('Your account cannot post public actions.');
+            return false;
         } else {
             $(this).addClass('click-disabled');
             $("a.action-option-edit").each(function () {
