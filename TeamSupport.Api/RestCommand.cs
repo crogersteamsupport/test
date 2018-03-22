@@ -150,8 +150,13 @@ namespace TeamSupport.Api
             int length = Convert.ToInt32(stream.Length);
             Byte[] bytes = new Byte[length];
             stream.Read(bytes, 0, length);
+			string contentType = context.Request.ContentType.ToLower();
+			bool isAttachmentFileUpload = !string.IsNullOrEmpty(contentType)
+										&& contentType.Contains("multipart/form-data")
+										&& contentType.Contains("boundary")
+										&& context.Request.RawUrl.ToLower().Split('/')[context.Request.RawUrl.ToLower().Split('/').Length - 1].StartsWith("attachments");
 
-            if (bytes.Length > 0)
+			if (bytes.Length > 0 && !isAttachmentFileUpload)
             {
                 content = FormatSafeContent((new UTF8Encoding()).GetString(bytes), restFormat);
             }
