@@ -531,6 +531,55 @@ namespace TSWebServices
         [WebMethod]
         public KnowledgeBaseCategoryTicketsProxy GetKnowledgeBaseSearchResults(string searchTerm, int firstItemIndex, int pageSize)
         {
+
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+            KnowledgeBaseCategoryTicketsProxy result = new KnowledgeBaseCategoryTicketsProxy();
+            result.CategoryName = "Search results";
+            List<KnowledgeBaseCategoryTicketsItemProxy> resultItems = new List<KnowledgeBaseCategoryTicketsItemProxy>();
+
+            SqlCommand command = new SqlCommand();
+            command.CommandText = "Tickets_KBSearch";
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("@FromIndex", firstItemIndex);
+            command.Parameters.AddWithValue("@ToIndex", pageSize);
+            command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+            command.Parameters.AddWithValue("@SearchTerm", cleanSearchTerm(searchTerm));
+
+            DataTable table = new DataTable();
+            using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+            {
+                command.Connection = connection;
+                connection.Open();
+                using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                {                   
+                    adapter.Fill(table);     
+                }
+            }
+
+            foreach (DataRow row in table.Rows)
+            {
+                KnowledgeBaseCategoryTicketsItemProxy resultItem = new KnowledgeBaseCategoryTicketsItemProxy();
+
+                resultItem.ID = (int)row["TicketID"];
+
+                string fullLengthName = row["Name"].ToString();
+                resultItem.Name = fullLengthName;
+
+                resultItems.Add(resultItem);
+            }
+        
+
+            result.Items = resultItems.ToArray();
+            return result;
+        
+        }
+
+
+        [WebMethod]
+        public KnowledgeBaseCategoryTicketsProxy GetKnowledgeBaseSearchResults_Old(string searchTerm, int firstItemIndex, int pageSize)
+        {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<SqlDataRecord> dtSearchTicketsResultsList = TicketsView.GetSearchResultsList(searchTerm, loginUser);
 
@@ -4740,8 +4789,18 @@ WHERE t.TicketID = @TicketID
             }
             return result;
         }
+        private static string cleanSearchTerm(string searchTerm)
+        {
+            searchTerm = searchTerm.Replace("\"", "").Replace("'", "");
+            if (!String.IsNullOrEmpty(searchTerm))
+                searchTerm = "\"" + searchTerm + "\"";
+
+            return searchTerm;
+        }
+
     }
 
+   
 
 
     [DataContract]
