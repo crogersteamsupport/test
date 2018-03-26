@@ -150,11 +150,7 @@ namespace TeamSupport.Api
             int length = Convert.ToInt32(stream.Length);
             Byte[] bytes = new Byte[length];
             stream.Read(bytes, 0, length);
-			string contentType = context.Request.ContentType.ToLower();
-			bool isAttachmentFileUpload = !string.IsNullOrEmpty(contentType)
-										&& contentType.Contains("multipart/form-data")
-										&& contentType.Contains("boundary")
-										&& context.Request.RawUrl.ToLower().Split('/')[context.Request.RawUrl.ToLower().Split('/').Length - 1].StartsWith("attachments");
+			bool isAttachmentFileUpload = IsFileUpload(context.Request);
 
 			if (bytes.Length > 0 && !isAttachmentFileUpload)
             {
@@ -202,6 +198,30 @@ namespace TeamSupport.Api
 
         return doc.InnerXml;
     }
+
+	private bool IsFileUpload(HttpRequest request)
+	{
+		bool isFileUpload = false;
+		string contentType = request.ContentType.ToLower();
+		string endpoint = request.RawUrl;
+		
+		if (!string.IsNullOrEmpty(endpoint))
+		{
+			endpoint = endpoint.TrimEnd('/').ToLower();
+		}
+
+		if (!string.IsNullOrEmpty(endpoint) && endpoint.Contains("/"))
+		{
+			endpoint = endpoint.Split('/')[endpoint.Split('/').Length - 1];
+		}
+
+		isFileUpload = !string.IsNullOrEmpty(contentType)
+						&& contentType.Contains("multipart/form-data")
+						&& contentType.Contains("boundary")
+						&& endpoint.StartsWith("attachments");
+
+		return isFileUpload;
+	}
 
     public int? _pageNumber;
 	public int? PageNumber
