@@ -821,23 +821,8 @@ WHERE a.SalesForceID = @SalesForceID";
             {
                 using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
                 {
-                    using (SqlCommand command = new SqlCommand())
-                    {
-                        command.Connection = connection;
-                        command.CommandType = CommandType.Text;
-                        command.CommandText = "SELECT * FROM dbo.TicketAverageSentiment WHERE TicketID = @TicketID FOR JSON PATH, ROOT('watson')";
-                        command.Parameters.AddWithValue("@TicketID", ticketID);
-                        connection.Open();
-                        SqlDataReader reader = command.ExecuteReader();
-                        if (reader.HasRows && reader.Read())
-                        {
-                            return reader.GetValue(0).ToString();
-                        }
-                        else
-                        {
-                            return "nothing";
-                        }
-                    }
+                    connection.Open();
+                    return Ticket.BruteForce.GetSentimentIndex(connection, ticketID);
                 }
             }
             catch (SqlException e)

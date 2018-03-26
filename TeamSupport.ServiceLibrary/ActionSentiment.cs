@@ -30,6 +30,8 @@ namespace WatsonToneAnalyzer
         public bool IsAgent;
         [Column]
         public DateTime DateCreated;
+
+        public List<ActionSentimentScore> _scores;
     }
 
 }

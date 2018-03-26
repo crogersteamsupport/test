@@ -21,57 +21,142 @@ namespace WatsonToneAnalyzer
         SqlTransaction _transaction;
         DataContext _db;
 
+        class MaxActionSentimentScore
+        {
+            public int ActionID;
+            public int SentimentID;
+            public decimal MaxSentimentScore;
+            public decimal SentimentMultiplier;
+        }
+
+        static System.Threading.Mutex _singleThreadedTransactions = new System.Threading.Mutex(false);
+
         /// <summary>
         /// Constructor to wrap the "using" of SqlConnection, SqlTransaction, and DataContext
         /// </summary>
         /// <param name="tones"></param>
         /// <param name="actionToAnalyze"></param>
-        public WatsonResultsTransaction(Utterance utterance, ActionToAnalyze actionToAnalyze)
+        public WatsonResultsTransaction(Utterance utterance, ActionToAnalyze actionToAnalyze, Action<WatsonTransactionCallback> callback)
         {
             List<Tones> tones = utterance.tones;
             if (tones == null)
                 return; // ?
 
             // open the connection
-            string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
-            _connection = new SqlConnection(connectionString);  // using
-            _connection.Open(); // connection must be open to begin transaction
-
-            // start the transaction
-            _transaction = _connection.BeginTransaction();  // using
-
-            // create a data context
-            _db = new DataContext(_connection); // using
-            _db.Transaction = _transaction;
-
             try
             {
+                _singleThreadedTransactions.WaitOne();
+                string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
+                _connection = new SqlConnection(connectionString);  // using
+                _connection.Open(); // connection must be open to begin transaction
+
+                // start the transaction
+                _transaction = _connection.BeginTransaction();  // using
+
+                // create a data context
+                _db = new DataContext(_connection); // using
+                _db.Transaction = _transaction;
+
                 // insert ActionSentiment
                 ActionSentiment sentiment = InsertActionSentiment(_db, actionToAnalyze);
                 _db.SubmitChanges();    // get the DB generated ID
                 int actionSentimentID = sentiment.ActionSentimentID;
 
                 // insert child records - ActionSentimentScore(s)
-                InsertSentimentScores(tones, _db, actionSentimentID);
+                List<ActionSentimentScore> scores = InsertSentimentScores(tones, _db, actionSentimentID);
 
                 // Delete ActionToAnalyze
                 actionToAnalyze.DeleteOnSubmit(_db);
                 _db.SubmitChanges();
 
-                //if (callback != null)
-                //    callback(sentiment);  // calculate metrics for Ticket, User, CDI, etc...
+                if (callback != null)
+                {
+                    WatsonTransactionCallback transaction = new WatsonTransactionCallback()
+                    {
+                        _db = _db,
+                        _sentiment = sentiment,
+                        _scores = scores
+                    };
+                    callback(transaction);
+                }
 
                 // Success!
                 _transaction.Commit();
             }
             catch (Exception e)
             {
-                _transaction.Rollback();
+                if (_transaction != null)
+                    _transaction.Rollback();
 
                 EventLog.WriteEntry(EVENT_SOURCE, "********************PublishToTable SubmitTransaction: Exception " + e.Message + " ### " + e.Source + " ### " + e.StackTrace.ToString());
                 Console.WriteLine("Exception at insert into Action Sentiment:" + e.Message + "###" + e.Source + " ----- STACK: " + e.StackTrace.ToString());
             }
+            finally
+            {
+                _singleThreadedTransactions.ReleaseMutex();
+            }
         }
+
+        //void Stuff(ActionToAnalyze actionToAnalyze)
+        //{
+        //    string query = @"SELECT m.ActionID, s.SentimentID, m.MaxSentimentScore, t.SentimentMultiplier
+        //                                FROM (
+        //                                    SELECT a.ActionID, a.ActionSentimentID, MAX(s.SentimentScore) AS MaxSentimentScore
+        //                                    FROM ActionSentiments a
+        //                                    INNER JOIN ActionSentimentScores s ON a.ActionSentimentID=s.ActionSentimentID
+        //                                    WHERE TicketID={0} AND a.IsAgent='{1}'
+        //                                    GROUP BY a.ActionID, a.ActionSentimentID
+        //                                ) AS m
+        //                                INNER JOIN ActionSentimentScores AS s ON m.ActionSentimentID=s.ActionSentimentID AND m.MaxSentimentScore=s.SentimentScore
+        //                                INNER JOIN ToneSentiments AS t ON t.SentimentID=s.SentimentID
+        //                                GROUP BY m.ActionID, s.SentimentID, m.MaxSentimentScore, t.SentimentMultiplier";
+        //    string fullQuery = string.Format(query, actionToAnalyze.TicketID, actionToAnalyze.IsAgent ? "1" : "0");
+        //    var result = _db.ExecuteQuery<MaxActionSentimentScore>(fullQuery);
+
+        //    Table<TicketSentimentScoreLinq> ticketScoresTable = _db.GetTable<TicketSentimentScoreLinq>();
+        //    TicketSentimentScoreLinq ticketSentimentScore = (from u in ticketScoresTable where u.TicketID == actionToAnalyze.TicketID select u).FirstOrDefault();
+        //    if (ticketSentimentScore == null)
+        //    {
+        //        ticketSentimentScore = new TicketSentimentScoreLinq()
+        //        {
+        //            TicketID = actionToAnalyze.TicketID,
+        //            IsAgent = actionToAnalyze.IsAgent,
+        //            TicketSentimentScore = 0,
+        //            Sad = false,
+        //            Frustrated = false,
+        //            Satisfied = false,
+        //            Excited = false,
+        //            Polite = false,
+        //            Impolite = false,
+        //            Sympathetic = false
+        //        };
+        //        ticketScoresTable.InsertOnSubmit(ticketSentimentScore);
+        //    }
+
+        //    // calculate a normalized ticket sentiment
+        //    double ticketSentiment = 0;
+        //    {
+        //        int count = 0;
+        //        List<int> sentiments = new List<int>();
+        //        foreach (MaxActionSentimentScore record in result)
+        //        {
+        //            ++count;
+        //            if (record.SentimentID == 0)    // no sentiment found
+        //                continue;
+
+        //            ticketSentiment += Convert.ToDouble(record.SentimentMultiplier) * Convert.ToDouble(record.MaxSentimentScore);
+        //            ticketSentimentScore.SetSentimentID(record.SentimentID);
+        //        }
+
+        //        if (count != 0)
+        //            ticketSentiment /= count;  // normalize to +- 100%
+        //        ticketSentiment = 500 * ticketSentiment + 500;  // normalize to [0, 1000]
+        //    }
+
+        //    // submit record
+        //    ticketSentimentScore.TicketSentimentScore = (int)Math.Round(ticketSentiment);
+        //    _db.SubmitChanges();
+        //}
 
         public void Dispose()
         {
@@ -127,8 +212,10 @@ namespace WatsonToneAnalyzer
         /// <param name="tones">tones from IBM Watson - may be empty</param>
         /// <param name="db">data context</param>
         /// <param name="actionSentimentID">Parent record ID</param>
-        private static void InsertSentimentScores(List<Tones> tones, DataContext db, int actionSentimentID)
+        private static List<ActionSentimentScore> InsertSentimentScores(List<Tones> tones, DataContext db, int actionSentimentID)
         {
+            List<ActionSentimentScore> result = new List<ActionSentimentScore>();
+
             // tones detected?
             Table<ActionSentimentScore> actionSentimentScoreTable = db.GetTable<ActionSentimentScore>();
             if ((tones == null) || !tones.Any())
@@ -141,7 +228,8 @@ namespace WatsonToneAnalyzer
                     SentimentScore = 0
                 };
                 actionSentimentScoreTable.InsertOnSubmit(score);
-                return;
+                result.Add(score);
+                return result;
             }
 
             // insert tone sentiment scores
@@ -154,7 +242,10 @@ namespace WatsonToneAnalyzer
                     SentimentScore = Convert.ToDecimal(tone.score)
                 };
                 actionSentimentScoreTable.InsertOnSubmit(score);
+                result.Add(score);
             }
+
+            return result;
         }
 
         /// <summary> See dbo.ToneSentiment </summary>

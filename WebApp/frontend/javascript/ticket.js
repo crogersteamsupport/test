@@ -5649,21 +5649,22 @@ var SetSolved = function (ResolvedID) {
 
 function watson (ticketnumber) {
     window.parent.Ts.Services.Tickets.GetTicketInfo(ticketnumber, function (info) {
-        if (info.Ticket.OrganizationID != '1078') { return; }
+        //if (info.Ticket.OrganizationID != '1078') { return; }
         var ticketid = info.Ticket.TicketID;
         window.parent.Ts.Services.TicketPage.WatsonTicket(ticketid, function (result) {
             if (result != 'negative' && result != 'nothing' && result != 'hidden') {
                 var data = jQuery.parseJSON(result);
-                var sentiments = { 1:'Sad', 2:'Frustrated', 3:'Satisfied', 4:'Excited', 5:'Polite', 6:'Impolite', 7: 'Sympathetic' }
+                var sentiments = { 1:'Sad ', 2:'Frustrated ', 3:'Satisfied ', 4:'Excited ', 5:'Polite ', 6:'Impolite ', 7: 'Sympathetic ' }
                 var display = [];
+                display.push(500 + Math.round(data.TicketSentimentIndex * 500) + " - ");
                 $.each(data.watson, function(key,sentiment) {
-                    if (sentiment.SentimentID > 0) {
-                        var emotion = sentiments[sentiment.SentimentID];
-                        var percent = Math.round(sentiment.SentimentScore * 100);
-                        display.push(emotion + ': ' + percent + '%');
-                    }
+                    if (sentiment.SentimentID > 0)
+                        display.push(sentiments[sentiment.SentimentID]);
                 });
-                $('#watson').text(display.join(', '));
+                //$('#watson').append("<link href='https://fonts.googleapis.com/css?family=Josefin+Slab' rel='stylesheet' type='text/css'><div class=\"gauge\"><ul class=\"meter\"><li class=\"low\"></li><li class=\"normal\"></li><li class=\"high\"></li></ul><div class=\"dial\"><div class=\"inner\"><div class=\"arrow\"></div></div></div><div class=\"value\">0%</div></div><script type=\"text/ javascript\" src=\"https://code.jquery.com/jquery-latest.js\"></script>");
+                $('#watson').append("<img class=\"likestar\" src=\"../images/icons/GuageMeter1.png\">");
+                //$('#watson').append("<div class=\"gauge\"><ul class=\"meter\"><li class=\"low\"></li><li class=\"normal\"></li><li class=\"high\"></li></ul><div class=\"dial\"><div class=\"inner\"><div class=\"arrow\"></div></div></div><div class=\"value\">0%</div></div>");
+                $('#watson').append(" " + display.join('   '));
             }
         });
     });
