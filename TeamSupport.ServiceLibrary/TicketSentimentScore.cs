@@ -7,12 +7,12 @@ using System.Data.Linq.Mapping;
 
 namespace WatsonToneAnalyzer
 {
-    [Table(Name = "TicketSentimentScores")]
-    class TicketSentimentScoreLinq
+    [Table(Name = "TicketSentiments")]
+    class TicketSentiments
     {
-        int _ticketSentimentScoreID;
-        [Column(Storage = "_ticketSentimentScoreID", DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true)]
-        public int TicketSentimentScoreID { get { return _ticketSentimentScoreID; } }
+        int _ticketSentimentID;
+        [Column(Storage = "_ticketSentimentID", DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true)]
+        public int TicketSentimentID { get { return _ticketSentimentID; } }
 
         [Column]
         public int TicketID;

@@ -88,7 +88,7 @@
     <Compile Include="TicketSentimentScore.cs" />
     <Compile Include="ToneAnalysisMain.cs" />
     <Compile Include="WatsonAnalyzer.cs" />
-    <Compile Include="WatsonResultsTransaction.cs" />
+    <Compile Include="WatsonTransaction.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
