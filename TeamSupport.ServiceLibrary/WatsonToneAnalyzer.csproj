@@ -84,7 +84,7 @@
     <Compile Include="MQChannel.cs" />
     <Compile Include="MQConnection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TicketSentiments.cs" />
+    <Compile Include="TicketSentiment.cs" />
     <Compile Include="ToneAnalysisMain.cs" />
     <Compile Include="WatsonAnalyzer.cs" />
     <Compile Include="WatsonTransaction.cs" />

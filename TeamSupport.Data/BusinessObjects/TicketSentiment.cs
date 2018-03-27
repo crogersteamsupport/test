@@ -9,7 +9,7 @@ namespace TeamSupport.Data.BusinessObjects
 {
     // see ts-app\TeamSupport.ServiceLibrary\TicketSentiments.cs
     [Table(Name = "TicketSentiments")]
-    class TicketSentiments
+    class TicketSentiment
     {
         int _ticketSentimentID;
         [Column(Storage = "_ticketSentimentID", DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true)]
@@ -17,6 +17,8 @@ namespace TeamSupport.Data.BusinessObjects
 
         [Column]
         public int TicketID;
+        [Column]
+        public int OrganizationID;
         [Column]
         public bool IsAgent;
         [Column]

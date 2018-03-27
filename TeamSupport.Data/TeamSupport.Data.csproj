@@ -328,7 +328,7 @@
     <Compile Include="BusinessObjects\TicketLinkToSnow.cs" />
     <Compile Include="BusinessObjects\TicketLinkToTFS.cs" />
     <Compile Include="BusinessObjects\TicketRelationships.cs" />
-    <Compile Include="BusinessObjects\TicketSentiments.cs" />
+    <Compile Include="BusinessObjects\TicketSentiment.cs" />
     <Compile Include="BusinessObjects\TicketsView.cs" />
     <Compile Include="BusinessObjects\TicketTemplates.cs" />
     <Compile Include="BusinessObjects\TicketTimeLineView.cs" />

@@ -104,15 +104,15 @@ namespace WatsonToneAnalyzer
             {
                 Stopwatch stopwatch = new Stopwatch();
                 // get all the ticket IDs from ActionSentiments
-                Table<ActionSentiment> sentiments = db.GetTable<ActionSentiment>();
-                IQueryable<int> ticketIDs = (from sentiment in sentiments select sentiment.TicketID).Distinct();
-                foreach (int ticketID in ticketIDs)
+                Table<ActionSentiment> sentimentsTable = db.GetTable<ActionSentiment>();
+                IQueryable<ActionSentiment> sentiments = (from sentiment in sentimentsTable select sentiment).Distinct();
+                foreach (ActionSentiment sentiment in sentiments)
                 {
-                    stopwatch.Reset();
-                    stopwatch.Start();
-                    TicketSentimentStrategy(ticketID, true);
-                    stopwatch.Stop();
-                    Console.WriteLine(stopwatch.ElapsedMilliseconds);
+                    //stopwatch.Reset();
+                    //stopwatch.Start();
+                    TicketSentimentStrategy(sentiment.TicketID, sentiment.OrganizationID, true);
+                    //stopwatch.Stop();
+                    //Console.WriteLine(stopwatch.ElapsedMilliseconds);
                 }
             }
         }
@@ -124,7 +124,7 @@ namespace WatsonToneAnalyzer
         /// Use Net Promoter score (promoters - detractors), normalized to [0, 1000] where 500 is neutral
         /// </summary>
         /// <param name="transaction">data associated with the watson transaction</param>
-        static void TicketSentimentStrategy(int ticketID, bool isAgent)
+        static void TicketSentimentStrategy(int ticketID, int organizationID, bool isAgent)
         {
             try
             {
@@ -148,13 +148,14 @@ namespace WatsonToneAnalyzer
                     //var result = db.ExecuteQuery<MaxActionSentimentScore>(query, ticketID, isAgent ? "1" : "0");  // this throws an exception on converstion of isAgent to a bit?
 
                     // attach to the ticket score
-                    Table<TicketSentiments> ticketScoresTable = db.GetTable<TicketSentiments>();
-                    TicketSentiments ticketSentimentScore = (from u in ticketScoresTable where u.TicketID == ticketID select u).FirstOrDefault();
+                    Table<TicketSentiment> ticketScoresTable = db.GetTable<TicketSentiment>();
+                    TicketSentiment ticketSentimentScore = (from u in ticketScoresTable where u.TicketID == ticketID select u).FirstOrDefault();
                     if (ticketSentimentScore == null)
                     {
-                        ticketSentimentScore = new TicketSentiments()
+                        ticketSentimentScore = new TicketSentiment()
                         {
                             TicketID = ticketID,
+                            OrganizationID = organizationID,
                             IsAgent = isAgent,
                             TicketSentimentScore = 0,
                             Sad = false,
@@ -237,7 +238,7 @@ namespace WatsonToneAnalyzer
                 }
 
                 // update the corresponding ticket sentiment
-                TicketSentimentStrategy(actionToAnalyze.TicketID, actionToAnalyze.IsAgent);
+                TicketSentimentStrategy(actionToAnalyze.TicketID, actionToAnalyze.OrganizationID, actionToAnalyze.IsAgent);
             }
             catch (Exception e2)
             {
