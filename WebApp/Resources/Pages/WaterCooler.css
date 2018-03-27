@@ -178,7 +178,6 @@ input, select
 .onlineList
 {
     overflow-y:auto;
-    max-height: 500px;
 }
 
 .chatavatar
