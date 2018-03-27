@@ -5649,7 +5649,7 @@ var SetSolved = function (ResolvedID) {
 
 function watson (ticketnumber) {
     window.parent.Ts.Services.Tickets.GetTicketInfo(ticketnumber, function (info) {
-        //if (info.Ticket.OrganizationID != '1078') { return; }
+        if (info.Ticket.OrganizationID != '1078') { return; }
         var ticketid = info.Ticket.TicketID;
         window.parent.Ts.Services.TicketPage.WatsonTicket(ticketid, function (result) {
             if (result != 'negative' && result != 'nothing' && result != 'hidden') {
