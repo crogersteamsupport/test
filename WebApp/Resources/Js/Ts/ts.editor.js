@@ -77,20 +77,16 @@ var initEditor = function (element, shouldResize, init, postinit) {
                 ed.on('init', function (e) {
                     _mainFrame.Ts.System.refreshUser(function () {
                         if (_mainFrame.Ts.System.User.FontFamilyDescription != "Unassigned") {
-                            var res = ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily));
                             FontName = GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily);
                         }
                         else if (_mainFrame.Ts.System.Organization.FontFamily != "Unassigned") {
-                            var res = ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily));
                             FontName = GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily);
                         }
 
                         if (_mainFrame.Ts.System.User.FontSize != "0") {
-                            var res = ed.execCommand("FontSize", false, GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize));
                             FontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize);
                         }
                         else if (_mainFrame.Ts.System.Organization.FontSize != "0") {
-                            var res = ed.execCommand("FontSize", false, GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize));
                             FontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize);
                         }
                         var content = '<p style="{0} {1}"></p>';
@@ -555,6 +551,9 @@ The following steps will refresh your browser<br><br> \
 }
 
 var initScheduledReportEditor = function (element, init, postinit) {
+    var FontName = '';
+    var FontSize = '';
+
     var editorOptions = {
         plugins: "paste link code textcolor image imagetools moxiemanager table lists codesample autoresize",
         toolbar1: "insertPasteImage insertTicket image insertDropBox insertUser | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
@@ -581,24 +580,52 @@ var initScheduledReportEditor = function (element, init, postinit) {
         paste_data_images: true,
         images_upload_url: "/Services/UserService.asmx/SaveTinyMCEPasteImage",
         setup: function (ed) {
+            ed.on('BeforeSetContent', function (e) {
+                if (e.content == '' && !e.initial) {
+                    setTimeout(function () {
+                        var content = '<p style="{0} {1}"></p>';
+                        if (FontSize != "")
+                            content = content.replace(/\{0\}/g, "font-size: " + FontSize + ";");
+                        else
+                            content = content.replace(/\{0\}/g, "");
+                        if (FontName != "")
+                            content = content.replace(/\{1\}/g, "font-family: " + FontName + ";");
+                        else
+                            content = content.replace(/\{1\}/g, "");
+                        ed.setContent(ed.getContent() + content);
+                    }, 10);
+                }
+            });
+
             ed.on('init', function (e) {
                 _mainFrame.Ts.System.refreshUser(function () {
                     if (_mainFrame.Ts.System.User.FontFamilyDescription != "Unassigned") {
-                        ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily));
+                        FontName = GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily);
                     }
-                    else if (_mainFrame.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-                        ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily));
+                    else if (_mainFrame.Ts.System.Organization.FontFamily != "Unassigned") {
+                        FontName = GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily);
                     }
 
                     if (_mainFrame.Ts.System.User.FontSize != "0") {
-                        ed.execCommand("FontSize", false, _mainFrame.Ts.System.User.FontSizeDescription);
+                        FontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize);
                     }
                     else if (_mainFrame.Ts.System.Organization.FontSize != "0") {
-                        ed.execCommand("FontSize", false, _mainFrame.Ts.System.Organization.FontSizeDescription);
+                        FontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize);
                     }
+                    var content = '<p style="{0} {1}"></p>';
+                    if (FontSize != "")
+                        content = content.replace(/\{0\}/g, "font-size: " + FontSize + ";");
+                    else
+                        content = content.replace(/\{0\}/g, "");
+                    if (FontName != "")
+                        content = content.replace(/\{1\}/g, "font-family: " + FontName + ";");
+                    else
+                        content = content.replace(/\{1\}/g, "");
+                    ed.setContent(ed.getContent() + content);
                     ed.focus();
 
                     if (postinit) postinit();
+
                 });
             });
 
