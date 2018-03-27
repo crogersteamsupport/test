@@ -171,8 +171,7 @@ Selectize.define('no_results', function (options) {
 
         return function () {
             original.apply(self, arguments);
-            this.hasOptions ? this.$empty_results_container.hide() :
-                this.displayEmptyResultsMessage();
+            this.hasOptions ? this.$empty_results_container.hide() : this.displayEmptyResultsMessage();
         }
     })();
 
@@ -459,6 +458,7 @@ function AddTicketProperty(item) {
 
 function SetupTicketProperties(order) {
     window.parent.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function (info) {
+        console.log(info);
         if (info == null) {
             var url = window.location.href;
             if (url.indexOf('.') > -1) {
@@ -466,6 +466,8 @@ function SetupTicketProperties(order) {
             }
             window.location = url + 'NoTicketAccess.html';
             return;
+        } else if (info.faults.length > 0) {
+            invalidStatus(info.Ticket.TicketStatusID);
         }
         _ticketInfo = info;
         _ticketID = info.Ticket.TicketID;
@@ -3667,6 +3669,10 @@ var SetupDueDateField = function (duedate) {
 
 var SetupStatusField = function (StatusId) {
     var statuses = window.parent.Ts.Cache.getNextStatuses(StatusId);
+
+    console.log(statuses);
+
+
     _ticketCurrStatus = StatusId;
     if ($('#ticket-status').length) {
         $("#ticket-status").selectize({
@@ -3722,6 +3728,9 @@ var SetupStatusField = function (StatusId) {
             }
         }
         selectize.addItem(StatusId, true);
+
+
+        // MARKER2
     }
 }
 
@@ -5787,3 +5796,33 @@ function Unsubscribe() {
 function taskCheckBox(id,status) {
     document.getElementById('task-' + id).checked = (status) ? true : false;
 }
+
+
+
+
+
+
+
+
+
+// Invalid Ticket Status.
+function invalidStatus (StatusId) {
+    teamsupport.modals.overlay.show();
+    $('#modal').html(Handlebars.templates['invalid']);
+    teamsupport.modals.modal.show('#modal');
+    var statuses = window.parent.Ts.Cache.getNextStatuses(StatusId);
+    $.each(statuses, function(key, status) {
+        console.log(key);
+        $('<option>').text(status.Name).attr('value', status.TicketStatusID).appendTo('#newStatus');
+    });
+}
+
+$(document).on('click', '#updateStatus', function (e) {
+    var newStatus = $('#newStatus').val();
+    alert('Update Status: ' + _ticketID + ' / ' + newStatus);
+    window.parent.Ts.Services.Tickets.SetTicketStatus(_ticketID, newStatus, function (result) {
+        if (result !== null) {
+            parent.document.getElementById(window.frameElement.id).contentDocument.location.reload(true);
+        }
+    });
+});

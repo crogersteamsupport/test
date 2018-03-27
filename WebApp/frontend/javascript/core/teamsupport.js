@@ -33,7 +33,47 @@ this.module('teamsupport', function() {
         }
     });
 
+    this.module('modals', function() {
+
+        this.module('overlay', function() {
+            this.show = function() {
+                if ($('#overlay').is(':hidden')) {
+                    $('#overlay').fadeIn("fast");
+                }
+            }
+            this.hide = function() {
+                if ($('#overlay').is(':visible')) {
+                    $('#overlay').fadeOut("fast");
+                }
+            }
+        });
+
+        this.module('modal', function() {
+            this.show = function(id) {
+                if ($(id).is(':hidden')) {
+                    $(id).slideToggle();
+                    if ($(id).is(':visible')) {
+                        teamsupport.modals.overlay.show();
+                    }
+                }
+            }
+            this.hide = function(id) {
+                if ($(id).is(':visible')) {
+                    $(id).slideToggle();
+                }
+            }
+        });
+
+    });
+
 });
+
+// CLOSE MODAL.
+$(document).on('click tap', '#overlay, .fa.close, #btn-cancel', function(e) {
+    teamsupport.modals.overlay.hide();
+    $('#modal').empty().slideToggle('fast');
+});
+
 
 // AUTOGROW.
 $.fn.autogrow = function (e) {
