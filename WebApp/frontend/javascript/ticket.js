@@ -5654,18 +5654,8 @@ function watson (ticketnumber) {
         window.parent.Ts.Services.TicketPage.WatsonTicket(ticketid, function (result) {
             if (result != 'negative' && result != 'nothing' && result != 'hidden') {
                 var data = jQuery.parseJSON(result);
-                var score = data.TicketSentimentScore;
-                if(score < 300)
-                    $('#watson').append("<img class=\"likestar\" src=\"../images/icons/GuageMeterVeryLow.png\">");
-                else if (score < 500)
-                    $('#watson').append("<img class=\"likestar\" src=\"../images/icons/GuageMeterLow.png\">");
-                else if (score < 700)
-                    $('#watson').append("<img class=\"likestar\" src=\"../images/icons/GuageMeterHigh.png\">");
-                else
-                    $('#watson').append("<img class=\"likestar\" src=\"../images/icons/GuageMeterVeryHigh.png\">");
-
                 var display = [];
-                display.push(score + " - ");
+                display.push(data.TicketSentimentScore + " - ");
                 if(data.Sad) display.push("Sad");
                 if(data.Frustrated) display.push("Frustrated");
                 if(data.Satisfied) display.push("Satisfied");
