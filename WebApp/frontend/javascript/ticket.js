@@ -2878,7 +2878,7 @@ function AddAssociatedTickets(Tickets) {
 function SetupRemindersSection() {
     AddReminders(_ticketInfo.Reminders);
     if ($('#ticket-reminder-who').length) {
-        $('#ticket-reminder-date').datetimepicker({ useCurrent: true, format: 'MM/DD/YYYY hh:mm A', defaultDate: new Date() });
+        $('#ticket-reminder-date').datetimepicker({ useCurrent: true, format: dateFormat + ' hh:mm A', defaultDate: new Date() });
 
         var $reminderSelect = $('#ticket-reminder-who').selectize({
             valueField: 'id',
@@ -2915,7 +2915,7 @@ function SetupRemindersSection() {
 
         $('#ticket-reminder-save').click(function (e) {
             var selectizeControl = $reminderSelect[0].selectize;
-            var date = window.parent.Ts.Utils.getMsDate($('#ticket-reminder-date').val());
+            var date = window.parent.Ts.Utils.getMsDate(moment($('#ticket-reminder-date').val(), dateFormat + ' hh:mm A').format('MM/DD/YYYY hh:mm A'));
             var userid = selectizeControl.getValue();
             if (userid == "") {
                 $('#ticket-reminder-who').parent().addClass('has-error').removeClass('has-success');
