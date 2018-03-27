@@ -30,6 +30,9 @@ namespace WatsonToneAnalyzer
     {
         const string EVENT_SOURCE = "Application";
 
+        /// <summary>
+        /// Record used in rolling up the sentiment scores for the ticket
+        /// </summary>
         class MaxActionSentimentScore
         {
             public int ActionID;
@@ -43,7 +46,7 @@ namespace WatsonToneAnalyzer
         /// </summary>
         static public void GetAction()
         {
-            //_lock.WaitOne();
+            //StressTest();
 
             // without this the HTTP message to Watson returns 405 - failure on send
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
@@ -93,6 +96,27 @@ namespace WatsonToneAnalyzer
 
         }
 
+        static void StressTest()
+        {
+            string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (DataContext db = new DataContext(connection))
+            {
+                Stopwatch stopwatch = new Stopwatch();
+                // get all the ticket IDs from ActionSentiments
+                Table<ActionSentiment> sentiments = db.GetTable<ActionSentiment>();
+                IQueryable<int> ticketIDs = (from sentiment in sentiments select sentiment.TicketID).Distinct();
+                foreach (int ticketID in ticketIDs)
+                {
+                    stopwatch.Reset();
+                    stopwatch.Start();
+                    TicketSentimentStrategy(ticketID, true);
+                    stopwatch.Stop();
+                    Console.WriteLine(stopwatch.ElapsedMilliseconds);
+                }
+            }
+        }
+
         /// <summary>
         /// Callback on insert of Watson results - using the transaction submitted but NOT committed
         /// 
@@ -100,16 +124,15 @@ namespace WatsonToneAnalyzer
         /// Use Net Promoter score (promoters - detractors), normalized to [0, 1000] where 500 is neutral
         /// </summary>
         /// <param name="transaction">data associated with the watson transaction</param>
-        static void TicketSentimentStrategy(int ticketID, bool isAgent, DataContext db)
+        static void TicketSentimentStrategy(int ticketID, bool isAgent)
         {
             try
             {
-                // find all the ticket MAX sentiments
-                //int ticketID = transaction._sentiment.TicketID;
-                //bool isAgent = transaction._sentiment.IsAgent;
-                //DataContext db = transaction._db;
-
-                string query = @"SELECT m.ActionID, s.SentimentID, m.MaxSentimentScore, t.SentimentMultiplier
+                string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (DataContext db = new DataContext(connection))
+                {
+                    string query = @"SELECT m.ActionID, s.SentimentID, m.MaxSentimentScore, t.SentimentMultiplier
                                         FROM (
                                             SELECT a.ActionID, a.ActionSentimentID, MAX(s.SentimentScore) AS MaxSentimentScore
                                             FROM ActionSentiments a
@@ -120,54 +143,55 @@ namespace WatsonToneAnalyzer
                                         INNER JOIN ActionSentimentScores AS s ON m.ActionSentimentID=s.ActionSentimentID AND m.MaxSentimentScore=s.SentimentScore
                                         INNER JOIN ToneSentiments AS t ON t.SentimentID=s.SentimentID
                                         GROUP BY m.ActionID, s.SentimentID, m.MaxSentimentScore, t.SentimentMultiplier";
-                string fullQuery = string.Format(query, ticketID, isAgent ? "1" : "0");
-                var result = db.ExecuteQuery<MaxActionSentimentScore>(fullQuery);
-                //var result = db.ExecuteQuery<MaxActionSentimentScore>(query, ticketID, isAgent ? "1" : "0");  // this throws an exception on converstion of isAgent to a bit?
+                    string fullQuery = string.Format(query, ticketID, isAgent ? "1" : "0");
+                    var result = db.ExecuteQuery<MaxActionSentimentScore>(fullQuery);
+                    //var result = db.ExecuteQuery<MaxActionSentimentScore>(query, ticketID, isAgent ? "1" : "0");  // this throws an exception on converstion of isAgent to a bit?
 
-                // attach to the ticket score
-                Table<TicketSentiments> ticketScoresTable = db.GetTable<TicketSentiments>();
-                TicketSentiments ticketSentimentScore = (from u in ticketScoresTable where u.TicketID == ticketID select u).FirstOrDefault();
-                if (ticketSentimentScore == null)
-                {
-                    ticketSentimentScore = new TicketSentiments()
+                    // attach to the ticket score
+                    Table<TicketSentiments> ticketScoresTable = db.GetTable<TicketSentiments>();
+                    TicketSentiments ticketSentimentScore = (from u in ticketScoresTable where u.TicketID == ticketID select u).FirstOrDefault();
+                    if (ticketSentimentScore == null)
                     {
-                        TicketID = ticketID,
-                        IsAgent = isAgent,
-                        TicketSentimentScore = 0,
-                        Sad = false,
-                        Frustrated = false,
-                        Satisfied = false,
-                        Excited = false,
-                        Polite = false,
-                        Impolite = false,
-                        Sympathetic = false
-                    };
-                    ticketScoresTable.InsertOnSubmit(ticketSentimentScore);
-                }
-
-                // calculate a normalized ticket sentiment
-                double ticketSentiment = 0;
-                {
-                    int count = 0;
-                    List<int> sentiments = new List<int>();
-                    foreach (MaxActionSentimentScore record in result)
-                    {
-                        ++count;
-                        if (record.SentimentID == 0)    // no sentiment found
-                            continue;
-
-                        ticketSentiment += Convert.ToDouble(record.SentimentMultiplier) * Convert.ToDouble(record.MaxSentimentScore);
-                        ticketSentimentScore.SetSentimentID(record.SentimentID);
+                        ticketSentimentScore = new TicketSentiments()
+                        {
+                            TicketID = ticketID,
+                            IsAgent = isAgent,
+                            TicketSentimentScore = 0,
+                            Sad = false,
+                            Frustrated = false,
+                            Satisfied = false,
+                            Excited = false,
+                            Polite = false,
+                            Impolite = false,
+                            Sympathetic = false
+                        };
+                        ticketScoresTable.InsertOnSubmit(ticketSentimentScore);
                     }
 
-                    if (count != 0)
-                        ticketSentiment /= count;  // normalize to +- 100%
-                    ticketSentiment = 500 * ticketSentiment + 500;  // normalize to [0, 1000]
-                }
+                    // calculate a normalized ticket sentiment
+                    double ticketSentiment = 0;
+                    {
+                        int count = 0;
+                        List<int> sentiments = new List<int>();
+                        foreach (MaxActionSentimentScore record in result)
+                        {
+                            ++count;
+                            if (record.SentimentID == 0)    // no sentiment found
+                                continue;
 
-                // submit record
-                ticketSentimentScore.TicketSentimentScore = (int)Math.Round(ticketSentiment);
-                db.SubmitChanges();
+                            ticketSentiment += Convert.ToDouble(record.SentimentMultiplier) * Convert.ToDouble(record.MaxSentimentScore);
+                            ticketSentimentScore.SetSentimentID(record.SentimentID);
+                        }
+
+                        if (count != 0)
+                            ticketSentiment /= count;  // normalize to +- 100%
+                        ticketSentiment = 500 * ticketSentiment + 500;  // normalize to [0, 1000]
+                    }
+
+                    // submit record
+                    ticketSentimentScore.TicketSentimentScore = (int)Math.Round(ticketSentiment);
+                    db.SubmitChanges();
+                }
             }
             catch (SqlException e1)
             {
@@ -210,11 +234,10 @@ namespace WatsonToneAnalyzer
                     // 3. delete the ActionToAnalyze
                     transaction.RecordWatsonResults(response.First, actionToAnalyze);
                     transaction.Commit();
-
-                    // update the corresponding ticket
-                    TicketSentimentStrategy(actionToAnalyze.TicketID, actionToAnalyze.IsAgent, transaction.DataContext);
                 }
 
+                // update the corresponding ticket sentiment
+                TicketSentimentStrategy(actionToAnalyze.TicketID, actionToAnalyze.IsAgent);
             }
             catch (Exception e2)
             {

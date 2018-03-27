@@ -5654,16 +5654,25 @@ function watson (ticketnumber) {
         window.parent.Ts.Services.TicketPage.WatsonTicket(ticketid, function (result) {
             if (result != 'negative' && result != 'nothing' && result != 'hidden') {
                 var data = jQuery.parseJSON(result);
-                var sentiments = { 1:'Sad ', 2:'Frustrated ', 3:'Satisfied ', 4:'Excited ', 5:'Polite ', 6:'Impolite ', 7: 'Sympathetic ' }
+                var score = data.TicketSentimentScore;
+                if(score < 300)
+                    $('#watson').append("<img class=\"likestar\" src=\"../images/icons/GuageMeterVeryLow.png\">");
+                else if (score < 500)
+                    $('#watson').append("<img class=\"likestar\" src=\"../images/icons/GuageMeterLow.png\">");
+                else if (score < 700)
+                    $('#watson').append("<img class=\"likestar\" src=\"../images/icons/GuageMeterHigh.png\">");
+                else
+                    $('#watson').append("<img class=\"likestar\" src=\"../images/icons/GuageMeterVeryHigh.png\">");
+
                 var display = [];
-                display.push(500 + Math.round(data.TicketSentimentIndex * 500) + " - ");
-                $.each(data.watson, function(key,sentiment) {
-                    if (sentiment.SentimentID > 0)
-                        display.push(sentiments[sentiment.SentimentID]);
-                });
-                //$('#watson').append("<link href='https://fonts.googleapis.com/css?family=Josefin+Slab' rel='stylesheet' type='text/css'><div class=\"gauge\"><ul class=\"meter\"><li class=\"low\"></li><li class=\"normal\"></li><li class=\"high\"></li></ul><div class=\"dial\"><div class=\"inner\"><div class=\"arrow\"></div></div></div><div class=\"value\">0%</div></div><script type=\"text/ javascript\" src=\"https://code.jquery.com/jquery-latest.js\"></script>");
-                $('#watson').append("<img class=\"likestar\" src=\"../images/icons/GuageMeter1.png\">");
-                //$('#watson').append("<div class=\"gauge\"><ul class=\"meter\"><li class=\"low\"></li><li class=\"normal\"></li><li class=\"high\"></li></ul><div class=\"dial\"><div class=\"inner\"><div class=\"arrow\"></div></div></div><div class=\"value\">0%</div></div>");
+                display.push(score + " - ");
+                if(data.Sad) display.push("Sad");
+                if(data.Frustrated) display.push("Frustrated");
+                if(data.Satisfied) display.push("Satisfied");
+                if(data.Excited) display.push("Excited");
+                if(data.Polite) display.push("Polite");
+                if(data.Impolite) display.push("Impolite");
+                if(data.Sympathetic) display.push("Sympathetic");
                 $('#watson').append(" " + display.join('   '));
             }
         });

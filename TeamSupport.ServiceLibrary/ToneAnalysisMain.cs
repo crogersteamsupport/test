@@ -82,7 +82,7 @@ namespace WatsonToneAnalyzer
             // onstart code here
 
             //ActionsToAnalyzer.GetHTML();
-            System.Threading.Thread.Sleep(1000);
+            //System.Threading.Thread.Sleep(1000);
             WatsonAnalyzer.GetAction();
 
         }

@@ -7,6 +7,8 @@ using System.Data.SqlClient;
 using System.Dynamic;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json;
+using System.Data.Linq;
+using TeamSupport.Data.BusinessObjects;
 
 namespace TeamSupport.Data
 {
@@ -822,7 +824,13 @@ WHERE a.SalesForceID = @SalesForceID";
                 using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
                 {
                     connection.Open();
-                    return Ticket.BruteForce.GetSentimentIndex(connection, ticketID);
+                    DataContext db = new DataContext(connection);
+                    Table<TicketSentiments> ticketScoresTable = db.GetTable<TicketSentiments>();
+                    TicketSentiments ticketSentimentScore = (from u in ticketScoresTable where u.TicketID == ticketID select u).FirstOrDefault();
+                    if (ticketSentimentScore == null)
+                        return "negative";
+
+                    return JsonConvert.SerializeObject(ticketSentimentScore);
                 }
             }
             catch (SqlException e)
