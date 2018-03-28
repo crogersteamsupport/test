@@ -19,6 +19,7 @@ using System.Configuration;
 using System.Collections.Specialized;
 using System.Data.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace WatsonToneAnalyzer
 {
@@ -35,8 +36,8 @@ namespace WatsonToneAnalyzer
         /// </summary>
         static public void GetAction()
         {
-            //StressTest();
-            int orgSentiment = OrganizationSentiment(1078);
+            //TicketSentiment.StressTest();
+            //int orgSentiment = TicketSentiment.OrganizationSentiment(1078);
 
 
             // without this the HTTP message to Watson returns 405 - failure on send
@@ -66,8 +67,7 @@ namespace WatsonToneAnalyzer
                                 continue;
                             }
 
-                            //EventLog.WriteEntry(EVENT_SOURCE, "Posting to Watson");
-                            // note that ActionDescription already contains Watson appropriate text (no HTML, no special characters, Length<500, etc...)
+                            // send them all off to watson - async
                             HTTP_POST(actionToAnalyze.ActionID.ToString(), actionToAnalyze.WatsonText(), (result) => PublishToTable(result, actionToAnalyze));
                         }
                     }
@@ -77,7 +77,6 @@ namespace WatsonToneAnalyzer
             {
                 EventLog.WriteEntry(EVENT_SOURCE, "There was an issues with the sql server:" + e1.ToString() + " ----- STACK: " + e1.StackTrace.ToString());
                 Console.WriteLine(e1.ToString());
-                throw (e1);
             }
             catch (Exception e2)
             {
@@ -86,27 +85,6 @@ namespace WatsonToneAnalyzer
             }
             //finally()
 
-        }
-
-        static void StressTest()
-        {
-            string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            using (DataContext db = new DataContext(connection))
-            {
-                Stopwatch stopwatch = new Stopwatch();
-                // get all the ticket IDs from ActionSentiments
-                Table<ActionSentiment> sentimentsTable = db.GetTable<ActionSentiment>();
-                IQueryable<ActionSentiment> sentiments = (from sentiment in sentimentsTable select sentiment).Distinct();
-                foreach (ActionSentiment sentiment in sentiments)
-                {
-                    //stopwatch.Reset();
-                    //stopwatch.Start();
-                    TicketSentiment.TicketSentimentStrategy(sentiment.TicketID, sentiment.OrganizationID, true);
-                    //stopwatch.Stop();
-                    //Console.WriteLine(stopwatch.ElapsedMilliseconds);
-                }
-            }
         }
 
         /// <summary>

@@ -84,7 +84,7 @@ namespace TeamSupport.Data.BusinessObjects
                     OrganizationID = creator.OrganizationID,
                     IsAgent = creatorCompany.OrganizationID == account.OrganizationID,
                     ActionDescription = a.Description,
-                    DateCreated = DateTime.Now
+                    DateCreated = a.DateCreated
                 };
 
                 // SUCCESS! create the ActionToAnalyze

@@ -72,7 +72,7 @@ namespace WatsonToneAnalyzer
             }
         }
 
-        static int OrganizationSentiment(int organizationID)
+        public static int OrganizationSentiment(int organizationID)
         {
             double result = 0;
             try
@@ -117,7 +117,6 @@ namespace WatsonToneAnalyzer
         {
             try
             {
-                _mutex.WaitOne();
                 string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (DataContext db = new DataContext(connection))
@@ -138,6 +137,7 @@ namespace WatsonToneAnalyzer
                     //var result = db.ExecuteQuery<MaxActionSentimentScore>(query, ticketID, isAgent ? "1" : "0");  // this throws an exception on converstion of isAgent to a bit?
 
                     // attach to the ticket score
+                    _mutex.WaitOne();   // NO DUPLICATES!! (note that the slow part is above)
                     Table<TicketSentiment> ticketScoresTable = db.GetTable<TicketSentiment>();
                     TicketSentiment ticketSentimentScore = (from u in ticketScoresTable where u.TicketID == ticketID select u).FirstOrDefault();
                     if (ticketSentimentScore == null)
@@ -197,6 +197,29 @@ namespace WatsonToneAnalyzer
             finally
             {
                 _mutex.ReleaseMutex();
+            }
+        }
+
+        public static void StressTest()
+        {
+            try
+            {
+                string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (DataContext db = new DataContext(connection))
+                {
+                    // get all the ticket IDs from ActionSentiments
+                    Table<ActionSentiment> sentimentsTable = db.GetTable<ActionSentiment>();
+                    IQueryable<ActionSentiment> sentiments = (from sentiment in sentimentsTable select sentiment).Distinct();
+                    foreach (ActionSentiment sentiment in sentiments)
+                    {
+                        var t = Task.Run(() => TicketSentiment.TicketSentimentStrategy(sentiment.TicketID, sentiment.OrganizationID, true));
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.ToString());
             }
         }
 
