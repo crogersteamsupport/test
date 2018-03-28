@@ -53,7 +53,7 @@ namespace WatsonToneAnalyzer
                 }
                 WatsonAnalyzer.GetAction();
                 sw.Stop();
-                //EventLog.WriteEntry("Application", "Elapsed =" + sw.Elapsed);
+                //EventLog.WriteEntry(EVENT_SOURCE, "Elapsed =" + sw.Elapsed);
             }
 
         }

@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.Linq.Mapping;
+using System.Data.SqlClient;
+using System.Data.Linq;
+using System.Diagnostics;
 
 namespace TeamSupport.Data.BusinessObjects
 {
@@ -64,6 +67,26 @@ namespace TeamSupport.Data.BusinessObjects
                     Sympathetic = true;
                     break;
             }
+        }
+
+        static int OrganizationSentiment(int organizationID)
+        {
+            double result = 0;
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(LoginUser.GetConnectionString(-1)))
+                using (DataContext db = new DataContext(connection))
+                {
+                    Table<TicketSentiment> ticketSentimentTable = db.GetTable<TicketSentiment>();
+                    result = (from sentiment in ticketSentimentTable where (sentiment.OrganizationID == organizationID) select sentiment.TicketSentimentScore).Average();
+                }
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("Application", "Exception caught at OrganizationSentiment:" + e.Message + " ----- STACK: " + e.StackTrace.ToString());
+                Console.WriteLine(e.ToString());
+            }
+            return (int)Math.Round(result);
         }
     }
 }

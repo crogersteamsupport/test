@@ -20,6 +20,7 @@ namespace WatsonToneAnalyzer
     /// </summary>
     public class ActionsToAnalyzer
     {
+        const string EVENT_SOURCE = "Application";
 
         public static void GetHTML()
         {
@@ -75,8 +76,7 @@ namespace WatsonToneAnalyzer
             }
             catch (Exception e)
             {
-                string sSource = "Application";
-                EventLog.WriteEntry(sSource, "Exception while reading from action table:" + e.ToString() + " ----- STACK: " + e.StackTrace.ToString());
+                EventLog.WriteEntry(EVENT_SOURCE, "Exception while reading from action table:" + e.ToString() + " ----- STACK: " + e.StackTrace.ToString());
                 Console.WriteLine(e.ToString());
             }
         }
