@@ -72,27 +72,6 @@ namespace WatsonToneAnalyzer
             }
         }
 
-        public static int OrganizationSentiment(int organizationID)
-        {
-            double result = 0;
-            try
-            {
-                string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                using (DataContext db = new DataContext(connection))
-                {
-                    Table<TicketSentiment> ticketSentimentTable = db.GetTable<TicketSentiment>();
-                    result = (from sentiment in ticketSentimentTable where (sentiment.OrganizationID == organizationID) select sentiment.TicketSentimentScore).Average();
-                }
-            }
-            catch (Exception e)
-            {
-                EventLog.WriteEntry(EVENT_SOURCE, "Exception caught at OrganizationSentiment:" + e.Message + " ----- STACK: " + e.StackTrace.ToString());
-                Console.WriteLine(e.ToString());
-            }
-            return (int)Math.Round(result);
-        }
-
         /// <summary>
         /// Record used in rolling up the sentiment scores for the ticket
         /// </summary>
@@ -115,12 +94,14 @@ namespace WatsonToneAnalyzer
         /// <param name="transaction">data associated with the watson transaction</param>
         public static void TicketSentimentStrategy(int ticketID, int organizationID, bool isAgent)
         {
+            //Stopwatch stopwatch = new Stopwatch();
+            //stopwatch.Start();
             try
             {
                 string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (DataContext db = new DataContext(connection))
-                {
+                {                    
                     string query = @"SELECT m.ActionID, s.SentimentID, m.MaxSentimentScore, t.SentimentMultiplier
                                         FROM (
                                             SELECT a.ActionID, a.ActionSentimentID, MAX(s.SentimentScore) AS MaxSentimentScore
@@ -135,8 +116,10 @@ namespace WatsonToneAnalyzer
                     string fullQuery = string.Format(query, ticketID, isAgent ? "1" : "0");
                     var result = db.ExecuteQuery<MaxActionSentimentScore>(fullQuery);
                     //var result = db.ExecuteQuery<MaxActionSentimentScore>(query, ticketID, isAgent ? "1" : "0");  // this throws an exception on converstion of isAgent to a bit?
+                    //Console.WriteLine("1 " + stopwatch.ElapsedMilliseconds);
 
                     // attach to the ticket score
+                    bool newTicket = false;
                     _mutex.WaitOne();   // NO DUPLICATES!! (note that the slow part is above)
                     Table<TicketSentiment> ticketScoresTable = db.GetTable<TicketSentiment>();
                     TicketSentiment ticketSentimentScore = (from u in ticketScoresTable where u.TicketID == ticketID select u).FirstOrDefault();
@@ -157,6 +140,7 @@ namespace WatsonToneAnalyzer
                             Sympathetic = false
                         };
                         ticketScoresTable.InsertOnSubmit(ticketSentimentScore);
+                        newTicket = true;
                     }
 
                     // calculate a normalized ticket sentiment
@@ -180,8 +164,13 @@ namespace WatsonToneAnalyzer
                     }
 
                     // submit record
+                    int oldScore = ticketSentimentScore.TicketSentimentScore;
                     ticketSentimentScore.TicketSentimentScore = (int)Math.Round(ticketSentiment);
                     db.SubmitChanges();
+                    if(newTicket)
+                        OrganizationSentiment.AddTicket(ticketSentimentScore, db);
+                    else
+                        OrganizationSentiment.UpdateTicket(ticketSentimentScore, oldScore, db);
                 }
             }
             catch (SqlException e1)
@@ -197,9 +186,13 @@ namespace WatsonToneAnalyzer
             finally
             {
                 _mutex.ReleaseMutex();
+                //Console.WriteLine(stopwatch.ElapsedMilliseconds);
             }
+
+            ++ticketStrategyCount;
         }
 
+        static int ticketStrategyCount = 0;
         public static void StressTest()
         {
             try
@@ -213,6 +206,7 @@ namespace WatsonToneAnalyzer
                     IQueryable<ActionSentiment> sentiments = (from sentiment in sentimentsTable select sentiment).Distinct();
                     foreach (ActionSentiment sentiment in sentiments)
                     {
+                        //TicketSentiment.TicketSentimentStrategy(sentiment.TicketID, sentiment.OrganizationID, true);
                         var t = Task.Run(() => TicketSentiment.TicketSentimentStrategy(sentiment.TicketID, sentiment.OrganizationID, true));
                     }
                 }

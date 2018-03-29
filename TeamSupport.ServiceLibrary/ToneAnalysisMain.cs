@@ -35,32 +35,37 @@ namespace WatsonToneAnalyzer
             {
                 Program.Stop();
             }
-            int _timerCount = 0;
 
+            int _timerCount = 0;
+            private int eventId = 1;
             public void OnTimer(object sender, System.Timers.ElapsedEventArgs args)
             {
-                Stopwatch sw = new Stopwatch();
-
-                sw.Start();
                 // TODO: Insert monitoring activities here.  
 
                 // only do the Action table query every 20 minutes to catch what we might have missed?
                 if (++_timerCount > 20)
                 {
+                    //_eventLog.WriteEntry("Query for ActionsToAnalyze", EventLogEntryType.Information, eventId++);
                     ActionsToAnalyzer.GetHTML();
                     _timerCount = 0;
-                    System.Threading.Thread.Sleep(1000);
+                    //System.Threading.Thread.Sleep(1000);
                 }
-                WatsonAnalyzer.GetAction();
-                sw.Stop();
+                WatsonAnalyzer.AnalyzeActions();
                 //EventLog.WriteEntry(EVENT_SOURCE, "Elapsed =" + sw.Elapsed);
             }
 
         }
         #endregion
 
+        //private static EventLog _eventLog = new EventLog();
+
         static void Main(string[] args)
         {
+            //if (!EventLog.SourceExists("WatsonToneAnalyzer"))
+            //    EventLog.CreateEventSource("WatsonToneAnalyzer", "MyNewLog");
+            //_eventLog.Source = "WatsonToneAnalyzer";
+            //_eventLog.Log = "MyNewLog";
+
             if (!Environment.UserInteractive)
                 // running as service
                 using (var service = new WatsonToneAnalyzer())
@@ -79,16 +84,17 @@ namespace WatsonToneAnalyzer
 
         private static void Start(string[] args)
         {
-            // onstart code here
+            //_eventLog.WriteEntry("In OnStart");
 
             //ActionsToAnalyzer.GetHTML();
             //System.Threading.Thread.Sleep(1000);
-            WatsonAnalyzer.GetAction();
+            WatsonAnalyzer.AnalyzeActions();
 
         }
 
         private static void Stop()
         {
+            //_eventLog.WriteEntry("In OnStop");
             // onstop code here
         }
     }

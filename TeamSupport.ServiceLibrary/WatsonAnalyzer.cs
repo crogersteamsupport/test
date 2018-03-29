@@ -34,7 +34,7 @@ namespace WatsonToneAnalyzer
         /// <summary>
         /// Get the actions to analyze (dbo.ActionToAnalyze) and post to Watson on the BlueMix account
         /// </summary>
-        static public void GetAction()
+        static public void AnalyzeActions()
         {
             //TicketSentiment.StressTest();
             //int orgSentiment = TicketSentiment.OrganizationSentiment(1078);
