@@ -531,114 +531,51 @@ namespace TSWebServices
         [WebMethod]
         public KnowledgeBaseCategoryTicketsProxy GetKnowledgeBaseSearchResults(string searchTerm, int firstItemIndex, int pageSize)
         {
+
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            List<SqlDataRecord> dtSearchTicketsResultsList = TicketsView.GetSearchResultsList(searchTerm, loginUser);
 
             KnowledgeBaseCategoryTicketsProxy result = new KnowledgeBaseCategoryTicketsProxy();
             result.CategoryName = "Search results";
             List<KnowledgeBaseCategoryTicketsItemProxy> resultItems = new List<KnowledgeBaseCategoryTicketsItemProxy>();
-            if (dtSearchTicketsResultsList.Count > 0)
+
+            SqlCommand command = new SqlCommand();
+            command.CommandText = "Tickets_KBSearch";
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("@FromIndex", firstItemIndex);
+            command.Parameters.AddWithValue("@ToIndex", pageSize);
+            command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+            command.Parameters.AddWithValue("@SearchTerm", cleanSearchTerm(searchTerm));
+
+            DataTable table = new DataTable();
+            using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
             {
-                SqlCommand command = new SqlCommand();
-                SqlParameter dtSearchTicketsResultsTable = new SqlParameter("@dtSearchTicketsResultsTable", SqlDbType.Structured);
-                dtSearchTicketsResultsTable.TypeName = "dtSearch_results_tbltype";
-                dtSearchTicketsResultsTable.Value = dtSearchTicketsResultsList;
-                command.Parameters.Add(dtSearchTicketsResultsTable);
-
-                string query = @"
-          DECLARE @TempItems
-          TABLE
-          (
-            ID            int IDENTITY,
-            TicketID      int
-          )
-
-          INSERT INTO @TempItems
-          (
-            TicketID
-          )
-          SELECT
-            utv.TicketID
-          FROM
-            dbo.UserTicketsView utv
-            JOIN @dtSearchTicketsResultsTable dtrt
-              ON utv.TicketID = dtrt.recordID
-          WHERE
-            utv.OrganizationID = @OrganizationID
-            AND utv.IsKnowledgeBase = 1
-            AND utv.ViewerID = @ViewerID
-          ORDER BY
-            utv.DateModified DESC
-
-          SET @resultsCount = @@RowCount
-
-          SELECT
-            t.TicketID
-            , t.Name
-          FROM
-            @TempItems ti
-            LEFT JOIN dbo.Tickets t
-              ON ti.TicketID = t.TicketID
-          WHERE
-            ti.ID BETWEEN @FromIndex AND @toIndex
-          ORDER BY
-            ti.ID
-          ";
-
-                command.CommandText = query;
-                command.CommandType = CommandType.Text;
-
-                SqlParameter resultsCount = new SqlParameter("@resultsCount", SqlDbType.Int)
-                {
-                    Direction = ParameterDirection.Output
-                };
-                command.Parameters.Add(resultsCount);
-
-                command.Parameters.AddWithValue("@FromIndex", firstItemIndex + 1);
-                command.Parameters.AddWithValue("@ToIndex", firstItemIndex + pageSize);
-                command.Parameters.AddWithValue("@OrganizationID", TSAuthentication.OrganizationID);
-                command.Parameters.AddWithValue("@ViewerID", loginUser.UserID);
-
-                DataTable table = new DataTable();
-                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
-                {
-                    command.Connection = connection;
-                    connection.Open();
-                    using (SqlDataAdapter adapter = new SqlDataAdapter(command))
-                    {
-                        try
-                        {
-                            adapter.Fill(table);
-                            if (resultsCount.Value != DBNull.Value)
-                            {
-                                result.Count = (int)resultsCount.Value;
-                            }
-                        }
-                        catch (Exception e)
-                        {
-
-                        }
-                    }
-                }
-
-                foreach (DataRow row in table.Rows)
-                {
-                    KnowledgeBaseCategoryTicketsItemProxy resultItem = new KnowledgeBaseCategoryTicketsItemProxy();
-
-                    resultItem.ID = (int)row["TicketID"];
-
-                    string fullLengthName = row["Name"].ToString();
-                    resultItem.Name = fullLengthName;
-
-                    resultItems.Add(resultItem);
+                command.Connection = connection;
+                connection.Open();
+                using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                {                   
+                    adapter.Fill(table);     
                 }
             }
 
+            foreach (DataRow row in table.Rows)
+            {
+                KnowledgeBaseCategoryTicketsItemProxy resultItem = new KnowledgeBaseCategoryTicketsItemProxy();
+
+                resultItem.ID = (int)row["TicketID"];
+
+                string fullLengthName = row["Name"].ToString();
+                resultItem.Name = fullLengthName;
+
+                resultItems.Add(resultItem);
+            }
+        
+
             result.Items = resultItems.ToArray();
-
             return result;
+        
         }
-
+        
         [WebMethod]
         public TicketTypeProxy[] GetTicketTypes()
         {
@@ -4740,8 +4677,18 @@ WHERE t.TicketID = @TicketID
             }
             return result;
         }
+        private static string cleanSearchTerm(string searchTerm)
+        {
+            searchTerm = searchTerm.Replace("\"", "").Replace("'", "");
+            if (!String.IsNullOrEmpty(searchTerm))
+                searchTerm = "\"" + searchTerm + "\"";
+
+            return searchTerm;
+        }
+
     }
 
+   
 
 
     [DataContract]
