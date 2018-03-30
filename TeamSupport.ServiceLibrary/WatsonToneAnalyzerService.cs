@@ -113,8 +113,8 @@ namespace WatsonToneAnalyzer
         {
             this._eventLog = new System.Diagnostics.EventLog();
             ((System.ComponentModel.ISupportInitialize)(this._eventLog)).BeginInit();
+            this.ServiceName = "WatsonToneAnalyzerService";
             ((System.ComponentModel.ISupportInitialize)(this._eventLog)).EndInit();
-
         }
     }
 }
