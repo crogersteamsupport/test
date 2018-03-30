@@ -7,55 +7,11 @@ using System.Linq;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
-using System.Configuration;
 
 namespace WatsonToneAnalyzer
 {
     public static class Program
     {
-        #region Nested classes to support running as service
-        public const string ServiceName = "WatsonToneAnalyzer";
-
-        public class WatsonToneAnalyzer : ServiceBase
-        {
-            public WatsonToneAnalyzer()
-            {
-                ServiceName = Program.ServiceName;
-            }
-
-            protected override void OnStart(string[] args)
-            {
-                System.Timers.Timer timer = new System.Timers.Timer();
-                timer.Interval = Convert.ToDouble(ConfigurationManager.AppSettings.Get("WatsonInterval"));
-                timer.Elapsed += new System.Timers.ElapsedEventHandler(this.OnTimer);
-                timer.Start();
-            }
-
-            protected override void OnStop()
-            {
-                Program.Stop();
-            }
-
-            int _timerCount = 0;
-            private int eventId = 1;
-            public void OnTimer(object sender, System.Timers.ElapsedEventArgs args)
-            {
-                // TODO: Insert monitoring activities here.  
-
-                // only do the Action table query every 20 minutes to catch what we might have missed?
-                if (++_timerCount > 20)
-                {
-                    //_eventLog.WriteEntry("Query for ActionsToAnalyze", EventLogEntryType.Information, eventId++);
-                    ActionsToAnalyzer.GetHTML();
-                    _timerCount = 0;
-                    //System.Threading.Thread.Sleep(1000);
-                }
-                WatsonAnalyzer.AnalyzeActions();
-                //EventLog.WriteEntry(EVENT_SOURCE, "Elapsed =" + sw.Elapsed);
-            }
-
-        }
-        #endregion
 
         //private static EventLog _eventLog = new EventLog();
 
@@ -68,7 +24,7 @@ namespace WatsonToneAnalyzer
 
             if (!Environment.UserInteractive)
                 // running as service
-                using (var service = new WatsonToneAnalyzer())
+                using (var service = new WatsonToneAnalyzerService())
                     ServiceBase.Run(service);
             else
             {
@@ -82,7 +38,7 @@ namespace WatsonToneAnalyzer
             }
         }
 
-        private static void Start(string[] args)
+        public static void Start(string[] args)
         {
             //_eventLog.WriteEntry("In OnStart");
 
@@ -92,7 +48,7 @@ namespace WatsonToneAnalyzer
 
         }
 
-        private static void Stop()
+        public static void Stop()
         {
             //_eventLog.WriteEntry("In OnStop");
             // onstop code here

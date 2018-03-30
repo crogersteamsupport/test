@@ -88,6 +88,9 @@
     <Compile Include="TicketSentiment.cs" />
     <Compile Include="ToneAnalysisMain.cs" />
     <Compile Include="WatsonAnalyzer.cs" />
+    <Compile Include="WatsonToneAnalyzerService.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="WatsonTransaction.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -108,6 +111,11 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="WatsonToneAnalyzerService.resx">
+      <DependentUpon>WatsonToneAnalyzerService.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
