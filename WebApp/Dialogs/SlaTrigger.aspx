@@ -199,7 +199,7 @@
                 option.innerHTML = dateText;
                 option.value = dateValue;
                 htmlSelect.appendChild(option);
-                AddToHidden(dateValue);
+                AddToHidden(datePicker.get_dateInput().get_selectedDate().localeFormat("MM/dd/yyyy"));
             }
 
             _reset = false;            

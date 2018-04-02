@@ -157,7 +157,7 @@
         if (item.userID) {
           appendContact(div, item);
         }
-        else {          
+        else {
           appendCompany(div, item);
         }
       }

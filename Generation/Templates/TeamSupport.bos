@@ -49231,6 +49231,23 @@
   </Fields>
   <Fields>
     <TableName>Users</TableName>
+    <FieldName>DisablePublic</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>Users</TableName>
     <FieldName>CanCreateProducts</FieldName>
     <CustomType>bool</CustomType>
     <IsReadOnly>false</IsReadOnly>

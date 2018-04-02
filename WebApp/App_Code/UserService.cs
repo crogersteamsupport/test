@@ -701,6 +701,18 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public bool SetRestrictUserPublicActions(int userID, bool value)
+        {
+          User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+          if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+          if (!TSAuthentication.IsSystemAdmin) return !value;
+
+          user.DisablePublic = value;
+          user.Collection.Save();
+          return user.DisablePublic;
+        }
+
+        [WebMethod]
         public bool SetAllowUserToEditAnyAction(int userID, bool value)
         {
           User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);

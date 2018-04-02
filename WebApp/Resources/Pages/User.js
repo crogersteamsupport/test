@@ -13,7 +13,7 @@ $(document).ready(function() {
 
 function onShow() {
     userPage.refresh();
-}
+};
 
 function DialogClosed(sender, args) {
     sender.remove_close(DialogClosed);
@@ -28,8 +28,11 @@ function ShowDialog(wnd) {
 
 UserPage = function() {
     var _user = null;
+
     $('button').button();
+
     $('a').addClass('ui-state-default ts-link');
+
     $('.ts-section').hover(function(e) {
         e.preventDefault();
         $(this).find('.user-profile-edit').show();
@@ -65,7 +68,7 @@ UserPage = function() {
                 return "Only assigned and tickets associated with specific customers";
                 break;
             default:
-                return '';
+                return "";
         }
     }
 
@@ -114,48 +117,49 @@ UserPage = function() {
         $('#userTimeZone').html(user.timeZoneDisplay == null ? 'None' : user.timeZoneDisplay);
         $('#userFontFamily').html(user.FontFamilyDescription);
         $('#userFontSize').html(user.FontSizeDescription);
-        $('#userRestrictFromEditingAnyActions').html((user.RestrictUserFromEditingAnyActions == true ? 'Enabled' : 'Disabled'));
-        $('#userCanBulkMerge').html((user.CanBulkMerge == true ? 'Enabled' : 'Disabled'));
-        $('#userDisableExporting').html((user.DisableExporting == true ? 'Enabled' : 'Disabled'));
-        $('#userAllowToEditAnyAction').html((user.AllowUserToEditAnyAction == true ? 'Enabled' : 'Disabled'));
-        $('#userCanPinAction').html((user.UserCanPinAction == true ? 'Enabled' : 'Disabled'));
-        $('#userTicketVisibility').html((user.ChangeTicketVisibility == true ? 'Enabled' : 'Disabled'));
-        $('#userCommunityVisibility').html((user.CanChangeCommunityVisibility == true ? 'Enabled' : 'Disabled'));
-        $('#userCanCreateCompany').html((user.CanCreateCompany == true ? 'Enabled' : 'Disabled'));
-        $('#userCanEditCompany').html((user.CanEditCompany == true ? 'Enabled' : 'Disabled'));
-        $('#userCanCreateContacts').html((user.CanCreateContact == true ? 'Enabled' : 'Disabled'));
-        $('#userCanEditContacts').html((user.CanEditContact == true ? 'Enabled' : 'Disabled'));
-        $('#userCanCreateAssets').html((user.CanCreateAsset == true ? 'Enabled' : 'Disabled'));
-        $('#userCanEditAssets').html((user.CanEditAsset == true ? 'Enabled' : 'Disabled'));
-        $('#userCanCreateProducts').html((user.CanCreateProducts == true ? 'Enabled' : 'Disabled'));
-        $('#userCanEditProducts').html((user.CanEditProducts == true ? 'Enabled' : 'Disabled'));
-        $('#userCanCreateVersions').html((user.CanCreateVersions == true ? 'Enabled' : 'Disabled'));
-        $('#userCanEditVersions').html((user.CanEditVersions == true ? 'Enabled' : 'Disabled'));
-        $('#userKBVisibility').html((user.ChangeKbVisibility == true ? 'Enabled' : 'Disabled'));
+        $('#userRestrictFromEditingAnyActions').html((user.RestrictUserFromEditingAnyActions == true ? 'Yes' : 'No'));
+        $('#userCanBulkMerge').html((user.CanBulkMerge == true ? 'Yes' : 'No'));
+        $('#userDisablePublic').html((user.DisablePublic == true ? 'Yes' : 'No'));
+        $('#userDisableExporting').html((user.DisableExporting == true ? 'Yes' : 'No'));
+        $('#userAllowToEditAnyAction').html((user.AllowUserToEditAnyAction == true ? 'Yes' : 'No'));
+        $('#userCanPinAction').html((user.UserCanPinAction == true ? 'Yes' : 'No'));
+        $('#userTicketVisibility').html((user.ChangeTicketVisibility == true ? 'Yes' : 'No'));
+        $('#userCommunityVisibility').html((user.CanChangeCommunityVisibility == true ? 'Yes' : 'No'));
+        $('#userCanCreateCompany').html((user.CanCreateCompany == true ? 'Yes' : 'No'));
+        $('#userCanEditCompany').html((user.CanEditCompany == true ? 'Yes' : 'No'));
+        $('#userCanCreateContacts').html((user.CanCreateContact == true ? 'Yes' : 'No'));
+        $('#userCanEditContacts').html((user.CanEditContact == true ? 'Yes' : 'No'));
+        $('#userCanCreateAssets').html((user.CanCreateAsset == true ? 'Yes' : 'No'));
+        $('#userCanEditAssets').html((user.CanEditAsset == true ? 'Yes' : 'No'));
+        $('#userCanCreateProducts').html((user.CanCreateProducts == true ? 'Yes' : 'No'));
+        $('#userCanEditProducts').html((user.CanEditProducts == true ? 'Yes' : 'No'));
+        $('#userCanCreateVersions').html((user.CanCreateVersions == true ? 'Yes' : 'No'));
+        $('#userCanEditVersions').html((user.CanEditVersions == true ? 'Yes' : 'No'));
+        $('#userKBVisibility').html((user.ChangeKbVisibility == true ? 'Yes' : 'No'));
         $('#userTicketRights').html(userRightsToString(user.TicketRights)).data('o', user.TicketRights);
         $('#userProductFamiliesRights').html(userProductFamiliesRightsToString(user.ProductFamiliesRights)).data('o', user.ProductFamiliesRights);
         if (window.parent.parent.Ts.System.Organization.UseProductFamilies && window.parent.parent.Ts.System.User.IsSystemAdmin) {
-            $('#userProductFamiliesRights').closest('.ui-helper-hidden').show();
+            $('#userProductFamiliesRights').closest('div').show();
             $('#divProductFamiliesContainer').toggle(user.ProductFamiliesRights == 1);
             window.parent.parent.Ts.Services.Users.GetUserProductFamilies(_user.UserID, appendProductFamilies);
         }
 
-        $('#userRightsAllTicketCustomers').html((user.AllowAnyTicketCustomer == true ? 'Enabled' : 'Disabled'));
+        $('#userRightsAllTicketCustomers').html((user.AllowAnyTicketCustomer == true ? 'Yes' : 'No'));
         if (user.TicketRights == 3) $('#userRightsAllTicketCustomers').closest('div').show();
 
         $('#divCustomerContainer').toggle(user.TicketRights == 3 && isSysAdmin == true);
         $('#userLastLogin').text(user.LastLogin.toDateString());
-        $('#userActive').text((user.IsActive == true ? 'Enabled' : 'Disabled'));
-        $('#userEmailNotify').text((user.ReceiveTicketNotifications == true ? 'Enabled' : 'Disabled'));
-        $('#userSubscribeTickets').text((user.SubscribeToNewTickets == true ? 'Enabled' : 'Disabled'));
-        $('#userSubscribeActions').text((user.SubscribeToNewActions == true ? 'Enabled' : 'Disabled'));
-        $('#userAutoSubscribe').text((user.DoNotAutoSubscribe == true ? 'Disabled' : 'Enabled'));
-        $('#userGroupNotify').text((user.ReceiveAllGroupNotifications == true ? 'Enabled' : 'Disabled'));
-        $('#userUnassignedGroupNotify').text((user.ReceiveUnassignedGroupEmails == true ? 'Enabled' : 'Disabled'));
-        $('#userEmailAfterHours').text((user.OnlyEmailAfterHours == true ? 'Disabled' : 'Enabled'));
+        $('#userActive').text((user.IsActive == true ? 'Yes' : 'No'));
+        $('#userEmailNotify').text((user.ReceiveTicketNotifications == true ? 'Yes' : 'No'));
+        $('#userSubscribeTickets').text((user.SubscribeToNewTickets == true ? 'Yes' : 'No'));
+        $('#userSubscribeActions').text((user.SubscribeToNewActions == true ? 'Yes' : 'No'));
+        $('#userAutoSubscribe').text((user.DoNotAutoSubscribe == true ? 'Yes' : 'No'));
+        $('#userGroupNotify').text((user.ReceiveAllGroupNotifications == true ? 'Yes' : 'No'));
+        $('#userUnassignedGroupNotify').text((user.ReceiveUnassignedGroupEmails == true ? 'Yes' : 'No'));
+        $('#userEmailAfterHours').text((user.OnlyEmailAfterHours == true ? 'Yes' : 'No'));
         $('#userDateFormat').text(user.CultureDisplay);
-        $('#userSysAdmin').text((user.IsSystemAdmin == true ? 'Enabled' : 'Disabled'));
-        $('#chatUser').text((user.IsChatUser == true ? 'Enabled' : 'Disabled'));
+        $('#userSysAdmin').text((user.IsSystemAdmin == true ? 'Yes' : 'No'));
+        $('#chatUser').text((user.IsChatUser == true ? 'Yes' : 'No'));
         $('#activatedOn').text(user.ActivatedOn.toDateString());
         $('#userInfo').html((user.UserInformation == '' ? 'No Additional Information' : user.UserInformation.replace(/\n\r?/g, '<br />')));
         if (user.verificationPhoneNumber !== null && user.verificationPhoneNumber !== "") $('#userTwoFactorCell').text(user.verificationPhoneNumber);
@@ -234,7 +238,7 @@ UserPage = function() {
         var types = window.parent.parent.Ts.Cache.getTicketTypes();
         for (var i = 0; i < types.length; i++) {
             if (types[i].IsActive) {
-                var ttmi = $('<div>').attr('id', 'mniTicketType_' + types[i].TicketTypeID);
+                var ttmi = $('<li>').attr('id', 'mniTicketType_' + types[i].TicketTypeID);
                 $('<label>').addClass('checkbox').text(types[i].Name).append($('<input>').attr('type', 'checkbox')).appendTo(ttmi);
                 ttmi.appendTo('#ulTicketTypes');
             }
@@ -324,21 +328,20 @@ UserPage = function() {
                 $('.intl-tel-input').css("float", "left");
             });
 
-            $('#twoStepSave')
-                .click(function(e) {
-                    e.preventDefault();
-                    $(this).parent().show().find('img').show();
-                    var phoneNumb = $("#mobile-number").intlTelInput("getNumber");
-                    window.parent.parent.Ts.Services.Login.SetupVerificationPhoneNumber(userID, phoneNumb, false, function(result) {
-                            $('#twoStepInputDiv').hide();
-                            if (phoneNumb !== null && phoneNumb !== "") {
-                                $('#userTwoFactorCell').text(phoneNumb).parent().show();
-                            } else $('#userTwoFactorCell').parent().show();
-                        },
-                        function(error) {
-                            alert('There was an error updating your record.  Please try again.');
-                        });
-                });
+            $('#twoStepSave').click(function(e) {
+                e.preventDefault();
+                $(this).parent().show().find('img').show();
+                var phoneNumb = $("#mobile-number").intlTelInput("getNumber");
+                window.parent.parent.Ts.Services.Login.SetupVerificationPhoneNumber(userID, phoneNumb, false, function(result) {
+                        $('#twoStepInputDiv').hide();
+                        if (phoneNumb !== null && phoneNumb !== "") {
+                            $('#userTwoFactorCell').text(phoneNumb).parent().show();
+                        } else $('#userTwoFactorCell').parent().show();
+                    },
+                    function(error) {
+                        alert('There was an error updating your record.  Please try again.');
+                    });
+            });
 
             $('#twoStepCancel').click(function(e) {
                 e.preventDefault();
@@ -394,18 +397,13 @@ UserPage = function() {
             e.preventDefault();
             window.parent.parent.Ts.System.logAction('User Info - Photo Dialog Opened');
             ShowDialog(parent.parent.GetProfileImageDialog(orgID, userID));
-            //            $('.dialog-avatar').dialog({
-            //              autoOpen: true,
-            //              modal: true,
-            //              height: 400,
-            //              width: 400
-            //            });
         });
 
         $('#UserName').after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>').click(function(e) {
             e.preventDefault();
             var header = $(this).parent().hide();
             var container = $('<div>').addClass('user-name-edit').css('marginTop', '1em').insertAfter(header);
+
             $('<input type="text">').addClass('ui-widget-content ui-corner-all').val(_user.FirstName).appendTo(container).focus();
             $('<input type="text">').addClass('ui-widget-content ui-corner-all').val(_user.MiddleName).appendTo(container).focus();
             $('<input type="text">').addClass('ui-widget-content ui-corner-all').val(_user.LastName).appendTo(container).focus();
@@ -543,30 +541,31 @@ UserPage = function() {
             $('<input type="text">').addClass('ui-widget-content ui-corner-all').val($('#userWebsite').text()).appendTo(container).focus();
 
             $('<span>').addClass('fa fa-check-square').click(function(e) {
-                $(this).closest('div').remove();
-                header.show().find('img').show();
-                window.parent.parent.Ts.Services.Users.SaveUserLinkedin(_user.UserID, $(this).prev().val(), function(result) {
-                        window.parent.parent.Ts.System.logAction('User Info - User LinkedIn ID Changed');
-                        header.show().find('img').hide().next().show().delay(800).fadeOut(400);
-                        if (result.substring(0, 6) == "_error")
-                            alert("The Website you have specified is invalid.");
-                        else
-                        if (result == '') {
-                            $('#userWebsite').html('None');
-                            $('#userWebsite').removeAttr("href", result);
-                            $('#userWebsite').removeAttr("target", "_blank");
-                        } else {
-                            $('#userWebsite').html(result);
-                            $('#userWebsite').attr("href", result);
-                            $('#userWebsite').attr("target", "_blank");
-                        }
+                    $(this).closest('div').remove();
+                    header.show().find('img').show();
+                    window.parent.parent.Ts.Services.Users.SaveUserLinkedin(_user.UserID, $(this).prev().val(), function(result) {
+                            window.parent.parent.Ts.System.logAction('User Info - User LinkedIn ID Changed');
+                            header.show().find('img').hide().next().show().delay(800).fadeOut(400);
+                            if (result.substring(0, 6) == "_error")
+                                alert("The Website you have specified is invalid.");
+                            else
+                            if (result == '') {
+                                $('#userWebsite').html('None');
+                                $('#userWebsite').removeAttr("href", result);
+                                $('#userWebsite').removeAttr("target", "_blank");
+                            } else {
+                                $('#userWebsite').html(result);
+                                $('#userWebsite').attr("href", result);
+                                $('#userWebsite').attr("target", "_blank");
+                            }
 
-                    },
-                    function(error) {
-                        header.show().find('img').hide();
-                        alert('There was an error saving the Website url.');
-                    });
-            }).appendTo(container)
+                        },
+                        function(error) {
+                            header.show().find('img').hide();
+                            alert('There was an error saving the Website url.');
+                        });
+                })
+                .appendTo(container)
 
             $('<span>').addClass('fa fa-window-close').click(function(e) {
                 $(this).closest('div').remove();
@@ -580,10 +579,10 @@ UserPage = function() {
 
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetIsActive(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetIsActive(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User Active State Changed');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                     },
                     function(error) {
                         alert('There was an error saving the user active status.');
@@ -596,10 +595,10 @@ UserPage = function() {
             e.preventDefault();
             var item = $(this);
             item.next().show();
-            window.parent.parent.Ts.Services.Users.SetEmailNotify(_user.UserID, (item.text() !== 'Enabled'),
+            window.parent.parent.Ts.Services.Users.SetEmailNotify(_user.UserID, (item.text() !== 'Yes'),
                 function(result) {
                     window.parent.parent.Ts.System.logAction('User Info - User Email Notifications Changed');
-                    item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                 },
                 function(error) {
                     alert('There was an error saving the user email notification status.');
@@ -612,10 +611,10 @@ UserPage = function() {
             e.preventDefault();
             var item = $(this);
             item.next().show();
-            window.parent.parent.Ts.Services.Users.SetSubscribeTickets(_user.UserID, (item.text() !== 'Enabled'),
+            window.parent.parent.Ts.Services.Users.SetSubscribeTickets(_user.UserID, (item.text() !== 'Yes'),
                 function(result) {
                     window.parent.parent.Ts.System.logAction('User Info - User Ticket Subscription Setting Changed');
-                    item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                 },
                 function(error) {
                     alert('There was an error saving the user ticket subscription status.');
@@ -627,10 +626,10 @@ UserPage = function() {
             e.preventDefault();
             var item = $(this);
             item.next().show();
-            window.parent.parent.Ts.Services.Users.SetSubscribeActions(_user.UserID, (item.text() !== 'Enabled'),
+            window.parent.parent.Ts.Services.Users.SetSubscribeActions(_user.UserID, (item.text() !== 'Yes'),
                 function(result) {
                     window.parent.parent.Ts.System.logAction('User Info - User Action Subscription Changed');
-                    item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                 },
                 function(error) {
                     alert('There was an error saving the user ticket action subscription status.');
@@ -642,10 +641,10 @@ UserPage = function() {
             e.preventDefault();
             var item = $(this);
             item.next().show();
-            window.parent.parent.Ts.Services.Users.SetAutoSubscribe(_user.UserID, (item.text() !== 'Disabled'),
+            window.parent.parent.Ts.Services.Users.SetAutoSubscribe(_user.UserID, (item.text() !== 'Yes'),
                 function(result) {
                     window.parent.parent.Ts.System.logAction('User Info - User Auto Subscribe Changed');
-                    item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                 },
                 function(error) {
                     alert('There was an error saving the user auto subscribe status.');
@@ -653,35 +652,14 @@ UserPage = function() {
                 });
         });
 
-
-        //var V2OrgID = window.parent.parent.Ts.System.User.OrganizationID;
-        //if (V2OrgID === 1078 || V2OrgID === 1088 || V2OrgID === 13679 || V2OrgID === 362372) {
-        //  $('#userTicketPageVersion')
-        //    .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
-        //    .click(function (e) {
-        //      e.preventDefault();
-        //      var item = $(this);
-        //      item.next().show();
-        //      window.parent.parent.Ts.Services.Users.SetUseClassicTicketPage(_user.UserID, (item.text() == 'Enabled'),
-        //      function (result) {
-        //        window.parent.parent.Ts.System.logAction('User Info - User Changed Ticket Page Version');
-        //        item.text((result === false ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
-        //      },
-        //      function (error) {
-        //        alert('There was an error saving the user auto subscribe status.');
-        //        item.next().hide();
-        //      });
-        //    });
-        //}
-
         $('#userTicketPageVersion').after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>').click(function(e) {
             e.preventDefault();
             var item = $(this);
             item.next().show();
-            window.parent.parent.Ts.Services.Users.SetUseClassicTicketPage(_user.UserID, (item.text() == 'Disabled'),
+            window.parent.parent.Ts.Services.Users.SetUseClassicTicketPage(_user.UserID, (item.text() == 'No'),
                 function(result) {
                     window.parent.parent.Ts.System.logAction('User Info - User Changed Ticket Page Version');
-                    item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                 },
                 function(error) {
                     alert('There was an error saving the user auto subscribe status.');
@@ -693,10 +671,10 @@ UserPage = function() {
             e.preventDefault();
             var item = $(this);
             item.next().show();
-            window.parent.parent.Ts.Services.Users.SetGroupNotify(_user.UserID, (item.text() !== 'Enabled'),
+            window.parent.parent.Ts.Services.Users.SetGroupNotify(_user.UserID, (item.text() !== 'Yes'),
                 function(result) {
                     window.parent.parent.Ts.System.logAction('User Info - Group Notification Changed');
-                    item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                 },
                 function(error) {
                     alert('There was an error saving the user group notification subscription status.');
@@ -708,10 +686,10 @@ UserPage = function() {
             e.preventDefault();
             var item = $(this);
             item.next().show();
-            window.parent.parent.Ts.Services.Users.SetUnassignedGroupNotify(_user.UserID, (item.text() !== 'Enabled'),
+            window.parent.parent.Ts.Services.Users.SetUnassignedGroupNotify(_user.UserID, (item.text() !== 'Yes'),
                 function(result) {
                     window.parent.parent.Ts.System.logAction('User Info - Group Unassigned Notification Changed');
-                    item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                 },
                 function(error) {
                     alert('There was an error saving the user group unassigned notification subscription status.');
@@ -723,10 +701,10 @@ UserPage = function() {
             e.preventDefault();
             var item = $(this);
             item.next().show();
-            window.parent.parent.Ts.Services.Users.SetOnlyEmailAfterHours(_user.UserID, (item.text() !== 'Disabled'),
+            window.parent.parent.Ts.Services.Users.SetOnlyEmailAfterHours(_user.UserID, (item.text() !== 'Yes'),
                 function(result) {
                     window.parent.parent.Ts.System.logAction('User Info - Only Email After Hours Changed');
-                    item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                 },
                 function(error) {
                     alert('There was an error saving the Only Email After Hours status.');
@@ -740,15 +718,16 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetSysAdmin(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetSysAdmin(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User System Admin Status Changed');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                     },
                     function(error) {
                         alert('There was an error saving the user system admin status.');
                         item.next().hide();
-                    });
+                    }
+                );
             }
         });
 
@@ -758,18 +737,19 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetRestrictUserFromEditingAnyActions(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetRestrictUserFromEditingAnyActions(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User Change Restrict User From Editing Any Actions Changed');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
-                        if (result === true && $('#userAllowToEditAnyAction').text() == 'Enabled') {
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                        if (result === true && $('#userAllowToEditAnyAction').text() == 'Yes') {
                             $('#userAllowToEditAnyAction').click();
                         }
                     },
                     function(error) {
                         alert('There was an error saving the user change restrict user from editing any actions.');
                         item.next().hide();
-                    });
+                    }
+                );
             }
         });
 
@@ -778,15 +758,16 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetChangeCanBulkMerge(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetChangeCanBulkMerge(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User Change Can Bulk Merge Changed');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                     },
                     function(error) {
                         alert('There was an error saving the user change can bulk merge.');
                         item.next().hide();
-                    });
+                    }
+                );
             }
         });
 
@@ -795,15 +776,34 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetRestrictUserFromExportingData(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetRestrictUserFromExportingData(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User Change Restrict User From Exporting Changed');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                     },
                     function(error) {
                         alert('There was an error saving the user change restrict user from exporting data.');
                         item.next().hide();
-                    });
+                    }
+                );
+            }
+        });
+
+        $('#userDisablePublic').after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>').click(function(e) {
+            e.preventDefault();
+            var item = $(this);
+            if (isSysAdmin) {
+                item.next().show();
+                window.parent.parent.Ts.Services.Users.SetRestrictUserPublicActions(_user.UserID, (item.text() !== 'Yes'),
+                    function(result) {
+                        window.parent.parent.Ts.System.logAction('User Info - User Change Restrict User From Exporting Changed');
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                    },
+                    function(error) {
+                        alert('There was an error saving the user change restrict user from exporting data.');
+                        item.next().hide();
+                    }
+                );
             }
         });
 
@@ -812,18 +812,19 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetAllowUserToEditAnyAction(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetAllowUserToEditAnyAction(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User Change Allow User To Edit Any Action Changed');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
-                        if (result === true && $('#userRestrictFromEditingAnyActions').text() == 'Enabled') {
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                        if (result === true && $('#userRestrictFromEditingAnyActions').text() == 'Yes') {
                             $('#userRestrictFromEditingAnyActions').click();
                         }
                     },
                     function(error) {
                         alert('There was an error saving the user change allow user to edit any action.');
                         item.next().hide();
-                    });
+                    }
+                );
             }
         });
 
@@ -832,15 +833,16 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetUserCanPinAction(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetUserCanPinAction(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User Can Pin Action Changed');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                     },
                     function(error) {
                         alert('There was an error saving the user can pin action.');
                         item.next().hide();
-                    });
+                    }
+                );
             }
         });
 
@@ -849,15 +851,16 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetChangeTicketVisibility(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetChangeTicketVisibility(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User Change Ticket Visibility Changed');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                     },
                     function(error) {
                         alert('There was an error saving the user change ticket visibility.');
                         item.next().hide();
-                    });
+                    }
+                );
             }
         });
 
@@ -866,15 +869,16 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetChangeCommunityVisibility(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetChangeCommunityVisibility(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User Change Ticket Community Changed');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                     },
                     function(error) {
                         alert('There was an error saving the user change community visibility.');
                         item.next().hide();
-                    });
+                    }
+                );
             }
         });
 
@@ -883,15 +887,16 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetChangeCanCreateCompany(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetChangeCanCreateCompany(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User Change Can Create Company Changed');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                     },
                     function(error) {
                         alert('There was an error saving the user change to can create company.');
                         item.next().hide();
-                    });
+                    }
+                );
             }
         });
 
@@ -900,15 +905,16 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetChangeCanEditCompany(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetChangeCanEditCompany(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User Change Can Edit Company Changed');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                     },
                     function(error) {
                         alert('There was an error saving the user change to can edit company.');
                         item.next().hide();
-                    });
+                    }
+                );
             }
         });
 
@@ -917,15 +923,16 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetChangeCanCreateContacts(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetChangeCanCreateContacts(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User Change Can Create Contacts Changed');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                     },
                     function(error) {
                         alert('There was an error saving the user change to can create contacts.');
                         item.next().hide();
-                    });
+                    }
+                );
             }
         });
 
@@ -934,15 +941,16 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetChangeCanEditContacts(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetChangeCanEditContacts(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User Change Can Edit Contacts Changed');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                     },
                     function(error) {
                         alert('There was an error saving the user change to can edit contacts.');
                         item.next().hide();
-                    });
+                    }
+                );
             }
         });
 
@@ -952,15 +960,16 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetChangeCanCreateAssets(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetChangeCanCreateAssets(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User Change Can Create Assets Changed');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                     },
                     function(error) {
                         alert('There was an error saving the user change to can create assets.');
                         item.next().hide();
-                    });
+                    }
+                );
             }
         });
 
@@ -969,15 +978,16 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetChangeCanEditAssets(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetChangeCanEditAssets(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User Change Can Edit Assets Changed');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                     },
                     function(error) {
                         alert('There was an error saving the user change to can edit assets.');
                         item.next().hide();
-                    });
+                    }
+                );
             }
         });
 
@@ -987,15 +997,16 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetChangeCanCreateProducts(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetChangeCanCreateProducts(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User Change Can Create Products Changed');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                     },
                     function(error) {
                         alert('There was an error saving the user change to can create products.');
                         item.next().hide();
-                    });
+                    }
+                );
             }
         });
 
@@ -1004,15 +1015,16 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetChangeCanEditProducts(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetChangeCanEditProducts(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User Change Can Edit Products Changed');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                     },
                     function(error) {
                         alert('There was an error saving the user change to can edit products.');
                         item.next().hide();
-                    });
+                    }
+                );
             }
         });
 
@@ -1021,15 +1033,16 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetChangeCanCreateVersions(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetChangeCanCreateVersions(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User Change Can Create Versions Changed');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                     },
                     function(error) {
                         alert('There was an error saving the user change to can create versions.');
                         item.next().hide();
-                    });
+                    }
+                );
             }
         });
 
@@ -1038,15 +1051,16 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetChangeCanEditVersions(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetChangeCanEditVersions(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User Change Can Edit Versions Changed');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                     },
                     function(error) {
                         alert('There was an error saving the user change to can edit versions.');
                         item.next().hide();
-                    });
+                    }
+                );
             }
         });
 
@@ -1055,15 +1069,16 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetChangeKbVisibility(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetChangeKbVisibility(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User Change Knowledgebase Visibility Changed');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                     },
                     function(error) {
                         alert('There was an error saving the user change knowledgebase visibility.');
                         item.next().hide();
-                    });
+                    }
+                );
             }
         });
 
@@ -1072,34 +1087,39 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetChatUser(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetChatUser(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         if (result == 'error') {
-                            item.text('Disabled').next().hide().next().show().delay(800).fadeOut(400);
+                            item.text('No').next().hide().next().show().delay(800).fadeOut(400);
                             alert("You have exceeded your chat licenses.  Please purchase more seats to add additional chat users.");
                         } else {
                             window.parent.parent.Ts.System.logAction('User Info - User Chat User Status Changed');
-                            item.text((result == "True" ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                            item.text((result == "True" ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                         }
                     },
                     function(error) {
                         alert('There was an error saving the user chat status.');
                         item.next().hide();
-                    });
+                    }
+                );
             }
         });
 
-        $('#userProductFamiliesRights').after('<img src="../Images/loading/loading_small2.gif"><span class="ts-icon ts-icon-saved"></span>').click(function(e) {
+        $('#userProductFamiliesRights').after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>').click(function(e) {
             e.preventDefault();
             e.stopPropagation();
             removeComboBoxes();
             var value = $(this).data('o');
-            var sibling = $(this).hide();
-            var container = $('<div>').addClass('ticket-combobox').insertAfter(sibling);
+            var parent = $(this).parent().hide();
+            var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
             var select = $('<select>').appendTo(container);
 
             for (var i = 0; i < 2; i++) {
-                var option = $('<option>').text(userProductFamiliesRightsToString(i)).data('type', i).appendTo(select);
+                var option = $('<option>')
+                    .text(userProductFamiliesRightsToString(i))
+                    .data('type', i)
+                    .appendTo(select);
+
                 if (value == i) {
                     option.attr('selected', 'selected');
                 }
@@ -1133,12 +1153,16 @@ UserPage = function() {
             e.stopPropagation();
             removeComboBoxes();
             var value = $(this).data('o');
-            var sibling = $(this).hide();
-            var container = $('<div>').addClass('ticket-combobox').insertAfter(sibling);
+            var parent = $(this).parent().hide();
+            var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
             var select = $('<select>').appendTo(container);
 
             for (var i = 0; i < 4; i++) {
-                var option = $('<option>').text(userRightsToString(i)).data('type', i).appendTo(select);
+                var option = $('<option>')
+                    .text(userRightsToString(i))
+                    .data('type', i)
+                    .appendTo(select);
+
                 if (value == i) {
                     option.attr('selected', 'selected');
                 }
@@ -1174,10 +1198,10 @@ UserPage = function() {
             var item = $(this);
             if (isSysAdmin) {
                 item.next().show();
-                window.parent.parent.Ts.Services.Users.SetAllowAnyTicketCustomer(_user.UserID, (item.text() !== 'Enabled'),
+                window.parent.parent.Ts.Services.Users.SetAllowAnyTicketCustomer(_user.UserID, (item.text() !== 'Yes'),
                     function(result) {
                         window.parent.parent.Ts.System.logAction('User Info - User Changed AllowAnyTicketCustomer');
-                        item.text((result === true ? 'Enabled' : 'Disabled')).next().hide().next().show().delay(800).fadeOut(400);
+                        item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                     },
                     function(error) {
                         alert('There was an error saving the user allow any ticket customer to be assigned.');
@@ -1186,15 +1210,16 @@ UserPage = function() {
             }
         });
 
+
+
         $('#userTimeZone').after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>').click(function(e) {
             e.preventDefault();
             e.stopPropagation();
             removeComboBoxes();
             var value = $(this).text();
-            var sibling = $(this).hide();
-            var container = $('<div>').addClass('ticket-combobox').insertAfter(sibling);
+            var parent = $(this).parent().hide();
+            var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
             var select = $('<select>').appendTo(container);
-
 
             var tz = window.parent.parent.Ts.Cache.getTimeZones();
             for (var i = 0; i < tz.length; i += 2) {
@@ -1235,8 +1260,8 @@ UserPage = function() {
             e.stopPropagation();
             removeComboBoxes();
             var value = $(this).text();
-            var sibling = $(this).hide();
-            var container = $('<div>').addClass('ticket-combobox').insertAfter(sibling);
+            var parent = $(this).parent().hide();
+            var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
             var select = $('<select>').appendTo(container);
 
             var families = window.parent.parent.Ts.Cache.getFontFamilies();
@@ -1278,8 +1303,8 @@ UserPage = function() {
             e.stopPropagation();
             removeComboBoxes();
             var value = $(this).text();
-            var sibling = $(this).hide();
-            var container = $('<div>').addClass('ticket-combobox').insertAfter(sibling);
+            var parent = $(this).parent().hide();
+            var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
             var select = $('<select>').appendTo(container);
 
             var sizes = window.parent.parent.Ts.Cache.getFontSizes();
@@ -1321,8 +1346,8 @@ UserPage = function() {
             e.stopPropagation();
             removeComboBoxes();
             var value = $(this).text();
-            var sibling = $(this).hide();
-            var container = $('<div>').addClass('ticket-combobox').insertAfter(sibling);
+            var parent = $(this).parent().hide();
+            var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
             var select = $('<select>').appendTo(container);
 
             var culture = window.parent.parent.Ts.Cache.getCultures();
@@ -1366,6 +1391,7 @@ UserPage = function() {
             $('#divActionForm').hide();
             $('#userSignature').show();
             $('#userSignatureEdit').show();
+
         });
 
         $('#divActionForm').delegate('.signature-save', 'click', function(e) {
@@ -1385,16 +1411,20 @@ UserPage = function() {
                 },
                 function(error) {
                     alert('There was an error saving the signature.');
-                });
+                }
+            );
 
         });
 
         $('#userSignatureEdit').click(function(e) {
             e.preventDefault();
             var element = $('#divActionForm');
+
             $(this).hide();
             $('#userSignature').hide();
+
             createTinyMCE($('<div>').appendTo('.userSignature-form'));
+
         });
 
         $('#userSignatureClear').click(function(e) {
@@ -1405,6 +1435,8 @@ UserPage = function() {
                     $('#userSignature').empty();
                 });
             }
+
+
         });
 
     } else {
@@ -1468,6 +1500,7 @@ UserPage = function() {
     GetPhoneNumbers();
     GetGroups();
 
+
     function removeComboBoxes() {
         $('.ticket-combobox').prev().show().next().remove();
     }
@@ -1481,42 +1514,66 @@ UserPage = function() {
             }
 
             for (var i = 0; i < addresses.length; i++) {
-                var header = $('<div>').addClass('user-address').hover(function() {
+                var header = $('<div>').addClass('user-address')
+                    .hover(function() {
                         $(this).find('.ts-icon').show();
                     }, function() {
                         $(this).find('.ts-icon').hide();
                     })
                     .data('data', addresses[i].AddressID);
-                var desc = $('<span>').addClass('link-strong').text(addresses[i].Description).appendTo(header);
+                var desc = $('<span>')
+                    .addClass('link-strong')
+                    .text(addresses[i].Description)
+                    .appendTo(header);
                 if (canEdit) {
-                    $('<span>').addClass('fleft ts-icon ts-icon-edit').click(function(e) {
-                        var item = $(this).parent();
-                        var data = item.data('data');
-                        ShowDialog(parent.parent.GetAddressDialog(data));
-                    }).hide().appendTo(header);
-
-                    $('<span>').addClass('fleft ts-icon ts-icon-delete fa fa-trash').click(function(e) {
-                        if (confirm('Are you sure you would like to remove this address?')) {
+                    $('<span>')
+                        .addClass('fleft ts-icon ts-icon-edit')
+                        .click(function(e) {
                             var item = $(this).parent();
                             var data = item.data('data');
-                            parent.parent.privateServices.DeleteAddress(data);
-                            window.location = window.location;
-                        } else {
-                            $(this).prev().hide();
-                            $(this).hide();
-                        }
-                    }).hide().appendTo(header);
+                            ShowDialog(parent.parent.GetAddressDialog(data));
+                        }).hide()
+                        .appendTo(header);
+
+
+                    $('<span>')
+                        .addClass('fleft ts-icon ts-icon-delete fa fa-trash')
+                        .click(function(e) {
+                            if (confirm('Are you sure you would like to remove this address?')) {
+                                var item = $(this).parent();
+                                var data = item.data('data');
+                                parent.parent.privateServices.DeleteAddress(data);
+                                window.location = window.location;
+                            } else {
+                                $(this).prev().hide();
+                                $(this).hide();
+                            }
+                        }).hide()
+                        .appendTo(header);
                 }
 
-                var addr1 = $('<div>').addClass('user-address-st1').text(addresses[i].Addr1).appendTo(header);
-                var addr2 = $('<div>').addClass('user-address-st2').text(addresses[i].Addr2).appendTo(header);
-                var addr3 = $('<div>').addClass('user-address-st3').text(addresses[i].Addr3).appendTo(header);
-                var csz = $('<div>').addClass('user-address-csz').text(addresses[i].City + ', ' + addresses[i].State + ' ' + addresses[i].Zip).appendTo(header);
-                var country = $('<div>').addClass('ser-address-country').text(addresses[i].Country).appendTo(header);
+                var addr1 = $('<div>').addClass('user-address-st1')
+                    .text(addresses[i].Addr1)
+                    .appendTo(header);
+
+                var addr2 = $('<div>').addClass('user-address-st2')
+                    .text(addresses[i].Addr2)
+                    .appendTo(header);
+                var addr3 = $('<div>').addClass('user-address-st3')
+                    .text(addresses[i].Addr3)
+                    .appendTo(header);
+                var csz = $('<div>').addClass('user-address-csz')
+                    .text(addresses[i].City + ', ' + addresses[i].State + ' ' + addresses[i].Zip)
+                    .appendTo(header);
+                var country = $('<div>').addClass('ser-address-country')
+                    .text(addresses[i].Country)
+                    .appendTo(header);
                 $('#userAddressList').append(header);
             }
+
             $('#userAddressList').prepend(addresslist);
         });
+
     }
 
     function GetPhoneNumbers() {
@@ -1527,30 +1584,42 @@ UserPage = function() {
                 phonelist = '<div>There are no phone numbers to display.</div>';
             }
             for (var i = 0; i < phones.length; i++) {
-                var header = $('<div>').addClass('user-phone').hover(function() {
-                    $(this).find('.ts-icon').show();
-                }, function() {
-                    $(this).find('.ts-icon').hide();
-                }).data('data', phones[i].PhoneID);
+                var header = $('<div>').addClass('user-phone')
+                    .hover(function() {
+                        $(this).find('.ts-icon').show();
+                    }, function() {
+                        $(this).find('.ts-icon').hide();
+                    })
+                    .data('data', phones[i].PhoneID);
 
-                var link = $('<span>').addClass('fleft').html('<strong>' + phones[i].PhoneTypeName + '</strong>: ' + phones[i].Number + '  ' + (phones[i].Extension == '' ? '' : '<strong>Ext:</strong> ' + phones[i].Extension)).appendTo(header);
+                var link = $('<span>')
+                    .addClass('fleft')
+                    .html('<strong>' + phones[i].PhoneTypeName + '</strong>: ' + phones[i].Number + '  ' + (phones[i].Extension == '' ? '' : '<strong>Ext:</strong> ' + phones[i].Extension))
+                    .appendTo(header);
                 if (canEdit) {
-                    $('<span>').addClass('fleft ts-icon ts-icon-edit').click(function(e) {
-                        var item = $(this).parent();
-                        var data = item.data('data');
-                        ShowDialog(parent.parent.GetPhoneDialog(data));
-                    }).hide().appendTo(header);
-                    $('<span>').addClass('fleft ts-icon ts-icon-delete fa fa-trash').click(function(e) {
-                        if (confirm('Are you sure you would like to remove this phone number?')) {
+                    $('<span>')
+                        .addClass('fleft ts-icon ts-icon-edit')
+                        .click(function(e) {
                             var item = $(this).parent();
                             var data = item.data('data');
-                            parent.parent.privateServices.DeletePhone(data);
-                            window.location = window.location;
-                        } else {
-                            $(this).prev().hide();
-                            $(this).hide();
-                        }
-                    }).hide().appendTo(header);
+                            ShowDialog(parent.parent.GetPhoneDialog(data));
+                        }).hide()
+                        .appendTo(header);
+
+                    $('<span>')
+                        .addClass('fleft ts-icon ts-icon-delete fa fa-trash')
+                        .click(function(e) {
+                            if (confirm('Are you sure you would like to remove this phone number?')) {
+                                var item = $(this).parent();
+                                var data = item.data('data');
+                                parent.parent.privateServices.DeletePhone(data);
+                                window.location = window.location;
+                            } else {
+                                $(this).prev().hide();
+                                $(this).hide();
+                            }
+                        }).hide()
+                        .appendTo(header);
                 }
                 $('#userPhoneList').append(header);
             }
@@ -1564,24 +1633,34 @@ UserPage = function() {
             if (groups.length === 0) {
                 groupslist = '<div>There are no groups to display.</div>';
             }
+
             for (var i = 0; i < groups.length; i++) {
-                var header = $('<div>').addClass('user-group').hover(function() {
-                    $(this).find('.ts-icon').show();
-                }, function() {
-                    $(this).find('.ts-icon').hide();
-                }).data('data', groups[i].GroupID);
-                var link = $('<span>').addClass('group-name').text(groups[i].Name).appendTo(header);
+                var header = $('<div>').addClass('user-group')
+                    .hover(function() {
+                        $(this).find('.ts-icon').show();
+                    }, function() {
+                        $(this).find('.ts-icon').hide();
+                    })
+                    .data('data', groups[i].GroupID);
+                var link = $('<span>')
+                    .addClass('group-name')
+                    .text(groups[i].Name)
+                    .appendTo(header);
                 if (isSysAdmin) {
-                    $('<span>').addClass('fleft ts-icon ts-icon-delete fa fa-trash').click(function(e) {
-                        if (confirm('Are you sure you would like to remove this group?')) {
-                            var item = $(this).parent();
-                            var data = item.data('data');
-                            parent.parent.privateServices.DeleteGroupUser(data, _user.UserID);
-                            window.location = window.location;
-                        } else
-                            $(this).hide();
-                    }).hide().appendTo(header);
+                    $('<span>')
+                        .addClass('fleft ts-icon ts-icon-delete fa fa-trash')
+                        .click(function(e) {
+                            if (confirm('Are you sure you would like to remove this group?')) {
+                                var item = $(this).parent();
+                                var data = item.data('data');
+                                parent.parent.privateServices.DeleteGroupUser(data, _user.UserID);
+                                window.location = window.location;
+                            } else
+                                $(this).hide();
+                        }).hide()
+                        .appendTo(header);
                 }
+
                 $('#userGroups').append(header);
             }
             $('#userGroups').prepend(groupslist);
@@ -1652,14 +1731,13 @@ UserPage = function() {
 
         element.find('.signature-save').click(function() {
             window.parent.parent.Ts.Services.Users.SaveUserSignature(_user.UserID, element.find('.userSignatureText').html(), function(result) {
-                    if (result.substring(0, 6) == "_error") {
+                    if (result.substring(0, 6) == "_error")
                         alert("The signature you have specified is invalid.");
-                    } else {
-                        if (result == "") {
+                    else {
+                        if (result == "")
                             $('#userSignature').html("None");
-                        } else {
+                        else
                             $('#userSignature').html(result);
-                        }
                         $('#userSignature').show();
                         $('#userSignatureEdit').show();
                         element.remove();
@@ -1669,6 +1747,7 @@ UserPage = function() {
                     alert('There was an error saving the signature.');
                 });
         });
+
     }
 
     var execGetProductFamily = null;
@@ -1682,15 +1761,19 @@ UserPage = function() {
         });
     }
 
-    $('#divAddProductFamily input').autocomplete({
-        minLength: 2,
-        source: getProductFamilies,
-        select: function(event, ui) {
-            $(this).data('o', ui.item).removeClass('ui-autocomplete-loading');
-        }
-    }).keypress(function(e) {
-        if (e.which == 13) $('#divAddProductFamily button').click();
-    });
+    $('#divAddProductFamily input')
+        .autocomplete({
+            minLength: 2,
+            source: getProductFamilies,
+            select: function(event, ui) {
+                $(this)
+                    .data('o', ui.item)
+                    .removeClass('ui-autocomplete-loading');
+            }
+        })
+        .keypress(function(e) {
+            if (e.which == 13) $('#divAddProductFamily button').click();
+        });
 
     $('#divAddProductFamily button').click(function(e) {
         e.preventDefault();
@@ -1724,15 +1807,28 @@ UserPage = function() {
     }
 
     function appendProductFamily(productFamily) {
-        var item = $('<div>').addClass('removable-item ui-corner-all ts-color-bg-accent ').data('data', productFamily);
+        var item = $('<div>')
+            .addClass('removable-item ui-corner-all ts-color-bg-accent ')
+            .data('data', productFamily);
+
         $('<span>').addClass('ui-icon ui-icon-close').appendTo(item);
         var title = $('<div>').addClass('removable-item-title').appendTo(item);
-        $('<a>').attr('href', '#').addClass('ui-state-default ts-link').click(function(e) {
-            e.preventDefault();
-            window.parent.parent.Ts.MainPage.openNewProductFamily(productFamily.ProductFamilyID);
-        }).text(window.parent.parent.Ts.Utils.ellipseString(productFamily.Name, 30)).appendTo(title);
+        $('<a>')
+            .attr('href', '#')
+            .addClass('ui-state-default ts-link')
+            .click(function(e) {
+                e.preventDefault();
+                window.parent.parent.Ts.MainPage.openNewProductFamily(productFamily.ProductFamilyID);
+            })
+            .text(window.parent.parent.Ts.Utils.ellipseString(productFamily.Name, 30))
+            .appendTo(title);
 
-        $('<span>').addClass('ts-icon ts-icon-info').cluetip(clueTipOptions).appendTo(title);
+        $('<span>')
+            .addClass('ts-icon ts-icon-info')
+            //.attr('rel', '../../../Tips/ProductFamily.aspx?ProductFamilyID=' + productFamily.ProductFamilyID)
+            .cluetip(clueTipOptions)
+            .appendTo(title);
+
         $('#divProductFamilies').append(item);
     }
 
@@ -1747,15 +1843,19 @@ UserPage = function() {
         });
     }
 
-    $('#divAddCustomer input').autocomplete({
-        minLength: 2,
-        source: getCustomers,
-        select: function(event, ui) {
-            $(this).data('o', ui.item).removeClass('ui-autocomplete-loading');
-        }
-    }).keypress(function(e) {
-        if (e.which == 13) $('#divAddCustomer button').click();
-    });
+    $('#divAddCustomer input')
+        .autocomplete({
+            minLength: 2,
+            source: getCustomers,
+            select: function(event, ui) {
+                $(this)
+                    .data('o', ui.item)
+                    .removeClass('ui-autocomplete-loading');
+            }
+        })
+        .keypress(function(e) {
+            if (e.which == 13) $('#divAddCustomer button').click();
+        });
 
     $('#divAddCustomer button').click(function(e) {
         e.preventDefault();
@@ -1789,14 +1889,28 @@ UserPage = function() {
     }
 
     function appendCustomer(customer) {
-        var item = $('<div>').addClass('removable-item ui-corner-all ts-color-bg-accent ').data('data', customer);
+        var item = $('<div>')
+            .addClass('removable-item ui-corner-all ts-color-bg-accent ')
+            .data('data', customer);
+
         $('<span>').addClass('ui-icon ui-icon-close').appendTo(item);
         var title = $('<div>').addClass('removable-item-title').appendTo(item);
-        $('<a>').attr('href', '#').addClass('ui-state-default ts-link').click(function(e) {
-            e.preventDefault();
-            window.parent.parent.Ts.MainPage.openNewCustomer(customer.OrganizationID);
-        }).text(window.parent.parent.Ts.Utils.ellipseString(customer.Name, 30)).appendTo(title);
-        $('<span>').addClass('ts-icon ts-icon-info').attr('rel', '../../../Tips/Customer.aspx?CustomerID=' + customer.OrganizationID).cluetip(clueTipOptions).appendTo(title);
+        $('<a>')
+            .attr('href', '#')
+            .addClass('ui-state-default ts-link')
+            .click(function(e) {
+                e.preventDefault();
+                window.parent.parent.Ts.MainPage.openNewCustomer(customer.OrganizationID);
+            })
+            .text(window.parent.parent.Ts.Utils.ellipseString(customer.Name, 30))
+            .appendTo(title);
+
+        $('<span>')
+            .addClass('ts-icon ts-icon-info')
+            .attr('rel', '../../../Tips/Customer.aspx?CustomerID=' + customer.OrganizationID)
+            .cluetip(clueTipOptions)
+            .appendTo(title);
+
         $('#divCustomers').append(item);
     }
 
@@ -1811,9 +1925,15 @@ UserPage = function() {
         var container = $('#customProperties').empty().removeClass('ts-loading');
         for (var i = 0; i < fields.length; i++) {
             var item = null;
+
             var field = fields[i];
+
             var div = $('<div>').addClass('user-name-value').css('height', '20px').data('field', field);
-            $('<span>').addClass('property').text(field.Name + ': ').appendTo(div);
+            $('<span>')
+                .addClass('property')
+                .text(field.Name + ': ')
+                .appendTo(div);
+
             switch (field.FieldType) {
                 case window.parent.parent.Ts.CustomFieldType.Text:
                     appendCustomEdit(field, div);
@@ -1838,58 +1958,68 @@ UserPage = function() {
                     break;
                 default:
             }
+
             container.append(div);
         }
     }
 
     function appendCustomEditCombo(field, element) {
-        var result = $('<a>').attr('href', '#').text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : field.Value)).addClass('value ui-state-default ts-link').appendTo(element).after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>').click(function(e) {
-            e.preventDefault();
-            if (canEdit) {
-                $('.ticket-cutstom-edit').prev().show().next().remove();
-                $(this).hide()
-                var parent = $(this).parent();
-                var container = $('<div>').addClass('user-cutstom-edit ticket-combobox user-custom-edit').css('marginTop', '1em').insertAfter(parent);
-                var fieldValue = parent.closest('.user-name-value').data('field').Value;
-                var select = $('<select>').appendTo(container);
+        var result = $('<a>')
+            .attr('href', '#')
+            .text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : field.Value))
+            .addClass('value ui-state-default ts-link')
+            .appendTo(element)
+            .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+            .click(function(e) {
+                e.preventDefault();
+                if (canEdit) {
+                    $('.ticket-cutstom-edit').prev().show().next().remove();
+                    $(this).hide()
+                    var parent = $(this).parent();
+                    var container = $('<div>')
+                        .addClass('user-cutstom-edit ticket-combobox user-custom-edit')
+                        .css('marginTop', '1em')
+                        .insertAfter(parent);
+                    var fieldValue = parent.closest('.user-name-value').data('field').Value;
+                    var select = $('<select>').appendTo(container);
 
-                var items = field.ListValues.split('|');
-                for (var i = 0; i < items.length; i++) {
-                    var option = $('<option>').text(items[i]).appendTo(select);
-                    if (fieldValue === items[i]) {
-                        option.attr('selected', 'selected');
-                    }
-                }
-
-                select.combobox({
-                    selected: function(e, ui) {
-                        parent.show().find('img').show();
-                        var value = $(this).val();
-                        container.remove();
-
-                        if (field.IsRequired && field.IsFirstIndexSelect == true && $(this).find('option:selected').index() < 1) {
-                            result.parent().addClass('ui-state-error-custom ui-corner-all');
-                        } else {
-                            result.parent().removeClass('ui-state-error-custom ui-corner-all');
+                    var items = field.ListValues.split('|');
+                    for (var i = 0; i < items.length; i++) {
+                        var option = $('<option>').text(items[i]).appendTo(select);
+                        if (fieldValue === items[i]) {
+                            option.attr('selected', 'selected');
                         }
-                        window.parent.parent.Ts.System.logAction('User - Custom Value Set');
-                        window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function(result) {
-                            parent.find('img').hide().next().show().delay(800).fadeOut(400);
-                            parent.closest('.user-name-value').data('field', result);
-                            parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value)).show();
-                        }, function() {
-                            alert("There was a problem saving your user property.");
-                        });
-
-
-                    },
-                    close: function(e, ui) {
-                        removeComboBoxes();
                     }
-                });
-                select.combobox('search', '');
-            }
-        });
+
+                    select.combobox({
+                        selected: function(e, ui) {
+                            parent.show().find('img').show();
+                            var value = $(this).val();
+                            container.remove();
+
+                            if (field.IsRequired && field.IsFirstIndexSelect == true && $(this).find('option:selected').index() < 1) {
+                                result.parent().addClass('ui-state-error-custom ui-corner-all');
+                            } else {
+                                result.parent().removeClass('ui-state-error-custom ui-corner-all');
+                            }
+                            window.parent.parent.Ts.System.logAction('User - Custom Value Set');
+                            window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function(result) {
+                                parent.find('img').hide().next().show().delay(800).fadeOut(400);
+                                parent.closest('.user-name-value').data('field', result);
+                                parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value)).show();
+                            }, function() {
+                                alert("There was a problem saving your user property.");
+                            });
+
+
+                        },
+                        close: function(e, ui) {
+                            removeComboBoxes();
+                        }
+                    });
+                    select.combobox('search', '');
+                }
+            });
         var items = field.ListValues.split('|');
         if (field.IsRequired && ((field.IsFirstIndexSelect == true && (items[0] == field.Value || field.Value == null || $.trim(field.Value) === '')) || (field.Value == null || $.trim(field.Value) === ''))) {
             result.parent().addClass('ui-state-error-custom ui-corner-all');
@@ -1897,105 +2027,157 @@ UserPage = function() {
     }
 
     function appendCustomEditNumber(field, element) {
-        var result = $('<a>').attr('href', '#').text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : field.Value)).addClass('value ui-state-default ts-link').appendTo(element).after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>').click(function(e) {
-            e.preventDefault();
-            if (canEdit) {
-                $('.user-custom-edit').prev().show().next().remove();
-                $(this).hide();
-                var parent = $(this).parent();
-                var container = $('<div>').addClass('user-cutstom-edit').css('marginTop', '1em').insertAfter($(this));
-                var fieldValue = parent.closest('.user-name-value').data('field').Value;
-                var input = $('<input type="text">').addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input').val(fieldValue).appendTo(container).numeric().focus();
-                $('<span>').addClass('fa fa-check-square').click(function(e) {
-                    parent.show().find('img').show();
-                    var value = input.val();
-                    container.remove();
-                    if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                        result.parent().addClass('ui-state-error-custom ui-corner-all');
-                    } else {
-                        result.parent().removeClass('ui-state-error-custom ui-corner-all');
-                    }
+        var result = $('<a>')
+            .attr('href', '#')
+            .text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : field.Value))
+            .addClass('value ui-state-default ts-link')
+            .appendTo(element)
+            .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+            .click(function(e) {
+                e.preventDefault();
+                if (canEdit) {
+                    $('.user-custom-edit').prev().show().next().remove();
+                    $(this).hide();
+                    var parent = $(this).parent();
+                    var container = $('<div>')
+                        .addClass('user-cutstom-edit')
+                        .css('marginTop', '1em')
+                        .insertAfter($(this));
 
-                    window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function(result) {
-                        parent.find('img').hide().next().show().delay(800).fadeOut(400);
-                        parent.closest('.user-name-value').data('field', result);
-                        parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value)).show();
-                    }, function() {
-                        alert("There was a problem saving your user property.");
-                    });
-                }).appendTo(container);
-                $('<span>').addClass('fa fa-window-close').click(function(e) {
-                    parent.show();
-                    parent.find('a').show();
-                    container.remove();
-                }).appendTo(container);
-            }
-        });
+                    var fieldValue = parent.closest('.user-name-value').data('field').Value;
+                    var input = $('<input type="text">')
+                        .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
+                        .val(fieldValue)
+                        .appendTo(container)
+                        .numeric()
+                        .focus();
+
+                    $('<span>')
+                        .addClass('fa fa-check-square')
+                        .click(function(e) {
+                            parent.show().find('img').show();
+                            var value = input.val();
+                            container.remove();
+                            if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                                result.parent().addClass('ui-state-error-custom ui-corner-all');
+                            } else {
+                                result.parent().removeClass('ui-state-error-custom ui-corner-all');
+                            }
+
+                            window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function(result) {
+                                parent.find('img').hide().next().show().delay(800).fadeOut(400);
+                                parent.closest('.user-name-value').data('field', result);
+                                parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value)).show();
+                            }, function() {
+                                alert("There was a problem saving your user property.");
+                            });
+                        })
+                        .appendTo(container);
+
+                    $('<span>')
+                        .addClass('fa fa-window-close')
+                        .click(function(e) {
+                            parent.show();
+                            parent.find('a').show();
+                            container.remove();
+                        })
+                        .appendTo(container);
+                }
+            });
         if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
             result.parent().addClass('ui-state-error-custom ui-corner-all');
         }
     }
 
     function appendCustomEditBool(field, element) {
-        var result = $('<a>').attr('href', '#').text((field.Value === null || $.trim(field.Value) === '' ? 'False' : field.Value)).addClass('value ui-state-default ts-link').appendTo(element).after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>').click(function(e) {
-            e.preventDefault();
-            if (canEdit) {
-                $('.ticket-cutstom-edit').prev().show().next().remove();
-                var parent = $(this).parent();
-                var value = $(this).text() === 'Disabled' || $(this).text() === 'False' ? true : false;
-                parent.find('img').show();
-                window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function(result) {
-                    parent.find('img').hide().next().show().delay(800).fadeOut(400);
-                    parent.closest('.user-name-value').data('field', result);
-                    parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'False' : result.Value));
-                }, function() {
-                    alert("There was a problem saving your user property.");
-                });
-            }
-        });
-    }
+        var result = $('<a>')
+            .attr('href', '#')
+            .text((field.Value === null || $.trim(field.Value) === '' ? 'False' : field.Value))
+            .addClass('value ui-state-default ts-link')
+            .appendTo(element)
+            .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+            .click(function(e) {
+                e.preventDefault();
+                if (canEdit) {
+                    $('.ticket-cutstom-edit').prev().show().next().remove();
 
-    function appendCustomEdit(field, element) {
-        var result = $('<a>').attr('href', '#').text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : field.Value)).addClass('value ui-state-default ts-link').appendTo(element).after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>').click(function(e) {
-            e.preventDefault();
-            if (canEdit) {
-                $('.ticket-cutstom-edit').prev().show().next().remove();
-                $(this).hide();
-                var parent = $(this).parent();
-                var container = $('<div>').addClass('user-cutstom-edit').css('marginTop', '1em').insertAfter($(this));
-                var fieldValue = parent.closest('.user-name-value').data('field').Value;
-                var input = $('<input type="text">').addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input').val(fieldValue).appendTo(container).focus();
-                var fieldMask = parent.closest('.user-name-value').data('field').Mask;
-                if (fieldMask) {
-                    input.mask(fieldMask);
-                    input.attr("placeholder", fieldMask);
-                }
-
-                $('<span>').addClass('fa fa-check-square').click(function(e) {
-                    parent.show().find('img').show();
-                    var value = input.val();
-                    container.remove();
-                    if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                        result.parent().addClass('ui-state-error-custom ui-corner-all');
-                    } else {
-                        result.parent().removeClass('ui-state-error-custom ui-corner-all');
-                    }
+                    var parent = $(this).parent();
+                    var value = $(this).text() === 'No' || $(this).text() === 'False' ? true : false;
+                    parent.find('img').show();
                     window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function(result) {
                         parent.find('img').hide().next().show().delay(800).fadeOut(400);
                         parent.closest('.user-name-value').data('field', result);
-                        parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value)).show();
+                        parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'False' : result.Value));
                     }, function() {
                         alert("There was a problem saving your user property.");
                     });
-                }).appendTo(container);
+                }
+            });
+    }
 
-                $('<span>').addClass('fa fa-window-close').click(function(e) {
-                    parent.show();
-                    parent.find('a').show();
-                    container.remove();
-                }).appendTo(container);
-            }
-        });
+    function appendCustomEdit(field, element) {
+        var result = $('<a>')
+            .attr('href', '#')
+            .text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : field.Value))
+            .addClass('value ui-state-default ts-link')
+            .appendTo(element)
+            .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+            .click(function(e) {
+                e.preventDefault();
+                if (canEdit) {
+                    $('.ticket-cutstom-edit').prev().show().next().remove();
+                    $(this).hide();
+                    var parent = $(this).parent();
+
+                    var container = $('<div>')
+                        .addClass('user-cutstom-edit')
+                        .css('marginTop', '1em')
+                        .insertAfter($(this));
+
+                    var fieldValue = parent.closest('.user-name-value').data('field').Value;
+                    var input = $('<input type="text">')
+                        .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
+                        .val(fieldValue)
+                        .appendTo(container)
+                        .focus();
+
+                    var fieldMask = parent.closest('.user-name-value').data('field').Mask;
+                    if (fieldMask) {
+                        input.mask(fieldMask);
+                        input.attr("placeholder", fieldMask);
+                    }
+
+                    $('<span>')
+                        .addClass('fa fa-check-square')
+                        .click(function(e) {
+                            parent.show().find('img').show();
+                            var value = input.val();
+                            container.remove();
+                            if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                                result.parent().addClass('ui-state-error-custom ui-corner-all');
+                            } else {
+                                result.parent().removeClass('ui-state-error-custom ui-corner-all');
+                            }
+                            window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function(result) {
+                                parent.find('img').hide().next().show().delay(800).fadeOut(400);
+                                parent.closest('.user-name-value').data('field', result);
+                                parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value)).show();
+                            }, function() {
+                                alert("There was a problem saving your user property.");
+                            });
+                        })
+                        .appendTo(container);
+
+                    $('<span>')
+                        .addClass('fa fa-window-close')
+                        .click(function(e) {
+                            parent.show();
+                            parent.find('a').show();
+                            container.remove();
+                        })
+                        .appendTo(container);
+                }
+            });
         if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
             result.parent().addClass('ui-state-error-custom ui-corner-all');
         }
@@ -2003,43 +2185,66 @@ UserPage = function() {
 
     function appendCustomEditDate(field, element) {
         var date = field.Value == null ? null : window.parent.parent.Ts.Utils.getMsDate(field.Value);
-        var result = $('<a>').attr('href', '#').text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getDatePattern()))).addClass('value ui-state-default ts-link').appendTo(element).after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>').click(function(e) {
-            e.preventDefault();
-            if (canEdit) {
-                $('.user-cutstom-edit').prev().show().next().remove();
-                $(this).hide();
-                var parent = $(this).parent();
-                var container = $('<div>').addClass('user-cutstom-edit').css('marginTop', '1em').insertAfter($(this));
-                var fieldValue = parent.closest('.user-name-value').data('field').Value;
-                var input = $('<input type="text">').addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input').appendTo(container).datepicker().focus();
+        var result = $('<a>')
+            .attr('href', '#')
+            .text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getDatePattern())))
+            .addClass('value ui-state-default ts-link')
+            .appendTo(element)
+            .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+            .click(function(e) {
+                e.preventDefault();
+                if (canEdit) {
+                    $('.user-cutstom-edit').prev().show().next().remove();
+                    $(this).hide();
+                    var parent = $(this).parent();
 
-                $('<span>').addClass('fa fa-check-square').click(function(e) {
-                    parent.show().find('img').show();
-                    var value = window.parent.parent.Ts.Utils.getMsDate(input.datepicker('getDate'));
-                    container.remove();
-                    if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                        result.parent().addClass('ui-state-error-custom ui-corner-all');
-                    } else {
-                        result.parent().removeClass('ui-state-error-custom ui-corner-all');
-                    }
-                    window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function(result) {
-                        parent.find('img').hide().next().show().delay(800).fadeOut(400);
-                        parent.closest('.user-name-value').data('field', result);
-                        var date = result.Value === null ? null : window.parent.parent.Ts.Utils.getMsDate(result.Value);
-                        parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getDatePattern()))).show();
+                    var container = $('<div>')
+                        .addClass('user-cutstom-edit')
+                        .css('marginTop', '1em')
+                        .insertAfter($(this));
 
-                    }, function() {
-                        alert("There was a problem saving your user property.");
-                    });
-                }).appendTo(container);
+                    var fieldValue = parent.closest('.user-name-value').data('field').Value;
 
-                $('<span>').addClass('fa fa-window-close').click(function(e) {
-                    parent.show();
-                    parent.find('a').show();
-                    container.remove();
-                }).appendTo(container);
-            }
-        });
+                    var input = $('<input type="text">')
+                        .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
+                        .appendTo(container)
+                        .datepicker()
+                        //.datetimepicker('setDate', window.parent.parent.Ts.Utils.getMsDate(fieldValue))
+                        .focus();
+
+                    $('<span>')
+                        .addClass('fa fa-check-square')
+                        .click(function(e) {
+                            parent.show().find('img').show();
+                            var value = window.parent.parent.Ts.Utils.getMsDate(input.datepicker('getDate'));
+                            container.remove();
+                            if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                                result.parent().addClass('ui-state-error-custom ui-corner-all');
+                            } else {
+                                result.parent().removeClass('ui-state-error-custom ui-corner-all');
+                            }
+                            window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function(result) {
+                                parent.find('img').hide().next().show().delay(800).fadeOut(400);
+                                parent.closest('.user-name-value').data('field', result);
+                                var date = result.Value === null ? null : window.parent.parent.Ts.Utils.getMsDate(result.Value);
+                                parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getDatePattern()))).show();
+
+                            }, function() {
+                                alert("There was a problem saving your user property.");
+                            });
+                        })
+                        .appendTo(container);
+
+                    $('<span>')
+                        .addClass('fa fa-window-close')
+                        .click(function(e) {
+                            parent.show();
+                            parent.find('a').show();
+                            container.remove();
+                        })
+                        .appendTo(container);
+                }
+            });
         if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
             result.parent().addClass('ui-state-error-custom ui-corner-all');
         }
@@ -2047,46 +2252,69 @@ UserPage = function() {
 
     function appendCustomEditTime(field, element) {
         var date = field.Value == null ? null : window.parent.parent.Ts.Utils.getMsDate(field.Value);
-        var result = $('<a>').attr('href', '#').text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getTimePattern()))).addClass('value ui-state-default ts-link').appendTo(element).after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>').click(function(e) {
-            e.preventDefault();
-            if (canEdit) {
-                $('.user-cutstom-edit').prev().show().next().remove();
-                $(this).hide();
-                var parent = $(this).parent();
-                var container = $('<div>').addClass('user-cutstom-edit').css('marginTop', '1em').insertAfter($(this));
-                var fieldValue = parent.closest('.user-name-value').data('field').Value;
-                var input = $('<input type="text">').addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input').appendTo(container).timepicker().timepicker('setDate', window.parent.parent.Ts.Utils.getMsDate(fieldValue)).focus();
+        var result = $('<a>')
+            .attr('href', '#')
+            .text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getTimePattern())))
+            .addClass('value ui-state-default ts-link')
+            .appendTo(element)
+            .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+            .click(function(e) {
+                e.preventDefault();
+                if (canEdit) {
+                    $('.user-cutstom-edit').prev().show().next().remove();
+                    $(this).hide();
+                    var parent = $(this).parent();
 
-                $('<span>').addClass('fa fa-check-square').click(function(e) {
-                    parent.show().find('img').show();
-                    var time = new Date("January 1, 1970 00:00:00");
-                    time.setHours(input.timepicker('getDate')[0].value.substring(0, 2));
-                    time.setMinutes(input.timepicker('getDate')[0].value.substring(3, 5));
-                    var value = window.parent.parent.Ts.Utils.getMsDate(time);
-                    container.remove();
-                    if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                        result.parent().addClass('ui-state-error-custom ui-corner-all');
-                    } else {
-                        result.parent().removeClass('ui-state-error-custom ui-corner-all');
-                    }
-                    window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function(result) {
-                        parent.find('img').hide().next().show().delay(800).fadeOut(400);
-                        parent.closest('.user-name-value').data('field', result);
-                        var date = result.Value === null ? null : window.parent.parent.Ts.Utils.getMsDate(result.Value);
-                        parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getTimePattern()))).show();
+                    var container = $('<div>')
+                        .addClass('user-cutstom-edit')
+                        .css('marginTop', '1em')
+                        .insertAfter($(this));
 
-                    }, function() {
-                        alert("There was a problem saving your user property.");
-                    });
-                }).appendTo(container);
+                    var fieldValue = parent.closest('.user-name-value').data('field').Value;
 
-                $('<span>').addClass('fa fa-window-close').click(function(e) {
-                    parent.show();
-                    parent.find('a').show();
-                    container.remove();
-                }).appendTo(container);
-            }
-        });
+                    var input = $('<input type="text">')
+                        .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
+                        .appendTo(container)
+                        .timepicker()
+                        .timepicker('setDate', window.parent.parent.Ts.Utils.getMsDate(fieldValue))
+                        .focus();
+
+                    $('<span>')
+                        .addClass('fa fa-check-square')
+                        .click(function(e) {
+                            parent.show().find('img').show();
+                            var time = new Date("January 1, 1970 00:00:00");
+                            time.setHours(input.timepicker('getDate')[0].value.substring(0, 2));
+                            time.setMinutes(input.timepicker('getDate')[0].value.substring(3, 5));
+                            var value = window.parent.parent.Ts.Utils.getMsDate(time);
+                            container.remove();
+                            if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                                result.parent().addClass('ui-state-error-custom ui-corner-all');
+                            } else {
+                                result.parent().removeClass('ui-state-error-custom ui-corner-all');
+                            }
+                            window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function(result) {
+                                parent.find('img').hide().next().show().delay(800).fadeOut(400);
+                                parent.closest('.user-name-value').data('field', result);
+                                var date = result.Value === null ? null : window.parent.parent.Ts.Utils.getMsDate(result.Value);
+                                parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getTimePattern()))).show();
+
+                            }, function() {
+                                alert("There was a problem saving your user property.");
+                            });
+                        })
+                        .appendTo(container);
+
+                    $('<span>')
+                        .addClass('fa fa-window-close')
+                        .click(function(e) {
+                            parent.show();
+                            parent.find('a').show();
+                            container.remove();
+                        })
+                        .appendTo(container);
+                }
+            });
         if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
             result.parent().addClass('ui-state-error-custom ui-corner-all');
         }
@@ -2094,48 +2322,73 @@ UserPage = function() {
 
     function appendCustomEditDateTime(field, element) {
         var date = field.Value == null ? null : window.parent.parent.Ts.Utils.getMsDate(field.Value);
-        var result = $('<a>').attr('href', '#').text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()))).addClass('value ui-state-default ts-link').appendTo(element).after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>').click(function(e) {
-            e.preventDefault();
-            if (canEdit) {
-                $('.user-cutstom-edit').prev().show().next().remove();
-                $(this).hide();
-                var parent = $(this).parent();
-                var container = $('<div>').addClass('user-cutstom-edit').css('marginTop', '1em').insertAfter($(this));
-                var fieldValue = parent.closest('.user-name-value').data('field').Value;
-                var input = $('<input type="text">').addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input').appendTo(container).datetimepicker().datetimepicker('setDate', window.parent.parent.Ts.Utils.getMsDate(fieldValue)).focus();
+        var result = $('<a>')
+            .attr('href', '#')
+            .text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern())))
+            .addClass('value ui-state-default ts-link')
+            .appendTo(element)
+            .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+            .click(function(e) {
+                e.preventDefault();
+                if (canEdit) {
+                    $('.user-cutstom-edit').prev().show().next().remove();
+                    $(this).hide();
+                    var parent = $(this).parent();
 
-                $('<span>').addClass('fa fa-check-square').click(function(e) {
-                    parent.show().find('img').show();
-                    var value = window.parent.parent.Ts.Utils.getMsDate(input.datetimepicker('getDate'));
-                    container.remove();
-                    if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                        result.parent().addClass('ui-state-error-custom ui-corner-all');
-                    } else {
-                        result.parent().removeClass('ui-state-error-custom ui-corner-all');
-                    }
-                    window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function(result) {
-                        parent.find('img').hide().next().show().delay(800).fadeOut(400);
-                        parent.closest('.user-name-value').data('field', result);
-                        var date = result.Value === null ? null : window.parent.parent.Ts.Utils.getMsDate(result.Value);
-                        parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()))).show();
+                    var container = $('<div>')
+                        .addClass('user-cutstom-edit')
+                        .css('marginTop', '1em')
+                        .insertAfter($(this));
 
-                    }, function() {
-                        alert("There was a problem saving your user property.");
-                    });
-                }).appendTo(container);
+                    var fieldValue = parent.closest('.user-name-value').data('field').Value;
 
-                $('<span>').addClass('fa fa-window-close').click(function(e) {
-                    parent.show();
-                    parent.find('a').show();
-                    container.remove();
-                }).appendTo(container);
-            }
-        });
+                    var input = $('<input type="text">')
+                        .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
+                        .appendTo(container)
+                        .datetimepicker()
+                        .datetimepicker('setDate', window.parent.parent.Ts.Utils.getMsDate(fieldValue))
+                        .focus();
+
+                    $('<span>')
+                        .addClass('fa fa-check-square')
+                        .click(function(e) {
+                            parent.show().find('img').show();
+                            var value = window.parent.parent.Ts.Utils.getMsDate(input.datetimepicker('getDate'));
+                            container.remove();
+                            if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                                result.parent().addClass('ui-state-error-custom ui-corner-all');
+                            } else {
+                                result.parent().removeClass('ui-state-error-custom ui-corner-all');
+                            }
+                            window.parent.parent.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function(result) {
+                                parent.find('img').hide().next().show().delay(800).fadeOut(400);
+                                parent.closest('.user-name-value').data('field', result);
+                                var date = result.Value === null ? null : window.parent.parent.Ts.Utils.getMsDate(result.Value);
+                                parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(window.parent.parent.Ts.Utils.getDateTimePattern()))).show();
+
+                            }, function() {
+                                alert("There was a problem saving your user property.");
+                            });
+                        })
+                        .appendTo(container);
+
+                    $('<span>')
+                        .addClass('fa fa-window-close')
+                        .click(function(e) {
+                            parent.show();
+                            parent.find('a').show();
+                            container.remove();
+                        })
+                        .appendTo(container);
+                }
+            });
         if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
             result.parent().addClass('ui-state-error-custom ui-corner-all');
         }
     }
 };
+
+
 
 UserPage.prototype = {
     constructor: UserPage,
