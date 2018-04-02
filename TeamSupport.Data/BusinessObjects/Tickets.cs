@@ -5,6 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
+using System.Data.Linq;
+using TeamSupport.Data.BusinessObjects;
+using Newtonsoft.Json;
 
 namespace TeamSupport.Data
 {
@@ -587,7 +590,7 @@ AND ot.TicketID = @TicketID
                     clonedTicketCustomValue.ModifierID = customValue.ModifierID;
                     clonedTicketCustomValue.DateCreated = customValue.DateCreatedUtc;
                     clonedTicketCustomValue.DateModified = customValue.DateModifiedUtc;
-					clonedTicketCustomValue.OrganizationID = loginUser.OrganizationID;
+                    clonedTicketCustomValue.OrganizationID = loginUser.OrganizationID;
                 }
 
                 clonedCustomValues.BulkSave();
