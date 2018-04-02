@@ -13,15 +13,8 @@ namespace WatsonToneAnalyzer
     public static class Program
     {
 
-        //private static EventLog _eventLog = new EventLog();
-
         static void Main(string[] args)
         {
-            //if (!EventLog.SourceExists("WatsonToneAnalyzer"))
-            //    EventLog.CreateEventSource("WatsonToneAnalyzer", "MyNewLog");
-            //_eventLog.Source = "WatsonToneAnalyzer";
-            //_eventLog.Log = "MyNewLog";
-
             if (!Environment.UserInteractive)
                 // running as service
                 using (var service = new WatsonToneAnalyzerService())
@@ -40,8 +33,6 @@ namespace WatsonToneAnalyzer
 
         public static void Start(string[] args)
         {
-            //_eventLog.WriteEntry("In OnStart");
-
             //ActionsToAnalyzer.GetHTML();
             //System.Threading.Thread.Sleep(1000);
             WatsonAnalyzer.AnalyzeActions();
@@ -50,7 +41,6 @@ namespace WatsonToneAnalyzer
 
         public static void Stop()
         {
-            //_eventLog.WriteEntry("In OnStop");
             // onstop code here
         }
     }
