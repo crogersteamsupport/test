@@ -97,6 +97,7 @@
     <Compile Include="TicketSentiment.cs" />
     <Compile Include="ToneAnalysisMain.cs" />
     <Compile Include="WatsonAnalyzer.cs" />
+    <Compile Include="WatsonPostContent.cs" />
     <Compile Include="WatsonToneAnalyzerService.cs">
       <SubType>Component</SubType>
     </Compile>

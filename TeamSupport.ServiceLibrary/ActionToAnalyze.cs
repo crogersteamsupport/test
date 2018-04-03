@@ -37,16 +37,39 @@ namespace WatsonToneAnalyzer
         public string ActionDescription;
 
         /// <summary>remove HTML, whitespace, email addresses...</summary>
-        public string WatsonText() { return CleanStringV2(ActionDescription); }
+        public string WatsonText() { return CleanStringV3(ActionDescription); }
 
         /// <summary> see ts-app\TeamSupport.Data\BusinessObjects\ActionToAnalyze.cs CleanStringV2 </summary>
-        public static string CleanStringV2(string RawHtml)
+        public static string CleanStringV3(string RawHtml)
         {
             String text = Regex.Replace(RawHtml, @"<[^>]*>", String.Empty); //remove html tags
             text = Regex.Replace(text, "&nbsp;", " "); //remove HTML space
             text = Regex.Replace(text, @"[\d-]", " "); //removes all digits [0-9]
             text = Regex.Replace(text, @"[\w\d]+\@[\w\d]+\.com", " "); //removes email adresses
             text = Regex.Replace(text, @"\s+", " ");   // remove whitespace
+            if (text.Length > 500)
+                text = text.Substring(0, 499);
+            return text;
+        }
+
+        public static String CleanStringV2(String RawHtml)
+        {
+            String Html = Regex.Replace(RawHtml, @"<[^>]*>", String.Empty); //removes html tags
+            Html = Regex.Replace(Html, "nbsp;", " "); //removes strange nbsp tags
+            Html = Regex.Replace(Html, @"[\d-]", " "); //removes all digits
+            Html = Regex.Replace(Html, @"[\w\d]+\@[\w\d]+\.com", " "); //removes email adresses
+            StringBuilder sb = new StringBuilder();
+            char previous = ' ';
+            foreach (char c in Html)  //goes through every charecter in the string and only passes on valid charecters to the new string
+            {
+                if ((c== '!') || (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '.' && previous != '.' || c == ' ' && previous != ' ' || c == '?')
+                {
+                    sb.Append(c);
+                }
+                previous = c;
+            }
+
+            string text = sb.ToString();
             if (text.Length > 500)
                 text = text.Substring(0, 499);
             return text;

@@ -149,49 +149,49 @@ namespace WatsonToneAnalyzer
             //Create Json Readable String with user input:    
             try
             {
-                if (InputText != null || InputText != "")
-                {
+                // let empty text fall through so we get it off the action sentiments list
+                if(InputText == null)
+                    return;
 
-                    //This is the format that Watson excepts for the Json Input. The two text fields have to be formatted without any protected charecters
-                    //String jsonString = "{\r\n  \"utterances\": [\r\n    {\r\n      \"text\":" + "\"" + InputText + "\"" + ",\r\n      \"user\":" + "\"" + UserID + "\"" + "\r\n  }\r\n  ]\r\n}\r\n";
+                //This is the format that Watson excepts for the Json Input. The two text fields have to be formatted without any protected charecters
+                WatsonPostContent toJson = new WatsonPostContent();
+                toJson.Add(UserID, InputText);
+                string jsonString = toJson.ToString();
 
-                    string jsonString = String.Format(@"{{""utterances"": [ {{ ""text"":""{0}"", ""user"":""{1}"" }} ]}}", InputText, UserID);
+                //EventLog.WriteEntry(EVENT_SOURCE, "****HTTP_POST1" + jsonString);
 
-                    //EventLog.WriteEntry(EVENT_SOURCE, "****HTTP_POST1" + jsonString);
+                using (HttpClient client = new HttpClient())
+                {   //Establish client
+                    //Concatonate credentials and pass authorization to the client header
+                    var Auth = WatsonUsername + ":" + WatsonPassword;
+                    var byteArray = Encoding.ASCII.GetBytes(Auth);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
 
-                    using (HttpClient client = new HttpClient())
-                    {   //Establish client
-                        //Concatonate credentials and pass authorization to the client header
-                        var Auth = WatsonUsername + ":" + WatsonPassword;
-                        var byteArray = Encoding.ASCII.GetBytes(Auth);
-                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+                    //add header with input type: json
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                        //add header with input type: json
-                        client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    //Make Post call and await response
+                    using (var response = await client.PostAsJsonAsync(WatsonGatewayUrl, JObject.Parse(jsonString)))
+                    {
+                        HttpContent content = response.Content;
 
-                        //Make Post call and await response
-                        using (var response = await client.PostAsJsonAsync(WatsonGatewayUrl, JObject.Parse(jsonString)))
-                        {
-                            HttpContent content = response.Content;
+                        //EventLog.WriteEntry(EVENT_SOURCE, "****HTTP_POST2" + content.ToString());
+                        //Format response and write to console (should be changed eventually to post to table using sql protocol
+                        var formatted = response.Content.ReadAsStringAsync().Result ?? " ";
+                        string result = await content.ReadAsStringAsync() ?? " ";
 
-                            //EventLog.WriteEntry(EVENT_SOURCE, "****HTTP_POST2" + content.ToString());
-                            //Format response and write to console (should be changed eventually to post to table using sql protocol
-                            var formatted = response.Content.ReadAsStringAsync().Result ?? " ";
-                            string result = await content.ReadAsStringAsync() ?? " ";
+                        //Create result object to organize response
+                        var ResultResponse = new Response();
+                        ResultResponse.ActionID = UserID;
+                        ResultResponse.InputText = InputText;
 
-                            //Create result object to organize response
-                            var ResultResponse = new Response();
-                            ResultResponse.ActionID = UserID;
-                            ResultResponse.InputText = InputText;
+                        //EventLog.WriteEntry(EVENT_SOURCE, "****HTTP_POST3" + InputText.ToString());
+                        ResultResponse.WatsonResponse = result;
 
-                            //EventLog.WriteEntry(EVENT_SOURCE, "****HTTP_POST3" + InputText.ToString());
-                            ResultResponse.WatsonResponse = result;
-
-                            //EventLog.WriteEntry(EVENT_SOURCE, "****HTTP_POST4" + content.ToString());
-                            callback(ResultResponse); //returns the response object to pass on to the postSQL class
-                                                      //EventLog.WriteEntry(EVENT_SOURCE, "****HTTP_POST5" + ResultResponse.WatsonResponse.ToString());
-                        }
+                        //EventLog.WriteEntry(EVENT_SOURCE, "****HTTP_POST4" + content.ToString());
+                        callback(ResultResponse); //returns the response object to pass on to the postSQL class
+                                                  //EventLog.WriteEntry(EVENT_SOURCE, "****HTTP_POST5" + ResultResponse.WatsonResponse.ToString());
                     }
                 }
             }
