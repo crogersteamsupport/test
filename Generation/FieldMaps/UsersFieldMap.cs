@@ -7,7 +7,7 @@ using System.Data.SqlClient;
 
 namespace TeamSupport.Data
 {
-  
+
   public partial class Users
   {
     protected override void BuildFieldMap()
@@ -86,6 +86,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("CanChangeCommunityVisibility", "CanChangeCommunityVisibility", false, false, false);
       _fieldMap.AddMap("FilterInactive", "FilterInactive", false, false, false);
       _fieldMap.AddMap("DisableExporting", "DisableExporting", false, false, false);
+      _fieldMap.AddMap("DisablePublic", "DisablePublic", false, false, false);
       _fieldMap.AddMap("CanCreateProducts", "CanCreateProducts", false, false, false);
       _fieldMap.AddMap("CanEditProducts", "CanEditProducts", false, false, false);
       _fieldMap.AddMap("CanCreateVersions", "CanCreateVersions", false, false, false);
@@ -102,8 +103,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ImportFileID", "ImportFileID", false, false, false);
       _fieldMap.AddMap("PortalLimitOrgChildrenTickets", "PortalLimitOrgChildrenTickets", false, false, false);
       _fieldMap.AddMap("CanBulkMerge", "CanBulkMerge", false, false, false);
-            
+
     }
   }
-  
+
 }

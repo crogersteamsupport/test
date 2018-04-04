@@ -24,6 +24,11 @@ div.action .header .action-options {
     text-align:right;
     width:100%;
 }
+
+div.action .header .action-option-items {
+    padding-right:30px;
+}
+
 div.action .header .action-option-items a {
     color:#777;
     margin-left:5px;
