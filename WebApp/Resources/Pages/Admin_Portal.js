@@ -148,6 +148,11 @@ AdminPortal = function () {
         $('.kb-cat-save-panel').show();
     });
 
+    $('.dropdownChange').change(function(e)
+    {
+        $('.portal-save-panel').show();
+    })
+
     var enablingCommunity = false;
     $('.com-enable').click(function (e) {
         e.preventDefault();
@@ -237,6 +242,7 @@ AdminPortal = function () {
                 parent.parent.Ts.Settings.Organization.read('ExternalPortalLink', '', function (externalLink) {
                     _portalOption = po;
                     loadValues(organization, _portalOption, externalLink);
+                    loadHubOptions();
                 });
             });
         });
@@ -309,12 +315,11 @@ AdminPortal = function () {
         $('#portal_landing_url').text(buildDomain('publicportal') + portalOption.PortalName).attr('href', buildDomain('publicportal') + portalOption.PortalName);
         $('#portal_public_landing_body').val(portalOption.PublicLandingPageBody);
         $('#portal_public_landing_header').val(portalOption.PublicLandingPageHeader);
-
         $('#portal_com_enabled').prop('checked', portalOption.DisplayForum == null ? false : portalOption.DisplayForum);
-
         $('.com-enable').button('option', 'label', (portalOption.DisplayForum == true ? "Disable Community" : "Enable Community"));
-
         $('#agentrating-enabled').prop('checked', organization.AgentRating);
+        $('#portal_forwarding').prop('checked', portalOption.PortalForward == '' ? false : true);
+        $('#portal_foward_location').attr('disabled', portalOption.PortalForward == '' ? true : false)
 
     }
 
@@ -371,6 +376,8 @@ AdminPortal = function () {
         portalOption.DisplayForum = $('#portal_com_enabled').prop('checked');
         portalOption.DisplayFbArticles = $('#portal_display_fb_article').prop('checked');
         portalOption.DisplayFbKB = $('#portal_display_fb_kb').prop('checked');
+
+        portalOption.PortalForward = $('#portal_forwarding').prop('checked') ? $('#portal_foward_location').val() : '';
         // show some indicator
 
 
@@ -852,8 +859,6 @@ AdminPortal = function () {
             }
         });
         $('.admin-portal-columns').combobox();
-
-
     }
 
     loadGridData();
@@ -1378,6 +1383,19 @@ AdminPortal = function () {
         parent.parent.Ts.Services.Organizations.ResetCDI();
         $(this).hide();
     });
+
+    $('#portal_forwarding').click(function () {
+        $('#portal_foward_location').attr('disabled', !this.checked)
+    });
+
+    function loadHubOptions() {
+        parent.parent.Ts.Services.Admin.GetHubRedirectList(function (hubResults) {
+            for (var i = 0; i < hubResults.length; i++) {
+                $('<option>').attr('value', (hubResults[i])).attr('selected', _portalOption.PortalForward == hubResults[i] ? true : false).text(hubResults[i]).appendTo('#portal_foward_location');
+            }
+        });
+    }
+
 };
 
 

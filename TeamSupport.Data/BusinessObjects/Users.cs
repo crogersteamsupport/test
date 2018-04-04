@@ -1690,44 +1690,19 @@ SET IDENTITY_INSERT Users Off
             }
         }
 
-		  public string MergeContacts(User contact, User loosingContact, LoginUser loginUser)
+		  public string MergeContactsFiles(User contact, User loosingContact, LoginUser loginUser)
 		  {
 			  string lossingContactNameForHistoryEntries = loosingContact.FirstLastName + " (" + loosingContact.UserID.ToString() + ")";
-			  String errLocation = "";
+			  String errLocation = "";		  
 
 			  try
 			  {
-				  contact.Collection.MergeUpdateTickets(loosingContact.UserID, contact.UserID, lossingContactNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-				  errLocation = string.Format("Error merging contact tickets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-			  }
+				    contact.Collection.MergeUpdateFiles(loosingContact.UserID, contact.UserID, lossingContactNameForHistoryEntries, loginUser);
+                    contact.NeedsIndexing = true;
+                    contact.Collection.Save();
 
-			  try
-			  {
-				  contact.Collection.MergeUpdateNotes(loosingContact.UserID, contact.UserID, lossingContactNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging contact notes. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  contact.Collection.MergeUpdateFiles(loosingContact.UserID, contact.UserID, lossingContactNameForHistoryEntries, loginUser);
-			  }
+                    return errLocation;
+            }
 			  catch (Exception e)
 			  {
 				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
@@ -1737,102 +1712,10 @@ SET IDENTITY_INSERT Users Off
 				  log.Collection.Save();
 
 				  errLocation = string.Format("Error merging contact files. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-			  }
+                  return errLocation;
+            }			  
 
-			  try
-			  {
-				  contact.Collection.MergeUpdateProducts(loosingContact.UserID, contact.UserID, lossingContactNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging contact products. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  contact.Collection.MergeUpdateAssets(loosingContact.UserID, contact.UserID, lossingContactNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging contact assets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  contact.Collection.MergeUpdateRatings(loosingContact.UserID, contact.UserID, lossingContactNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging contact ratings. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  contact.Collection.MergeUpdateCustomValues(loosingContact.UserID, contact.UserID, lossingContactNameForHistoryEntries, loginUser);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging contact custom values. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  contact.Collection.DeleteRecentlyViewItems(loosingContact.UserID);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error merging company ratings. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  try
-			  {
-				  contact.Collection.DeleteFromDB(loosingContact.UserID);
-			  }
-			  catch (Exception e)
-			  {
-				  ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
-				  log.ExceptionName = "Merge Exception " + e.Source;
-				  log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-				  log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-				  log.Collection.Save();
-
-				  errLocation = string.Format("Error deleting losing company from database. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-			  }
-
-			  contact.NeedsIndexing = true;
-			  contact.Collection.Save();
-
-			  return errLocation;
+			  
 		  }
 
         public void MergeUpdateActions(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
@@ -2168,5 +2051,6 @@ SET IDENTITY_INSERT Users Off
 				  ExecuteNonQuery(command, "RecentlyViewedItems");
 			  }
 		  }
+
 	 }
 }

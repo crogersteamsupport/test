@@ -78,20 +78,20 @@ var initEditor = function (element, shouldResize, init, postinit) {
                 ed.on('init', function (e) {
                     _mainFrame.Ts.System.refreshUser(function () {
                         if (_mainFrame.Ts.System.User.FontFamilyDescription != "Unassigned") {
-                            ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily));
+                            var res = ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily));
                             FontName = GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily);
                         }
                         else if (_mainFrame.Ts.System.Organization.FontFamily != "Unassigned") {
-                            ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily));
+                            var res = ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily));
                             FontName = GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily);
                         }
 
                         if (_mainFrame.Ts.System.User.FontSize != "0") {
-                            ed.execCommand("FontSize", false, GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize));
+                            var res = ed.execCommand("FontSize", false, GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize));
                             FontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize);
                         }
                         else if (_mainFrame.Ts.System.Organization.FontSize != "0") {
-                            ed.execCommand("FontSize", false, GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize));
+                            var res = ed.execCommand("FontSize", false, GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize));
                             FontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize);
                         }
                         var content = '<p style="{0} {1}"></p>';
@@ -104,9 +104,10 @@ var initEditor = function (element, shouldResize, init, postinit) {
                         else
                             content = content.replace(/\{1\}/g, "");
                         ed.setContent(ed.getContent() + content);
+                        ed.focus();
 
-                      if(postinit) postinit();
-                      // ed.focus();
+                        if (postinit) postinit();
+                         
                     });
                     _insertedKBTicketID = null;
                 });
@@ -321,7 +322,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
 													  screenSharingPublisher,
 													  function (error) {
 													  	if (error) {
-													  		alert('Screen Recording will not statrt because, ' + error.message);
+													  		alert('Screen Recording will not start because, ' + error.message);
 													  		element.parent().find('#recordScreenContainer').hide();
 													  		element.parent().find('#rcdtokScreen').hide();
 													  		element.parent().find('#canceltokScreen').hide();
@@ -591,7 +592,8 @@ var initScheduledReportEditor = function (element, init, postinit) {
                     else if (_mainFrame.Ts.System.Organization.FontSize != "0") {
                         ed.execCommand("FontSize", false, _mainFrame.Ts.System.Organization.FontSizeDescription);
                     }
-
+                    ed.focus();
+                    
                     if (postinit) postinit();
                 });
             });
