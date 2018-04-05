@@ -38,8 +38,8 @@ namespace TeamSupport.Data.BusinessObjects
         public string ActionDescription;
 
         /// <summary> 
-        /// Previously the watson service used Stored Procedure dbo.ActionsGetForWatson 
-        /// to create records in Table ActionToAnalyze
+        /// The watson service uses Stored Procedure dbo.ActionsGetForWatson to find records for watson ActionToAnalyze
+        /// This routine performs the equivalent checks
         /// </summary>
         /// <param name="a"></param>
         public static void QueueForWatsonToneAnalysis(Action a, SqlConnection connection, LoginUser user)
