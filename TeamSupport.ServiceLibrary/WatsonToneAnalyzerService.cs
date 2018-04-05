@@ -102,7 +102,7 @@ namespace WatsonToneAnalyzer
             if (++_timerCount > 20)
             {
                 _eventLog.WriteEntry("Query for ActionsToAnalyze", EventLogEntryType.Information, eventId++);
-                ActionsToAnalyzer.GetHTML();
+                ActionsToAnalyzer.FindActionsToAnalyze();
                 _timerCount = 0;
             }
 

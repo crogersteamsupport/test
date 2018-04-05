@@ -32,7 +32,7 @@ namespace WatsonToneAnalyzer
             public string ActionDescription;
         }
 
-        public static void GetHTML()
+        public static void FindActionsToAnalyze()
         {
             try
             {
