@@ -53,7 +53,7 @@ namespace WatsonToneAnalyzer
                             OrganizationID = a.OrganizationID,
                             IsAgent = a.IsAgent == 1,
                             DateCreated = a.DateCreated,
-                            ActionDescription = ActionToAnalyze.CleanStringV2(a.ActionDescription),   // clean the text of HTML and special characters
+                            ActionDescription = ActionToAnalyze.CleanString(a.ActionDescription),   // clean the text of HTML and special characters
                         };
 
                         if (!table.Where(u => u.ActionID == actionToAnalyze.ActionID).Any())

@@ -57,43 +57,60 @@ namespace WatsonToneAnalyzer
         // new ticket for organization
         public static void AddTicket(TicketSentiment sentiment, DataContext db)
         {
-            Table<OrganizationSentiment> table = db.GetTable<OrganizationSentiment>();
-            var results = from u in table where (u.OrganizationID == sentiment.OrganizationID) && (u.IsAgent == sentiment.IsAgent) select u;
-            OrganizationSentiment score = results.FirstOrDefault();
-            if (score == null)
+            try
             {
-                score = new OrganizationSentiment()
+                Table<OrganizationSentiment> table = db.GetTable<OrganizationSentiment>();
+                var results = from u in table where (u.OrganizationID == sentiment.OrganizationID) && (u.IsAgent == sentiment.IsAgent) select u;
+                OrganizationSentiment score = results.FirstOrDefault();
+                if (score == null)
                 {
-                    OrganizationID = sentiment.OrganizationID,
-                    IsAgent = sentiment.IsAgent,
-                    OrganizationSentimentScore = sentiment.TicketSentimentScore,
-                    TicketSentimentCount = 1
-                };
-                table.InsertOnSubmit(score);
+                    score = new OrganizationSentiment()
+                    {
+                        OrganizationID = sentiment.OrganizationID,
+                        IsAgent = sentiment.IsAgent,
+                        OrganizationSentimentScore = sentiment.TicketSentimentScore,
+                        TicketSentimentCount = 1
+                    };
+                    table.InsertOnSubmit(score);
+                }
+                else
+                {
+                    int count = score.TicketSentimentCount;
+                    score.OrganizationSentimentScore = ((count * score.OrganizationSentimentScore) + sentiment.TicketSentimentScore) / (count + 1);
+                    score.TicketSentimentCount = count + 1;
+                }
+                db.SubmitChanges();
             }
-            else
+            catch (Exception e)
             {
-                int count = score.TicketSentimentCount;
-                score.OrganizationSentimentScore = ((count * score.OrganizationSentimentScore) + sentiment.TicketSentimentScore) / (count + 1);
-                score.TicketSentimentCount = count + 1;
+                System.Diagnostics.EventLog.WriteEntry(EVENT_SOURCE, "Unable to update ticket on Organization" + e.Message + " ----- STACK: " + e.StackTrace.ToString());
+                Console.WriteLine(e.ToString());
             }
-            db.SubmitChanges();
         }
 
         // ticket has new action - recalculate
         public static void UpdateTicket(TicketSentiment sentiment, int oldScore, DataContext db)
         {
-            // new ticket score == old ticket score
-            if (sentiment.TicketSentimentScore == oldScore)
-                return;
+            try
+            {
+                // new ticket score == old ticket score
+                if (sentiment.TicketSentimentScore == oldScore)
+                    return;
 
-            Table<OrganizationSentiment> table = db.GetTable<OrganizationSentiment>();
-            var results = from u in table where (u.OrganizationID == sentiment.OrganizationID) && (u.IsAgent == sentiment.IsAgent) select u;
-            OrganizationSentiment score = results.FirstOrDefault();
+                Table<OrganizationSentiment> table = db.GetTable<OrganizationSentiment>();
+                var results = from u in table where (u.OrganizationID == sentiment.OrganizationID) && (u.IsAgent == sentiment.IsAgent) select u;
+                OrganizationSentiment score = results.FirstOrDefault();
 
-            int count = score.TicketSentimentCount;
-            score.OrganizationSentimentScore = score.OrganizationSentimentScore + (sentiment.TicketSentimentScore - oldScore) / count;
-            db.SubmitChanges();
+                int count = score.TicketSentimentCount;
+                score.OrganizationSentimentScore = score.OrganizationSentimentScore + (sentiment.TicketSentimentScore - oldScore) / count;
+                db.SubmitChanges();
+            }
+            catch(Exception e)
+            {
+                string message = String.Format("Unable to update ticket {0} on Organization {1} ", sentiment.TicketID, sentiment.OrganizationID);
+                System.Diagnostics.EventLog.WriteEntry(EVENT_SOURCE, message + e.Message + " ----- STACK: " + e.StackTrace.ToString());
+                Console.WriteLine(e.ToString());
+            }
         }
 
     }

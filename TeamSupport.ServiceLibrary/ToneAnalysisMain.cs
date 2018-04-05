@@ -33,7 +33,7 @@ namespace WatsonToneAnalyzer
 
         public static void Start(string[] args)
         {
-            //ActionsToAnalyzer.GetHTML();
+            //ActionsToAnalyzer.FindActionsToAnalyze();
             //System.Threading.Thread.Sleep(1000);
             WatsonAnalyzer.AnalyzeActions();
 
