@@ -5666,16 +5666,16 @@ function watson (ticketnumber) {
         window.parent.Ts.Services.TicketPage.WatsonTicket(ticketid, function (result) {
             if (result != 'negative' && result != 'nothing' && result != 'hidden') {
                 var data = jQuery.parseJSON(result);
-                var sentiments = { 1:'Sad', 2:'Frustrated', 3:'Satisfied', 4:'Excited', 5:'Polite', 6:'Impolite', 7: 'Sympathetic' }
                 var display = [];
-                $.each(data.watson, function(key,sentiment) {
-                    if (sentiment.SentimentID > 0) {
-                        var emotion = sentiments[sentiment.SentimentID];
-                        var percent = Math.round(sentiment.SentimentScore * 100);
-                        display.push(emotion + ': ' + percent + '%');
-                    }
-                });
-                $('#watson').text(display.join(', '));
+                display.push(data.TicketSentimentScore + " - ");
+                if(data.Sad) display.push("Sad");
+                if(data.Frustrated) display.push("Frustrated");
+                if(data.Satisfied) display.push("Satisfied");
+                if(data.Excited) display.push("Excited");
+                if(data.Polite) display.push("Polite");
+                if(data.Impolite) display.push("Impolite");
+                if(data.Sympathetic) display.push("Sympathetic");
+                $('#watson').append(" " + display.join('   '));
             }
         });
     });

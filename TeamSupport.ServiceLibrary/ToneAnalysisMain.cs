@@ -35,14 +35,22 @@ namespace WatsonToneAnalyzer
             {
                 Program.Stop();
             }
+            int _timerCount = 0;
+
             public void OnTimer(object sender, System.Timers.ElapsedEventArgs args)
             {
                 Stopwatch sw = new Stopwatch();
 
                 sw.Start();
                 // TODO: Insert monitoring activities here.  
-                ActionsToAnalyzer.GetHTML();
-                System.Threading.Thread.Sleep(1000);
+
+                // only do the Action table query every 20 minutes to catch what we might have missed?
+                if (++_timerCount > 20)
+                {
+                    ActionsToAnalyzer.GetHTML();
+                    _timerCount = 0;
+                    System.Threading.Thread.Sleep(1000);
+                }
                 WatsonAnalyzer.GetAction();
                 sw.Stop();
                 //EventLog.WriteEntry("Application", "Elapsed =" + sw.Elapsed);
@@ -72,11 +80,11 @@ namespace WatsonToneAnalyzer
         private static void Start(string[] args)
         {
             // onstart code here
-            
-            ActionsToAnalyzer.GetHTML();
-            System.Threading.Thread.Sleep(1000);
+
+            //ActionsToAnalyzer.GetHTML();
+            //System.Threading.Thread.Sleep(1000);
             WatsonAnalyzer.GetAction();
-            
+
         }
 
         private static void Stop()
