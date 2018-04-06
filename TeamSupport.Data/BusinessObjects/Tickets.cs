@@ -2817,7 +2817,7 @@ AND u.OrganizationID = @OrganizationID
             }
         }
 
-        public static int GetProductVersionOpenTicketCount(LoginUser loginUser, int productVersionID, int ticketTypeID)
+        public static int GetProductVersionOpenTicketCount(LoginUser loginUser, int productVersionID, int ticketTypeID, int organizationID)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -2831,18 +2831,19 @@ AND u.OrganizationID = @OrganizationID
         WHERE 
           t.TicketTypeID = @TicketTypeID
           AND ts.IsClosed = 0
+          and t.organizationid = @organizationID
           AND (t.ReportedVersionID = @ProductVersionID OR t.SolvedVersionID = @ProductVersionID)
         ";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@ProductVersionID", productVersionID);
                 command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
-
+                command.Parameters.AddWithValue("@organizationID", organizationID);
                 Tickets tickets = new Tickets(loginUser);
                 return (int)tickets.ExecuteScalar(command, "Tickets");
             }
         }
 
-        public static int GetProductVersionClosedTicketCount(LoginUser loginUser, int productVersionID, int ticketTypeID)
+        public static int GetProductVersionClosedTicketCount(LoginUser loginUser, int productVersionID, int ticketTypeID, int organizationID)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -2856,12 +2857,13 @@ AND u.OrganizationID = @OrganizationID
         WHERE 
           t.TicketTypeID = @TicketTypeID
           AND ts.IsClosed = 1
+          and t.organizationid = @organizationID
           AND (t.ReportedVersionID = @ProductVersionID OR t.SolvedVersionID = @ProductVersionID)
         ";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@ProductVersionID", productVersionID);
                 command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
-
+                command.Parameters.AddWithValue("@organizationID", organizationID);
                 Tickets tickets = new Tickets(loginUser);
                 return (int)tickets.ExecuteScalar(command, "Tickets");
             }
@@ -3561,7 +3563,7 @@ AND
             }
         }
 
-        public int GetProductVersionTicketCount(int productVersionID, int closed)
+        public int GetProductVersionTicketCount(int productVersionID, int closed, int organizationID)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -3574,11 +3576,13 @@ AND
             ON t.TicketStatusID = ts.TicketStatusID
         WHERE 
           ts.IsClosed = @closed
+          and t.organizationid = @organizationID
           AND (t.ReportedVersionID = @ProductVersionID OR t.SolvedVersionID = @ProductVersionID)
         ";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@ProductVersionID", productVersionID);
                 command.Parameters.AddWithValue("@closed", closed);
+                command.Parameters.AddWithValue("@organizationID", organizationID);
                 object o = ExecuteScalar(command);
                 if (o == null || o == DBNull.Value) return 0;
                 return (int)o;
