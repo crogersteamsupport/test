@@ -37,10 +37,9 @@ namespace WatsonToneAnalyzer
         public string ActionDescription;
 
         /// <summary>remove HTML, whitespace, email addresses...</summary>
-        public string WatsonText() { return CleanStringV2(ActionDescription); }
+        public string WatsonText() { return CleanString(ActionDescription); }
 
-        /// <summary> see ts-app\TeamSupport.Data\BusinessObjects\ActionToAnalyze.cs CleanStringV2 </summary>
-        public static string CleanStringV2(string RawHtml)
+        public static string CleanString(string RawHtml)
         {
             String text = Regex.Replace(RawHtml, @"<[^>]*>", String.Empty); //remove html tags
             text = Regex.Replace(text, "&nbsp;", " "); //remove HTML space

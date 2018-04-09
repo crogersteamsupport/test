@@ -233,6 +233,10 @@ button:focus {
     padding:3px 0px;
     font-size:11px;
 }
+#ticket-Sentiment {
+    padding: 3px 0px;
+    font-size: 11px;
+}
 #ticket-Community-RO,
 #ticket-TimeSpent {
     padding:3px 0px;

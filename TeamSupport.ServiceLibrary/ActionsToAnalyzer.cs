@@ -12,6 +12,7 @@ using System.Configuration;
 using System.Collections.Specialized;
 using System.Configuration.Assemblies;
 using System.Data.Linq;
+using System.Data.Linq.Mapping;
 
 namespace WatsonToneAnalyzer
 {
@@ -20,57 +21,46 @@ namespace WatsonToneAnalyzer
     /// </summary>
     public class ActionsToAnalyzer
     {
-
-        public static void GetHTML()
+        class ActionGetForWatson
         {
-            Console.WriteLine("GettingHTML");
-            //opens a sqlconnection at the specified location
+            public int ActionID;
+            public int TicketID;
+            public int UserID;
+            public int OrganizationID;
+            public int IsAgent;
+            public DateTime DateCreated;
+            public string ActionDescription;
+        }
+
+        public static void FindActionsToAnalyze()
+        {
             try
             {
-                String ConnectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
-
-                using (SqlConnection sqlConnection1 = new SqlConnection(ConnectionString))
+                string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
+                using (SqlConnection sqlConnection1 = new SqlConnection(connectionString))
+                using (DataContext db = new DataContext(sqlConnection1))
                 {
-
-                    using (SqlCommand cmd = new SqlCommand())
+                    string batchSize = ConfigurationManager.AppSettings.Get("ActionsBatchSize");
+                    var results = db.ExecuteQuery<ActionGetForWatson>("Exec " + "dbo.ActionsGetForWatson @ActionsBatchSize={0}", batchSize);
+                    Table<ActionToAnalyze> table = db.GetTable<ActionToAnalyze>();
+                    foreach (ActionGetForWatson a in results)
                     {
-                        SqlDataReader reader;
-                        //enters the GET querry from the action table and saves the response 
-                        cmd.CommandText = "dbo.ActionsGetForWatson";
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@ActionsBatchSize", ConfigurationManager.AppSettings.Get("ActionsBatchSize"));
-                        cmd.Connection = sqlConnection1;
-                        sqlConnection1.Open();
-
-
-                        //opens up a reading channel and selects a row for reading
-                        using (reader = cmd.ExecuteReader())
+                        ActionToAnalyze actionToAnalyze = new ActionToAnalyze()
                         {
-                            DataContext db = new DataContext(sqlConnection1);
-                            Table<ActionToAnalyze> table = db.GetTable<ActionToAnalyze>();
+                            ActionID = a.ActionID,
+                            TicketID = a.TicketID,
+                            UserID = a.UserID,
+                            OrganizationID = a.OrganizationID,
+                            IsAgent = a.IsAgent == 1,
+                            DateCreated = a.DateCreated,
+                            ActionDescription = ActionToAnalyze.CleanString(a.ActionDescription),   // clean the text of HTML and special characters
+                        };
 
-                            while (reader.Read())
-                            {
-                                String Description = reader["Description"].ToString();
-                                Description = ActionToAnalyze.CleanStringV2(Description);
-                                // use Linq to avoid escape character problems with the SQL text interface...
-                                ActionToAnalyze actionToAnalyze = new ActionToAnalyze()
-                                {
-                                    ActionID = (int)reader["ActionID"],
-                                    TicketID = (int)reader["TicketID"],
-                                    UserID = (int)reader["CreatorID"],
-                                    OrganizationID = (int)reader["OrganizationID"],
-                                    IsAgent = (reader["IsAgent"].ToString() == "1"),
-                                    DateCreated = DateTime.Now,
-                                    ActionDescription = Description.ToString()
-                                };
-
-                                // insert if not found
-                                if (!table.Where(u => u.ActionID == actionToAnalyze.ActionID).Any())
-                                    table.InsertOnSubmit(actionToAnalyze);
-                            }
-                        }
+                        if (!table.Where(u => u.ActionID == actionToAnalyze.ActionID).Any())
+                            table.InsertOnSubmit(actionToAnalyze);
                     }
+
+                    db.SubmitChanges();
                 }
             }
             catch (Exception e)
@@ -80,6 +70,7 @@ namespace WatsonToneAnalyzer
                 Console.WriteLine(e.ToString());
             }
         }
+
     }
 
 }
