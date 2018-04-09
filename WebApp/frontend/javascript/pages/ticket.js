@@ -411,8 +411,7 @@ function SetupTicketPage() {
     $('#NewCustomerModal').on('shown.bs.modal', function () {
         if ((top.Ts.System.User.CanCreateContact) || top.Ts.System.User.IsSystemAdmin) {
             return;
-        }
-        else {
+        } else {
             $('#customer-email-input').prop("disabled", true);
             $('#customer-fname-input').prop("disabled", true);
             $('#customer-lname-input').prop("disabled", true);
@@ -580,7 +579,7 @@ function CreateNewActionLI() {
         e.stopPropagation();
         if ($(this).hasClass('click-disabled')) {
             return false;
-        } else if (window.parent.Ts.System.User.DisablePublic) {
+        } else if (window.parent.Ts.System.User.DisablePublic && !top.Ts.System.User.IsSystemAdmin) {
             alert('Your account cannot post public actions.');
             return false;
         } else {
@@ -4651,6 +4650,11 @@ function CreateTimeLineDelegates() {
         e.preventDefault();
         e.stopPropagation();
 
+        if (window.parent.Ts.System.User.DisablePublic && !top.Ts.System.User.IsSystemAdmin) {
+            alert('You cannot change action visibility.');
+            return false;
+        }
+
         var self     = $(this);
         var action   = self.closest('div.action').data().action;
         var applause = '#applause-' + action.RefID;
@@ -4879,6 +4883,10 @@ function CreateTimeLineDelegates() {
     $('.new-action-option-visible').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
+        if (window.parent.Ts.System.User.DisablePublic && !top.Ts.System.User.IsSystemAdmin) {
+            alert('You cannot change action visibility.');
+            return false;
+        }
         if (this.text == 'Private') {
             FlipNewActionBadge(false);
         } else {
