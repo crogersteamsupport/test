@@ -26,12 +26,12 @@ namespace TeamSupport.Data
 			}
 		}
 
-		public static string ReadString(LoginUser loginUser, string key, string defaultValue)
+		public static string ReadString(LoginUser loginUser, string key, string defaultValue, string category = "General")
 		{
-			return ReadString(loginUser, loginUser.UserID, key, defaultValue);
+			return ReadString(loginUser, loginUser.UserID, key, defaultValue, category);
 		}
 
-		public static string ReadString(LoginUser loginUser, int userID, string key, string defaultValue = "")
+		public static string ReadString(LoginUser loginUser, int userID, string key, string defaultValue = "", string category = "General")
 		{
 			string result = defaultValue;
 			using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
@@ -40,12 +40,22 @@ namespace TeamSupport.Data
 
 				SqlCommand command = new SqlCommand();
 				command.Connection = connection;
-				command.CommandText = "SELECT SettingValue FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@SettingKey)";
-				command.CommandType = CommandType.Text;
+                command.CommandType = CommandType.Text;
+
+                if (category.ToLower() == "general")
+                {
+                    command.CommandText = "SELECT SettingValue FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@SettingKey)";
+                }
+                else
+                {
+                    command.CommandText = "SELECT SettingValue FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@SettingKey) AND (Category=@Category)";
+                    command.Parameters.AddWithValue("@Category", category);
+                }
+
 				command.Parameters.AddWithValue("@UserID", userID);
 				command.Parameters.AddWithValue("@SettingKey", key);
 
-				SqlDataReader reader = command.ExecuteReader(CommandBehavior.SingleRow);
+                SqlDataReader reader = command.ExecuteReader(CommandBehavior.SingleRow);
 				if (reader.Read())
 				{
 					result = (string)reader[0];
@@ -71,12 +81,12 @@ namespace TeamSupport.Data
 
 		}
 
-		public static void WriteString(LoginUser loginUser, string key, string value)
+		public static void WriteString(LoginUser loginUser, string key, string value, string category = "General")
 		{
-			WriteString(loginUser, loginUser.UserID, key, value);
+			WriteString(loginUser, loginUser.UserID, key, value, category);
 		}
 
-		public static void WriteString(LoginUser loginUser, int userID, string key, string value)
+		public static void WriteString(LoginUser loginUser, int userID, string key, string value, string category = "General")
 		{
 
 
@@ -91,7 +101,7 @@ namespace TeamSupport.Data
 IF EXISTS(SELECT * FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@SettingKey))
   BEGIN
     UPDATE [dbo].[UserSettings]
-  	SET SettingValue = @SettingValue
+  	SET SettingValue = @SettingValue, Category @Category
     WHERE (UserID = @UserID)
 	  AND (SettingKey = @SettingKey)
   END
@@ -101,19 +111,26 @@ IF EXISTS(SELECT * FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@Set
 	  (
 		[UserID],
 		[SettingKey],
-		[SettingValue])
+		[SettingValue],
+        [Category])
 	  VALUES (
 		@UserID,
 		@SettingKey,
-		@SettingValue)
+		@SettingValue,
+        @Category)
   END";
 					command.Parameters.AddWithValue("@UserID", userID);
 					command.Parameters.AddWithValue("@SettingKey", key);
 					command.Parameters.AddWithValue("@SettingValue", value);
-					command.ExecuteNonQuery();
+                    command.Parameters.AddWithValue("@Category", category);
+                    
+
+                    command.ExecuteNonQuery();
 				}
 				connection.Close();
 			}
 		}
+
+        //TODO:  Add read category method
 	}
 }
