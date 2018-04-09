@@ -188,8 +188,7 @@ Selectize.define('sticky_placeholder', function(options) {
 Selectize.define('no_results', function(options) {
     var self = this;
 
-    options = $
-        .extend({
+    options = $.extend({
             message: 'No results found.',
             html: function(data) {
                 return ('<div class="selectize-dropdown ' + data.classNames + ' dropdown-empty-message">' + '<div class="selectize-dropdown-content" style="padding: 3px 12px">' + data.message + '</div>' + '</div>');
@@ -255,25 +254,18 @@ $(window).resize(function(e) {
 $(document).ready(function() {
     pagewidth();
     ticketmenu();
-
     _ticketNumber = window.parent.Ts.Utils.getQueryValue("TicketNumber", window);
-
     apiKey = "45228242";
-
     //Setup Ticket Elements
     SetupTicketPage();
-
     //Create Handlebar Helpers
     CreateHandleBarHelpers();
-
     //Create Dom Events
     CreateTicketToolbarDomEvents();
     CreateTimeLineDelegates();
-
     //Setup WC Area
     SetupWCArea();
     SetupPusher();
-
     var script = document.createElement('script');
     script.type = 'text/javascript';
     script.async = true;
@@ -307,7 +299,6 @@ $(document).ready(function() {
             });
         }
     });
-
     $('textarea.autogrow').autogrow();
 });
 
@@ -344,7 +335,6 @@ var loadTicket = function(ticketNumber, refresh) {
             });
         }
 
-
         $('#ticket-status-label').toggleClass('ticket-closed', _ticketInfo.Ticket.IsClosed);
         $('#ticket-visible').prop("checked", _ticketInfo.Ticket.IsVisibleOnPortal);
         $('#ticket-isKB').prop("checked", _ticketInfo.Ticket.IsKnowledgeBase);
@@ -354,43 +344,15 @@ var loadTicket = function(ticketNumber, refresh) {
         }
         SetCommunityCategory(_ticketInfo.Ticket.ForumCategory);
         SetDueDate(_ticketInfo.Ticket.DueDate);
-
         SetProduct(_ticketInfo.Ticket.ProductID);
         SetVersion(_ticketInfo.Ticket.ReportedVersionID);
         SetSolved(_ticketInfo.Ticket.SolvedVersionID);
-        //var $select = $('#ticket-Versions').selectize();
-        //var control = $select[0].selectize;
-        //control.destroy();
-        //$('#ticket-Versions').empty();
-
-        //$select = $('#ticket-Resolved').selectize();
-        //control = $select[0].selectize;
-        //control.destroy();
-        //$('#ticket-Resolved').empty();
-
-        ////SetProduct(_ticketInfo.Ticket.ProductID);
-
-        //if (window.parent.Ts.System.Organization.ProductType == window.parent.Ts.ProductType.Express || window.parent.Ts.System.Organization.ProductType === window.parent.Ts.ProductType.HelpDesk) {
-        //    $('#ticket-Product').closest('.form-horizontal').remove();
-        //    $('#ticket-Resolved').closest('.form-horizontal').remove();
-        //    $('#ticket-Versions').closest('.form-horizontal').remove();
-        //} else {
-        //    SetupProductSection();
-        //}
-        //SetProduct(_ticketInfo.Ticket.ProductID);
-        //var $select = $('#ticket-Versions').selectize();
-        //var control = $select[0].selectize;
-        //control.destroy();
-        //$('#ticket-Versions').empty();
-        ////$('#ticket-Resolved').empty();
-
         SetAssignedUser(_ticketInfo.Ticket.UserID);
         SetGroup(_ticketInfo.Ticket.GroupID);
         SetType(_ticketInfo.Ticket.TicketTypeID);
         SetStatus(_ticketInfo.Ticket.TicketStatusID);
         SetSeverity(_ticketInfo.Ticket.TicketSeverityID);
         CreateNewAction(_ticketInfo.Actions)
-
         setSLAInfo();
         AddCustomers(_ticketInfo.Customers);
         AddAssociatedTickets(_ticketInfo.Related);
@@ -407,7 +369,6 @@ var loadTicket = function(ticketNumber, refresh) {
         SetupSnowFieldValues();
         LoadGroups();
         LoadPlugins(info);
-
     });
 };
 
@@ -1342,38 +1303,6 @@ function SaveAction(_oldActionID, isPrivate, callback) {
             window.parent.Ts.Services.System.LogException("TinyMCE save action threw exception : " + ex.message + " . ticket " + _ticketID, "TinyMCE Error");
         }
 
-        //// Get Content Grab and Check
-        //if (saveError != 0) {
-        //	action.Description = tinymce.activeEditor.getContent();
-        //	if (action.Description == "" || action.Description == undefined) {
-        //		saveError = 1;
-        //		window.parent.Ts.Services.System.LogException("TinyMCE save action contains an empty string with getContent ticket " + _ticketID, "TinyMCE Error");
-        //	}
-
-        //	if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
-        //		saveError = 2;
-        //		window.parent.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with getContent ticket " + _ticketID, "TinyMCE Error");
-        //	}
-        //}
-        //// HTML Grab Check
-        //if (saveError != 0) {
-        //	action.Description = $('#action-new-editor').html();
-        //	if (action.Description == "") {
-        //		saveError = 1;
-        //		window.parent.Ts.Services.System.LogException("TinyMCE save action contains an empty string with .html ticket " + _ticketID, "TinyMCE Error");
-        //	}
-
-        //	if (action.Description == "<p><span></span></p> <p>&nbsp;</p>") {
-        //		saveError = 2;
-        //		window.parent.Ts.Services.System.LogException("TinyMCE save action contains empty p and span tags with .html ticket " + _ticketID, "TinyMCE Error");
-        //	}
-        //}
-
-        //// Text Grab Check
-        //if ($('#action-new-editor').text().trim().length < 1) {
-        //	window.parent.Ts.Services.System.LogException("TinyMCE text trim length is 0  on ticket " + _ticketID, "TinyMCE Error");
-        //}
-
         // TINYMCE ACTIVE EDITOR CHECK
         if (saveError != 0) {
             if (tinymce.activeEditor == null) {
@@ -1776,18 +1705,14 @@ function LoadTicketControls() {
         $('#ticket-Community').closest('.form-horizontal').remove();
         //$('#ticket-Community-RO').remove();
     }
-
     setSLAInfo();
-
     SetupTicketPropertyEvents();
     if (window.parent.Ts.System.Organization.ProductType == window.parent.Ts.ProductType.Express) {
         $('#ticket-Customer').closest('.form-group').remove();
     } else {
         SetupCustomerSection();
     }
-
     SetupTagsSection();
-
     if (window.parent.Ts.System.Organization.ProductType == window.parent.Ts.ProductType.Express || window.parent.Ts.System.Organization.ProductType === window.parent.Ts.ProductType.HelpDesk) {
         $('#ticket-Product').closest('.form-horizontal').remove();
         $('#ticket-Resolved').closest('.form-horizontal').remove();
@@ -1795,13 +1720,11 @@ function LoadTicketControls() {
     } else {
         SetupProductSection();
     }
-
     if (window.parent.Ts.System.Organization.IsInventoryEnabled === true) {
         SetupInventorySection();
     } else {
         $('#ticket-group-assets').hide();
     }
-
     SetupUserQueuesSection();
     SetupSubscribedUsersSection();
     SetupAssociatedTicketsSection();
@@ -2261,8 +2184,6 @@ function SetupTagsSection() {
             var tag = $(this).parent()[0];
             if (tag) {
                 window.parent.Ts.Services.Tickets.RemoveTag(_ticketID, tag.id, function(tags) {
-
-                    //tag.parentNode.removeChild(tag);
                     $(tag).remove();
                     window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber, "removetag", userFullName);
                 }, function() {
@@ -2289,7 +2210,6 @@ function AddTags(tags) {
     var tagDiv = $("#ticket-tags");
     tagDiv.empty();
     $("#ticket-tag-Input").val('');
-
     for (var i = 0; i < tags.length; i++) {
         var label = tags[i].Value
         PrependTag(tagDiv, tags[i].TagID, label, tags[i]);
@@ -2371,7 +2291,6 @@ function UpdateTicketTypes(persistedGroup, callback) {
                 if (firstTypeID == 0) {
                     firstTypeID = types[i].TicketTypeID;
                 }
-
                 if (_ticketTypeID == types[i].TicketTypeID) {
                     selectizeType.addItem(types[i].TicketTypeID, true);
                     persistedType = true;
@@ -2388,7 +2307,6 @@ function UpdateTicketTypes(persistedGroup, callback) {
             if (firstTypeID == 0) {
                 firstTypeID = types[i].TicketTypeID;
             }
-
             if (_ticketTypeID == types[i].TicketTypeID) {
                 selectizeType.addItem(types[i].TicketTypeID, true);
             }
@@ -3878,9 +3796,6 @@ var SetupStatusField = function(StatusId) {
             }
         }
         selectize.addItem(StatusId, true);
-
-
-        // MARKER2
     }
 }
 
@@ -3890,25 +3805,25 @@ var SetupJiraFields = function() {
         $('.ts-jira-buttons-container').hide();
         var errorMessage = "There was an error setting your Jira Issue Key. Please contact TeamSupport.com";
         window.parent.Ts.Services.Tickets.SetSyncWithJira(_ticketID, function(result) {
-                if (result != null) {
-                    var syncResult = JSON.parse(result);
-                    if (syncResult.IsSuccessful === true) {
-                        $('#issueKeyValue').text('Pending...');
-                        $('#issueKey').show();
-                    } else {
-                        $('.ts-jira-buttons-container').show();
-                        $('#issueKey').hide();
-                        alert(syncResult.Error);
-                    }
+            if (result != null) {
+                var syncResult = JSON.parse(result);
+                if (syncResult.IsSuccessful === true) {
+                    $('#issueKeyValue').text('Pending...');
+                    $('#issueKey').show();
                 } else {
-                    alert(errorMessage);
+                    $('.ts-jira-buttons-container').show();
+                    $('#issueKey').hide();
+                    alert(syncResult.Error);
                 }
-            },
-            function(error) {
-                $('.ts-jira-buttons-container').show();
-                $('#issueKey').hide();
+            } else {
                 alert(errorMessage);
-            });
+            }
+        },
+        function(error) {
+            $('.ts-jira-buttons-container').show();
+            $('#issueKey').hide();
+            alert(errorMessage);
+        });
     });
 
     $('#existingJiraIssue').click(function(e) {
@@ -3933,22 +3848,22 @@ var SetupJiraFields = function() {
             $('#issueKey').show();
             var errorMessage = "There was an error setting your Jira Issue Key. Please contact TeamSupport.com";
             window.parent.Ts.Services.Tickets.SetJiraIssueKey(_ticketID, $.trim($('#issueKeyInput').val()), function(result) {
-                    if (result != null) {
-                        var syncResult = JSON.parse(result);
-                        if (syncResult.IsSuccessful === false) {
-                            $('.ts-jira-buttons-container').show();
-                            $('#issueKey').hide();
-                            alert(syncResult.Error);
-                        }
-                    } else {
-                        alert(errorMessage);
+                if (result != null) {
+                    var syncResult = JSON.parse(result);
+                    if (syncResult.IsSuccessful === false) {
+                        $('.ts-jira-buttons-container').show();
+                        $('#issueKey').hide();
+                        alert(syncResult.Error);
                     }
-                },
-                function(error) {
-                    $('.ts-jira-buttons-container').show();
-                    $('#issueKey').hide();
+                } else {
                     alert(errorMessage);
-                });
+                }
+            },
+            function(error) {
+                $('.ts-jira-buttons-container').show();
+                $('#issueKey').hide();
+                alert(errorMessage);
+            });
         }
     });
 
@@ -3959,20 +3874,20 @@ var SetupJiraFields = function() {
         if (confirm(confirmMessage)) {
             e.preventDefault();
             window.parent.Ts.Services.Tickets.UnSetSyncWithJira(_ticketID, function(result) {
-                    if (result === true) {
-                        $('.ts-jira-buttons-container').show();
-                        $('#issueKey').hide();
-                    } else {
-                        alert('There was an error setting your Jira Issue Key. Please try again later');
-                        $('.ts-jira-buttons-container').hide();
-                        $('#issueKey').show();
-                    }
-                },
-                function(error) {
-                    alert('There was an error setting your Jira Issue Key.');
+                if (result === true) {
+                    $('.ts-jira-buttons-container').show();
+                    $('#issueKey').hide();
+                } else {
+                    alert('There was an error setting your Jira Issue Key. Please try again later');
                     $('.ts-jira-buttons-container').hide();
                     $('#issueKey').show();
-                });
+                }
+            },
+            function(error) {
+                alert('There was an error setting your Jira Issue Key.');
+                $('.ts-jira-buttons-container').hide();
+                $('#issueKey').show();
+            });
         }
     });
 }
@@ -4019,25 +3934,25 @@ var SetupTFSFields = function() {
         $('.ts-tfs-buttons-container').hide();
         var errorMessage = "There was an error setting your TFS Work Item Title. Please contact TeamSupport.com";
         window.parent.Ts.Services.Tickets.SetSyncWithTFS(_ticketID, function(result) {
-                if (result != null) {
-                    var syncResult = JSON.parse(result);
-                    if (syncResult.IsSuccessful === true) {
-                        $('#workItemTitleValue').text('Pending...');
-                        $('#workItemTitle').show();
-                    } else {
-                        $('.ts-tfs-buttons-container').show();
-                        $('#workItemTitle').hide();
-                        alert(syncResult.Error);
-                    }
+            if (result != null) {
+                var syncResult = JSON.parse(result);
+                if (syncResult.IsSuccessful === true) {
+                    $('#workItemTitleValue').text('Pending...');
+                    $('#workItemTitle').show();
                 } else {
-                    alert(errorMessage);
+                    $('.ts-tfs-buttons-container').show();
+                    $('#workItemTitle').hide();
+                    alert(syncResult.Error);
                 }
-            },
-            function(error) {
-                $('.ts-tfs-buttons-container').show();
-                $('#workItemTitle').hide();
+            } else {
                 alert(errorMessage);
-            });
+            }
+        },
+        function(error) {
+            $('.ts-tfs-buttons-container').show();
+            $('#workItemTitle').hide();
+            alert(errorMessage);
+        });
     });
 
     $('#existingTFSWorkItem').click(function(e) {
@@ -4063,22 +3978,22 @@ var SetupTFSFields = function() {
             var errorMessage = "There was an error setting your Work Item Title. Please contact TeamSupport.com";
 
             window.parent.Ts.Services.Tickets.SetTFSWorkItemID(_ticketID, $.trim($('#workItemIDInput').val()), function(result) {
-                    if (result != null) {
-                        var syncResult = JSON.parse(result);
-                        if (syncResult.IsSuccessful === false) {
-                            $('.ts-tfs-buttons-container').show();
-                            $('#workItemTitle').hide();
-                            alert(syncResult.Error);
-                        }
-                    } else {
-                        alert(errorMessage);
+                if (result != null) {
+                    var syncResult = JSON.parse(result);
+                    if (syncResult.IsSuccessful === false) {
+                        $('.ts-tfs-buttons-container').show();
+                        $('#workItemTitle').hide();
+                        alert(syncResult.Error);
                     }
-                },
-                function(error) {
-                    $('.ts-tfs-buttons-container').show();
-                    $('#workItemTitle').hide();
+                } else {
                     alert(errorMessage);
-                });
+                }
+            },
+            function(error) {
+                $('.ts-tfs-buttons-container').show();
+                $('#workItemTitle').hide();
+                alert(errorMessage);
+            });
         }
     });
 
@@ -4089,20 +4004,20 @@ var SetupTFSFields = function() {
         if (confirm(confirmMessage)) {
             e.preventDefault();
             window.parent.Ts.Services.Tickets.UnSetSyncWithTFS(_ticketID, function(result) {
-                    if (result === true) {
-                        $('.ts-tfs-buttons-container').show();
-                        $('#workItemTitle').hide();
-                    } else {
-                        alert('There was an error setting your TFS Work Item Title. Please try again later');
-                        $('.ts-tfs-buttons-container').hide();
-                        $('#workItemTitle').show();
-                    }
-                },
-                function(error) {
-                    alert('There was an error setting your TFS Work Item Title.');
+                if (result === true) {
+                    $('.ts-tfs-buttons-container').show();
+                    $('#workItemTitle').hide();
+                } else {
+                    alert('There was an error setting your TFS Work Item Title. Please try again later');
                     $('.ts-tfs-buttons-container').hide();
                     $('#workItemTitle').show();
-                });
+                }
+            },
+            function(error) {
+                alert('There was an error setting your TFS Work Item Title.');
+                $('.ts-tfs-buttons-container').hide();
+                $('#workItemTitle').show();
+            });
         }
     });
 }
@@ -4152,25 +4067,25 @@ var SetupSnowFields = function() {
         $('.ts-snow-buttons-container').hide();
         var errorMessage = "There was an error setting your ServiceNow Incident Number. Please contact TeamSupport.com";
         window.parent.Ts.Services.Tickets.SetSyncWithSnow(_ticketID, function(result) {
-                if (result != null) {
-                    var syncResult = JSON.parse(result);
-                    if (syncResult.IsSuccessful === true) {
-                        $('#incidentNumberValue').text('Pending...');
-                        $('#incidentNumber').show();
-                    } else {
-                        $('.ts-snow-buttons-container').show();
-                        $('#incidentNumber').hide();
-                        alert(syncResult.Error);
-                    }
+            if (result != null) {
+                var syncResult = JSON.parse(result);
+                if (syncResult.IsSuccessful === true) {
+                    $('#incidentNumberValue').text('Pending...');
+                    $('#incidentNumber').show();
                 } else {
-                    alert(errorMessage);
+                    $('.ts-snow-buttons-container').show();
+                    $('#incidentNumber').hide();
+                    alert(syncResult.Error);
                 }
-            },
-            function(error) {
-                $('.ts-snow-buttons-container').show();
-                $('#incidentNumber').hide();
+            } else {
                 alert(errorMessage);
-            });
+            }
+        },
+        function(error) {
+            $('.ts-snow-buttons-container').show();
+            $('#incidentNumber').hide();
+            alert(errorMessage);
+        });
     });
 
     $('#existingSnowIncident').click(function(e) {
@@ -4196,22 +4111,22 @@ var SetupSnowFields = function() {
             var errorMessage = "There was an error setting your Incident Number. Please contact TeamSupport.com";
 
             window.parent.Ts.Services.Tickets.SetSnowWorkItemID(_ticketID, $.trim($('#incidentNumberInput').val()), function(result) {
-                    if (result != null) {
-                        var syncResult = JSON.parse(result);
-                        if (syncResult.IsSuccessful === false) {
-                            $('.ts-snow-buttons-container').show();
-                            $('#incidentNumber').hide();
-                            alert(syncResult.Error);
-                        }
-                    } else {
-                        alert(errorMessage);
+                if (result != null) {
+                    var syncResult = JSON.parse(result);
+                    if (syncResult.IsSuccessful === false) {
+                        $('.ts-snow-buttons-container').show();
+                        $('#incidentNumber').hide();
+                        alert(syncResult.Error);
                     }
-                },
-                function(error) {
-                    $('.ts-snow-buttons-container').show();
-                    $('#incidentNumber').hide();
+                } else {
                     alert(errorMessage);
-                });
+                }
+            },
+            function(error) {
+                $('.ts-snow-buttons-container').show();
+                $('#incidentNumber').hide();
+                alert(errorMessage);
+            });
         }
     });
 
@@ -4222,20 +4137,20 @@ var SetupSnowFields = function() {
         if (confirm(confirmMessage)) {
             e.preventDefault();
             window.parent.Ts.Services.Tickets.UnSetSyncWithSnow(_ticketID, function(result) {
-                    if (result === true) {
-                        $('.ts-snow-buttons-container').show();
-                        $('#incidentNumber').hide();
-                    } else {
-                        alert('There was an error setting your Incident Number. Please try again later');
-                        $('.ts-snow-buttons-container').hide();
-                        $('#incidentNumber').show();
-                    }
-                },
-                function(error) {
-                    alert('There was an error setting your Incident Number.');
+                if (result === true) {
+                    $('.ts-snow-buttons-container').show();
+                    $('#incidentNumber').hide();
+                } else {
+                    alert('There was an error setting your Incident Number. Please try again later');
                     $('.ts-snow-buttons-container').hide();
                     $('#incidentNumber').show();
-                });
+                }
+            },
+            function(error) {
+                alert('There was an error setting your Incident Number.');
+                $('.ts-snow-buttons-container').hide();
+                $('#incidentNumber').show();
+            });
         }
     });
 };
@@ -4245,7 +4160,6 @@ var SetupSnowFieldValues = function() {
     window.parent.Ts.Services.Admin.GetSnowCRMLinkTableRecordForTicket(_ticketID, function(result) {
         if (result.length > 0) {
             $('#ticket-snowfields').show();
-
             if (_ticketInfo.LinkToSnow != null) {
                 if (!_ticketInfo.LinkToSnow.Number) {
                     $('#incidentNumberValue').text('Pending...');
@@ -4258,15 +4172,8 @@ var SetupSnowFieldValues = function() {
                     if ($(".snowLink").length) {
                         $(".snowLink").remove();
                     }
-
-                    var snowLink = $('<a>')
-                        .attr('href', _ticketInfo.LinkToSnow.URL)
-                        .attr('target', '_blank')
-                        .text(_ticketInfo.LinkToSnow.Number)
-                        .addClass('snowLink control-label ticket-anchor ')
-                        .prependTo($('#ticket-incident-container'));
+                    var snowLink = $('<a>').attr('href', _ticketInfo.LinkToSnow.URL).attr('target', '_blank').text(_ticketInfo.LinkToSnow.Number).addClass('snowLink control-label ticket-anchor').prependTo($('#ticket-incident-container'));
                 }
-
                 $('#incidentNumberValue').show();
                 $('.ts-snow-buttons-container').hide();
             } else {
