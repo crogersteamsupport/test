@@ -43,6 +43,7 @@ namespace WatsonToneAnalyzer
                 using (DataContext db = new DataContext(connection))
                 {
                     Table<TicketSentiment> ticketSentimentTable = db.GetTable<TicketSentiment>();
+                    //result = ticketSentimentTable.Where(s => s.OrganizationID == organizationID).Select(s => s.TicketSentimentScore).Average();
                     result = (from sentiment in ticketSentimentTable where (sentiment.OrganizationID == organizationID) select sentiment.TicketSentimentScore).Average();
                 }
             }
