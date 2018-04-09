@@ -41,18 +41,18 @@ namespace TeamSupport.Data.BusinessObjects
         /// The watson service uses Stored Procedure dbo.ActionsGetForWatson to find records for watson ActionToAnalyze
         /// This routine performs the equivalent checks
         /// </summary>
-        /// <param name="a"></param>
-        public static void QueueForWatsonToneAnalysis(Action a, SqlConnection connection, LoginUser user)
+        /// <param name="action"></param>
+        public static void QueueForWatsonToneAnalysis(Action action, SqlConnection connection, LoginUser user)
         {
             try
             {
                 //--------- Queue for IBM Watson?
-                int creatorID = a.CreatorID;   // JOIN dbo.Users creator WITH(NOLOCK) ON a.[creatorid] = creator.[userid]
-                if (a.CreatorID == 0)
+                int creatorID = action.CreatorID;   // JOIN dbo.Users creator WITH(NOLOCK) ON a.[creatorid] = creator.[userid]
+                if (action.CreatorID == 0)
                     creatorID = user.UserID;   //  ? first ticket on first action has CreatorID == 0 ?
                 LoginUser creator = user;
 
-                int ticketID = a.TicketID;  // JOIN dbo.Tickets t WITH (NOLOCK) ON a.[ticketid] = t.[ticketid]
+                int ticketID = action.TicketID;  // JOIN dbo.Tickets t WITH (NOLOCK) ON a.[ticketid] = t.[ticketid]
                 Ticket t = Tickets.GetTicket(creator, ticketID);
 
                 int accountID = t.OrganizationID;   // JOIN dbo.Organizations account WITH (NOLOCK) ON t.organizationid = account.organizationid
@@ -64,7 +64,7 @@ namespace TeamSupport.Data.BusinessObjects
                 //AND account.producttype = 2
                 // AND NOT EXISTS (SELECT NULL FROM ActionSentiments ast WHERE a.actionid = ast.actionid);
                 if (!(account.UseWatson &&
-                    a.IsVisibleOnPortal && t.IsVisibleOnPortal &&
+                    action.IsVisibleOnPortal && t.IsVisibleOnPortal &&
                     (account.ProductType == ProductType.Enterprise)))
                     return;
 
@@ -78,13 +78,13 @@ namespace TeamSupport.Data.BusinessObjects
                 // insert a record into the Table dbo.ActionToAnalyze
                 ActionToAnalyze actionToAnalyze = new ActionToAnalyze
                 {
-                    ActionID = a.ActionID,
-                    TicketID = a.TicketID,
+                    ActionID = action.ActionID,
+                    TicketID = action.TicketID,
                     UserID = creatorID,
                     OrganizationID = creator.OrganizationID,
                     IsAgent = creatorCompany.OrganizationID == account.OrganizationID,
-                    ActionDescription = a.Description,
-                    DateCreated = a.DateCreated
+                    ActionDescription = action.Description,
+                    DateCreated = action.DateCreated
                 };
 
                 // SUCCESS! create the ActionToAnalyze
