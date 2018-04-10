@@ -7,7 +7,7 @@ using System.Data.SqlClient;
 
 namespace TeamSupport.Data
 {
-  
+
   public partial class Users
   {
     protected override void BuildFieldMap()
@@ -63,8 +63,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("PortalLimitOrgChildrenTickets", "PortalLimitOrgChildrenTickets", false, false, false);
 	  _fieldMap.AddMap("BlockInboundEmail", "BlockInboundEmail", true, false, true);
 	  _fieldMap.AddMap("CanBulkMerge", "CanBulkMerge", false, false, false);
-                        
+	  _fieldMap.AddMap("DisablePublic", "DisablePublic", false, false, false);                        
     }
   }
-  
+
 }
