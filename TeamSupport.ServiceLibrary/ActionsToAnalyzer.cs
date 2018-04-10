@@ -40,8 +40,7 @@ namespace WatsonToneAnalyzer
                 using (SqlConnection sqlConnection1 = new SqlConnection(connectionString))
                 using (DataContext db = new DataContext(sqlConnection1))
                 {
-                    string batchSize = ConfigurationManager.AppSettings.Get("ActionsBatchSize");
-                    var results = db.ExecuteQuery<ActionGetForWatson>("Exec " + "dbo.ActionsGetForWatson @ActionsBatchSize={0}", batchSize);
+                    var results = db.ExecuteQuery<ActionGetForWatson>("Exec " + "dbo.ActionsGetForWatson");
                     Table<ActionToAnalyze> table = db.GetTable<ActionToAnalyze>();
                     foreach (ActionGetForWatson a in results)
                     {
