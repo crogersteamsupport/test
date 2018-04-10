@@ -1066,9 +1066,18 @@ Namespace TeamSupport
 				result.Append("""project"":{""key"":""" + jiraProjectKey + """},")
                 Dim actionDescription As Action = Actions.GetTicketDescription(User, ticket.TicketID)
                 actionDescriptionId = actionDescription.ActionID
-                Dim addLines As Boolean = True
-                Dim description As String = HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(actionDescription.Description), addLines)
-                result.Append("""description"":""" + DataUtils.GetJsonCompatibleString(description) + """")
+				'            Dim addLines As Boolean = True
+				'Dim description As String = HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(actionDescription.Description), addLines)
+
+				Dim description As String = actionDescription.Description
+				'Extract the code tag contents (if exists) and re-add after the html strip
+				Dim codeSamples As New Dictionary(Of Integer, String)
+				codeSamples = HtmlCleaner.ExtractCodeSamples(description)
+				Dim addLines As Boolean = True
+				description = HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(description), addLines)
+				HtmlCleaner.AddCodeSamples(description, codeSamples)
+
+				result.Append("""description"":""" + DataUtils.GetJsonCompatibleString(description) + """")
                 result.Append("}")
                 result.Append("}")
 

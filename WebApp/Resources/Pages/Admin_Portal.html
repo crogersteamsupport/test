@@ -169,7 +169,7 @@
         }
     </style>
     <title></title>
-        <script src="/frontend/javascript/growthscore.js?1515087127" type="text/javascript"></script>
+        <script src="/frontend/javascript/vendors/growthscore.js?1515087127" type="text/javascript"></script>
 </head>
 <body>
     <div class="portal-admin ui-widget ts-color-bg-accent ui-widget frame-content">
@@ -203,6 +203,18 @@
                                     <div class="ts-setting-field-content">
                                         <input type="text" id="portal_name" class="ui-widget-content ui-corner-all text" />
                                         <p></p>
+                                    </div>
+                                </div>
+                                <div class="ts-setting-field two-column ui-widget-content">
+                                    <div class="ts-setting-field-description">
+                                        Forward Portal To Hub
+                                    </div>
+                                    <div class="ts-setting-field-content">
+                                        <input type="checkbox" class="checkbox" id="portal_forwarding" /><label class="checkbox"
+                                                                                                                for="portal_forwarding">Enabled</label>
+                                        <p></p>
+                                        <select id="portal_foward_location" class="dropdownChange" disabled>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="ts-setting-field two-column ui-widget-content">

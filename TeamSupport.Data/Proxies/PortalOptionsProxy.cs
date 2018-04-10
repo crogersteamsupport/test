@@ -64,6 +64,7 @@ namespace TeamSupport.Data
     [DataMember] public bool EnableSaExpiration { get; set; }
     [DataMember] public bool AllowSeverityEditing { get; set; }
     [DataMember] public bool AllowNameEditing { get; set; }
+    [DataMember] public string PortalForward { get; set; }
     }
   
   public partial class PortalOption : BaseItem
@@ -71,6 +72,7 @@ namespace TeamSupport.Data
     public PortalOptionProxy GetProxy()
     {
       PortalOptionProxy result = new PortalOptionProxy();
+      result.PortalForward = this.PortalForward;
       result.AllowNameEditing = this.AllowNameEditing;
       result.AllowSeverityEditing = this.AllowSeverityEditing;
       result.DisplayLogout = this.DisplayLogout;
@@ -120,7 +122,7 @@ namespace TeamSupport.Data
       result.PortalHTMLFooter = this.PortalHTMLFooter;
       result.PortalHTMLHeader = this.PortalHTMLHeader;
       result.OrganizationID = this.OrganizationID;
-
+    
       FacebookOptions fb = new FacebookOptions(BaseCollection.LoginUser);
       fb.LoadByOrganizationID(result.OrganizationID);
       if (fb.IsEmpty)
