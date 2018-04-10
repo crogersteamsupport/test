@@ -565,7 +565,7 @@ namespace TSWebServices
             int count = 0;
             foreach (TicketType ticketType in ticketTypes)
             {
-                count += Tickets.GetProductVersionOpenTicketCount(TSAuthentication.GetLoginUser(), versionID, ticketType.TicketTypeID);
+                count += Tickets.GetProductVersionOpenTicketCount(TSAuthentication.GetLoginUser(), versionID, ticketType.TicketTypeID, TSAuthentication.OrganizationID);
             }
 
             return count;
@@ -622,9 +622,9 @@ namespace TSWebServices
             {
                 int count;
                 if (open)
-                    count = Tickets.GetProductVersionOpenTicketCount(loginUser, productVersionID, ticketType.TicketTypeID);
+                    count = Tickets.GetProductVersionOpenTicketCount(loginUser, productVersionID, ticketType.TicketTypeID, TSAuthentication.OrganizationID);
                 else
-                    count = Tickets.GetProductVersionClosedTicketCount(loginUser, productVersionID, ticketType.TicketTypeID);
+                    count = Tickets.GetProductVersionClosedTicketCount(loginUser, productVersionID, ticketType.TicketTypeID, TSAuthentication.OrganizationID);
                 total += count;
 
                 if (count > 0)
@@ -686,7 +686,7 @@ namespace TSWebServices
         {
             Tickets tickets = new Tickets(TSAuthentication.GetLoginUser());
 
-            return tickets.GetProductVersionTicketCount(productVersionID, closed).ToString();
+            return tickets.GetProductVersionTicketCount(productVersionID, closed, TSAuthentication.OrganizationID).ToString();
         }
 
         [WebMethod]

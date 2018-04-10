@@ -269,7 +269,6 @@ $(document).ready(function () {
         }
     });
 
-    watson(_ticketNumber);
     $('textarea.autogrow').autogrow();
 });
 
@@ -1685,6 +1684,8 @@ function LoadTicketControls() {
         $('#ticket-DaysOpened').text(_ticketInfo.Ticket.DaysOpened);
         $('#label-days').text('Days Opened');
     }
+
+    WatsonTicketField(_ticketInfo.Ticket.TicketID);
 
     var dueDate = _ticketInfo.Ticket.DueDate;
     SetupDueDateField(dueDate);
@@ -4316,7 +4317,7 @@ function CreateHandleBarHelpers() {
 
     Handlebars.registerHelper('Watson', function () {
         if (this.item.IsWC) { return; }
-        if (this.item.OrganizationID != '1078') { return; }
+        //if (this.item.OrganizationID != '1078') { return; }
         var ticketID = this.item.TicketID;
         var actionID = this.item.RefID;
         var output = window.parent.Ts.Services.TicketPage.WatsonAction(ticketID, actionID, function (result) {
@@ -5659,25 +5660,21 @@ var SetSolved = function (ResolvedID) {
     }
 };
 
-function watson (ticketnumber) {
-    window.parent.Ts.Services.Tickets.GetTicketInfo(ticketnumber, function (info) {
-        if (info.Ticket.OrganizationID != '1078') { return; }
-        var ticketid = info.Ticket.TicketID;
-        window.parent.Ts.Services.TicketPage.WatsonTicket(ticketid, function (result) {
-            if (result != 'negative' && result != 'nothing' && result != 'hidden') {
-                var data = jQuery.parseJSON(result);
-                var sentiments = { 1:'Sad', 2:'Frustrated', 3:'Satisfied', 4:'Excited', 5:'Polite', 6:'Impolite', 7: 'Sympathetic' }
-                var display = [];
-                $.each(data.watson, function(key,sentiment) {
-                    if (sentiment.SentimentID > 0) {
-                        var emotion = sentiments[sentiment.SentimentID];
-                        var percent = Math.round(sentiment.SentimentScore * 100);
-                        display.push(emotion + ': ' + percent + '%');
-                    }
-                });
-                $('#watson').text(display.join(', '));
-            }
-        });
+function WatsonTicketField(ticketid) {
+    window.parent.Ts.Services.TicketPage.WatsonTicket(ticketid, function (result) {
+        if (result != 'negative' && result != 'nothing' && result != 'hidden') {
+            var data = jQuery.parseJSON(result);
+            var display = [];
+            display.push(data.TicketSentimentScore + " - ");
+            if (data.Sad) display.push("Sad");
+            if (data.Frustrated) display.push("Frustrated");
+            if (data.Satisfied) display.push("Satisfied");
+            if (data.Excited) display.push("Excited");
+            if (data.Polite) display.push("Polite");
+            if (data.Impolite) display.push("Impolite");
+            if (data.Sympathetic) display.push("Sympathetic");
+            $('#ticket-Sentiment').append(display.join(' '));
+        }
     });
 }
 

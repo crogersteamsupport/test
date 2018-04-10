@@ -1037,7 +1037,7 @@ WHERE ot.OrganizationID = @OrganizationID {0}";
             }
         }
 
-        public void LoadForTagsHub(LoginUser loginUser, string text, int parentID, int customerID)
+        public void LoadForTagsHub(LoginUser loginUser, string text, int parentID, int customerID, bool enableCustomerProductAssociation)
         {
             string[] tagArray = text.Split(' ');
 
@@ -1066,7 +1066,7 @@ WHERE ot.OrganizationID = @OrganizationID {0}";
                 }
                 builder.Append(", '" + text.Trim() + "'");
                 builder.Append(@"))");
-                if (customerID > 0)
+                if (customerID > 0 && enableCustomerProductAssociation)
                 {
                     builder.Append(@" AND (T.ProductID IS NULL
 												OR T.ProductID IN (
