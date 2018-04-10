@@ -105,9 +105,6 @@ UserPage = function() {
         _user = user;
         orgID = user.OrganizationID;
 
-        console.log(user);
-
-
         $('.user-displayname').html(user.FirstName + ' ' + user.LastName);
         $('#userEmail').html('<a class=fleft href="mailto:' + user.Email + '">' + user.Email + '</a>');
         var email = $('#userEmail').parent().hover(function(e) {
@@ -253,7 +250,6 @@ UserPage = function() {
             var id = $(this).attr('id');
             list = (list != "") ? list + "," + id : id;
         });
-        console.log(list);
         window.parent.parent.Ts.Services.Users.SetMenuItems(userID, list, function() {
             window.parent.parent.Ts.System.logAction('User Info - Menu Items Changed');
         });
