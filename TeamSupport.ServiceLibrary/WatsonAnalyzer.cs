@@ -60,7 +60,7 @@ namespace WatsonToneAnalyzer
                         {
                             actionToAnalyze.DeleteOnSubmit(db);
                             db.SubmitChanges();
-                            WatsonEventLog.WriteEntry("duplciate ActionID in ActionSentiment table " + actionToAnalyze.ActionID);
+                            WatsonEventLog.WriteEntry("duplicate ActionID in ActionSentiment table " + actionToAnalyze.ActionID);
                             continue;
                         }
 

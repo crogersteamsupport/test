@@ -65,7 +65,7 @@ namespace WatsonToneAnalyzer
             // already exists?
             Table<ActionSentiment> table = db.GetTable<ActionSentiment>();
             if (table.Where(u => u.ActionID == actionToAnalyze.ActionID).Any())
-                WatsonEventLog.WriteEntry("duplciate ActionID in ActionSentiment table " + actionToAnalyze.ActionID);
+                WatsonEventLog.WriteEntry("duplicate ActionID in ActionSentiment table " + actionToAnalyze.ActionID);
 
             // Insert
             ActionSentiment sentiment = new ActionSentiment

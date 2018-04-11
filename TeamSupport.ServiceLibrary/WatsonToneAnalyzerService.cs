@@ -57,11 +57,14 @@ namespace WatsonToneAnalyzer
         bool _timerEnable;
         System.Timers.Timer _timer;
 
+        // expose so running as console app runs the same code
         public void StartTimer()
         {
             _timerEnable = true;
             OnTimer(this, null);    // process immediately, which then restarts the timer
         }
+
+        // expose so running as console app runs the same code
         public void StopTimer()
         {
             _timer.Stop();
