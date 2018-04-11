@@ -15,8 +15,6 @@ namespace WatsonToneAnalyzer
     [Table(Name = "TicketSentiments")]
     class TicketSentiment
     {
-        const string EVENT_SOURCE = "Application";
-
 #pragma warning disable CS0649  // Field is never assigned to, and will always have its default value null
         int _ticketSentimentID;
         [Column(Storage = "_ticketSentimentID", DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true)]
@@ -179,12 +177,12 @@ namespace WatsonToneAnalyzer
             }
             catch (SqlException e1)
             {
-                EventLog.WriteEntry(EVENT_SOURCE, "There was an issues with the sql server:" + e1.ToString() + " ----- STACK: " + e1.StackTrace.ToString());
+                WatsonEventLog.WriteEntry("There was an issues with the sql server:", e1);
                 Console.WriteLine(e1.ToString());
             }
             catch (Exception e2)
             {
-                EventLog.WriteEntry(EVENT_SOURCE, "Exception caught at select from ACtionsToAnalyze or HttpPOST:" + e2.Message + " ----- STACK: " + e2.StackTrace.ToString());
+                WatsonEventLog.WriteEntry("Exception caught at select from ACtionsToAnalyze or HttpPOST:", e2);
                 Console.WriteLine(e2.ToString());
             }
             finally

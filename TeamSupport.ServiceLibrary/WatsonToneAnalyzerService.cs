@@ -35,21 +35,13 @@ namespace WatsonToneAnalyzer
 
     public class WatsonToneAnalyzerService : ServiceBase
     {
-        const string source = "MySource";
-        const string logName = "MyNewLog";
-
         public WatsonToneAnalyzerService()
         {
-            ServiceName = "TeamSupport.WatsonToneAnalyzerService";
+            //InitializeComponent();
 
-            // Event Log
-            _eventLog = new EventLog(source);
-            if (!EventLog.SourceExists(source))
-            {
-                EventLog.CreateEventSource(source, logName);
-            }
-            _eventLog.Source = source;
-            _eventLog.Log = logName;
+            // base.EventLog - The source is the ServiceName of the service, and the log is the computer's Application log.
+            ServiceName = "TeamSupport.WatsonToneAnalyzerService";
+            base.AutoLog = true;    // auto log to Application log for service start, stop...
 
             // timer to add a 1 minute delay between each execution
             _timer = new System.Timers.Timer();
@@ -78,7 +70,7 @@ namespace WatsonToneAnalyzer
 
         protected override void OnStart(string[] args)
         {
-            _eventLog.WriteEntry("In OnStart");
+            //base.EventLog.WriteEntry("In OnStart");
 
             // Update the service state to Start Pending.  
             ServiceStatus serviceStatus = new ServiceStatus
@@ -98,20 +90,15 @@ namespace WatsonToneAnalyzer
         protected override void OnStop()
         {
             StopTimer();
-            _eventLog.WriteEntry("In OnStop");
         }
 
         protected override void OnContinue()
         {
-            _eventLog.WriteEntry("In OnContinue.");
         }
 
         // only query periodically
         static int WatsonQueryIntervalMinutes = Int32.Parse(ConfigurationManager.AppSettings.Get("WatsonQueryIntervalMinutes"));
-        DateTime _lastQueryTime = DateTime.Now;
-
-        private System.Diagnostics.EventLog _eventLog;
-        private int eventId = 1;
+        DateTime _lastQueryTime = DateTime.MinValue;
 
         public void OnTimer(object sender, System.Timers.ElapsedEventArgs args)
         {
@@ -119,7 +106,7 @@ namespace WatsonToneAnalyzer
             TimeSpan timeSince = DateTime.Now - _lastQueryTime;
             if(timeSince.Minutes >= WatsonQueryIntervalMinutes)
             {
-                _eventLog.WriteEntry("Query for ActionsToAnalyze", EventLogEntryType.Information, eventId++);
+                WatsonEventLog.WriteEntry("Query for ActionsToAnalyze");
                 ActionsToAnalyzer.FindActionsToAnalyze();
                 _lastQueryTime = DateTime.Now;
             }
@@ -131,10 +118,6 @@ namespace WatsonToneAnalyzer
 
         private void InitializeComponent()
         {
-            this._eventLog = new System.Diagnostics.EventLog();
-            ((System.ComponentModel.ISupportInitialize)(this._eventLog)).BeginInit();
-            this.ServiceName = "TeamSupport.WatsonToneAnalyzerService";
-            ((System.ComponentModel.ISupportInitialize)(this._eventLog)).EndInit();
         }
     }
 }

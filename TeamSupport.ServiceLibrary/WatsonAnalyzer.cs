@@ -28,7 +28,6 @@ namespace WatsonToneAnalyzer
     /// </summary>
     public class WatsonAnalyzer
     {
-        const string EVENT_SOURCE = "Application";
         static int WatsonUtterancePerAPICall = Int32.Parse(ConfigurationManager.AppSettings.Get("WatsonUtterancePerAPICall"));
 
         /// <summary>
@@ -61,7 +60,7 @@ namespace WatsonToneAnalyzer
                         {
                             actionToAnalyze.DeleteOnSubmit(db);
                             db.SubmitChanges();
-                            EventLog.WriteEntry(EVENT_SOURCE, "duplciate ActionID in ActionSentiment table " + actionToAnalyze.ActionID);
+                            WatsonEventLog.WriteEntry("duplciate ActionID in ActionSentiment table " + actionToAnalyze.ActionID);
                             continue;
                         }
 
@@ -81,18 +80,19 @@ namespace WatsonToneAnalyzer
             }
             catch (SqlException e1)
             {
-                EventLog.WriteEntry(EVENT_SOURCE, "There was an issues with the sql server:" + e1.ToString() + " ----- STACK: " + e1.StackTrace.ToString());
+                WatsonEventLog.WriteEntry("There was an issues with the sql server:", e1);
                 Console.WriteLine(e1.ToString());
             }
             catch (Exception e2)
             {
-                EventLog.WriteEntry(EVENT_SOURCE, "Exception caught at select from ACtionsToAnalyze or HttpPOST:" + e2.Message + " ----- STACK: " + e2.StackTrace.ToString());
+                WatsonEventLog.WriteEntry("Exception caught at select from ACtionsToAnalyze or HttpPOST:", e2);
                 Console.WriteLine(e2.ToString());
             }
             finally
             {
                 // wait until all the tone chat messages have been received and recorded
                 Task.WaitAll(asyncTransactionsInProcess.ToArray(), 5 * 60 * 1000);  // 5 minute timeout just in case...
+                WatsonEventLog.WriteEntry("Actions Analyzed " + WatsonAnalyzer.ActionsAnalyzed.ToString());
             }
         }
 
@@ -103,17 +103,16 @@ namespace WatsonToneAnalyzer
                 // missmatch?
                 if ((utterance.utterance_id < 0) || (utterance.utterance_id >= response.ActionsToAnalyze.Count))
                 {
-                    EventLog.WriteEntry(EVENT_SOURCE, "utterance_id " + utterance.utterance_id + " out of range");
+                    WatsonEventLog.WriteEntry("utterance_id " + utterance.utterance_id + " out of range", EventLogEntryType.Error);
                     continue;
                 }
 
-                ActionToAnalyze actionToAnalyze = response.ActionsToAnalyze[utterance.utterance_id];
-                if (string.CompareOrdinal(actionToAnalyze.ActionDescription, utterance.utterance_text) != 0)
-                    Debugger.Break();
-
-                PublishToTable(actionToAnalyze, utterance);
+                PublishToTable(response.ActionsToAnalyze[utterance.utterance_id], utterance);
             }
         }
+
+        static int _actionsAnalyzed = 0;
+        public static int ActionsAnalyzed { get { return _actionsAnalyzed; } }
 
         /// <summary>
         /// Async callback from HTTP_POST to put the watson response into the db
@@ -139,7 +138,7 @@ namespace WatsonToneAnalyzer
             {
                 if (transaction != null)
                     transaction.Rollback();
-                EventLog.WriteEntry(EVENT_SOURCE, "Watson analysis failed - system will retry" + e2.Message + " ----- STACK: " + e2.StackTrace.ToString());
+                WatsonEventLog.WriteEntry("Watson analysis failed - system will retry", e2);
                 Console.WriteLine(e2.ToString());
             }
             finally
@@ -147,6 +146,7 @@ namespace WatsonToneAnalyzer
                 if (transaction != null)
                     transaction.Dispose();
                 _singleThreadedTransactions.ReleaseMutex();
+                ++_actionsAnalyzed;
             }
 
             // update the corresponding ticket sentiment
@@ -177,8 +177,6 @@ namespace WatsonToneAnalyzer
                     toJson.Add(actionToAnalyze.ActionID.ToString(), actionToAnalyze.WatsonText());  // extract the first 500 characters of raw text
                 string jsonString = toJson.ToString();
 
-                //EventLog.WriteEntry(EVENT_SOURCE, "****HTTP_POST1" + jsonString);
-
                 using (HttpClient client = new HttpClient())
                 {   //Establish client
                     //Concatonate credentials and pass authorization to the client header
@@ -195,7 +193,6 @@ namespace WatsonToneAnalyzer
                     {
                         HttpContent content = response.Content;
 
-                        //EventLog.WriteEntry(EVENT_SOURCE, "****HTTP_POST2" + content.ToString());
                         //Format response and write to console (should be changed eventually to post to table using sql protocol
                         string result = await content.ReadAsStringAsync() ?? " ";
 
@@ -204,17 +201,14 @@ namespace WatsonToneAnalyzer
                         ResultResponse.ActionsToAnalyze = analyzeList;
                         ResultResponse.WatsonResponse = JsonConvert.DeserializeObject<UtteranceToneList>(result);
 
-                        //EventLog.WriteEntry(EVENT_SOURCE, "****HTTP_POST4" + content.ToString());
                         callback(ResultResponse); //returns the response object to pass on to the postSQL class
-                                                  //EventLog.WriteEntry(EVENT_SOURCE, "****HTTP_POST5" + ResultResponse.WatsonResponse.ToString());
                     }
                 }
             }
             catch (Exception ex)
             {
-                EventLog.WriteEntry(EVENT_SOURCE, String.Format("********************: Error durring watson analysis: {0}  ----STACK:{1} ", ex.Message, ex.StackTrace.ToString()));
+                WatsonEventLog.WriteEntry("********************: Error durring watson analysis:", ex);
                 Console.WriteLine(ex.ToString());
-                System.Threading.Thread.Sleep(1000);
             }
         }
     }

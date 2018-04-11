@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Data.Linq;
 using System.Configuration;
+using System.Diagnostics;
 
 namespace WatsonToneAnalyzer
 {
     class WatsonTransaction : IDisposable
     {
-        const string EVENT_SOURCE = "Application";
-
         SqlConnection _connection;
         SqlTransaction _transaction;
         DataContext _db;
@@ -66,7 +65,7 @@ namespace WatsonToneAnalyzer
             // already exists?
             Table<ActionSentiment> table = db.GetTable<ActionSentiment>();
             if (table.Where(u => u.ActionID == actionToAnalyze.ActionID).Any())
-                System.Diagnostics.EventLog.WriteEntry(EVENT_SOURCE, "duplciate ActionID in ActionSentiment table " + actionToAnalyze.ActionID);
+                WatsonEventLog.WriteEntry("duplciate ActionID in ActionSentiment table " + actionToAnalyze.ActionID);
 
             // Insert
             ActionSentiment sentiment = new ActionSentiment

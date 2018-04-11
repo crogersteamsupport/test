@@ -7,14 +7,13 @@ using System.Data.Linq.Mapping;
 using System.Data.SqlClient;
 using System.Data.Linq;
 using System.Configuration;
+using System.Diagnostics;
 
 namespace WatsonToneAnalyzer
 {
     [Table(Name = "OrganizationSentiments")]
     class OrganizationSentiment
     {
-        const string EVENT_SOURCE = "Application";
-
 #pragma warning disable CS0649  // Field is never assigned to, and will always have its default value null
         int _organizationSentimentID;
         [Column(Storage = "_organizationSentimentID", DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true)]
@@ -50,7 +49,7 @@ namespace WatsonToneAnalyzer
             }
             catch (Exception e)
             {
-                System.Diagnostics.EventLog.WriteEntry(EVENT_SOURCE, "Exception caught at OrganizationSentiment:" + e.Message + " ----- STACK: " + e.StackTrace.ToString());
+                WatsonEventLog.WriteEntry("Exception caught at OrganizationSentiment:", e);
                 Console.WriteLine(e.ToString());
             }
             return (int)Math.Round(result);
@@ -85,7 +84,7 @@ namespace WatsonToneAnalyzer
             }
             catch (Exception e)
             {
-                System.Diagnostics.EventLog.WriteEntry(EVENT_SOURCE, "Unable to update ticket on Organization" + e.Message + " ----- STACK: " + e.StackTrace.ToString());
+                WatsonEventLog.WriteEntry("Unable to update ticket on Organization", e);
                 Console.WriteLine(e.ToString());
             }
         }
@@ -110,7 +109,7 @@ namespace WatsonToneAnalyzer
             catch(Exception e)
             {
                 string message = String.Format("Unable to update ticket {0} on Organization {1} ", sentiment.TicketID, sentiment.OrganizationID);
-                System.Diagnostics.EventLog.WriteEntry(EVENT_SOURCE, message + e.Message + " ----- STACK: " + e.StackTrace.ToString());
+                WatsonEventLog.WriteEntry(message, e);
                 Console.WriteLine(e.ToString());
             }
         }

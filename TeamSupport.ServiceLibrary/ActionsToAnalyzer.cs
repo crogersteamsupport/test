@@ -66,8 +66,7 @@ namespace WatsonToneAnalyzer
             }
             catch (Exception e)
             {
-                string sSource = "Application";
-                EventLog.WriteEntry(sSource, "Exception while reading from action table:" + e.ToString() + " ----- STACK: " + e.StackTrace.ToString());
+                WatsonEventLog.WriteEntry("Exception while reading from action table:", e);
                 Console.WriteLine(e.ToString());
             }
         }

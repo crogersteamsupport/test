@@ -66,7 +66,7 @@ namespace WatsonToneAnalyzer
             }
             catch (Exception e2)
             {
-                EventLog.WriteEntry("Application", "Exception with table.Attach - " + e2.Message + " ----- STACK: " + e2.StackTrace.ToString());
+                WatsonEventLog.WriteEntry("Exception with table.Attach - ", e2);
                 Console.WriteLine(e2.ToString());
             }
 
