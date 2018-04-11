@@ -17,6 +17,7 @@ namespace WatsonToneAnalyzer
     {
         const string EVENT_SOURCE = "Application";
 
+#pragma warning disable CS0649  // Field is never assigned to, and will always have its default value null
         int _ticketSentimentID;
         [Column(Storage = "_ticketSentimentID", DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true)]
         public int TicketSentimentID { get { return _ticketSentimentID; } }
@@ -43,6 +44,7 @@ namespace WatsonToneAnalyzer
         public bool Impolite;
         [Column]
         public bool Sympathetic;
+#pragma warning restore CS0649
 
         public void SetSentimentID(int sentimentID)
         {
@@ -77,10 +79,12 @@ namespace WatsonToneAnalyzer
         /// </summary>
         class MaxActionSentimentScore
         {
+#pragma warning disable CS0649  // Field is never assigned to, and will always have its default value null
             public int ActionID;
             public int SentimentID;
             public decimal MaxSentimentScore;
             public decimal SentimentMultiplier;
+#pragma warning restore CS0649
         }
 
         static Mutex _mutex = new Mutex(false);

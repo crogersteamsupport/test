@@ -59,23 +59,23 @@ namespace WatsonToneAnalyzer
         /// Create the ActionSentiment for the ActionID
         /// </summary>
         /// <param name="db">context for insert/submit</param>
-        /// <param name="a">action to analyze</param>
+        /// <param name="actionToAnalyze">action to analyze</param>
         /// <returns></returns>
-        static ActionSentiment InsertActionSentiment(DataContext db, ActionToAnalyze a)
+        static ActionSentiment InsertActionSentiment(DataContext db, ActionToAnalyze actionToAnalyze)
         {
             // already exists?
             Table<ActionSentiment> table = db.GetTable<ActionSentiment>();
-            if (table.Where(u => u.ActionID == a.ActionID).Any())
-                throw new Exception("Error: ActionSentiment already exists?");
+            if (table.Where(u => u.ActionID == actionToAnalyze.ActionID).Any())
+                System.Diagnostics.EventLog.WriteEntry(EVENT_SOURCE, "duplciate ActionID in ActionSentiment table " + actionToAnalyze.ActionID);
 
             // Insert
             ActionSentiment sentiment = new ActionSentiment
             {
-                ActionID = a.ActionID,
-                TicketID = a.TicketID,
-                UserID = a.UserID,
-                OrganizationID = a.OrganizationID,
-                IsAgent = a.IsAgent,
+                ActionID = actionToAnalyze.ActionID,
+                TicketID = actionToAnalyze.TicketID,
+                UserID = actionToAnalyze.UserID,
+                OrganizationID = actionToAnalyze.OrganizationID,
+                IsAgent = actionToAnalyze.IsAgent,
                 DateCreated = DateTime.Now
             };
             table.InsertOnSubmit(sentiment);

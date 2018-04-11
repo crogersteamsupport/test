@@ -14,6 +14,7 @@ namespace TeamSupport.Data.BusinessObjects
     [Table(Name = "TicketSentiments")]
     class TicketSentiment
     {
+#pragma warning disable CS0649  // Field is never assigned to, and will always have its default value null
         int _ticketSentimentID;
         [Column(Storage = "_ticketSentimentID", DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true)]
         public int TicketSentimentID { get { return _ticketSentimentID; } }
@@ -40,6 +41,7 @@ namespace TeamSupport.Data.BusinessObjects
         public bool Impolite;
         [Column]
         public bool Sympathetic;
+#pragma warning restore CS0649
 
         public void SetSentimentID(int sentimentID)
         {

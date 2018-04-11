@@ -19,7 +19,6 @@ using System.Configuration;
 using System.Collections.Specialized;
 using System.Data.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace WatsonToneAnalyzer
 {
@@ -30,65 +29,54 @@ namespace WatsonToneAnalyzer
     public class WatsonAnalyzer
     {
         const string EVENT_SOURCE = "Application";
-        const int MaxUtteranceCount = 50;
-        const int MaxTotalTextContentLength = 128000;
+        static int WatsonUtterancePerAPICall = Int32.Parse(ConfigurationManager.AppSettings.Get("WatsonUtterancePerAPICall"));
 
         /// <summary>
         /// Get the actions to analyze (dbo.ActionToAnalyze) and post to Watson on the BlueMix account
         /// </summary>
         static public void AnalyzeActions()
         {
-            //TicketSentiment.StressTest();
-            //int orgSentiment = TicketSentiment.OrganizationSentiment(1078);
-
-
             // without this the HTTP message to Watson returns 405 - failure on send
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 
-            //EventLog.WriteEntry(EVENT_SOURCE, "GetAction");
+            // keep a handle to all the async transactions we start
+            List<Task> asyncTransactionsInProcess = new List<Task>();
+
             try
             {
                 //opens a sqlconnection at the specified location
                 string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
                 using (SqlConnection connection = new SqlConnection(connectionString))
+                using (DataContext db = new DataContext(connection))
                 {
-                    // use linq to get the actions to send to watson
-                    using (DataContext db = new DataContext(connection))
+                    Table<ActionSentiment> actionSentimentTable = db.GetTable<ActionSentiment>();
+                    List<ActionToAnalyze> actionsForAPICall = new List<ActionToAnalyze>();
+
+                    Table<ActionToAnalyze> actionToAnalyzeTable = db.GetTable<ActionToAnalyze>();
+                    IQueryable<ActionToAnalyze> actionToAnalyzeQuery = from action in actionToAnalyzeTable select action;
+                    foreach (ActionToAnalyze actionToAnalyze in actionToAnalyzeQuery)
                     {
-                        Table<ActionSentiment> actionSentimentTable = db.GetTable<ActionSentiment>();
-                        List<ActionToAnalyze> actionsToAnalyzeList = new List<ActionToAnalyze>();
-                        int utteranceCount = 0;
-                        int textSize = 0;
-
-                        Table<ActionToAnalyze> actionToAnalyzeTable = db.GetTable<ActionToAnalyze>();
-                        IQueryable<ActionToAnalyze> actionToAnalyzeQuery = from action in actionToAnalyzeTable select action;
-                        foreach (ActionToAnalyze actionToAnalyze in actionToAnalyzeQuery)
+                        // ActionSentiment record already exists?
+                        if (actionSentimentTable.Where(u => u.ActionID == actionToAnalyze.ActionID).Any())
                         {
-                            // ActionSentiment record already exists?
-                            if (actionSentimentTable.Where(u => u.ActionID == actionToAnalyze.ActionID).Any())
-                            {
-                                actionToAnalyze.DeleteOnSubmit(db);
-                                db.SubmitChanges();
-                                continue;
-                            }
-
-                            // pack actionsToAnalyze into a single billable API call
-                            actionToAnalyze.ActionDescription = actionToAnalyze.WatsonText();   // clean and truncate
-                            textSize += actionToAnalyze.ActionDescription.Length;
-                            if ((++utteranceCount > MaxUtteranceCount) || (textSize > MaxTotalTextContentLength))    // watson API call restrictions
-                            {
-                                // send them all off to watson - async
-                                HTTP_POST(actionsToAnalyzeList, (result) => PublishToTable(result));
-                                utteranceCount = 0;
-                                textSize = 0;
-                                actionsToAnalyzeList = new List<ActionToAnalyze>();
-                            }
-
-                            actionsToAnalyzeList.Add(actionToAnalyze);
+                            actionToAnalyze.DeleteOnSubmit(db);
+                            db.SubmitChanges();
+                            EventLog.WriteEntry(EVENT_SOURCE, "duplciate ActionID in ActionSentiment table " + actionToAnalyze.ActionID);
+                            continue;
                         }
 
-                        // the remainder can wait to be packed into a call when we have more...
+                        // pack actionsToAnalyze into a single billable API call
+                        actionsForAPICall.Add(actionToAnalyze);
+                        if (actionsForAPICall.Count >= WatsonUtterancePerAPICall)
+                        {
+                            // send them all off to watson - async
+                            List<ActionToAnalyze> tmp = actionsForAPICall;
+                            actionsForAPICall = new List<ActionToAnalyze>(); // new list of 50 (preserves old list for async call)
+                            asyncTransactionsInProcess.Add(HTTP_POST(tmp, (result) => PublishToTable(result)));
+                        }
                     }
+
+                    // the remainder can wait to be packed into a call when we have more...
                 }
             }
             catch (SqlException e1)
@@ -101,15 +89,29 @@ namespace WatsonToneAnalyzer
                 EventLog.WriteEntry(EVENT_SOURCE, "Exception caught at select from ACtionsToAnalyze or HttpPOST:" + e2.Message + " ----- STACK: " + e2.StackTrace.ToString());
                 Console.WriteLine(e2.ToString());
             }
-            //finally()
-
+            finally
+            {
+                // wait until all the tone chat messages have been received and recorded
+                Task.WaitAll(asyncTransactionsInProcess.ToArray(), 5 * 60 * 1000);  // 5 minute timeout just in case...
+            }
         }
 
         static void PublishToTable(Response response)
         {
-            for (int i = 0; i < response.ActionsToAnalyze.Count; ++i)
+            foreach (Utterance utterance in response.WatsonResponse.utterances_tone)
             {
-                PublishToTable(response.ActionsToAnalyze[i], response.WatsonResponse.utterances_tone[i]);
+                // missmatch?
+                if ((utterance.utterance_id < 0) || (utterance.utterance_id >= response.ActionsToAnalyze.Count))
+                {
+                    EventLog.WriteEntry(EVENT_SOURCE, "utterance_id " + utterance.utterance_id + " out of range");
+                    continue;
+                }
+
+                ActionToAnalyze actionToAnalyze = response.ActionsToAnalyze[utterance.utterance_id];
+                if (string.CompareOrdinal(actionToAnalyze.ActionDescription, utterance.utterance_text) != 0)
+                    Debugger.Break();
+
+                PublishToTable(actionToAnalyze, utterance);
             }
         }
 
@@ -157,7 +159,7 @@ namespace WatsonToneAnalyzer
         /// <param name="UserID">DB ID of user inserting the action</param>
         /// <param name="InputText">Action text</param>
         /// <param name="callback">Callback function</param>
-        static async void HTTP_POST(List<ActionToAnalyze> analyzeList, Action<Response> callback)
+        static async Task HTTP_POST(List<ActionToAnalyze> analyzeList, Action<Response> callback)
         {
             string WatsonGatewayUrl = ConfigurationManager.AppSettings.Get("WatsonGatewayUrl");
             string WatsonUsername = ConfigurationManager.AppSettings.Get("WatsonUsername");
@@ -172,7 +174,7 @@ namespace WatsonToneAnalyzer
                 //This is the format that Watson excepts for the Json Input. The two text fields have to be formatted without any protected charecters
                 WatsonPostContent toJson = new WatsonPostContent();
                 foreach (ActionToAnalyze actionToAnalyze in analyzeList)
-                    toJson.Add(actionToAnalyze.ActionID.ToString(), actionToAnalyze.ActionDescription);
+                    toJson.Add(actionToAnalyze.ActionID.ToString(), actionToAnalyze.WatsonText());  // extract the first 500 characters of raw text
                 string jsonString = toJson.ToString();
 
                 //EventLog.WriteEntry(EVENT_SOURCE, "****HTTP_POST1" + jsonString);
@@ -195,7 +197,6 @@ namespace WatsonToneAnalyzer
 
                         //EventLog.WriteEntry(EVENT_SOURCE, "****HTTP_POST2" + content.ToString());
                         //Format response and write to console (should be changed eventually to post to table using sql protocol
-                        var formatted = response.Content.ReadAsStringAsync().Result ?? " ";
                         string result = await content.ReadAsStringAsync() ?? " ";
 
                         //Create result object to organize response
@@ -218,7 +219,7 @@ namespace WatsonToneAnalyzer
         }
     }
 
-    //creates an object to format the Watson Response
+    // send the transaction data back to the action sentiment strategy
     class Response
     {
         public List<ActionToAnalyze> ActionsToAnalyze { get; set; }
@@ -229,22 +230,19 @@ namespace WatsonToneAnalyzer
     public class UtteranceToneList
     {
         public List<Utterance> utterances_tone { get; set; }
-
-        public Utterance First
-        {
-            get { return (utterances_tone != null) ? utterances_tone[0] : null; }
-        }
     }
 
     public class Utterance
     {
-        public List<Tones> tones { get; set; }
+        public int utterance_id;    // index [0, 49] corresponding to the index of the utterance in the request
+        public string utterance_text;   // text that was processed
+        public List<Tones> tones { get; set; }  // tones detected in text (possibley 0)
     }
 
     public class Tones
     {
-        public float score { get; set; }
-        public String tone_id { get; set; }
+        public float score { get; set; }    // likelihood of this perception
+        public String tone_id { get; set; } // sad, frustrated, satisfied, excited, polite, impolite, sy
     }
 }
 

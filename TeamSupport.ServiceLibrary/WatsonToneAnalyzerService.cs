@@ -40,7 +40,7 @@ namespace WatsonToneAnalyzer
 
         public WatsonToneAnalyzerService()
         {
-            ServiceName = "WatsonToneAnalyzer";
+            ServiceName = "TeamSupport.WatsonToneAnalyzerService";
 
             // Event Log
             _eventLog = new EventLog(source);
@@ -50,12 +50,31 @@ namespace WatsonToneAnalyzer
             }
             _eventLog.Source = source;
             _eventLog.Log = logName;
+
+            // timer to add a 1 minute delay between each execution
+            _timer = new System.Timers.Timer();
+            _timer.Interval = Convert.ToDouble(ConfigurationManager.AppSettings.Get("WatsonInterval"));
+            _timer.Elapsed += new System.Timers.ElapsedEventHandler(this.OnTimer);
+            _timer.AutoReset = false;
+            _timerEnable = true;
         }
 
         [DllImport("advapi32.dll", SetLastError = true)]
         private static extern bool SetServiceStatus(IntPtr handle, ref ServiceStatus serviceStatus);
 
-        System.Timers.Timer _timer = new System.Timers.Timer();
+        bool _timerEnable;
+        System.Timers.Timer _timer;
+
+        public void StartTimer()
+        {
+            _timerEnable = true;
+            OnTimer(this, null);    // process immediately, which then restarts the timer
+        }
+        public void StopTimer()
+        {
+            _timer.Stop();
+            _timerEnable = false;
+        }
 
         protected override void OnStart(string[] args)
         {
@@ -69,10 +88,7 @@ namespace WatsonToneAnalyzer
             };
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
 
-            // service is a simple timer...
-            _timer.Interval = Convert.ToDouble(ConfigurationManager.AppSettings.Get("WatsonInterval"));
-            _timer.Elapsed += new System.Timers.ElapsedEventHandler(this.OnTimer);
-            _timer.Start();
+            StartTimer();
 
             // Update the service state to Running.  
             serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
@@ -81,9 +97,8 @@ namespace WatsonToneAnalyzer
 
         protected override void OnStop()
         {
-            _timer.Stop();
+            StopTimer();
             _eventLog.WriteEntry("In OnStop");
-            Program.Stop();
         }
 
         protected override void OnContinue()
@@ -91,7 +106,9 @@ namespace WatsonToneAnalyzer
             _eventLog.WriteEntry("In OnContinue.");
         }
 
-        int _timerCount = 0;
+        // only query periodically
+        static int WatsonQueryIntervalMinutes = Int32.Parse(ConfigurationManager.AppSettings.Get("WatsonQueryIntervalMinutes"));
+        DateTime _lastQueryTime = DateTime.Now;
 
         private System.Diagnostics.EventLog _eventLog;
         private int eventId = 1;
@@ -99,21 +116,24 @@ namespace WatsonToneAnalyzer
         public void OnTimer(object sender, System.Timers.ElapsedEventArgs args)
         {
             // only do the Action table query every 20 minutes to catch what we might have missed?
-            if (++_timerCount > 20)
+            TimeSpan timeSince = DateTime.Now - _lastQueryTime;
+            if(timeSince.Minutes >= WatsonQueryIntervalMinutes)
             {
                 _eventLog.WriteEntry("Query for ActionsToAnalyze", EventLogEntryType.Information, eventId++);
                 ActionsToAnalyzer.FindActionsToAnalyze();
-                _timerCount = 0;
+                _lastQueryTime = DateTime.Now;
             }
 
             WatsonAnalyzer.AnalyzeActions();
+            if(_timerEnable)
+                _timer.Start();
         }
 
         private void InitializeComponent()
         {
             this._eventLog = new System.Diagnostics.EventLog();
             ((System.ComponentModel.ISupportInitialize)(this._eventLog)).BeginInit();
-            this.ServiceName = "WatsonToneAnalyzerService";
+            this.ServiceName = "TeamSupport.WatsonToneAnalyzerService";
             ((System.ComponentModel.ISupportInitialize)(this._eventLog)).EndInit();
         }
     }

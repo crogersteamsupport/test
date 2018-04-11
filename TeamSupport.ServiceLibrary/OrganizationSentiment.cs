@@ -15,6 +15,7 @@ namespace WatsonToneAnalyzer
     {
         const string EVENT_SOURCE = "Application";
 
+#pragma warning disable CS0649  // Field is never assigned to, and will always have its default value null
         int _organizationSentimentID;
         [Column(Storage = "_organizationSentimentID", DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true)]
         public int OrganizationSentimentID { get { return _organizationSentimentID; } }
@@ -27,7 +28,7 @@ namespace WatsonToneAnalyzer
         public double OrganizationSentimentScore;
         [Column]
         public int TicketSentimentCount;
-
+#pragma warning restore CS0649
         /// <summary>
         /// Raw calculation
         /// </summary>

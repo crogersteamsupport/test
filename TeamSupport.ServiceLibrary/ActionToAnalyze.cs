@@ -7,6 +7,7 @@ using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace WatsonToneAnalyzer
 {
@@ -16,6 +17,7 @@ namespace WatsonToneAnalyzer
     [Table(Name = "ActionToAnalyze")]
     class ActionToAnalyze
     {
+#pragma warning disable CS0649  // Field is never assigned to, and will always have its default value null
         // note Int64 - different ID data type from other ID's
         private Int64 _actionToAnalyzeID;
         [Column(Storage="_actionToAnalyzeID", IsPrimaryKey = true, IsDbGenerated = true)]
@@ -35,6 +37,7 @@ namespace WatsonToneAnalyzer
         public DateTime DateCreated;
         [Column]
         public string ActionDescription;
+#pragma warning restore CS0649
 
         /// <summary>remove HTML, whitespace, email addresses...</summary>
         public string WatsonText() { return CleanString(ActionDescription); }
@@ -55,7 +58,18 @@ namespace WatsonToneAnalyzer
         public void DeleteOnSubmit(DataContext db)
         {
             Table<ActionToAnalyze> table = db.GetTable<ActionToAnalyze>();
-            table.Attach(this);
+            try
+            {
+                // linq classes have an attach state to the DB table row
+                if(table.GetOriginalEntityState(this) == null)
+                    table.Attach(this); // must be attached to delete
+            }
+            catch (Exception e2)
+            {
+                EventLog.WriteEntry("Application", "Exception with table.Attach - " + e2.Message + " ----- STACK: " + e2.StackTrace.ToString());
+                Console.WriteLine(e2.ToString());
+            }
+
             table.DeleteOnSubmit(this);
         }
 

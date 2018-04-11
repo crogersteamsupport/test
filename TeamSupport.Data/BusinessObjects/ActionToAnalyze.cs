@@ -18,6 +18,7 @@ namespace TeamSupport.Data.BusinessObjects
     [Table(Name = "ActionToAnalyze")]
     class ActionToAnalyze
     {
+#pragma warning disable CS0649  // Field is never assigned to, and will always have its default value null
         private Int64 _ActionToAnalyzeID;
         [Column(Storage = "_ActionToAnalyzeID", IsPrimaryKey = true, IsDbGenerated = true)]
         public Int64 ActionToAnalyzeID { get { return _ActionToAnalyzeID; } }
@@ -36,6 +37,7 @@ namespace TeamSupport.Data.BusinessObjects
         public DateTime DateCreated;
         [Column]
         public string ActionDescription;
+#pragma warning restore CS0649
 
         /// <summary> 
         /// The watson service uses Stored Procedure dbo.ActionsGetForWatson to find records for watson ActionToAnalyze
@@ -91,13 +93,16 @@ namespace TeamSupport.Data.BusinessObjects
                 using (DataContext db = new DataContext(connection))
                 {
                     Table<ActionToAnalyze> actionToAnalyzeTable = db.GetTable<ActionToAnalyze>();
+                    if (!actionToAnalyzeTable.Where(u => u.ActionID == actionToAnalyze.ActionID).Any())
                     actionToAnalyzeTable.InsertOnSubmit(actionToAnalyze);
                     db.SubmitChanges();
                 }
             }
             catch (Exception e)
             {
-                throw;
+                System.Diagnostics.EventLog.WriteEntry("Application", "Unable to queue action for watson" + e.Message + " ----- STACK: " + e.StackTrace.ToString());
+                Console.WriteLine(e.ToString());
+                return;
             }
         }
     }
