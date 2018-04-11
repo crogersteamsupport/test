@@ -1167,9 +1167,8 @@ namespace TeamSupport.Data
                             value = "\"\"";
                         }
 
-                        Encoding ascii = Encoding.GetEncoding("us-ascii", new EncoderReplacementFallback("*"), new DecoderReplacementFallback("*"));
-                        //Encoding utf8 = Encoding.GetEncoding("utf-8", new EncoderReplacementFallback("*"), new DecoderReplacementFallback("*"));
-                        builder.Append(ascii.GetString(ascii.GetBytes(value)));
+						Encoding utf8 = Encoding.GetEncoding("utf-8", new EncoderReplacementFallback("*"), new DecoderReplacementFallback("*"));
+						builder.Append(utf8.GetString(utf8.GetBytes(value)));
                     }
                 }
                 reader.Close();
