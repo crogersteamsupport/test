@@ -112,6 +112,7 @@ namespace WatsonToneAnalyzer
                 WatsonEventLog.WriteEntry("Query for ActionsToAnalyze");
                 ActionsToAnalyzer.FindActionsToAnalyze();
                 _lastQueryTime = DateTime.Now;
+                WatsonEventLog.WriteEntry("Actions Analyzed " + WatsonAnalyzer.ActionsAnalyzed.ToString());
             }
 
             WatsonAnalyzer.AnalyzeActions();

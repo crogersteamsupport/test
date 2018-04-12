@@ -60,7 +60,7 @@ namespace WatsonToneAnalyzer
                         {
                             actionToAnalyze.DeleteOnSubmit(db);
                             db.SubmitChanges();
-                            WatsonEventLog.WriteEntry("duplicate ActionID in ActionSentiment table " + actionToAnalyze.ActionID);
+                            WatsonEventLog.WriteEntry("duplicate ActionID in ActionSentiment table " + actionToAnalyze.ActionID, EventLogEntryType.Error);
                             continue;
                         }
 
@@ -92,7 +92,6 @@ namespace WatsonToneAnalyzer
             {
                 // wait until all the tone chat messages have been received and recorded
                 Task.WaitAll(asyncTransactionsInProcess.ToArray(), 5 * 60 * 1000);  // 5 minute timeout just in case...
-                WatsonEventLog.WriteEntry("Actions Analyzed " + WatsonAnalyzer.ActionsAnalyzed.ToString());
             }
         }
 
