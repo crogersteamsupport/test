@@ -33,3 +33,5 @@ _ReSharper*/
 *.userosscache
 *.sln.docstates
 /.vs/config/applicationhost.config
+*.bak
+

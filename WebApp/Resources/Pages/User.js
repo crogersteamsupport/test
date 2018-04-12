@@ -145,7 +145,9 @@ UserPage = function() {
         }
 
         $('#userRightsAllTicketCustomers').html((user.AllowAnyTicketCustomer == true ? 'Yes' : 'No'));
-        if (user.TicketRights == 3) $('#userRightsAllTicketCustomers').closest('div').show();
+        if (user.TicketRights == 3) {
+            $('#userRightsAllTicketCustomers').closest('div').show();
+        }
 
         $('#divCustomerContainer').toggle(user.TicketRights == 3 && isSysAdmin == true);
         $('#userLastLogin').text(user.LastLogin.toDateString());
@@ -164,9 +166,9 @@ UserPage = function() {
         $('#userInfo').html((user.UserInformation == '' ? 'No Additional Information' : user.UserInformation.replace(/\n\r?/g, '<br />')));
         if (user.verificationPhoneNumber !== null && user.verificationPhoneNumber !== "") $('#userTwoFactorCell').text(user.verificationPhoneNumber);
 
-        if (user.LinkedIn == '')
+        if (user.LinkedIn == '') {
             $('#userWebsite').html('None');
-        else {
+        } else {
             $('#userWebsite').html(user.LinkedIn);
             $('#userWebsite').attr("href", user.LinkedIn);
             $('#userWebsite').attr("target", "_blank");
@@ -176,14 +178,11 @@ UserPage = function() {
             appendCustomValues(customValues);
         });
 
-
         $('#userWebsite').parent().parent().hover(function(e) {
             $('#editWebsite').show();
         }, function() {
             $('#editWebsite').hide();
         });
-
-
 
         if (user.MenuItems == null) {
             $('#divMenuItems input').each(function() {
@@ -192,7 +191,7 @@ UserPage = function() {
         } else {
             var menuItems = user.MenuItems.split(',');
             for (var i = 0; i < menuItems.length; i++) {
-                $('#' + menuItems[i] + ' input').prop('checked', true);
+                $('#' + menuItems[i]).prop('checked', true);
             }
         }
 
@@ -220,8 +219,9 @@ UserPage = function() {
         });
 
         window.parent.parent.Ts.Services.Users.GetUserSignature(userID, function(signature) {
-            if (signature == '')
+            if (signature == '') {
                 signature = 'None';
+            }
             $('#userSignature').html(signature);
         });
 
@@ -234,33 +234,28 @@ UserPage = function() {
     if (isSysAdmin == true) {
         $('#divMenuItems').show();
         $('#userTicketRights').closest('.user-name-value').show();
-
         var types = window.parent.parent.Ts.Cache.getTicketTypes();
         for (var i = 0; i < types.length; i++) {
             if (types[i].IsActive) {
-                var ttmi = $('<li>').attr('id', 'mniTicketType_' + types[i].TicketTypeID);
-                $('<label>').addClass('checkbox').text(types[i].Name).append($('<input>').attr('type', 'checkbox')).appendTo(ttmi);
-                ttmi.appendTo('#ulTicketTypes');
+                var input = $('<input>').attr('type','checkbox').attr('id', 'mniTicketType_' + types[i].TicketTypeID);
+                var label = $('<label>').addClass('checkbox').text(types[i].Name).append(input);
+                label.appendTo('#ulTicketTypes');
             }
         }
-
     }
 
     $('#divMenuItems input').click(function(e) {
         var list = "";
         $('#divMenuItems input:checked').each(function() {
-            var id = $(this).closest('li').attr('id');
+            var id = $(this).attr('id');
             list = (list != "") ? list + "," + id : id;
         });
-
         window.parent.parent.Ts.Services.Users.SetMenuItems(userID, list, function() {
             window.parent.parent.Ts.System.logAction('User Info - Menu Items Changed');
         });
-
     });
 
     if (canEdit) {
-
         if (!isSysAdmin) {
             $('#userActive').removeClass('ui-state-default ts-link');
             $('#userActive').addClass('disabledlink');
@@ -348,8 +343,9 @@ UserPage = function() {
                 $('#twoStepInputDiv').hide();
                 $('#userTwoFactorCell').parent().show();
             });
-        } else $('#twoFactorDiv').remove();
-
+        } else {
+            $('#twoFactorDiv').remove();
+        }
 
         $('.user-address-add').click(function(e) {
             e.preventDefault();
@@ -387,7 +383,6 @@ UserPage = function() {
                     function(error) {
                         alert('There was an error.');
                     });
-
             } else {
                 window.open("/vcr/1_9_0/pages/LoginNewPassword.html?UserID=" + _user.UserID, "ChangePW");
             }
@@ -453,18 +448,18 @@ UserPage = function() {
                 $(this).closest('div').remove();
                 header.show().find('img').show();
                 window.parent.parent.Ts.Services.Users.SaveUserInfo(_user.UserID, $(this).prev().val(), function(result) {
-                        window.parent.parent.Ts.System.logAction('User Info - User Info Changed');
-                        header.show().find('img').hide().next().show().delay(800).fadeOut(400);
-                        if (result != '') {
-                            $('#userInfo').html(result.replace(/\n\r?/g, '<br />'));
-                        } else {
-                            $('#userInfo').html('No Additional Information');
+                    window.parent.parent.Ts.System.logAction('User Info - User Info Changed');
+                    header.show().find('img').hide().next().show().delay(800).fadeOut(400);
+                    if (result != '') {
+                        $('#userInfo').html(result.replace(/\n\r?/g, '<br />'));
+                    } else {
+                        $('#userInfo').html('No Additional Information');
                         }
-                    },
-                    function(error) {
-                        header.show().find('img').hide();
-                        alert('There was an error saving the users information.');
-                    });
+                },
+                function(error) {
+                    header.show().find('img').hide();
+                    alert('There was an error saving the users information.');
+                });
             }).appendTo(container)
 
             $('<span>').addClass('fa fa-window-close').click(function(e) {
@@ -512,18 +507,18 @@ UserPage = function() {
                 $(this).closest('div').remove();
                 header.show().find('img').show();
                 window.parent.parent.Ts.Services.Users.SaveUserEmail(_user.UserID, $(this).prev().val(), function(result) {
-                        header.show().find('img').hide().next().show().delay(800).fadeOut(400);
-                        if (result.substring(0, 6) == "_error") {
-                            alert("The email you have specified is invalid.  Please choose another email.");
-                        } else {
-                            $('#userEmail').html('<a href="mailto:' + result + '">' + result + '</a>');
-                            window.parent.parent.Ts.System.logAction('User Info - User Email Changed');
-                        }
-                    },
-                    function(error) {
-                        header.show().find('img').hide();
-                        alert('There was an error saving the email.');
-                    });
+                    header.show().find('img').hide().next().show().delay(800).fadeOut(400);
+                    if (result.substring(0, 6) == "_error") {
+                        alert("The email you have specified is invalid.  Please choose another email.");
+                    } else {
+                        $('#userEmail').html('<a href="mailto:' + result + '">' + result + '</a>');
+                        window.parent.parent.Ts.System.logAction('User Info - User Email Changed');
+                    }
+                },
+                function(error) {
+                    header.show().find('img').hide();
+                    alert('There was an error saving the email.');
+                });
             }).appendTo(container)
 
             $('<span>').addClass('fa fa-window-close').click(function(e) {
