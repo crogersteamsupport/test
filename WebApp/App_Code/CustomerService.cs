@@ -39,7 +39,7 @@ namespace TSWebServices
         [WebMethod]
         public string SetCompanyName(int orgID, string value)
 		{
-			value = DataUtils.CleanValueScript(value);//vv
+			value = DataUtils.CleanValueScript(value);
 			Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
             o.Name = value;
             o.Collection.Save();
@@ -62,7 +62,7 @@ namespace TSWebServices
         public string SetCompanyWeb(int orgID, string value)
         {
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
-            o.Website = DataUtils.CleanValueScript(value);//vv
+            o.Website = DataUtils.CleanValueScript(value);
             o.Collection.Save();
             string description = String.Format("{0} set company website to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
@@ -116,7 +116,7 @@ namespace TSWebServices
         public string SetCompanyDomain(int orgID, string value)
         {
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
-            o.CompanyDomains = DataUtils.CleanValueScript(value);//vv
+            o.CompanyDomains = DataUtils.CleanValueScript(value);
 			o.Collection.Save();
             string description = String.Format("{0} set company domain to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
@@ -160,7 +160,7 @@ namespace TSWebServices
 
 			if (value != "" && value != null)
 			{
-				value = DataUtils.CleanValueScript(value);//vv
+				value = DataUtils.CleanValueScript(value);
 				o.SAExpirationDate = DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), Convert.ToDateTime(value + " 12:00:00"));
 			}
 			else
@@ -195,7 +195,7 @@ namespace TSWebServices
         public string SetCompanyDescription(int orgID, string value)
         {
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
-            o.Description = DataUtils.CleanValueScript(value);//vv
+            o.Description = DataUtils.CleanValueScript(value);
             o.Collection.Save();
             string description = String.Format("{0} set company description to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
@@ -205,7 +205,7 @@ namespace TSWebServices
         public string SetCompanyInactive(int orgID, string value)
         {
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
-            o.InActiveReason = DataUtils.CleanValueScript(value);//vv
+            o.InActiveReason = DataUtils.CleanValueScript(value);
 			o.Collection.Save();
             string description = String.Format("{0} set company inactive to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
@@ -216,7 +216,7 @@ namespace TSWebServices
         public string SetContactEmail(int userID, string email)
         {
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
-            u.Email = DataUtils.CleanValueScript(email);//vv
+            u.Email = DataUtils.CleanValueScript(email);
             u.Collection.Save();
             string description = String.Format("{0} set contact email to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, email);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
@@ -226,9 +226,9 @@ namespace TSWebServices
         public string SetContactName(int userID, string fname, string mname, string lname)
         {
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
-            u.FirstName = DataUtils.CleanValueScript(fname);//vv
-			u.MiddleName = DataUtils.CleanValueScript(mname);//vv
-			u.LastName = DataUtils.CleanValueScript(lname);//vv
+            u.FirstName = DataUtils.CleanValueScript(fname);
+			u.MiddleName = DataUtils.CleanValueScript(mname);
+			u.LastName = DataUtils.CleanValueScript(lname);
 			u.Collection.Save();
             string description = String.Format("{0} set contact name to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, u.FirstLastName);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
@@ -239,7 +239,7 @@ namespace TSWebServices
         public string SetContactLinkedIn(int userID, string linkedin)
         {
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
-            u.LinkedIn = DataUtils.CleanValueScript(linkedin);//vv
+            u.LinkedIn = DataUtils.CleanValueScript(linkedin);
 			u.Collection.Save();
             string description = String.Format("{0} set contact linkedin to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, linkedin);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
@@ -350,7 +350,7 @@ namespace TSWebServices
         public string SetContactTitle(int userID, string title)
         {
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
-            u.Title = DataUtils.CleanValueScript(title);//vv
+            u.Title = DataUtils.CleanValueScript(title);
 			u.Collection.Save();
             string description = String.Format("{0} set contact title to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, title);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);

@@ -2096,7 +2096,6 @@ namespace TeamSupport.Data
             return table;
         }
 
-		//vv
 		public static string CleanValueScript(string originalValue)
 		{
 			string cleanValue = originalValue;
