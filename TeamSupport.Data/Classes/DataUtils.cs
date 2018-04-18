@@ -2096,6 +2096,29 @@ namespace TeamSupport.Data
             return table;
         }
 
+		//vv
+		public static string CleanValueScript(string originalValue)
+		{
+			string cleanValue = originalValue;
+
+			List<string> eventsList = Chat.GetHTMLGlobalEventAttributes();
+			bool containsProhibitedText = false;
+			int i = 0;
+
+			while (i < eventsList.Count && !containsProhibitedText)
+			{
+				containsProhibitedText = originalValue.Trim().IndexOf("<script ") >= 0 || originalValue.Trim().IndexOf("<script>") >= 0 || originalValue.Trim().Contains(string.Format(" {0}=", eventsList[i]));
+				i++;
+			}
+
+			if (containsProhibitedText)
+			{
+				cleanValue = Microsoft.Security.Application.Encoder.HtmlEncode(originalValue);
+			}
+
+			return cleanValue;
+		}
+
         #region "API Common methods"
 
         /// <summary>
