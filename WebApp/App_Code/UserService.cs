@@ -1516,22 +1516,22 @@ namespace TSWebServices
             // 4 = group
 
             var testDate = DateTime.Parse(startdate);
-            if (testDate.Day != 1)
-            {
+            if (testDate.Day != 1) {
                 testDate = testDate.AddMonths(1);
                 startdate = testDate.ToString();
             }
 
+
+            var offset = TSAuthentication.GetLoginUser().TimeZoneInfo.GetUtcOffset(DateTime.UtcNow).Hours;
             Tickets tickets = new Tickets(TSAuthentication.GetLoginUser());
             ////get all due dates for the current month
-            if (pageType == "0" || pageType == "-1")
-            {
+            if (pageType == "0" || pageType == "-1") {
                 tickets.LoadbyUserMonth(DateTime.Parse(startdate), TSAuthentication.GetLoginUser().UserID, TSAuthentication.GetLoginUser().OrganizationID);
-            }
-            else if (pageType == "4")
-                tickets.LoadbyGroupMonth(DateTime.Parse(startdate), int.Parse(pageID), TSAuthentication.GetLoginUser().OrganizationID);
-            else if (pageType == "2")
+            } else if (pageType == "4") {
+                tickets.LoadbyGroupMonth(DateTime.Parse(startdate), offset, int.Parse(pageID), TSAuthentication.GetLoginUser().OrganizationID);
+            } else if (pageType == "2") {
                 tickets.LoadbyCompanyMonth(DateTime.Parse(startdate), int.Parse(pageID), TSAuthentication.GetLoginUser().OrganizationID);
+            }
 
             foreach (Ticket t in tickets)
             {
@@ -1542,11 +1542,10 @@ namespace TSWebServices
                 cal.title = t.Name;
                 cal.type = "ticket";
                 cal.id = t.TicketNumber;
-                cal.description = "";
+                cal.description = offset.ToString();
                 cal.end = null;
                 cal.displayend = null;
                 cal.allday = false;
-
                 cal.creatorID = -1;
 
                 Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
