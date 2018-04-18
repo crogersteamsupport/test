@@ -1521,7 +1521,6 @@ namespace TSWebServices
                 startdate = testDate.ToString();
             }
 
-
             var offset = TSAuthentication.GetLoginUser().TimeZoneInfo.GetUtcOffset(DateTime.UtcNow).Hours;
             Tickets tickets = new Tickets(TSAuthentication.GetLoginUser());
             ////get all due dates for the current month
@@ -1542,7 +1541,7 @@ namespace TSWebServices
                 cal.title = t.Name;
                 cal.type = "ticket";
                 cal.id = t.TicketNumber;
-                cal.description = offset.ToString();
+                cal.description = "";
                 cal.end = null;
                 cal.displayend = null;
                 cal.allday = false;
