@@ -419,7 +419,7 @@ namespace TeamSupport.Api
                     //Commented in ticket 8867.
                     //case "/customers/{id}/products/{id}/": data = RestProducts.RemoveOrganizationProduct(_command, GetId(1), GetId(3)); break;
                     case "/customers/{id}/products/{id}/customerproduct/{id}/": data = RestOrganizationProducts.DeleteOrganizationProductItem(_command, GetId(1), GetId(3), GetId(5)); break;
-                    case "/customers/{id}/": RestOrganizations.DeleteOrganization(_command, GetId(1)); break;
+                    //case "/customers/{id}/": RestOrganizations.DeleteOrganization(_command, GetId(1)); break;
                     case "/contacts/{id}/": RestContacts.DeleteContact(_command, GetId(1)); break;
                     case "/contacts/{id}/phonenumbers/{id}/": RestPhoneNumbers.RemovePhoneNumber(_command, ReferenceType.Users, GetId(1), GetId(3)); break;
                     case "/contacts/{id}/addresses/{id}/": RestAddresses.RemoveAddress(_command, ReferenceType.Users, GetId(1), GetId(3)); break;
