@@ -205,36 +205,41 @@ var initEditor = function (element, shouldResize, init, postinit) {
                     icon: 'awesome fa fa-video-camera',
                     onclick: function () {
                         _mainFrame.Ts.System.logAction('Ticket - Video Recording Button Clicked');
-                        if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
-                            var dynamicPub = element.parent().find("#publisher");
-                            element.parent().find("#recordVideoContainer").show();
-                            dynamicPub.show();
-                            dynamicPub.attr("id", "tempContainer");
-                            dynamicPub.attr("width", "400px");
-                            dynamicPub.attr("height", "400px");
-
-                            if (dynamicPub.length == 0)
-                                dynamicPub = element.parent().find("#tempContainer");
-
-
-
-                            _mainFrame.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
-                                sessionId = resultID[0];
-                                token = resultID[1];
-                                session = OT.initSession(apiKey, sessionId);
-                                session.connect(token, function (error) {
-                                    publisher = OT.initPublisher(dynamicPub.attr('id'), {
-                                        insertMode: 'append',
-                                        width: '100%',
-                                        height: '100%'
-                                    });
-                                    session.publish(publisher);
-                                });
-                            });
-
+                        if (navigator.userAgent.match(/Trident/)) {
+                            alert("Sorry, this feature is not supported by Internet Explorer at the moment. Please try using Firefox or Chrome");
                         }
                         else {
-                            alert("Your client does not support video recording.")
+                            if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
+                                var dynamicPub = element.parent().find("#publisher");
+                                element.parent().find("#recordVideoContainer").show();
+                                dynamicPub.show();
+                                dynamicPub.attr("id", "tempContainer");
+                                dynamicPub.attr("width", "400px");
+                                dynamicPub.attr("height", "400px");
+
+                                if (dynamicPub.length == 0)
+                                    dynamicPub = element.parent().find("#tempContainer");
+
+
+
+                                _mainFrame.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
+                                    sessionId = resultID[0];
+                                    token = resultID[1];
+                                    session = OT.initSession(apiKey, sessionId);
+                                    session.connect(token, function (error) {
+                                        publisher = OT.initPublisher(dynamicPub.attr('id'), {
+                                            insertMode: 'append',
+                                            width: '100%',
+                                            height: '100%'
+                                        });
+                                        session.publish(publisher);
+                                    });
+                                });
+
+                            }
+                            else {
+                                alert("Your client does not support video recording.")
+                            }
                         }
                     }
                 });
@@ -244,11 +249,11 @@ var initEditor = function (element, shouldResize, init, postinit) {
                     //image: '../images/icons/Symbol_Record.png',
                     icon: 'awesome fa fa-circle',
                     onclick: function () {
+                        _mainFrame.Ts.System.logAction('Ticket - Video Screen Recording Button Clicked');
                         if (navigator.userAgent.match(/Trident/)) {
                             alert("Sorry, this feature is not supported by Internet Explorer at the moment. Please try using Firefox or Chrome");
                         }
                         else {
-                            _mainFrame.Ts.System.logAction('Ticket - Video Screen Recording Button Clicked');
                             if (OT.checkSystemRequirements() == 1 || BrowserDetect.browser == "Mozilla") {
                                 var dynamicPub = element.parent().find("#screenShare");
                                 var ffWhitelistVersion = '52';
