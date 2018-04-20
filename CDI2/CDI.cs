@@ -13,7 +13,6 @@ namespace CDI2
         TimeSpan _analysisInterval;
         bool _isClosed; // read only closed or only open records
         TicketReader _ticketReader;    // cache the tickets for analysis
-        //List<IntervalData> _all;    // raw analysis of all tickets
         Dictionary<int, List<IntervalData>> _organizations;  // raw analysis by organization
 
         public CDI(int calendarDaysToAnalyze, TimeSpan analysisInterval, bool isClosed)
@@ -21,7 +20,7 @@ namespace CDI2
             _calendarDaysToAnalyze = calendarDaysToAnalyze;
             _analysisInterval = analysisInterval;
             _isClosed = isClosed;
-            _ticketReader = new TicketReader(_calendarDaysToAnalyze, _isClosed);
+            _ticketReader = new TicketReader(_calendarDaysToAnalyze);
             //_all = null;
             _organizations = new Dictionary<int, List<IntervalData>>();
         }
@@ -30,15 +29,13 @@ namespace CDI2
         {
             CDIEventLog.WriteEntry("CDI Update started...");
 
-            // load the data to be analyzed
+            // load the tickets
             Ticket[] tickets = _ticketReader.Read();
+
+            // time span to analyze
             DateTime firstDayMidnight = tickets[0].DateCreated;
             firstDayMidnight = firstDayMidnight.AddTicks(-(firstDayMidnight.Ticks % _analysisInterval.Ticks));
             DateTime lastDayMidnight = firstDayMidnight.AddDays(_calendarDaysToAnalyze);
-
-            // analyze the data
-            ClosedTicketAnalysis ticketAnalysis = new ClosedTicketAnalysis(tickets);
-            //_all = ticketAnalysis.AnalyzeDaysOpen(firstDayMidnight, lastDayMidnight, _analysisInterval);
 
             // analyze by organization
             int[] organizationIDs = _ticketReader.ReadOrganizationIDs();

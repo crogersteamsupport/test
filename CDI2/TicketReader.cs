@@ -16,7 +16,6 @@ namespace CDI2
     /// </summary>
     class TicketReader
     {
-        public bool IsClosed { get; private set; }
         public int DaysToLoad { get; private set; }
         private Ticket[] _tickets;  // tickets for organization in the last year
 
@@ -24,11 +23,9 @@ namespace CDI2
 
         /// <summary> Constructor </summary>
         /// <param name="daysToLoad">How many days prior to today do we load?</param>
-        /// <param name="isClosed">Load only open tickets or closed tickets</param>
-        public TicketReader(int daysToLoad, bool isClosed)
+        public TicketReader(int daysToLoad)
         {
             DaysToLoad = daysToLoad;
-            IsClosed = isClosed;
         }
 
         /// <summary> Load the tickets since the start date </summary>
@@ -93,9 +90,9 @@ namespace CDI2
                              join tt in ticketTypeTable on t.TicketTypeID equals tt.TicketTypeID
                              join ts in ticketStatusTable on t.TicketStatusID equals ts.TicketStatusID
                              where (t.DateCreated > startDate) &&
+                                 (ts.IsClosed == true) &&   // only closed tickets
                                  (t.DateClosed.HasValue) &&
-                                 (t.DateCreated != t.DateClosed.Value) &&
-                                 (ts.IsClosed == IsClosed) &&
+                                 (t.DateCreated != t.DateClosed.Value) &&   // valid DateClosed
                                  (!tt.ExcludeFromCDI) &&
                                  (!ts.ExcludeFromCDI)
                              orderby t.DateCreated

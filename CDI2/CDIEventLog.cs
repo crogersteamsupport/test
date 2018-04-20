@@ -32,7 +32,7 @@ namespace CDI2
                 if (!EventLog.SourceExists(source))
                     EventLog.CreateEventSource(source, logName);
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 EventLog.WriteEntry("Application", "Unable to open TeamSupport log on CDI-2 source");
             }
