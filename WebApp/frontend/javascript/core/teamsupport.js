@@ -14,12 +14,10 @@ this.module = function(names, fn) {
 };
 
 this.module('teamsupport', function() {
-
     // TEAMSUPPORT.PAGE
     this.module('page', function() {
         this.data = new Object();
     });
-
     // TEAMSUPPORT.TOOLS
     this.module('tools', function() {
         // TEAMSUPPORT.TOOLS.JOURNAL
@@ -32,9 +30,7 @@ this.module('teamsupport', function() {
             console.log(err.stack);
         }
     });
-
     this.module('modals', function() {
-
         this.module('overlay', function() {
             this.show = function() {
                 if ($('#overlay').is(':hidden')) {
@@ -47,7 +43,6 @@ this.module('teamsupport', function() {
                 }
             }
         });
-
         this.module('modal', function() {
             this.show = function(id) {
                 if ($(id).is(':hidden')) {
@@ -63,9 +58,7 @@ this.module('teamsupport', function() {
                 }
             }
         });
-
     });
-
 });
 
 // CLOSE MODAL.
@@ -73,7 +66,6 @@ $(document).on('click tap', '#overlay, .fa.close, #btn-cancel', function(e) {
     teamsupport.modals.overlay.hide();
     $('#modal').empty().slideToggle('fast');
 });
-
 
 // AUTOGROW.
 $.fn.autogrow = function (e) {
@@ -98,15 +90,15 @@ $(document).ready(function() {
     });
 });
 
-// COPY TEXT TO CLIPBOARD.
-$(document).on('click', '#clipboard', function (e) {
+// COPY LINK TO CLIPBOARD.
+$(document).on('click', '#clipboard, button.clipboard', function (e) {
     var text = $(this).data('copy');
     var $temp = $("<input>");
     $("body").append($temp);
     $temp.val(text).select();
     document.execCommand("copy");
     $temp.remove();
-    alert("Ticket URL has been copied.\n\n" + text);
+    alert("Copied to your clipboard:\n\n" + text);
 });
 
 $(document).on('click', '#file-browse', function (e) {
