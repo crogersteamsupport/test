@@ -229,13 +229,13 @@ namespace WatsonToneAnalyzer
     {
         public int utterance_id;    // index [0, 49] corresponding to the index of the utterance in the request
         public string utterance_text;   // text that was processed
-        public List<Tones> tones { get; set; }  // tones detected in text (possibley 0)
+        public List<Tones> tones { get; set; }  // tones detected in text (possibly 0)
     }
 
     public class Tones
     {
         public float score { get; set; }    // likelihood of this perception
-        public String tone_id { get; set; } // sad, frustrated, satisfied, excited, polite, impolite, sy
+        public String tone_id { get; set; } // sad, frustrated, satisfied, excited, polite, impolite, sympathetic
     }
 }
 
