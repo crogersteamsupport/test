@@ -37,6 +37,9 @@ namespace CDI2
             if (_tickets != null)
                 return _tickets;
 
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             try
             {
                 string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
@@ -48,8 +51,10 @@ namespace CDI2
             }
             catch (Exception e)
             {
-                Debugger.Break();
+                CDIEventLog.WriteEntry("Ticket Read failed", e);
             }
+
+            long ellapsed = stopwatch.ElapsedMilliseconds;
 
             return _tickets;
         }
@@ -57,16 +62,13 @@ namespace CDI2
         public Ticket[] Read(int organizationID)
         {
             Ticket[] tickets = Read();
-            var query = from t in tickets
-                        where t.OrganizationID == organizationID
-                        orderby t.DateCreated
-                        select t;
+            var query = tickets.Where(t => t.OrganizationID == organizationID).OrderBy(t => t.DateCreated);
             return query.ToArray();
         }
 
         public int[] ReadOrganizationIDs()
         {
-            var query = (from t in _tickets select t.OrganizationID).Distinct();
+            var query = _tickets.Select(t => t.OrganizationID).Distinct();
             return query.ToArray();
         }
 
@@ -83,7 +85,7 @@ namespace CDI2
             Table<TicketType> ticketTypeTable = db.GetTable<TicketType>();
 
             // loop through loading blocks
-            DateTime now = DateTime.Now;
+            DateTime now = DateTime.UtcNow;
             DateTime startDate = now.AddDays(-1 * DaysToLoad);
             while (startDate < now)
             {
@@ -91,6 +93,8 @@ namespace CDI2
                              join tt in ticketTypeTable on t.TicketTypeID equals tt.TicketTypeID
                              join ts in ticketStatusTable on t.TicketStatusID equals ts.TicketStatusID
                              where (t.DateCreated > startDate) &&
+                                 (t.DateClosed.HasValue) &&
+                                 (t.DateCreated != t.DateClosed.Value) &&
                                  (ts.IsClosed == IsClosed) &&
                                  (!tt.ExcludeFromCDI) &&
                                  (!ts.ExcludeFromCDI)

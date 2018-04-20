@@ -27,11 +27,10 @@ namespace CDI2
             try
             {
                 InitStatistics();
-                InitChronological();
             }
             catch (Exception e)
             {
-                Debugger.Break();
+                CDIEventLog.WriteEntry("InitStatistics failed", e);
             }
         }
 
@@ -39,15 +38,12 @@ namespace CDI2
         void InitStatistics()
         {
             // average
-            AvgTimeToClose = _tickets.Where(t => t.DateClosed.HasValue).Average(t => t.TotalDaysOpen);
+            AvgTimeToClose = _tickets.Average(t => t.TotalDaysOpen);
 
             // standard deviation
             double denominator = 0;
             foreach (Ticket t in _tickets)
             {
-                if (!t.DateClosed.HasValue)
-                    continue;
-
                 double xdiff = t.TotalDaysOpen - AvgTimeToClose;
                 denominator += xdiff * xdiff;
             }
@@ -57,15 +53,14 @@ namespace CDI2
         /// <summary> organize tickets for each open and close </summary>
         void InitChronological()
         {
-            // TODO - use array double the size and sort?
+            // can be called from AnalyzeDaysOpen if analyzing multiple time spans
+            if (_chronological != null)
+                return;
 
             // insert each ticket by DateCreated and DateClosed (duplicates allowed)
             _chronological = new List<Tuple<DateTime, Ticket>>();   // allow duplicates for DateTime
             foreach (Ticket t in _tickets)
             {
-                if ((t.DateCreated == t.DateClosed) || !t.DateClosed.HasValue)
-                    continue;
-
                 _chronological.Add(new Tuple<DateTime, Ticket>(t.DateCreated, t));  // opened
                 _chronological.Add(new Tuple<DateTime, Ticket>(t.DateClosed.Value, t));  // closed
             }
@@ -85,7 +80,6 @@ namespace CDI2
         public List<IntervalData> AnalyzeDaysOpen(DateTime firstDayMidnight, DateTime lastDayMidnight, TimeSpan interval)
         {
             List<IntervalData> results = null;
-            //Debug.WriteLine("Date\tOpenCount\tAvgOpenTime(days)\tAvgTimeToClose(days)");
             try
             {
                 DateTime nextInterval = firstDayMidnight + interval;
@@ -95,6 +89,10 @@ namespace CDI2
                 HashSet<Ticket> closedTickets = new HashSet<Ticket>();
                 int ticketsCreated = 0;
                 results = new List<IntervalData>();
+
+                // spin through all the create/close times and keep a running tally of 
+                // all currently open/closed
+                InitChronological();
                 foreach (Tuple<DateTime, Ticket> pair in _chronological)
                 {
                     if (pair.Item1 > nextInterval)
@@ -102,6 +100,7 @@ namespace CDI2
                         // sample the data at this time
                         results.Add(GetIntervalData(nextInterval, openTickets, closedTickets, ticketsCreated));
                         closedTickets.Clear();
+                        ticketsCreated = 0;
                         nextInterval += interval;
                     }
 
@@ -128,7 +127,7 @@ namespace CDI2
             }
             catch (Exception e)
             {
-                Debugger.Break();
+                CDIEventLog.WriteEntry("AnalyzeDaysOpen failed", e);
             }
 
             return results;
@@ -143,6 +142,7 @@ namespace CDI2
                 _ticketsCreated = ticketsCreated,
                 _ticketsOpen = openTickets.Count,
                 _averageDaysOpen = (openTickets.Count <= 0) ? 0 : openTickets.Average(ticket => ticket.TotalDaysOpen),
+                _ticketsClosed = closedTickets.Count,
                 _averageDaysToClose = (closedTickets.Count <= 0) ? 0 : closedTickets.Average(ticket => ticket.TotalDaysOpen)
             };
 
@@ -160,16 +160,8 @@ namespace CDI2
         {
             Debug.WriteLine("TimeOpen({0})	TicketCount", timeScale);
             TallyDictionary open = new TallyDictionary();
-            //int droppedRecords = 0;
             foreach (Ticket t in tickets)
             {
-                // no data?
-                if (!t.DateClosed.HasValue || (t.TotalDaysOpen <= 0.0))
-                {
-                    //++droppedRecords;
-                    continue;
-                }
-
                 int timeOpen = (int)Math.Round(t.ScaledTimeOpen(timeScale));
                 open.Increment(timeOpen);
             }

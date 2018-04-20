@@ -13,8 +13,8 @@ namespace CDI2
         TimeSpan _analysisInterval;
         bool _isClosed; // read only closed or only open records
         TicketReader _ticketReader;    // cache the tickets for analysis
-        List<IntervalData> _all;    // raw analysis of all tickets
-        Dictionary<int, List<IntervalData>> _organization;  // raw analysis by organization
+        //List<IntervalData> _all;    // raw analysis of all tickets
+        Dictionary<int, List<IntervalData>> _organizations;  // raw analysis by organization
 
         public CDI(int calendarDaysToAnalyze, TimeSpan analysisInterval, bool isClosed)
         {
@@ -22,12 +22,14 @@ namespace CDI2
             _analysisInterval = analysisInterval;
             _isClosed = isClosed;
             _ticketReader = new TicketReader(_calendarDaysToAnalyze, _isClosed);
-            _all = null;
-            _organization = new Dictionary<int, List<IntervalData>>();
+            //_all = null;
+            _organizations = new Dictionary<int, List<IntervalData>>();
         }
 
         public void Run()
         {
+            CDIEventLog.WriteEntry("CDI Update started...");
+
             // load the data to be analyzed
             Ticket[] tickets = _ticketReader.Read();
             DateTime firstDayMidnight = tickets[0].DateCreated;
@@ -36,39 +38,33 @@ namespace CDI2
 
             // analyze the data
             ClosedTicketAnalysis ticketAnalysis = new ClosedTicketAnalysis(tickets);
-            _all = ticketAnalysis.AnalyzeDaysOpen(firstDayMidnight, lastDayMidnight, _analysisInterval);
+            //_all = ticketAnalysis.AnalyzeDaysOpen(firstDayMidnight, lastDayMidnight, _analysisInterval);
 
             // analyze by organization
             int[] organizationIDs = _ticketReader.ReadOrganizationIDs();
             foreach (int organizationID in organizationIDs)
             {
-                tickets = _ticketReader.Read(organizationID); // test cases: Walmart 1085741, Ecsi 536001
+                tickets = _ticketReader.Read(organizationID);
                 ClosedTicketAnalysis organizationAnalysis = new ClosedTicketAnalysis(tickets);
-                _organization[organizationID] = organizationAnalysis.AnalyzeDaysOpen(firstDayMidnight, lastDayMidnight, _analysisInterval);
+                _organizations[organizationID] = organizationAnalysis.AnalyzeDaysOpen(firstDayMidnight, lastDayMidnight, _analysisInterval);
             }
 
             CalculateCDI();
+            CDIEventLog.WriteEntry("CDI Update complete.");
         }
 
         void CalculateCDI()
         {
-            for (int i = 0; i < _all.Count; ++i)
+            // each interval for each organization
+            foreach (KeyValuePair<int, List<IntervalData>> pair in _organizations)
             {
-                IntervalData average = new IntervalData()
+                IntervalDataAverage organizationAverage = new IntervalDataAverage(pair.Value);
+                foreach (IntervalData intervalData in pair.Value)
                 {
-                    _timeStamp = _all[i]._timeStamp,
-                    _ticketsCreated = _all[i]._ticketsCreated / _organization.Count,
-                    _ticketsOpen = _all[i]._ticketsOpen / _organization.Count,
-                    _averageDaysOpen = _all[i]._averageDaysOpen,
-                    _averageDaysToClose = _all[i]._averageDaysToClose
-                };
+                    intervalData.CalculateCDI(organizationAverage);
 
-                foreach (KeyValuePair<int, List<IntervalData>> pair in _organization)
-                {
-                    pair.Value[i].CalculateCDI(average);
-
-                    if (pair.Key == 536001) // test cases: Walmart 1085741, Ecsi 536001
-                        pair.Value[i].Write();
+                    //if (pair.Key == 536001) // test cases: Walmart 1085741, Ecsi 536001
+                    //    intervalData.Write();
                 }
             }
         }

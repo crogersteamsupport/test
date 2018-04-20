@@ -13,7 +13,7 @@ namespace CDI2
         {
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            CDI cdi = new CDI(365, TimeSpan.FromDays(1), true);
+            CDI cdi = new CDI(365, TimeSpan.FromDays(7), true);
             cdi.Run();
             long ellapsed = stopwatch.ElapsedMilliseconds;
         }

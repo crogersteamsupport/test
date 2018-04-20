@@ -40,25 +40,13 @@ namespace CDI2
             return DateCreated.CompareTo(other.DateCreated);
         }
 
-        static DateTime _now = DateTime.Now;
-        public TimeSpan TimeOpen
-        {
-            get
-            {
-                if (!DateClosed.HasValue)
-                    return _now - DateCreated;
-                return DateClosed.Value - DateCreated;
-            }
-        }
+        public TimeSpan TimeOpen { get { return DateClosed.Value - DateCreated; } }
 
         // default to days
         public double TotalDaysOpen {  get { return TimeOpen.TotalDays; } }
 
         public double ScaledTimeOpen(TimeScale scale)
         {
-            if (!DateClosed.HasValue)
-                return Double.PositiveInfinity;
-
             TimeSpan timeSpan = TimeOpen;
             double result;
             switch(scale)
