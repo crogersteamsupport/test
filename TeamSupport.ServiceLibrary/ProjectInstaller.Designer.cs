@@ -39,8 +39,8 @@
             // 
             // serviceInstaller1
             // 
-            this.serviceInstaller1.DisplayName = "WatsonToneAnalyzerService";
-            this.serviceInstaller1.ServiceName = "WatsonToneAnalyzerService";
+            this.serviceInstaller1.DisplayName = "TeamSupport Watson Tone Analyzer Service";
+            this.serviceInstaller1.ServiceName = "TeamSupport.WatsonToneAnalyzerService";
             this.serviceInstaller1.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller
