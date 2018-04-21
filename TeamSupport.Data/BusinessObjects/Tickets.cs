@@ -80,9 +80,9 @@ namespace TeamSupport.Data
                 {
                     SqlCommand command = new SqlCommand();
                     command.CommandText = @"
-SELECT COUNT(*) 
+SELECT COUNT(*)
 FROM OrganizationTickets ot
-INNER JOIN UserRightsOrganizations uro ON ot.OrganizationID = uro.OrganizationID 
+INNER JOIN UserRightsOrganizations uro ON ot.OrganizationID = uro.OrganizationID
 WHERE uro.UserID = @UserID
 AND ot.TicketID = @TicketID
 ";
@@ -143,13 +143,13 @@ AND ot.TicketID = @TicketID
             //        SqlCommand command = connection.CreateCommand();
             //        command.CommandText = @"
             //            SELECT
-            //                COUNT(*) 
-            //            FROM 
-            //                Users u           
+            //                COUNT(*)
+            //            FROM
+            //                Users u
             //                JOIN Organizations o
-            //                    ON u.OrganizationID = o.OrganizationID 
+            //                    ON u.OrganizationID = o.OrganizationID
             //                LEFT JOIN UserRightsProductFamilies urpf
-            //                    ON u.UserID = urpf.UserID 
+            //                    ON u.UserID = urpf.UserID
             //                LEFT JOIN Products p
             //                    ON urpf.ProductFamilyID = p.ProductFamilyID
             //                LEFT JOIN Tickets t
@@ -160,7 +160,7 @@ AND ot.TicketID = @TicketID
             //                (
             //                    o.UseProductFamilies = 0
             //                    OR t.TicketID = @TicketID
-            //                )              
+            //                )
             //        ";
             //        command.Parameters.AddWithValue("UserID", user.UserID);
             //        command.Parameters.AddWithValue("TicketID", ticketID);
@@ -1456,19 +1456,19 @@ AND ts.IsClosed = 0";
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = @"
-              SELECT 
+              SELECT
                 *
               FROM
-                Tickets t 
+                Tickets t
                 JOIN OrganizationTickets ot
                   ON t.TicketID = ot.TicketID
-                JOIN Organizations o 
+                JOIN Organizations o
                   ON o.OrganizationID = ot.OrganizationID
                 LEFT JOIN TicketStatuses ts
                   ON t.TicketStatusID = ts.TicketStatusID
-              WHERE 
-                t.OrganizationID = @OrgID 
-                AND 
+              WHERE
+                t.OrganizationID = @OrgID
+                AND
                 (
                   (
                     @LastTicketID > 0
@@ -1496,12 +1496,12 @@ AND ts.IsClosed = 0";
             {
                 command.CommandText = @"SELECT TOP 5 TicketID, NAME
 																FROM Tickets
-																WHERE 
-																	OrganizationID              = @OrganizationID 
+																WHERE
+																	OrganizationID              = @OrganizationID
 																	AND IsKnowledgeBase         = 1
 																	AND IsVisibleOnPortal         = 1
 																	AND KnowledgeBaseCategoryID = @KnowledgeBaseCategoryID
-																ORDER BY 
+																ORDER BY
 																	DateModified desc";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
@@ -1516,12 +1516,12 @@ AND ts.IsClosed = 0";
             {
                 command.CommandText = @"SELECT TOP (@Limit) TicketID, NAME
 																FROM Tickets
-																WHERE 
-																	OrganizationID              = @OrganizationID 
+																WHERE
+																	OrganizationID              = @OrganizationID
 																	AND IsKnowledgeBase         = 1
 																	AND IsVisibleOnPortal         = 1
 																	AND KnowledgeBaseCategoryID = @KnowledgeBaseCategoryID
-																ORDER BY 
+																ORDER BY
 																	DateModified desc";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
@@ -1551,15 +1551,15 @@ AND ts.IsClosed = 0";
 	                        ON OT.TicketID = T.TicketID
                         LEFT JOIN dbo.OrganizationProducts as OP
 	                        on OP.OrganizationID = @CustomerID
-                        WHERE 
+                        WHERE
 	                        t.OrganizationID = @OrganizationID
                             AND t.IsKnowledgeBase = 1
                             AND t.IsVisibleOnPortal = 1
-                            AND t.KnowledgeBaseCategoryID" + isKnowledgeBaseClause + @" 
+                            AND t.KnowledgeBaseCategoryID" + isKnowledgeBaseClause + @"
                             AND (
 			                        --Customer Match for sure included no matter what
 			                        OT.OrganizationID = @customerID
-			                        OR 
+			                        OR
                                     (
 				                        --Tickets are assigned to no organization
 				                        OT.TicketID IS NULL
@@ -1582,11 +1582,11 @@ AND ts.IsClosed = 0";
                         FROM Tickets AS T
                         LEFT JOIN dbo.OrganizationTickets as OT
 	                        ON OT.TicketID = T.TicketID
-                        WHERE 
+                        WHERE
 	                        t.OrganizationID = @OrganizationID
                             AND t.IsKnowledgeBase = 1
                             AND t.IsVisibleOnPortal = 1
-                            AND t.KnowledgeBaseCategoryID" + isKnowledgeBaseClause + @" 
+                            AND t.KnowledgeBaseCategoryID" + isKnowledgeBaseClause + @"
                             AND (
 		                        --Customer Match for sure included no matter what
 		                        OT.OrganizationID = @customerID
@@ -1604,12 +1604,12 @@ AND ts.IsClosed = 0";
                         FROM Tickets AS T
                         LEFT JOIN dbo.OrganizationProducts as OP
 	                        on OP.OrganizationID = @CustomerID
-                        WHERE 
+                        WHERE
 	                        t.OrganizationID = @OrganizationID
                             AND t.IsKnowledgeBase = 1
                             AND t.IsVisibleOnPortal = 1
                             AND t.KnowledgeBaseCategoryID" + isKnowledgeBaseClause + @"
-                            AND 
+                            AND
 		                        (
 			                        T.ProductID is null
 			                        OR OP.ProductID = T.ProductID
@@ -1623,7 +1623,7 @@ AND ts.IsClosed = 0";
                             ,t.Name
 	                        ,t.DateModified
                         FROM Tickets AS T
-                        WHERE 
+                        WHERE
 	                        t.OrganizationID = @OrganizationID
                             AND t.IsKnowledgeBase = 1
                             AND t.IsVisibleOnPortal = 1
@@ -1659,8 +1659,8 @@ AND ts.IsClosed = 0";
                                 FROM Tickets as T
                                 Inner Join ForumTickets as FT on T.TicketID = FT.TicketID
                                 Inner Join ForumCategories as FC on FT.ForumCategory = FC.CategoryID
-                                WHERE 
-	                                t.OrganizationID         = @OrganizationID 
+                                WHERE
+	                                t.OrganizationID         = @OrganizationID
 	                                AND t.IsVisibleOnPortal  = 1
 	                                AND FT.ForumCategory = @ForumCategoryID");
                 builder.Append(@" ORDER BY t.DateModified desc");
@@ -2025,12 +2025,13 @@ AND ts.IsClosed = 0";
             }
         }
 
-        public void LoadbyGroupMonth(DateTime date, int groupID, int orgID)
+        public void LoadbyGroupMonth(DateTime date, int offset, int groupID, int orgID)
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "SELECT * from Tickets WHERE (Month(DueDate) = @month) AND (Year(DueDate) = @year) AND (GroupID = @groupID) AND (OrganizationID = @OrgID)";
+                command.CommandText = "SELECT * from Tickets WHERE (Month(DATEADD(hour, @offset, DueDate)) = @month) AND (Year(DATEADD(hour, @offset, DueDate)) = @year) AND (GroupID = @groupID) AND (OrganizationID = @OrgID)";
                 command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@offset", offset);
                 command.Parameters.AddWithValue("@month", date.Month);
                 command.Parameters.AddWithValue("@year", date.Year);
                 command.Parameters.AddWithValue("@groupID", groupID);
@@ -2123,11 +2124,11 @@ AND ts.IsClosed = 0";
                           AND ((@DateCreatedEnd is null) OR (tgv.DateCreated <= @DateCreatedEnd))
                           AND ((@DateModifiedBegin is null) OR (tgv.DateModified >= @DateModifiedBegin))
                           AND ((@DateModifiedEnd is null) OR (tgv.DateModified <= @DateModifiedEnd))
-                          AND ((@Search = '""""') 
+                          AND ((@Search = '""""')
                                 OR (CONTAINS((t.[Name]), @Search))
                                 OR EXISTS (SELECT * FROM Actions a WHERE (a.TicketID = tgv.TicketID) AND CONTAINS((a.[Description], a.[Name]), @Search))
-                                OR EXISTS (SELECT * FROM CustomValues cv 
-                                        LEFT JOIN CustomFields cf ON cv.CustomFieldID = cf.CustomFieldID 
+                                OR EXISTS (SELECT * FROM CustomValues cv
+                                        LEFT JOIN CustomFields cf ON cv.CustomFieldID = cf.CustomFieldID
                                         WHERE (cf.RefType = 17)
                                         AND (cv.RefID = tgv.TicketID)
                                         AND CONTAINS((cv.[CustomValue]), @Search))
@@ -2183,9 +2184,9 @@ AND ts.IsClosed = 0";
                 if (sortAsc) builder.Append(" ASC");
                 else builder.Append(" DESC");
                 builder.Append(") AS RowNumber, tgv.*");
-                builder.Append(@" 
-                              	  
-                                  
+                builder.Append(@"
+
+
                                   FROM TicketGridView tgv LEFT JOIN Tickets t ON tgv.TicketID = t.TicketID
                                   WHERE (tgv.OrganizationID = @OrganizationID)
                                   AND ((tgv.TicketTypeID = @TicketTypeID) OR (@TicketTypeID = -1))
@@ -2203,18 +2204,18 @@ AND ts.IsClosed = 0";
                                   AND ((@DateCreatedEnd is null) OR (tgv.DateCreated <= @DateCreatedEnd))
                                   AND ((@DateModifiedBegin is null) OR (tgv.DateModified >= @DateModifiedBegin))
                                   AND ((@DateModifiedEnd is null) OR (tgv.DateModified <= @DateModifiedEnd))
-                                  AND ((@Search = '""""') OR (tgv.TicketNumber LIKE '%'+@SearchClean+'%') 
+                                  AND ((@Search = '""""') OR (tgv.TicketNumber LIKE '%'+@SearchClean+'%')
                                         OR (CONTAINS((t.[Name]), @Search))
                                         OR EXISTS (SELECT * FROM Actions a WHERE (a.TicketID = tgv.TicketID) AND CONTAINS((a.[Description], a.[Name]), @Search))
-                                        --OR EXISTS (SELECT * FROM CustomValues cv 
-                                          --      LEFT JOIN CustomFields cf ON cv.CustomFieldID = cf.CustomFieldID 
+                                        --OR EXISTS (SELECT * FROM CustomValues cv
+                                          --      LEFT JOIN CustomFields cf ON cv.CustomFieldID = cf.CustomFieldID
                                             --    WHERE (cf.RefType = 17)
                                               --  AND (cv.RefID = tgv.TicketID)
                                                 --AND CONTAINS((cv.[CustomValue]), @Search))
                                         )
                                 )
-                              	  
-                                  SELECT * FROM TicketRows 
+
+                                  SELECT * FROM TicketRows
                                   WHERE RowNumber BETWEEN @PageIndex*@PageSize+1 AND @PageIndex*@PageSize+@PageSize
                                   ORDER BY RowNumber ASC");
 
@@ -2303,11 +2304,11 @@ AND ts.IsClosed = 0";
                           AND ((@DateCreatedEnd is null) OR (tgv.DateCreated <= @DateCreatedEnd))
                           AND ((@DateModifiedBegin is null) OR (tgv.DateModified >= @DateModifiedBegin))
                           AND ((@DateModifiedEnd is null) OR (tgv.DateModified <= @DateModifiedEnd))
-                          AND ((@Search = '""""') 
+                          AND ((@Search = '""""')
                                 OR (CONTAINS((t.[Name]), @Search))
                                 OR EXISTS (SELECT * FROM Actions a WHERE (a.TicketID = tgv.TicketID) AND CONTAINS((a.[Description], a.[Name]), @Search))
-                                OR EXISTS (SELECT * FROM CustomValues cv 
-                                        LEFT JOIN CustomFields cf ON cv.CustomFieldID = cf.CustomFieldID 
+                                OR EXISTS (SELECT * FROM CustomValues cv
+                                        LEFT JOIN CustomFields cf ON cv.CustomFieldID = cf.CustomFieldID
                                         WHERE (cf.RefType = 17)
                                         AND (cv.RefID = tgv.TicketID)
                                         AND CONTAINS((cv.[CustomValue]), @Search))
@@ -2346,12 +2347,12 @@ AND ts.IsClosed = 0";
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = @"
-  SELECT tgv.* 
-  FROM TicketGridView tgv 
+  SELECT tgv.*
+  FROM TicketGridView tgv
     WHERE (tgv.OrganizationID = @OrganizationID)
     AND (
-      (@Search = '""""') 
-      OR (tgv.TicketNumber LIKE '%'+@SearchClean+'%') 
+      (@Search = '""""')
+      OR (tgv.TicketNumber LIKE '%'+@SearchClean+'%')
       --OR (tgv.Name LIKE @SearchClean+'%')
       OR EXISTS (SELECT * FROM Tickets t WHERE (t.TicketID = tgv.TicketID) AND CONTAINS((t.[Name]), @Search))
       OR EXISTS (SELECT * FROM Actions a WHERE (a.TicketID = tgv.TicketID) AND CONTAINS((a.[Description], a.[Name]), @Search))
@@ -2428,7 +2429,7 @@ AND ts.IsClosed = 0";
       ,tgv.[SlaWarningTime]
       ,tgv.[SlaViolationHours]
       ,tgv.[SlaWarningHours]
-FROM TicketGridView tgv 
+FROM TicketGridView tgv
 WHERE tgv.OrganizationID = @OrganizationID"
       );
             for (int i = 0; i < tagArray.Length; i++)
@@ -2481,16 +2482,16 @@ WHERE tgv.OrganizationID = @OrganizationID"
                 }
                 else*/
                 {
-                    commandText = @" 
-SELECT TOP {0} CAST(TicketNumber AS VARCHAR(50)) + ':  ' + Name AS TicketDescription, TicketID, TicketNumber FROM Tickets t 
-WHERE OrganizationID = @OrganizationID 
+                    commandText = @"
+SELECT TOP {0} CAST(TicketNumber AS VARCHAR(50)) + ':  ' + Name AS TicketDescription, TicketID, TicketNumber FROM Tickets t
+WHERE OrganizationID = @OrganizationID
 AND IsKnowledgebase = 1
 AND (
   CONTAINS((t.[Name]), @Search)
   OR TicketNumber LIKE @SearchClean+'%'
   OR EXISTS (SELECT * FROM Actions a WHERE (a.TicketID = t.TicketID) AND CONTAINS((a.[Description], a.[Name]), @Search))
-  OR EXISTS (SELECT * FROM CustomValues cv LEFT JOIN CustomFields cf ON cv.CustomFieldID = cf.CustomFieldID WHERE (cf.RefType = 17) AND (cv.RefID = t.TicketID) AND CONTAINS(cv.[CustomValue], @Search))                              
-) 
+  OR EXISTS (SELECT * FROM CustomValues cv LEFT JOIN CustomFields cf ON cv.CustomFieldID = cf.CustomFieldID WHERE (cf.RefType = 17) AND (cv.RefID = t.TicketID) AND CONTAINS(cv.[CustomValue], @Search))
+)
 ORDER BY TicketNumber DESC";
                 }
 
@@ -2528,15 +2529,15 @@ ORDER BY TicketNumber DESC";
                 }
                 else*/
                 {
-                    commandText = @" 
+                    commandText = @"
 SELECT TOP {0} CAST(TicketNumber AS VARCHAR(50)) + ':  ' + Name AS TicketDescription, TicketID, TicketNumber FROM Tickets t (NOLOCK)
-WHERE OrganizationID = @OrganizationID 
+WHERE OrganizationID = @OrganizationID
 AND (
   CONTAINS((t.[Name]), @Search)
   OR TicketNumber LIKE @SearchClean+'%'
   OR EXISTS (SELECT * FROM Actions a WHERE (a.TicketID = t.TicketID) AND CONTAINS((a.[Description], a.[Name]), @Search))
-  OR EXISTS (SELECT * FROM CustomValues cv LEFT JOIN CustomFields cf ON cv.CustomFieldID = cf.CustomFieldID WHERE (cf.RefType = 17) AND (cv.RefID = t.TicketID) AND CONTAINS(cv.[CustomValue], @Search))                              
-) 
+  OR EXISTS (SELECT * FROM CustomValues cv LEFT JOIN CustomFields cf ON cv.CustomFieldID = cf.CustomFieldID WHERE (cf.RefType = 17) AND (cv.RefID = t.TicketID) AND CONTAINS(cv.[CustomValue], @Search))
+)
 ORDER BY TicketNumber DESC";
                 }
 
@@ -2580,7 +2581,7 @@ ORDER BY TicketNumber DESC";
                 command.CommandText =
         @"SELECT COUNT(*) FROM Users u
 LEFT JOIN UserTickets ut ON ut.UserID = u.UserID
-WHERE ut.TicketID = @TicketID 
+WHERE ut.TicketID = @TicketID
 AND u.OrganizationID = @OrganizationID
 ";
                 command.CommandType = CommandType.Text;
@@ -2683,19 +2684,19 @@ AND u.OrganizationID = @OrganizationID
                     SELECT
                         COUNT(*)
                     FROM
-                        Tickets t 
-                        LEFT JOIN TicketStatuses ts 
-                            ON ts.TicketStatusID = t.TicketStatusID 
-                    WHERE 
+                        Tickets t
+                        LEFT JOIN TicketStatuses ts
+                            ON ts.TicketStatusID = t.TicketStatusID
+                    WHERE
                         t.TicketTypeID = @TicketTypeID
                         AND ts.IsClosed = 0
                         AND EXISTS
                         (
-                            SELECT 
+                            SELECT
                                 *
                             FROM
-                                OrganizationTickets ot 
-                            WHERE 
+                                OrganizationTickets ot
+                            WHERE
                                 t.TicketID = ot.TicketID
                                 AND ot.OrganizationID IN
                                 (
@@ -2726,23 +2727,23 @@ AND u.OrganizationID = @OrganizationID
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = @"
-                    SELECT 
-                        COUNT(*) 
+                    SELECT
+                        COUNT(*)
                     FROM
                         Tickets t
-                        LEFT JOIN TicketStatuses ts 
-                            ON ts.TicketStatusID = t.TicketStatusID 
+                        LEFT JOIN TicketStatuses ts
+                            ON ts.TicketStatusID = t.TicketStatusID
                     WHERE
-                        t.TicketTypeID = @TicketTypeID 
-                        AND ts.IsClosed = 1 
+                        t.TicketTypeID = @TicketTypeID
+                        AND ts.IsClosed = 1
                         AND EXISTS
                         (
                             SELECT
                                 *
                             FROM
-                                OrganizationTickets ot 
+                                OrganizationTickets ot
                             WHERE
-                                t.TicketID = ot.TicketID 
+                                t.TicketID = ot.TicketID
                                 AND ot.OrganizationID IN
                                 (
                                     SELECT
@@ -2773,12 +2774,12 @@ AND u.OrganizationID = @OrganizationID
             {
                 command.CommandText = @"
         SELECT
-          COUNT(*) 
-        FROM 
-          Tickets t 
-          LEFT JOIN TicketStatuses ts 
-            ON ts.TicketStatusID = t.TicketStatusID 
-        WHERE 
+          COUNT(*)
+        FROM
+          Tickets t
+          LEFT JOIN TicketStatuses ts
+            ON ts.TicketStatusID = t.TicketStatusID
+        WHERE
           t.TicketTypeID = @TicketTypeID
           AND ts.IsClosed = 0
           AND t.ProductID = @ProductID
@@ -2803,7 +2804,7 @@ AND u.OrganizationID = @OrganizationID
           Tickets t
           LEFT JOIN TicketStatuses ts
             ON ts.TicketStatusID = t.TicketStatusID
-        WHERE 
+        WHERE
           t.TicketTypeID = @TicketTypeID
           AND ts.IsClosed = 1
           AND t.ProductID = @ProductID
@@ -2823,12 +2824,12 @@ AND u.OrganizationID = @OrganizationID
             {
                 command.CommandText = @"
         SELECT
-          COUNT(*) 
-        FROM 
-          Tickets t 
-          LEFT JOIN TicketStatuses ts 
-            ON ts.TicketStatusID = t.TicketStatusID 
-        WHERE 
+          COUNT(*)
+        FROM
+          Tickets t
+          LEFT JOIN TicketStatuses ts
+            ON ts.TicketStatusID = t.TicketStatusID
+        WHERE
           t.TicketTypeID = @TicketTypeID
           AND ts.IsClosed = 0
           and t.organizationid = @organizationID
@@ -2854,7 +2855,7 @@ AND u.OrganizationID = @OrganizationID
           Tickets t
           LEFT JOIN TicketStatuses ts
             ON ts.TicketStatusID = t.TicketStatusID
-        WHERE 
+        WHERE
           t.TicketTypeID = @TicketTypeID
           AND ts.IsClosed = 1
           and t.organizationid = @organizationID
@@ -2875,14 +2876,14 @@ AND u.OrganizationID = @OrganizationID
             {
                 command.CommandText = @"
         SELECT
-          COUNT(*) 
-        FROM 
-          Tickets t 
-          JOIN TicketStatuses ts 
-            ON ts.TicketStatusID = t.TicketStatusID 
-          JOIN Products p 
-            ON t.ProductID = p.ProductID 
-        WHERE 
+          COUNT(*)
+        FROM
+          Tickets t
+          JOIN TicketStatuses ts
+            ON ts.TicketStatusID = t.TicketStatusID
+          JOIN Products p
+            ON t.ProductID = p.ProductID
+        WHERE
           t.TicketTypeID = @TicketTypeID
           AND ts.IsClosed = 0
           AND p.ProductFamilyID = @ProductFamilyID
@@ -2907,9 +2908,9 @@ AND u.OrganizationID = @OrganizationID
           Tickets t
           JOIN TicketStatuses ts
             ON ts.TicketStatusID = t.TicketStatusID
-          JOIN Products p 
-            ON t.ProductID = p.ProductID 
-        WHERE 
+          JOIN Products p
+            ON t.ProductID = p.ProductID
+        WHERE
           t.TicketTypeID = @TicketTypeID
           AND ts.IsClosed = 1
           AND p.ProductFamilyID = @ProductFamilyID
@@ -2927,7 +2928,7 @@ AND u.OrganizationID = @OrganizationID
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "SELECT TOP " + top.ToString() + @" tgv.* FROM TicketGridView tgv 
+                command.CommandText = "SELECT TOP " + top.ToString() + @" tgv.* FROM TicketGridView tgv
                                 WHERE (tgv.UserID is null)
                                 AND (tgv.IsClosed = 0)
                                 AND EXISTS(SELECT * FROM GroupUsers gu WHERE (GroupID = tgv.GroupID) AND (UserID = @UserID))
@@ -2942,7 +2943,7 @@ AND u.OrganizationID = @OrganizationID
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "SELECT TOP " + top.ToString() + @" tgv.* FROM TicketGridView tgv 
+                command.CommandText = "SELECT TOP " + top.ToString() + @" tgv.* FROM TicketGridView tgv
                                WHERE (tgv.OrganizationID = @OrganizationID)
                                AND (tgv.IsKnowledgeBase = 1)
                                ORDER BY tgv.DateModified DESC";
@@ -2969,10 +2970,10 @@ AND u.OrganizationID = @OrganizationID
                         LEFT JOIN dbo.OrganizationProducts as OP
 	                        on OP.OrganizationID = @CustomerID
                         LEFT JOIN dbo.ticketratings ON T.TicketID = ticketratings.ticketid
-                        WHERE 
+                        WHERE
 	                        t.OrganizationID = @OrganizationID
 	                        AND t.IsKnowledgeBase = 1
-	                        AND t.IsVisibleOnPortal = 1 
+	                        AND t.IsVisibleOnPortal = 1
                 ");
 
                 if (enableCustomerSpecificKB && ((customerID > 0 || enableAnonymousProductAssociation) && enableCustomerProductAssociation))
@@ -2981,7 +2982,7 @@ AND u.OrganizationID = @OrganizationID
                             AND (
 		                            --Customer Match for sure includeded no matter what
 		                            OT.OrganizationID = @customerID
-		                            OR 
+		                            OR
                                     (
 			                            --Tickets are assigned to no organization
 			                            OT.TicketID is null
@@ -3038,7 +3039,7 @@ AND u.OrganizationID = @OrganizationID
 	                        ON OT.TicketID = T.TicketID
                         LEFT JOIN dbo.OrganizationProducts as OP
 	                        on OP.OrganizationID = @CustomerID
-                        WHERE 
+                        WHERE
 	                        t.OrganizationID = @OrganizationID
 	                        AND t.IsKnowledgeBase = 1
 	                        AND t.IsVisibleOnPortal = 1
@@ -3050,7 +3051,7 @@ AND u.OrganizationID = @OrganizationID
                             AND (
 		                        --Customer Match for sure includeded no matter what
 		                        OT.OrganizationID = @customerID
-		                        OR 
+		                        OR
                                 (
 			                        --Tickets are assigned to no organization
 			                        OT.TicketID is null
@@ -3165,50 +3166,50 @@ AND u.OrganizationID = @OrganizationID
 SELECT ticketnumber, t.*, sn.*
 FROM Tickets t
 LEFT JOIN SlaNotifications sn ON t.TicketID = sn.TicketID
-WHERE  
+WHERE
 t.DateClosed IS NULL
 AND
 (
-  ( 
+  (
     t.SlaViolationTimeClosed IS NOT NULL AND
-    t.SlaViolationTimeClosed < DATEADD(DAY, 1, GETUTCDATE()) AND 
+    t.SlaViolationTimeClosed < DATEADD(DAY, 1, GETUTCDATE()) AND
 	t.SlaViolationTimeClosed > DATEADD(DAY, -1, GETUTCDATE()) AND
-    t.SlaViolationTimeClosed > DATEADD(MINUTE, 10, ISNULL(sn.TimeClosedViolationDate, '1/1/1980')) 
+    t.SlaViolationTimeClosed > DATEADD(MINUTE, 10, ISNULL(sn.TimeClosedViolationDate, '1/1/1980'))
   )
   OR
   (
     t.SlaWarningTimeClosed IS NOT NULL AND
-    t.SlaWarningTimeClosed < DATEADD(DAY, 1, GETUTCDATE()) AND 
+    t.SlaWarningTimeClosed < DATEADD(DAY, 1, GETUTCDATE()) AND
 	t.SlaWarningTimeClosed > DATEADD(DAY, -1, GETUTCDATE()) AND
-    t.SlaWarningTimeClosed > DATEADD(MINUTE, 10, ISNULL(sn.TimeClosedWarningDate, '1/1/1980')) 
+    t.SlaWarningTimeClosed > DATEADD(MINUTE, 10, ISNULL(sn.TimeClosedWarningDate, '1/1/1980'))
   )
   OR
   (
     t.SlaViolationLastAction IS NOT NULL AND
-    t.SlaViolationLastAction < DATEADD(DAY, 1, GETUTCDATE()) AND 
+    t.SlaViolationLastAction < DATEADD(DAY, 1, GETUTCDATE()) AND
 	t.SlaViolationLastAction > DATEADD(DAY, -1, GETUTCDATE()) AND
-    t.SlaViolationLastAction > DATEADD(MINUTE, 10, ISNULL(sn.LastActionViolationDate, '1/1/1980')) 
+    t.SlaViolationLastAction > DATEADD(MINUTE, 10, ISNULL(sn.LastActionViolationDate, '1/1/1980'))
   )
   OR
   (
     t.SlaWarningLastAction IS NOT NULL AND
-    t.SlaWarningLastAction < DATEADD(DAY, 1, GETUTCDATE()) AND 
+    t.SlaWarningLastAction < DATEADD(DAY, 1, GETUTCDATE()) AND
 	t.SlaWarningLastAction > DATEADD(DAY, -1, GETUTCDATE()) AND
-    t.SlaWarningLastAction > DATEADD(MINUTE, 10, ISNULL(sn.LastActionWarningDate, '1/1/1980')) 
+    t.SlaWarningLastAction > DATEADD(MINUTE, 10, ISNULL(sn.LastActionWarningDate, '1/1/1980'))
   )
   OR
   (
     t.SlaViolationInitialResponse IS NOT NULL AND
-    t.SlaViolationInitialResponse < DATEADD(DAY, 1, GETUTCDATE()) AND 
+    t.SlaViolationInitialResponse < DATEADD(DAY, 1, GETUTCDATE()) AND
 	t.SlaViolationInitialResponse > DATEADD(DAY, -1, GETUTCDATE()) AND
-    t.SlaViolationInitialResponse > DATEADD(MINUTE, 10, ISNULL(sn.InitialResponseViolationDate, '1/1/1980')) 
+    t.SlaViolationInitialResponse > DATEADD(MINUTE, 10, ISNULL(sn.InitialResponseViolationDate, '1/1/1980'))
   )
   OR
   (
     t.SlaWarningInitialResponse IS NOT NULL AND
-    t.SlaWarningInitialResponse < DATEADD(DAY, 1, GETUTCDATE()) AND 
+    t.SlaWarningInitialResponse < DATEADD(DAY, 1, GETUTCDATE()) AND
 	t.SlaWarningInitialResponse > DATEADD(DAY, -1, GETUTCDATE()) AND
-    t.SlaWarningInitialResponse > DATEADD(MINUTE, 10, ISNULL(sn.InitialResponseWarningDate, '1/1/1980')) 
+    t.SlaWarningInitialResponse > DATEADD(MINUTE, 10, ISNULL(sn.InitialResponseWarningDate, '1/1/1980'))
   )
 )
 ";
@@ -3568,13 +3569,13 @@ AND
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = @"
-        SELECT 
-          COUNT(*) 
-        FROM 
+        SELECT
+          COUNT(*)
+        FROM
           Tickets t
           JOIN TicketStatuses ts
             ON t.TicketStatusID = ts.TicketStatusID
-        WHERE 
+        WHERE
           ts.IsClosed = @closed
           and t.organizationid = @organizationID
           AND (t.ReportedVersionID = @ProductVersionID OR t.SolvedVersionID = @ProductVersionID)
@@ -3594,13 +3595,13 @@ AND
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = @"
-        SELECT 
-          COUNT(*) 
-        FROM 
+        SELECT
+          COUNT(*)
+        FROM
           Tickets t
           JOIN TicketStatuses ts
             ON t.TicketStatusID = ts.TicketStatusID
-        WHERE 
+        WHERE
           ts.IsClosed = @closed
           AND t.ProductID = @ProductID
         ";
@@ -3630,12 +3631,12 @@ AND
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = @"
-			 SELECT 
+			 SELECT
 				t.*
 			FROM
 				Tickets t
 				JOIN OrganizationTickets ot
-			WHERE 
+			WHERE
 				t.OrganizationID = @OrgID
 				AND ot.OrganizationID = @companyID";
                 command.CommandType = CommandType.Text;
@@ -3662,7 +3663,7 @@ AND
                 {
                     command.Connection = connection;
                     command.CommandText = @"UPDATE [dbo].[Tickets]
-    SET 
+    SET
         SlaViolationInitialResponse = @SlaViolationInitialResponse,
         SlaViolationLastAction = @SlaViolationLastAction,
         SlaViolationTimeClosed = @SlaViolationTimeClosed,
@@ -3684,4 +3685,3 @@ AND
         }
     }
 }
-
