@@ -3441,7 +3441,7 @@ var appendCustomEdit = function (field, element) {
     .appendTo(element);
 
     var result = $('<p>')
-      .html((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : getUrls(field.Value)))
+      .text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : $("<div>").html(getUrls(field.Value)).text()))
       .addClass('form-control-static editable')
       .appendTo(div)
       .click(function (e) {
