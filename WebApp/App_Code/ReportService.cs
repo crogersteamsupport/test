@@ -314,7 +314,7 @@ namespace TSWebServices
         [WebMethod]
         public void AdminUpdateQuery(int reportID, string query)
         {
-            if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47 && TSAuthentication.UserID != 1839999) return;
+            if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47 && TSAuthentication.UserID != 4759191) return;
             Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
             report.Query = query;
             report.Collection.Save();
@@ -323,7 +323,7 @@ namespace TSWebServices
         [WebMethod]
         public void AdminTestQuery(int reportID, string query)
         {
-            if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47 && TSAuthentication.UserID != 1839999) return;
+            if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47 && TSAuthentication.UserID != 4759191) return;
             if (!string.IsNullOrWhiteSpace(query))
             {
                 Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
