@@ -16,16 +16,18 @@ namespace CDI2
     /// </summary>
     class TicketReader
     {
-        public int DaysToLoad { get; private set; }
+        DateTime _startDate;
+        DateTime _endDate;
         private Ticket[] _tickets;  // tickets for organization in the last year
 
         const int _TicketBlockSize = 500000; // load in blocks?
 
         /// <summary> Constructor </summary>
         /// <param name="daysToLoad">How many days prior to today do we load?</param>
-        public TicketReader(int daysToLoad)
+        public TicketReader(DateTime startDate, DateTime endDate)
         {
-            DaysToLoad = daysToLoad;
+            _startDate = startDate;
+            _endDate = endDate;
         }
 
         /// <summary> Load the tickets since the start date </summary>
@@ -58,14 +60,15 @@ namespace CDI2
 
         public Ticket[] Read(int organizationID)
         {
-            Ticket[] tickets = Read();
+            Ticket[] tickets = Read(); // make sure we are initilized
             var query = tickets.Where(t => t.OrganizationID == organizationID).OrderBy(t => t.DateCreated);
             return query.ToArray();
         }
 
         public int[] ReadOrganizationIDs()
         {
-            var query = _tickets.Select(t => t.OrganizationID).Distinct();
+            Ticket[] tickets = Read(); // make sure we are initilized
+            var query = tickets.Select(t => t.OrganizationID).Distinct();
             return query.ToArray();
         }
 
@@ -82,17 +85,17 @@ namespace CDI2
             Table<TicketType> ticketTypeTable = db.GetTable<TicketType>();
 
             // loop through loading blocks
-            DateTime now = DateTime.UtcNow;
-            DateTime startDate = now.AddDays(-1 * DaysToLoad);
-            while (startDate < now)
+            DateTime queryDate = _startDate;
+            while (queryDate < _endDate)
             {
                 var query = (from t in ticketTable
                              join tt in ticketTypeTable on t.TicketTypeID equals tt.TicketTypeID
                              join ts in ticketStatusTable on t.TicketStatusID equals ts.TicketStatusID
-                             where (t.DateCreated > startDate) &&
+                             where (t.DateCreated > queryDate) &&
                                  (ts.IsClosed == true) &&   // only closed tickets
-                                 (t.DateClosed.HasValue) &&
-                                 (t.DateCreated != t.DateClosed.Value) &&   // valid DateClosed
+                                 (t.DateClosed.HasValue) && 
+                                 (t.DateClosed.Value > t.DateCreated.AddSeconds(1)) &&  // ignore those open for less than a second
+                                 (t.TicketSource != "SalesForce") &&    // ignore imported ticketse
                                  (!tt.ExcludeFromCDI) &&
                                  (!ts.ExcludeFromCDI)
                              orderby t.DateCreated
@@ -111,7 +114,7 @@ namespace CDI2
                     Array.Resize(ref tickets, tickets.Length + queryResults.Length);
                     queryResults.CopyTo(tickets, previousLength);
                 }
-                startDate = tickets[tickets.Length - 1].DateCreated;
+                queryDate = tickets[tickets.Length - 1].DateCreated;
             }
             return tickets;
         }

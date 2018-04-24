@@ -32,6 +32,8 @@ namespace CDI2
         [Column]
         public DateTime? DateClosed;
         [Column]
+        public string TicketSource;
+        [Column]
         public DateTime DateCreated;
 #pragma warning restore CS0649
 
@@ -43,7 +45,7 @@ namespace CDI2
         public TimeSpan TimeOpen { get { return DateClosed.Value - DateCreated; } }
 
         // default to days
-        public double TotalDaysOpen {  get { return TimeOpen.TotalDays; } }
+        public double TotalDaysOpen { get { return TimeOpen.TotalDays; } }
 
         public double ScaledTimeOpen(TimeScale scale)
         {

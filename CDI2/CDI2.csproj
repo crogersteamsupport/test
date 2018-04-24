@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="CDI.cs" />
     <Compile Include="IntervalData.cs" />
+    <Compile Include="IntervalDataDistribution.cs" />
     <Compile Include="TicketReader.cs" />
     <Compile Include="linq\Ticket.cs" />
     <Compile Include="linq\TicketStatus.cs" />
