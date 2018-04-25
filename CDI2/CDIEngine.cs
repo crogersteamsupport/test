@@ -6,7 +6,7 @@ using System.Text;
 
 namespace CDI2
 {
-    public class CDI
+    public class CDIEngine
     {
         TimeSpan _analysisInterval;
         DateTime _startDate;
@@ -21,7 +21,7 @@ namespace CDI2
         /// <param name="analysisInterval">interval to sample and average across</param>
         /// <param name="intervalCount">Use an even number of intervals</param>
         /// <param name="isClosed"></param>
-        public CDI(TimeSpan analysisInterval, int intervalCount)
+        public CDIEngine(TimeSpan analysisInterval, int intervalCount)
         {
             _analysisInterval = analysisInterval;
             _endDate = PreviousMidnight(DateTime.UtcNow);
@@ -41,18 +41,27 @@ namespace CDI2
             CDIEventLog.WriteEntry("CDI Update started...");
 
             // load all the tickets
-            Ticket[] tickets = _ticketReader.Read();
-            //List<IntervalData> all = Analyze(tickets);    // complete analysis of all tickets
+            _ticketReader.LoadTickets();
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            List<IntervalData> all = Analyze(_ticketReader.Tickets);    // complete analysis of all tickets
+            long ms = stopwatch.ElapsedMilliseconds;
 
             // analyze by organization
             int[] organizationIDs = _ticketReader.ReadOrganizationIDs();
             foreach (int organizationID in organizationIDs)
             {
                 // extract this organization's tickets from the complete set
-                tickets = _ticketReader.Read(organizationID);
+                TicketJoin[] tickets = _ticketReader.Read(organizationID);
+
+                // filter?
+                if (tickets.Length < 1000)
+                    continue;
+
                 _organizations[organizationID] = Analyze(tickets);
             }
-            Write();
+            WriteCdiByOrganization();
 
             CDIEventLog.WriteEntry("CDI Update complete.");
         }
@@ -62,7 +71,7 @@ namespace CDI2
         /// </summary>
         /// <param name="tickets"></param>
         /// <returns></returns>
-        List<IntervalData> Analyze(Ticket[] tickets)
+        List<IntervalData> Analyze(TicketJoin[] tickets)
         {
             // collect metrics for each interval
             ClosedTicketAnalysis analysis = new ClosedTicketAnalysis(tickets);
@@ -79,7 +88,7 @@ namespace CDI2
         /// <summary>
         /// Complete summary of CDI by date for all organizations
         /// </summary>
-        public void Write()
+        public void WriteCdiByOrganization()
         {
             // DateTime org1 org2 org3...
             StringBuilder str = new StringBuilder();
@@ -93,7 +102,10 @@ namespace CDI2
                 str.Clear();
                 str.Append(_organizations.First().Value[i]._timeStamp.ToShortDateString() + "\t");
                 foreach (KeyValuePair<int, List<IntervalData>> pair in _organizations)
-                    str.Append(((int)Math.Round(pair.Value[i].CDI)).ToString() + "\t");
+                {
+                    str.Append(pair.Value[i].CDI.Value);
+                    str.Append('\t');
+                }
 
                 Debug.WriteLine(str.ToString());
             }

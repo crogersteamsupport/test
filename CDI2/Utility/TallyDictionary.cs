@@ -10,13 +10,13 @@ namespace CDI2
     /// <summary>
     /// Utility class for histogram - counter by bin
     /// </summary>
-    class TallyDictionary
+    class TallyDictionary<T>
     {
-        SortedDictionary<int, int> _sum = new SortedDictionary<int, int>();
+        SortedDictionary<T, int> _sum = new SortedDictionary<T, int>();
 
         /// <summary> add an item to the bin </summary>
         /// <param name="binIndex">which bin does this record land in</param>
-        public void Increment(int binIndex)
+        public void Increment(T binIndex)
         {
             if (!_sum.ContainsKey(binIndex))
                 _sum[binIndex] = 1;
@@ -26,7 +26,7 @@ namespace CDI2
 
         /// <summary> remove an item from the bin </summary>
         /// <param name="binIndex">which bin does this record land in</param>
-        public void Decrement(int binIndex)
+        public void Decrement(T binIndex)
         {
             if (!_sum.ContainsKey(binIndex))
                 _sum[binIndex] = -1;
@@ -36,7 +36,7 @@ namespace CDI2
 
         public void Write()
         {
-            foreach (KeyValuePair<int, int> pair in _sum)
+            foreach (KeyValuePair<T, int> pair in _sum)
                 Debug.WriteLine("{0}\t{1}", pair.Key, pair.Value);
         }
     }

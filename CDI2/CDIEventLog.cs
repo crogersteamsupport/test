@@ -45,7 +45,7 @@ namespace CDI2
 
         public static void WriteEntry(string message, Exception e)
         {
-            //Debugger.Break();
+            Debugger.Break();
             WriteEntry(message + e.ToString() + " ----- STACK: " + e.StackTrace.ToString(), EventLogEntryType.Error);
         }
     }

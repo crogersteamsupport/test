@@ -16,12 +16,12 @@ namespace CDI2
     /// </summary>
     class ClosedTicketAnalysis
     {
-        Ticket[] _tickets;
+        TicketJoin[] _tickets;
         public double AvgTimeToClose { get; private set; }
         public double StdevTimeToClose { get; private set; }   // days
-        List<Tuple<DateTime, Ticket>> _chronological;   // chronological listing of each open and close
+        List<Tuple<DateTime, TicketJoin>> _chronological;   // chronological listing of each open and close
 
-        public ClosedTicketAnalysis(Ticket[] tickets)
+        public ClosedTicketAnalysis(TicketJoin[] tickets)
         {
             _tickets = tickets;
             try
@@ -42,7 +42,7 @@ namespace CDI2
 
             // standard deviation
             double denominator = 0;
-            foreach (Ticket t in _tickets)
+            foreach (TicketJoin t in _tickets)
             {
                 double xdiff = t.TotalDaysOpen - AvgTimeToClose;
                 denominator += xdiff * xdiff;
@@ -58,11 +58,11 @@ namespace CDI2
                 return;
 
             // insert each ticket by DateCreated and DateClosed (duplicates allowed)
-            _chronological = new List<Tuple<DateTime, Ticket>>();   // allow duplicates for DateTime
-            foreach (Ticket t in _tickets)
+            _chronological = new List<Tuple<DateTime, TicketJoin>>();   // allow duplicates for DateTime
+            foreach (TicketJoin t in _tickets)
             {
-                _chronological.Add(new Tuple<DateTime, Ticket>(t.DateCreated, t));  // opened
-                _chronological.Add(new Tuple<DateTime, Ticket>(t.DateClosed.Value, t));  // closed
+                _chronological.Add(new Tuple<DateTime, TicketJoin>(t.DateCreated, t));  // opened
+                _chronological.Add(new Tuple<DateTime, TicketJoin>(t.DateClosed.Value, t));  // closed
             }
 
             // sort by date and TicketID
@@ -85,15 +85,15 @@ namespace CDI2
                 DateTime nextInterval = firstDayMidnight + interval;
 
                 // tickets open at that moment in time
-                HashSet<Ticket> openTickets = new HashSet<Ticket>();    // HashSet is faster than List for big data
-                HashSet<Ticket> closedTickets = new HashSet<Ticket>();
+                HashSet<TicketJoin> openTickets = new HashSet<TicketJoin>();    // HashSet is faster than List for big data
+                HashSet<TicketJoin> closedTickets = new HashSet<TicketJoin>();
                 int ticketsCreated = 0;
                 results = new List<IntervalData>();
 
                 // spin through all the create/close times and keep a running tally of 
                 // all currently open/closed
                 InitChronological();
-                foreach (Tuple<DateTime, Ticket> pair in _chronological)
+                foreach (Tuple<DateTime, TicketJoin> pair in _chronological)
                 {
                     if (pair.Item1 > nextInterval)
                     {
@@ -133,7 +133,30 @@ namespace CDI2
             return results;
         }
 
-        private IntervalData GetIntervalData(DateTime nextDay, HashSet<Ticket> openTickets, HashSet<Ticket> closedTickets, int ticketsCreated)
+        private double? Median(HashSet<TicketJoin> tickets)
+        {
+            try
+            {
+                double[] totalDays = tickets.Select(ticket => ticket.TotalDaysOpen).ToArray();
+                if (totalDays.Length == 0)
+                    return null;
+
+                Array.Sort(totalDays);
+                int centerIndex = totalDays.Length / 2;
+                if (totalDays.Length % 2 == 1)
+                    return totalDays[centerIndex];
+
+                return (totalDays[centerIndex - 1] + totalDays[centerIndex]) / 2;
+            }
+            catch(Exception e)
+            {
+                CDIEventLog.WriteEntry("Failed Median", e);
+            }
+
+            return null;
+        }
+
+        private IntervalData GetIntervalData(DateTime nextDay, HashSet<TicketJoin> openTickets, HashSet<TicketJoin> closedTickets, int ticketsCreated)
         {
             // TODO - optimize by previous time open and how long its been since then
             IntervalData sample = new IntervalData()
@@ -141,9 +164,9 @@ namespace CDI2
                 _timeStamp = nextDay,
                 _ticketsCreated = ticketsCreated,
                 _ticketsOpen = openTickets.Count,
-                _averageDaysOpen = (openTickets.Count <= 0) ? 0 : openTickets.Average(ticket => ticket.TotalDaysOpen),
+                _medianDaysOpen = Median(openTickets),
                 _ticketsClosed = closedTickets.Count,
-                _averageDaysToClose = (closedTickets.Count <= 0) ? 0 : closedTickets.Average(ticket => ticket.TotalDaysOpen)
+                _medianDaysToClose = Median(closedTickets)
             };
 
             //sample.Write();
@@ -156,11 +179,11 @@ namespace CDI2
         }
 
         /// <summary> Count the days open </summary>
-        void TimeOpenHistogram(TimeScale timeScale, Ticket[] tickets)
+        void TimeOpenHistogram(TimeScale timeScale, TicketJoin[] tickets)
         {
             Debug.WriteLine("TimeOpen({0})	TicketCount", timeScale);
-            TallyDictionary open = new TallyDictionary();
-            foreach (Ticket t in tickets)
+            TallyDictionary<int> open = new TallyDictionary<int>();
+            foreach (TicketJoin t in tickets)
             {
                 int timeOpen = (int)Math.Round(t.ScaledTimeOpen(timeScale));
                 open.Increment(timeOpen);
@@ -169,13 +192,13 @@ namespace CDI2
             open.Write();
         }
 
-        /// <summary> Count the days open </summary>
-        void TicketTypeHistogram(TimeScale timeScale, Ticket[] tickets)
+        /// <summary> Count the ticket types </summary>
+        void TicketTypeHistogram(TimeScale timeScale, TicketJoin[] tickets)
         {
             Debug.WriteLine("TicketType({0})	TicketCount", timeScale);
-            TallyDictionary open = new TallyDictionary();
-            foreach (Ticket t in tickets)
-                open.Increment(t.TicketTypeID);
+            TallyDictionary<string> open = new TallyDictionary<string>();
+            foreach (TicketJoin t in tickets)
+                open.Increment(t.TicketTypeName);
 
             open.Write();
         }

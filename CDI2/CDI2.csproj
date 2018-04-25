@@ -44,9 +44,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CDI.cs" />
+    <Compile Include="CDIEngine.cs" />
     <Compile Include="IntervalData.cs" />
     <Compile Include="IntervalDataDistribution.cs" />
+    <Compile Include="linq\Action.cs" />
+    <Compile Include="linq\TicketJoin.cs" />
     <Compile Include="TicketReader.cs" />
     <Compile Include="linq\Ticket.cs" />
     <Compile Include="linq\TicketStatus.cs" />

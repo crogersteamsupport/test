@@ -16,6 +16,8 @@ namespace CDI2
         public int TicketStatusID { get { return _ticketStatusID; } }
 
         [Column]
+        public string Name;
+        [Column]
         public bool IsClosed;
         [Column]
         public bool ExcludeFromCDI;
