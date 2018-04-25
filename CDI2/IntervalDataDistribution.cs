@@ -77,12 +77,13 @@ namespace CDI2
                 _ticketsOpen[i] = organization[(int)Math.Round((double)(organization.Count - 1) * i / PercentileBuckets)]._ticketsOpen;
 
             // _medianDaysOpen
+            _averageOfMedianDaysOpen = new double[PercentileBuckets + 1];
+            var tmp = organization.Where(t => t._medianDaysOpen.HasValue).ToArray();
+            if (tmp.Length > 0)
             {
-                var tmp = organization.Where(t => t._medianDaysOpen.HasValue).ToList();
-                tmp.Sort((lhs, rhs) => lhs._medianDaysOpen.Value.CompareTo(rhs._medianDaysOpen.Value));
-                _averageOfMedianDaysOpen = new double[PercentileBuckets + 1];
+                Array.Sort(tmp, (lhs, rhs) => lhs._medianDaysOpen.Value.CompareTo(rhs._medianDaysOpen.Value));
                 for (int i = 0; i <= PercentileBuckets; ++i)
-                    _averageOfMedianDaysOpen[i] = tmp[(int)Math.Round((double)(tmp.Count - 1) * i / PercentileBuckets)]._medianDaysOpen.Value;
+                    _averageOfMedianDaysOpen[i] = tmp[(int)Math.Round((double)(tmp.Length - 1) * i / PercentileBuckets)]._medianDaysOpen.Value;
             }
 
             // _ticketsClosed
@@ -92,12 +93,13 @@ namespace CDI2
                 _ticketsClosed[i] = organization[(int)Math.Round((double)(organization.Count - 1) * i / PercentileBuckets)]._ticketsClosed;
 
             // _medianDaysToClose
+            _averageOfMedianDaysToClose = new double[PercentileBuckets + 1];
+            var tmp1 = organization.Where(t => t._medianDaysToClose.HasValue).ToArray();
+            if(tmp1.Length > 0)
             {
-                var tmp1 = organization.Where(t => t._medianDaysToClose.HasValue).ToList();
-                tmp1.Sort((lhs, rhs) => lhs._medianDaysToClose.Value.CompareTo(rhs._medianDaysToClose.Value));
-                _averageOfMedianDaysToClose = new double[PercentileBuckets + 1];
+                Array.Sort(tmp1, (lhs, rhs) => lhs._medianDaysToClose.Value.CompareTo(rhs._medianDaysToClose.Value));
                 for (int i = 0; i <= PercentileBuckets; ++i)
-                    _averageOfMedianDaysToClose[i] = tmp1[(int)Math.Round((double)(tmp1.Count - 1) * i / PercentileBuckets)]._medianDaysToClose.Value;
+                    _averageOfMedianDaysToClose[i] = tmp1[(int)Math.Round((double)(tmp1.Length - 1) * i / PercentileBuckets)]._medianDaysToClose.Value;
             }
 
             // leave sorted by date

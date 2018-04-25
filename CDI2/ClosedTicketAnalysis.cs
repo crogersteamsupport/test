@@ -17,38 +17,38 @@ namespace CDI2
     class ClosedTicketAnalysis
     {
         TicketJoin[] _tickets;
-        public double AvgTimeToClose { get; private set; }
-        public double StdevTimeToClose { get; private set; }   // days
+        //public double AvgTimeToClose { get; private set; }
+        //public double StdevTimeToClose { get; private set; }   // days
         List<Tuple<DateTime, TicketJoin>> _chronological;   // chronological listing of each open and close
 
         public ClosedTicketAnalysis(TicketJoin[] tickets)
         {
             _tickets = tickets;
-            try
-            {
-                InitStatistics();
-            }
-            catch (Exception e)
-            {
-                CDIEventLog.WriteEntry("InitStatistics failed", e);
-            }
+            //try
+            //{
+            //    InitStatistics();
+            //}
+            //catch (Exception e)
+            //{
+            //    CDIEventLog.WriteEntry("InitStatistics failed", e);
+            //}
         }
 
         /// <summary> Average days open and StDev </summary>
-        void InitStatistics()
-        {
-            // average
-            AvgTimeToClose = _tickets.Average(t => t.TotalDaysOpen);
+        //void InitStatistics()
+        //{
+        //    // average
+        //    AvgTimeToClose = _tickets.Average(t => t.TotalDaysOpen);
 
-            // standard deviation
-            double denominator = 0;
-            foreach (TicketJoin t in _tickets)
-            {
-                double xdiff = t.TotalDaysOpen - AvgTimeToClose;
-                denominator += xdiff * xdiff;
-            }
-            StdevTimeToClose = Math.Sqrt(denominator / _tickets.Length);
-        }
+        //    // standard deviation
+        //    double denominator = 0;
+        //    foreach (TicketJoin t in _tickets)
+        //    {
+        //        double xdiff = t.TotalDaysOpen - AvgTimeToClose;
+        //        denominator += xdiff * xdiff;
+        //    }
+        //    StdevTimeToClose = Math.Sqrt(denominator / _tickets.Length);
+        //}
 
         /// <summary> organize tickets for each open and close </summary>
         void InitChronological()
@@ -77,12 +77,12 @@ namespace CDI2
         /// Sample the days open at the specified interval
         /// </summary>
         /// <param name="interval">how often do we sample - daily, weekly,... </param>
-        public List<IntervalData> AnalyzeDaysOpen(DateTime firstDayMidnight, DateTime lastDayMidnight, TimeSpan interval)
+        public List<IntervalData> AnalyzeDaysOpen(AnalysisInterval interval)
         {
             List<IntervalData> results = null;
             try
             {
-                DateTime nextInterval = firstDayMidnight + interval;
+                DateTime nextInterval = interval.StartDate + interval.Duration;
 
                 // tickets open at that moment in time
                 HashSet<TicketJoin> openTickets = new HashSet<TicketJoin>();    // HashSet is faster than List for big data
@@ -101,7 +101,7 @@ namespace CDI2
                         results.Add(GetIntervalData(nextInterval, openTickets, closedTickets, ticketsCreated));
                         closedTickets.Clear();
                         ticketsCreated = 0;
-                        nextInterval += interval;
+                        nextInterval += interval.Duration;
                     }
 
                     // running list of open and closed tickets
@@ -118,10 +118,10 @@ namespace CDI2
                 }
 
                 // pad any remaining time intervals
-                while(nextInterval <= lastDayMidnight)
+                while(nextInterval <= interval.EndDate)
                 {
                     results.Add(GetIntervalData(nextInterval, openTickets, closedTickets, ticketsCreated));
-                    nextInterval += interval;
+                    nextInterval += interval.Duration;
                 }
 
             }
@@ -133,27 +133,21 @@ namespace CDI2
             return results;
         }
 
+        static Stopwatch _stopwatch = new Stopwatch();
         private double? Median(HashSet<TicketJoin> tickets)
         {
-            try
-            {
-                double[] totalDays = tickets.Select(ticket => ticket.TotalDaysOpen).ToArray();
-                if (totalDays.Length == 0)
-                    return null;
+            if (tickets.Count == 0)
+                return null;
 
-                Array.Sort(totalDays);
-                int centerIndex = totalDays.Length / 2;
-                if (totalDays.Length % 2 == 1)
-                    return totalDays[centerIndex];
+            _stopwatch.Start();
+            //double result = tickets.Average(t => t.TotalDaysOpen);
 
-                return (totalDays[centerIndex - 1] + totalDays[centerIndex]) / 2;
-            }
-            catch(Exception e)
-            {
-                CDIEventLog.WriteEntry("Failed Median", e);
-            }
-
-            return null;
+            double[] totalDays = tickets.Select(ticket => ticket.TotalDaysOpen).ToArray();
+            Array.Sort(totalDays);
+            int centerIndex = totalDays.Length / 2;
+            double result = (totalDays.Length % 2 == 1) ? totalDays[centerIndex] : (totalDays[centerIndex - 1] + totalDays[centerIndex]) / 2;
+            _stopwatch.Stop();
+            return result;
         }
 
         private IntervalData GetIntervalData(DateTime nextDay, HashSet<TicketJoin> openTickets, HashSet<TicketJoin> closedTickets, int ticketsCreated)

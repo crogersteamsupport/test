@@ -56,7 +56,7 @@ namespace CDI2
         public TicketJoin[] Read(int organizationID)
         {
             LoadTickets(); // make sure we are initilized
-            var query = Tickets.Where(t => t.OrganizationID == organizationID).OrderBy(t => t.DateCreated);
+            var query = Tickets.Where(t => t.OrganizationID == organizationID);//.OrderBy(t => t.DateCreated);
             return query.ToArray();
         }
 
