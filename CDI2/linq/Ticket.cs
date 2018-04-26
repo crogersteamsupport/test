@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Linq.Mapping;
 
-namespace CDI2
+namespace TeamSupport.CDI
 {
-    enum TimeScale
+    public enum TimeScale
     {
         Minutes,
         Hours,

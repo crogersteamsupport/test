@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{20C29A59-8A47-4CCD-9AAC-509AEB72741D}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>CDI2</RootNamespace>
+    <RootNamespace>TeamSupport.CDI</RootNamespace>
     <AssemblyName>CDI2</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -44,10 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnalysisInterval.cs" />
-    <Compile Include="CDIEngine.cs" />
+    <Compile Include="DateRange.cs" />
+    <Compile Include="CDI2.cs" />
     <Compile Include="IntervalData.cs" />
-    <Compile Include="IntervalDataDistribution.cs" />
+    <Compile Include="CDIStrategy.cs" />
     <Compile Include="linq\Action.cs" />
     <Compile Include="linq\TicketJoin.cs" />
     <Compile Include="Organization.cs" />
@@ -57,12 +57,13 @@
     <Compile Include="linq\TicketType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ClosedTicketAnalysis.cs" />
+    <Compile Include="IntervalStrategy.cs" />
     <Compile Include="Utility\TallyDictionary.cs" />
     <Compile Include="CDIEventLog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

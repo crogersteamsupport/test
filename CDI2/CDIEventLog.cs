@@ -5,7 +5,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace CDI2
+namespace TeamSupport.CDI
 {
     /// <summary>
     /// Send detailed logging to TeamSupport custom log

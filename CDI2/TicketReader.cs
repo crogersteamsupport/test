@@ -9,30 +9,31 @@ using System.Data.SqlClient;
 using System.Data.Linq;
 using System.IO;
 
-namespace CDI2
+namespace TeamSupport.CDI
 {
     /// <summary>
-    /// Load the tickets from the database
+    /// Load the tickets from the database from AnalysisInterval StartDate to EndDate
+    /// * ignore tickets closed in less than a second
+    /// * ignore tickets imported from SalesForce
+    /// * ignore ExcludeFromCDI ticket types and ticket statuses
     /// </summary>
     class TicketReader
     {
-        DateTime _startDate;
-        DateTime _endDate;
-        public TicketJoin[] Tickets { get; private set; }  // tickets for organization in the last year
+        DateRange _dateRange;
+        public TicketJoin[] AllTickets { get; private set; }  // tickets for organization in the last year
 
-        /// <summary> Constructor </summary>
-        /// <param name="daysToLoad">How many days prior to today do we load?</param>
-        public TicketReader(DateTime startDate, DateTime endDate)
+        /// <summary>Time frame to analyze the ticket data</summary>
+        /// <param name="analysisInterval"></param>
+        public TicketReader(DateRange analysisInterval)
         {
-            _startDate = startDate;
-            _endDate = endDate;
-            Tickets = null;
+            _dateRange = analysisInterval;
+            AllTickets = null;
         }
 
         /// <summary> Load the tickets since the start date </summary>
-        public void LoadTickets()
+        public void LoadAllTickets()
         {
-            if (Tickets != null)
+            if (AllTickets != null)
                 return;
 
             Stopwatch stopwatch = new Stopwatch();
@@ -43,7 +44,7 @@ namespace CDI2
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (DataContext db = new DataContext(connection))
                 {
-                    Tickets = LoadTicketsHelper(db);
+                    AllTickets = LoadAllTicketsHelper(db);
                 }
             }
             catch (Exception e)
@@ -53,24 +54,27 @@ namespace CDI2
             long ellapsed = stopwatch.ElapsedMilliseconds;
         }
 
+        /// <summary>Extract the tickets for this organization</summary>
+        /// <param name="organizationID"></param>
+        /// <returns></returns>
         public TicketJoin[] Read(int organizationID)
         {
-            LoadTickets(); // make sure we are initilized
-            var query = Tickets.Where(t => t.OrganizationID == organizationID);//.OrderBy(t => t.DateCreated);
+            LoadAllTickets(); // make sure we are initilized
+            var query = AllTickets.Where(t => t.OrganizationID == organizationID);//.OrderBy(t => t.DateCreated);
             return query.ToArray();
         }
 
         public int[] ReadOrganizationIDs()
         {
-            LoadTickets(); // make sure we are initilized
-            var query = Tickets.Select(t => t.OrganizationID).Distinct();
+            LoadAllTickets(); // make sure we are initilized
+            var query = AllTickets.Select(t => t.OrganizationID).Distinct();
             return query.ToArray();
         }
 
         /// <summary> big data - Load the tickets in pages </summary>
         /// <param name="startDate"></param>
         /// <param name="db"></param>
-        TicketJoin[] LoadTicketsHelper(DataContext db)
+        TicketJoin[] LoadAllTicketsHelper(DataContext db)
         {
             TicketJoin[] tickets = null;
 
@@ -81,19 +85,20 @@ namespace CDI2
             Table<Action> actionsTable = db.GetTable<Action>();
 
             // loop through loading blocks
-            DateTime queryDate = _startDate;
-            while (queryDate < _endDate)
+            DateTime queryDate = _dateRange.StartDate;
+            while (queryDate < _dateRange.EndDate)
             {
                 var query = (from t in ticketsTable
                              join tt in ticketTypesTable on t.TicketTypeID equals tt.TicketTypeID
                              join ts in ticketStatusesTable on t.TicketStatusID equals ts.TicketStatusID
                              join a in actionsTable on t.TicketID equals a.TicketID into actionJoin // count actions
                              where (t.DateCreated > queryDate) &&
-                                 (ts.IsClosed == true) &&   // only closed tickets
-                                 (t.DateClosed.HasValue) &&
-                                 (t.DateClosed.Value > t.DateCreated.AddSeconds(1)) &&  // ignore those open for less than a second
+                                 //(ts.IsClosed == true) &&   // only closed tickets
+                                 //(t.DateClosed.HasValue) &&
+                                 //(t.DateClosed.Value > t.DateCreated.AddSeconds(1)) &&  // ignore those open for less than a second
+                                 ((ts.IsClosed == false) || ((t.DateClosed.HasValue) && (t.DateClosed.Value > t.DateCreated.AddSeconds(1)))) && // open for more than 1 second
                                  (t.TicketSource != "SalesForce") &&    // ignore imported tickets
-                                 (!tt.ExcludeFromCDI) &&
+                                 (!tt.ExcludeFromCDI) && 
                                  (!ts.ExcludeFromCDI)
                              orderby t.DateCreated
                              select new TicketJoin()
@@ -105,7 +110,7 @@ namespace CDI2
                                  DateClosed = t.DateClosed,
                                  TicketSource = t.TicketSource,
                                  DateCreated = t.DateCreated,
-                                 ActionCount = actionJoin.Count(),
+                                 ActionsCount = actionJoin.Count(),
                                  IsClosed = ts.IsClosed
                              }).Distinct();
 

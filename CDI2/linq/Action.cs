@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Linq.Mapping;
 
-namespace CDI2
+namespace TeamSupport.CDI
 {
     [Table(Name = "Actions")]
     class Action

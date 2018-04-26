@@ -4,30 +4,34 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CDI2
+namespace TeamSupport.CDI
 {
+    /// <summary>
+    /// Generate CDI metrics for an individual organization
+    /// </summary>
     class Organization
     {
         public int OrganizationID { get; private set; }
         TicketJoin[] _tickets;
-        AnalysisInterval _interval;
-        public List<IntervalData> AnalysisIntervalData { get; private set; }
-        IntervalDataDistribution _distribution;
+        DateRange _dateRange;
+        IntervalStrategy _intervalStrategy;
+        public List<IntervalData> IntervalData { get; private set; }
+        ICDIStrategy _cdiStrategy;
 
-        public Organization(TicketJoin[] tickets, int organizationID, AnalysisInterval interval)
+        public Organization(int organizationID, TicketJoin[] tickets, DateRange analysisInterval)
         {
             OrganizationID = organizationID;
-            _interval = interval;
+            _dateRange = analysisInterval;
             _tickets = tickets;
 
             // collect metrics for each interval
-            ClosedTicketAnalysis analysis = new ClosedTicketAnalysis(_tickets);
-            AnalysisIntervalData = analysis.AnalyzeDaysOpen(interval);
- 
+            _intervalStrategy = new IntervalStrategy(_tickets);
+            IntervalData = _intervalStrategy.GenerateIntervalData(_dateRange);
+            _cdiStrategy = new CDIPercentileStrategy(IntervalData);
+
             // calculate the CDI using normalized data
-            _distribution = new IntervalDataDistribution(AnalysisIntervalData);
-            foreach (IntervalData intervalData in AnalysisIntervalData)
-                intervalData.CalculateCDI(_distribution);
+            foreach (IntervalData intervalData in IntervalData)
+                _cdiStrategy.CalculateCDI(intervalData);
         }
 
     }

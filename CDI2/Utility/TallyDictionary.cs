@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
-namespace CDI2
+namespace TeamSupport.CDI
 {
     /// <summary>
     /// Utility class for histogram - counter by bin

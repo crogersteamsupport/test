@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
-namespace CDI2
+namespace TeamSupport.CDI
 {
     class Program
     {
@@ -13,7 +13,7 @@ namespace CDI2
         {
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            CDIEngine cdi = new CDIEngine(TimeSpan.FromDays(7), 26);
+            CDI2 cdi = new CDI2(TimeSpan.FromDays(7), 26);
             cdi.Run();
             long ellapsed = stopwatch.ElapsedMilliseconds;
         }

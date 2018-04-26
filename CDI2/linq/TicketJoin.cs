@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Linq.Mapping;
 
-namespace CDI2
+namespace TeamSupport.CDI
 {
-    class TicketJoin : IComparable<TicketJoin>
+    public class TicketJoin : IComparable<TicketJoin>
     {
         public int TicketID;
         public string TicketStatusName;
@@ -16,7 +16,7 @@ namespace CDI2
         public DateTime? DateClosed;
         public string TicketSource;
         public DateTime DateCreated;
-        public int ActionCount;
+        public int ActionsCount;
         public bool IsClosed;
 
         public int CompareTo(TicketJoin other) { return DateCreated.CompareTo(other.DateCreated); }
