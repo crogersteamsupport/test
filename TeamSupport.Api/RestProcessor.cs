@@ -112,6 +112,7 @@ namespace TeamSupport.Api
                     case "/tickets/{id}/actions/{id}/attachments/{id}/": data = RestAttachments.GetAttachment(_command, GetId(5)); break;
                     case "/tickets/{id}/relatedtickets/": data = RestTickets.GetRelatedTickets(_command, GetId(1)); break;
                     case "/tickets/{id}/assets/": data = RestAssetsView.GetAssetsView(_command, GetId(1)); break;
+					case "/tickets/assignmenthistory/": data = RestTickets.GetTicketAssignments(_command); break;//vv
                     case "/customers/": data = RestOrganizations.GetOrganizations(_command); break;
                     case "/customers/{id}/": data = RestOrganizations.GetOrganization(_command, GetId(1)); break;
                     case "/customers/{id}/history/": data = RestActionLogs.GetItems(_command, ReferenceType.Organizations, GetId(1)); break;
@@ -311,6 +312,7 @@ namespace TeamSupport.Api
                     case "/tickets/{id}/actions/{id}/attachments/": data = RestAttachments.CreateAttachment(_command, GetId(1), GetId(3)); break;
                     case "/tickets/{id}/subscribe/{id}/": data = RestSubscriptions.SubscribeToTicket(_command, GetId(1), GetId(3)); break;
                     case "/tickets/{id}/unsubscribe/{id}/": data = RestSubscriptions.UnSubscribeFromTicket(_command, GetId(1), GetId(3)); break;
+                    case "/tickets/assignmenthistory/": data = RestTickets.GetTicketAssignments(_command, isPost: true); break;//vv
                     case "/customers/": data = RestOrganizations.CreateOrganization(_command); break;
                     case "/customers/{id}/phonenumbers/": data = RestPhoneNumbers.AddPhoneNumber(_command, ReferenceType.Organizations, GetId(1)); break;
                     case "/customers/{id}/addresses/": data = RestAddresses.AddAddress(_command, ReferenceType.Organizations, GetId(1)); break;
