@@ -11,68 +11,53 @@ namespace FilesMover
 {
     public partial class Form1 : Form
     {
-        LoginUser _loginUser = new LoginUser(ConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString, -5, -1, null);
+        private LoginUser _loginUser = new LoginUser(ConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString, -5, -1, null);
+        private Logs _logs = new Logs(DateTime.Now.ToString("HH-mm"));
+        private int _attachmentsBatchSize = Int32.Parse(ConfigurationManager.AppSettings.Get("AttachmentsBatchSize"));
+        private string _source = ConfigurationManager.AppSettings.Get("Source");
+        private string _destination = ConfigurationManager.AppSettings.Get("Destination");
+        private int _filesMoved = 0;
+        private bool _stop = false;
 
         public Form1()
         {
             InitializeComponent();
+            DisplayAndLog(GetInitialText());
         }
 
         private void start_Click(object sender, EventArgs e)
         {
-            SqlCommand loadFilesToMoveCommand = new SqlCommand();
-            loadFilesToMoveCommand.CommandText = @"
-                SELECT TOP (@attachmentsBatchSize)
-                    a.AttachmentID,
-                    a.FileName,
-                    a.Path
-                FROM
-                    Attachments a
-                    LEFT JOIN FailedToMoveAttachments f
-                        ON a.AttachmentID = f.AttachmentID
-                WHERE
-                    f.AttachmentID IS NULL
-                    AND LEFT(a.Path, @sourceLength) = @source
-                ORDER BY
-                    a.AttachmentID
-            ";
-            loadFilesToMoveCommand.Parameters.AddWithValue("@attachmentsBatchSize", ConfigurationManager.AppSettings.Get("AttachmentsBatchSize"));
-            string source = ConfigurationManager.AppSettings.Get("Source");
-            loadFilesToMoveCommand.Parameters.AddWithValue("@source", source);
-            loadFilesToMoveCommand.Parameters.AddWithValue("@sourceLength", source.Length);
-            DataTable filesToMove = SqlExecutor.ExecuteQuery(_loginUser, loadFilesToMoveCommand);
-            string destination = ConfigurationManager.AppSettings.Get("Destination");
-            while (filesToMove.Rows.Count > 0)
+            try
             {
-                foreach (DataRow fileToMove in filesToMove.Rows)
+                DisplayAndLog("Start at " + DateTime.Now.ToString());
+                DataTable filesToMove = GetFilesToMove(_attachmentsBatchSize);
+                DisplayAndLog("Got batch of " + filesToMove.Rows.Count.ToString() + " files.");
+                while (filesToMove.Rows.Count > 0 && !_stop)
                 {
-                    try
+                    foreach (DataRow fileToMove in filesToMove.Rows)
                     {
-                        string fileName = fileToMove[1].ToString();
-                        string path = fileToMove[2].ToString();
-                        string pathWithoutSource = path.Substring(source.Length, path.Length - source.Length);
-                        string pathWithoutSourceAndFile = pathWithoutSource.Replace(fileName, string.Empty);
-                        if (!Directory.Exists(destination + pathWithoutSourceAndFile)) Directory.CreateDirectory(destination + pathWithoutSourceAndFile);
-                        File.Move(path, destination + pathWithoutSource);
-                        SqlCommand updatePathCommand = new SqlCommand();
-                        updatePathCommand.CommandText = @"
-                            UPDATE
-                                Attachments
-                            SET
-                                Path = @newPath
-                            WHERE
-                                AttachmentID = @attachmentID
-                        ";
-                        updatePathCommand.Parameters.AddWithValue("@newPath", destination + pathWithoutSource);
-                        updatePathCommand.Parameters.AddWithValue("@attachmentID", (int)fileToMove[0]);
-                        SqlExecutor.ExecuteNonQuery(_loginUser, updatePathCommand);
+                        try
+                        {
+                            if (!_stop)
+                            {
+                                string pathWithoutSource = MoveFile(fileToMove);
+                                UpdatePath((int)fileToMove[0], pathWithoutSource);
+                                _filesMoved++;
+                                DisplayAndLog("Moved file with AttachmentID: " + fileToMove[0].ToString());
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            AddFailedMove((int)fileToMove[0], exception);
+                            DisplayAndLog("Moving file with AttachmentID: " + fileToMove[0].ToString() + " got exception: " + exception.Message);
+                        }
                     }
-                    catch (Exception exception)
-                    {
-
-                    }
+                    filesToMove = GetFilesToMove(_attachmentsBatchSize);
                 }
-                filesToMove = SqlExecutor.ExecuteQuery(_loginUser, loadFilesToMoveCommand);
+            }
+            catch (Exception exception)
+            {
+                DisplayAndLog(exception.Message);
             }
         }
 
@@ -81,30 +66,118 @@ namespace FilesMover
 
         }
 
+        private void DisplayAndLog(string message)
+        {
+            string messageWithCount = "#: " + _filesMoved.ToString() + " " + message;
+            textBox1.AppendText(messageWithCount + Environment.NewLine);
+            _logs.WriteEvent(messageWithCount);
+        }
+
         private string GetInitialText()
         {
             StringBuilder result = new StringBuilder();
             result.AppendLine("ConnectionString: " + _loginUser.ConnectionString);
+            result.AppendLine("AttachmentsBatchSize: " + _attachmentsBatchSize.ToString());
+            result.AppendLine("Source: " + _source);
+            result.AppendLine("Destination: " + _destination);
             return result.ToString();
-         
+        }
+
+        private DataTable GetFilesToMove(int attachmentsBatchSize)
+        {
+            SqlCommand command = new SqlCommand();
+            command.CommandText = "LoadMoveAttachmentsQuery";
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@attachmentsBatchSize", attachmentsBatchSize);
+            command.Parameters.AddWithValue("@source", _source);
+            //command.Parameters.AddWithValue("@sourceLength", _source.Length);
+            return SqlExecutor.ExecuteQuery(_loginUser, command);
+        }
+
+        private string MoveFile(DataRow fileToMove)
+        {
+            string fileName = fileToMove[1].ToString();
+            string path = fileToMove[2].ToString();
+            string pathWithoutSource = path.Substring(_source.Length, path.Length - _source.Length);
+            string pathWithoutSourceAndFile = pathWithoutSource.Replace(fileName, string.Empty);
+            if (!Directory.Exists(_destination + pathWithoutSourceAndFile)) Directory.CreateDirectory(_destination + pathWithoutSourceAndFile);
+            File.Move(path, _destination + pathWithoutSource);
+            return pathWithoutSource;
+        }
+
+        private void UpdatePath(int attachmentID, string pathWithoutSource)
+        {
+            SqlCommand command = new SqlCommand();
+            command.CommandText = @"
+                UPDATE
+                    Attachments
+                SET
+                    Path = @newPath
+                WHERE
+                    AttachmentID = @attachmentID
+            ";
+            command.Parameters.AddWithValue("@newPath", _destination + pathWithoutSource);
+            command.Parameters.AddWithValue("@attachmentID", attachmentID);
+            SqlExecutor.ExecuteNonQuery(_loginUser, command);
+        }
+
+
+        private void AddFailedMove(int attachmentID, Exception ex)
+        {
+            SqlCommand command = new SqlCommand();
+            command.CommandText = @"
+                INSERT INTO
+                    FailedToMoveAttachments
+                VALUES
+                (
+                    @attachmentID,
+                    @exceptionMessage,
+                    @exceptionType
+                )
+            ";
+            command.Parameters.AddWithValue("@attachmentID", attachmentID);
+            command.Parameters.AddWithValue("@exceptionMessage", ex.Message);
+            command.Parameters.AddWithValue("@exceptionType", ex.GetType().ToString());
+            SqlExecutor.ExecuteNonQuery(_loginUser, command);
+        }
+
+        private void textBox1_TextChanged_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void step_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                DisplayAndLog("Start at " + DateTime.Now.ToString());
+                DataTable filesToMove = GetFilesToMove(1);
+                DisplayAndLog("Got batch of " + filesToMove.Rows.Count.ToString() + " files.");
+                foreach (DataRow fileToMove in filesToMove.Rows)
+                {
+                    try
+                    {
+                        string pathWithoutSource = MoveFile(fileToMove);
+                        UpdatePath((int)fileToMove[0], pathWithoutSource);
+                        _filesMoved++;
+                        DisplayAndLog("Moved file with AttachmentID: " + fileToMove[0].ToString());
+                    }
+                    catch (Exception exception)
+                    {
+                        AddFailedMove((int)fileToMove[0], exception);
+                        DisplayAndLog("Moving file with AttachmentID: " + fileToMove[0].ToString() + " got exception: " + exception.Message);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                DisplayAndLog(exception.Message);
+            }
+        }
+
+        private void stop_Click(object sender, EventArgs e)
+        {
+            _stop = true;
         }
     }
 }
-
-//namespace TeamSupport.Data
-//{
-//    public partial class Attachments
-//    {
-//        public void LoadToMove()
-//        {
-//            using (SqlCommand command = new SqlCommand())
-//            {
-//                command.CommandText = "SELECT a.* FROM Attachments a WHERE AttachmentGUID = @attachmentGUID";
-//                command.CommandType = CommandType.Text;
-//                command.Parameters.AddWithValue("@attachmentGUID", attachmentGUID);
-//                BaseCollection.Fill
-//            }
-
-//        }
-//    }
-//}
