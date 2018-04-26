@@ -379,7 +379,6 @@ function LoadPlugins(info) {
         for (var i = 0; i < info.Plugins.length; i++) {
             var plugin = $('#ticket-group-plugin-' + info.Plugins[i].PluginID);
             if (plugin.length > 0) {
-                plugin.html(info.Plugins[i].Code);
                 try {
                     plugin.html(info.Plugins[i].Code);
                 } catch (e) {}
