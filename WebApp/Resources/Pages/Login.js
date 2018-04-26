@@ -56,7 +56,7 @@ $(document).ready(function() {
         switch (result.Result) { //Unknown = 0, Success = 1, Fail = 2, VerificationNeeded = 3, VerificationSetupNeeded = 4, ExipredPassword = 5
             case 1:
                 window.location = (ticketnum > 0) ? '/?TicketNumber=' + ticketnum : '/';
-                // window.location = returnURL;
+                window.location = returnURL;
                 break;
             case 3:
                 window.location = '/LoginTwoStep.aspx?UserID=' + result.UserId;
