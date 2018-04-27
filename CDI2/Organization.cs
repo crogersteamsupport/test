@@ -8,6 +8,15 @@ using System.Diagnostics;
 namespace TeamSupport.CDI
 {
     /// <summary>
+    /// Interface to CDI strategy
+    /// </summary>
+    interface ICDIStrategy
+    {
+        void CalculateCDI(IntervalData intervalData);
+    }
+
+
+    /// <summary>
     /// Generate CDI metrics for an individual organization
     /// </summary>
     class Organization

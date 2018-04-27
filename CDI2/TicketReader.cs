@@ -71,7 +71,7 @@ namespace TeamSupport.CDI
                                      TicketSource = t.TicketSource,
                                      DateCreated = t.DateCreated,
                                      IsClosed = ts.IsClosed,
-                                     ActionsCount = (from t in ticketsTable join a in actionsTable on t.TicketID equals a.TicketID select a.ActionID).Count()
+                                     ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count()
                                  }).Distinct();
 
                     _tickets = query.ToArray();

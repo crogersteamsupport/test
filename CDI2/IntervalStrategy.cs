@@ -62,6 +62,14 @@ namespace TeamSupport.CDI
                 // spin through all the create/close times and keep a running tally
                 List<Tuple<DateTime, TicketJoin>> chronological = GetAsChronological();
                 DateTime nextInterval = dateRange.StartDate + dateRange.IntervalTimeSpan;
+
+                // pad while we have no data
+                while (nextInterval < chronological[0].Item1)
+                {
+                    results.Add(new IntervalData(nextInterval));
+                    nextInterval += dateRange.IntervalTimeSpan;
+                }
+
                 foreach (Tuple<DateTime, TicketJoin> pair in chronological)
                 {
                     if (pair.Item1 > nextInterval)
@@ -86,10 +94,10 @@ namespace TeamSupport.CDI
                     }
                 }
 
-                // pad any remaining time intervals
+                // pad where we have no data
                 while(nextInterval <= dateRange.EndDate)
                 {
-                    results.Add(new IntervalData(nextInterval, currentlyOpenTickets, intervalClosedTickets, newTicketsCount));
+                    results.Add(new IntervalData(nextInterval));
                     nextInterval += dateRange.IntervalTimeSpan;
                 }
             }

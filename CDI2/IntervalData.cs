@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Linq;
 
 namespace TeamSupport.CDI
 {
@@ -13,6 +11,7 @@ namespace TeamSupport.CDI
     public class IntervalData
     {
         public DateTime _intervalEndTimeStamp; // date time for this data
+        public bool HasData { get; private set; }
 
         // new tickets
         public int _newTicketsCount; // new (this interval)
@@ -22,20 +21,33 @@ namespace TeamSupport.CDI
         // closed tickets
         public int _closedTicketsCount;  // closed (this interval)
         public double? _medianDaysToClose;  // average time to close (this interval)
+        public double? _closedTicketsActionsCount;   // how many actions do the closed ticket have?
 
         public int? CDI { get; set; }    // CDI !!
 
+        public IntervalData(DateTime nextDay)
+        {
+            _intervalEndTimeStamp = nextDay;
+            HasData = false;
+        }
+
         public IntervalData(DateTime nextDay, HashSet<TicketJoin> openTickets, HashSet<TicketJoin> closedTickets, int ticketsCreated)
         {
+            HasData = true;
             _intervalEndTimeStamp = nextDay;
             _newTicketsCount = ticketsCreated;
             _openTicketsCount = openTickets.Count;
-            _medianOpenTicketsDaysOpen = openTickets.Count == 0 ? 0 : Median(openTickets).Value;
+            _medianOpenTicketsDaysOpen = openTickets.Count == 0 ? 0 : MedianTotalDaysOpen(openTickets).Value;
             _closedTicketsCount = closedTickets.Count;
-            _medianDaysToClose = Median(closedTickets);
+
+            if (closedTickets.Count > 0)
+            {
+                _medianDaysToClose = MedianTotalDaysOpen(closedTickets);
+                _closedTicketsActionsCount = closedTickets.Average(x => x.ActionsCount);
+            }
         }
 
-        private double? Median(HashSet<TicketJoin> tickets)
+        private double? MedianTotalDaysOpen(HashSet<TicketJoin> tickets)
         {
             if (tickets.Count == 0)
                 return null;
@@ -57,18 +69,8 @@ namespace TeamSupport.CDI
         }
         public override string ToString()
         {
-            return String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}",
-                _intervalEndTimeStamp, _newTicketsCount, _openTicketsCount, _medianOpenTicketsDaysOpen, _closedTicketsCount, _medianDaysToClose, CDI);
-        }
-
-        // are we above or below average?
-        enum Metric
-        {
-            Created,
-            Open,
-            DaysOpen,
-            Closed,
-            DaysToClose
+            return String.Format("{0} {1} {2} {3:0.00} {4} {5:0.00} {6}",
+                _intervalEndTimeStamp.ToShortDateString(), _newTicketsCount, _openTicketsCount, _medianOpenTicketsDaysOpen, _closedTicketsCount, _medianDaysToClose, CDI);
         }
     }
 

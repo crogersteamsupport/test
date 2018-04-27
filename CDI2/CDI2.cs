@@ -82,7 +82,8 @@ namespace TeamSupport.CDI
                 str.Append(_organizations.First().IntervalData[i]._intervalEndTimeStamp.ToShortDateString() + "\t");
                 foreach (Organization organization in _organizations)
                 {
-                    str.Append(organization.IntervalData[i].CDI.Value);
+                    if(organization.IntervalData[i].CDI.HasValue)
+                        str.Append(organization.IntervalData[i].CDI.Value);
                     str.Append('\t');
                 }
 
