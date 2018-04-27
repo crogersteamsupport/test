@@ -53,6 +53,7 @@ namespace FilesMover
                         }
                     }
                     filesToMove = GetFilesToMove(_attachmentsBatchSize);
+                    DisplayAndLog("Got batch of " + filesToMove.Rows.Count.ToString() + " files.");
                 }
             }
             catch (Exception exception)
