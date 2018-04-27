@@ -30,7 +30,7 @@ namespace TeamSupport.CDI
             _intervalEndTimeStamp = nextDay;
             _newTicketsCount = ticketsCreated;
             _openTicketsCount = openTickets.Count;
-            _medianOpenTicketsDaysOpen = Median(openTickets).Value;
+            _medianOpenTicketsDaysOpen = openTickets.Count == 0 ? 0 : Median(openTickets).Value;
             _closedTicketsCount = closedTickets.Count;
             _medianDaysToClose = Median(closedTickets);
         }

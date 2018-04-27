@@ -31,45 +31,64 @@ namespace TeamSupport.CDI
             _ticketReader.LoadAllTickets();
 
             // analyze by organization
-            int[] organizationIDs = _ticketReader.ReadOrganizationIDs();
-            foreach (int organizationID in organizationIDs)
-            {
-                TicketJoin[] tickets = _ticketReader.Read(organizationID);
-                if (tickets.Length < _dateRange.IntervalCount * 2)
-                    continue;
+            LoadOrganizations();
+            WriteCdiByOrganization();
+            CDIEventLog.WriteEntry("CDI Update complete.");
+        }
 
-                _organizations.Add(new Organization(organizationID, tickets, _dateRange));
+        void LoadOrganizations()
+        {
+            // should already be sorted from TicketReader
+            TicketJoin[] allTickets = _ticketReader.AllTickets;
+            //Array.Sort(allTickets, (lhs, rhs) => lhs.OrganizationID.CompareTo(rhs.OrganizationID));
+
+            // spin through each organization
+            int startIndex = 0;
+            int startId = allTickets[startIndex].OrganizationID;
+            int count = 0;
+            for (int i = 1; i < allTickets.Length; ++i)
+            {
+                if(allTickets[i].OrganizationID != startId)
+                {
+                    // insufficient tickets to get good metrics?
+                    if (i - startIndex > _dateRange.IntervalCount * 2)
+                        _organizations.Add(new Organization(_dateRange, allTickets, startIndex, i));
+                    else
+                        ++count;
+                    startIndex = i;
+                    startId = allTickets[startIndex].OrganizationID;
+                }
             }
 
-            //WriteCdiByOrganization();
-            CDIEventLog.WriteEntry("CDI Update complete.");
+            if (allTickets.Length - startIndex > _dateRange.IntervalCount * 2)
+                _organizations.Add(new Organization(_dateRange, allTickets, startIndex, allTickets.Length));
         }
 
         /// <summary>
         /// Complete summary of CDI by date for all organizations
         /// </summary>
-        //public void WriteCdiByOrganization()
-        //{
-        //    // DateTime org1 org2 org3...
-        //    StringBuilder str = new StringBuilder();
-        //    str.Append("DateTime");
-        //    foreach (Organization organization in _organizations)
-        //        str.Append("\t" + organization.OrganizationID);
-        //    Debug.WriteLine(str.ToString());
+        public void WriteCdiByOrganization()
+        {
+            // DateTime org1 org2 org3...
+            StringBuilder str = new StringBuilder();
+            str.Append("DateTime");
+            foreach (Organization organization in _organizations)
+                str.Append("\t" + organization.OrganizationID);
+            Debug.WriteLine(str.ToString());
 
-        //    for (int i = 0; i < _analysisInterval.IntervalCount; ++i)
-        //    {
-        //        str.Clear();
-        //        str.Append(_organizations.First().AnalysisIntervalData[i]._intervalEndTimeStamp.ToShortDateString() + "\t");
-        //        foreach (Organization organization in _organizations)
-        //        {
-        //            str.Append(organization.AnalysisIntervalData[i].CDI.Value);
-        //            str.Append('\t');
-        //        }
+            for (int i = 0; i < _dateRange.IntervalCount; ++i)
+            {
+                str.Clear();
+                str.Append(_organizations.First().IntervalData[i]._intervalEndTimeStamp.ToShortDateString() + "\t");
+                foreach (Organization organization in _organizations)
+                {
+                    str.Append(organization.IntervalData[i].CDI.Value);
+                    str.Append('\t');
+                }
 
-        //        Debug.WriteLine(str.ToString());
-        //    }
-        //}
+                Debug.WriteLine(str.ToString());
+            }
+        }
 
     }
 }

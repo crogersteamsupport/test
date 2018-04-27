@@ -11,11 +11,8 @@ namespace TeamSupport.CDI
     {
         static void Main(string[] args)
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            CDI2 cdi = new CDI2(TimeSpan.FromDays(7), 26);
+            CDI2 cdi = new CDI2(TimeSpan.FromDays(7), 5 * 52);
             cdi.Run();
-            long ellapsed = stopwatch.ElapsedMilliseconds;
         }
     }
 }

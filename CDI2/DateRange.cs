@@ -11,6 +11,8 @@ namespace TeamSupport.CDI
     /// </summary>
     public class DateRange
     {
+        public static DateTime EndTime = DateTime.UtcNow;
+
         /// <summary>Count of intervals to analyze</summary>
         public int IntervalCount { get; private set; }
         /// <summary>time span of a single interval</summary>
@@ -24,7 +26,7 @@ namespace TeamSupport.CDI
         {
             IntervalCount = intervalCount;
             IntervalTimeSpan = analysisInterval;
-            EndDate = PreviousMidnight(DateTime.UtcNow);
+            EndDate = PreviousMidnight(EndTime);
             StartDate = PreviousMidnight(EndDate - TimeSpan.FromDays(analysisInterval.TotalDays * intervalCount));
         }
 

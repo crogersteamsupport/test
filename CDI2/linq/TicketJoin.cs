@@ -20,9 +20,17 @@ namespace TeamSupport.CDI
         public bool IsClosed;
 
         public int CompareTo(TicketJoin other) { return DateCreated.CompareTo(other.DateCreated); }
-        public TimeSpan TimeOpen { get { return DateClosed.Value - DateCreated; } }
+        public TimeSpan TimeOpen
+        {
+            get
+            {
+                DateTime dateClosed = (IsClosed && DateClosed.HasValue) ? DateClosed.Value : DateRange.EndTime;
+                return dateClosed - DateCreated;
+            }
+        }
+
         public double TotalDaysOpen { get { return TimeOpen.TotalDays; } }
-        public override string ToString() { return DateCreated.ToShortDateString(); }
+        public override string ToString() { return String.Format("{0} {1:0.00}", DateCreated.ToShortDateString(), TimeOpen.TotalMinutes); }
 
         public double ScaledTimeOpen(TimeScale scale)
         {
