@@ -70,7 +70,7 @@ namespace TSWebServices
                         _skipVerification = true;
                     } else {
                         _skipVerification = false;
-                   }
+                    }
 
                     if (organization.TwoStepVerificationEnabled && verificationRequired && _skipVerification)
                     {
