@@ -65,10 +65,7 @@ namespace TeamSupport.CDI
 
                 // pad while we have no data
                 while (nextInterval < chronological[0].Item1)
-                {
-                    results.Add(new IntervalData(nextInterval));
                     nextInterval += dateRange.IntervalTimeSpan;
-                }
 
                 foreach (Tuple<DateTime, TicketJoin> pair in chronological)
                 {
@@ -92,13 +89,6 @@ namespace TeamSupport.CDI
                         currentlyOpenTickets.Remove(pair.Item2); // ticket closed
                         intervalClosedTickets.Add(pair.Item2);
                     }
-                }
-
-                // pad where we have no data
-                while(nextInterval <= dateRange.EndDate)
-                {
-                    results.Add(new IntervalData(nextInterval));
-                    nextInterval += dateRange.IntervalTimeSpan;
                 }
             }
             catch (Exception e)

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace TeamSupport.CDI
 {
     /// <summary>
-    /// Collect and calculate percentiles [0%, 5%, 10%, 15%...] to determine where the current value lies in the distribution
+    /// Collect percentiles to determine where the current value lies in the distribution
     /// </summary>
     class Percentile<T> where T : IComparable<T>
     {
@@ -16,25 +16,22 @@ namespace TeamSupport.CDI
 
         public Percentile(List<IntervalData> intervalData, Func<IntervalData, T> getFunc)
         {
-            // only consider the intervals containing data
-            IntervalData[] nonNull = intervalData.Where(x => x.HasData).ToArray();
-
             // sort
-            Array.Sort(nonNull, (lhs, rhs) => getFunc(lhs).CompareTo(getFunc(rhs)));
+            intervalData.Sort((lhs, rhs) => getFunc(lhs).CompareTo(getFunc(rhs)));
 
             // collect percentile thresholds
-            percentiles = new T[PercentileBucketCount + 1];    // 0%, 10%, 20%,... 100%
+            percentiles = new T[PercentileBucketCount + 1];
             for (int i = 0; i <= PercentileBucketCount; ++i)
-                percentiles[i] = getFunc(nonNull[(int)Math.Round((double)(nonNull.Length - 1) * i / PercentileBucketCount)]);
+                percentiles[i] = getFunc(intervalData[(int)Math.Round((double)(intervalData.Count - 1) * i / PercentileBucketCount)]);
         }
 
-        public int AsPercentile(T value, bool highIsBad = true)
+        public int AsPercentile(T value)
         {
+            // where is std::lower_bound when you need it?
             int index = 0;
             while (percentiles[index].CompareTo(value) < 0)
                 index++;
-            int percentile = index * 100 / PercentileBucketCount;
-            return highIsBad ? 100 - percentile : percentile;
+            return index * 100 / PercentileBucketCount;
         }
     }
 }

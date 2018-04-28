@@ -37,22 +37,33 @@ namespace TeamSupport.CDI
         /// <param name="endIndex">end index into all tickets for this organization</param>
         public Organization(DateRange analysisInterval, TicketJoin[] allTickets, int startIndex, int endIndex)
         {
-            _dateRange = analysisInterval;
+            try
+            {
+                _dateRange = analysisInterval;
 
-            TicketJoin[] tickets = new TicketJoin[endIndex - startIndex];
-            Array.Copy(allTickets, startIndex, tickets, 0, tickets.Length);
-            _tickets = tickets;
-            OrganizationID = tickets[0].OrganizationID;
+                // pull out the range for this organization
+                _tickets = new TicketJoin[endIndex - startIndex];
+                Array.Copy(allTickets, startIndex, _tickets, 0, _tickets.Length);
+                OrganizationID = _tickets[0].OrganizationID;
 
-            // collect metrics for each interval
-            _intervalStrategy = new IntervalStrategy(_tickets);
-            IntervalData = _intervalStrategy.GenerateIntervalData(_dateRange);
-            _cdiStrategy = new CDIPercentileStrategy(IntervalData);
+                // collect metrics for each interval
+                _intervalStrategy = new IntervalStrategy(_tickets);
+                IntervalData = _intervalStrategy.GenerateIntervalData(_dateRange);
 
-            // calculate the CDI using normalized data
-            foreach (IntervalData intervalData in IntervalData)
-                _cdiStrategy.CalculateCDI(intervalData);
+                // calculate the CDI using normalized data
+                _cdiStrategy = new CDIPercentileStrategy(IntervalData);
+                foreach (IntervalData intervalData in IntervalData)
+                    _cdiStrategy.CalculateCDI(intervalData);
+            }
+            catch(Exception ex)
+            {
+                CDIEventLog.WriteEntry("New organization failed", ex);
+            }
         }
 
+        public override string ToString()
+        {
+            return String.Format("{0} {1}({2})", OrganizationID, IntervalData.Count, _tickets.Length);
+        }
     }
 }

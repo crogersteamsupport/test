@@ -20,18 +20,26 @@ namespace TeamSupport.CDI
     class TicketReader
     {
         DateRange _dateRange;
-        private TicketJoin[] _tickets;
-        public TicketJoin[] AllTickets { get { return _tickets; } }  // tickets for organization in the last year
+        public TicketJoin[] AllTickets { get; private set; }
 
         /// <summary>Time frame to analyze the ticket data</summary>
         /// <param name="analysisInterval"></param>
         public TicketReader(DateRange analysisInterval)
         {
             _dateRange = analysisInterval;
-            _tickets = null;
         }
 
-        /// <summary> Load the tickets since the start date </summary>
+        /// <summary> 
+        /// Load the tickets since the start date 
+        /// 
+        /// Verified counts by the following query:
+        /// SELECT DISTINCT Count([TicketID])
+        ///  FROM [dbo].[Tickets] as t
+        ///  JOIN [dbo].[TicketTypes] as tt on t.TicketTypeID=tt.TicketTypeID
+        ///  JOIN [dbo].[TicketStatuses] as ts on t.TicketStatusID=ts.TicketStatusID
+        ///  WHERE t.DateCreated > '2013-04-29 00:00:00' AND (t.TicketSource != 'SalesForce') AND
+        ///  ((ts.IsClosed=0) OR (t.[DateClosed] > t.[DateCreated]))
+        /// </summary>
         public void LoadAllTickets()
         {
             try
@@ -40,14 +48,6 @@ namespace TeamSupport.CDI
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (DataContext db = new DataContext(connection))
                 {
-                    // Verified counts by the following query:
-                    //SELECT DISTINCT Count([TicketID])
-                    //  FROM [dbo].[Tickets] as t
-                    //  JOIN [dbo].[TicketTypes] as tt on t.TicketTypeID=tt.TicketTypeID
-                    //  JOIN [dbo].[TicketStatuses] as ts on t.TicketStatusID=ts.TicketStatusID
-                    //  WHERE t.DateCreated > '2013-04-29 00:00:00' AND (t.TicketSource != 'SalesForce') AND
-                    //  ((ts.IsClosed=0) OR (t.[DateClosed] > t.[DateCreated]))
-
                     Table<Ticket> ticketsTable = db.GetTable<Ticket>();
                     Table<TicketStatus> ticketStatusesTable = db.GetTable<TicketStatus>();
                     Table<TicketType> ticketTypesTable = db.GetTable<TicketType>();
@@ -60,7 +60,7 @@ namespace TeamSupport.CDI
                                      (t.TicketSource != "SalesForce") &&    // ignore imported tickets
                                      (!tt.ExcludeFromCDI) &&
                                      (!ts.ExcludeFromCDI)
-                                 orderby t.OrganizationID
+                                 orderby t.OrganizationID   // pre-organize into blocks we can later process
                                  select new TicketJoin()
                                  {
                                      TicketID = t.TicketID,
@@ -74,43 +74,13 @@ namespace TeamSupport.CDI
                                      ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count()
                                  }).Distinct();
 
-                    _tickets = query.ToArray();
+                    AllTickets = query.ToArray();
                 }
             }
             catch (Exception e)
             {
                 CDIEventLog.WriteEntry("Ticket Read failed", e);
             }
-        }
-
-        /// <summary>Extract the tickets for this organization</summary>
-        /// <param name="organizationID"></param>
-        /// <returns></returns>
-        public TicketJoin[] Read(int organizationID)
-        {
-            var query = AllTickets.Where(t => t.OrganizationID == organizationID);//.OrderBy(t => t.DateCreated);
-            return query.ToArray();
-        }
-
-        public int[] ReadOrganizationIDs()
-        {
-            var query = AllTickets.Select(t => t.OrganizationID).Distinct();
-            return query.ToArray();
-        }
-
-        public List<int> ReadOrganizationOffsets()
-        {
-            List<int> results = new List<int>();
-            int organizationID = Int32.MinValue;
-            for(int i = 0; i < _tickets.Length; ++i)
-            {
-                if (_tickets[i].OrganizationID == organizationID)
-                    continue;
-
-                organizationID = _tickets[i].OrganizationID;
-                results.Add(organizationID);
-            }
-            return results;
         }
     }
 }

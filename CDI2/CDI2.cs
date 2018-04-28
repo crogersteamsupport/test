@@ -38,8 +38,9 @@ namespace TeamSupport.CDI
 
         void LoadOrganizations()
         {
-            // should already be sorted from TicketReader
             TicketJoin[] allTickets = _ticketReader.AllTickets;
+
+            // already sorted
             //Array.Sort(allTickets, (lhs, rhs) => lhs.OrganizationID.CompareTo(rhs.OrganizationID));
 
             // spin through each organization
