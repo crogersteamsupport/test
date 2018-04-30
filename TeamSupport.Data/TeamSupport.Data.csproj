@@ -210,6 +210,7 @@
     <Compile Include="BusinessObjects\ActionLogsView.cs" />
     <Compile Include="BusinessObjects\Actions.cs" />
     <Compile Include="BusinessObjects\ActionsView.cs" />
+    <Compile Include="BusinessObjects\ActionToAnalyze.cs" />
     <Compile Include="BusinessObjects\ActionTypes.cs" />
     <Compile Include="BusinessObjects\Addresses.cs" />
     <Compile Include="BusinessObjects\AgentRatings.cs" />
@@ -327,6 +328,7 @@
     <Compile Include="BusinessObjects\TicketLinkToSnow.cs" />
     <Compile Include="BusinessObjects\TicketLinkToTFS.cs" />
     <Compile Include="BusinessObjects\TicketRelationships.cs" />
+    <Compile Include="BusinessObjects\TicketSentiment.cs" />
     <Compile Include="BusinessObjects\TicketsView.cs" />
     <Compile Include="BusinessObjects\TicketTemplates.cs" />
     <Compile Include="BusinessObjects\TicketTimeLineView.cs" />

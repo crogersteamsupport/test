@@ -611,7 +611,10 @@ namespace TeamSupport.Data
 		{
 		  foreach (Action action in this)
 		  {
-			if (action.Row.RowState == DataRowState.Added)
+            switch (action.Row.RowState)
+            {
+
+            case DataRowState.Added:
 			{
 			  BeforeRowInsert(action);
 			  for (int i = 0; i < insertCommand.Parameters.Count; i++)
@@ -631,9 +634,13 @@ namespace TeamSupport.Data
 			  Table.Columns["ActionID"].ReadOnly = false;
 			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
 				action.Row["ActionID"] = (int)insertCommand.Parameters["Identity"].Value;
+
+              TeamSupport.Data.BusinessObjects.ActionToAnalyze.QueueForWatsonToneAnalysis(action, connection, LoginUser);
 			  AfterRowInsert(action);
 			}
-			else if (action.Row.RowState == DataRowState.Modified)
+            break;
+
+            case DataRowState.Modified:
 			{
 			  BeforeRowEdit(action);
 			  for (int i = 0; i < updateCommand.Parameters.Count; i++)
@@ -647,7 +654,9 @@ namespace TeamSupport.Data
 			  updateCommand.ExecuteNonQuery();
 			  AfterRowEdit(action);
 			}
-			else if (action.Row.RowState == DataRowState.Deleted)
+            break;
+
+            case DataRowState.Deleted:
 			{
 			  int id = (int)action.Row["ActionID", DataRowVersion.Original];
 			  deleteCommand.Parameters["ActionID"].Value = id;
@@ -655,7 +664,9 @@ namespace TeamSupport.Data
 			  deleteCommand.ExecuteNonQuery();
 			  AfterRowDelete(id);
 			}
+            break;
 		  }
+        }
 		  //transaction.Commit();
 		}
 		catch (Exception)

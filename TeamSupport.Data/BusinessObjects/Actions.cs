@@ -7,6 +7,8 @@ using System.Data.SqlClient;
 using System.Dynamic;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json;
+using System.Data.Linq;
+using TeamSupport.Data.BusinessObjects;
 
 namespace TeamSupport.Data
 {
@@ -821,23 +823,14 @@ WHERE a.SalesForceID = @SalesForceID";
             {
                 using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
                 {
-                    using (SqlCommand command = new SqlCommand())
-                    {
-                        command.Connection = connection;
-                        command.CommandType = CommandType.Text;
-                        command.CommandText = "SELECT * FROM dbo.TicketAverageSentiment WHERE TicketID = @TicketID FOR JSON PATH, ROOT('watson')";
-                        command.Parameters.AddWithValue("@TicketID", ticketID);
-                        connection.Open();
-                        SqlDataReader reader = command.ExecuteReader();
-                        if (reader.HasRows && reader.Read())
-                        {
-                            return reader.GetValue(0).ToString();
-                        }
-                        else
-                        {
-                            return "nothing";
-                        }
-                    }
+                    connection.Open();
+                    DataContext db = new DataContext(connection);
+                    Table<TicketSentiment> ticketScoresTable = db.GetTable<TicketSentiment>();
+                    TicketSentiment ticketSentimentScore = (from u in ticketScoresTable where u.TicketID == ticketID select u).FirstOrDefault();
+                    if (ticketSentimentScore == null)
+                        return "negative";
+
+                    return JsonConvert.SerializeObject(ticketSentimentScore);
                 }
             }
             catch (SqlException e)

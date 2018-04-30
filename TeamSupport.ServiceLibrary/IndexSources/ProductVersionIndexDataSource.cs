@@ -35,7 +35,7 @@ namespace TeamSupport.ServiceLibrary
 
       ProductVersionsSearch productVersionsSearch = new ProductVersionsSearch(productVersion);
       Tickets tickets = new Tickets(_loginUser);
-      productVersionsSearch.openTicketCount = tickets.GetProductVersionTicketCount(productVersion.ProductVersionID, 0);
+      productVersionsSearch.openTicketCount = tickets.GetProductVersionTicketCount(productVersion.ProductVersionID, 0, _organizationID);
       AddDocField("**JSON", JsonConvert.SerializeObject(productVersionsSearch));
 
       CustomValues customValues = new CustomValues(_loginUser);
