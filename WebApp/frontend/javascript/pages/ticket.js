@@ -5924,13 +5924,6 @@ function taskCheckBox(id, status) {
 }
 
 
-
-
-
-
-
-
-
 // Invalid Ticket Status.
 function invalidStatus(StatusId) {
     teamsupport.modals.overlay.show();
@@ -5938,14 +5931,12 @@ function invalidStatus(StatusId) {
     teamsupport.modals.modal.show('#modal');
     var statuses = window.parent.Ts.Cache.getNextStatuses(StatusId);
     $.each(statuses, function(key, status) {
-        console.log(key);
         $('<option>').text(status.Name).attr('value', status.TicketStatusID).appendTo('#newStatus');
     });
 }
 
 $(document).on('click', '#updateStatus', function(e) {
     var newStatus = $('#newStatus').val();
-    alert('Update Status: ' + _ticketID + ' / ' + newStatus);
     window.parent.Ts.Services.Tickets.SetTicketStatus(_ticketID, newStatus, function(result) {
         if (result !== null) {
             parent.document.getElementById(window.frameElement.id).contentDocument.location.reload(true);
