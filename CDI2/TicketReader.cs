@@ -52,6 +52,8 @@ namespace TeamSupport.CDI
                     Table<TicketStatus> ticketStatusesTable = db.GetTable<TicketStatus>();
                     Table<TicketType> ticketTypesTable = db.GetTable<TicketType>();
                     Table<Action> actionsTable = db.GetTable<Action>();
+                    Table<TicketSentiment> ticketSentimentsTable = db.GetTable<TicketSentiment>();
+
                     var query = (from t in ticketsTable
                                  join tt in ticketTypesTable on t.TicketTypeID equals tt.TicketTypeID
                                  join ts in ticketStatusesTable on t.TicketStatusID equals ts.TicketStatusID
@@ -60,19 +62,19 @@ namespace TeamSupport.CDI
                                      (t.TicketSource != "SalesForce") &&    // ignore imported tickets
                                      (!tt.ExcludeFromCDI) &&
                                      (!ts.ExcludeFromCDI)
-                                 orderby t.OrganizationID   // pre-organize into blocks we can later process
                                  select new TicketJoin()
                                  {
-                                     TicketID = t.TicketID,
-                                     TicketStatusName = ts.Name,
-                                     TicketTypeName = tt.Name,
+                                     //TicketID = t.TicketID,
+                                     //TicketStatusName = ts.Name,
+                                     //TicketTypeName = tt.Name,
                                      OrganizationID = t.OrganizationID,
                                      DateClosed = t.DateClosed,
-                                     TicketSource = t.TicketSource,
+                                     //TicketSource = t.TicketSource,
                                      DateCreated = t.DateCreated,
                                      IsClosed = ts.IsClosed,
-                                     ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count()
-                                 }).Distinct();
+                                     ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count(),
+                                     TicketSentimentScore = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.TicketSentimentScore).Min()  // for some reason Min is faster than First()
+                                 });
 
                     AllTickets = query.ToArray();
                 }

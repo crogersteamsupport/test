@@ -90,6 +90,9 @@ namespace TeamSupport.CDI
                         intervalClosedTickets.Add(pair.Item2);
                     }
                 }
+
+                // the final interval
+                results.Add(new IntervalData(nextInterval, currentlyOpenTickets, intervalClosedTickets, newTicketsCount));
             }
             catch (Exception e)
             {
@@ -114,12 +117,22 @@ namespace TeamSupport.CDI
         }
 
         /// <summary> Count the ticket types </summary>
-        void TicketTypeHistogram(TimeScale timeScale)
+        //void TicketTypeHistogram(TimeScale timeScale)
+        //{
+        //    Debug.WriteLine("TicketType({0})	TicketCount", timeScale);
+        //    TallyDictionary<string> open = new TallyDictionary<string>();
+        //    foreach (TicketJoin t in _tickets)
+        //        open.Increment(t.TicketTypeName);
+
+        //    open.Write();
+        //}
+
+        /// <summary> Count the ticket types </summary>
+        void TicketDateCreatedHistogram(DateRange dateRange)
         {
-            Debug.WriteLine("TicketType({0})	TicketCount", timeScale);
-            TallyDictionary<string> open = new TallyDictionary<string>();
+            TallyDictionary<DateTime> open = new TallyDictionary<DateTime>();
             foreach (TicketJoin t in _tickets)
-                open.Increment(t.TicketTypeName);
+                open.Increment(dateRange.PreviousMidnight(t.DateCreated));
 
             open.Write();
         }

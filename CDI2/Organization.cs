@@ -37,6 +37,9 @@ namespace TeamSupport.CDI
         /// <param name="endIndex">end index into all tickets for this organization</param>
         public Organization(DateRange analysisInterval, TicketJoin[] allTickets, int startIndex, int endIndex)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             try
             {
                 _dateRange = analysisInterval;
@@ -59,11 +62,32 @@ namespace TeamSupport.CDI
             {
                 CDIEventLog.WriteEntry("New organization failed", ex);
             }
+
+            //Debug.WriteLine("{0}\t{1}\t{2}", OrganizationID, _tickets.Count(), stopwatch.ElapsedMilliseconds);
         }
 
         public override string ToString()
         {
             return String.Format("{0} {1}({2})", OrganizationID, IntervalData.Count, _tickets.Length);
+        }
+
+        public string CDIValues()
+        {
+            IntervalData.Sort((lhs, rhs) => lhs._intervalEndTimeStamp.CompareTo(rhs._intervalEndTimeStamp));
+            int intervalIndex = 0;
+            StringBuilder str = new StringBuilder();
+            str.Append(OrganizationID);
+            foreach (DateTime time in _dateRange)
+            {
+                str.Append("\t");
+                if((intervalIndex < IntervalData.Count()) && (IntervalData[intervalIndex]._intervalEndTimeStamp == time))
+                    str.Append(IntervalData[intervalIndex++].CDI);
+            }
+
+            //if (intervalIndex != IntervalData.Count() - 1)
+            //    Debugger.Break();
+
+            return str.ToString();
         }
     }
 }

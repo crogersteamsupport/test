@@ -9,22 +9,23 @@ namespace TeamSupport.CDI
 {
     public class TicketJoin : IComparable<TicketJoin>
     {
-        public int TicketID;
-        public string TicketStatusName;
-        public string TicketTypeName;
+        //public int TicketID;
+        //public string TicketStatusName;
+        //public string TicketTypeName;
         public int OrganizationID;
         public DateTime? DateClosed;
-        public string TicketSource;
+        //public string TicketSource;
         public DateTime DateCreated;
         public int ActionsCount;
         public bool IsClosed;
+        public int? TicketSentimentScore;
 
         public int CompareTo(TicketJoin other) { return DateCreated.CompareTo(other.DateCreated); }
         public TimeSpan TimeOpen
         {
             get
             {
-                DateTime dateClosed = (IsClosed && DateClosed.HasValue) ? DateClosed.Value : DateRange.EndTime;
+                DateTime dateClosed = (IsClosed && DateClosed.HasValue) ? DateClosed.Value : DateRange.EndTimeNow;
                 return dateClosed - DateCreated;
             }
         }
