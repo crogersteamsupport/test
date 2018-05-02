@@ -30,5 +30,9 @@
     void RegisterRoutes(RouteCollection routes) {
         routes.MapPageRoute("","login","~/login.aspx");
     }
-
+    
+    void Application_PreSendRequestHeaders(Object sender, EventArgs e)
+    {
+        Response.Headers.Set("Server-Tag", System.Environment.MachineName);
+    }
 </script>
