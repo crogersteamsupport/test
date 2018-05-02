@@ -10,7 +10,7 @@ namespace TeamSupport.CDI
     /// </summary>
     public class IntervalData
     {
-        public DateTime _intervalEndTimeStamp; // date time for this data
+        public DateTime _timeStamp; // date time for this data
 
         // new tickets
         public int _newCount; // new (this interval)
@@ -21,12 +21,13 @@ namespace TeamSupport.CDI
         public int _closedCount;  // closed (this interval)
         public double? _medianDaysToClose;  // average time to close (this interval)
         public double? _averageActionCount;   // how many actions do the closed ticket have?
+        public double? _ticketSentimentScore;
 
         public int? CDI { get; set; }    // CDI !!
 
         public IntervalData(DateTime nextDay, HashSet<TicketJoin> openTickets, HashSet<TicketJoin> closedTickets, int ticketsCreated)
         {
-            _intervalEndTimeStamp = nextDay;
+            _timeStamp = nextDay;
             _newCount = ticketsCreated;
             _openCount = openTickets.Count;
             _medianDaysOpen = openTickets.Count == 0 ? 0 : MedianTotalDaysOpen(openTickets).Value;
@@ -36,6 +37,7 @@ namespace TeamSupport.CDI
             {
                 _medianDaysToClose = MedianTotalDaysOpen(closedTickets);
                 _averageActionCount = closedTickets.Average(x => x.ActionsCount);
+                _ticketSentimentScore = closedTickets.Average(x => x.TicketSentimentScore);
             }
         }
 
@@ -62,7 +64,7 @@ namespace TeamSupport.CDI
         public override string ToString()
         {
             return String.Format("{0} {1} {2} {3:0.00} {4} {5:0.00} {6}",
-                _intervalEndTimeStamp.ToShortDateString(), _newCount, _openCount, _medianDaysOpen, _closedCount, _medianDaysToClose, CDI);
+                _timeStamp.ToShortDateString(), _newCount, _openCount, _medianDaysOpen, _closedCount, _medianDaysToClose, CDI);
         }
     }
 

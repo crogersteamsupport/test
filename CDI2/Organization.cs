@@ -37,9 +37,6 @@ namespace TeamSupport.CDI
         /// <param name="endIndex">end index into all tickets for this organization</param>
         public Organization(DateRange analysisInterval, TicketJoin[] allTickets, int startIndex, int endIndex)
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-
             try
             {
                 _dateRange = analysisInterval;
@@ -53,17 +50,54 @@ namespace TeamSupport.CDI
                 _intervalStrategy = new IntervalStrategy(_tickets);
                 IntervalData = _intervalStrategy.GenerateIntervalData(_dateRange);
 
-                // calculate the CDI using normalized data
-                _cdiStrategy = new CDIPercentileStrategy(IntervalData);
-                foreach (IntervalData intervalData in IntervalData)
-                    _cdiStrategy.CalculateCDI(intervalData);
+                //Debug.WriteLine("Date\tNew\tOpen\tClosed\tDaysOpen\tDaysToClose\tActions\tSentiment\tCDI");
+                CalculateCDIRollingYear();
             }
             catch(Exception ex)
             {
                 CDIEventLog.WriteEntry("New organization failed", ex);
             }
+        }
 
-            //Debug.WriteLine("{0}\t{1}\t{2}", OrganizationID, _tickets.Count(), stopwatch.ElapsedMilliseconds);
+        /// <summary>calculate the CDI normalized by a single percentile lookup</summary>
+        void CalculateCDIFullTimeline()
+        {
+            _cdiStrategy = new CDIPercentileStrategy(IntervalData);
+            IntervalData.Sort((lhs, rhs) => lhs._timeStamp.CompareTo(rhs._timeStamp));
+            foreach (IntervalData intervalData in IntervalData)
+                _cdiStrategy.CalculateCDI(intervalData);
+        }
+
+        /// <summary>calculate the CDI using a rolling percentile lookup</summary>
+        void CalculateCDIRollingYear()
+        {
+            IntervalData.Sort((lhs, rhs) => lhs._timeStamp.CompareTo(rhs._timeStamp));
+            DateTime begin = IntervalData.First()._timeStamp;
+            DateTime end = begin.AddDays(365);  // 1 year rolling average
+
+            // get a rolling year into the queue
+            List<IntervalData> rollingYear = IntervalData.Where(t => t._timeStamp < end).ToList();
+            _cdiStrategy = new CDIPercentileStrategy(rollingYear);  // mixes up rollingYear...
+            foreach (IntervalData intervalData in IntervalData)
+            {
+                // rolling year for percentile
+                bool update = false;
+                rollingYear.Sort((lhs, rhs) => lhs._timeStamp.CompareTo(rhs._timeStamp));
+                if (intervalData._timeStamp > rollingYear.Last()._timeStamp)
+                {
+                    rollingYear.Add(intervalData);  // add future data
+                    update = true;
+                }
+                while (rollingYear.First()._timeStamp < intervalData._timeStamp.AddDays(-365))
+                {
+                    rollingYear.RemoveAt(0);    // drop old data
+                    update = true;
+                }
+
+                if(update)
+                    _cdiStrategy = new CDIPercentileStrategy(rollingYear);  // mixes up rollingYear...
+                _cdiStrategy.CalculateCDI(intervalData);
+            }
         }
 
         public override string ToString()
@@ -73,14 +107,14 @@ namespace TeamSupport.CDI
 
         public string CDIValues()
         {
-            IntervalData.Sort((lhs, rhs) => lhs._intervalEndTimeStamp.CompareTo(rhs._intervalEndTimeStamp));
+            IntervalData.Sort((lhs, rhs) => lhs._timeStamp.CompareTo(rhs._timeStamp));
             int intervalIndex = 0;
             StringBuilder str = new StringBuilder();
             str.Append(OrganizationID);
             foreach (DateTime time in _dateRange)
             {
                 str.Append("\t");
-                if((intervalIndex < IntervalData.Count()) && (IntervalData[intervalIndex]._intervalEndTimeStamp == time))
+                if((intervalIndex < IntervalData.Count()) && (IntervalData[intervalIndex]._timeStamp == time))
                     str.Append(IntervalData[intervalIndex++].CDI);
             }
 

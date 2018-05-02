@@ -28,21 +28,25 @@ namespace TeamSupport.CDI
         {
             _dateRange = new DateRange(timeSpan, intervalCount);
             _ticketReader = new TicketReader(_dateRange);
-            _organizations = new HashSet<Organization>();
         }
 
         public void Run()
         {
-            // load all the tickets
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
             CDIEventLog.WriteEntry("CDI Update started...");
+            RunHelper();
+            CDIEventLog.WriteEntry(String.Format("CDI Update complete. {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
+        }
+
+        public void RunHelper()
+        {
+            // load all the tickets
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             _ticketReader.LoadAllTickets();
             CDIEventLog.WriteEntry(String.Format("{0} Tickets loaded {1} in {2:0.00} sec",
                 _ticketReader.AllTickets.Length, _dateRange, stopwatch.ElapsedMilliseconds / 1000));
-
-            //_organizations.Add(new Organization(_dateRange, _ticketReader.AllTickets, 0, _ticketReader.AllTickets.Length));
-            //WriteCdiByOrganization();
 
             // analyze by organization
             stopwatch.Restart();
@@ -50,14 +54,16 @@ namespace TeamSupport.CDI
             CDIEventLog.WriteEntry(String.Format("Organization analysis completed in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
 
             // Store the results
-            WriteCdiByOrganization();
-            CDIEventLog.WriteEntry("CDI Update complete.");
+            //stopwatch.Restart();
+            //WriteCdiByOrganization();
+            //CDIEventLog.WriteEntry(String.Format("Results saved. {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
         }
 
         void LoadOrganizations()
         {
             TicketJoin[] allTickets = _ticketReader.AllTickets;
             Array.Sort(allTickets, (lhs, rhs) => lhs.OrganizationID.CompareTo(rhs.OrganizationID));
+            _organizations = new HashSet<Organization>();
 
             // spin through each organization
             int startIndex = 0;
@@ -66,8 +72,7 @@ namespace TeamSupport.CDI
             {
                 if(allTickets[i].OrganizationID != startId)
                 {
-                    Organization org = new Organization(_dateRange, allTickets, startIndex, i);
-                    _organizations.Add(org);
+                    _organizations.Add(new Organization(_dateRange, allTickets, startIndex, i));
                     startIndex = i;
                     startId = allTickets[startIndex].OrganizationID;
                 }

@@ -38,24 +38,54 @@ namespace TeamSupport.CDI
             }
         }
 
+        void Write(string text)
+        {
+            //Debug.Write(text);
+        }
+
+        void WriteLine(string text)
+        {
+            //Debug.WriteLine(text);
+        }
+
         // TODO
         //  * time to respond (first response from customer service)
         //  * count of actions (long ticket = bad)
         public void CalculateCDI(IntervalData intervalData)
         {
+            Write(intervalData._timeStamp.ToShortDateString());
             List<double> metrics = new List<double>();
             metrics.Add(_newCount.AsPercentile(intervalData._newCount));
             metrics.Add(_openCount.AsPercentile(intervalData._openCount));
-            metrics.Add(100 - _closedCount.AsPercentile(intervalData._closedCount));    // the higher the better
+            metrics.Add(_closedCount.AsPercentile(intervalData._closedCount));
             metrics.Add(_medianDaysOpen.AsPercentile(intervalData._medianDaysOpen));
+
+            Write(String.Format("\t{0}\t{1}\t{2}\t{3}\t", metrics[0], metrics[1], metrics[2], metrics[3]));
 
             // closed tickets?
             if (intervalData._medianDaysToClose.HasValue)
+            {
                 metrics.Add(_daysToClose.AsPercentile(intervalData._medianDaysToClose.Value));
+                Write(String.Format("{0}", metrics[metrics.Count() - 1]));
+            }
+            Write("\t");
+
             if (intervalData._averageActionCount.HasValue)
+            {
                 metrics.Add(_averageActionCount.AsPercentile(intervalData._averageActionCount.Value));
+                Write(String.Format("{0}", metrics[metrics.Count() - 1]));
+            }
+            Write("\t");
+
+            if (intervalData._ticketSentimentScore.HasValue)
+            {
+                metrics.Add(intervalData._ticketSentimentScore.Value / 10);
+                Write(String.Format("{0:0.0}", metrics[metrics.Count() - 1]));
+            }
+            Write("\t");
 
             intervalData.CDI = (int)Math.Round(metrics.Average() * 10);  // [0, 1000]
+            WriteLine((intervalData.CDI / 10).ToString());
         }
     }
 
