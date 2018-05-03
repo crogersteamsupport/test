@@ -896,7 +896,7 @@ namespace TeamSupport.Data
 
 
 			StringBuilder builder = new StringBuilder();
-			builder.Append("(SELECT CAST(NULLIF(RTRIM(CustomValue), '') AS varchar(8000)) FROM CustomValues WHERE (CustomFieldID = ");
+			builder.Append("(SELECT CustomValue FROM CustomValues WHERE (CustomFieldID = ");
 			builder.Append(field.CustomFieldID.ToString());
 			builder.Append(") AND (RefID = ");
 			builder.Append(refIDFieldName);
@@ -924,11 +924,7 @@ namespace TeamSupport.Data
 		{
 			string sql = @"
 (
-  CASE 
-    WHEN ISDATE((SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))) = 1  
-    THEN (SELECT CAST(NULLIF(RTRIM(CustomValue), '') AS datetime) FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))
-    ELSE NULL
-  END
+  SELECT TRY_CAST(CustomValue AS DateTime) FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1})
 ) AS [{2}]
 ";
 			return string.Format(sql, field.CustomFieldID.ToString(), refIDFieldName, fieldAlias);
@@ -938,11 +934,7 @@ namespace TeamSupport.Data
 		{
 			string sql = @"
 (
-  CASE 
-    WHEN ISNUMERIC((SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))) = 1  
-    THEN (SELECT TRY_CAST(NULLIF(RTRIM(CustomValue), '') AS float) FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))
-    ELSE NULL
-  END
+  SELECT TRY_CAST (CustomValue AS float) FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1})
 ) AS [{2}]
 ";
 			return string.Format(sql, field.CustomFieldID.ToString(), refIDFieldName, fieldAlias);
@@ -952,11 +944,7 @@ namespace TeamSupport.Data
 		{
 			string sql = @"
 (
-  CASE 
-    WHEN (SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1})) = 'true'  THEN CAST(1 AS bit)
-    WHEN (SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1})) = 'false'  THEN CAST(0 AS bit)
-    ELSE NULL
-  END 
+  SELECT TRY_CAST(CustomValue as Bit) FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1})  
 ) AS [{2}]
 ";
 			return string.Format(sql, field.CustomFieldID.ToString(), refIDFieldName, fieldAlias);
