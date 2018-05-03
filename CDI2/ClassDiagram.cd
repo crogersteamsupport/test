@@ -11,7 +11,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAACAgAAAAAAAAAAAAAAAAAABAAAAAAAAIAAAAABI=</HashCode>
+      <HashCode>AgAAACAgAAAAAAAAAAAAAAAAAABAAAAAAAAIAAAAABI=</HashCode>
       <FileName>CDI2.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -28,12 +28,16 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAEAAAAACAAAAAAAAAAAEAAgAAAgAAAAAAAAAEAAAAA=</HashCode>
-      <FileName>DateRange.cs</FileName>
+      <HashCode>AAEAAAAACAAAABAECAAAUAAgAAAAAAAEAAAAAEAAAAA=</HashCode>
+      <FileName>Utility\DateRange.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="TeamSupport.CDI.Organization">
-    <Position X="7" Y="2" Width="1.5" />
+    <Position X="7" Y="2" Width="2" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <AssociationLine Name="_tickets" Type="TeamSupport.CDI.TicketJoin">
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="-0.838" Y="0.341" />
@@ -41,13 +45,13 @@
     </AssociationLine>
     <AssociationLine Name="_intervalStrategy" Type="TeamSupport.CDI.IntervalStrategy" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="8.5" Y="3.361" />
-        <Point X="10.75" Y="3.361" />
-        <Point X="10.75" Y="5" />
+        <Point X="9" Y="2.699" />
+        <Point X="10.25" Y="2.699" />
+        <Point X="10.25" Y="5" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAEAAAAAACAAAAAAAAAAAAAQEAAABAAAAABA=</HashCode>
+      <HashCode>AAAAAAAAAEAgAAAECIAAQAAAAAAAAAAEAAABAAAAABA=</HashCode>
       <FileName>Organization.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -57,7 +61,7 @@
     </ShowAsAssociation>
     <ShowAsCollectionAssociation>
       <Field Name="_tickets" />
-      <Property Name="IntervalData" />
+      <Property Name="Intervals" />
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="TeamSupport.CDI.TicketReader">
@@ -66,7 +70,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAIAAAAAAAICAAAAAAAgAAEAAAAEAAAAAAAAABA=</HashCode>
+      <HashCode>AAAAAAIAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
       <FileName>TicketReader.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -77,61 +81,76 @@
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="TeamSupport.CDI.CDIPercentileStrategy">
-    <Position X="12" Y="2" Width="2" />
+    <Position X="11.25" Y="2" Width="1.75" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAQgACAEQAAAkEAAAAAAAAAEAwCQAAAAAAAAAA=</HashCode>
+      <HashCode>AAAgAQACAAAAAAAgEAAIAEAAAAAAEAAAAAABAAAAAAA=</HashCode>
       <FileName>CDIPercentileStrategy.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_averageActionCountPercentiles" />
+      <Field Name="_closedCountPercentiles" />
+      <Field Name="_medianDaysOpenPercentiles" />
+      <Field Name="_medianDaysToClosePercentiles" />
+      <Field Name="_newCountPercentiles" />
+      <Field Name="_openCountPercentiles" />
+    </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="TeamSupport.CDI.TicketJoin">
-    <Position X="4.5" Y="5" Width="1.75" />
+    <Position X="4.75" Y="5" Width="1.75" />
     <Compartments>
       <Compartment Name="Properties" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAQAQEAAAACAAAAAAAAEAAAAANqAAQGAA=</HashCode>
+      <HashCode>QAAAAAAAAAAAQAQEAAAACAAAAAAAAEAAAAAFiAAACAA=</HashCode>
       <FileName>linq\TicketJoin.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="TeamSupport.CDI.IntervalData">
-    <Position X="6.75" Y="5" Width="2.5" />
+    <Position X="7" Y="5" Width="2" />
     <Compartments>
       <Compartment Name="Properties" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
-    <NestedTypes>
-      <Enum Name="TeamSupport.CDI.IntervalData.Metric" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>IntervalData.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Enum>
-    </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAACEACAEAAAABAQAAAgAAAAAAAAAAAEAAAY=</HashCode>
+      <HashCode>EAQAAAAAAACAASAMACAAAAAAABCAAAAAAAgAAAEAIAA=</HashCode>
       <FileName>IntervalData.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TeamSupport.CDI.IntervalStrategy">
-    <Position X="10" Y="5" Width="1.5" />
+    <Position X="9.5" Y="5" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAABAAACAAAAAAAAAAAEgAAAAAAAAAA=</HashCode>
+      <HashCode>AAACAAAAAAAAAAAAAAACAAAAAAAAAAAEgAAAAAAAAAA=</HashCode>
       <FileName>IntervalStrategy.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="TeamSupport.CDI.CDIEventLog" Collapsed="true">
+    <Position X="14" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAQAAAAA=</HashCode>
+      <FileName>Utility\CDIEventLog.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TeamSupport.CDI.Percentiles&lt;T&gt;">
+    <Position X="13.5" Y="4" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAQAIAAAAACAgAAAAAAAAAAAA=</HashCode>
+      <FileName>Utility\Percentile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Interface Name="TeamSupport.CDI.ICDIStrategy">
-    <Position X="9.75" Y="2" Width="1.5" />
+    <Position X="11.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAA=</HashCode>
-      <FileName>CDIPercentileStrategy.cs</FileName>
+      <FileName>Organization.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Font Name="Segoe UI" Size="9" />

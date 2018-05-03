@@ -48,6 +48,8 @@ namespace TeamSupport.CDI
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (DataContext db = new DataContext(connection))
                 {
+                    // define the tables we will reference in the query
+                    // - each table class only contains the fields we care about
                     Table<Ticket> ticketsTable = db.GetTable<Ticket>();
                     Table<TicketStatus> ticketStatusesTable = db.GetTable<TicketStatus>();
                     Table<TicketType> ticketTypesTable = db.GetTable<TicketType>();
@@ -76,6 +78,7 @@ namespace TeamSupport.CDI
                                      TicketSentimentScore = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.TicketSentimentScore).Min()  // for some reason Min is faster than First()
                                  });
 
+                    // run the query
                     AllTickets = query.ToArray();
                 }
             }

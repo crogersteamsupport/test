@@ -12,80 +12,72 @@ namespace TeamSupport.CDI
     /// </summary>
     public class CDIPercentileStrategy : ICDIStrategy
     {
-        Percentile<int> _newCount;  // new (this interval)
-        Percentile<int> _openCount; // currently Open (since startDate)
-        Percentile<double> _medianDaysOpen;   // days open of currently open
-        Percentile<int> _closedCount;   // closed (this interval)
-        Percentile<double> _daysToClose;    // average time to close (this interval)
-        Percentile<double> _averageActionCount;   // actions per ticket
+        Percentiles<int> _newCountPercentiles;  // new (this interval)
+        Percentiles<int> _openCountPercentiles; // currently Open (since startDate)
+        Percentiles<double> _medianDaysOpenPercentiles;   // days open of currently open
+        Percentiles<int> _closedCountPercentiles;   // closed (this interval)
+        Percentiles<double> _medianDaysToClosePercentiles;    // average time to close (this interval)
+        Percentiles<double> _averageActionCountPercentiles;   // actions per ticket
 
         public CDIPercentileStrategy(List<IntervalData> intervalData)
         {
             // counts
-            _newCount = new Percentile<int>(intervalData, delegate (IntervalData x) { return x._newCount; });
-            _openCount = new Percentile<int>(intervalData, delegate (IntervalData x) { return x._openCount; });
-            _closedCount = new Percentile<int>(intervalData, delegate (IntervalData x) { return x._closedCount; });
+            _newCountPercentiles = new Percentiles<int>(intervalData, delegate (IntervalData x) { return x._newCount; });
+            _openCountPercentiles = new Percentiles<int>(intervalData, delegate (IntervalData x) { return x._openCount; });
+            _closedCountPercentiles = new Percentiles<int>(intervalData, delegate (IntervalData x) { return x._closedCount; });
 
             // open tickets
-            _medianDaysOpen = new Percentile<double>(intervalData, delegate (IntervalData x) { return x._medianDaysOpen; });
+            _medianDaysOpenPercentiles = new Percentiles<double>(intervalData, delegate (IntervalData x) { return x._medianDaysOpen; });
 
             // closed tickets
             List<IntervalData> closedTickets = intervalData.Where(t => t._closedCount > 0).ToList();
             if (closedTickets.Count > 0)
             {
-                _averageActionCount = new Percentile<double>(closedTickets, delegate (IntervalData x) { return x._averageActionCount.Value; });
-                _daysToClose = new Percentile<double>(closedTickets, delegate (IntervalData x) { return x._medianDaysToClose.Value; });
+                _averageActionCountPercentiles = new Percentiles<double>(closedTickets, delegate (IntervalData x) { return x._averageActionCount.Value; });
+                _medianDaysToClosePercentiles = new Percentiles<double>(closedTickets, delegate (IntervalData x) { return x._medianDaysToClose.Value; });
             }
         }
 
-        void Write(string text)
+        //static bool _writeHeader = true;
+        public void CalculateCDI(IntervalData intervalData)
         {
-            //Debug.Write(text);
-        }
+            // Create the CDI from the normalized fields
+            IntervalData normalized = Normalize(intervalData);
+            normalized.UpdateCDI();
+            intervalData.CDI = normalized.CDI;
 
-        void WriteLine(string text)
-        {
-            //Debug.WriteLine(text);
+            //if (_writeHeader)
+            //{
+            //    _writeHeader = false;
+            //    Debug.WriteLine("Date\tNew\tOpen\tMedianDaysOpen\tClosed\tMedianDaysToClose\tAvgActions\tAvgSentiment\tCDI");
+            //}
+            //Debug.WriteLine(normalized.ToString());
+            //Debug.WriteLine(intervalData.ToString());
         }
 
         // TODO
         //  * time to respond (first response from customer service)
-        //  * count of actions (long ticket = bad)
-        public void CalculateCDI(IntervalData intervalData)
+        public IntervalData Normalize(IntervalData intervalData)
         {
-            Write(intervalData._timeStamp.ToShortDateString());
-            List<double> metrics = new List<double>();
-            metrics.Add(_newCount.AsPercentile(intervalData._newCount));
-            metrics.Add(_openCount.AsPercentile(intervalData._openCount));
-            metrics.Add(_closedCount.AsPercentile(intervalData._closedCount));
-            metrics.Add(_medianDaysOpen.AsPercentile(intervalData._medianDaysOpen));
-
-            Write(String.Format("\t{0}\t{1}\t{2}\t{3}\t", metrics[0], metrics[1], metrics[2], metrics[3]));
-
-            // closed tickets?
-            if (intervalData._medianDaysToClose.HasValue)
+            IntervalData normalized = new IntervalData()
             {
-                metrics.Add(_daysToClose.AsPercentile(intervalData._medianDaysToClose.Value));
-                Write(String.Format("{0}", metrics[metrics.Count() - 1]));
-            }
-            Write("\t");
+                _timeStamp = intervalData._timeStamp,
+                _newCount = _newCountPercentiles.AsPercentile(intervalData._newCount),
+                _openCount = _openCountPercentiles.AsPercentile(intervalData._openCount),
+                _medianDaysOpen = _medianDaysOpenPercentiles.AsPercentile(intervalData._medianDaysOpen),
+                _closedCount = _closedCountPercentiles.AsPercentile(intervalData._closedCount),
+            };
+
+            if (intervalData._medianDaysToClose.HasValue)
+                normalized._medianDaysToClose = _medianDaysToClosePercentiles.AsPercentile(intervalData._medianDaysToClose.Value);
 
             if (intervalData._averageActionCount.HasValue)
-            {
-                metrics.Add(_averageActionCount.AsPercentile(intervalData._averageActionCount.Value));
-                Write(String.Format("{0}", metrics[metrics.Count() - 1]));
-            }
-            Write("\t");
+                normalized._averageActionCount = _averageActionCountPercentiles.AsPercentile(intervalData._averageActionCount.Value);
 
-            if (intervalData._ticketSentimentScore.HasValue)
-            {
-                metrics.Add(intervalData._ticketSentimentScore.Value / 10);
-                Write(String.Format("{0:0.0}", metrics[metrics.Count() - 1]));
-            }
-            Write("\t");
+            if (intervalData._averageSentimentScore.HasValue)
+                normalized._averageSentimentScore = intervalData._averageSentimentScore.Value;
 
-            intervalData.CDI = (int)Math.Round(metrics.Average() * 10);  // [0, 1000]
-            WriteLine((intervalData.CDI / 10).ToString());
+            return normalized;
         }
     }
 

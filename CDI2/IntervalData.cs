@@ -21,9 +21,11 @@ namespace TeamSupport.CDI
         public int _closedCount;  // closed (this interval)
         public double? _medianDaysToClose;  // average time to close (this interval)
         public double? _averageActionCount;   // how many actions do the closed ticket have?
-        public double? _ticketSentimentScore;
+        public double? _averageSentimentScore;
 
         public int? CDI { get; set; }    // CDI !!
+
+        public IntervalData() { }
 
         public IntervalData(DateTime nextDay, HashSet<TicketJoin> openTickets, HashSet<TicketJoin> closedTickets, int ticketsCreated)
         {
@@ -37,8 +39,25 @@ namespace TeamSupport.CDI
             {
                 _medianDaysToClose = MedianTotalDaysOpen(closedTickets);
                 _averageActionCount = closedTickets.Average(x => x.ActionsCount);
-                _ticketSentimentScore = closedTickets.Average(x => x.TicketSentimentScore);
+                _averageSentimentScore = closedTickets.Average(x => x.TicketSentimentScore);
             }
+        }
+
+        /// <summary>used by a normalized instance of Interval Data - See CDIPercentileStrategy</summary>
+        public void UpdateCDI()
+        {
+            HashSet<double> contribution = new HashSet<double> { _newCount, _openCount, _medianDaysOpen, (100 - _closedCount) };
+
+            if (_medianDaysToClose.HasValue)
+                contribution.Add(_medianDaysToClose.Value);
+
+            if (_averageActionCount.HasValue)
+                contribution.Add(_averageActionCount.Value);
+
+            if (_averageSentimentScore.HasValue)
+                contribution.Add(100 - _averageSentimentScore.Value / 10);  // [0, 1000] where low is in distress
+
+            CDI = (int)Math.Round(contribution.Average());
         }
 
         private double? MedianTotalDaysOpen(HashSet<TicketJoin> tickets)
@@ -56,15 +75,16 @@ namespace TeamSupport.CDI
 
         public static void Write(List<IntervalData> intervals)
         {
-            Debug.WriteLine("Date\tNewTickets\tOpenCount\tAvgOpenTime(days)\tClosed\tAvgTimeToClose(days)\tCDI");
+            Debug.WriteLine("Date\tNew\tOpen\tMedianDaysOpen\tClosed\tMedianDaysToClose\tAvgActions\tAvgSentiment\tCDI");
             foreach (IntervalData interval in intervals)
                 Debug.WriteLine(interval.ToString());
 
         }
+
         public override string ToString()
         {
-            return String.Format("{0} {1} {2} {3:0.00} {4} {5:0.00} {6}",
-                _timeStamp.ToShortDateString(), _newCount, _openCount, _medianDaysOpen, _closedCount, _medianDaysToClose, CDI);
+            return String.Format("{0}\t{1}\t{2}\t{3:0.00}\t{4}\t{5:0.00}\t{6:0.00}\t{7:0.00}\t{8}",
+                _timeStamp.ToShortDateString(), _newCount, _openCount, _medianDaysOpen, _closedCount, _medianDaysToClose, _averageActionCount, _averageSentimentScore, CDI);
         }
     }
 
