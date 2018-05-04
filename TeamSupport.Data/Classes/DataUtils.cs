@@ -283,16 +283,16 @@ namespace TeamSupport.Data
                 case CustomFieldType.Date:
                 case CustomFieldType.Time:
                 case CustomFieldType.DateTime:
-                    builder.Append("(CASE WHEN ISDATE (CustomValue) = 1 THEN (SELECT CAST(RTRIM(CustomValue) AS Datetime)) END"); //good
+                    builder.Append("TRY_CAST(CustomValue AS Datetime"); //good
                     break;
                 case CustomFieldType.Boolean:
-                    builder.Append("CAST(ISNULL(NULLIF(RTRIM(CustomValue), ''), 'False') AS BIT");
+                    builder.Append("TRY_CAST(CustomValue AS BIT");
                     break;
                 case CustomFieldType.Number:
-                    builder.Append("TRY_CAST(NULLIF(RTRIM(CustomValue), '') AS decimal");
+                    builder.Append("TRY_CAST(CustomValue AS decimal");
                     break;
                 default:
-                    builder.Append("CAST(NULLIF(RTRIM(CustomValue), '') AS varchar(8000)");
+                    builder.Append("(CustomValue");
                     break;
             }
 
