@@ -1163,7 +1163,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public NoteProxy[] LoadNotesByUserRights(int refID, ReferenceType refType, bool includeChildren)
+        public NoteProxy[] LoadNotesByUserRights(int refID, ReferenceType refType, bool includeChildren, int organizationID)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Notes notes = new Notes(loginUser);
@@ -2740,10 +2740,9 @@ SELECT
 
                 foreach (UserNoteSetting u in uns)
                 {
-                    u.IsDismissed = false;
-                    u.IsSnoozed = false;
-                    u.Collection.Save();
+                    u.Delete();
                 }
+                uns.Save();
             }
             else
             {
