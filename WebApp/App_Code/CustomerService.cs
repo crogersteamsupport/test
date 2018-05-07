@@ -3460,6 +3460,13 @@ SELECT
         }
 
         [WebMethod]
+        public string GetOrganizationSentiment(int organizationID)
+        {
+            double? result = TeamSupport.Data.BusinessObjects.OrganizationSentiment.GetOrganizationSentiment(organizationID);
+            return result.HasValue ? ((int)Math.Round(result.Value)).ToString() : string.Empty;
+        }
+
+        [WebMethod]
         public int[] LoadRatingPercents(int organizationID, ReferenceType type)
         {
             List<int> results = new List<int>();

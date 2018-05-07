@@ -296,6 +296,7 @@
     <Compile Include="BusinessObjects\OrganizationEmails.cs" />
     <Compile Include="BusinessObjects\OrganizationProductsView.cs" />
     <Compile Include="BusinessObjects\Organizations.cs" />
+    <Compile Include="BusinessObjects\OrganizationSentiment.cs" />
     <Compile Include="BusinessObjects\Plugins.cs" />
     <Compile Include="BusinessObjects\ProductFamilies.cs" />
     <Compile Include="BusinessObjects\RecentlyViewedItems.cs" />
