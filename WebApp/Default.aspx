@@ -25,11 +25,11 @@
         <link href="vcr/1_9_0/Css/jquery.pnotify.default.icons.css" rel="stylesheet" />
         <link href="vcr/1_9_0/Css/jquery.pnotify.default.css" rel="stylesheet" />
 
-        <script src="vcr/1_9_0/Js/jquery-latest.min.js" type="text/javascript"></script>
+        <script src="/frontend/library/jquery-latest.min.js" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
-        <script src="vcr/1_9_0/Js/chat.js" type="text/javascript"></script>
+        <script src="/frontend/library/chat.js" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/json2.min.js" type="text/javascript"></script>
-        <script src="vcr/1_9_0/Js/browser.js" type="text/javascript"></script>
+        <script src="/frontend/library/browser.js" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/jquery.jplayer.min.js" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/jquery.pnotify.min.js" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/moment.min.js" type="text/javascript"></script>
@@ -38,7 +38,7 @@
 
         <script src="../js_5/imagepaste.js" type="text/javascript"></script>
         <script src="../js_5/jquery.Jcrop.js" type="text/javascript"></script>
-        <script src="vcr/1_9_0/Js/aes.js" type="text/javascript"></script>
+        <script src="/frontend/library/aes.js" type="text/javascript"></script>
 
   <script type="text/javascript" language="javascript">
 

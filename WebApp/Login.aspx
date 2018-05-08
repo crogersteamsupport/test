@@ -9,8 +9,8 @@
     <meta name="robots" content="noindex, nofollow">
     <link href="vcr/1_9_0/Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
     <link href="vcr/1_9_0/Pages/Login.css" rel="stylesheet" type="text/css" />
-    <script src="vcr/1_9_0/Js/jquery-latest.min.js" type="text/javascript"></script>
-    <script src="vcr/1_9_0/Js/bootstrap3.min.js" type="text/javascript"></script>
+    <script src="/frontend/library/jquery-latest.min.js" type="text/javascript"></script>
+    <script src="/frontend/library/bootstrap3.min.js" type="text/javascript"></script>
     <script src="vcr/1_9_0/Pages/Login.js?1524781023" type="text/javascript"></script>
     <script src="vcr/1_9_0/Js/Ts/ts.utils.js"></script>
 </head>

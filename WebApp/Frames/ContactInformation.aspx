@@ -14,7 +14,7 @@
     .no-tickets { padding-top: 1em;}
   
   </style>
-  <script src="../vcr/1_9_0/Js/jquery-latest.min.js" type="text/javascript"></script>
+  <script src="/frontend/library/jquery-latest.min.js" type="text/javascript"></script>
   <script src="../vcr/1_9_0/Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
 
   <script src="../vcr/1_9_0/Js/jquery.hoverIntent.min.js" type="text/javascript"></script>

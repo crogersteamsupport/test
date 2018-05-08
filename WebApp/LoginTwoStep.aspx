@@ -13,8 +13,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="vcr/1_9_0/Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
   <link href="vcr/1_9_0/Pages/LoginTwoStep.css" rel="stylesheet" type="text/css" />
-  <script src="vcr/1_9_0/Js/jquery-latest.min.js" type="text/javascript"></script>
-  <script src="vcr/1_9_0/Js/bootstrap3.min.js" type="text/javascript"></script>
+  <script src="/frontend/library/jquery-latest.min.js" type="text/javascript"></script>
+  <script src="/frontend/library/bootstrap3.min.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Pages/LoginTwoStep.js" type="text/javascript"></script>
   <script src="vcr/1_9_0/Js/Ts/ts.utils.js"></script>
 </head>
