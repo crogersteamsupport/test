@@ -37,7 +37,7 @@
         <script src="vcr/1_9_0/Js/Ts/ts.wc.signalr.js" type="text/javascript"></script>
 
         <script src="../js_5/imagepaste.js" type="text/javascript"></script>
-        <script src="../js_5/jquery.Jcrop.js" type="text/javascript"></script>
+        <script src="/frontend/library/jquery.Jcrop.js" type="text/javascript"></script>
         <script src="/frontend/library/aes.js" type="text/javascript"></script>
 
   <script type="text/javascript" language="javascript">
