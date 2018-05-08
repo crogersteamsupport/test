@@ -318,7 +318,7 @@ UserPage = function() {
                 //    callback(countryCode);
                 //  });
                 //},
-                utilsScript: "../../Resources/js/utils.js" // just for formatting/placeholders etc
+                utilsScript: "/frontend/library/utils.js" // just for formatting/placeholders etc
             });
 
             $('#userTwoFactorCell').click(function(e) {
