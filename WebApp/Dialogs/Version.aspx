@@ -3,7 +3,7 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
   <script src="/frontend/library/jquery-latest.min.js" type="text/javascript"></script>
-  <script src="../Resources/Js/jquery.maskedinput.min.js" type="text/javascript"></script>
+  <script src="/frontend/library/jquery.maskedinput.min.js" type="text/javascript"></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
 

@@ -26,13 +26,13 @@
         <link href="vcr/1_9_0/Css/jquery.pnotify.default.css" rel="stylesheet" />
 
         <script src="/frontend/library/jquery-latest.min.js" type="text/javascript"></script>
-        <script src="vcr/1_9_0/Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
+        <script src="/frontend/library/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
         <script src="/frontend/library/chat.js" type="text/javascript"></script>
-        <script src="vcr/1_9_0/Js/json2.min.js" type="text/javascript"></script>
+        <script src="/frontend/library/json2.min.js" type="text/javascript"></script>
         <script src="/frontend/library/browser.js" type="text/javascript"></script>
-        <script src="vcr/1_9_0/Js/jquery.jplayer.min.js" type="text/javascript"></script>
-        <script src="vcr/1_9_0/Js/jquery.pnotify.min.js" type="text/javascript"></script>
-        <script src="vcr/1_9_0/Js/moment.min.js" type="text/javascript"></script>
+        <script src="/frontend/library/jquery.jplayer.min.js" type="text/javascript"></script>
+        <script src="/frontend/library/jquery.pnotify.min.js" type="text/javascript"></script>
+        <script src="/frontend/library/moment.min.js" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/Ts/ts.editor.js?1513012903" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/Ts/ts.wc.signalr.js" type="text/javascript"></script>
 
@@ -166,12 +166,12 @@
       </services>
     <scripts>
 
-          <asp:ScriptReference Path="vcr/1_9_0/Js/json2.js" />
-          <asp:ScriptReference Path="vcr/1_9_0/Js/jquery.layout.min.js" />
-          <asp:ScriptReference Path="vcr/1_9_0/Js/jquery.jgrowl_minimized.js" />
-          <asp:ScriptReference Path="vcr/1_9_0/Js/jquery.editlabel.js" />
-          <asp:ScriptReference Path="vcr/1_9_0/Js/jquery.ui.combobox.js" />
-          <asp:ScriptReference Path="vcr/1_9_0/Js/jquery.ui.timepicker.js" />
+          <asp:ScriptReference Path="/frontend/library/json2.js" />
+          <asp:ScriptReference Path="/frontend/library/jquery.layout.min.js" />
+          <asp:ScriptReference Path="/frontend/library/jquery.jgrowl_minimized.js" />
+          <asp:ScriptReference Path="/frontend/library/jquery.editlabel.js" />
+          <asp:ScriptReference Path="/frontend/library/jquery.ui.combobox.js" />
+          <asp:ScriptReference Path="/frontend/library/jquery.ui.timepicker.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.system.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.utils.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.cache.js" />

@@ -3,7 +3,7 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
   <script src="/frontend/library/jquery-latest.min.js" type="text/javascript"></script>
-  <script src="../Resources/Js/jquery.maskedinput.min.js" type="text/javascript"></script>
+  <script src="/frontend/library/jquery.maskedinput.min.js" type="text/javascript"></script>
   <script language="javascript" type="text/javascript">
     function OnClientItemsRequesting(sender, eventArgs) {
       var context = eventArgs.get_context();

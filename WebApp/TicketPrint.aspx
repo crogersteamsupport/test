@@ -6,7 +6,7 @@
   <title>Ticket Print Preview</title>
   <link href="vcr/1_7_9/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <script src="/frontend/library/jquery-latest.min.js" type="text/javascript"></script>
-  <script src="vcr/1_7_9/Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
+  <script src="/frontend/library/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
   <style type="text/css">
     .sectionDiv
     {
