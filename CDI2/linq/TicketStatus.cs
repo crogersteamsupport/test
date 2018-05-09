@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Linq.Mapping;
 
-namespace CDI2
+namespace TeamSupport.CDI
 {
     [Table(Name = "TicketStatuses")]
     class TicketStatus
@@ -15,6 +15,8 @@ namespace CDI2
         [Column(Storage = "_ticketStatusID", DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true)]
         public int TicketStatusID { get { return _ticketStatusID; } }
 
+        [Column]
+        public string Name;
         [Column]
         public bool IsClosed;
         [Column]

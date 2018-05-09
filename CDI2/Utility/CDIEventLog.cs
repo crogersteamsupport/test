@@ -5,7 +5,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace CDI2
+namespace TeamSupport.CDI
 {
     /// <summary>
     /// Send detailed logging to TeamSupport custom log
@@ -40,12 +40,13 @@ namespace CDI2
 
         public static void WriteEntry(string message, EventLogEntryType type = EventLogEntryType.Information)
         {
+            Debug.WriteLine(message);
             _eventLog.WriteEntry(message, type);
         }
 
         public static void WriteEntry(string message, Exception e)
         {
-            //Debugger.Break();
+            Debugger.Break();
             WriteEntry(message + e.ToString() + " ----- STACK: " + e.StackTrace.ToString(), EventLogEntryType.Error);
         }
     }

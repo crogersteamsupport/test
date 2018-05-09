@@ -1,33 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Linq;
 
-namespace CDI2
+namespace TeamSupport.CDI
 {
-    /// <summary>
-    /// Average data for IntervalData
-    /// </summary>
-    public class IntervalDataAverage
-    {
-        public double _ticketsCreated; // new (this interval)
-        public double _ticketsOpen;    // currently Open (since start)
-        public double _averageDaysOpen; // average of still open
-        public double _ticketsClosed;  // closed (this interval)
-        public double _averageDaysToClose;  // average time to close (this interval)
-
-        public IntervalDataAverage(List<IntervalData> organization)
-        {
-            _ticketsCreated = organization.Average(o => o._ticketsCreated);
-            _ticketsOpen = organization.Average(o => o._ticketsOpen);
-            _averageDaysOpen = organization.Average(o => o._averageDaysOpen);
-            _ticketsClosed = organization.Average(o => o._ticketsClosed);
-            _averageDaysToClose = organization.Average(o => o._averageDaysToClose);
-        }
-    }
-
     /// <summary>
     /// Keep the results for the analysis of closed tickets for the given time interval
     /// </summary>
@@ -36,65 +13,78 @@ namespace CDI2
         public DateTime _timeStamp; // date time for this data
 
         // new tickets
-        public int _ticketsCreated; // new (this interval)
-        public int _ticketsOpen;    // currently Open (since start)
-        public double _averageDaysOpen; // average of still open
+        public int _newCount; // new (this interval)
+        public int _openCount;    // currently Open (since start)
+        public double _medianDaysOpen; // median of currently open tickets (days)
 
         // closed tickets
-        public int _ticketsClosed;  // closed (this interval)
-        public double _averageDaysToClose;  // average time to close (this interval)
+        public int _closedCount;  // closed (this interval)
+        public double? _medianDaysToClose;  // average time to close (this interval)
+        public double? _averageActionCount;   // how many actions do the closed ticket have?
+        public double? _averageSentimentScore;
 
-        private double _cdi;    // CDI !!
+        public int? CDI { get; set; }    // CDI !!
 
-        static bool _headerWritten = false;
-        public void Write()
+        public IntervalData() { }
+
+        public IntervalData(DateTime nextDay, HashSet<TicketJoin> openTickets, HashSet<TicketJoin> closedTickets, int ticketsCreated)
         {
-            if (!_headerWritten)
-            {
-                Debug.WriteLine("Date\tNewTickets\tOpenCount\tAvgOpenTime(days)\tClosed\tAvgTimeToClose(days)\tCDI");
-                _headerWritten = true;
-            }
+            _timeStamp = nextDay;
+            _newCount = ticketsCreated;
+            _openCount = openTickets.Count;
+            _medianDaysOpen = openTickets.Count == 0 ? 0 : MedianTotalDaysOpen(openTickets).Value;
+            _closedCount = closedTickets.Count;
 
-            Debug.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}",
-                _timeStamp, _ticketsCreated, _ticketsOpen, _averageDaysOpen, _ticketsClosed, _averageDaysToClose, _cdi));
+            if (closedTickets.Count > 0)
+            {
+                _medianDaysToClose = MedianTotalDaysOpen(closedTickets);
+                _averageActionCount = closedTickets.Average(x => x.ActionsCount);
+                _averageSentimentScore = closedTickets.Average(x => x.TicketSentimentScore);
+            }
+        }
+
+        /// <summary>used by a normalized instance of Interval Data - See CDIPercentileStrategy</summary>
+        public void UpdateCDI()
+        {
+            HashSet<double> contribution = new HashSet<double> { _newCount, _openCount, _medianDaysOpen, (100 - _closedCount) };
+
+            if (_medianDaysToClose.HasValue)
+                contribution.Add(_medianDaysToClose.Value);
+
+            if (_averageActionCount.HasValue)
+                contribution.Add(_averageActionCount.Value);
+
+            if (_averageSentimentScore.HasValue)
+                contribution.Add(100 - _averageSentimentScore.Value / 10);  // [0, 1000] where low is in distress
+
+            CDI = (int)Math.Round(contribution.Average());
+        }
+
+        private double? MedianTotalDaysOpen(HashSet<TicketJoin> tickets)
+        {
+            if (tickets.Count == 0)
+                return null;
+
+            double[] totalDays = tickets.Select(ticket => ticket.TotalDaysOpen).ToArray();
+            Array.Sort(totalDays);
+            int centerIndex = totalDays.Length / 2;
+            double result = (totalDays.Length % 2 == 1) ? totalDays[centerIndex] : (totalDays[centerIndex - 1] + totalDays[centerIndex]) / 2;
+            return result;
+        }
+
+
+        public static void Write(List<IntervalData> intervals)
+        {
+            Debug.WriteLine("Date\tNew\tOpen\tMedianDaysOpen\tClosed\tMedianDaysToClose\tAvgActions\tAvgSentiment\tCDI");
+            foreach (IntervalData interval in intervals)
+                Debug.WriteLine(interval.ToString());
+
         }
 
         public override string ToString()
         {
-            return _timeStamp.ToString();
-        }
-
-        double Normalize(double numerator, double denominator)
-        {
-            if (denominator == 0)
-                return 0;
-            return numerator / denominator;
-        }
-
-        // are we above or below average?
-        enum Metric
-        {
-            Created,
-            Open,
-            DaysOpen,
-            Closed,
-            DaysToClose
-        }
-
-        /// <summary>
-        /// get a +-% from the average
-        /// </summary>
-        /// <param name="average"></param>
-        public void CalculateCDI(IntervalDataAverage average)
-        {
-            double[] metrics = new double[(int)Metric.DaysToClose + 1];
-            metrics[(int)Metric.Created] = Normalize(_ticketsCreated, average._ticketsCreated);
-            metrics[(int)Metric.Open] = Normalize(_ticketsOpen, average._ticketsOpen);
-            metrics[(int)Metric.DaysOpen] = Normalize(_averageDaysOpen, average._averageDaysOpen);
-            metrics[(int)Metric.Closed] = Normalize(_ticketsClosed, average._ticketsClosed);
-            metrics[(int)Metric.DaysToClose] = Normalize(_averageDaysToClose, average._averageDaysToClose);
-
-            _cdi = metrics.Average();
+            return String.Format("{0}\t{1}\t{2}\t{3:0.00}\t{4}\t{5:0.00}\t{6:0.00}\t{7:0.00}\t{8}",
+                _timeStamp.ToShortDateString(), _newCount, _openCount, _medianDaysOpen, _closedCount, _medianDaysToClose, _averageActionCount, _averageSentimentScore, CDI);
         }
     }
 
