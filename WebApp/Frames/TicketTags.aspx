@@ -13,7 +13,7 @@
   <script src="../js_5/ts.system.old.js" type="text/javascript"></script>
   <script src="../js_5/ts.data.tickets.js" type="text/javascript"></script>
   <script src="/frontend/library/json2.js" type="text/javascript"></script>
-  <script src="/frontend/library/jquery.layout.min.js" type="text/javascript"></script>
+  <script src="/frontend/library/jquery.layout.1.3.0.min.js" type="text/javascript"></script>
 
   <style type="text/css">
 
