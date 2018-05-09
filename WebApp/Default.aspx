@@ -179,7 +179,7 @@
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.ui.menutree.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.pages.main.js?1513637540" />
           <asp:ScriptReference Path="https://js.pusher.com/3.1/pusher.min.js" />
-          <asp:ScriptReference Path="js_5/dialogs.js" />
+          <asp:ScriptReference Path="/frontend/library/dialogs.js" />
 
       </scripts>
     <compositescript scriptmode="Release">
