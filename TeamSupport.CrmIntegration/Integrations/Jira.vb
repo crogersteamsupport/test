@@ -800,10 +800,10 @@ Namespace TeamSupport
                             End If
                         End If
                     ElseIf cRMLinkField.TSFieldName IsNot Nothing Then
-                        If ticket.Row(cRMLinkField.TSFieldName) IsNot Nothing AndAlso Not IsDBNull(ticket.Row(cRMLinkField.TSFieldName)) Then
-                            value = GetDataLineValue(fieldKey, field.Value("schema")("custom"), ticket.Row(cRMLinkField.TSFieldName))
+					If ticket.Row(cRMLinkField.TSFieldName) IsNot Nothing Then
+							value = GetDataLineValue(fieldKey, field.Value("schema")("custom"), ticket.Row(cRMLinkField.TSFieldName).ToString()) '//vv
                         Else
-                            notIncludedMessage = GetFieldNotIncludedMessage(ticket.TicketID, fieldName, ticket.Row(cRMLinkField.TSFieldName) Is Nothing OrElse IsDBNull(ticket.Row(cRMLinkField.TSFieldName)))
+						notIncludedMessage = GetFieldNotIncludedMessage(ticket.TicketID, fieldName, ticket.Row(cRMLinkField.TSFieldName) Is Nothing)
                         End If
                     Else
                         AddLog("Field '" + fieldName + "' was not included because custom field " +
@@ -1257,7 +1257,11 @@ Namespace TeamSupport
                         result = """originalEstimate"":""" + fieldValue + """"
                     Case "remainingestimate"
                         result = """remainingEstimate"":""" + fieldValue + """"
-                    Case Else
+					Case "duedate"
+						'Jira date format for duedate: yyyy-MM-dd
+						Dim dueDateFull As DateTime = Convert.ToDateTime(fieldValue)
+						result = """" + dueDateFull.ToString("yyyy-MM-dd") + """"
+					Case Else
                         result = """" + fieldValue + """"
                         If fieldType IsNot Nothing Then
                             Dim fieldTypeString = fieldType.ToString()
