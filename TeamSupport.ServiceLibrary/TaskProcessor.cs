@@ -182,6 +182,8 @@ namespace TeamSupport.ServiceLibrary
                     return;
                 }
 
+                if (Emails.IsEmailDisabled(LoginUser, owner.UserID, "Tasks")) return;
+
                 MailMessage message = EmailTemplates.GetTaskModified(LoginUser, UsersView.GetUsersViewItem(LoginUser, modifierID), UsersView.GetUsersViewItem(LoginUser, (int)task.UserID), task);
                 message.To.Add(GetMailAddress(owner.Email, owner.FirstLastName));
                 //message.Subject = message.Subject + " [pvt]";
@@ -244,6 +246,8 @@ namespace TeamSupport.ServiceLibrary
                     return;
                 }
 
+                if (Emails.IsEmailDisabled(LoginUser, owner.UserID, "Tasks")) return;
+
                 MailMessage message = EmailTemplates.GetTaskAssigned(LoginUser, UsersView.GetUsersViewItem(LoginUser, modifierID), UsersView.GetUsersViewItem(LoginUser, (int)task.UserID), task);
                 message.To.Add(GetMailAddress(owner.Email, owner.FirstLastName));
                 //message.Subject = message.Subject + " [pvt]";
@@ -257,6 +261,7 @@ namespace TeamSupport.ServiceLibrary
                 //AddMessage(taskOrganization, "Ticket Update Request [" + ticket.TicketNumber.ToString() + "]", message, emailReplyToAddress);
                 Emails.AddEmail(LoginUser, task.OrganizationID, null, message.Subject, message);
                 Logs.WriteEvent("Message queued");
+            
             }
             catch (Exception ex)
             {
@@ -302,15 +307,16 @@ namespace TeamSupport.ServiceLibrary
                 User owner = Users.GetUser(LoginUser, (int)task.UserID);
 
                 MailMessage message = EmailTemplates.GetTaskComplete(LoginUser, UsersView.GetUsersViewItem(LoginUser, modifierID), UsersView.GetUsersViewItem(LoginUser, (int)task.UserID), task);
-                if (owner.UserID == modifier.UserID)
+                if (owner.UserID == modifier.UserID && !Emails.IsEmailDisabled(LoginUser, (int)task.CreatorID, "Tasks"))
                 {
                     User creator = Users.GetUser(LoginUser, (int)task.CreatorID);
                     message.To.Add(GetMailAddress(creator.Email, creator.FirstLastName));
                 }
-                else
+                else if (!Emails.IsEmailDisabled(LoginUser, owner.UserID, "Tasks"))
                 {
                     message.To.Add(GetMailAddress(owner.Email, owner.FirstLastName));
                 }
+                if (message.To.Count < 1) return;
                 //message.Subject = message.Subject + " [pvt]";
                 //EmailTemplates.ReplaceEmailRecipientParameters(LoginUser, message, ticket, owner.UserID, owner.OnlyEmailAfterHours);
                 EmailTemplates.ReplaceMailAddressParameters(message);
@@ -367,6 +373,8 @@ namespace TeamSupport.ServiceLibrary
                 {
                     owner = UsersView.GetUsersViewItem(LoginUser, (int)task.UserID);
                 }
+
+                if (Emails.IsEmailDisabled(LoginUser, oldUser.UserID, "Tasks")) return;
 
                 MailMessage message = EmailTemplates.GetTaskOldUser(LoginUser, UsersView.GetUsersViewItem(LoginUser, modifierID), UsersView.GetUsersViewItem(LoginUser, (int)oldUserID), owner, task);
                 //if (oldUser.UserID == modifier.UserID)
