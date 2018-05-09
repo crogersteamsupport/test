@@ -5,17 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
-namespace CDI2
+namespace TeamSupport.CDI
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            CDI cdi = new CDI(365, TimeSpan.FromDays(7), true);
+            CDI2 cdi = new CDI2(TimeSpan.FromDays(7), 5 * 52);
             cdi.Run();
-            long ellapsed = stopwatch.ElapsedMilliseconds;
         }
     }
 }

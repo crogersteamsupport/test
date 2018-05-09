@@ -9,111 +9,83 @@ using System.Data.SqlClient;
 using System.Data.Linq;
 using System.IO;
 
-namespace CDI2
+namespace TeamSupport.CDI
 {
     /// <summary>
-    /// Load the tickets from the database
+    /// Load the tickets from the database from AnalysisInterval StartDate to EndDate
+    /// * ignore tickets closed in less than a second
+    /// * ignore tickets imported from SalesForce
+    /// * ignore ExcludeFromCDI ticket types and ticket statuses
     /// </summary>
     class TicketReader
     {
-        public int DaysToLoad { get; private set; }
-        private Ticket[] _tickets;  // tickets for organization in the last year
+        DateRange _dateRange;
+        public TicketJoin[] AllTickets { get; private set; }
 
-        const int _TicketBlockSize = 500000; // load in blocks?
-
-        /// <summary> Constructor </summary>
-        /// <param name="daysToLoad">How many days prior to today do we load?</param>
-        public TicketReader(int daysToLoad)
+        /// <summary>Time frame to analyze the ticket data</summary>
+        /// <param name="analysisInterval"></param>
+        public TicketReader(DateRange analysisInterval)
         {
-            DaysToLoad = daysToLoad;
+            _dateRange = analysisInterval;
         }
 
-        /// <summary> Load the tickets since the start date </summary>
-        public Ticket[] Read()
+        /// <summary> 
+        /// Load the tickets since the start date 
+        /// 
+        /// Verified counts by the following query:
+        /// SELECT DISTINCT Count([TicketID])
+        ///  FROM [dbo].[Tickets] as t
+        ///  JOIN [dbo].[TicketTypes] as tt on t.TicketTypeID=tt.TicketTypeID
+        ///  JOIN [dbo].[TicketStatuses] as ts on t.TicketStatusID=ts.TicketStatusID
+        ///  WHERE t.DateCreated > '2013-04-29 00:00:00' AND (t.TicketSource != 'SalesForce') AND
+        ///  ((ts.IsClosed=0) OR (t.[DateClosed] > t.[DateCreated]))
+        /// </summary>
+        public void LoadAllTickets()
         {
-            if (_tickets != null)
-                return _tickets;
-
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-
             try
             {
                 string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (DataContext db = new DataContext(connection))
                 {
-                    _tickets = LoadFromDatabase(db);
+                    // define the tables we will reference in the query
+                    // - each table class only contains the fields we care about
+                    Table<Ticket> ticketsTable = db.GetTable<Ticket>();
+                    Table<TicketStatus> ticketStatusesTable = db.GetTable<TicketStatus>();
+                    Table<TicketType> ticketTypesTable = db.GetTable<TicketType>();
+                    Table<Action> actionsTable = db.GetTable<Action>();
+                    Table<TicketSentiment> ticketSentimentsTable = db.GetTable<TicketSentiment>();
+
+                    var query = (from t in ticketsTable
+                                 join tt in ticketTypesTable on t.TicketTypeID equals tt.TicketTypeID
+                                 join ts in ticketStatusesTable on t.TicketStatusID equals ts.TicketStatusID
+                                 where (t.DateCreated > _dateRange.StartDate) &&
+                                     (!ts.IsClosed || (t.DateClosed.Value > t.DateCreated)) &&
+                                     (t.TicketSource != "SalesForce") &&    // ignore imported tickets
+                                     (!tt.ExcludeFromCDI) &&
+                                     (!ts.ExcludeFromCDI)
+                                 select new TicketJoin()
+                                 {
+                                     //TicketID = t.TicketID,
+                                     //TicketStatusName = ts.Name,
+                                     //TicketTypeName = tt.Name,
+                                     OrganizationID = t.OrganizationID,
+                                     DateClosed = t.DateClosed,
+                                     //TicketSource = t.TicketSource,
+                                     DateCreated = t.DateCreated,
+                                     IsClosed = ts.IsClosed,
+                                     ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count(),
+                                     TicketSentimentScore = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.TicketSentimentScore).Min()  // for some reason Min is faster than First()
+                                 });
+
+                    // run the query
+                    AllTickets = query.ToArray();
                 }
             }
             catch (Exception e)
             {
                 CDIEventLog.WriteEntry("Ticket Read failed", e);
             }
-
-            long ellapsed = stopwatch.ElapsedMilliseconds;
-
-            return _tickets;
-        }
-
-        public Ticket[] Read(int organizationID)
-        {
-            Ticket[] tickets = Read();
-            var query = tickets.Where(t => t.OrganizationID == organizationID).OrderBy(t => t.DateCreated);
-            return query.ToArray();
-        }
-
-        public int[] ReadOrganizationIDs()
-        {
-            var query = _tickets.Select(t => t.OrganizationID).Distinct();
-            return query.ToArray();
-        }
-
-        /// <summary> big data - Load the tickets in pages </summary>
-        /// <param name="startDate"></param>
-        /// <param name="db"></param>
-        Ticket[] LoadFromDatabase(DataContext db)
-        {
-            Ticket[] tickets = null;
-
-            // tables
-            Table<Ticket> ticketTable = db.GetTable<Ticket>();
-            Table<TicketStatus> ticketStatusTable = db.GetTable<TicketStatus>();
-            Table<TicketType> ticketTypeTable = db.GetTable<TicketType>();
-
-            // loop through loading blocks
-            DateTime now = DateTime.UtcNow;
-            DateTime startDate = now.AddDays(-1 * DaysToLoad);
-            while (startDate < now)
-            {
-                var query = (from t in ticketTable
-                             join tt in ticketTypeTable on t.TicketTypeID equals tt.TicketTypeID
-                             join ts in ticketStatusTable on t.TicketStatusID equals ts.TicketStatusID
-                             where (t.DateCreated > startDate) &&
-                                 (ts.IsClosed == true) &&   // only closed tickets
-                                 (t.DateClosed.HasValue) &&
-                                 (t.DateCreated != t.DateClosed.Value) &&   // valid DateClosed
-                                 (!tt.ExcludeFromCDI) &&
-                                 (!ts.ExcludeFromCDI)
-                             orderby t.DateCreated
-                             select t).Take(_TicketBlockSize);
-
-                // execute the query into the array
-                Ticket[] queryResults = query.ToArray();
-                if (queryResults.Length == 0)
-                    break;  // done - no more records
-
-                if (tickets == null)
-                    tickets = queryResults;    // first call
-                else
-                {
-                    int previousLength = tickets.Length;
-                    Array.Resize(ref tickets, tickets.Length + queryResults.Length);
-                    queryResults.CopyTo(tickets, previousLength);
-                }
-                startDate = tickets[tickets.Length - 1].DateCreated;
-            }
-            return tickets;
         }
     }
 }

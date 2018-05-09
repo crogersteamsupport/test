@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Linq.Mapping;
 
-namespace CDI2
+namespace TeamSupport.CDI
 {
-    enum TimeScale
+    public enum TimeScale
     {
         Minutes,
         Hours,
@@ -32,48 +32,12 @@ namespace CDI2
         [Column]
         public DateTime? DateClosed;
         [Column]
+        public string TicketSource;
+        [Column]
         public DateTime DateCreated;
 #pragma warning restore CS0649
 
-        public int CompareTo(Ticket other)
-        {
-            return DateCreated.CompareTo(other.DateCreated);
-        }
-
-        public TimeSpan TimeOpen { get { return DateClosed.Value - DateCreated; } }
-
-        // default to days
-        public double TotalDaysOpen {  get { return TimeOpen.TotalDays; } }
-
-        public double ScaledTimeOpen(TimeScale scale)
-        {
-            TimeSpan timeSpan = TimeOpen;
-            double result;
-            switch(scale)
-            {
-                case TimeScale.Minutes:
-                    result = timeSpan.TotalMinutes;
-                    break;
-                case TimeScale.Hours:
-                    result = timeSpan.TotalHours;
-                    break;
-                case TimeScale.Days:
-                    result = timeSpan.TotalDays;
-                    break;
-                case TimeScale.Weeks:
-                    result = timeSpan.TotalDays / 7;
-                    break;
-                default:
-                    result = Double.PositiveInfinity;
-                    break;
-            }
-
-            return result;
-        }
-
-        public override string ToString()
-        {
-            return DateCreated.ToShortDateString();
-        }
+        public int CompareTo(Ticket other) { return DateCreated.CompareTo(other.DateCreated); }
+        public override string ToString() { return DateCreated.ToShortDateString(); }
     }
 }

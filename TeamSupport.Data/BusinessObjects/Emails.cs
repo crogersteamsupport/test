@@ -128,6 +128,14 @@ namespace TeamSupport.Data
       }
     }
 
+    public static bool IsEmailDisabled(LoginUser loginUser, int userID, string setting)
+    {
+        bool doDisableEmails = false;
+        bool.TryParse(UserSettings.ReadString(loginUser, userID, setting, "False", "Email"), out doDisableEmails);
+        return doDisableEmails;
+    }
+
+
     public static Email GetNextWaiting(LoginUser loginUser, string processID)
     {
       Emails emails = new Emails(loginUser);

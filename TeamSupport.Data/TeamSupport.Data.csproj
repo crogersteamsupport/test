@@ -340,9 +340,9 @@
     <Compile Include="BusinessObjects\TicketTemplates.cs" />
     <Compile Include="BusinessObjects\TicketTimeLineView.cs" />
     <Compile Include="BusinessObjects\TicketTypesView.cs" />
+    <Compile Include="BusinessObjects\TicketUserAssignment.cs" />
     <Compile Include="BusinessObjects\TokStorage.cs" />
     <Compile Include="BusinessObjects\Translate.cs" />
-    <Compile Include="BusinessObjects\UserAssignmentHistory.cs" />
     <Compile Include="BusinessObjects\UserDevices.cs" />
     <Compile Include="BusinessObjects\UserNoteSettings.cs" />
     <Compile Include="BusinessObjects\UserProducts.cs" />
@@ -357,6 +357,8 @@
     <Compile Include="Classes\AccountClone.cs" />
     <Compile Include="Classes\AttachmentPath.cs" />
     <Compile Include="Classes\CheckSums.cs" />
+    <Compile Include="Classes\DataNamesAttribute.cs" />
+    <Compile Include="Classes\DataNamesMapper.cs" />
     <Compile Include="Classes\HtmlUtility.cs" />
     <Compile Include="Classes\IndexSearch.cs" />
     <Compile Include="Classes\LogFile.cs" />
