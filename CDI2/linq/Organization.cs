@@ -35,11 +35,12 @@ namespace TeamSupport.CDI.linq
         //public int CustDisIndex;
 #pragma warning restore CS0649
 
-        public static Organization[] LoadOrganizations1(int[] orgs)
+        public static Dictionary<int, HashSet<int>> LoadCustomerOrganizations(int[] orgs)
         {
-            Organization[] organizations = null;
+            Dictionary<int, HashSet<int>> allOrganizations = null;
             try
             {
+                Organization[] organizations = null;
                 string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (DataContext db = new DataContext(connection))
@@ -48,7 +49,7 @@ namespace TeamSupport.CDI.linq
                     organizations = (from o in OrganizationsTable select o).ToArray();
                 }
 
-                Dictionary<int, HashSet<int>> allOrganizations = new Dictionary<int, HashSet<int>>();
+                allOrganizations = new Dictionary<int, HashSet<int>>();
                 Organization[] customers = organizations.Where(o => !o.ParentID.HasValue || (o.ParentID.Value == 1)).ToArray();
                 foreach (Organization og in customers)
                     allOrganizations[og.OrganizationID] = new HashSet<int>();
@@ -65,7 +66,7 @@ namespace TeamSupport.CDI.linq
                 CDIEventLog.WriteEntry("Organization Read failed", e);
             }
 
-            return organizations;
+            return allOrganizations;
         }
 
     }

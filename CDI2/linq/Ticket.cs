@@ -27,6 +27,8 @@ namespace TeamSupport.CDI.linq
         public string TicketSource;
         [Column]
         public DateTime DateCreated;
+        [Column]
+        public int CreatorID;
 #pragma warning restore CS0649
 
         public int CompareTo(Ticket other) { return DateCreated.CompareTo(other.DateCreated); }

@@ -56,6 +56,7 @@ namespace TeamSupport.CDI
                     Table<TicketType> ticketTypesTable = db.GetTable<TicketType>();
                     Table<TeamSupport.CDI.linq.Action> actionsTable = db.GetTable<TeamSupport.CDI.linq.Action>();
                     Table<TicketSentiment> ticketSentimentsTable = db.GetTable<TicketSentiment>();
+                    Table<User> userTable = db.GetTable<User>();
 
                     var query = (from t in ticketsTable
                                  join tt in ticketTypesTable on t.TicketTypeID equals tt.TicketTypeID
@@ -71,17 +72,19 @@ namespace TeamSupport.CDI
                                      //TicketID = t.TicketID,
                                      //TicketStatusName = ts.Name,
                                      //TicketTypeName = tt.Name,
-                                     OrganizationID = t.OrganizationID,
+                                     CustomerID = t.OrganizationID,
                                      DateClosed = t.DateClosed,
                                      //TicketSource = t.TicketSource,
                                      DateCreated = t.DateCreated,
                                      IsClosed = ts.IsClosed,
                                      ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count(),
-                                     TicketSentimentScore = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.TicketSentimentScore).Min()  // for some reason Min is faster than First()
+                                     TicketSentimentScore = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.TicketSentimentScore).Min(),  // for some reason Min is faster than First()
+                                     ClientID = (from u in userTable where u.UserID == t.CreatorID select u.OrganizationID).First()
                                  });
 
                     // run the query
                     AllTickets = query.ToArray();
+                    //TicketJoin[] creators = AllTickets.Where(t => t.ClientID.HasValue && (t.CustomerID != t.ClientID.Value) && t.ActionsCount > 0).ToArray();
                 }
             }
             catch (Exception e)

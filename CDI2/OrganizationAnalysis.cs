@@ -21,8 +21,8 @@ namespace TeamSupport.CDI
     /// </summary>
     class OrganizationAnalysis
     {
-        DateRange _dateRange;
-        TicketJoin[] _tickets;
+        public DateRange _dateRange { get; private set; }
+        public TicketJoin[] Tickets { get; private set; }
         public int OrganizationID { get; private set; }
         IntervalStrategy _intervalStrategy;
         public List<IntervalData> Intervals { get; private set; }
@@ -41,12 +41,12 @@ namespace TeamSupport.CDI
                 _dateRange = analysisInterval;
 
                 // pull out the range for this organization
-                _tickets = new TicketJoin[endIndex - startIndex];
-                Array.Copy(allTickets, startIndex, _tickets, 0, _tickets.Length);
-                OrganizationID = _tickets[0].OrganizationID;
+                Tickets = new TicketJoin[endIndex - startIndex];
+                Array.Copy(allTickets, startIndex, Tickets, 0, Tickets.Length);
+                OrganizationID = Tickets[0].CustomerID;
 
                 // collect metrics for each interval
-                _intervalStrategy = new IntervalStrategy(_tickets);
+                _intervalStrategy = new IntervalStrategy(Tickets);
                 Intervals = _intervalStrategy.GenerateIntervalData(_dateRange);
             }
             catch(Exception ex)
@@ -57,7 +57,7 @@ namespace TeamSupport.CDI
 
         public override string ToString()
         {
-            return String.Format("{0} {1}({2})", OrganizationID, Intervals.Count, _tickets.Length);
+            return String.Format("{0} {1}({2})", OrganizationID, Intervals.Count, Tickets.Length);
         }
 
         public string CDIValuesToString()

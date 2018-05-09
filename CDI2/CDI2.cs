@@ -18,8 +18,7 @@ namespace TeamSupport.CDI
     {
         DateRange _dateRange;
         TicketReader _ticketReader;    // cache the tickets for analysis
-        HashSet<OrganizationAnalysis> _organizations;  // raw analysis by organization
-        HashSet<Customer> _customers;
+        Dictionary<int, Customer> _customers;  // raw analysis by organization
 
         /// <summary>
         /// Constructor
@@ -34,15 +33,10 @@ namespace TeamSupport.CDI
 
         public void Run()
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
+            Stopwatch totalTimer = new Stopwatch();
+            totalTimer.Start();
             CDIEventLog.WriteEntry("CDI Update started...");
-            RunHelper();
-            CDIEventLog.WriteEntry(String.Format("CDI Update complete. {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
-        }
 
-        public void RunHelper()
-        {
             // load all the tickets
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -50,44 +44,67 @@ namespace TeamSupport.CDI
             CDIEventLog.WriteEntry(String.Format("{0} Tickets loaded {1} in {2:0.00} sec",
                 _ticketReader.AllTickets.Length, _dateRange, stopwatch.ElapsedMilliseconds / 1000));
 
-            int[] orgs = _ticketReader.AllTickets.Select(t => t.OrganizationID).Distinct().ToArray();
-
-            Organization[] organizations = Organization.LoadOrganizations1(orgs);
-
             // analyze by organization
             stopwatch.Restart();
-            LoadOrganizations();
+            AnalyzeCustomers();
             CDIEventLog.WriteEntry(String.Format("Organization analysis completed in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
+
+            // Do the dirty work
+            CalculateCustomerCDI();
 
             // Store the results
             //stopwatch.Restart();
             //WriteCdiByOrganization();
             //CDIEventLog.WriteEntry(String.Format("Results saved. {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
+            CDIEventLog.WriteEntry(String.Format("CDI Update complete. {0:0.00} sec", totalTimer.ElapsedMilliseconds / 1000));
         }
 
-        void LoadOrganizations()
+        void AnalyzeCustomers()
         {
             TicketJoin[] allTickets = _ticketReader.AllTickets;
-            Array.Sort(allTickets, (lhs, rhs) => lhs.OrganizationID.CompareTo(rhs.OrganizationID));
-            _organizations = new HashSet<OrganizationAnalysis>();
+            Array.Sort(allTickets, (lhs, rhs) => lhs.CustomerID.CompareTo(rhs.CustomerID));
+            _customers = new Dictionary<int, Customer>();
 
             // spin through each organization
             int startIndex = 0;
-            int startId = allTickets[startIndex].OrganizationID;
+            int startId = allTickets[startIndex].CustomerID;
             for (int i = 1; i < allTickets.Length; ++i)
             {
-                if(allTickets[i].OrganizationID != startId)
+                if(allTickets[i].CustomerID != startId)
                 {
-                    _organizations.Add(new OrganizationAnalysis(_dateRange, allTickets, startIndex, i));
+                    _customers[startId] = new Customer(new OrganizationAnalysis(_dateRange, allTickets, startIndex, i));
                     startIndex = i;
-                    startId = allTickets[startIndex].OrganizationID;
+                    startId = allTickets[startIndex].CustomerID;
                 }
             }
 
-            _organizations.Add(new OrganizationAnalysis(_dateRange, allTickets, startIndex, allTickets.Length));
+            _customers[startId] = new Customer(new OrganizationAnalysis(_dateRange, allTickets, startIndex, allTickets.Length));
+        }
 
-            foreach (OrganizationAnalysis organization in _organizations)
-                organization.InvokeCDIStrategy();
+        void CalculateCustomerCDI()
+        {
+            //// construct customers and their clients
+            //int[] orgs = _ticketReader.AllTickets.Select(t => t.CustomerID).Distinct().ToArray();
+            //Dictionary<int, HashSet<int>> organizations = Organization.LoadCustomerOrganizations(orgs);
+
+            //foreach(KeyValuePair<int, HashSet<int>> pair in organizations)
+            //{
+            //    int customerID = pair.Key;
+            //    if (!_organizations.ContainsKey(customerID))
+            //        continue;
+
+            //    Customer customer = new Customer(_organizations[customerID]);
+            //    customer.InvokeCDIStrategy();
+            //    a_customers.Add(customer);
+
+            //    foreach (int clientId in pair.Value)
+            //    {
+            //        if (!_organizations.ContainsKey(clientId))
+            //            continue;
+            //        customer.AddClient(new Client(_organizations[clientId]));
+            //    }
+            //}
+
         }
 
         /// <summary>
@@ -103,13 +120,8 @@ namespace TeamSupport.CDI
             Debug.WriteLine(str.ToString());
 
             // by organization
-            foreach (OrganizationAnalysis organization in _organizations)
-                Debug.WriteLine(organization.CDIValuesToString());
-        }
-
-        public void Customers()
-        {
-            _customers = new HashSet<Customer>();
+            //foreach (OrganizationAnalysis organization in _organizations)
+            //    Debug.WriteLine(organization.CDIValuesToString());
         }
     }
 }

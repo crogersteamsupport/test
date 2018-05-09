@@ -14,5 +14,10 @@ namespace TeamSupport.CDI
         {
             _organizationAnalysis = organizationAnalysis;
         }
+
+        public override string ToString()
+        {
+            return _organizationAnalysis.ToString();
+        }
     }
 }
