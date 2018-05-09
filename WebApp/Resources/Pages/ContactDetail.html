@@ -247,7 +247,7 @@
                                                     </div>
                                                 </div>
                                                 <input type="hidden" id="fieldNoteID" value="-1" />
-                                                <button id="btnNotesSave" class="btn btn-primary col-md-offset-1">Save Note</button>
+                                                <button id="btnNotesSave" class="btn btn-primary col-md-offset-1">Save Activity</button>
                                                 <button id="btnNotesCancel" class="btn btn-default">Cancel</button>
                                             </form>
                                         </div>
@@ -260,9 +260,27 @@
                                     <button id="noteToggle" class="btn btn-primary">Add Activity</button>
                                 </div>
                                 <div class="box-content">
+                                    <strong>User Activity</strong>
                                     <div class="row note-list">
                                         <div class="col-md-12">
                                             <table class="table table-hover" id="tblNotes">
+                                                <thead>
+                                                <th></th>
+                                                <th></th>
+                                                <th>Title</th>
+                                                <th>Author</th>
+                                                <th>Date Written</th>
+                                                <th class="productFamilyColumn" style="display: none;">Product Line</th>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <strong>Company Activity</strong>
+                                    <div class="row note-list">
+                                        <div class="col-md-12">
+                                            <table class="table table-hover" id="tblNotesAdditional">
                                                 <thead>
                                                 <th></th>
                                                 <th></th>
