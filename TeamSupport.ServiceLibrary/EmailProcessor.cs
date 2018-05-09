@@ -1056,8 +1056,10 @@ namespace TeamSupport.ServiceLibrary
 		{
 			try
 			{
-				User sender = Users.GetUser(LoginUser, creatorID);
-				User receiver = Users.GetUser(LoginUser, receiverID);
+                if (Emails.IsEmailDisabled(LoginUser, receiverID, "Applause")) return;
+
+                User receiver = Users.GetUser(LoginUser, receiverID);
+                User sender = Users.GetUser(LoginUser, creatorID);
 				Ticket ticket = Tickets.GetTicket(LoginUser, ticketID);
 				MailMessage message = EmailTemplates.GetReaction(LoginUser, sender, receiver, ticket.GetTicketView(), hostName);
 

@@ -828,43 +828,17 @@ ORDER BY cf.Position";
         {
             if (value == null) value = "";
             value = value.Trim();
-            SqlCommand command = new SqlCommand();
-            command.CommandText = @"
-IF EXISTS (SELECT * FROM CustomValues WHERE RefID = @RefID AND CustomFieldID=@CustomFieldID)
-BEGIN
-  UPDATE CustomValues SET CustomValue = @CustomValue, OrganizationID = @OrganizationID WHERE RefID = @RefID AND CustomFieldID=@CustomFieldID
-END
-ELSE
-BEGIN
-  INSERT INTO CustomValues
-           ([CustomFieldID]
-           ,[RefID]
-           ,[CustomValue]
-           ,[DateCreated]
-           ,[DateModified]
-           ,[CreatorID]
-           ,[ModifierID]
-			,OrganizationID)
-     VALUES
-           (@CustomFieldID
-           ,@RefID
-           ,@CustomValue
-           ,GETUTCDATE()
-           ,GETUTCDATE()
-           ,-1
-           ,-1
-			,@OrganizationID)
-END";
 
-            command.Parameters.AddWithValue("CustomFieldID", customFieldID);
-            command.Parameters.AddWithValue("RefID", refID);
-            command.Parameters.AddWithValue("CustomValue", value);
-            command.Parameters.AddWithValue("OrganizationID", loginUser.OrganizationID);
-
-            SqlExecutor.ExecuteNonQuery(loginUser, command);
-
-
-
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "uspSetCustomValue";
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@CustomFieldID", customFieldID);
+                command.Parameters.AddWithValue("@RefID", refID);
+                command.Parameters.AddWithValue("@CustomValue", value);
+                command.Parameters.AddWithValue("@ModifierID", loginUser.UserID);
+                SqlExecutor.ExecuteNonQuery(loginUser, command);
+            }
         }
 
         public static void UpdateByAPIFieldName(LoginUser loginUser, CustomFields customFields, int refID, string apiFieldName, string value)

@@ -56,18 +56,23 @@ namespace TSWebServices
                 LoginUser loginUser = LoginUser.Anonymous;
                 User user = null;
                 Organization organization = null;
-
-                _skipVerification = false;
                 result = IsValid(loginUser, email, password, organizationId, ref user, ref organization);
 
                 if (result.Result == LoginResult.Success)
                 {
 
+                    // DEVICE VERIFICATION // TRUE ALLOWS BYPASS.
                     UserDevices devices = new UserDevices(loginUser);
                     devices.LoadByUserIDAndDeviceID(user.UserID, GetDeviceID());
-                    _skipVerification = !devices.IsEmpty && devices[0].IsActivated;
+                    if (devices.IsEmpty) {
+                        _skipVerification = false;
+                    } else if (devices[0].IsActivated) {
+                        _skipVerification = true;
+                    } else {
+                        _skipVerification = false;
+                    }
 
-                    if (organization.TwoStepVerificationEnabled && verificationRequired && !_skipVerification)
+                    if (organization.TwoStepVerificationEnabled && verificationRequired && _skipVerification)
                     {
                         string userVerificationPhoneNumber = user.verificationPhoneNumber;
 
