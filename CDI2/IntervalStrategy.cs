@@ -59,19 +59,20 @@ namespace TeamSupport.CDI
                 HashSet<TicketJoin> intervalClosedTickets = new HashSet<TicketJoin>();  // tickets closed in that time interval
                 int newTicketsCount = 0;
 
-                // spin through all the create/close times and keep a running tally
+                // Complete list of all the ticket open and close times
                 List<Tuple<DateTime, TicketJoin>> chronological = GetAsChronological();
-                DateTime nextInterval = dateRange.StartDate + dateRange.IntervalTimeSpan;
 
-                // pad while we have no data
+                // move to the first interval where we have data
+                DateTime nextInterval = dateRange.StartDate + dateRange.IntervalTimeSpan;
                 while (nextInterval < chronological[0].Item1)
                     nextInterval += dateRange.IntervalTimeSpan;
 
+                // walk through all the ticket open/close and keep the running tally for each interval
                 foreach (Tuple<DateTime, TicketJoin> pair in chronological)
                 {
                     if (pair.Item1 > nextInterval)
                     {
-                        // sample the data at this time
+                        // snapshot of the data at this time
                         results.Add(new IntervalData(nextInterval, currentlyOpenTickets, intervalClosedTickets, newTicketsCount));
                         intervalClosedTickets.Clear();
                         newTicketsCount = 0;

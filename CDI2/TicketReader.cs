@@ -8,6 +8,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Data.Linq;
 using System.IO;
+using TeamSupport.CDI.linq;
 
 namespace TeamSupport.CDI
 {
@@ -53,7 +54,7 @@ namespace TeamSupport.CDI
                     Table<Ticket> ticketsTable = db.GetTable<Ticket>();
                     Table<TicketStatus> ticketStatusesTable = db.GetTable<TicketStatus>();
                     Table<TicketType> ticketTypesTable = db.GetTable<TicketType>();
-                    Table<Action> actionsTable = db.GetTable<Action>();
+                    Table<TeamSupport.CDI.linq.Action> actionsTable = db.GetTable<TeamSupport.CDI.linq.Action>();
                     Table<TicketSentiment> ticketSentimentsTable = db.GetTable<TicketSentiment>();
 
                     var query = (from t in ticketsTable
@@ -62,6 +63,7 @@ namespace TeamSupport.CDI
                                  where (t.DateCreated > _dateRange.StartDate) &&
                                      (!ts.IsClosed || (t.DateClosed.Value > t.DateCreated)) &&
                                      (t.TicketSource != "SalesForce") &&    // ignore imported tickets
+                                     (t.OrganizationID == 1078) &&
                                      (!tt.ExcludeFromCDI) &&
                                      (!ts.ExcludeFromCDI)
                                  select new TicketJoin()

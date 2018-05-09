@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using TeamSupport.CDI.linq;
 
 namespace TeamSupport.CDI
 {
@@ -17,7 +18,8 @@ namespace TeamSupport.CDI
     {
         DateRange _dateRange;
         TicketReader _ticketReader;    // cache the tickets for analysis
-        HashSet<Organization> _organizations;  // raw analysis by organization
+        HashSet<OrganizationAnalysis> _organizations;  // raw analysis by organization
+        HashSet<Customer> _customers;
 
         /// <summary>
         /// Constructor
@@ -48,6 +50,10 @@ namespace TeamSupport.CDI
             CDIEventLog.WriteEntry(String.Format("{0} Tickets loaded {1} in {2:0.00} sec",
                 _ticketReader.AllTickets.Length, _dateRange, stopwatch.ElapsedMilliseconds / 1000));
 
+            int[] orgs = _ticketReader.AllTickets.Select(t => t.OrganizationID).Distinct().ToArray();
+
+            Organization[] organizations = Organization.LoadOrganizations1(orgs);
+
             // analyze by organization
             stopwatch.Restart();
             LoadOrganizations();
@@ -63,7 +69,7 @@ namespace TeamSupport.CDI
         {
             TicketJoin[] allTickets = _ticketReader.AllTickets;
             Array.Sort(allTickets, (lhs, rhs) => lhs.OrganizationID.CompareTo(rhs.OrganizationID));
-            _organizations = new HashSet<Organization>();
+            _organizations = new HashSet<OrganizationAnalysis>();
 
             // spin through each organization
             int startIndex = 0;
@@ -72,13 +78,16 @@ namespace TeamSupport.CDI
             {
                 if(allTickets[i].OrganizationID != startId)
                 {
-                    _organizations.Add(new Organization(_dateRange, allTickets, startIndex, i));
+                    _organizations.Add(new OrganizationAnalysis(_dateRange, allTickets, startIndex, i));
                     startIndex = i;
                     startId = allTickets[startIndex].OrganizationID;
                 }
             }
 
-            _organizations.Add(new Organization(_dateRange, allTickets, startIndex, allTickets.Length));
+            _organizations.Add(new OrganizationAnalysis(_dateRange, allTickets, startIndex, allTickets.Length));
+
+            foreach (OrganizationAnalysis organization in _organizations)
+                organization.InvokeCDIStrategy();
         }
 
         /// <summary>
@@ -94,9 +103,13 @@ namespace TeamSupport.CDI
             Debug.WriteLine(str.ToString());
 
             // by organization
-            foreach (Organization organization in _organizations)
-                Debug.WriteLine(organization.CDIValues());
+            foreach (OrganizationAnalysis organization in _organizations)
+                Debug.WriteLine(organization.CDIValuesToString());
         }
 
+        public void Customers()
+        {
+            _customers = new HashSet<Customer>();
+        }
     }
 }

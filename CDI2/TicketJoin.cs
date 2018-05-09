@@ -7,6 +7,14 @@ using System.Data.Linq.Mapping;
 
 namespace TeamSupport.CDI
 {
+    public enum TimeScale
+    {
+        Minutes,
+        Hours,
+        Days,
+        Weeks
+    }
+
     public class TicketJoin : IComparable<TicketJoin>
     {
         //public int TicketID;

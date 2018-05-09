@@ -12,21 +12,20 @@ namespace TeamSupport.CDI
     /// </summary>
     interface ICDIStrategy
     {
-        void CalculateCDI(IntervalData intervalData);
+        void CalculateCDI();
     }
 
 
     /// <summary>
     /// Generate CDI metrics for an individual organization
     /// </summary>
-    class Organization
+    class OrganizationAnalysis
     {
         DateRange _dateRange;
         TicketJoin[] _tickets;
         public int OrganizationID { get; private set; }
         IntervalStrategy _intervalStrategy;
         public List<IntervalData> Intervals { get; private set; }
-        ICDIStrategy _cdiStrategy;
 
         /// <summary>
         /// Create from subset of all tickets (faster than using linq to query)
@@ -35,7 +34,7 @@ namespace TeamSupport.CDI
         /// <param name="allTickets">complete set for date range, all organizations</param>
         /// <param name="startIndex">start index into all tickets for this organization</param>
         /// <param name="endIndex">end index into all tickets for this organization</param>
-        public Organization(DateRange analysisInterval, TicketJoin[] allTickets, int startIndex, int endIndex)
+        public OrganizationAnalysis(DateRange analysisInterval, TicketJoin[] allTickets, int startIndex, int endIndex)
         {
             try
             {
@@ -49,54 +48,10 @@ namespace TeamSupport.CDI
                 // collect metrics for each interval
                 _intervalStrategy = new IntervalStrategy(_tickets);
                 Intervals = _intervalStrategy.GenerateIntervalData(_dateRange);
-
-                //Debug.WriteLine("Date\tNew\tOpen\tClosed\tDaysOpen\tDaysToClose\tActions\tSentiment\tCDI");
-                CalculateCDIRollingYear();
             }
             catch(Exception ex)
             {
                 CDIEventLog.WriteEntry("New organization failed", ex);
-            }
-        }
-
-        /// <summary>calculate the CDI normalized by a single percentile lookup</summary>
-        //void CalculateCDIFullTimeline()
-        //{
-        //    _cdiStrategy = new CDIPercentileStrategy(IntervalData);
-        //    IntervalData.Sort((lhs, rhs) => lhs._timeStamp.CompareTo(rhs._timeStamp));
-        //    foreach (IntervalData intervalData in IntervalData)
-        //        _cdiStrategy.CalculateCDI(intervalData);
-        //}
-
-        /// <summary>calculate the CDI using a rolling percentile lookup</summary>
-        void CalculateCDIRollingYear()
-        {
-            Intervals.Sort((lhs, rhs) => lhs._timeStamp.CompareTo(rhs._timeStamp));
-            DateTime begin = Intervals.First()._timeStamp;
-            DateTime end = begin.AddDays(365);  // 1 year rolling average
-
-            // get a rolling year into the queue
-            List<IntervalData> rollingYear = Intervals.Where(t => t._timeStamp < end).ToList();
-            _cdiStrategy = new CDIPercentileStrategy(rollingYear);  // mixes up rollingYear...
-            foreach (IntervalData intervalData in Intervals)
-            {
-                // rolling year for percentile
-                bool update = false;
-                rollingYear.Sort((lhs, rhs) => lhs._timeStamp.CompareTo(rhs._timeStamp));
-                if (intervalData._timeStamp > rollingYear.Last()._timeStamp)
-                {
-                    rollingYear.Add(intervalData);  // add future data
-                    update = true;
-                }
-                while (rollingYear.First()._timeStamp < intervalData._timeStamp.AddDays(-365))
-                {
-                    rollingYear.RemoveAt(0);    // drop old data
-                    update = true;
-                }
-
-                if(update)
-                    _cdiStrategy = new CDIPercentileStrategy(rollingYear);  // updated percentile strategy
-                _cdiStrategy.CalculateCDI(intervalData);
             }
         }
 
@@ -105,7 +60,7 @@ namespace TeamSupport.CDI
             return String.Format("{0} {1}({2})", OrganizationID, Intervals.Count, _tickets.Length);
         }
 
-        public string CDIValues()
+        public string CDIValuesToString()
         {
             Intervals.Sort((lhs, rhs) => lhs._timeStamp.CompareTo(rhs._timeStamp));
             int intervalIndex = 0;

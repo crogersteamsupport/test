@@ -43,7 +43,7 @@ namespace TeamSupport.CDI
             }
         }
 
-        /// <summary>used by a normalized instance of Interval Data - See CDIPercentileStrategy</summary>
+        /// <summary>used by a normalized instance of Interval Data - See ICDIStrategy</summary>
         public void UpdateCDI()
         {
             HashSet<double> contribution = new HashSet<double> { _newCount, _openCount, _medianDaysOpen, (100 - _closedCount) };

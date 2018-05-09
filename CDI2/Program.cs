@@ -11,7 +11,7 @@ namespace TeamSupport.CDI
     {
         static void Main(string[] args)
         {
-            CDI2 cdi = new CDI2(TimeSpan.FromDays(7), 5 * 52);
+            CDI2 cdi = new CDI2(TimeSpan.FromDays(7), 2 * 52);
             cdi.Run();
         }
     }
