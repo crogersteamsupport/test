@@ -373,3 +373,5 @@ tr.over-due > td > span > i, .over-due > td > a {
         color: #2A3F54;
         cursor: pointer;
     }
+
+    .noteDesc{        margin-top: 20px;    }

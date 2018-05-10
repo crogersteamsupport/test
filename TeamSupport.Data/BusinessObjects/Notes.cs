@@ -80,6 +80,49 @@ namespace TeamSupport.Data
             }
         }
 
+        //Get all the notes for the users under the org
+        public void LoadByReferenceTypeUser(ReferenceType refType, int refID, string orderBy = "DateCreated", bool includeCompanyChildren = false)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+            SELECT 
+                n.*
+                , u.FirstName + ' ' + u.LastName AS CreatorName
+            FROM
+                Notes n 
+                LEFT JOIN Users u
+                    ON n.CreatorID = u.UserID
+            WHERE
+                n.RefType = @ReferenceType
+                AND n.RefID IN
+                (
+                    SELECT
+                        @ReferenceID
+                    UNION
+                    SELECT
+                        CustomerID
+                    FROM
+                        CustomerRelationships
+                    WHERE
+                        RelatedCustomerID = @ReferenceID
+                        AND @IncludeCompanyChildren = 1
+				    UNION
+					SELECT UserID
+					FROM Users
+					WHERE OrganizationID=@organizationID
+                )
+            ORDER BY
+                n." + orderBy + " DESC";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ReferenceType", refType);
+                command.Parameters.AddWithValue("@ReferenceID", refID);
+                command.Parameters.AddWithValue("@IncludeCompanyChildren", includeCompanyChildren);
+                command.Parameters.AddWithValue("@organizationID", refID);
+                Fill(command);
+            }
+        }
+
         public void LoadByReferenceTypeByUserRights(ReferenceType refType, int refID, int viewerID, string orderBy = "DateCreated", bool includeCompanyChildren = false)
         {
             using (SqlCommand command = new SqlCommand())
@@ -131,6 +174,66 @@ namespace TeamSupport.Data
                 command.Parameters.AddWithValue("@ReferenceID", refID);
                 command.Parameters.AddWithValue("@IncludeCompanyChildren", includeCompanyChildren);
                 command.Parameters.AddWithValue("@ViewerID", viewerID);
+                Fill(command);
+            }
+        }
+
+        public void LoadByReferenceTypeByUserRightsUsers(ReferenceType refType, int refID, int viewerID, string organizationID, string orderBy = "DateCreated", bool includeCompanyChildren = false)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+            SELECT 
+                n.*
+                , u.FirstName + ' ' + u.LastName AS CreatorName
+                , f.Name AS ProductFamily
+            FROM
+                Notes n 
+                LEFT JOIN Users u
+                    ON n.CreatorID = u.UserID
+                LEFT JOIN ProductFamilies f
+                    ON n.ProductFamilyID = f.ProductFamilyID
+            WHERE
+                n.RefType = @ReferenceType
+                AND n.RefID IN
+                (
+                    SELECT
+                        @ReferenceID
+                    UNION
+                    SELECT
+                        CustomerID
+                    FROM
+                        CustomerRelationships
+                    WHERE
+                        RelatedCustomerID = @ReferenceID
+                        AND @IncludeCompanyChildren = 1
+				    UNION
+					SELECT UserID
+					FROM Users
+					WHERE OrganizationID=@organizationID
+                )
+                AND
+                (
+                    EXISTS (SELECT UserID FROM Users WHERE UserID = @ViewerID AND ProductFamiliesRights = 0)
+                    OR n.ProductFamilyID IS NULL
+                    OR n.ProductFamilyID IN
+                    (
+                        SELECT
+                            urpf.ProductFamilyID
+                        FROM
+                            UserRightsProductFamilies urpf
+                        WHERE
+                            urpf.UserID = @ViewerID
+                    )
+                )
+            ORDER BY
+                n." + orderBy + " DESC";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@ReferenceType", refType);
+                command.Parameters.AddWithValue("@ReferenceID", refID);
+                command.Parameters.AddWithValue("@IncludeCompanyChildren", includeCompanyChildren);
+                command.Parameters.AddWithValue("@ViewerID", viewerID);
+                command.Parameters.AddWithValue("@organizationID", organizationID);
                 Fill(command);
             }
         }
