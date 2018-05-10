@@ -50,11 +50,8 @@
       <div id="loginError" class="alert alert-danger" style="display:none; margin-top:15px; margin-bottom: 0px;" role="alert"></div>
       <footer class="container">
         <div class="row">
-          <div class="col-xs-6" style="border-right: 1px solid rgba(117, 117, 117, 0.15);">
+          <div class="col-xs-12" style="border-right: 1px solid rgba(117, 117, 117, 0.15);">
 			 	<a href="http://www.teamsupport.com/customer-support-software-free-trial">Create a free account</a>
-          </div>
-          <div class="col-xs-6">
-            <a id="mobile-link" href="http://m.teamsupport.com">Mobile Site</a>
           </div>
         </div>
       </footer>
