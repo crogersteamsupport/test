@@ -44,15 +44,11 @@
         </div>
         <button id="signIn" class="btn btn-lg btn-primary btn-block btn-signin">Sign in</button>
       </form>
-      <a id="forgotPW" href="ResetPassword.aspx?reason=forgot" class="forgot-password">
-        Forgot your password?
-      </a>
       <div id="loginError" class="alert alert-danger" style="display:none; margin-top:15px; margin-bottom: 0px;" role="alert"></div>
       <footer class="container">
         <div class="row">
-          <div class="col-xs-12" style="border-right: 1px solid rgba(117, 117, 117, 0.15);">
-			 	<a href="http://www.teamsupport.com/customer-support-software-free-trial">Create a free account</a>
-          </div>
+            <div class="col-xs-6" style="border-right: 1px solid rgba(117, 117, 117, 0.15);"><a href="http://www.teamsupport.com/customer-support-software-free-trial">Create A Free Account</a></div>
+            <div class="col-xs-6"><a id="forgotPW" href="ResetPassword.aspx?reason=forgot" class="forgot-password">Forgot Your Password?</a></div>
         </div>
       </footer>
     </div>
