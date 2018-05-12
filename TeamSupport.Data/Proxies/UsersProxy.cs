@@ -60,7 +60,7 @@ namespace TeamSupport.Data
     [DataMember] public bool ShowWelcomePage { get; set; }
     [DataMember] public string UserInformation { get; set; }
     [DataMember] public bool AppChatStatus { get; set; }
-    [DataMember] public string AppChatID { get; set; }   
+    [DataMember] public string AppChatID { get; set; }
     [DataMember] public string MenuItems { get; set; }
     [DataMember] public string LinkedIn { get; set; }
     [DataMember] public TicketRightType TicketRights { get; set; }
@@ -90,6 +90,7 @@ namespace TeamSupport.Data
     [DataMember] public bool PortalLimitOrgTickets { get; set; }
     [DataMember] public bool FilterInactive { get; set; }
     [DataMember] public bool DisableExporting { get; set; }
+    [DataMember] public bool DisablePublic { get; set; }
     [DataMember] public bool CanCreateProducts { get; set; }
     [DataMember] public bool CanCreateVersions { get; set; }
     [DataMember] public bool CanEditProducts { get; set; }
@@ -98,16 +99,16 @@ namespace TeamSupport.Data
     [DataMember] public bool? BlockEmailFromCreatingOnly { get; set; }
     [DataMember] public Guid CalGUID { get; set; }
     [DataMember] public bool PortalViewOnly { get; set; }
-	 [DataMember] public string verificationCode { get; set; }
-	 [DataMember] public string verificationPhoneNumber { get; set; }
-	 [DataMember] public DateTime? verificationCodeExpiration { get; set; }
+	[DataMember] public string verificationCode { get; set; }
+	[DataMember] public string verificationPhoneNumber { get; set; }
+	[DataMember] public DateTime? verificationCodeExpiration { get; set; }
 	[DataMember] public DateTime? PasswordCreatedUtc { get; set; }
     [DataMember] public int? ImportFileID { get; set; }
     [DataMember] public bool PortalLimitOrgChildrenTickets { get; set; }
     [DataMember] public bool CanBulkMerge { get; set; }
-          
+
   }
-  
+
   public partial class User : BaseItem
   {
     public UserProxy GetProxy()
@@ -123,6 +124,7 @@ namespace TeamSupport.Data
       result.BlockEmailFromCreatingOnly = this.BlockEmailFromCreatingOnly;
       result.ProductFamiliesRights = (ProductFamiliesRightType)this.ProductFamiliesRights;
       result.DisableExporting = this.DisableExporting;
+      result.DisablePublic = this.DisablePublic;
       result.PortalLimitOrgTickets = this.PortalLimitOrgTickets;
       result.UserCanPinAction = this.UserCanPinAction;
       result.AllowUserToEditAnyAction = this.AllowUserToEditAnyAction;
@@ -178,16 +180,16 @@ namespace TeamSupport.Data
       result.FirstName = (this.FirstName);
       result.Email = (this.Email);
       result.UserID = this.UserID;
-       
+
       result.LastLogin = DateTime.SpecifyKind(this.LastLoginUtc, DateTimeKind.Utc);
       result.LastActivity = DateTime.SpecifyKind(this.LastActivityUtc, DateTimeKind.Utc);
       result.ActivatedOn = DateTime.SpecifyKind(this.ActivatedOnUtc, DateTimeKind.Utc);
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
-       
-      result.PasswordCreatedUtc = this.PasswordCreatedUtcUtc == null ? this.PasswordCreatedUtcUtc : DateTime.SpecifyKind((DateTime)this.PasswordCreatedUtcUtc, DateTimeKind.Utc); 
-      result.verificationCodeExpiration = this.verificationCodeExpirationUtc == null ? this.verificationCodeExpirationUtc : DateTime.SpecifyKind((DateTime)this.verificationCodeExpirationUtc, DateTimeKind.Utc); 
-      result.DeactivatedOn = this.DeactivatedOnUtc == null ? this.DeactivatedOnUtc : DateTime.SpecifyKind((DateTime)this.DeactivatedOnUtc, DateTimeKind.Utc); 
+
+      result.PasswordCreatedUtc = this.PasswordCreatedUtcUtc == null ? this.PasswordCreatedUtcUtc : DateTime.SpecifyKind((DateTime)this.PasswordCreatedUtcUtc, DateTimeKind.Utc);
+      result.verificationCodeExpiration = this.verificationCodeExpirationUtc == null ? this.verificationCodeExpirationUtc : DateTime.SpecifyKind((DateTime)this.verificationCodeExpirationUtc, DateTimeKind.Utc);
+      result.DeactivatedOn = this.DeactivatedOnUtc == null ? this.DeactivatedOnUtc : DateTime.SpecifyKind((DateTime)this.DeactivatedOnUtc, DateTimeKind.Utc);
       result.LastPing = this.LastPingUtc == null ? this.LastPingUtc : DateTime.SpecifyKind((DateTime)this.LastPingUtc, DateTimeKind.Utc);
       if (!string.IsNullOrEmpty(this.TimeZoneID))
       {
@@ -226,9 +228,9 @@ namespace TeamSupport.Data
       else
           result.Avatar = "../images/blank_avatar.png";
 
-         
+
 
       return result;
-    }	
+    }
   }
 }

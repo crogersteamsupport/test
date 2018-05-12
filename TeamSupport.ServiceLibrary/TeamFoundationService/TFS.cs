@@ -76,14 +76,6 @@ namespace TeamSupport.ServiceLibrary
 				}
 				else
 				{
-					if (uri.Contains("alegeus"))
-					{
-						LogTFS("uri: " + uri);
-						LogTFS("method: " + method.ToString());
-						LogTFS("patchDocument: " + patchDocument);
-						LogTFS("Encoding.UTF8.GetBytes(patchDocument): " + Encoding.UTF8.GetBytes(patchDocument));
-					}
-
 					byte[] response = client.UploadData(uri, method.ToString(), Encoding.UTF8.GetBytes(patchDocument));
 
 					if (response != null)
@@ -127,6 +119,11 @@ namespace TeamSupport.ServiceLibrary
 				{
 					//the workItemId used to 'test' this was not found but at least we know the credentials and hostname worked, which is what we really want from this method.
 					responseBody = null;
+				}
+				else if (ex.Message.ToLower().Contains("unable to connect"))
+				{
+					//service can't connect to the specified hostname
+					responseBody = ex.Message;
 				}
 			}
 
@@ -224,7 +221,7 @@ namespace TeamSupport.ServiceLibrary
 
 			if (lastLink.HasValue)
 			{
-				//vv We substract one day because of the GreaterThan '>' logic in the query below. wiql does not allow time precision for dates. (it is possible with other library which we are not using now)
+				//We substract one day because of the GreaterThan '>' logic in the query below. wiql does not allow time precision for dates. (it is possible with other library which we are not using now)
 				dateOnly = lastLink.Value.AddDays(-1).ToString("yyyy-MM-dd");
 			}
 
@@ -244,12 +241,6 @@ namespace TeamSupport.ServiceLibrary
 			try
 			{
 				string response = MakeRequest(string.Format("{0}/_apis/wit/wiql?api-version=2.2", HostName), ApiMethod.Post, patchValue.ReadAsStringAsync().Result);
-
-				if (HostName.Contains("alegeus"))
-				{
-					LogTFS(response);
-				}
-
 				WorkItemQueryResult workItemQueryResult = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItemQueryResult>(response);
 
 				//now that we have a bunch of work items, build a list of id's so we can get details
@@ -271,7 +262,8 @@ namespace TeamSupport.ServiceLibrary
 					//ToDo //vv The 'asOf' should be the last processed timestamp
 					//ToDo //vv we probably should have a 'max' of ids here because there is a limit in the query string size. We'll need to loop if needed. https://stackoverflow.com/questions/812925/what-is-the-maximum-possible-length-of-a-query-string
 
-					string queryString = string.Format("_apis/wit/workitems?ids={0}&asOf={1}&api-version=2.2", ids, workItemQueryResult.AsOf);
+					string asOfFormatted = workItemQueryResult.AsOf.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'");
+					string queryString = string.Format("_apis/wit/workitems?ids={0}&asOf={1}&api-version=2.2", ids, asOfFormatted);
 					response = MakeRequest(HostName + "/" + queryString, ApiMethod.Get);
 
 					result = Newtonsoft.Json.JsonConvert.DeserializeObject<WorkItems>(response);

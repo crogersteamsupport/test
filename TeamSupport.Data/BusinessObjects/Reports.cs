@@ -302,6 +302,7 @@ namespace TeamSupport.Data
             }
         }
         // end old stuff
+  
 
         public void GetCommand(SqlCommand command, bool inlcudeHiddenFields = true, bool isSchemaOnly = false, bool useUserFilter = true, string sortField = null, string sortDir = null)
         {
@@ -331,6 +332,7 @@ namespace TeamSupport.Data
             }
 
             AddCommandParameters(command, Collection.LoginUser);
+            command.CommandText = $" /* ReportID: {ReportID.ToString()} OrganizationID: {OrganizationID.ToString()} */ " + command.CommandText;
         }
 
         public static DataTable GetPortalTicketsTablePage(LoginUser loginUser, int from, int to, string sortField, TabularReport tabReport)

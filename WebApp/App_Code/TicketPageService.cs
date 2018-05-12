@@ -50,14 +50,17 @@ namespace TSWebServices
             TicketPageInfo info = new TicketPageInfo();
             info.Ticket = ticket.GetProxy();
 
-            if (info.Ticket.Name.ToLower() == "<no subject>")
+            info.faults = null;
+            dynamic faults = new ExpandoObject();
+
+            if (info.Ticket.Name.ToLower() == "<no subject>") {
                 info.Ticket.Name = "";
+            }
 
             TicketTypes types = new TicketTypes(ticket.Collection.LoginUser);
             types.LoadAllPositions(TSAuthentication.OrganizationID);
 
-            if (!types.Any(a => a.TicketTypeID == info.Ticket.TicketTypeID))
-            {
+            if (!types.Any(a => a.TicketTypeID == info.Ticket.TicketTypeID)) {
                 info.Ticket.TicketTypeID = types[0].TicketTypeID;
                 ticket.TicketTypeID = info.Ticket.TicketTypeID;
                 Ticket newticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
@@ -65,17 +68,14 @@ namespace TSWebServices
                 newticket.Collection.Save();
             }
 
-            //check if outside resource change ticket type and to modify the status
+            // check if outside resource change ticket type and to modify the status
             TicketStatuses statuses = new TicketStatuses(ticket.Collection.LoginUser);
             statuses.LoadAvailableTicketStatuses(info.Ticket.TicketTypeID, null);
 
-            if (!statuses.Any(a => a.TicketStatusID == info.Ticket.TicketStatusID))
-            {
+            if (!statuses.Any(a => a.TicketStatusID == info.Ticket.TicketStatusID)) {
                 info.Ticket.TicketStatusID = statuses[0].TicketStatusID;
                 ticket.TicketStatusID = info.Ticket.TicketStatusID;
-                Ticket newticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
-                newticket.TicketStatusID = ticket.TicketStatusID;
-                newticket.Collection.Save();
+                faults.status = "invalid";
             }
 
             if (info.Ticket.CategoryName != null && info.Ticket.ForumCategory != null)
@@ -110,23 +110,22 @@ namespace TSWebServices
             info.IsSlaPaused = ticketStatus != null && ticketStatus[0].PauseSLA;
             SlaTicket slaTicket = SlaTickets.GetSlaTicket(TSAuthentication.GetLoginUser(), ticket.TicketID);
 
-            if (slaTicket != null)
-            {
+            if (slaTicket != null) {
                 info.SlaTriggerId = slaTicket.SlaTriggerId;
                 info.IsSlaPending = slaTicket.IsPending;
             }
 
-            try
-            {
+            try {
                 Plugins plugins = new Plugins(TSAuthentication.GetLoginUser());
                 plugins.LoadByOrganizationID(TSAuthentication.OrganizationID);
                 PluginProxy[] pluginProxies = plugins.GetPluginProxies();
                 ReplacePluginData(TSAuthentication.GetLoginUser(), ticket, pluginProxies);
                 info.Plugins = pluginProxies;
             }
-            catch (Exception)
-            {
+            catch (Exception) { }
 
+            if (faults != null) {
+                info.faults = faults;
             }
 
             return info;
@@ -1416,6 +1415,8 @@ namespace TSWebServices
             public PluginProxy[] Plugins { get; set; }
             [DataMember]
             public List<TaskDTO> Tasks { get; set; }
+            [DataMember]
+            public object faults { get; set; }
         }
 
         [DataContract]

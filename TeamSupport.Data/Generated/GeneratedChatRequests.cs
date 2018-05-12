@@ -62,7 +62,7 @@ namespace TeamSupport.Data
     
     public string Message
     {
-      get { return (string)Row["Message"]; }
+      get { return Row["Message"] != DBNull.Value ? (string)Row["Message"] : null; }
       set { Row["Message"] = CheckValue("Message", value); }
     }
     
@@ -239,7 +239,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Message", SqlDbType.VarChar, 8000);
+		tempParameter = updateCommand.Parameters.Add("Message", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -303,7 +303,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Message", SqlDbType.VarChar, 8000);
+		tempParameter = insertCommand.Parameters.Add("Message", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

@@ -154,9 +154,10 @@ Namespace TeamSupport
                             jiraInstanceName = String.Format(" Instance: {0}", CRMLinkTableItem.InstanceName)
                         End If
 
-                        Log.Write(String.Format("Begin processing {0} sync.{1}",
-                                    CRMType.ToString(),
-                                    If(String.IsNullOrEmpty(jiraInstanceName), "", jiraInstanceName)))
+						Log.Write(String.Format("Thread [{2}] Begin processing {0} sync.{1}",
+									CRMType.ToString(),
+									If(String.IsNullOrEmpty(jiraInstanceName), "", jiraInstanceName),
+									Thread.ManagedThreadId))
 
                         Try
                             'if sync processed successfully, log that message. otherwise log an error
@@ -165,7 +166,7 @@ Namespace TeamSupport
                                 CRMLinkTableItem.Collection.Save()
                                 Dim synchedOrganizations As New CRMLinkSynchedOrganizations(LoginUser)
                                 synchedOrganizations.DeleteByCRMLinkTableID(CRMLinkTableItem.CRMLinkID)
-                                Log.Write("Finished processing successfully.")
+								Log.Write(String.Format("Thread {0} Finished processing successfully.", Thread.ManagedThreadId))
 
                                 Dim pushTicketsAndPullCasesMessage As StringBuilder = New StringBuilder()
                                 If CRMLinkTableItem.PullCasesAsTickets Then
