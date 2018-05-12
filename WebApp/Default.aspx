@@ -27,7 +27,7 @@
 
         <script src="vcr/1_9_0/Js/jquery-latest.min.js" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
-        <script src="vcr/1_9_0/Js/chat.js" type="text/javascript"></script>
+        <script src="vcr/1_9_0/Js/Ts/chat.js" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/json2.min.js" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/browser.js" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/jquery.jplayer.min.js" type="text/javascript"></script>
