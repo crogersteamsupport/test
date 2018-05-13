@@ -5,7 +5,7 @@ var resourcesURL = '/vcr/1_9_0/Pages/';
 $(document).ready(function () {
   $("#mobile-number").intlTelInput({
     defaultCountry: "US",
-    utilsScript: "../../Resources/js/utils.js" // just for formatting/placeholders etc
+    utilsScript: "/frontend/library/utils.js" // just for formatting/placeholders etc
   });
 
   $('#update').click(function (e) {

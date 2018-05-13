@@ -33,7 +33,7 @@
 
   <link href="../css_5/ui.css" rel="stylesheet" type="text/css" />
 
-  <script src="../js_5/json2.js" type="text/javascript"></script>
+  <script src="/frontend/library/json2.js" type="text/javascript"></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
   <telerik:RadAjaxManager ID="RadAjaxManager1" runat="server" UpdatePanelsRenderMode="Inline">
