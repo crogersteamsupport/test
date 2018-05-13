@@ -1,4 +1,11 @@
-!function($, wysi) {
+/*!
+ * bootstrap-wysihtml5 (https://github.com/jhollingworth/bootstrap-wysihtml5)
+ * Version: 0.0.2
+ * Copyright (c) 2012 JFHollingworth LTD
+ * Licensed under MIT (https://github.com/jhollingworth/bootstrap-wysihtml5/blob/master/LICENCE)
+ */
+
+!function ($, wysi) {
 	"use strict"
 	
 	var templates = {
