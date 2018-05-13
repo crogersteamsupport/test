@@ -1,3 +1,4 @@
+/*https://gist.github.com/jbcappell/5263290*/
 jQuery.fn.sortElements = (function () {
 
     var sort = [].sort;
