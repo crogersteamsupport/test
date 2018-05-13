@@ -364,13 +364,6 @@
       </staticContent>
     </system.webServer>
   </location>
-  <location path="signalr">
-    <system.web>
-      <authorization>
-        <allow users="*" />
-      </authorization>
-    </system.web>
-  </location>
   <!--
         The system.webServer section is required for running ASP.NET AJAX under Internet
         Information Services 7.0.  It is not necessary for previous version of IIS.
