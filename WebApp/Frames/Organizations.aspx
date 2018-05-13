@@ -31,7 +31,7 @@
 
   </style>
 
-  <link href="../css_5/ui.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/ui.css" rel="stylesheet" type="text/css" />
 
   <script src="/frontend/library/json2.js" type="text/javascript"></script>
 </asp:Content>

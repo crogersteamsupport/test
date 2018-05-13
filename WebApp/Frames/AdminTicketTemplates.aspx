@@ -5,9 +5,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head id="Head1" runat="server">
   <title></title>
-  <link href="../css_5/frame.css" rel="stylesheet" type="text/css" />
-  <link href="../css_5/ui.css" rel="stylesheet" type="text/css" />
-  <link href="../css_5/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/frame.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/ui.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <script src="../vcr/1_9_0/Js/Ts/ts.pendo.js" type="text/javascript"></script>
 
   <script src="/frontend/library/jquery-1.4.2.min.js" type="text/javascript"></script>

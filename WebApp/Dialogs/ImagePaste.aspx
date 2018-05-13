@@ -2,7 +2,7 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 
-<script src="../js_5/imagepaste.js" type="text/javascript"></script>
+<script src="../Js/imagepaste.js" type="text/javascript"></script>
 <script src="/frontend/library/jquery.Jcrop.js" type="text/javascript"></script>
 
 </asp:Content>
