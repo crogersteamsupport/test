@@ -168,8 +168,8 @@
           <asp:ScriptReference Path="vcr/1_9_0/Js/json2.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/jquery.layout.min.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/jquery.jgrowl_minimized.js" />
-          <asp:ScriptReference Path="vcr/1_9_0/Js/jquery.editlabel.js" />
-          <asp:ScriptReference Path="vcr/1_9_0/Js/jquery.ui.combobox.js" />
+          <asp:ScriptReference Path="vcr/1_9_0/Js/Ts/ts.editlabel.js" />
+          <asp:ScriptReference Path="vcr/1_9_0/Js/Ts/ts.jquery.ui.combobox.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/jquery.ui.timepicker.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.system.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.utils.js" />
