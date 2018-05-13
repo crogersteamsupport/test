@@ -169,9 +169,9 @@
           <asp:ScriptReference Path="/frontend/library/json2.js" />
           <asp:ScriptReference Path="/frontend/library/jquery.layout.min.js" />
           <asp:ScriptReference Path="/frontend/library/jquery.jgrowl_minimized.js" />
-          <asp:ScriptReference Path="/frontend/library/jquery.editlabel.js" />
-          <asp:ScriptReference Path="/frontend/library/jquery.ui.combobox.js" />
+          <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.jquery.ui.combobox.js" />
           <asp:ScriptReference Path="/frontend/library/jquery.ui.timepicker.js" />
+          <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.editlabel.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.system.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.utils.js" />
           <asp:ScriptReference Path="vcr/1_9_0/Js/ts/ts.cache.js" />
