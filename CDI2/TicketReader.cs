@@ -28,6 +28,7 @@ namespace TeamSupport.CDI
         public TicketReader(DateRange analysisInterval)
         {
             _dateRange = analysisInterval;
+            //CreateTicketSeverities();
         }
 
         /// <summary> 
@@ -57,6 +58,7 @@ namespace TeamSupport.CDI
                     Table<TeamSupport.CDI.linq.Action> actionsTable = db.GetTable<TeamSupport.CDI.linq.Action>();
                     Table<TicketSentiment> ticketSentimentsTable = db.GetTable<TicketSentiment>();
                     Table<User> userTable = db.GetTable<User>();
+                    Table<TicketSeverity> severityTable = db.GetTable<TicketSeverity>();
 
                     var query = (from t in ticketsTable
                                  join tt in ticketTypesTable on t.TicketTypeID equals tt.TicketTypeID
@@ -64,7 +66,7 @@ namespace TeamSupport.CDI
                                  where (t.DateCreated > _dateRange.StartDate) &&
                                      (!ts.IsClosed || (t.DateClosed.Value > t.DateCreated)) &&
                                      (t.TicketSource != "SalesForce") &&    // ignore imported tickets
-                                     (t.OrganizationID == 1078) &&
+                                     //(t.OrganizationID == 1078) &&
                                      (!tt.ExcludeFromCDI) &&
                                      (!ts.ExcludeFromCDI)
                                  select new TicketJoin()
@@ -72,14 +74,15 @@ namespace TeamSupport.CDI
                                      //TicketID = t.TicketID,
                                      //TicketStatusName = ts.Name,
                                      //TicketTypeName = tt.Name,
-                                     CustomerID = t.OrganizationID,
+                                     OrganizationID = t.OrganizationID,
                                      DateClosed = t.DateClosed,
                                      //TicketSource = t.TicketSource,
                                      DateCreated = t.DateCreated,
                                      IsClosed = ts.IsClosed,
                                      ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count(),
                                      TicketSentimentScore = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.TicketSentimentScore).Min(),  // for some reason Min is faster than First()
-                                     ClientID = (from u in userTable where u.UserID == t.CreatorID select u.OrganizationID).First()
+                                     ClientOrganizationID = (from u in userTable where u.UserID == t.CreatorID select u.OrganizationID).First(),
+                                     Severity = (from s in severityTable where t.TicketSeverityID == s.TicketSeverityID select s.Severity).First()
                                  });
 
                     // run the query
@@ -92,5 +95,32 @@ namespace TeamSupport.CDI
                 CDIEventLog.WriteEntry("Ticket Read failed", e);
             }
         }
+
+        public void CreateTicketSeverities()
+        {
+            try
+            {
+                string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (DataContext db = new DataContext(connection))
+                {
+                    Table<TicketSeverity> severityTable = db.GetTable<TicketSeverity>();
+
+                    var query = (from t in severityTable
+                                 where !t.Severity.HasValue
+                                 select t);
+
+                    TicketSeverity[] needsValue = query.ToArray();
+                    foreach(TicketSeverity severity in needsValue)
+                        severity.AssignSeverity();
+                    db.SubmitChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                CDIEventLog.WriteEntry("Ticket Read failed", e);
+            }
+        }
+
     }
 }

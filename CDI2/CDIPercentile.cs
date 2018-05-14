@@ -18,6 +18,7 @@ namespace TeamSupport.CDI
         Percentiles<int> _closedCountPercentiles;   // closed (this interval)
         Percentiles<double> _medianDaysToClosePercentiles;    // average time to close (this interval)
         Percentiles<double> _averageActionCountPercentiles;   // actions per ticket
+        Percentiles<double> _averageSeverityPercentiles;   // actions per ticket
 
         public CDIPercentile(List<IntervalData> intervalData)
         {
@@ -35,6 +36,7 @@ namespace TeamSupport.CDI
             {
                 _averageActionCountPercentiles = new Percentiles<double>(closedTickets, delegate (IntervalData x) { return x._averageActionCount.Value; });
                 _medianDaysToClosePercentiles = new Percentiles<double>(closedTickets, delegate (IntervalData x) { return x._medianDaysToClose.Value; });
+                _averageSeverityPercentiles = new Percentiles<double>(closedTickets, delegate (IntervalData x) { return x._averageSeverity.Value; });
             }
         }
 
@@ -43,7 +45,9 @@ namespace TeamSupport.CDI
         {
             // Create the CDI from the normalized fields
             IntervalData normalized = Normalize(intervalData);
-            normalized.UpdateCDI();
+
+            /// <summary>used by a normalized instance of Interval Data - See ICDIStrategy</summary>
+            CalculateNormalizedCDI(normalized); // keep this in the CDI strategy
             intervalData.CDI = normalized.CDI;
 
             //if (_writeHeader)
@@ -55,8 +59,6 @@ namespace TeamSupport.CDI
             //Debug.WriteLine(intervalData.ToString());
         }
 
-        // TODO
-        //  * time to respond (first response from customer service)
         public IntervalData Normalize(IntervalData intervalData)
         {
             IntervalData normalized = new IntervalData()
@@ -79,6 +81,26 @@ namespace TeamSupport.CDI
 
             return normalized;
         }
+
+        void CalculateNormalizedCDI(IntervalData normalized)
+        {
+            HashSet<double> contribution = new HashSet<double> { normalized._newCount, normalized._openCount, normalized._medianDaysOpen, (100 - normalized._closedCount) };
+
+            if (normalized._medianDaysToClose.HasValue)
+                contribution.Add(normalized._medianDaysToClose.Value);
+
+            if (normalized._averageActionCount.HasValue)
+                contribution.Add(normalized._averageActionCount.Value);
+
+            if (normalized._averageSentimentScore.HasValue)
+                contribution.Add(100 - normalized._averageSentimentScore.Value / 10);  // [0, 1000] where low is in distress
+
+            if (normalized._averageSeverity.HasValue)
+                contribution.Add(100 - normalized._averageSeverity.Value);
+
+            normalized.CDI = (int)Math.Round(contribution.Average());
+        }
+
     }
 
 }

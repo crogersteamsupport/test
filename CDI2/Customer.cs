@@ -9,44 +9,52 @@ namespace TeamSupport.CDI
     class Customer
     {
         OrganizationAnalysis _organizationAnalysis;
-        Dictionary<int, Client> _clients;
-        ICDIStrategy _cdiStrategy;
+        HashSet<Client> _clients;
+        ICDIStrategy _iCdiStrategy;
 
         public Customer(OrganizationAnalysis organizationAnalysis)
         {
             _organizationAnalysis = organizationAnalysis;
-            AnalyzeClients();
+            LoadClients();
         }
 
-        void AnalyzeClients()
-        {
-            TicketJoin[] allTickets = _organizationAnalysis.Tickets.Where(t => t.ClientID.HasValue).ToArray();
+        public List<IntervalData> Intervals { get { return _organizationAnalysis.Intervals; } }
 
-            Array.Sort(allTickets, (lhs, rhs) => lhs.ClientID.Value.CompareTo(rhs.ClientID.Value));
-            _clients = new Dictionary<int, Client>();
+        void LoadClients()
+        {
+            TicketJoin[] allTickets = _organizationAnalysis.Tickets.Where(t => t.ClientOrganizationID.HasValue).ToArray();
+            if (allTickets.Length == 0)
+                return;
+
+            Array.Sort(allTickets, (lhs, rhs) => lhs.ClientOrganizationID.Value.CompareTo(rhs.ClientOrganizationID.Value));
+            _clients = new HashSet<Client>();
 
             // spin through each organization
             int startIndex = 0;
-            int startId = allTickets[startIndex].ClientID.Value;
+            int startId = allTickets[startIndex].ClientOrganizationID.Value;
             for (int i = 1; i < allTickets.Length; ++i)
             {
-                if (allTickets[i].ClientID != startId)
+                if (allTickets[i].ClientOrganizationID != startId)
                 {
                     // not a client of ourselves
                     if(startId != _organizationAnalysis.OrganizationID)
-                        _clients[startId] = new Client(new OrganizationAnalysis(_organizationAnalysis._dateRange, allTickets, startIndex, i));
+                        _clients.Add(new Client(new OrganizationAnalysis(_organizationAnalysis._dateRange, allTickets, startIndex, i)));
                     startIndex = i;
-                    startId = allTickets[startIndex].ClientID.Value;
+                    startId = allTickets[startIndex].ClientOrganizationID.Value;
                 }
             }
 
-            _clients[startId] = new Client(new OrganizationAnalysis(_organizationAnalysis._dateRange, allTickets, startIndex, allTickets.Length));
+            _clients.Add(new Client(new OrganizationAnalysis(_organizationAnalysis._dateRange, allTickets, startIndex, allTickets.Length)));
         }
 
-        public void InvokeCDIStrategy()
+        public void InvokeCDIStrategy(ICDIStrategy iCdiStrategy)
         {
-            _cdiStrategy = new CDIPercentileStrategy(_organizationAnalysis.Intervals);
-            _cdiStrategy.CalculateCDI();
+            _iCdiStrategy = iCdiStrategy;
+            //_cdiStrategy.CalculateCDI();    // test strategy with customer
+
+            // run strategy against each client
+            foreach (Client client in _clients)
+                client.InvokeCDIStrategy(_iCdiStrategy);
         }
 
         public override string ToString()

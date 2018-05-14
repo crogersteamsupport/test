@@ -9,10 +9,16 @@ namespace TeamSupport.CDI
     class Client
     {
         OrganizationAnalysis _organizationAnalysis;
+        ICDIStrategy _iCdiStrategy;
 
         public Client(OrganizationAnalysis organizationAnalysis)
         {
             _organizationAnalysis = organizationAnalysis;
+        }
+
+        public void InvokeCDIStrategy(ICDIStrategy iCdiStrategy)
+        {
+            _iCdiStrategy = iCdiStrategy;
         }
 
         public override string ToString()

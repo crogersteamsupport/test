@@ -43,7 +43,7 @@ namespace TeamSupport.CDI
                 // pull out the range for this organization
                 Tickets = new TicketJoin[endIndex - startIndex];
                 Array.Copy(allTickets, startIndex, Tickets, 0, Tickets.Length);
-                OrganizationID = Tickets[0].CustomerID;
+                OrganizationID = Tickets[0].OrganizationID;
 
                 // collect metrics for each interval
                 _intervalStrategy = new IntervalStrategy(Tickets);

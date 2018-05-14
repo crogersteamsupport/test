@@ -20,14 +20,15 @@ namespace TeamSupport.CDI
         //public int TicketID;
         //public string TicketStatusName;
         //public string TicketTypeName;
-        public int CustomerID;
+        public int OrganizationID;
         public DateTime? DateClosed;
         //public string TicketSource;
         public DateTime DateCreated;
         public int ActionsCount;
         public bool IsClosed;
         public int? TicketSentimentScore;
-        public int? ClientID;
+        public int? ClientOrganizationID;
+        public int? Severity;
 
         public int CompareTo(TicketJoin other) { return DateCreated.CompareTo(other.DateCreated); }
         public TimeSpan TimeOpen

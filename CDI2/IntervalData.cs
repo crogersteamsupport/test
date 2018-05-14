@@ -22,6 +22,7 @@ namespace TeamSupport.CDI
         public double? _medianDaysToClose;  // average time to close (this interval)
         public double? _averageActionCount;   // how many actions do the closed ticket have?
         public double? _averageSentimentScore;
+        public double? _averageSeverity;
 
         public int? CDI { get; set; }    // CDI !!
 
@@ -40,24 +41,8 @@ namespace TeamSupport.CDI
                 _medianDaysToClose = MedianTotalDaysOpen(closedTickets);
                 _averageActionCount = closedTickets.Average(x => x.ActionsCount);
                 _averageSentimentScore = closedTickets.Average(x => x.TicketSentimentScore);
+                _averageSeverity = closedTickets.Average(x => x.Severity);
             }
-        }
-
-        /// <summary>used by a normalized instance of Interval Data - See ICDIStrategy</summary>
-        public void UpdateCDI()
-        {
-            HashSet<double> contribution = new HashSet<double> { _newCount, _openCount, _medianDaysOpen, (100 - _closedCount) };
-
-            if (_medianDaysToClose.HasValue)
-                contribution.Add(_medianDaysToClose.Value);
-
-            if (_averageActionCount.HasValue)
-                contribution.Add(_averageActionCount.Value);
-
-            if (_averageSentimentScore.HasValue)
-                contribution.Add(100 - _averageSentimentScore.Value / 10);  // [0, 1000] where low is in distress
-
-            CDI = (int)Math.Round(contribution.Average());
         }
 
         private double? MedianTotalDaysOpen(HashSet<TicketJoin> tickets)
