@@ -313,7 +313,7 @@
       </staticContent>
     </system.webServer>
   </location>
-  <location path="css_5">
+  <location path="Css">
     <system.web>
       <authorization>
         <allow users="*" />
@@ -325,7 +325,7 @@
       </staticContent>
     </system.webServer>
   </location>
-  <location path="js_5">
+  <location path="Js">
     <system.web>
       <authorization>
         <allow users="*" />
@@ -363,13 +363,6 @@
         <clientCache cacheControlMode="UseMaxAge" cacheControlMaxAge="08:00:00" />
       </staticContent>
     </system.webServer>
-  </location>
-  <location path="signalr">
-    <system.web>
-      <authorization>
-        <allow users="*" />
-      </authorization>
-    </system.web>
   </location>
   <!--
         The system.webServer section is required for running ASP.NET AJAX under Internet

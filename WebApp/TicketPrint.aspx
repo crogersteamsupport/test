@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
   <title>Ticket Print Preview</title>
-  <link href="vcr/1_7_9/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_9_0/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <script src="/frontend/library/jquery-latest.min.js" type="text/javascript"></script>
   <script src="/frontend/library/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
   <style type="text/css">
