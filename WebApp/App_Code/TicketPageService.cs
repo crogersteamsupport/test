@@ -399,34 +399,75 @@ namespace TSWebServices
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Organization organization = Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
-
-            string reminderCatName = ToCat("hr", "Line Break") + ToCat("Reminders", "Reminders");
+            string reminderCatName = @",{'CatID':'hr','CatName':'Line Break','Disabled':'false'},
+                    {'CatID':'Reminders','CatName':'Reminders','Disabled':'false'}";
 
             if (organization.ProductType == ProductType.Enterprise)
             {
-                reminderCatName = ToCat("Sentiment", "Sentiment") + ToCat("hr", "Line Break") + ToCat("Tasks", "Tasks");
+                reminderCatName = @",{'CatID':'hr','CatName':'Line Break','Disabled':'false'},
+                    {'CatID':'Tasks','CatName':'Tasks','Disabled':'false'}";
                 if (KeyName == "NewTicketFieldsOrder")
                 {
                     reminderCatName = string.Empty;
                 }
             }
 
-            string defaultOrder = "[" + ToCatNoComma("AssignedTo", "Assigned To") + ToCat("Group", "Group") + ToCat("hr", "Line Break") + ToCat("Type", "Type") + ToCat("Status", "Status") + ToCat("Severity", "Severity") + ToCat("hr", "Line Break") + ToCat("SLAStatus", "SLA Status") + ToCat("VisibleToCustomers", "Visible To Customers") + ToCat("KnowledgeBase", "Knowledge Base") + ToCat("Community", "Community") + ToCat("DaysOpened", "Days Opened") + ToCat("TotalTimeSpent", "Total Time Spent") + ToCat("DueDate", "Due Date") + ToCat("hr", "Line Break") + ToCat("Customers", "Customers") + ToCat("CustomFields", "Custom Fields") + ToCat("hr", "Line Break") + ToCat("Product", "Product") + ToCat("Reported", "Reported") + ToCat("Resolved", "Resolved") + ToCat("hr", "Line Break") + ToCat("Inventory", "Inventory") + ToCat("hr", "Line Break") + ToCat("Tags", "Tags") + reminderCatName + ToCat("hr","Line Break") + ToCat("AssociatedTickets","Associated Tickets") + ToCat("hr","Line Break") + ToCat("UserQueue","User Queue") + ToCat("hr","Line Break") + ToCat("SubscribedUsers","Subscribed Users") + ToCat("hr","Line Break", true) + ToCat("Jira","Jira") + ToCat("TFS","TFS") + ToCat("Attachments","Attachments") + "]";
+            string defaultOrder = @"[{'CatID':'AssignedTo','CatName':'Assigned To','Disabled':'false'},
+                {'CatID':'Group','CatName':'Group','Disabled':'false'},
+                {'CatID':'hr','CatName':'Line Break','Disabled':'false'},
+                {'CatID':'Type','CatName':'Type','Disabled':'false'},
+                {'CatID':'Status','CatName':'Status','Disabled':'false'},
+                {'CatID':'Severity','CatName':'Severity','Disabled':'false'},
+                {'CatID':'hr','CatName':'Line Break','Disabled':'false'},
+                {'CatID':'SLAStatus','CatName':'SLA Status','Disabled':'false'},
+                {'CatID':'VisibleToCustomers','CatName':'Visible To Customers','Disabled':'false'},
+                {'CatID':'KnowledgeBase','CatName':'Knowledge Base','Disabled':'false'},
+                {'CatID':'Community','CatName':'Community','Disabled':'false'},
+                {'CatID':'DaysOpened','CatName':'Days Opened','Disabled':'false'},
+                {'CatID':'TotalTimeSpent','CatName':'Total Time Spent','Disabled':'false'},
+                {'CatID':'DueDate','CatName':'Due Date','Disabled':'false'},
+                {'CatID':'hr','CatName':'Line Break','Disabled':'false'},
+                {'CatID':'Customers','CatName':'Customers','Disabled':'false'},
+                {'CatID':'CustomFields','CatName':'Custom Fields','Disabled':'false'},
+                {'CatID':'hr','CatName':'Line Break','Disabled':'false'},
+                {'CatID':'Product','CatName':'Product','Disabled':'false'},
+                {'CatID':'Reported','CatName':'Reported','Disabled':'false'},
+                {'CatID':'Resolved','CatName':'Resolved','Disabled':'false'},
+                {'CatID':'hr','CatName':'Line Break','Disabled':'false'},
+                {'CatID':'Inventory','CatName':'Inventory','Disabled':'false'},
+                {'CatID':'hr','CatName':'Line Break','Disabled':'false'},
+                {'CatID':'Tags','CatName':'Tags','Disabled':'false'}" 
+                + reminderCatName 
+                + @",{'CatID':'hr','CatName':'Line Break','Disabled':'false'},
+                {'CatID':'AssociatedTickets','CatName':'Associated Tickets','Disabled':'false'},
+                {'CatID':'hr','CatName':'Line Break','Disabled':'false'},
+                {'CatID':'UserQueue','CatName':'User Queue','Disabled':'false'},
+                {'CatID':'hr','CatName':'Line Break','Disabled':'false'},
+                {'CatID':'SubscribedUsers','CatName':'Subscribed Users','Disabled':'false'},
+                {'CatID':'hr','CatName':'Line Break','Disabled':'true'},
+                {'CatID':'Jira','CatName':'Jira','Disabled':'false'},
+                {'CatID':'TFS','CatName':'TFS','Disabled':'false'},
+                {'CatID':'Attachments','CatName':'Attachments','Disabled':'false'}]";
+
+            string fieldOrder = Settings.OrganizationDB.ReadString(KeyName, string.Empty);
+            if (string.IsNullOrEmpty(fieldOrder))
+                return JsonConvert.DeserializeObject<List<TicketCategoryOrder>>(defaultOrder).ToArray();
+
             List<TicketCategoryOrder> items = JsonConvert.DeserializeObject<List<TicketCategoryOrder>>(Settings.OrganizationDB.ReadString(KeyName, defaultOrder));
+
+            // custom field order configurations are a snapshot in time and might not contain sentiment
+            TicketCategoryOrder[] sentimentField = items.Where(t => t.CatName == "Sentiment").ToArray();
+            if (sentimentField.Length == 0)
+            {
+                // insert after severity
+                int i = 0;
+                while (items[i].CatID != "Severity")
+                    ++i;
+                items.Insert(++i, new TicketCategoryOrder() { CatID = "Sentiment", CatName = "Sentiment", Disabled = "false" });
+            }
 
             return items.ToArray();
         }
-
-        string ToCat(string catID, string catName, bool disabled = false)
-        {
-            return "," + ToCatNoComma(catID, catName, disabled);
-        }
-
-        string ToCatNoComma(string catID, string catName, bool disabled = false)
-        {
-            return string.Format(@"{{'CatID':'{0}','CatName':'{1}','Disabled':'{2}'}}", catID, catName, disabled);
-        }
-
 
         [WebMethod]
         public PluginProxy GetTicketPagePlugin(int pluginID)
