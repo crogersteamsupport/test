@@ -15,33 +15,23 @@ namespace WatsonToneAnalyzer
 
         static void Main(string[] args)
         {
-            if (!Environment.UserInteractive)
-                // running as service
-                using (var service = new WatsonToneAnalyzerService())
-                    ServiceBase.Run(service);
-            else
+            using (var service = new WatsonToneAnalyzerService())
             {
-                // running as console app
-                Start(args);
+                if (!Environment.UserInteractive)
+                {
+                    ServiceBase.Run(service);   // running as a service
+                }
+                else
+                {
+                    // run from console
+                    service.StartTimer();
 
-                Console.WriteLine("Press any key to stop...");
-                Console.ReadKey(true);
+                    Console.WriteLine("Press any key to stop...");
+                    Console.ReadKey(true);
 
-                Stop();
+                    service.StopTimer();
+                }
             }
-        }
-
-        public static void Start(string[] args)
-        {
-            //ActionsToAnalyzer.FindActionsToAnalyze();
-            //System.Threading.Thread.Sleep(1000);
-            WatsonAnalyzer.AnalyzeActions();
-
-        }
-
-        public static void Stop()
-        {
-            // onstop code here
         }
     }
 }

@@ -14,6 +14,7 @@ namespace WatsonToneAnalyzer
     [Table(Name = "ActionSentimentScores")]
     class ActionSentimentScore
     {
+#pragma warning disable CS0649  // Field is never assigned to, and will always have its default value null
         int _actionSentimentScoreID;
         [Column(Storage = "_actionSentimentScoreID", DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true)]
         public int ActionSentimentScoreID { get { return _actionSentimentScoreID; } }
@@ -24,5 +25,6 @@ namespace WatsonToneAnalyzer
         public int SentimentID;
         [Column]
         public decimal SentimentScore;
+#pragma warning restore CS0649
     }
 }

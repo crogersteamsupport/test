@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Data.Linq;
 using System.Configuration;
+using System.Diagnostics;
 
 namespace WatsonToneAnalyzer
 {
     class WatsonTransaction : IDisposable
     {
-        const string EVENT_SOURCE = "Application";
-
         SqlConnection _connection;
         SqlTransaction _transaction;
         DataContext _db;
@@ -59,23 +58,23 @@ namespace WatsonToneAnalyzer
         /// Create the ActionSentiment for the ActionID
         /// </summary>
         /// <param name="db">context for insert/submit</param>
-        /// <param name="a">action to analyze</param>
+        /// <param name="actionToAnalyze">action to analyze</param>
         /// <returns></returns>
-        static ActionSentiment InsertActionSentiment(DataContext db, ActionToAnalyze a)
+        static ActionSentiment InsertActionSentiment(DataContext db, ActionToAnalyze actionToAnalyze)
         {
             // already exists?
             Table<ActionSentiment> table = db.GetTable<ActionSentiment>();
-            if (table.Where(u => u.ActionID == a.ActionID).Any())
-                throw new Exception("Error: ActionSentiment already exists?");
+            if (table.Where(u => u.ActionID == actionToAnalyze.ActionID).Any())
+                WatsonEventLog.WriteEntry("duplicate ActionID in ActionSentiment table " + actionToAnalyze.ActionID, EventLogEntryType.Error);
 
             // Insert
             ActionSentiment sentiment = new ActionSentiment
             {
-                ActionID = a.ActionID,
-                TicketID = a.TicketID,
-                UserID = a.UserID,
-                OrganizationID = a.OrganizationID,
-                IsAgent = a.IsAgent,
+                ActionID = actionToAnalyze.ActionID,
+                TicketID = actionToAnalyze.TicketID,
+                UserID = actionToAnalyze.UserID,
+                OrganizationID = actionToAnalyze.OrganizationID,
+                IsAgent = actionToAnalyze.IsAgent,
                 DateCreated = DateTime.Now
             };
             table.InsertOnSubmit(sentiment);

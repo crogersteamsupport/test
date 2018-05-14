@@ -23,6 +23,7 @@ namespace WatsonToneAnalyzer
     {
         class ActionGetForWatson
         {
+#pragma warning disable CS0649  // Field is never assigned to, and will always have its default value null
             public int ActionID;
             public int TicketID;
             public int UserID;
@@ -30,6 +31,7 @@ namespace WatsonToneAnalyzer
             public int IsAgent;
             public DateTime DateCreated;
             public string ActionDescription;
+#pragma warning restore CS0649
         }
 
         public static void FindActionsToAnalyze()
@@ -64,8 +66,7 @@ namespace WatsonToneAnalyzer
             }
             catch (Exception e)
             {
-                string sSource = "Application";
-                EventLog.WriteEntry(sSource, "Exception while reading from action table:" + e.ToString() + " ----- STACK: " + e.StackTrace.ToString());
+                WatsonEventLog.WriteEntry("Exception while reading from action table:", e);
                 Console.WriteLine(e.ToString());
             }
         }
