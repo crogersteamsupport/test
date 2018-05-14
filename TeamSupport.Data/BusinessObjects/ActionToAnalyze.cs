@@ -39,6 +39,24 @@ namespace TeamSupport.Data.BusinessObjects
         public string ActionDescription;
 #pragma warning restore CS0649
 
+        /// <summary>
+        /// Watson utterance only allows 500 char 
+        /// (don't throw sql exception on truncate of dbo.ActionToAnalyze.ActionDescription)
+        /// </summary>
+        /// <param name="RawHtml">verbose ActionDescription nvarchar(max)</param>
+        /// <returns>500 characters to send to Watson</returns>
+        public static string CleanString(string RawHtml)
+        {
+            String text = Regex.Replace(RawHtml, @"<[^>]*>", String.Empty); //remove html tags
+            text = Regex.Replace(text, "&nbsp;", " "); //remove HTML space
+            text = Regex.Replace(text, @"[\d-]", " "); //removes all digits [0-9]
+            text = Regex.Replace(text, @"[\w\d]+\@[\w\d]+\.com", " "); //removes email adresses
+            text = Regex.Replace(text, @"\s+", " ");   // remove whitespace
+            if (text.Length > 500)
+                text = text.Substring(0, 499);
+            return text;
+        }
+
         /// <summary> 
         /// The watson service uses Stored Procedure dbo.ActionsGetForWatson to find records for watson ActionToAnalyze
         /// This routine performs the equivalent checks
@@ -85,7 +103,7 @@ namespace TeamSupport.Data.BusinessObjects
                     UserID = creatorID,
                     OrganizationID = creator.OrganizationID,
                     IsAgent = creatorCompany.OrganizationID == account.OrganizationID,
-                    ActionDescription = action.Description,
+                    ActionDescription = CleanString(action.Description),
                     DateCreated = action.DateCreated
                 };
 
@@ -94,7 +112,7 @@ namespace TeamSupport.Data.BusinessObjects
                 {
                     Table<ActionToAnalyze> actionToAnalyzeTable = db.GetTable<ActionToAnalyze>();
                     if (!actionToAnalyzeTable.Where(u => u.ActionID == actionToAnalyze.ActionID).Any())
-                    actionToAnalyzeTable.InsertOnSubmit(actionToAnalyze);
+                        actionToAnalyzeTable.InsertOnSubmit(actionToAnalyze);
                     db.SubmitChanges();
                 }
             }
