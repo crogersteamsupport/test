@@ -55,26 +55,34 @@ namespace WatsonToneAnalyzer
             return (int)Math.Round(result);
         }
 
+        // first ticket for organization
+        static bool CreateOrganizationSentiment(TicketSentiment sentiment, DataContext db, out OrganizationSentiment score)
+        {
+            Table<OrganizationSentiment> table = db.GetTable<OrganizationSentiment>();
+            var results = from u in table where (u.OrganizationID == sentiment.OrganizationID) && (u.IsAgent == sentiment.IsAgent) select u;
+            score = results.FirstOrDefault();
+            if (score == null)
+            {
+                score = new OrganizationSentiment()
+                {
+                    OrganizationID = sentiment.OrganizationID,
+                    IsAgent = sentiment.IsAgent,
+                    OrganizationSentimentScore = sentiment.TicketSentimentScore,
+                    TicketSentimentCount = 1
+                };
+                table.InsertOnSubmit(score);
+                return true;
+            }
+            return false;
+        }
+
         // new ticket for organization
         public static void AddTicket(TicketSentiment sentiment, DataContext db)
         {
             try
             {
-                Table<OrganizationSentiment> table = db.GetTable<OrganizationSentiment>();
-                var results = from u in table where (u.OrganizationID == sentiment.OrganizationID) && (u.IsAgent == sentiment.IsAgent) select u;
-                OrganizationSentiment score = results.FirstOrDefault();
-                if (score == null)
-                {
-                    score = new OrganizationSentiment()
-                    {
-                        OrganizationID = sentiment.OrganizationID,
-                        IsAgent = sentiment.IsAgent,
-                        OrganizationSentimentScore = sentiment.TicketSentimentScore,
-                        TicketSentimentCount = 1
-                    };
-                    table.InsertOnSubmit(score);
-                }
-                else
+                OrganizationSentiment score;
+                if (!CreateOrganizationSentiment(sentiment, db, out score))
                 {
                     int count = score.TicketSentimentCount;
                     score.OrganizationSentimentScore = ((count * score.OrganizationSentimentScore) + sentiment.TicketSentimentScore) / (count + 1);
@@ -98,12 +106,12 @@ namespace WatsonToneAnalyzer
                 if (sentiment.TicketSentimentScore == oldScore)
                     return;
 
-                Table<OrganizationSentiment> table = db.GetTable<OrganizationSentiment>();
-                var results = from u in table where (u.OrganizationID == sentiment.OrganizationID) && (u.IsAgent == sentiment.IsAgent) select u;
-                OrganizationSentiment score = results.FirstOrDefault();
-
-                int count = score.TicketSentimentCount;
-                score.OrganizationSentimentScore = score.OrganizationSentimentScore + (sentiment.TicketSentimentScore - oldScore) / count;
+                OrganizationSentiment score;
+                if (!CreateOrganizationSentiment(sentiment, db, out score))
+                {
+                    int count = score.TicketSentimentCount;
+                    score.OrganizationSentimentScore = score.OrganizationSentimentScore + (sentiment.TicketSentimentScore - oldScore) / count;
+                }
                 db.SubmitChanges();
             }
             catch(Exception e)
