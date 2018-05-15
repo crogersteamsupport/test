@@ -1829,7 +1829,7 @@ namespace TSWebServices
             StringBuilder serialNumberDisplayValue;
             StringBuilder warrantyExpirationDisplayValue;
 
-            foreach (AssetsViewItem asset in assets)
+            foreach (AssetsViewItem asset in assets.OrderBy(p => p.DisplayName))
             {
                 productVersionNumberDisplayName = new StringBuilder();
                 serialNumberDisplayValue = new StringBuilder();
