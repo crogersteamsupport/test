@@ -84,7 +84,7 @@ namespace TeamSupport.CDI
         void InvokeCDIStrategy()
         {
             foreach (Customer customer in _customers)
-                customer.InvokeCDIStrategy(new CDIPercentileStrategy(customer.Intervals));
+                customer.InvokeCDIStrategy();
         }
 
         /// <summary>

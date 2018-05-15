@@ -17,18 +17,15 @@ namespace TeamSupport.CDI
 
     public class TicketJoin : IComparable<TicketJoin>
     {
-        //public int TicketID;
-        //public string TicketStatusName;
-        //public string TicketTypeName;
         public int OrganizationID;
         public DateTime? DateClosed;
-        //public string TicketSource;
         public DateTime DateCreated;
         public int ActionsCount;
         public bool IsClosed;
         public int? TicketSentimentScore;
         public int? ClientOrganizationID;
         public int? Severity;
+        public int CreatorID;
 
         public int CompareTo(TicketJoin other) { return DateCreated.CompareTo(other.DateCreated); }
         public TimeSpan TimeOpen

@@ -39,12 +39,16 @@ namespace TeamSupport.CDI
         public override string ToString()
         {
             StringBuilder builder = new StringBuilder();
-            foreach(T percentile in percentiles)
+            foreach (T percentile in percentiles)
             {
-                builder.Append(percentile);
-                builder.Append("\t");
+                if(typeof(T) == typeof(double))
+                    builder.Append(String.Format("{0:0.0}", percentile));
+                else
+                    builder.Append(percentile);
+                builder.Append("  ");
             }
             return builder.ToString();
         }
+
     }
 }

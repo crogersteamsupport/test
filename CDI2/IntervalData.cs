@@ -57,19 +57,22 @@ namespace TeamSupport.CDI
             return result;
         }
 
+        public static void WriteHeader()
+        {
+            Debug.WriteLine("Date\tNew\tOpen\tMedianDaysOpen\tClosed\tMedianDaysToClose\tAvgActions\tAvgSentiment\tAverageSeverity\tCDI");
+        }
 
         public static void Write(List<IntervalData> intervals)
         {
-            Debug.WriteLine("Date\tNew\tOpen\tMedianDaysOpen\tClosed\tMedianDaysToClose\tAvgActions\tAvgSentiment\tCDI");
+            WriteHeader();
             foreach (IntervalData interval in intervals)
                 Debug.WriteLine(interval.ToString());
-
         }
 
         public override string ToString()
         {
-            return String.Format("{0}\t{1}\t{2}\t{3:0.00}\t{4}\t{5:0.00}\t{6:0.00}\t{7:0.00}\t{8}",
-                _timeStamp.ToShortDateString(), _newCount, _openCount, _medianDaysOpen, _closedCount, _medianDaysToClose, _averageActionCount, _averageSentimentScore, CDI);
+            return String.Format("{0}\t{1}\t{2}\t{3:0.00}\t{4}\t{5:0.00}\t{6:0.00}\t{7:0.00}\t{8:0.00}\t{9}",
+                _timeStamp.ToShortDateString(), _newCount, _openCount, _medianDaysOpen, _closedCount, _medianDaysToClose, _averageActionCount, _averageSentimentScore, _averageSeverity, CDI);
         }
     }
 

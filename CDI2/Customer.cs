@@ -47,10 +47,10 @@ namespace TeamSupport.CDI
             _clients.Add(new Client(new OrganizationAnalysis(_organizationAnalysis._dateRange, allTickets, startIndex, allTickets.Length)));
         }
 
-        public void InvokeCDIStrategy(ICDIStrategy iCdiStrategy)
+        public void InvokeCDIStrategy()
         {
-            _iCdiStrategy = iCdiStrategy;
-            //_cdiStrategy.CalculateCDI();    // test strategy with customer
+            _iCdiStrategy = new CDIPercentileStrategy(Intervals);
+            _iCdiStrategy.CalculateCDI();    // test strategy with customer - TODO
 
             // run strategy against each client
             foreach (Client client in _clients)

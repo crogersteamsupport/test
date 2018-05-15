@@ -10,7 +10,7 @@ namespace TeamSupport.CDI
     class CDIPercentileStrategy : ICDIStrategy
     {
         List<IntervalData> _intervals;
-        CDIPercentile _cdiPercentile;
+        IntervalPercentiles _cdiPercentile;
 
         public CDIPercentileStrategy(List<IntervalData> intervals)
         {
@@ -27,7 +27,7 @@ namespace TeamSupport.CDI
 
             // get a rolling year into the queue
             List<IntervalData> rollingYear = _intervals.Where(t => t._timeStamp < end).ToList();
-            _cdiPercentile = new CDIPercentile(rollingYear);  // mixes up rollingYear...
+            _cdiPercentile = new IntervalPercentiles(rollingYear);  // mixes up rollingYear...
             foreach (IntervalData intervalData in _intervals)
             {
                 // rolling year for percentile
@@ -45,8 +45,10 @@ namespace TeamSupport.CDI
                 }
 
                 if (update)
-                    _cdiPercentile = new CDIPercentile(rollingYear);  // updated percentile strategy
+                    _cdiPercentile = new IntervalPercentiles(rollingYear);  // updated percentile strategy
                 _cdiPercentile.CalculateCDI(intervalData);
+
+                // do the same for all clients with this intervalData
             }
         }
     }

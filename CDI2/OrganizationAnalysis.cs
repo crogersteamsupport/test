@@ -26,6 +26,8 @@ namespace TeamSupport.CDI
         public int OrganizationID { get; private set; }
         IntervalStrategy _intervalStrategy;
         public List<IntervalData> Intervals { get; private set; }
+        public int CreatorIDCount { get; private set; }
+
 
         /// <summary>
         /// Create from subset of all tickets (faster than using linq to query)
@@ -44,6 +46,7 @@ namespace TeamSupport.CDI
                 Tickets = new TicketJoin[endIndex - startIndex];
                 Array.Copy(allTickets, startIndex, Tickets, 0, Tickets.Length);
                 OrganizationID = Tickets[0].OrganizationID;
+                CreatorIDCount = Tickets.Select(t => t.CreatorID).Distinct().Count();
 
                 // collect metrics for each interval
                 _intervalStrategy = new IntervalStrategy(Tickets);

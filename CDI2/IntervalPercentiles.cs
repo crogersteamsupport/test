@@ -10,7 +10,7 @@ namespace TeamSupport.CDI
     /// <summary>
     /// Use percentiles of the interval distribution
     /// </summary>
-    public class CDIPercentile
+    public class IntervalPercentiles
     {
         Percentiles<int> _newCountPercentiles;  // new (this interval)
         Percentiles<int> _openCountPercentiles; // currently Open (since startDate)
@@ -18,9 +18,9 @@ namespace TeamSupport.CDI
         Percentiles<int> _closedCountPercentiles;   // closed (this interval)
         Percentiles<double> _medianDaysToClosePercentiles;    // average time to close (this interval)
         Percentiles<double> _averageActionCountPercentiles;   // actions per ticket
-        Percentiles<double> _averageSeverityPercentiles;   // actions per ticket
+        Percentiles<double> _averageSeverityPercentiles;   // ticket severity
 
-        public CDIPercentile(List<IntervalData> intervalData)
+        public IntervalPercentiles(List<IntervalData> intervalData)
         {
             // counts
             _newCountPercentiles = new Percentiles<int>(intervalData, delegate (IntervalData x) { return x._newCount; });
@@ -40,7 +40,7 @@ namespace TeamSupport.CDI
             }
         }
 
-        //static bool _writeHeader = true;
+        static bool _writeHeader = true;
         public void CalculateCDI(IntervalData intervalData)
         {
             // Create the CDI from the normalized fields
@@ -50,13 +50,13 @@ namespace TeamSupport.CDI
             CalculateNormalizedCDI(normalized); // keep this in the CDI strategy
             intervalData.CDI = normalized.CDI;
 
-            //if (_writeHeader)
-            //{
-            //    _writeHeader = false;
-            //    Debug.WriteLine("Date\tNew\tOpen\tMedianDaysOpen\tClosed\tMedianDaysToClose\tAvgActions\tAvgSentiment\tCDI");
-            //}
+            if (_writeHeader)
+            {
+                _writeHeader = false;
+                IntervalData.WriteHeader();
+            }
             //Debug.WriteLine(normalized.ToString());
-            //Debug.WriteLine(intervalData.ToString());
+            Debug.WriteLine(intervalData.ToString());
         }
 
         public IntervalData Normalize(IntervalData intervalData)
@@ -77,14 +77,23 @@ namespace TeamSupport.CDI
                 normalized._averageActionCount = _averageActionCountPercentiles.AsPercentile(intervalData._averageActionCount.Value);
 
             if (intervalData._averageSentimentScore.HasValue)
-                normalized._averageSentimentScore = intervalData._averageSentimentScore.Value;
+                normalized._averageSentimentScore = intervalData._averageSentimentScore.Value / 10; // [0, 1000] => [0, 100]
+
+            if (intervalData._averageSeverity.HasValue)
+                normalized._averageSeverity = _averageSeverityPercentiles.AsPercentile(intervalData._averageSeverity.Value);
 
             return normalized;
         }
 
         void CalculateNormalizedCDI(IntervalData normalized)
         {
-            HashSet<double> contribution = new HashSet<double> { normalized._newCount, normalized._openCount, normalized._medianDaysOpen, (100 - normalized._closedCount) };
+            HashSet<double> contribution = new HashSet<double>
+            {
+                normalized._newCount,
+                normalized._openCount,
+                normalized._medianDaysOpen,
+                (100 - normalized._closedCount),    // less distress when tickets are closed
+            };
 
             if (normalized._medianDaysToClose.HasValue)
                 contribution.Add(normalized._medianDaysToClose.Value);
@@ -93,7 +102,7 @@ namespace TeamSupport.CDI
                 contribution.Add(normalized._averageActionCount.Value);
 
             if (normalized._averageSentimentScore.HasValue)
-                contribution.Add(100 - normalized._averageSentimentScore.Value / 10);  // [0, 1000] where low is in distress
+                contribution.Add(100 - normalized._averageSentimentScore.Value);  // [0, 1000] where low is in distress
 
             if (normalized._averageSeverity.HasValue)
                 contribution.Add(100 - normalized._averageSeverity.Value);

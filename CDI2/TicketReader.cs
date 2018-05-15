@@ -66,19 +66,16 @@ namespace TeamSupport.CDI
                                  where (t.DateCreated > _dateRange.StartDate) &&
                                      (!ts.IsClosed || (t.DateClosed.Value > t.DateCreated)) &&
                                      (t.TicketSource != "SalesForce") &&    // ignore imported tickets
-                                     //(t.OrganizationID == 1078) &&
+                                     (t.OrganizationID == 536001) &&
                                      (!tt.ExcludeFromCDI) &&
                                      (!ts.ExcludeFromCDI)
                                  select new TicketJoin()
                                  {
-                                     //TicketID = t.TicketID,
-                                     //TicketStatusName = ts.Name,
-                                     //TicketTypeName = tt.Name,
                                      OrganizationID = t.OrganizationID,
                                      DateClosed = t.DateClosed,
-                                     //TicketSource = t.TicketSource,
                                      DateCreated = t.DateCreated,
                                      IsClosed = ts.IsClosed,
+                                     CreatorID = t.CreatorID,
                                      ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count(),
                                      TicketSentimentScore = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.TicketSentimentScore).Min(),  // for some reason Min is faster than First()
                                      ClientOrganizationID = (from u in userTable where u.UserID == t.CreatorID select u.OrganizationID).First(),

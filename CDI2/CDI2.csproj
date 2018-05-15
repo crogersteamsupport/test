@@ -73,7 +73,7 @@
     <Compile Include="Utility\DateRange.cs" />
     <Compile Include="CDI2.cs" />
     <Compile Include="IntervalData.cs" />
-    <Compile Include="CDIPercentile.cs" />
+    <Compile Include="IntervalPercentiles.cs" />
     <Compile Include="linq\Action.cs" />
     <Compile Include="TicketJoin.cs" />
     <Compile Include="linq\TicketSentiment.cs" />
