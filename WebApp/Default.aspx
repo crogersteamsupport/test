@@ -34,6 +34,7 @@
         <script src="/frontend/library/moment.min.js" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/Ts/chat.js" type="text/javascript"></script>
         <script src="vcr/1_9_0/Js/Ts/ts.editor.js?1513012903" type="text/javascript"></script>
+        <script src="vcr/1_9_0/Js/Ts/ts.wc.pusher.js" type="text/javascript"></script>
         <script src="../Js/imagepaste.js" type="text/javascript"></script>
         <script src="/frontend/library/jquery.Jcrop.js" type="text/javascript"></script>
         <script src="/frontend/library/aes.js" type="text/javascript"></script>
