@@ -96,6 +96,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TicketSentiment.cs" />
     <Compile Include="ToneAnalysisMain.cs" />
+    <Compile Include="ToneSentiment.cs" />
     <Compile Include="WatsonEventLog.cs" />
     <Compile Include="WatsonAnalyzer.cs" />
     <Compile Include="WatsonPostContent.cs" />
