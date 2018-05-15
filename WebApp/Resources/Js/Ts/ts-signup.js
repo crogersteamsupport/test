@@ -1,4 +1,4 @@
-﻿jQuery(document).ready(function () {
+jQuery(document).ready(function () {
 
     function getURLParameter(name) {
         var val = (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [, null])[1];
@@ -175,4 +175,3 @@
 
 
 });
-
