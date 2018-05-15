@@ -75,7 +75,7 @@ namespace WatsonToneAnalyzer
                 UserID = actionToAnalyze.UserID,
                 OrganizationID = actionToAnalyze.OrganizationID,
                 IsAgent = actionToAnalyze.IsAgent,
-                DateCreated = DateTime.Now
+                DateCreated = DateTime.UtcNow
             };
             table.InsertOnSubmit(sentiment);
             return sentiment;
