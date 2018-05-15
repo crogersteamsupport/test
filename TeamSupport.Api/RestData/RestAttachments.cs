@@ -54,7 +54,7 @@ namespace TeamSupport.Api
       TicketsViewItem ticket = TicketsView.GetTicketsViewItemByIdOrNumber(command.LoginUser, ticketIDOrNumber);
       if (ticket.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
 
-      string path = AttachmentPath.GetPath(command.LoginUser, command.Organization.OrganizationID, AttachmentPath.Folder.Actions);
+      string path = AttachmentPath.GetPath(command.LoginUser, command.Organization.OrganizationID, AttachmentPath.Folder.Actions, 3);
       path = Path.Combine(path, actionID.ToString());
       if (!Directory.Exists(path)) Directory.CreateDirectory(path);
       HttpFileCollection files = command.Context.Request.Files;
@@ -72,9 +72,10 @@ namespace TeamSupport.Api
           attachment.RefID = (int)actionID;
           attachment.OrganizationID = command.Organization.OrganizationID;
           attachment.FileName = fileName;
-          attachment.Path = Path.Combine(path, fileName);
+          //attachment.Path = Path.Combine(path, fileName);
           attachment.FileType = files[0].ContentType;
           attachment.FileSize = files[0].ContentLength;
+            attachment.FilePathID = 3;
           attachment.Collection.Save();
           return attachment.Collection.GetXml("Attachments", "Attachment", true, command.Filters);
         }
@@ -114,7 +115,7 @@ namespace TeamSupport.Api
       Asset asset = Assets.GetAsset(command.LoginUser, assetID);
       if (asset == null || asset.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
 
-      string path = AttachmentPath.GetPath(command.LoginUser, command.Organization.OrganizationID, AttachmentPath.Folder.AssetAttachments);
+      string path = AttachmentPath.GetPath(command.LoginUser, command.Organization.OrganizationID, AttachmentPath.Folder.AssetAttachments, 3);
       path = Path.Combine(path, assetID.ToString());
       if (!Directory.Exists(path)) Directory.CreateDirectory(path);
       HttpFileCollection files = command.Context.Request.Files;
@@ -132,9 +133,10 @@ namespace TeamSupport.Api
           attachment.RefID = (int)assetID;
           attachment.OrganizationID = command.Organization.OrganizationID;
           attachment.FileName = fileName;
-          attachment.Path = Path.Combine(path, fileName);
+          //attachment.Path = Path.Combine(path, fileName);
           attachment.FileType = files[0].ContentType;
           attachment.FileSize = files[0].ContentLength;
+          attachment.FilePathID = 3;
           attachment.Collection.Save();
           return attachment.Collection.GetXml("Attachments", "Attachment", true, command.Filters);
         }

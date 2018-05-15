@@ -1774,7 +1774,7 @@ namespace TSWebServices
             result.ImportFields = simpleImportFieldsView.GetSimpleImportFieldsViewItemProxies();
 			uploadedFileName = Path.GetFileName(uploadedFileName);
 
-            string csvFile = Path.Combine(AttachmentPath.GetPath(loginUser, loginUser.OrganizationID, AttachmentPath.Folder.Imports), uploadedFileName);
+            string csvFile = Path.Combine(AttachmentPath.GetPath(loginUser, loginUser.OrganizationID, AttachmentPath.Folder.Imports, 3), uploadedFileName);
 
 			try
 			{

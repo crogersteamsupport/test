@@ -428,7 +428,7 @@ namespace TeamSupport.ServiceLibrary
         if (!string.IsNullOrEmpty(customerInsightsOrganizationInfo.logo))
         {
           string resultMessage  = string.Empty;
-          string logoPath       = AttachmentPath.GetPath(LoginUser, (int)currentCompanyInfo.ParentID, AttachmentPath.Folder.OrganizationsLogo);
+          string logoPath       = AttachmentPath.GetPath(LoginUser, (int)currentCompanyInfo.ParentID, AttachmentPath.Folder.OrganizationsLogo, 3);
           string logoFullPath   = string.Format("{0}\\{1}.png", logoPath, currentCompanyInfo.OrganizationID);
 
           if (CustomerInsightsUtilities.DownloadImage(customerInsightsOrganizationInfo.logo, logoFullPath, currentCompanyInfo.OrganizationID, TeamSupport.Data.ReferenceType.Organizations, LoginUser, out resultMessage))
@@ -566,7 +566,7 @@ namespace TeamSupport.ServiceLibrary
         if (!string.IsNullOrEmpty(photoUrl))
         {
             string resultMessage  = string.Empty;
-            string logoPath       = AttachmentPath.GetPath(LoginUser, organizationParentId, AttachmentPath.Folder.ContactImages);
+            string logoPath       = AttachmentPath.GetPath(LoginUser, organizationParentId, AttachmentPath.Folder.ContactImages, 3);
             string logoFullPath   = string.Format("{0}\\{1}avatar.jpg", logoPath, currentContactInfo.UserID.ToString());
 
             if (CustomerInsightsUtilities.DownloadImage(photoUrl, logoFullPath, currentContactInfo.OrganizationID, TeamSupport.Data.ReferenceType.Contacts, LoginUser, out resultMessage))

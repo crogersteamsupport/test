@@ -136,8 +136,8 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
     {
         try
         {
-            String temppath = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages);//HttpContext.Current.Request.PhysicalApplicationPath + "images\\";
-            string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages);
+            String temppath = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages, 3);//HttpContext.Current.Request.PhysicalApplicationPath + "images\\";
+            string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages, 3);
             RemoveCachedImages(UserSession.LoginUser.OrganizationID, _userID);
 
             if (img1.Value != "")
@@ -166,7 +166,8 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
                 if (att.Count > 0)
                 {
                     att[0].FileName = _userID + "avatar.jpg";
-                    att[0].Path = path + '\\' + _userID + "avatar.jpg";
+                    //att[0].Path = path + '\\' + _userID + "avatar.jpg";
+                    att[0].FilePathID = 3;
                     att.Save();
                 }
                 else
@@ -176,7 +177,8 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
                     attachment.RefID = _userID;
                     attachment.OrganizationID = _organizationID;
                     attachment.FileName = _userID + "avatar.jpg";
-                    attachment.Path = path + '\\' + _userID + "avatar.jpg";
+                    //attachment.Path = path + '\\' + _userID + "avatar.jpg";
+                    attachment.FilePathID = 3;
                     attachment.FileType = "image/jpeg";
                     attachment.FileSize = -1;
 

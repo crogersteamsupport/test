@@ -50,9 +50,10 @@ namespace TeamSupport.ServiceLibrary
                   attachment.RefID = user.UserID;
                   attachment.OrganizationID = organizationId;
                   attachment.FileName = Path.GetFileName(savePath);
-                  attachment.Path = savePath;
+                  //attachment.Path = savePath;
                   attachment.FileType = string.IsNullOrEmpty(httpWebResponse.ContentType) ? "application/octet-stream" : httpWebResponse.ContentType;
                   attachment.FileSize = httpWebResponse.ContentLength;
+                  attachment.FilePathID = 3;
                   attachments.Save();
                 }
               }

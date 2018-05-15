@@ -36,7 +36,7 @@ namespace TeamSupport.ServiceLibrary
                 if (!imports.IsEmpty)
                 {
                     _importUser = new Data.LoginUser(LoginUser.ConnectionString, -5, imports[0].OrganizationID, null);
-                    string path = AttachmentPath.GetPath(_importUser, imports[0].OrganizationID, AttachmentPath.Folder.ImportLogs);
+                    string path = AttachmentPath.GetPath(_importUser, imports[0].OrganizationID, AttachmentPath.Folder.ImportLogs, 3);
                     //string logPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Logs");
                     //logPath = Path.Combine(logPath, imports[0].OrganizationID.ToString());
                     _importLog = new ImportLog(path, imports[0].ImportID);

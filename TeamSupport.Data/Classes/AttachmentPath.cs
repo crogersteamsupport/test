@@ -52,7 +52,17 @@ namespace TeamSupport.Data
       return path;
     }
 
-    public static string GetImageCachePath(LoginUser loginUser)
+        public static string GetRoot(LoginUser loginUser, int organizationID, int filePathID)
+        {
+            FilePaths filePath = new FilePaths(loginUser);
+            filePath.LoadByID(filePathID);
+            string root = filePath[0].Value;
+            string path = Path.Combine(Path.Combine(root, "Organizations"), organizationID.ToString());
+            Directory.CreateDirectory(path);
+            return path;
+        }
+
+        public static string GetImageCachePath(LoginUser loginUser)
     {
       string path = SystemSettings.ReadString(loginUser, "ImageCachePath", "C:\\TSData\\ImageCache");
       Directory.CreateDirectory(path);
@@ -67,6 +77,14 @@ namespace TeamSupport.Data
     public static string GetDefaultRoot(LoginUser loginUser)
     {
       string root = SystemSettings.ReadString(loginUser, "FilePath", "C:\\TSData");
+      return Path.Combine(root, "Default\\");
+    }
+
+    public static string GetDefaultRoot(LoginUser loginUser, int filePathID)
+    {
+        FilePaths filePaths = new FilePaths(loginUser);
+        filePaths.LoadByID(filePathID);
+        string root = filePaths[0].Value;
       return Path.Combine(root, "Default\\");
     }
 
@@ -85,6 +103,14 @@ namespace TeamSupport.Data
       return path;
     }
 
+    public static string GetPath(LoginUser loginUser, int organizationID, Folder folder, int filePathID)
+    {
+      string root = GetRoot(loginUser, organizationID, filePathID);
+      string path = Path.Combine(root, GetFolderName(folder));
+      Directory.CreateDirectory(path);
+      return path;
+    }
+
     /// <summary>
     /// Gets the default path.
     /// </summary>
@@ -94,6 +120,12 @@ namespace TeamSupport.Data
     public static string GetDefaultPath(LoginUser loginUser, Folder folder)
     {
       string root = GetDefaultRoot(loginUser);
+      return Path.Combine(root, GetFolderName(folder));
+    }
+
+    public static string GetDefaultPath(LoginUser loginUser, Folder folder, int filePathID)
+    {
+      string root = GetDefaultRoot(loginUser, filePathID);
       return Path.Combine(root, GetFolderName(folder));
     }
 

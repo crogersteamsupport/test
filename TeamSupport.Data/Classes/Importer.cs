@@ -1897,7 +1897,7 @@ AND a.OrganizationID = @OrganizationID
 
             }
 
-            string path = Attachments.GetAttachmentPath(_loginUser, refType, id);
+            string path = Attachments.GetAttachmentPath(_loginUser, refType, id, 3);
             Directory.CreateDirectory(path);
             string ext = Path.GetExtension(sourceFile);
             string fileName = Path.GetFileName(sourceFile);
@@ -1912,7 +1912,8 @@ AND a.OrganizationID = @OrganizationID
                 attachment.FileSize = info.Length;
                 attachment.FileType = DataUtils.MimeTypeFromFileName(fileName);
                 attachment.OrganizationID = _organizationID;
-                attachment.Path = Path.Combine(path, fileName);
+                //attachment.Path = Path.Combine(path, fileName);
+                attachment.FilePathID = 3;
                 attachment.RefID = id;
                 attachment.RefType = refType;
             }

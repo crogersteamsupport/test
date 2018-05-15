@@ -559,7 +559,7 @@ namespace TeamSupport.ServiceLibrary
         {
             int organizationId = scheduledReport.OrganizationId;
             string fileName = string.Empty;
-            string outputImagePath = AttachmentPath.GetPath(loginUser, organizationId, AttachmentPath.Folder.ScheduledReports);
+            string outputImagePath = AttachmentPath.GetPath(loginUser, organizationId, AttachmentPath.Folder.ScheduledReports, 3);
             string reportNameForFile = RemoveSpecialCharacters(reportName);
 
             if (string.IsNullOrEmpty(reportNameForFile))
