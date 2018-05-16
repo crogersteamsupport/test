@@ -20,6 +20,8 @@ namespace TeamSupport.CDI.linq
 
         [Column]
         public int? ParentID;
+        [Column]
+        public string Name;
 
         //[Column]
         //public int TotalTicketsCreated;
@@ -35,7 +37,45 @@ namespace TeamSupport.CDI.linq
         //public int CustDisIndex;
 #pragma warning restore CS0649
 
-        public static Dictionary<int, HashSet<int>> LoadCustomerOrganizations(int[] orgs)
+
+        public static string GetOrganizationName(int organizationID)
+        {
+            if (organizationNames == null)
+                organizationNames = LoadOrganizationNames();
+
+            if(organizationNames.ContainsKey(organizationID))
+                return organizationNames[organizationID];
+            return string.Empty;
+        }
+
+        static Dictionary<int, string> organizationNames;
+        static Dictionary<int, string> LoadOrganizationNames()
+        {
+            Dictionary<int, string> allOrganizations = null;
+            try
+            {
+                Organization[] organizations = null;
+                string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (DataContext db = new DataContext(connection))
+                {
+                    Table<Organization> OrganizationsTable = db.GetTable<Organization>();
+                    organizations = (from o in OrganizationsTable select o).ToArray();
+                }
+
+                allOrganizations = new Dictionary<int, string>();
+                foreach (Organization og in organizations)
+                    allOrganizations[og.OrganizationID] = og.Name;
+            }
+            catch (Exception e)
+            {
+                CDIEventLog.WriteEntry("Organization Read failed", e);
+            }
+
+            return allOrganizations;
+        }
+
+        public static Dictionary<int, HashSet<int>> LoadCustomerOrganizations()
         {
             Dictionary<int, HashSet<int>> allOrganizations = null;
             try

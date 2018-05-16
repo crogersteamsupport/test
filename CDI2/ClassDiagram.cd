@@ -1,10 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="TeamSupport.CDI.CDI2">
-    <Position X="2.5" Y="0.75" Width="1.5" />
+    <Position X="2.5" Y="0.5" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
+    <AssociationLine Name="_dateRange" Type="TeamSupport.CDI.DateRange">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.033" Y="0.239" />
+      </MemberNameLabel>
+    </AssociationLine>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAABAAEAAAAAIAEAAABM=</HashCode>
       <FileName>CDI2.cs</FileName>
@@ -17,8 +22,8 @@
       <Field Name="_customers" />
     </ShowAsCollectionAssociation>
   </Class>
-  <Class Name="TeamSupport.CDI.DateRange">
-    <Position X="2.5" Y="3" Width="1.5" />
+  <Class Name="TeamSupport.CDI.DateRange" Collapsed="true">
+    <Position X="2.5" Y="2" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
       <Compartment Name="Properties" Collapsed="true" />
@@ -29,8 +34,8 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="TeamSupport.CDI.TicketReader">
-    <Position X="0.5" Y="2" Width="1.5" />
+  <Class Name="TeamSupport.CDI.TicketReader" Collapsed="true">
+    <Position X="0.5" Y="3" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
@@ -45,25 +50,8 @@
       <Property Name="AllTickets" />
     </ShowAsCollectionAssociation>
   </Class>
-  <Class Name="TeamSupport.CDI.CDIPercentileStrategy">
-    <Position X="10" Y="3.5" Width="1.75" />
-    <Compartments>
-      <Compartment Name="Methods" Collapsed="true" />
-    </Compartments>
-    <TypeIdentifier>
-      <HashCode>AAAAAAAgAAAAAAAAAAAAAAACAAAAEAAAAAAAAAAAAAA=</HashCode>
-      <FileName>CDIPercentileStrategy.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="_cdiPercentile" />
-    </ShowAsAssociation>
-    <ShowAsCollectionAssociation>
-      <Field Name="_intervals" />
-    </ShowAsCollectionAssociation>
-    <Lollipop Position="0.2" />
-  </Class>
   <Class Name="TeamSupport.CDI.TicketJoin">
-    <Position X="2.5" Y="5.25" Width="1.75" />
+    <Position X="2.5" Y="4.25" Width="1.75" />
     <Compartments>
       <Compartment Name="Properties" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
@@ -75,17 +63,17 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="TeamSupport.CDI.IntervalData">
-    <Position X="7.75" Y="5.25" Width="2" />
+    <Position X="8.25" Y="4.25" Width="2" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>EAQAAAAAAACAASAMACAAAAAAABCAAAAAAAAAAAEAJAA=</HashCode>
+      <HashCode>EAQAAIAAAACAASAMACAAAAAAABCAAAAAAAAgAAEAJAA=</HashCode>
       <FileName>IntervalData.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="TeamSupport.CDI.IntervalStrategy">
-    <Position X="5.25" Y="5.25" Width="1.5" />
+  <Class Name="TeamSupport.CDI.IntervalStrategy" Collapsed="true">
+    <Position X="5.25" Y="4.25" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
@@ -98,26 +86,26 @@
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="TeamSupport.CDI.CDIEventLog" Collapsed="true">
-    <Position X="0.5" Y="0.5" Width="1.5" />
+    <Position X="14" Y="5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAQAAAAA=</HashCode>
       <FileName>Utility\CDIEventLog.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TeamSupport.CDI.Percentiles&lt;T&gt;">
-    <Position X="15.25" Y="5.25" Width="2.5" />
+    <Position X="16" Y="2" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAEAAAAQAIAAAAACAgAAAAAAAAAAAA=</HashCode>
       <FileName>Utility\Percentile.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TeamSupport.CDI.IntervalPercentiles">
-    <Position X="12.75" Y="3.5" Width="2.25" />
+    <Position X="13.75" Y="0.5" Width="1.75" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAgAQACAAAAAAAgEAAIAEAAAAAAEAAAAAABAAAQACA=</HashCode>
+      <HashCode>AAAgAQACAAAAAAAAEAAIAEAAAAAAEAAAAAABAAAQACA=</HashCode>
       <FileName>IntervalPercentiles.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -130,7 +118,7 @@
       <Field Name="_averageSeverityPercentiles" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="TeamSupport.CDI.OrganizationAnalysis">
+  <Class Name="TeamSupport.CDI.OrganizationAnalysis" Collapsed="true">
     <Position X="5.25" Y="3" Width="1.75" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
@@ -138,13 +126,13 @@
     </Compartments>
     <AssociationLine Name="Intervals" Type="TeamSupport.CDI.IntervalData" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="7" Y="3.911" />
-        <Point X="8.562" Y="3.911" />
-        <Point X="8.562" Y="5.25" />
+        <Point X="7" Y="3.437" />
+        <Point X="9.062" Y="3.437" />
+        <Point X="9.062" Y="4.25" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAQAAEAAAEAAAAAEAIAAAAAAAAAAAAgAAAABAAAAABA=</HashCode>
+      <HashCode>AAQAAEAAEEAAAAAEAIAAAAAAAAAAAAgAAAABAAAAABA=</HashCode>
       <FileName>OrganizationAnalysis.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -155,13 +143,13 @@
       <Property Name="Intervals" />
     </ShowAsCollectionAssociation>
   </Class>
-  <Class Name="TeamSupport.CDI.Client">
-    <Position X="7.75" Y="2.5" Width="1.5" />
+  <Class Name="TeamSupport.CDI.Client" Collapsed="true">
+    <Position X="5.75" Y="2" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAIAAAAAAAAAAAEABAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAIAAAAAAAAAIAEABAAA=</HashCode>
       <FileName>Client.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -169,8 +157,8 @@
       <Field Name="_iCdiStrategy" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="TeamSupport.CDI.Customer">
-    <Position X="7.75" Y="0.75" Width="1.5" />
+  <Class Name="TeamSupport.CDI.Customer" Collapsed="true">
+    <Position X="5.5" Y="0.5" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
       <Compartment Name="Properties" Collapsed="true" />
@@ -181,7 +169,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAIAAAAAAAEAIAAAAAAAIAAAIAAAAAAAEABAAA=</HashCode>
+      <HashCode>AAAAAAAIAAAAAAAEAIAAAAAAAIAAAIAAAAAIAEABQAA=</HashCode>
       <FileName>Customer.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -192,8 +180,48 @@
       <Field Name="_clients" />
     </ShowAsCollectionAssociation>
   </Class>
+  <Class Name="TeamSupport.CDI.CustomerPercentileStrategy" Collapsed="true">
+    <Position X="10.25" Y="0.5" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="_intervals" Type="TeamSupport.CDI.IntervalData" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="12.406" Y="1.062" />
+        <Point X="12.406" Y="6.438" />
+        <Point X="10.25" Y="6.438" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAAAAAAACIAAAEAAQAAAAAAAAAAA=</HashCode>
+      <FileName>CustomerPercentileStrategy.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="_cdiPercentile" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="_intervals" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TeamSupport.CDI.ClientPercentileStrategy" Collapsed="true">
+    <Position X="10.25" Y="1.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAAAAAAAAAAAAEAAAEAAAAAAAAAA=</HashCode>
+      <FileName>ClientPercentileStrategy.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="_parentStrategy" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="_intervals" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
   <Interface Name="TeamSupport.CDI.ICDIStrategy">
-    <Position X="10.25" Y="0.75" Width="1.5" />
+    <Position X="8.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAA=</HashCode>
       <FileName>OrganizationAnalysis.cs</FileName>

@@ -33,8 +33,6 @@ namespace TeamSupport.CDI
 
         public void Run()
         {
-            Stopwatch totalTimer = new Stopwatch();
-            totalTimer.Start();
             CDIEventLog.WriteEntry("CDI Update started...");
 
             // load all the tickets
@@ -54,9 +52,7 @@ namespace TeamSupport.CDI
 
             // Store the results
             //stopwatch.Restart();
-            //WriteCdiByOrganization();
             //CDIEventLog.WriteEntry(String.Format("Results saved. {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
-            CDIEventLog.WriteEntry(String.Format("CDI Update complete. {0:0.00} sec", totalTimer.ElapsedMilliseconds / 1000));
         }
 
         void LoadCustomers()
@@ -92,16 +88,8 @@ namespace TeamSupport.CDI
         /// </summary>
         public void WriteCdiByOrganization()
         {
-            // header
-            StringBuilder str = new StringBuilder();
-            str.Append("OrganizationID");
-            foreach (DateTime time in _dateRange)
-                str.Append("\t" + time.ToShortDateString());
-            Debug.WriteLine(str.ToString());
-
-            // by organization
-            //foreach (OrganizationAnalysis organization in _organizations)
-            //    Debug.WriteLine(organization.CDIValuesToString());
+            foreach (Customer customer in _customers)
+                customer.WriteCdiByOrganization();
         }
     }
 }

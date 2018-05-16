@@ -64,7 +64,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CDIPercentileStrategy.cs" />
+    <Compile Include="ClientPercentileStrategy.cs" />
+    <Compile Include="CustomerPercentileStrategy.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="Customer.cs" />
     <Compile Include="linq\Organization.cs" />

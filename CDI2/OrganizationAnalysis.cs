@@ -27,6 +27,15 @@ namespace TeamSupport.CDI
         IntervalStrategy _intervalStrategy;
         public List<IntervalData> Intervals { get; private set; }
         public int CreatorIDCount { get; private set; }
+        public int? ClientOrganizationID
+        {
+            get
+            {
+                if(Tickets.Length > 0)
+                    return Tickets[0].ClientOrganizationID;
+                return null;
+            }
+        }
 
 
         /// <summary>

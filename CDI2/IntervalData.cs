@@ -23,6 +23,7 @@ namespace TeamSupport.CDI
         public double? _averageActionCount;   // how many actions do the closed ticket have?
         public double? _averageSentimentScore;
         public double? _averageSeverity;
+        public int _CreatorIDCount;  // how many users created the closed tickets
 
         public int? CDI { get; set; }    // CDI !!
 
@@ -42,6 +43,7 @@ namespace TeamSupport.CDI
                 _averageActionCount = closedTickets.Average(x => x.ActionsCount);
                 _averageSentimentScore = closedTickets.Average(x => x.TicketSentimentScore);
                 _averageSeverity = closedTickets.Average(x => x.Severity);
+                _CreatorIDCount = closedTickets.Select(t => t.CreatorID).Distinct().Count();
             }
         }
 

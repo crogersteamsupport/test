@@ -66,7 +66,7 @@ namespace TeamSupport.CDI
                                  where (t.DateCreated > _dateRange.StartDate) &&
                                      (!ts.IsClosed || (t.DateClosed.Value > t.DateCreated)) &&
                                      (t.TicketSource != "SalesForce") &&    // ignore imported tickets
-                                     (t.OrganizationID == 536001) &&
+                                     //(t.OrganizationID == 1078) &&
                                      (!tt.ExcludeFromCDI) &&
                                      (!ts.ExcludeFromCDI)
                                  select new TicketJoin()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace TeamSupport.CDI
 {
@@ -49,8 +50,15 @@ namespace TeamSupport.CDI
 
         public void InvokeCDIStrategy()
         {
-            _iCdiStrategy = new CDIPercentileStrategy(Intervals);
+            _iCdiStrategy = new CustomerPercentileStrategy(Intervals, Callback);
             _iCdiStrategy.CalculateCDI();    // test strategy with customer - TODO
+
+        }
+
+        public void Callback()
+        {
+            if (_clients == null)
+                return;
 
             // run strategy against each client
             foreach (Client client in _clients)
@@ -61,5 +69,14 @@ namespace TeamSupport.CDI
         {
             return _organizationAnalysis.ToString();
         }
+
+        public void WriteCdiByOrganization()
+        {
+            Debug.WriteLine(_organizationAnalysis.OrganizationID);
+            Debug.WriteLine("ClientID\tClient\tActiveWeeks\tCDI");
+            foreach (Client client in _clients)
+                client.WriteCdiByOrganization(_organizationAnalysis.Intervals[0]._timeStamp);
+        }
+
     }
 }

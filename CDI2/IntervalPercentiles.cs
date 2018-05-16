@@ -20,67 +20,74 @@ namespace TeamSupport.CDI
         Percentiles<double> _averageActionCountPercentiles;   // actions per ticket
         Percentiles<double> _averageSeverityPercentiles;   // ticket severity
 
-        public IntervalPercentiles(List<IntervalData> intervalData)
+        public IntervalPercentiles(List<IntervalData> intervals)
         {
             // counts
-            _newCountPercentiles = new Percentiles<int>(intervalData, delegate (IntervalData x) { return x._newCount; });
-            _openCountPercentiles = new Percentiles<int>(intervalData, delegate (IntervalData x) { return x._openCount; });
-            _closedCountPercentiles = new Percentiles<int>(intervalData, delegate (IntervalData x) { return x._closedCount; });
+            _newCountPercentiles = new Percentiles<int>(intervals, x => x._newCount);
+            _openCountPercentiles = new Percentiles<int>(intervals, x => x._openCount);
+            _closedCountPercentiles = new Percentiles<int>(intervals, x => x._closedCount);
 
             // open tickets
-            _medianDaysOpenPercentiles = new Percentiles<double>(intervalData, delegate (IntervalData x) { return x._medianDaysOpen; });
+            _medianDaysOpenPercentiles = new Percentiles<double>(intervals, x => x._medianDaysOpen);
 
             // closed tickets
-            List<IntervalData> closedTickets = intervalData.Where(t => t._closedCount > 0).ToList();
+            List<IntervalData> closedTickets = intervals.Where(t => t._closedCount > 0).ToList();
             if (closedTickets.Count > 0)
             {
-                _averageActionCountPercentiles = new Percentiles<double>(closedTickets, delegate (IntervalData x) { return x._averageActionCount.Value; });
-                _medianDaysToClosePercentiles = new Percentiles<double>(closedTickets, delegate (IntervalData x) { return x._medianDaysToClose.Value; });
-                _averageSeverityPercentiles = new Percentiles<double>(closedTickets, delegate (IntervalData x) { return x._averageSeverity.Value; });
+                _averageActionCountPercentiles = new Percentiles<double>(closedTickets, x => x._averageActionCount.Value);
+                _medianDaysToClosePercentiles = new Percentiles<double>(closedTickets, x => x._medianDaysToClose.Value);
+                try
+                {
+                    _averageSeverityPercentiles = new Percentiles<double>(closedTickets, x => x._averageSeverity.Value);
+                }
+                catch(Exception)
+                {
+                    _averageSeverityPercentiles = null;
+                }
             }
         }
 
-        static bool _writeHeader = true;
-        public void CalculateCDI(IntervalData intervalData)
+        //static bool _writeHeader = true;
+        public void CalculateCDI(IntervalData interval)
         {
             // Create the CDI from the normalized fields
-            IntervalData normalized = Normalize(intervalData);
+            IntervalData normalized = Normalize(interval);
 
             /// <summary>used by a normalized instance of Interval Data - See ICDIStrategy</summary>
             CalculateNormalizedCDI(normalized); // keep this in the CDI strategy
-            intervalData.CDI = normalized.CDI;
+            interval.CDI = normalized.CDI;
 
-            if (_writeHeader)
-            {
-                _writeHeader = false;
-                IntervalData.WriteHeader();
-            }
+            //if (_writeHeader)
+            //{
+            //    _writeHeader = false;
+            //    IntervalData.WriteHeader();
+            //}
             //Debug.WriteLine(normalized.ToString());
-            Debug.WriteLine(intervalData.ToString());
+            //Debug.WriteLine(interval.ToString());
         }
 
-        public IntervalData Normalize(IntervalData intervalData)
+        public IntervalData Normalize(IntervalData interval)
         {
             IntervalData normalized = new IntervalData()
             {
-                _timeStamp = intervalData._timeStamp,
-                _newCount = _newCountPercentiles.AsPercentile(intervalData._newCount),
-                _openCount = _openCountPercentiles.AsPercentile(intervalData._openCount),
-                _medianDaysOpen = _medianDaysOpenPercentiles.AsPercentile(intervalData._medianDaysOpen),
-                _closedCount = _closedCountPercentiles.AsPercentile(intervalData._closedCount),
+                _timeStamp = interval._timeStamp,
+                _newCount = _newCountPercentiles.AsPercentile(interval._newCount),
+                _openCount = _openCountPercentiles.AsPercentile(interval._openCount),
+                _medianDaysOpen = _medianDaysOpenPercentiles.AsPercentile(interval._medianDaysOpen),
+                _closedCount = _closedCountPercentiles.AsPercentile(interval._closedCount),
             };
 
-            if (intervalData._medianDaysToClose.HasValue)
-                normalized._medianDaysToClose = _medianDaysToClosePercentiles.AsPercentile(intervalData._medianDaysToClose.Value);
+            if (interval._medianDaysToClose.HasValue)
+                normalized._medianDaysToClose = _medianDaysToClosePercentiles.AsPercentile(interval._medianDaysToClose.Value);
 
-            if (intervalData._averageActionCount.HasValue)
-                normalized._averageActionCount = _averageActionCountPercentiles.AsPercentile(intervalData._averageActionCount.Value);
+            if (interval._averageActionCount.HasValue)
+                normalized._averageActionCount = _averageActionCountPercentiles.AsPercentile(interval._averageActionCount.Value);
 
-            if (intervalData._averageSentimentScore.HasValue)
-                normalized._averageSentimentScore = intervalData._averageSentimentScore.Value / 10; // [0, 1000] => [0, 100]
+            if (interval._averageSentimentScore.HasValue)
+                normalized._averageSentimentScore = interval._averageSentimentScore.Value / 10; // [0, 1000] => [0, 100]
 
-            if (intervalData._averageSeverity.HasValue)
-                normalized._averageSeverity = _averageSeverityPercentiles.AsPercentile(intervalData._averageSeverity.Value);
+            if ((interval._averageSeverity.HasValue) && (_averageSeverityPercentiles != null))
+                normalized._averageSeverity = _averageSeverityPercentiles.AsPercentile(interval._averageSeverity.Value);
 
             return normalized;
         }

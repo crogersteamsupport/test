@@ -7,15 +7,19 @@ using System.Threading.Tasks;
 namespace TeamSupport.CDI
 {
     /// <summary>calculate the CDI using a rolling percentile lookup</summary>
-    class CDIPercentileStrategy : ICDIStrategy
+    class CustomerPercentileStrategy : ICDIStrategy
     {
         List<IntervalData> _intervals;
-        IntervalPercentiles _cdiPercentile;
+        public IntervalPercentiles _cdiPercentile { get; private set; }
+        public DateTime IntervalTimestamp { get; private set; }
+        Action _callback;
 
-        public CDIPercentileStrategy(List<IntervalData> intervals)
+        public CustomerPercentileStrategy(List<IntervalData> intervals, Action callback)
         {
             _intervals = intervals;
+            _callback = callback;
         }
+
 
         /// <summary>calculate the CDI using a rolling percentile lookup</summary>
         public void CalculateCDI()
@@ -28,17 +32,17 @@ namespace TeamSupport.CDI
             // get a rolling year into the queue
             List<IntervalData> rollingYear = _intervals.Where(t => t._timeStamp < end).ToList();
             _cdiPercentile = new IntervalPercentiles(rollingYear);  // mixes up rollingYear...
-            foreach (IntervalData intervalData in _intervals)
+            foreach (IntervalData interval in _intervals)
             {
                 // rolling year for percentile
                 bool update = false;
                 rollingYear.Sort((lhs, rhs) => lhs._timeStamp.CompareTo(rhs._timeStamp));
-                if (intervalData._timeStamp > rollingYear.Last()._timeStamp)
+                if (interval._timeStamp > rollingYear.Last()._timeStamp)
                 {
-                    rollingYear.Add(intervalData);  // add future data
+                    rollingYear.Add(interval);  // add future data
                     update = true;
                 }
-                while (rollingYear.First()._timeStamp < intervalData._timeStamp.AddDays(-365))
+                while (rollingYear.First()._timeStamp < interval._timeStamp.AddDays(-365))
                 {
                     rollingYear.RemoveAt(0);    // drop old data
                     update = true;
@@ -46,10 +50,21 @@ namespace TeamSupport.CDI
 
                 if (update)
                     _cdiPercentile = new IntervalPercentiles(rollingYear);  // updated percentile strategy
-                _cdiPercentile.CalculateCDI(intervalData);
+
+                _cdiPercentile.CalculateCDI(interval);
+
+                IntervalTimestamp = interval._timeStamp;
+                _callback();
 
                 // do the same for all clients with this intervalData
             }
         }
+
+        /// <summary>calculate the CDI using a rolling percentile lookup</summary>
+        public void CalculateCDI(IntervalData interval)
+        {
+            _cdiPercentile.CalculateCDI(interval);
+        }
+
     }
 }

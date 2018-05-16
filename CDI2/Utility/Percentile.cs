@@ -16,24 +16,29 @@ namespace TeamSupport.CDI
         const int PercentIncrement = 100 / PercentileBucketCount;  // 5% increments
         T[] percentiles;
 
-        public Percentiles(List<IntervalData> intervalData, Func<IntervalData, T> getFunc)
+        public Percentiles(List<IntervalData> intervals, Func<IntervalData, T> getFunc)
         {
             // sort
-            intervalData.Sort((lhs, rhs) => getFunc(lhs).CompareTo(getFunc(rhs)));
+            intervals.Sort((lhs, rhs) => getFunc(lhs).CompareTo(getFunc(rhs)));
 
             // collect percentile thresholds
             percentiles = new T[PercentileBucketCount + 1];
             for (int i = 0; i <= PercentileBucketCount; ++i)
-                percentiles[i] = getFunc(intervalData[(int)Math.Round((double)(intervalData.Count - 1) * i / PercentileBucketCount)]);
+                percentiles[i] = getFunc(intervals[(int)Math.Round((double)(intervals.Count - 1) * i / PercentileBucketCount)]);
         }
 
         public int AsPercentile(T value)
         {
             // where is std::lower_bound when you need it?
-            int index = 0;
-            while (percentiles[index + 1].CompareTo(value) < 0)
-                index++;
-            return index * PercentIncrement;
+            int i = 0;
+            for(; i < percentiles.Length - 1; ++i)
+            {
+                // found a match
+                if (percentiles[i + 1].CompareTo(value) > 0)
+                    break;
+            }
+
+            return i * PercentIncrement;
         }
 
         public override string ToString()
