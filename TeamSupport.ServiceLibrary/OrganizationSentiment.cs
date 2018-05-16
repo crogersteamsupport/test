@@ -29,34 +29,6 @@ namespace WatsonToneAnalyzer
         public int TicketSentimentCount;
 #pragma warning restore CS0649
 
-        /// <summary>
-        /// Raw calculation
-        /// </summary>
-        /// <param name="organizationID"></param>
-        /// <returns></returns>
-        public static int FUTURE_GetOrganizationSentiment(int organizationID)
-        {
-            double result = 0;
-            try
-            {
-                DateTime cutOff = DateTime.UtcNow.AddDays(-26 * 7); // put in app.config
-                string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                using (DataContext db = new DataContext(connection))
-                {
-                    Table<TicketSentiment> table = db.GetTable<TicketSentiment>();
-                    //result = table.Where(s => !s.IsAgent && (s.OrganizationID == organizationID)).Select(s => s.AverageActionSentiment).Average();
-                    result = (from t in table where !t.IsAgent && (t.OrganizationID == organizationID) && (t.TicketDateCreated > cutOff) select t.AverageActionSentiment).Average();
-                }
-            }
-            catch (Exception e)
-            {
-                WatsonEventLog.WriteEntry("Exception caught at OrganizationSentiment:", e);
-                Console.WriteLine(e.ToString());
-            }
-            return (int)Math.Round(result);
-        }
-
         // first ticket for organization
         static bool CreateOrganizationSentiment(TicketSentiment sentiment, DataContext db, out OrganizationSentiment score)
         {
