@@ -18,7 +18,7 @@ namespace TeamSupport.CDI.linq
         [Column]
         public int TicketID;
         [Column]
-        public int TicketSentimentScore;
+        public double AverageActionSentiment;
 #pragma warning restore CS0649
     }
 }

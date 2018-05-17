@@ -18,6 +18,8 @@ namespace TeamSupport.CDI
             _organizationAnalysis = organizationAnalysis;
         }
 
+        public int? ClientOrganizationID { get { return _organizationAnalysis.ClientOrganizationID; } }
+
         public void InvokeCDIStrategy(ICDIStrategy customerStrategy)
         {
             _iCdiStrategy = new ClientPercentileStrategy(_organizationAnalysis.Intervals, customerStrategy);
@@ -29,7 +31,6 @@ namespace TeamSupport.CDI
             return _organizationAnalysis.ToString();
         }
 
-
         public void WriteCdiByOrganization(DateTime timestamp)
         {
             if (!_organizationAnalysis.ClientOrganizationID.HasValue)
@@ -40,7 +41,22 @@ namespace TeamSupport.CDI
                 return; // too old...
 
             int clientID = _organizationAnalysis.ClientOrganizationID.Value;
-            Debug.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}", clientID, Organization.GetOrganizationName(clientID), _organizationAnalysis.Intervals.Count, last.CDI));
+            Organization organization;
+            if(Organization.TryGet(clientID, out organization))
+                Debug.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}\t{4}", clientID, organization.Name, _organizationAnalysis.Intervals.Count, organization.CustDisIndex, last.CDI));
         }
+
+        public void WriteItervalData()
+        {
+            int clientID = _organizationAnalysis.ClientOrganizationID.Value;
+            Organization organization;
+            if (!Organization.TryGet(clientID, out organization))
+                return;
+
+            string clientName = organization.Name;
+            foreach (IntervalData interval in _organizationAnalysis.Intervals)
+                Debug.WriteLine(String.Format("{0}\t{1}\t{2}", clientID, clientName, interval.ToString()));
+        }
+
     }
 }

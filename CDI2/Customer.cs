@@ -20,6 +20,7 @@ namespace TeamSupport.CDI
         }
 
         public List<IntervalData> Intervals { get { return _organizationAnalysis.Intervals; } }
+        public int OrganizationID {  get { return _organizationAnalysis.OrganizationID; } }
 
         void LoadClients()
         {
@@ -38,7 +39,7 @@ namespace TeamSupport.CDI
                 if (allTickets[i].ClientOrganizationID != startId)
                 {
                     // not a client of ourselves
-                    if(startId != _organizationAnalysis.OrganizationID)
+                    if(startId != _organizationAnalysis.ClientOrganizationID)
                         _clients.Add(new Client(new OrganizationAnalysis(_organizationAnalysis._dateRange, allTickets, startIndex, i)));
                     startIndex = i;
                     startId = allTickets[startIndex].ClientOrganizationID.Value;
@@ -73,9 +74,19 @@ namespace TeamSupport.CDI
         public void WriteCdiByOrganization()
         {
             Debug.WriteLine(_organizationAnalysis.OrganizationID);
-            Debug.WriteLine("ClientID\tClient\tActiveWeeks\tCDI");
+            Debug.WriteLine("ClientID\tClient\tActiveWeeks\tCDI\tCDI-2");
             foreach (Client client in _clients)
                 client.WriteCdiByOrganization(_organizationAnalysis.Intervals[0]._timeStamp);
+        }
+
+        public void WriteItervalData(int clientID)
+        {
+            Debug.Write("ClientID\tClient\t");
+            IntervalData.WriteHeader();
+
+            Client client = _clients.Where(c => c.ClientOrganizationID.HasValue && (c.ClientOrganizationID == clientID)).FirstOrDefault();
+            if (client != null)
+                client.WriteItervalData();
         }
 
     }

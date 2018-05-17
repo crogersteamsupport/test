@@ -34,29 +34,43 @@ namespace TeamSupport.CDI
             _timeStamp = nextDay;
             _newCount = ticketsCreated;
             _openCount = openTickets.Count;
-            _medianDaysOpen = openTickets.Count == 0 ? 0 : MedianTotalDaysOpen(openTickets).Value;
+            _medianDaysOpen = openTickets.Count == 0 ? 0 : MedianTotalDaysOpenToTimestamp(openTickets, _timeStamp).Value;
             _closedCount = closedTickets.Count;
 
             if (closedTickets.Count > 0)
             {
-                _medianDaysToClose = MedianTotalDaysOpen(closedTickets);
+                _medianDaysToClose = MedianTotalDaysToClose(closedTickets);
                 _averageActionCount = closedTickets.Average(x => x.ActionsCount);
-                _averageSentimentScore = closedTickets.Average(x => x.TicketSentimentScore);
+                _averageSentimentScore = closedTickets.Average(x => x.AverageActionSentiment);
                 _averageSeverity = closedTickets.Average(x => x.Severity);
                 _CreatorIDCount = closedTickets.Select(t => t.CreatorID).Distinct().Count();
             }
         }
 
-        private double? MedianTotalDaysOpen(HashSet<TicketJoin> tickets)
+        private double Median(double[] values)
+        {
+            Array.Sort(values);
+            int centerIndex = values.Length / 2;
+            double result = (values.Length % 2 == 1) ? values[centerIndex] : (values[centerIndex - 1] + values[centerIndex]) / 2;
+            return result;
+        }
+
+        private double? MedianTotalDaysToClose(HashSet<TicketJoin> tickets)
         {
             if (tickets.Count == 0)
                 return null;
 
-            double[] totalDays = tickets.Select(ticket => ticket.TotalDaysOpen).ToArray();
-            Array.Sort(totalDays);
-            int centerIndex = totalDays.Length / 2;
-            double result = (totalDays.Length % 2 == 1) ? totalDays[centerIndex] : (totalDays[centerIndex - 1] + totalDays[centerIndex]) / 2;
-            return result;
+            double[] totalDays = tickets.Select(ticket => ticket.TotalDaysToClose).ToArray();
+            return Median(totalDays);
+        }
+
+        private double? MedianTotalDaysOpenToTimestamp(HashSet<TicketJoin> tickets, DateTime timestamp)
+        {
+            if (tickets.Count == 0)
+                return null;
+
+            double[] totalDays = tickets.Select(ticket => ticket.TotalDaysOpenToTimestamp(timestamp)).ToArray();
+            return Median(totalDays);
         }
 
         public static void WriteHeader()
@@ -73,7 +87,7 @@ namespace TeamSupport.CDI
 
         public override string ToString()
         {
-            return String.Format("{0}\t{1}\t{2}\t{3:0.00}\t{4}\t{5:0.00}\t{6:0.00}\t{7:0.00}\t{8:0.00}\t{9}",
+            return String.Format("{0} \t{1} \t{2} \t{3:0.00} \t{4} \t{5:0.00} \t{6:0.00} \t{7:0.00} \t{8:0.00} \t{9}",
                 _timeStamp.ToShortDateString(), _newCount, _openCount, _medianDaysOpen, _closedCount, _medianDaysToClose, _averageActionCount, _averageSentimentScore, _averageSeverity, CDI);
         }
     }

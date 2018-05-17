@@ -33,25 +33,29 @@ namespace TeamSupport.CDI.linq
         //public int AvgTimeOpen;
         //[Column]
         //public int AvgTimeToClose;
-        //[Column]
-        //public int CustDisIndex;
+        [Column]
+        public int CustDisIndex;
 #pragma warning restore CS0649
 
-
-        public static string GetOrganizationName(int organizationID)
+        // for test output...
+        public static bool TryGet(int organizationID, out Organization organization)
         {
-            if (organizationNames == null)
-                organizationNames = LoadOrganizationNames();
+            if (_organizations == null)
+                _organizations = LoadOrganizations();
 
-            if(organizationNames.ContainsKey(organizationID))
-                return organizationNames[organizationID];
-            return string.Empty;
+            if (!_organizations.ContainsKey(organizationID))
+            {
+                organization = null;
+                return false;
+            }
+            organization = _organizations[organizationID];
+            return true;
         }
 
-        static Dictionary<int, string> organizationNames;
-        static Dictionary<int, string> LoadOrganizationNames()
+        static Dictionary<int, Organization> _organizations;
+        static Dictionary<int, Organization> LoadOrganizations()
         {
-            Dictionary<int, string> allOrganizations = null;
+            Dictionary<int, Organization> allOrganizations = null;
             try
             {
                 Organization[] organizations = null;
@@ -63,9 +67,9 @@ namespace TeamSupport.CDI.linq
                     organizations = (from o in OrganizationsTable select o).ToArray();
                 }
 
-                allOrganizations = new Dictionary<int, string>();
+                allOrganizations = new Dictionary<int, Organization>();
                 foreach (Organization og in organizations)
-                    allOrganizations[og.OrganizationID] = og.Name;
+                    allOrganizations[og.OrganizationID] = og;
             }
             catch (Exception e)
             {
@@ -74,40 +78,5 @@ namespace TeamSupport.CDI.linq
 
             return allOrganizations;
         }
-
-        public static Dictionary<int, HashSet<int>> LoadCustomerOrganizations()
-        {
-            Dictionary<int, HashSet<int>> allOrganizations = null;
-            try
-            {
-                Organization[] organizations = null;
-                string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                using (DataContext db = new DataContext(connection))
-                {
-                    Table<Organization> OrganizationsTable = db.GetTable<Organization>();
-                    organizations = (from o in OrganizationsTable select o).ToArray();
-                }
-
-                allOrganizations = new Dictionary<int, HashSet<int>>();
-                Organization[] customers = organizations.Where(o => !o.ParentID.HasValue || (o.ParentID.Value == 1)).ToArray();
-                foreach (Organization og in customers)
-                    allOrganizations[og.OrganizationID] = new HashSet<int>();
-
-                Organization[] clients = organizations.Where(o => o.ParentID.HasValue && (o.ParentID.Value != 1)).ToArray();
-                foreach (Organization org in clients)
-                {
-                    if (allOrganizations.ContainsKey(org.ParentID.Value))
-                        allOrganizations[org.ParentID.Value].Add(org.OrganizationID);
-                }
-            }
-            catch (Exception e)
-            {
-                CDIEventLog.WriteEntry("Organization Read failed", e);
-            }
-
-            return allOrganizations;
-        }
-
     }
 }

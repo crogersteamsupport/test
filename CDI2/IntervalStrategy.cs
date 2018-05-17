@@ -70,12 +70,15 @@ namespace TeamSupport.CDI
                 // walk through all the ticket open/close and keep the running tally for each interval
                 foreach (Tuple<DateTime, TicketJoin> pair in chronological)
                 {
-                    if (pair.Item1 > nextInterval)
+                    while (pair.Item1 > nextInterval)
                     {
                         // snapshot of the data at this time
-                        results.Add(new IntervalData(nextInterval, currentlyOpenTickets, intervalClosedTickets, newTicketsCount));
-                        intervalClosedTickets.Clear();
-                        newTicketsCount = 0;
+                        if ((currentlyOpenTickets.Count() > 0) || (intervalClosedTickets.Count() > 0) || (newTicketsCount > 0))
+                        {
+                            results.Add(new IntervalData(nextInterval, currentlyOpenTickets, intervalClosedTickets, newTicketsCount));
+                            intervalClosedTickets.Clear();
+                            newTicketsCount = 0;
+                        }
                         nextInterval += dateRange.IntervalTimeSpan;
                     }
 

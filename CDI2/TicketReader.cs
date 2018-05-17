@@ -77,14 +77,14 @@ namespace TeamSupport.CDI
                                      IsClosed = ts.IsClosed,
                                      CreatorID = t.CreatorID,
                                      ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count(),
-                                     TicketSentimentScore = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.TicketSentimentScore).Min(),  // for some reason Min is faster than First()
+                                     AverageActionSentiment = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.AverageActionSentiment).First(),  // for some reason Min is faster than First()
                                      ClientOrganizationID = (from u in userTable where u.UserID == t.CreatorID select u.OrganizationID).First(),
                                      Severity = (from s in severityTable where t.TicketSeverityID == s.TicketSeverityID select s.Severity).First()
                                  });
 
                     // run the query
                     AllTickets = query.ToArray();
-                    //TicketJoin[] creators = AllTickets.Where(t => t.ClientID.HasValue && (t.CustomerID != t.ClientID.Value) && t.ActionsCount > 0).ToArray();
+                    //AllTickets = AllTickets.Where(t => t.ClientOrganizationID == 2633).ToArray();
                 }
             }
             catch (Exception e)

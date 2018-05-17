@@ -22,27 +22,26 @@ namespace TeamSupport.CDI
         public DateTime DateCreated;
         public int ActionsCount;
         public bool IsClosed;
-        public int? TicketSentimentScore;
+        public double? AverageActionSentiment;
         public int? ClientOrganizationID;
         public int? Severity;
         public int CreatorID;
 
         public int CompareTo(TicketJoin other) { return DateCreated.CompareTo(other.DateCreated); }
-        public TimeSpan TimeOpen
-        {
-            get
-            {
-                DateTime dateClosed = (IsClosed && DateClosed.HasValue) ? DateClosed.Value : DateRange.EndTimeNow;
-                return dateClosed - DateCreated;
-            }
-        }
 
-        public double TotalDaysOpen { get { return TimeOpen.TotalDays; } }
-        public override string ToString() { return String.Format("{0} {1:0.00}", DateCreated.ToShortDateString(), TimeOpen.TotalMinutes); }
+        public double TotalDaysToClose {  get { return !DateClosed.HasValue ? 0 : (DateClosed.Value - DateCreated).TotalDays; } }
+        public double TotalDaysOpenToTimestamp(DateTime timestamp)
+        {
+            TimeSpan span = timestamp - DateCreated;
+            return span.TotalDays;
+        }
 
         public double ScaledTimeOpen(TimeScale scale)
         {
-            TimeSpan timeSpan = TimeOpen;
+            if (!DateClosed.HasValue)
+                return 0;
+
+            TimeSpan timeSpan = DateClosed.Value - DateCreated;
             double result;
             switch (scale)
             {

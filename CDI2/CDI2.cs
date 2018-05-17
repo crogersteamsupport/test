@@ -91,5 +91,12 @@ namespace TeamSupport.CDI
             foreach (Customer customer in _customers)
                 customer.WriteCdiByOrganization();
         }
+
+        public void WriteItervalData(int customerID, int clientID)
+        {
+            Customer customer = _customers.Where(c => c.OrganizationID == customerID).FirstOrDefault();
+            if(customer != null)
+                customer.WriteItervalData(clientID);
+        }
     }
 }
