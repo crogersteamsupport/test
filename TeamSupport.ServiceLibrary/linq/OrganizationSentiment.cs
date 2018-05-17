@@ -92,7 +92,6 @@ namespace WatsonToneAnalyzer
                     int count = score.TicketSentimentCount;
                     score.OrganizationSentimentScore = score.OrganizationSentimentScore + (sentiment.AverageActionSentiment - oldScore) / count;
                 }
-                db.SubmitChanges();
             }
             catch(Exception e)
             {
