@@ -235,6 +235,7 @@ namespace WatsonToneAnalyzer
                             sentiment.AverageActionSentiment = (count * sentiment.AverageActionSentiment + ticketSentimentScore) / (count + 1);
                             sentiment.ActionSentimentCount = count + 1;
                             sentiment.SetSentimentID(maxActionSentiment.SentimentID);
+                            sentiment.TicketSentimentScore = (int)Math.Round(sentiment.AverageActionSentiment);
                         }
                         else
                         {
