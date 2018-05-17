@@ -69,7 +69,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
         Boolean FileSaved = false;
 
         //String path = HttpContext.Current.Request.PhysicalApplicationPath + "images\\tempupload\\";
-        string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages);
+        string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages, 3);
         string fileName = "tmpavatar" + Upload.FileName.Replace(" ",string.Empty);
 		  uploadedFileName = fileName;
 		  string testpath = "";
@@ -91,8 +91,8 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
         {
             try
             {
-				    testpath = Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages), fileName);
-                Upload.PostedFile.SaveAs(Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages), fileName));
+				    testpath = Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages, 3), fileName);
+                Upload.PostedFile.SaveAs(Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages, 3), fileName));
                 FileSaved = true;
             }
             catch (Exception ex)
