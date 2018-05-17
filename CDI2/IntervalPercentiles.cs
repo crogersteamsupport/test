@@ -47,8 +47,7 @@ namespace TeamSupport.CDI
             }
         }
 
-        //static bool _writeHeader = true;
-        public void CalculateCDI(IntervalData interval)
+        public bool CalculateCDI(IntervalData interval)
         {
             // Create the CDI from the normalized fields
             IntervalData normalized = Normalize(interval);
@@ -57,13 +56,9 @@ namespace TeamSupport.CDI
             CalculateNormalizedCDI(normalized); // keep this in the CDI strategy
             interval.CDI = normalized.CDI;
 
-            //if (_writeHeader)
-            //{
-            //    _writeHeader = false;
-            //    IntervalData.WriteHeader();
-            //}
-            //Debug.WriteLine(normalized.ToString());
+            //Debug.Write(normalized.ToString());
             //Debug.WriteLine(interval.ToString());
+            return true;
         }
 
         public IntervalData Normalize(IntervalData interval)

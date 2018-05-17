@@ -16,7 +16,6 @@ namespace TeamSupport.CDI
             CDI2 cdi = new CDI2(TimeSpan.FromDays(7), 52);
             cdi.Run();
             //cdi.WriteCdiByOrganization();
-            cdi.WriteItervalData(1078, 2633);
             CDIEventLog.WriteEntry(String.Format("CDI Update complete. {0:0.00} sec", totalTimer.ElapsedMilliseconds / 1000));
         }
     }

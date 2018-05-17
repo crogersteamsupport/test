@@ -51,9 +51,8 @@ namespace TeamSupport.CDI
 
         public void InvokeCDIStrategy()
         {
-            _iCdiStrategy = new CustomerPercentileStrategy(Intervals, Callback);
+            _iCdiStrategy = new CustomerPercentileStrategy(Intervals, Callback, _organizationAnalysis.TicketCount);
             _iCdiStrategy.CalculateCDI();    // test strategy with customer - TODO
-
         }
 
         public void Callback()

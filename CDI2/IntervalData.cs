@@ -75,7 +75,7 @@ namespace TeamSupport.CDI
 
         public static void WriteHeader()
         {
-            Debug.WriteLine("Date\tNew\tOpen\tMedianDaysOpen\tClosed\tMedianDaysToClose\tAvgActions\tAvgSentiment\tAverageSeverity\tCDI");
+            Debug.WriteLine("Date\tNew\tOpen\tMedianDaysOpen\tClosed\tMedianDaysToClose\tAvgActions\tAvgSentiment\tAverageSeverity\tCDI\tClientCustomerID");
         }
 
         public static void Write(List<IntervalData> intervals)

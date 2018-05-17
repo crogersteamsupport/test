@@ -84,7 +84,6 @@ namespace TeamSupport.CDI
 
                     // run the query
                     AllTickets = query.ToArray();
-                    //AllTickets = AllTickets.Where(t => t.ClientOrganizationID == 2633).ToArray();
                 }
             }
             catch (Exception e)

@@ -79,6 +79,7 @@ namespace TeamSupport.CDI
 
         void InvokeCDIStrategy()
         {
+            //IntervalData.WriteHeader();
             foreach (Customer customer in _customers)
                 customer.InvokeCDIStrategy();
         }

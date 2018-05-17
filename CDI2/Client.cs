@@ -22,8 +22,10 @@ namespace TeamSupport.CDI
 
         public void InvokeCDIStrategy(ICDIStrategy customerStrategy)
         {
-            _iCdiStrategy = new ClientPercentileStrategy(_organizationAnalysis.Intervals, customerStrategy);
+            _iCdiStrategy = new ClientPercentileStrategy(_organizationAnalysis.Intervals, customerStrategy, _organizationAnalysis.TicketCount);
             _iCdiStrategy.CalculateCDI();
+            //if (_iCdiStrategy.CalculateCDI())
+            //    Debug.WriteLine(String.Format("\t{0}", ClientOrganizationID.Value));
         }
 
         public override string ToString()

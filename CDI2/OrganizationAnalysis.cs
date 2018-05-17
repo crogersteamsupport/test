@@ -12,7 +12,7 @@ namespace TeamSupport.CDI
     /// </summary>
     interface ICDIStrategy
     {
-        void CalculateCDI();
+        bool CalculateCDI();
     }
 
 
@@ -27,16 +27,12 @@ namespace TeamSupport.CDI
         IntervalStrategy _intervalStrategy;
         public List<IntervalData> Intervals { get; private set; }
         public int CreatorIDCount { get; private set; }
+        public int TicketCount { get; private set; }
+
         public int? ClientOrganizationID
         {
-            get
-            {
-                if(Tickets.Length > 0)
-                    return Tickets[0].ClientOrganizationID;
-                return null;
-            }
+            get { return (Tickets.Length > 0) ? Tickets[0].ClientOrganizationID : null; }
         }
-
 
         /// <summary>
         /// Create from subset of all tickets (faster than using linq to query)
@@ -52,6 +48,7 @@ namespace TeamSupport.CDI
                 _dateRange = analysisInterval;
 
                 // pull out the range for this organization
+                TicketCount = endIndex - startIndex;
                 Tickets = new TicketJoin[endIndex - startIndex];
                 Array.Copy(allTickets, startIndex, Tickets, 0, Tickets.Length);
                 OrganizationID = Tickets[0].OrganizationID;
