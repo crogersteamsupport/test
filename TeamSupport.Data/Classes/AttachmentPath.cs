@@ -46,7 +46,10 @@ namespace TeamSupport.Data
     /// <returns></returns>
     public static string GetRoot(LoginUser loginUser, int organizationID)
     {
-      string root = SystemSettings.ReadString(loginUser, "FilePath", "C:\\TSData");
+      //string root = SystemSettings.ReadString(loginUser, "FilePath", "C:\\TSData");
+      FilePaths filePath = new Data.FilePaths(loginUser);
+      filePath.LoadByID(1);
+      string root = filePath[0].Value;
       string path = Path.Combine(Path.Combine(root, "Organizations"), organizationID.ToString());
       Directory.CreateDirectory(path);
       return path;
@@ -64,7 +67,10 @@ namespace TeamSupport.Data
 
         public static string GetImageCachePath(LoginUser loginUser)
     {
-      string path = SystemSettings.ReadString(loginUser, "ImageCachePath", "C:\\TSData\\ImageCache");
+      //string path = SystemSettings.ReadString(loginUser, "ImageCachePath", "C:\\TSData\\ImageCache");
+      FilePaths filePaths = new Data.FilePaths(loginUser);
+      filePaths.LoadByID(2);
+      string path = filePaths[0].Value;
       Directory.CreateDirectory(path);
       return path;
     }
@@ -76,7 +82,10 @@ namespace TeamSupport.Data
     /// <returns></returns>
     public static string GetDefaultRoot(LoginUser loginUser)
     {
-      string root = SystemSettings.ReadString(loginUser, "FilePath", "C:\\TSData");
+      //string root = SystemSettings.ReadString(loginUser, "FilePath", "C:\\TSData");
+        FilePaths filePaths = new FilePaths(loginUser);
+        filePaths.LoadByID(1);
+        string root = filePaths[0].Value;
       return Path.Combine(root, "Default\\");
     }
 
