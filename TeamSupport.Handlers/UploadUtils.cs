@@ -55,7 +55,7 @@ namespace TeamSupport.Handlers
                         attachment.RefID = (int)itemID;
                         attachment.OrganizationID = organizationID;
                         attachment.FileName = fileName;
-                        //attachment.Path = Path.Combine(path, fileName);
+                        attachment.Path = Path.Combine(path, fileName);
                         attachment.FileType = files[i].ContentType;
                         attachment.FileSize = files[i].ContentLength;
                         attachment.FilePathID = 3;
