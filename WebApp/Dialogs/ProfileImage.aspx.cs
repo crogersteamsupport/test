@@ -166,7 +166,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
                 if (att.Count > 0)
                 {
                     att[0].FileName = _userID + "avatar.jpg";
-                    //att[0].Path = path + '\\' + _userID + "avatar.jpg";
+                    att[0].Path = path + '\\' + _userID + "avatar.jpg";
                     att[0].FilePathID = 3;
                     att.Save();
                 }
@@ -177,7 +177,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
                     attachment.RefID = _userID;
                     attachment.OrganizationID = _organizationID;
                     attachment.FileName = _userID + "avatar.jpg";
-                    //attachment.Path = path + '\\' + _userID + "avatar.jpg";
+                    attachment.Path = path + '\\' + _userID + "avatar.jpg";
                     attachment.FilePathID = 3;
                     attachment.FileType = "image/jpeg";
                     attachment.FileSize = -1;

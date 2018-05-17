@@ -72,7 +72,7 @@ namespace TeamSupport.Api
           attachment.RefID = (int)actionID;
           attachment.OrganizationID = command.Organization.OrganizationID;
           attachment.FileName = fileName;
-          //attachment.Path = Path.Combine(path, fileName);
+          attachment.Path = Path.Combine(path, fileName);
           attachment.FileType = files[0].ContentType;
           attachment.FileSize = files[0].ContentLength;
             attachment.FilePathID = 3;
@@ -133,7 +133,7 @@ namespace TeamSupport.Api
           attachment.RefID = (int)assetID;
           attachment.OrganizationID = command.Organization.OrganizationID;
           attachment.FileName = fileName;
-          //attachment.Path = Path.Combine(path, fileName);
+          attachment.Path = Path.Combine(path, fileName);
           attachment.FileType = files[0].ContentType;
           attachment.FileSize = files[0].ContentLength;
           attachment.FilePathID = 3;
