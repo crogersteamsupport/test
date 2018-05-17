@@ -1730,6 +1730,7 @@ namespace TSWebServices
             import.RefType = (ReferenceType)refType;
             import.FileName = fileName;
             import.OrganizationID = TSAuthentication.OrganizationID;
+            import.FilePathID = 3;
             import.Collection.Save();
 
             List<ImportFieldMap> fields = JsonConvert.DeserializeObject<List<ImportFieldMap>>(fieldsData);

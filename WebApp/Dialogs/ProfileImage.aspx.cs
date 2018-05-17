@@ -143,7 +143,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
             if (img1.Value != "")
             {
                 img1.Value = img1.Value.Replace(".ashx", "");
-                string source = Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages), Session["WorkingImage"].ToString());//temppath + "\\" + ImageResizer.Util.PathUtils.RemoveQueryString(img1.Value).Replace('/','\\');
+                string source = Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages, 3), Session["WorkingImage"].ToString());//temppath + "\\" + ImageResizer.Util.PathUtils.RemoveQueryString(img1.Value).Replace('/','\\');
                 string dest = path + '\\' + _userID + "avatar.jpg";
                 try
                 {

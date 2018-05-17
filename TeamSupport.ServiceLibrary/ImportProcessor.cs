@@ -74,7 +74,7 @@ namespace TeamSupport.ServiceLibrary
             Logs.WriteData(import.Row);
 
             //string csvFile = "U:\\Development\\Imports\\TestFiles\test.csv"; // Path.Combine(path, import.FileName);
-            string csvFile = Path.Combine(AttachmentPath.GetPath(_importUser, import.OrganizationID, AttachmentPath.Folder.Imports), import.FileName);
+            string csvFile = Path.Combine(AttachmentPath.GetPath(_importUser, import.OrganizationID, AttachmentPath.Folder.Imports, import.FilePathID), import.FileName);
             _organizationID = import.OrganizationID;
 
             try

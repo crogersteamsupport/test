@@ -134,6 +134,60 @@ namespace TeamSupport.Data
       }
     }
 
+        public void LoadByReferenceAndOrganizationID(ReferenceType refType, int organizationID, string orderBy = "")
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandType = CommandType.Text;
+                command.CommandText = @"
+                SELECT
+                    a.*
+                FROM
+                    Attachments a
+                WHERE
+                    RefType = @RefType
+                    AND OrganizationID = @OrganizationID";
+
+                command.Parameters.AddWithValue("@RefType", (int)refType);
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+
+                if (orderBy != string.Empty)
+                {
+                    command.CommandText += " ORDER BY " + orderBy;
+                }
+
+                Fill(command);
+            }
+        }
+
+        public void LoadByReferenceOrganizationAndFileName(ReferenceType refType, int organizationID, string fileName, string orderBy = "")
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandType = CommandType.Text;
+                command.CommandText = @"
+                SELECT
+                    a.*
+                FROM
+                    Attachments a
+                WHERE
+                    RefType = @RefType
+                    AND OrganizationID = @OrganizationID
+                    AND FileName = @FileName";
+
+                command.Parameters.AddWithValue("@RefType", (int)refType);
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@FileName", fileName);
+
+                if (orderBy != string.Empty)
+                {
+                    command.CommandText += " ORDER BY " + orderBy;
+                }
+
+                Fill(command);
+            }
+        }
+
 	  public void LoadByTicketId(int ticketId)
 		{
 			using (SqlCommand command = new SqlCommand())
