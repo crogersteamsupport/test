@@ -53,7 +53,7 @@ namespace TeamSupport.Data
       result.ProductFamily = this.ProductFamily;
       result.IsAlert = this.IsAlert;
       result.ActivityType = this.ActivityType;
-      result.DateOccurred = this.DateOccurred;
+      result.DateOccurred = this.DateOccurred == null ? "" : this.DateOccurred;
             
 
        
