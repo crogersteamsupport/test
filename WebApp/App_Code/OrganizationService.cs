@@ -1823,6 +1823,17 @@ namespace TSWebServices
             return items.GetEMailAlternateInboundItemProxies();
         }
 
+        [WebMethod]
+        public List<string> LoadNoteActivities()
+        {
+            var results = new List<string>();
+            foreach (ActivityType activity in Enum.GetValues(typeof(ActivityType)))
+            {
+                results.Add(activity.ToString());
+            }
+            return results;
+        }
+
     }
 
     [DataContract]
