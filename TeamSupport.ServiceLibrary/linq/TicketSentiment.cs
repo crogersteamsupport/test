@@ -234,6 +234,7 @@ namespace WatsonToneAnalyzer
                             int count = sentiment.ActionSentimentCount;
                             sentiment.AverageActionSentiment = (count * sentiment.AverageActionSentiment + ticketSentimentScore) / (count + 1);
                             sentiment.ActionSentimentCount = count + 1;
+                            sentiment.SetSentimentID(maxActionSentiment.SentimentID);
                         }
                         else
                         {
@@ -255,6 +256,7 @@ namespace WatsonToneAnalyzer
                                 TicketDateCreated = maxActionSentiment.DateCreated
                             };
                             avgTicketSentiments[sentiment.TicketID] = sentiment;
+                            sentiment.SetSentimentID(maxActionSentiment.SentimentID);
                             table.InsertOnSubmit(sentiment);
                         }
                     }
