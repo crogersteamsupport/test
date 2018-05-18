@@ -304,12 +304,12 @@ namespace TeamSupport.Data
         // end old stuff
   
 
-        public void GetCommand(SqlCommand command, bool inlcudeHiddenFields = true, bool isSchemaOnly = false, bool useUserFilter = true, string sortField = null, string sortDir = null)
+        public void GetCommand(SqlCommand command, int timeout, bool inlcudeHiddenFields = true, bool isSchemaOnly = false, bool useUserFilter = true, string sortField = null, string sortDir = null)
         {
             MigrateToNewReport();
 
             command.CommandType = CommandType.Text;
-            command.CommandTimeout = 180;
+            command.CommandTimeout = timeout;
             switch (ReportDefType)
             {
                 case ReportType.Table:
@@ -1549,13 +1549,13 @@ namespace TeamSupport.Data
             return "";
         }
 
-        public ReportColumn[] GetSqlColumns()
+        public ReportColumn[] GetSqlColumns(int timeout)
         {
             DataTable table = new DataTable();
 
             using (SqlCommand command = new SqlCommand())
             {
-                GetCommand(command, true, true, false);
+                GetCommand(command, timeout, true, true, false);
                 BaseCollection.FixCommandParameters(command);
 
                 using (SqlConnection connection = new SqlConnection(Collection.LoginUser.ConnectionString))
@@ -2011,7 +2011,7 @@ namespace TeamSupport.Data
         }
         // end old stuff
 
-        public static GridResult GetReportData(LoginUser loginUser, int reportID, int from, int to, string sortField, bool isDesc, bool useUserFilter)
+        public static GridResult GetReportData(LoginUser loginUser, int reportID, int from, int to, string sortField, bool isDesc, bool useUserFilter, int timeout)
         {
             Report report = Reports.GetReport(loginUser, reportID, loginUser.UserID);
             GridResult result;
@@ -2019,11 +2019,11 @@ namespace TeamSupport.Data
             {
                 if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
                 {
-                    result = GetReportDataAll(loginUser, report, sortField, isDesc, useUserFilter);
+                    result = GetReportDataAll(loginUser, report, sortField, isDesc, useUserFilter, timeout);
                 }
                 else
                 {
-                    result = GetReportDataPage(loginUser, report, from, to, sortField, isDesc, useUserFilter);
+                    result = GetReportDataPage(loginUser, report, from, to, sortField, isDesc, useUserFilter, timeout);
                 }
             }
             catch (Exception)
@@ -2033,11 +2033,11 @@ namespace TeamSupport.Data
                 {
                     if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
                     {
-                        result = GetReportDataAll(loginUser, report, null, isDesc, useUserFilter);
+                        result = GetReportDataAll(loginUser, report, null, isDesc, useUserFilter, timeout);
                     }
                     else
                     {
-                        result = GetReportDataPage(loginUser, report, from, to, null, isDesc, useUserFilter);
+                        result = GetReportDataPage(loginUser, report, from, to, null, isDesc, useUserFilter, timeout);
                     }
                 }
                 catch (Exception)
@@ -2045,11 +2045,11 @@ namespace TeamSupport.Data
                     // try without the user filters
                     if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
                     {
-                        result = GetReportDataAll(loginUser, report, null, isDesc, false);
+                        result = GetReportDataAll(loginUser, report, null, isDesc, false, timeout);
                     }
                     else
                     {
-                        result = GetReportDataPage(loginUser, report, from, to, null, isDesc, false);
+                        result = GetReportDataPage(loginUser, report, from, to, null, isDesc, false, timeout);
                     }
 
                     UserTabularSettings userFilters = JsonConvert.DeserializeObject<UserTabularSettings>((string)report.Row["Settings"]);
@@ -2062,7 +2062,7 @@ namespace TeamSupport.Data
 
         }
 
-        public static DataTable GetReportTable(LoginUser loginUser, int reportID, int from, int to, string sortField, bool isDesc, bool useUserFilter, bool includeHiddenFields)
+        public static DataTable GetReportTable(LoginUser loginUser, int reportID, int from, int to, string sortField, bool isDesc, bool useUserFilter, bool includeHiddenFields, int timeout)
         {
             Report report = Reports.GetReport(loginUser, reportID);
             DataTable result = null;
@@ -2070,11 +2070,11 @@ namespace TeamSupport.Data
             {
                 if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
                 {
-                    result = GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, includeHiddenFields);
+                    result = GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, includeHiddenFields, timeout);
                 }
                 else
                 {
-                    result = GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, includeHiddenFields);
+                    result = GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, includeHiddenFields, timeout);
                 }
             }
             catch (Exception)
@@ -2084,11 +2084,11 @@ namespace TeamSupport.Data
                 {
                     if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
                     {
-                        result = GetReportTableAll(loginUser, report, null, isDesc, useUserFilter, includeHiddenFields);
+                        result = GetReportTableAll(loginUser, report, null, isDesc, useUserFilter, includeHiddenFields, timeout);
                     }
                     else
                     {
-                        result = GetReportTablePage(loginUser, report, from, to, null, isDesc, useUserFilter, includeHiddenFields);
+                        result = GetReportTablePage(loginUser, report, from, to, null, isDesc, useUserFilter, includeHiddenFields, timeout);
                     }
                 }
                 catch (Exception)
@@ -2096,11 +2096,11 @@ namespace TeamSupport.Data
                     // try without the user filters
                     if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
                     {
-                        result = GetReportTableAll(loginUser, report, null, isDesc, false, includeHiddenFields);
+                        result = GetReportTableAll(loginUser, report, null, isDesc, false, includeHiddenFields, timeout);
                     }
                     else
                     {
-                        result = GetReportTablePage(loginUser, report, from, to, null, isDesc, false, includeHiddenFields);
+                        result = GetReportTablePage(loginUser, report, from, to, null, isDesc, false, includeHiddenFields, timeout);
                     }
 
                     UserTabularSettings userFilters = JsonConvert.DeserializeObject<UserTabularSettings>((string)report.Row["Settings"]);
@@ -2112,9 +2112,9 @@ namespace TeamSupport.Data
             return result;
         }
 
-        private static GridResult GetReportDataPage(LoginUser loginUser, Report report, int from, int to, string sortField, bool isDesc, bool useUserFilter)
+        private static GridResult GetReportDataPage(LoginUser loginUser, Report report, int from, int to, string sortField, bool isDesc, bool useUserFilter, int timeout)
         {
-            DataTable table = GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, true);
+            DataTable table = GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, true, timeout);
             GridResult result = new GridResult();
             result.From = from;
             result.To = to;
@@ -2123,7 +2123,7 @@ namespace TeamSupport.Data
             return result;
         }
 
-        private static DataTable GetReportTablePage(LoginUser loginUser, Report report, int from, int to, string sortField, bool isDesc, bool useUserFilter, bool includeHiddenFields)
+        private static DataTable GetReportTablePage(LoginUser loginUser, Report report, int from, int to, string sortField, bool isDesc, bool useUserFilter, bool includeHiddenFields, int timeout)
         {
             from++;
             to++;
@@ -2152,7 +2152,7 @@ WHERE RowNum BETWEEN @From AND @To";
 
             if (string.IsNullOrWhiteSpace(sortField))
             {
-                sortField = GetReportColumnNames(loginUser, report.ReportID)[0];
+                sortField = GetReportColumnNames(loginUser, report.ReportID, timeout)[0];
                 isDesc = false;
             }
 
@@ -2175,12 +2175,12 @@ WHERE RowNum BETWEEN @From AND @To";
 
             if (report.ReportDefType != ReportType.Custom)
             {
-                report.GetCommand(command, includeHiddenFields, false, useUserFilter, sortField, isDesc ? "DESC" : "ASC");
+                report.GetCommand(command, timeout, includeHiddenFields, false, useUserFilter, sortField, isDesc ? "DESC" : "ASC");
                 command.CommandText = string.Format(query, command.CommandText);
             }
             else
             {
-                report.GetCommand(command, includeHiddenFields, false, useUserFilter);
+                report.GetCommand(command, timeout, includeHiddenFields, false, useUserFilter);
                 command.CommandText = string.Format(query, command.CommandText, sortField, isDesc ? "DESC" : "ASC", totalRows);
             }
 
@@ -2220,9 +2220,9 @@ WHERE RowNum BETWEEN @From AND @To";
             return table;
         }
 
-        private static GridResult GetReportDataAll(LoginUser loginUser, Report report, string sortField, bool isDesc, bool useUserFilter)
+        private static GridResult GetReportDataAll(LoginUser loginUser, Report report, string sortField, bool isDesc, bool useUserFilter, int timeout)
         {
-            DataTable table = GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, true);
+            DataTable table = GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, true, timeout);
 
             GridResult result = new GridResult();
             result.From = 0;
@@ -2232,16 +2232,16 @@ WHERE RowNum BETWEEN @From AND @To";
             return result;
         }
 
-        private static DataTable GetReportTableAll(LoginUser loginUser, Report report, string sortField, bool isDesc, bool useUserFilter, bool includeHiddenFields)
+        private static DataTable GetReportTableAll(LoginUser loginUser, Report report, string sortField, bool isDesc, bool useUserFilter, bool includeHiddenFields, int timeout)
         {
             SqlCommand command = new SqlCommand();
 
-            report.GetCommand(command, includeHiddenFields, false, useUserFilter);
+            report.GetCommand(command, timeout, includeHiddenFields, false, useUserFilter);
             if (command.CommandText.ToLower().IndexOf(" order by ") < 0)
             {
                 if (string.IsNullOrWhiteSpace(sortField))
                 {
-                    sortField = GetReportColumnNames(loginUser, report.ReportID)[0];
+                    sortField = GetReportColumnNames(loginUser, report.ReportID, timeout)[0];
                     isDesc = false;
                 }
                 command.CommandText = command.CommandText + " ORDER BY [" + sortField + (isDesc ? "] DESC" : "] ASC");
@@ -2306,10 +2306,10 @@ WHERE RowNum BETWEEN @From AND @To";
             return table;
         }
 
-        public static string[] GetReportColumnNames(LoginUser loginUser, int reportID)
+        public static string[] GetReportColumnNames(LoginUser loginUser, int reportID, int timeout)
         {
             List<string> result = new List<string>();
-            ReportColumn[] columns = GetReportColumns(loginUser, reportID);
+            ReportColumn[] columns = GetReportColumns(loginUser, reportID, timeout);
             foreach (ReportColumn column in columns)
             {
                 result.Add(column.Name);
@@ -2317,11 +2317,11 @@ WHERE RowNum BETWEEN @From AND @To";
             return result.ToArray();
         }
 
-        public static ReportColumn[] GetReportColumns(LoginUser loginUser, int reportID)
+        public static ReportColumn[] GetReportColumns(LoginUser loginUser, int reportID, int timeout)
         {
             Report report = Reports.GetReport(loginUser, reportID);
             if (report.ReportDefType == ReportType.Table || report.ReportDefType == ReportType.TicketView) return report.GetTabularColumns();
-            return report.GetSqlColumns();
+            return report.GetSqlColumns(timeout);
         }
 
         public void LoadByFolder(int organizationID, int folderID)
