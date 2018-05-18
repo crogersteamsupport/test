@@ -73,7 +73,7 @@
 
     function validateEmail() {
         var el = jQuery('input[name="email"]');
-        var emailReg = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@(?!gmail.com)(?!hotmail.com)(?!me.com)(?!yahoo.com)(?!outlook.com)(?!aol.com)(?!live.com)(?!qq.com)((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        var emailReg = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@(?!gmail.com)(?!hotmail.com)(?!me.com)(?!yahoo.)(?!outlook.com)(?!aol.com)(?!live.com)(?!qq.com)((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         var email = jQuery.trim(el.val());
         if (!emailReg.test(email) || email == '') {
             el.closest('.form-group').addClass('has-error');
