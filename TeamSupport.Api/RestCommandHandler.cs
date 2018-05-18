@@ -59,6 +59,19 @@ namespace TeamSupport.Api
                     int apiRequestLimit = command.IsCustomerOnly ? Organizations.GetOrganization(_loginUser, companyId).APIRequestLimit : _organization.APIRequestLimit;
                     int apiRequestCount = ApiLogs.GetDailyRequestCount(_loginUser, companyId);
 
+                    if (ApiLogs.IsUrlBlackListed(_loginUser, _organization.OrganizationID, log.Url))
+                    {
+                        string blacklistError = "{ \"Error\": \"This resource is not accessible at this time.\"}";
+
+                        if (command.Format == RestFormat.XML)
+                        {
+                            System.Xml.XmlDocument xmlDoc = Newtonsoft.Json.JsonConvert.DeserializeXmlNode(blacklistError);
+                            xmlDoc.XmlResolver = null;
+                            blacklistError = xmlDoc.InnerXml;
+                        }
+
+                        throw new RestException(HttpStatusCode.BadRequest, blacklistError);
+                    }
                     if (apiRequestCount >= apiRequestLimit)
 					{
 						string requestLimitError = "{ \"Error\": \"You have exceeded your 24 hour API request limit of " + _organization.APIRequestLimit.ToString() + ".\"}";
@@ -113,18 +126,17 @@ namespace TeamSupport.Api
             {
                 context.Response.ContentType = "text/plain";
                 context.Response.StatusCode = (int)rex.HttpStatusCode;
-                log.TimeToComplete =  (DateTime.Now - timeStart).TotalSeconds;
+                log.TimeToComplete =  (int)(DateTime.Now - timeStart).TotalSeconds;
                 log.StatusCode = context.Response.StatusCode;
                 log.Collection.Save();
                 context.Response.ClearContent();
                 context.Response.Write(rex.Message);
                 context.Response.End();
             }
+            log.TimeToComplete = (int)(DateTime.Now - timeStart).TotalSeconds;
             log.StatusCode = context.Response.StatusCode;
             log.Collection.Save();
             context.Response.End();
-
-
         }
         #endregion
     }

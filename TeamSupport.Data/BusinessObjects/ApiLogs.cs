@@ -68,6 +68,24 @@ WHERE
                 return (int)apiLogs.ExecuteScalar(command);
             }
         }
+
+        public static bool IsUrlBlackListed(LoginUser loginUser, int organizationID, string url)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+                    SELECT COUNT(*)
+                    FROM ApiBlacklist
+                    WHERE OrganizationID=@OrganizationID
+                    AND Url = @url";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@Url", url);
+
+                ApiLogs apiLogs = new ApiLogs(loginUser);
+                return (int)apiLogs.ExecuteScalar(command) > 0;
+            }
+        }
     
   }
   
