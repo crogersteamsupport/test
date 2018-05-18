@@ -2014,6 +2014,9 @@ namespace TeamSupport.Data
         public static GridResult GetReportData(LoginUser loginUser, int reportID, int from, int to, string sortField, bool isDesc, bool useUserFilter)
         {
             Report report = Reports.GetReport(loginUser, reportID, loginUser.UserID);
+
+            if (report.IsDisabled || SystemSettings.GetIsReportsDisabled()) return null;
+            DateTime timeStart = DateTime.Now;
             GridResult result;
             try
             {
@@ -2058,6 +2061,8 @@ namespace TeamSupport.Data
                     report.Collection.Save();
                 }
             }
+            report.LastTimeTaken = (int)(DateTime.Now - timeStart).TotalSeconds;
+            report.Collection.Save();
             return result;
 
         }
@@ -2065,6 +2070,8 @@ namespace TeamSupport.Data
         public static DataTable GetReportTable(LoginUser loginUser, int reportID, int from, int to, string sortField, bool isDesc, bool useUserFilter, bool includeHiddenFields)
         {
             Report report = Reports.GetReport(loginUser, reportID);
+            if (report.IsDisabled || SystemSettings.GetIsReportsDisabled()) return null;
+            DateTime timeStart = DateTime.Now;
             DataTable result = null;
             try
             {
@@ -2109,6 +2116,10 @@ namespace TeamSupport.Data
                     report.Collection.Save();
                 }
             }
+            report.LastTimeTaken = (int)(DateTime.Now - timeStart).TotalSeconds;
+            report.Collection.Save();
+
+
             return result;
         }
 
