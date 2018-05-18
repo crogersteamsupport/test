@@ -309,7 +309,7 @@ namespace TeamSupport.Data
             MigrateToNewReport();
 
             command.CommandType = CommandType.Text;
-            command.CommandTimeout = 180;
+            command.CommandTimeout = SystemSettings.GetReportTimeout();
             switch (ReportDefType)
             {
                 case ReportType.Table:
