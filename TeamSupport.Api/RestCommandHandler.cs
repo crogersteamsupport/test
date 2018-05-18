@@ -59,7 +59,7 @@ namespace TeamSupport.Api
                     int apiRequestLimit = command.IsCustomerOnly ? Organizations.GetOrganization(_loginUser, companyId).APIRequestLimit : _organization.APIRequestLimit;
                     int apiRequestCount = ApiLogs.GetDailyRequestCount(_loginUser, companyId);
 
-                    if (ApiLogs.IsUrlBlackListed(_loginUser, _organization.OrganizationID, log.Url))
+                    if (ApiLogs.IsUrlBlackListed(_loginUser, _organization.OrganizationID, log.Url) || SystemSettings.GetIsApiDisabled())
                     {
                         string blacklistError = "{ \"Error\": \"This resource is not accessible at this time.\"}";
 
