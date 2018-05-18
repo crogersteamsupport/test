@@ -39,6 +39,7 @@ namespace TeamSupport.Api
             }
 
             ApiLog log = new ApiLogs(_loginUser).AddNewApiLog();
+            DateTime timeStart = DateTime.Now;
 
             context.Response.StatusCode = (int)HttpStatusCode.OK;
             context.Response.ContentType = "text/plain";
@@ -106,12 +107,13 @@ namespace TeamSupport.Api
                         throw ex;
                     }
                 }
-
+                
             }
             catch (RestException rex)
             {
                 context.Response.ContentType = "text/plain";
                 context.Response.StatusCode = (int)rex.HttpStatusCode;
+                log.TimeToComplete =  (DateTime.Now - timeStart).TotalSeconds;
                 log.StatusCode = context.Response.StatusCode;
                 log.Collection.Save();
                 context.Response.ClearContent();

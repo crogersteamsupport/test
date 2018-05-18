@@ -116,8 +116,11 @@ namespace TeamSupport.Api
 
       try
       {
+        if (SystemSettings.GetIsApiDisabled()) return false;
         if (string.IsNullOrEmpty(password)) return false;
         LoginUser loginUser = GetLoginUser();
+
+        
 
         Organization organization = Organizations.GetOrganization(loginUser, int.Parse(username));
         Guid guid = new Guid(password);
