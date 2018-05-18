@@ -2800,6 +2800,7 @@ ORDER BY
                         command.Parameters.AddWithValue("@WinOrgID", winningOrganizationID);
                         command.Parameters.AddWithValue("@LooseOrgID", losingOrganizationID);
                         command.Parameters.AddWithValue("@LoginUserID", loginUser.UserID);
+						command.CommandTimeout = 120;
                         ExecuteNonQuery(command);
 
                         string description = "Merged '" + companyName + "' contacts.";
