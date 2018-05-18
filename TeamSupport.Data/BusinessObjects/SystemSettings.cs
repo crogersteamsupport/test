@@ -164,6 +164,13 @@ IF EXISTS(SELECT * FROM SystemSettings WHERE (SettingKey=@SettingKey))
             return ReadString("MobileURL", "https://m.teamsupport.com/");
         }
 
+        public static int GetReportTimeout()
+        {
+            int value = 60;
+            int.TryParse(ReadString("ReportTimeout", "60"), out value);
+            return value;
+        }
+
         //Pusher credentials below. If not entered to the SystemSettings table yet then we'll use the original pusher account used in the beginning, named: choice-rock-331-development
         public static string GetPusherKey()
         {
