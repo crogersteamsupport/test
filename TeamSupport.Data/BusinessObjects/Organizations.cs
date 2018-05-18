@@ -2785,39 +2785,36 @@ ORDER BY
                         {
                             //As is, if error on merging files on any of the contacts happen.  It is being logged, but process continues
                             string mergeContactErrLocation = winningOrganizationMatchingContact.Collection.MergeContactsFiles(winningOrganizationMatchingContact, losingOrganizationContact, loginUser);
+                            try
+                            {
+                                using (SqlCommand command = new SqlCommand())
+                                {
+                                    command.CommandText = "Org_MergeContacts_UpdatesSingle";
+                                    command.CommandType = CommandType.StoredProcedure;
+                                    command.Parameters.AddWithValue("@WinOrgID", winningOrganizationID);
+                                    command.Parameters.AddWithValue("@WinConctactID", winningOrganizationMatchingContact.UserID);
+                                    command.Parameters.AddWithValue("@LooseContactID", losingOrganizationContact.UserID);
+                                    command.Parameters.AddWithValue("@LoginUserID", loginUser.UserID);
+                                    ExecuteNonQuery(command);
+
+                                    string description = "Merged '" + companyName + "' contacts.";
+                                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
+                                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Contacts, winningOrganizationID, description);
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
+                                log.ExceptionName = "Merge Update Contact Exception " + e.Source;
+                                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
+                                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
+                                log.Collection.Save();
+
+                                throw;
+                            }
                         }
                     }
-                }
-
-                //Merge contacts SP Org_MergeCompanies_Updates.  Loops through matched contacts and updates pertaining tables.
-                //Then updates all contacts orgid from loosing to winning org id.
-                try
-                {
-                    using (SqlCommand command = new SqlCommand())
-                    {
-                        command.CommandText = "Org_MergeContacts_Updates";
-                        command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@WinOrgID", winningOrganizationID);
-                        command.Parameters.AddWithValue("@LooseOrgID", losingOrganizationID);
-                        command.Parameters.AddWithValue("@LoginUserID", loginUser.UserID);
-						command.CommandTimeout = 120;
-                        ExecuteNonQuery(command);
-
-                        string description = "Merged '" + companyName + "' contacts.";
-                        ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
-                        ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Contacts, winningOrganizationID, description);
-                    }
-                }
-                catch (Exception e)
-                {
-                    ExceptionLog log = (new ExceptionLogs(loginUser)).AddNewExceptionLog();
-                    log.ExceptionName = "Merge Update Contact Exception " + e.Source;
-                    log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-                    log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-                    log.Collection.Save();
-
-                    throw;
-                }
+                }                
             }
         }
 
