@@ -19,6 +19,7 @@ namespace TeamSupport.CDI
         DateRange _dateRange;
         TicketReader _ticketReader;    // cache the tickets for analysis
         HashSet<Customer> _customers;  // raw analysis by organization
+        bool _verboseLog;
 
         /// <summary>
         /// Constructor
@@ -29,30 +30,88 @@ namespace TeamSupport.CDI
         {
             _dateRange = new DateRange(timeSpan, intervalCount);
             _ticketReader = new TicketReader(_dateRange);
+            _verboseLog = false;
         }
 
-        public void Run()
+        void Log(string text)
         {
+            if (_verboseLog)
+                CDIEventLog.WriteEntry(text);
+        }
+
+        public void Run(string[] args)
+        {
+            if (args.Contains("verbose"))
+                _verboseLog = true;
             CDIEventLog.WriteEntry("CDI Update started...");
 
             // load all the tickets
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             _ticketReader.LoadAllTickets();
-            CDIEventLog.WriteEntry(String.Format("{0} Tickets loaded {1} in {2:0.00} sec",
-                _ticketReader.AllTickets.Length, _dateRange, stopwatch.ElapsedMilliseconds / 1000));
+            Log(String.Format("{0} Tickets loaded {1} in {2:0.00} sec",
+                 _ticketReader.AllTickets.Length, _dateRange, stopwatch.ElapsedMilliseconds / 1000));
+
 
             // analyze by organization
             stopwatch.Restart();
             LoadCustomers();
-            CDIEventLog.WriteEntry(String.Format("Customer analysis completed in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
+            //EntireDatabase();
+            Log(String.Format("Customers and Clients loaded in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
+
+            // analyze by organization
+            stopwatch.Restart();
+            GenerateIntervals();
+            Log(String.Format("Interval data generated in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
 
             // Do the dirty work
+            stopwatch.Restart();
             InvokeCDIStrategy();
+            Log(String.Format("Client CDI generated in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
+
+            // test output
+            for (int i = 0; i < args.Length; ++i)
+            {
+                string arg = args[i];
+                Console.WriteLine(arg);
+                switch (arg)
+                {
+                    case "customer":
+                        {
+                            int organizationID = int.Parse(args[++i]);
+                            Customer customer = _customers.Where(c => c.OrganizationID == organizationID).FirstOrDefault();
+                            if (customer != null)
+                                customer.WriteCdiByOrganization();
+                            else
+                                Console.WriteLine("Customer ID not found");
+                        }
+                        break;
+                    case "customerIntervals":
+                        {
+                            int organizationID = int.Parse(args[++i]);
+                            Customer customer = _customers.Where(c => c.OrganizationID == organizationID).FirstOrDefault();
+                            if (customer != null)
+                                customer.WriteIntervals();
+                            else
+                                Console.WriteLine("Customer ID not found");
+                        }
+                        break;
+                }
+            }
 
             // Store the results
             //stopwatch.Restart();
             //CDIEventLog.WriteEntry(String.Format("Results saved. {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
+            CDIEventLog.WriteEntry(String.Format("CDI Update complete"));
+        }
+
+        public void EntireDatabase()
+        {
+            OrganizationAnalysis all = new OrganizationAnalysis(_dateRange, _ticketReader.AllTickets, 0, _ticketReader.AllTickets.Length);
+            all.GenerateIntervals();
+            IntervalData.WriteHeader();
+            foreach (IntervalData interval in all.Intervals)
+                Console.WriteLine(interval.ToString());
         }
 
         void LoadCustomers()
@@ -77,6 +136,12 @@ namespace TeamSupport.CDI
             _customers.Add(new Customer(new OrganizationAnalysis(_dateRange, allTickets, startIndex, allTickets.Length)));
         }
 
+        public void GenerateIntervals()
+        {
+            foreach (Customer customer in _customers)
+                customer.GenerateIntervals();
+        }
+
         void InvokeCDIStrategy()
         {
             //IntervalData.WriteHeader();
@@ -93,11 +158,11 @@ namespace TeamSupport.CDI
                 customer.WriteCdiByOrganization();
         }
 
-        public void WriteItervalData(int customerID, int clientID)
+        public void WriteIntervals(int customerID, int clientID)
         {
             Customer customer = _customers.Where(c => c.OrganizationID == customerID).FirstOrDefault();
             if(customer != null)
-                customer.WriteItervalData(clientID);
+                customer.WriteIntervals(clientID);
         }
     }
 }

@@ -41,6 +41,7 @@ namespace TeamSupport.CDI
         public static void WriteEntry(string message, EventLogEntryType type = EventLogEntryType.Information)
         {
             Debug.WriteLine(message);
+            Console.WriteLine(message);
             _eventLog.WriteEntry(message, type);
         }
 

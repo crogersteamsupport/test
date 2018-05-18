@@ -25,7 +25,7 @@ namespace TeamSupport.CDI
         public double? AverageActionSentiment;
         public int? ClientOrganizationID;
         public int? Severity;
-        public int CreatorID;
+        //public int CreatorID;
 
         public int CompareTo(TicketJoin other) { return DateCreated.CompareTo(other.DateCreated); }
 

@@ -20,6 +20,11 @@ namespace TeamSupport.CDI
 
         public int? ClientOrganizationID { get { return _organizationAnalysis.ClientOrganizationID; } }
 
+        public void GenerateIntervals()
+        {
+            _organizationAnalysis.GenerateIntervals();
+        }
+
         public void InvokeCDIStrategy(ICDIStrategy customerStrategy)
         {
             _iCdiStrategy = new ClientPercentileStrategy(_organizationAnalysis.Intervals, customerStrategy, _organizationAnalysis.TicketCount);
@@ -45,10 +50,10 @@ namespace TeamSupport.CDI
             int clientID = _organizationAnalysis.ClientOrganizationID.Value;
             Organization organization;
             if(Organization.TryGet(clientID, out organization))
-                Debug.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}\t{4}", clientID, organization.Name, _organizationAnalysis.Intervals.Count, organization.CustDisIndex, last.CDI));
+                Console.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}\t{4}", clientID, organization.Name, _organizationAnalysis.Intervals.Count, organization.CustDisIndex, last.CDI));
         }
 
-        public void WriteItervalData()
+        public void WriteIntervals()
         {
             int clientID = _organizationAnalysis.ClientOrganizationID.Value;
             Organization organization;

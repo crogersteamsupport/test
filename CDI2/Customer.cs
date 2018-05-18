@@ -16,11 +16,13 @@ namespace TeamSupport.CDI
         public Customer(OrganizationAnalysis organizationAnalysis)
         {
             _organizationAnalysis = organizationAnalysis;
+            _clients = new HashSet<Client>();
             LoadClients();
         }
 
         public List<IntervalData> Intervals { get { return _organizationAnalysis.Intervals; } }
-        public int OrganizationID {  get { return _organizationAnalysis.OrganizationID; } }
+        public int OrganizationID { get { return _organizationAnalysis.OrganizationID; } }
+        public void WriteItervals() { _organizationAnalysis.WriteItervals(); }
 
         void LoadClients()
         {
@@ -29,7 +31,6 @@ namespace TeamSupport.CDI
                 return;
 
             Array.Sort(allTickets, (lhs, rhs) => lhs.ClientOrganizationID.Value.CompareTo(rhs.ClientOrganizationID.Value));
-            _clients = new HashSet<Client>();
 
             // spin through each organization
             int startIndex = 0;
@@ -39,7 +40,7 @@ namespace TeamSupport.CDI
                 if (allTickets[i].ClientOrganizationID != startId)
                 {
                     // not a client of ourselves
-                    if(startId != _organizationAnalysis.ClientOrganizationID)
+                    if (startId != _organizationAnalysis.ClientOrganizationID)
                         _clients.Add(new Client(new OrganizationAnalysis(_organizationAnalysis._dateRange, allTickets, startIndex, i)));
                     startIndex = i;
                     startId = allTickets[startIndex].ClientOrganizationID.Value;
@@ -47,6 +48,13 @@ namespace TeamSupport.CDI
             }
 
             _clients.Add(new Client(new OrganizationAnalysis(_organizationAnalysis._dateRange, allTickets, startIndex, allTickets.Length)));
+        }
+
+        public void GenerateIntervals()
+        {
+            _organizationAnalysis.GenerateIntervals();
+            foreach (Client client in _clients)
+                client.GenerateIntervals();
         }
 
         public void InvokeCDIStrategy()
@@ -72,20 +80,30 @@ namespace TeamSupport.CDI
 
         public void WriteCdiByOrganization()
         {
-            Debug.WriteLine(_organizationAnalysis.OrganizationID);
-            Debug.WriteLine("ClientID\tClient\tActiveWeeks\tCDI\tCDI-2");
+            Console.WriteLine("------------------------------------------");
+            Console.WriteLine(_organizationAnalysis.OrganizationID);
+            Console.WriteLine("------------------------------------------");
+            Console.WriteLine("ClientID\tClient\tActiveWeeks\tCDI\tCDI-2");
             foreach (Client client in _clients)
                 client.WriteCdiByOrganization(_organizationAnalysis.Intervals[0]._timeStamp);
         }
 
-        public void WriteItervalData(int clientID)
+        public void WriteIntervals()
+        {
+            Console.WriteLine("------------------------------------------");
+            Console.WriteLine(_organizationAnalysis.OrganizationID);
+            Console.WriteLine("------------------------------------------");
+            _organizationAnalysis.WriteItervals();
+        }
+
+        public void WriteIntervals(int clientID)
         {
             Debug.Write("ClientID\tClient\t");
             IntervalData.WriteHeader();
 
             Client client = _clients.Where(c => c.ClientOrganizationID.HasValue && (c.ClientOrganizationID == clientID)).FirstOrDefault();
             if (client != null)
-                client.WriteItervalData();
+                client.WriteIntervals();
         }
 
     }

@@ -28,7 +28,6 @@ namespace TeamSupport.CDI
         public TicketReader(DateRange analysisInterval)
         {
             _dateRange = analysisInterval;
-            //CreateTicketSeverities();
         }
 
         /// <summary> 
@@ -66,7 +65,7 @@ namespace TeamSupport.CDI
                                  where (t.DateCreated > _dateRange.StartDate) &&
                                      (!ts.IsClosed || (t.DateClosed.Value > t.DateCreated)) &&
                                      (t.TicketSource != "SalesForce") &&    // ignore imported tickets
-                                     //(t.OrganizationID == 1078) &&
+                                     //(t.OrganizationID == 536001) &&
                                      (!tt.ExcludeFromCDI) &&
                                      (!ts.ExcludeFromCDI)
                                  select new TicketJoin()
@@ -75,7 +74,7 @@ namespace TeamSupport.CDI
                                      DateClosed = t.DateClosed,
                                      DateCreated = t.DateCreated,
                                      IsClosed = ts.IsClosed,
-                                     CreatorID = t.CreatorID,
+                                     //CreatorID = t.CreatorID,
                                      ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count(),
                                      AverageActionSentiment = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.AverageActionSentiment).First(),  // for some reason Min is faster than First()
                                      ClientOrganizationID = (from u in userTable where u.UserID == t.CreatorID select u.OrganizationID).First(),
@@ -84,32 +83,6 @@ namespace TeamSupport.CDI
 
                     // run the query
                     AllTickets = query.ToArray();
-                }
-            }
-            catch (Exception e)
-            {
-                CDIEventLog.WriteEntry("Ticket Read failed", e);
-            }
-        }
-
-        public void CreateTicketSeverities()
-        {
-            try
-            {
-                string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                using (DataContext db = new DataContext(connection))
-                {
-                    Table<TicketSeverity> severityTable = db.GetTable<TicketSeverity>();
-
-                    var query = (from t in severityTable
-                                 where !t.Severity.HasValue
-                                 select t);
-
-                    TicketSeverity[] needsValue = query.ToArray();
-                    foreach(TicketSeverity severity in needsValue)
-                        severity.AssignSeverity();
-                    db.SubmitChanges();
                 }
             }
             catch (Exception e)

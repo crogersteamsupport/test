@@ -43,7 +43,7 @@ namespace TeamSupport.CDI
                 _averageActionCount = closedTickets.Average(x => x.ActionsCount);
                 _averageSentimentScore = closedTickets.Average(x => x.AverageActionSentiment);
                 _averageSeverity = closedTickets.Average(x => x.Severity);
-                _CreatorIDCount = closedTickets.Select(t => t.CreatorID).Distinct().Count();
+                //_CreatorIDCount = closedTickets.Select(t => t.CreatorID).Distinct().Count();
             }
         }
 
@@ -75,7 +75,7 @@ namespace TeamSupport.CDI
 
         public static void WriteHeader()
         {
-            Debug.WriteLine("Date\tNew\tOpen\tMedianDaysOpen\tClosed\tMedianDaysToClose\tAvgActions\tAvgSentiment\tAverageSeverity\tCDI\tClientCustomerID");
+            Console.WriteLine("Date\tNew\tOpen\tMedianDaysOpen\tClosed\tMedianDaysToClose\tAvgActions\tAvgSentiment\tAverageSeverity\tCDI\tClientCustomerID");
         }
 
         public static void Write(List<IntervalData> intervals)

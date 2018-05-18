@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.Linq.Mapping;
+using System.Configuration;
+using System.Data.SqlClient;
+using System.Data.Linq;
 
 namespace TeamSupport.CDI.linq
 {
@@ -20,6 +23,32 @@ namespace TeamSupport.CDI.linq
         [Column]
         public int? Severity;
 #pragma warning restore CS0649
+
+        public static void AssignTicketSeverities()
+        {
+            try
+            {
+                string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (DataContext db = new DataContext(connection))
+                {
+                    Table<TicketSeverity> severityTable = db.GetTable<TicketSeverity>();
+
+                    var query = (from t in severityTable
+                                 where !t.Severity.HasValue
+                                 select t);
+
+                    TicketSeverity[] needsValue = query.ToArray();
+                    foreach (TicketSeverity severity in needsValue)
+                        severity.AssignSeverity();
+                    db.SubmitChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                CDIEventLog.WriteEntry("Ticket Read failed", e);
+            }
+        }
 
         static string[][] Priorities = new string[][] {
             new string[] { "urgent", "immediate", "highest", "emergency", "critical", "urgente", "blocker", "down", "crítica", "very severe", "a.s.a.p." },
