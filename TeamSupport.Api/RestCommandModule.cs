@@ -119,6 +119,8 @@ namespace TeamSupport.Api
         if (string.IsNullOrEmpty(password)) return false;
         LoginUser loginUser = GetLoginUser();
 
+        
+
         Organization organization = Organizations.GetOrganization(loginUser, int.Parse(username));
         Guid guid = new Guid(password);
 

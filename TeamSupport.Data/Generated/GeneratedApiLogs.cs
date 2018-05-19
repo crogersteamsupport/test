@@ -42,6 +42,12 @@ namespace TeamSupport.Data
     
 
     
+    public int TimeToComplete
+    {
+      get { return (int)Row["TimeToComplete"]; }
+      set { Row["TimeToComplete"] = CheckValue("TimeToComplete", value); }
+    }
+    
     public int StatusCode
     {
       get { return (int)Row["StatusCode"]; }
@@ -176,7 +182,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ApiLogs] SET     [OrganizationID] = @OrganizationID,    [IPAddress] = @IPAddress,    [Url] = @Url,    [Verb] = @Verb,    [StatusCode] = @StatusCode,    [RequestBody] = @RequestBody  WHERE ([ApiLogID] = @ApiLogID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ApiLogs] SET     [OrganizationID] = @OrganizationID,    [IPAddress] = @IPAddress,    [Url] = @Url,    [Verb] = @Verb,    [StatusCode] = @StatusCode,    [RequestBody] = @RequestBody,    [TimeToComplete] = @TimeToComplete  WHERE ([ApiLogID] = @ApiLogID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ApiLogID", SqlDbType.Int, 4);
@@ -228,13 +234,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("TimeToComplete", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ApiLogs] (    [OrganizationID],    [IPAddress],    [Url],    [Verb],    [StatusCode],    [RequestBody],    [DateCreated]) VALUES ( @OrganizationID, @IPAddress, @Url, @Verb, @StatusCode, @RequestBody, @DateCreated); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ApiLogs] (    [OrganizationID],    [IPAddress],    [Url],    [Verb],    [StatusCode],    [RequestBody],    [DateCreated],    [TimeToComplete]) VALUES ( @OrganizationID, @IPAddress, @Url, @Verb, @StatusCode, @RequestBody, @DateCreated, @TimeToComplete); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("TimeToComplete", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("DateCreated", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -397,7 +417,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ApiLogID], [OrganizationID], [IPAddress], [Url], [Verb], [StatusCode], [RequestBody], [DateCreated] FROM [dbo].[ApiLogs] WHERE ([ApiLogID] = @ApiLogID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ApiLogID], [OrganizationID], [IPAddress], [Url], [Verb], [StatusCode], [RequestBody], [DateCreated], [TimeToComplete] FROM [dbo].[ApiLogs] WHERE ([ApiLogID] = @ApiLogID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ApiLogID", apiLogID);
         Fill(command);

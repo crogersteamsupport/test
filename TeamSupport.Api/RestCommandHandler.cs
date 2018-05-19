@@ -39,6 +39,7 @@ namespace TeamSupport.Api
             }
 
             ApiLog log = new ApiLogs(_loginUser).AddNewApiLog();
+            DateTime timeStart = DateTime.Now;
 
             context.Response.StatusCode = (int)HttpStatusCode.OK;
             context.Response.ContentType = "text/plain";
@@ -58,6 +59,19 @@ namespace TeamSupport.Api
                     int apiRequestLimit = command.IsCustomerOnly ? Organizations.GetOrganization(_loginUser, companyId).APIRequestLimit : _organization.APIRequestLimit;
                     int apiRequestCount = ApiLogs.GetDailyRequestCount(_loginUser, companyId);
 
+                    if (ApiLogs.IsUrlBlackListed(_loginUser, _organization.OrganizationID, log.Url) || SystemSettings.GetIsApiDisabled())
+                    {
+                        string blacklistError = "{ \"Error\": \"This resource is not accessible at this time.\"}";
+
+                        if (command.Format == RestFormat.XML)
+                        {
+                            System.Xml.XmlDocument xmlDoc = Newtonsoft.Json.JsonConvert.DeserializeXmlNode(blacklistError);
+                            xmlDoc.XmlResolver = null;
+                            blacklistError = xmlDoc.InnerXml;
+                        }
+
+                        throw new RestException(HttpStatusCode.BadRequest, blacklistError);
+                    }
                     if (apiRequestCount >= apiRequestLimit)
 					{
 						string requestLimitError = "{ \"Error\": \"You have exceeded your 24 hour API request limit of " + _organization.APIRequestLimit.ToString() + ".\"}";
@@ -106,23 +120,23 @@ namespace TeamSupport.Api
                         throw ex;
                     }
                 }
-
+                
             }
             catch (RestException rex)
             {
                 context.Response.ContentType = "text/plain";
                 context.Response.StatusCode = (int)rex.HttpStatusCode;
+                log.TimeToComplete =  (int)(DateTime.Now - timeStart).TotalSeconds;
                 log.StatusCode = context.Response.StatusCode;
                 log.Collection.Save();
                 context.Response.ClearContent();
                 context.Response.Write(rex.Message);
                 context.Response.End();
             }
+            log.TimeToComplete = (int)(DateTime.Now - timeStart).TotalSeconds;
             log.StatusCode = context.Response.StatusCode;
             log.Collection.Save();
             context.Response.End();
-
-
         }
         #endregion
     }
