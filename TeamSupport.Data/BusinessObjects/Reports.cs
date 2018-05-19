@@ -616,7 +616,6 @@ namespace TeamSupport.Data
             if (!string.IsNullOrWhiteSpace(sortClause))
             {
                 builder.Append($", ROW_NUMBER() OVER (ORDER BY {sortClause} {sortDir}) AS [RowNum]");
-                builder.Append($", COUNT(*) OVER () AS [TotalRows]");
             }
 
             if (includeHiddenFields)
@@ -2118,7 +2117,19 @@ namespace TeamSupport.Data
             GridResult result = new GridResult();
             result.From = from;
             result.To = to;
-            result.Total = table.Rows.Count > 0 ? (int)table.Rows[0]["TotalRows"] : 0;
+            int page = to - from + 1;
+            if (table.Rows.Count < 1)
+            {
+                result.Total = from > 0 ? to : 0;
+            }
+            else if (table.Rows.Count == page)
+            {
+                result.Total = to + page;
+            }
+            else
+            {
+                result.Total = from + table.Rows.Count;
+            }
             result.Data = table;
             return result;
         }
@@ -2129,7 +2140,6 @@ namespace TeamSupport.Data
             to++;
 
             SqlCommand command = new SqlCommand();
-            string totalRows = includeHiddenFields ? ", (SELECT COUNT(RowNum) FROM r) AS 'TotalRows'" : "";
 
             string query = @"WITH  q AS({0}) SELECT * FROM q WHERE RowNum BETWEEN @From AND @To ORDER BY RowNum ASC";
             
@@ -2146,7 +2156,7 @@ namespace TeamSupport.Data
 WITH 
 {0}
 ,r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY [{1}] {2}) AS 'RowNum' FROM q)
-SELECT  *{3} FROM r
+SELECT  * FROM r
 WHERE RowNum BETWEEN @From AND @To";
             }
 
@@ -2181,7 +2191,7 @@ WHERE RowNum BETWEEN @From AND @To";
             else
             {
                 report.GetCommand(command, includeHiddenFields, false, useUserFilter);
-                command.CommandText = string.Format(query, command.CommandText, sortField, isDesc ? "DESC" : "ASC", totalRows);
+                command.CommandText = string.Format(query, command.CommandText, sortField, isDesc ? "DESC" : "ASC");
             }
 
             report.LastSqlExecuted = DataUtils.GetCommandTextSql(command);
