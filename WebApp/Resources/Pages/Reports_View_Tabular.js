@@ -471,7 +471,22 @@
             for (var i = args.from; i <= args.to; i++) {
                 _grid.invalidateRow(i);
             }
-            $('.reports-count').text(datamodel.data.length + ' Rows');
+
+            if (args.total) {
+                var page = args.to - args.from + 1;
+
+                if (args.total < 1) {
+                    if (args.from > 0) $('.reports-count').text(args.to + ' Rows');
+                    else $('.reports-count').text('0 Rows');
+                }
+                else if (args.total < args.to) {
+                    $('.reports-count').text(args.total + ' Rows');
+                }
+                else {
+                    $('.reports-count').text(args.total-page + ' displayed.  Scroll to see more.');
+                }
+            }
+
             _grid.updateRowCount();
             _grid.render();
 
