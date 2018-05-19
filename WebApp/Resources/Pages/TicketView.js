@@ -1314,7 +1314,21 @@ TicketGrid = function (options) {
         grid.updateRowCount();
         grid.render();
 
-        $('.grid-count').text(loader.data.length + ' Tickets');
+        if (args.total) {
+            var page = args.to - args.from + 1;
+
+            if (args.total < 1) {
+                if (args.from > 0) $('.grid-count').text(args.to + ' Tickets');
+                else $('.grid-count').text('0 Tickets');
+            }
+            else if (args.total < args.to) {
+                $('.grid-count').text(args.total + ' Tickets');
+            }
+            else {
+                $('.grid-count').text(args.total-page + ' displayed.  Scroll to see more.');
+            }
+        }
+
         self.hideLoadingIndicator();
         if (self._currentTicket == null) {
             self._currentTicket = getActiveTicket();
