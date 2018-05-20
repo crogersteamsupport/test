@@ -2131,14 +2131,17 @@ namespace TeamSupport.Data
             int page = to - from + 1;
             if (table.Rows.Count < 1)
             {
-                result.Total = from > 0 ? to : 0;
+                //0 rows or exact match
+                result.Total = from > 0 ? from : 0;
             }
             else if (table.Rows.Count == page)
             {
-                result.Total = to + page;
+                //page is full, add some padding
+                result.Total = to + 100;
             }
             else
             {
+                //page is not full, so set the proper total
                 result.Total = from + table.Rows.Count;
             }
             result.Data = table;

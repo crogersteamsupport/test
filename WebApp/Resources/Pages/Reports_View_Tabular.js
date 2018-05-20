@@ -17,7 +17,6 @@
             "useUserFilter": true
         };
 
-        //console.log('REQUEST: From: ' + fromPage * PAGESIZE + ', To: ' + ((fromPage * PAGESIZE) + PAGESIZE-1) + "  Page: " + fromPage);
         req = $.ajax({
             type: "POST",
             url: "/reportdata/table",
@@ -326,11 +325,10 @@
             loadingIndicator = null;
         }
         try {
+            _grid.scrollRowIntoView(0);
             var vp = _grid.getViewport();
-            var t = vp.top;
             datamodel.clear();
             datamodel.ensureData(vp.top, vp.bottom + 50, function () {
-                if (t > 10) _grid.scrollRowIntoView(t + 10, false);
                 _grid.resizeCanvas();
             });
         } catch (e) {
@@ -340,13 +338,11 @@
     }
 
     var dateTimeFormatter = function (row, cell, value, columnDef, dataContext) {
-    	console.log(_report.ReportType)
         var date = dataContext[columnDef.id];
         return date ? parent.Ts.Utils.getDateString(date, true, !(_report.ReportType == 4), _report.ReportType == 3) : '';
     };
 
     var dateFormatter = function (row, cell, value, columnDef, dataContext) {
-        console.log(_report.ReportType)
         var date = dataContext[columnDef.id];
         return date ? parent.Ts.Utils.getDateString(date, true, false, _report.ReportType == 3) : '';
     };
@@ -455,8 +451,11 @@
             _report.Settings.SortField = args.sortCol.field;
             _report.Settings.IsSortAsc = args.sortAsc;
             saveUserSettings();
+            _grid.scrollRowIntoView(0);
             var vp = _grid.getViewport();
+            datamodel.clear();
             datamodel.ensureData(vp.top, vp.bottom);
+
         });
 
         _grid.onColumnsReordered.subscribe(function (e, args) { saveColumns(); });
@@ -472,24 +471,25 @@
                 _grid.invalidateRow(i);
             }
 
-            if (args.total) {
-                var page = args.to - args.from + 1;
-
+            if (args.total || args.total == 0) {
                 if (args.total < 1) {
-                    if (args.from > 0) $('.reports-count').text(args.to + ' Rows');
+                    if (args.from > 0) {
+                        $('.reports-count').text(args.to + ' Rows');
+                        datamodel.setEndTotal(args.to);
+                    }
                     else $('.reports-count').text('0 Rows');
                 }
-                else if (args.total < args.to) {
+                else if (args.total <= args.to) {
                     $('.reports-count').text(args.total + ' Rows');
+                    datamodel.setEndTotal(args.total);
                 }
                 else {
-                    $('.reports-count').text(args.total-page + ' displayed.  Scroll to see more.');
+                    $('.reports-count').text(args.total - 99 + ' displayed, scroll to see more.');
                 }
             }
 
             _grid.updateRowCount();
             _grid.render();
-
 
             hideLoadingIndicator();
         });
@@ -534,6 +534,10 @@
     });
 
     function refresh() {
+        _grid.scrollRowIntoView(0);
+        var vp = _grid.getViewport();
+        datamodel.clear();
+        datamodel.ensureData(vp.top, vp.bottom);
 
         _layout.resizeAll();
     }
