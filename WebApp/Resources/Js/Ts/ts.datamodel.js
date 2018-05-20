@@ -8,6 +8,7 @@
         var sortdir = 1;
         var h_request = null;
         var req = null; // ajax request
+        var endTotal = 0;
 
         // events
         var onDataLoading = new Slick.Event();
@@ -29,6 +30,7 @@
         }
 
         function clear() {
+            endTotal = 0;
             for (var key in data) {
                 delete data[key];
             }
@@ -38,6 +40,10 @@
                     return getItemMetadata(index, data);
                 }
             }
+        }
+
+        function setEndTotal(value) {
+            endTotal = value;
         }
 
         function ensureData(from, to, loadedCallback) {
@@ -53,7 +59,8 @@
                     data[i * PAGESIZE] = undefined;
                 }
             }
-
+            if (endTotal != 0 && to > endTotal) to = endTotal;
+            if (endTotal != 0 && from > endTotal) from = endTotal;
             if (from < 0) { from = 0; }
 
             if (data.length > 0) { to = Math.min(to, data.length - 1); }
@@ -141,6 +148,7 @@
             "data": data,
             // methods
             "clear": clear,
+            "setEndTotal": setEndTotal,
             "isDataLoaded": isDataLoaded,
             "ensureData": ensureData,
             "reloadData": reloadData,
