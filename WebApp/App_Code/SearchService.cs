@@ -1501,7 +1501,7 @@ namespace TSWebServices
             if (string.IsNullOrWhiteSpace(searchTerm))
             {
                 //return GetAllCompaniesAndContacts(from, count, searchCompanies, searchContacts, active);
-                return GetAllCompaniesAndContacts(searchTerm, from, count, searchCompanies, searchContacts, active, true);
+                return sendResults(GetSearchForAll(from, count, "ContactCustomerList", active, false));
             }
 
             if (searchCompanies || searchContacts)
@@ -1541,10 +1541,20 @@ namespace TSWebServices
         public string[] SearchCompaniesAndContacts2(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            string[] resultItems;
+            string[] resultItems= new string[] { };
 
             Stopwatch stopWatch = Stopwatch.StartNew();
-            resultItems = GetAllCompaniesAndContacts(searchTerm, from, count, searchCompanies, searchContacts, active, parentsOnly);
+            if(!String.IsNullOrEmpty(searchTerm))
+                resultItems = sendResults(GetAllCompaniesAndContactsWithTerm(searchTerm, from, count, searchCompanies, searchContacts, active, parentsOnly));
+            else
+            {
+                if (searchCompanies && !searchContacts)
+                    resultItems = sendResults(GetSearchForAll(from, count, "CustomerList", active, parentsOnly));
+                if (searchContacts && !searchCompanies)
+                    resultItems = sendResults(GetSearchForAll(from, count, "ContactList", active, parentsOnly));
+                if(searchContacts && searchCompanies)
+                    resultItems = sendResults(GetSearchForAll(from, count, "ContactCustomerList", active, parentsOnly));
+            }
             stopWatch.Stop();
 
             NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchCompaniesAndContacts", stopWatch.ElapsedMilliseconds);
@@ -1558,7 +1568,7 @@ namespace TSWebServices
             return resultItems;
         }
         
-        private string[] GetAllCompaniesAndContacts(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly = false)
+        private DataTable GetAllCompaniesAndContactsWithTerm(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly = false)
         {
 
             LoginUser loginUser = TSAuthentication.GetLoginUser();
@@ -1571,7 +1581,7 @@ namespace TSWebServices
 
             SqlCommand command = new SqlCommand();
 
-            command.CommandText = "CustomerSearch";
+            command.CommandText = "CustomerSearch_New";
             command.CommandType = CommandType.StoredProcedure;
 
             command.Parameters.AddWithValue("@FromIndex", from + 1);
@@ -1585,21 +1595,52 @@ namespace TSWebServices
             command.Parameters.AddWithValue("@ParentsOnly", parentsOnly);
 
 
-            DataTable table = SqlExecutor.ExecuteQuery(loginUser, command);
-            
+            return SqlExecutor.ExecuteQuery(loginUser, command);       
+           
+
+        }
+        private DataTable GetSearchForAll( int from, int count, string sprocName, bool? active, bool? parentsOnly = false)
+        {
+
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            List<string> results = new List<string>();
+
+            //Clean searchterm
+            SqlCommand command = new SqlCommand();
+
+            command.CommandText = sprocName;
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("@FromIndex", from + 1);
+            command.Parameters.AddWithValue("@ToIndex", from + count);
+            command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+            command.Parameters.AddWithValue("@UserID", loginUser.UserID);
+            command.Parameters.AddWithValue("@ActiveOnly", active);
+            command.Parameters.AddWithValue("@ParentsOnly", parentsOnly);
+
+
+           return SqlExecutor.ExecuteQuery(loginUser, command);  
+
+        }      
+
+        private string[] sendResults(DataTable table)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            List<string> results = new List<string>();
+
             foreach (DataRow row in table.Rows)
             {
                 if (row["UserID"] == DBNull.Value)
                 {
                     CustomerSearchCompany company = new CustomerSearchCompany();
-                    company.name = (string)row["Organization"];
-                    company.organizationID = (int)row["OrganizationID"];
-                    company.isPortal = (bool)row["HasPortalAccess"];
+                    company.name = (string) row["Organization"];
+                    company.organizationID = (int) row["OrganizationID"];
+                    company.isPortal = (bool) row["HasPortalAccess"];
                     company.openTicketCount = 0;// (int)row["OrgOpenTickets"];
                     company.website = GetDBString(row["Website"]);
 
-                    List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
-                    PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
+                List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
+                PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
                     foreach (PhoneNumber number in phoneNumbers)
                     {
                         phones.Add(new CustomerSearchPhone(number));
@@ -1611,19 +1652,19 @@ namespace TSWebServices
                 else
                 {
                     CustomerSearchContact contact = new CustomerSearchContact();
-                    contact.organizationID = (int)row["OrganizationID"];
-                    contact.isPortal = (bool)row["IsPortalUser"];
+                    contact.organizationID = (int) row["OrganizationID"];
+                    contact.isPortal = (bool) row["IsPortalUser"];
                     contact.openTicketCount = 0;// (int)row["ContactOpenTickets"];
 
-                    contact.userID = (int)row["UserID"];
+                    contact.userID = (int) row["UserID"];
                     contact.fName = GetDBString(row["FirstName"]);
                     contact.lName = GetDBString(row["LastName"]);
                     contact.email = GetDBString(row["Email"]);
                     contact.title = GetDBString(row["Title"]);
                     contact.organization = GetDBString(row["Organization"]);
 
-                    List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
-                    PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
+                List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
+                PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
                     foreach (PhoneNumber number in phoneNumbers)
                     {
                         phones.Add(new CustomerSearchPhone(number));
@@ -1631,13 +1672,11 @@ namespace TSWebServices
                     contact.phones = phones.ToArray();
                     results.Add(JsonConvert.SerializeObject(contact));
                 }
-
             }
-
             return results.ToArray();
+        }
 
-        }     
-
+        
         public static string GetDBString(object o)
         {
             if (o == null || o == DBNull.Value) return "";
