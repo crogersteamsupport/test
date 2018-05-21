@@ -159,6 +159,25 @@ IF EXISTS(SELECT * FROM SystemSettings WHERE (SettingKey=@SettingKey))
             return ReadString("MobileURL", "https://m.teamsupport.com/");
         }
 
+        public static int GetReportTimeout()
+        {
+            int value = 60;
+            int.TryParse(ReadString("ReportTimeout", "60"), out value);
+            return value;
+        }
+
+        public static bool GetIsReportsDisabled()
+        {
+            string value = ReadString("DisableReports", "false").ToLower();
+            return value.IndexOf('t') > -1 || value.IndexOf('1') > -1;
+        }
+
+        public static bool GetIsApiDisabled()
+        {
+            string value = ReadString("DisableApi", "false").ToLower();
+            return value.IndexOf('t') > -1 || value.IndexOf('1') > -1;
+        }
+
         //Pusher credentials below. If not entered to the SystemSettings table yet then we'll use the original pusher account used in the beginning, named: choice-rock-331-development
         public static string GetPusherKey()
         {

@@ -1,5 +1,6 @@
 ﻿$(document).ready(function() {
     var _isAdmin = parent.Ts.System.User.IsSystemAdmin;
+
     if (!parent.Ts.System.User.CanCreateCompany && !parent.Ts.System.User.CanCreateContact && !_isAdmin) {
         $('.action-new').hide();
     }
@@ -18,7 +19,10 @@
         fetchItems();
     });
 
+    var execFetchItems = null;
+
     function fetchItems(start) {
+        if (execFetchItems) { execFetchItems._executor.abort();  }
         start = start || 0;
         showLoadingIndicator();
         $('.searchresults').fadeTo(200, 0.5);
@@ -39,7 +43,7 @@
             parentsOnly = true;
         }
         parent.Ts.System.logAction('Customer Page - Search Executed');
-        parent.Ts.Services.Search.SearchCompaniesAndContacts2($('#searchString').val(), start, 10, searchCompanies, searchContacts, $('#cbActive').prop('checked') ? true : null, parentsOnly, function(items) {
+        execFetchItems = parent.Ts.Services.Search.SearchCompaniesAndContactsDt($('#searchString').val(), start, 10, searchCompanies, searchContacts, $('#cbActive').prop('checked') ? true : null, parentsOnly, function (items) {
             $('.searchresults').fadeTo(0, 1);
             if (start == 0) {
                 insertSearchResults(items);
@@ -186,6 +190,7 @@
 
     $('.customers-filter').on('click', 'a', function(e) {
         e.preventDefault();
+        if ($(this).parent().hasClass('active')) return; 
         $('.customers-filter li.active').removeClass('active');
         $(this).parent().addClass('active');
         parent.Ts.System.logAction('Customer Page - Change Filter');

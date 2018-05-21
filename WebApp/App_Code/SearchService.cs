@@ -1502,7 +1502,7 @@ namespace TSWebServices
             if (string.IsNullOrWhiteSpace(searchTerm))
             {
                 //return GetAllCompaniesAndContacts(from, count, searchCompanies, searchContacts, active);
-                return GetAllCompaniesAndContacts(searchTerm, from, count, searchCompanies, searchContacts, active, true);
+                return sendResults(GetSearchForAll(from, count, "ContactCustomerList", active, false));
             }
 
             if (searchCompanies || searchContacts)
@@ -1538,54 +1538,143 @@ namespace TSWebServices
             return resultItems.ToArray();
         }
 
-        [WebMethod]
-        public string[] SearchCompaniesAndContacts2(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly)
+
+        [WebMethod]                                 
+        public string[] SearchCompaniesAndContactsDt(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly)
         {
-            searchTerm = AntiXss.HtmlEncode(searchTerm);
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            string[] resultItems;
-
-            Stopwatch stopWatch = Stopwatch.StartNew();
-            resultItems = GetAllCompaniesAndContacts(searchTerm, from, count, searchCompanies, searchContacts, active, parentsOnly);
-            stopWatch.Stop();
-
-            NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchCompaniesAndContacts", stopWatch.ElapsedMilliseconds);
-            //Only record the custom parameter in NR if the search took longer than 3 seconds (I'm using this arbitrarily, seems appropiate)
-            if (stopWatch.ElapsedMilliseconds > 500)
+            List<string> resultItems = new List<string>();
+            if (string.IsNullOrWhiteSpace(searchTerm))
             {
-                NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchCompaniesAndContacts-OrgId", TSAuthentication.GetOrganization(loginUser).OrganizationID);
-                NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchCompaniesAndContacts-Term", searchTerm);
+                return GetAllCompaniesAndContactsDt(from, count, searchCompanies, searchContacts, active, parentsOnly);
             }
 
-            return resultItems;
+            if (searchCompanies || searchContacts)
+            {
+                Stopwatch stopWatch = Stopwatch.StartNew();
+                SearchResults results = GetCustomerSearchResults(loginUser, searchTerm, searchCompanies, searchContacts, 0, active, parentsOnly);
+                stopWatch.Stop();
+                NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchCompaniesAndContacts", stopWatch.ElapsedMilliseconds);
+                //Only record the custom parameter in NR if the search took longer than 3 seconds (I'm using this arbitrarily, seems appropiate)
+                if (stopWatch.ElapsedMilliseconds > 500)
+                {
+                    NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchCompaniesAndContacts-OrgId", TSAuthentication.GetOrganization(loginUser).OrganizationID);
+                    NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchCompaniesAndContacts-Term", searchTerm);
+                }
+
+                int topLimit = from + count;
+                if (topLimit > results.Count)
+                {
+                    topLimit = results.Count;
+                }
+
+                stopWatch.Restart();
+                for (int i = from; i < topLimit; i++)
+                {
+                    results.GetNthDoc(i);
+                    if (results.CurrentItem.UserFields != null && results.CurrentItem.UserFields["JSON"] != null)
+                        resultItems.Add(results.CurrentItem.UserFields["JSON"].ToString());
+                }
+                stopWatch.Stop();
+                NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchCompaniesAndContactsPullData", stopWatch.ElapsedMilliseconds);
+            }
+
+            return resultItems.ToArray();
         }
 
-        private string[] GetAllCompaniesAndContacts(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly = false)
+        private string[] GetAllCompaniesAndContactsDt(int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly = false)
         {
-
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             List<string> results = new List<string>();
-
-            //Clean searchterm
-            searchTerm = searchTerm.Replace("\"", "").Replace("'", "");
-            if (!String.IsNullOrEmpty(searchTerm))
-                searchTerm = "\"" + searchTerm + "\"";
-
             SqlCommand command = new SqlCommand();
 
-            command.CommandText = "CustomerSearch";
-            command.CommandType = CommandType.StoredProcedure;
+            string pageQuery = @"
+WITH 
+q AS ({0}),
+r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY 
+    CASE 
+        WHEN [NAME] IS NULL THEN 1 
+        WHEN [NAME] = ''    THEN 2 
+        ELSE 3 
+    END DESC, 
+    [NAME] ASC) AS 'RowNum' FROM q)
+SELECT * INTO #X FROM r
+WHERE RowNum BETWEEN @From AND @To
 
-            command.Parameters.AddWithValue("@FromIndex", from + 1);
-            command.Parameters.AddWithValue("@ToIndex", from + count);
+SELECT 
+	o.Name AS Organization, 
+	o.OrganizationID, 
+	u.UserID, 
+	o.Website, 
+	u.IsPortalUser, 
+	o.HasPortalAccess, 
+	u.FirstName, 
+	u.LastName, 
+	u.Email, 
+	u.Title,
+	(SELECT COUNT(*) FROM TicketsView t LEFT JOIN OrganizationTickets ot ON ot.TicketID = t.TicketID WHERE ot.OrganizationID = o.OrganizationID AND t.IsClosed = 0) AS OrgOpenTickets,
+	(SELECT COUNT(*) FROM TicketsView t LEFT JOIN UserTickets ut ON ut.TicketID = t.TicketID WHERE ut.UserID = u.UserID AND t.IsClosed = 0) AS ContactOpenTickets
+FROM #X AS x
+LEFT JOIN Organizations o ON o.OrganizationID = x.OrganizationID
+LEFT JOIN Users u ON u.UserID = x.UserID";
+
+            string companyQuery = @"
+SELECT 
+  LTRIM(o.Name) AS Name, 
+  o.OrganizationID,
+  NULL AS UserID
+  FROM Organizations o WHERE o.ParentID = @OrganizationID
+";
+
+            if (Convert.ToBoolean(parentsOnly))
+            {
+                companyQuery += " AND (1 < (SELECT COUNT(*) FROM GetCompanyFamilyIDs(o.OrganizationID, 1))) ";
+            }
+
+            string contactQuery = @"
+SELECT 
+  LTRIM(u.LastName + ' ' + u.FirstName) AS Name, 
+  u.OrganizationID,
+  u.UserID
+  FROM Users u
+  LEFT JOIN Organizations o ON u.OrganizationID = o.OrganizationID
+  WHERE o.ParentID = @OrganizationID AND u.MarkDeleted=0
+";
+            User user = Users.GetUser(loginUser, loginUser.UserID);
+            if (user.TicketRights == TicketRightType.Customers)
+            {
+                companyQuery = companyQuery + " AND o.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = " + user.UserID.ToString() + ")";
+                contactQuery = contactQuery + " AND u.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = " + user.UserID.ToString() + ")";
+            }
+
+            if (active != null)
+            {
+                companyQuery = companyQuery + " AND o.IsActive = @IsActive";
+                contactQuery = contactQuery + " AND u.IsActive = @IsActive";
+                command.Parameters.AddWithValue("@IsActive", (bool)active);
+            }
+
+            if (searchContacts && searchCompanies)
+            {
+                command.CommandText = string.Format(pageQuery, companyQuery + " UNION ALL " + contactQuery);
+            }
+            else if (searchCompanies)
+            {
+                command.CommandText = string.Format(pageQuery, companyQuery);
+            }
+            else if (searchContacts)
+            {
+                command.CommandText = string.Format(pageQuery, contactQuery);
+            }
+            else
+            {
+                return results.ToArray();
+            }
+
+
             command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
-            command.Parameters.AddWithValue("@UserID", loginUser.UserID);
-            command.Parameters.AddWithValue("@SearchTerm",  searchTerm);
-            command.Parameters.AddWithValue("@IncludeCompanies", searchCompanies);
-            command.Parameters.AddWithValue("@IncludeContacts", searchContacts);
-            command.Parameters.AddWithValue("@ActiveOnly", active);
-            command.Parameters.AddWithValue("@ParentsOnly", parentsOnly);
-
+            command.Parameters.AddWithValue("@From", from + 1);
+            command.Parameters.AddWithValue("@To", from + count);
 
             DataTable table = SqlExecutor.ExecuteQuery(loginUser, command);
 
@@ -1597,11 +1686,12 @@ namespace TSWebServices
                     company.name = (string)row["Organization"];
                     company.organizationID = (int)row["OrganizationID"];
                     company.isPortal = (bool)row["HasPortalAccess"];
-                    company.openTicketCount = 0;// (int)row["OrgOpenTickets"];
+                    company.openTicketCount = (int)row["OrgOpenTickets"];
                     company.website = GetDBString(row["Website"]);
 
                     List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
                     PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
+                    //phoneNumbers.LoadByID(company.organizationID, ReferenceType.Organizations);
                     foreach (PhoneNumber number in phoneNumbers)
                     {
                         phones.Add(new CustomerSearchPhone(number));
@@ -1615,7 +1705,7 @@ namespace TSWebServices
                     CustomerSearchContact contact = new CustomerSearchContact();
                     contact.organizationID = (int)row["OrganizationID"];
                     contact.isPortal = (bool)row["IsPortalUser"];
-                    contact.openTicketCount = 0;// (int)row["ContactOpenTickets"];
+                    contact.openTicketCount = (int)row["ContactOpenTickets"];
 
                     contact.userID = (int)row["UserID"];
                     contact.fName = GetDBString(row["FirstName"]);
@@ -1626,6 +1716,7 @@ namespace TSWebServices
 
                     List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
                     PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
+                    //phoneNumbers.LoadByID(contact.userID, ReferenceType.Contacts);
                     foreach (PhoneNumber number in phoneNumbers)
                     {
                         phones.Add(new CustomerSearchPhone(number));
@@ -1640,6 +1731,148 @@ namespace TSWebServices
 
         }
 
+
+        [WebMethod]
+        public string[] SearchCompaniesAndContacts2(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly)
+        {
+            searchTerm = AntiXss.HtmlEncode(searchTerm);
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            string[] resultItems= new string[] { };
+
+            Stopwatch stopWatch = Stopwatch.StartNew();
+            if(!String.IsNullOrEmpty(searchTerm))
+                resultItems = sendResults(GetAllCompaniesAndContactsWithTerm(searchTerm, from, count, searchCompanies, searchContacts, active, parentsOnly));
+            else
+            {
+                if (searchCompanies && !searchContacts)
+                    resultItems = sendResults(GetSearchForAll(from, count, "CustomerList", active, parentsOnly));
+                if (searchContacts && !searchCompanies)
+                    resultItems = sendResults(GetSearchForAll(from, count, "ContactList", active, parentsOnly));
+                if(searchContacts && searchCompanies)
+                    resultItems = sendResults(GetSearchForAll(from, count, "ContactCustomerList", active, parentsOnly));
+            }
+            stopWatch.Stop();
+
+            NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/SearchCompaniesAndContacts", stopWatch.ElapsedMilliseconds);
+            //Only record the custom parameter in NR if the search took longer than 3 seconds (I'm using this arbitrarily, seems appropiate)
+            if (stopWatch.ElapsedMilliseconds > 500)
+            {
+                NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchCompaniesAndContacts-OrgId", TSAuthentication.GetOrganization(loginUser).OrganizationID);
+                NewRelic.Api.Agent.NewRelic.AddCustomParameter("SearchCompaniesAndContacts-Term", searchTerm);
+            }
+
+            return resultItems;
+        }
+
+        private DataTable GetAllCompaniesAndContactsWithTerm(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly = false)
+        {
+
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            List<string> results = new List<string>();
+
+            //Clean searchterm
+            searchTerm = searchTerm.Replace("\"", "").Replace("'", "");
+            if (!String.IsNullOrEmpty(searchTerm))
+                searchTerm = "\"" + searchTerm + "\"";
+
+            SqlCommand command = new SqlCommand();
+
+            command.CommandText = "CustomerSearch_New";
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("@FromIndex", from + 1);
+            command.Parameters.AddWithValue("@ToIndex", from + count);
+            command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+            command.Parameters.AddWithValue("@UserID", loginUser.UserID);
+            command.Parameters.AddWithValue("@SearchTerm",  searchTerm);
+            command.Parameters.AddWithValue("@IncludeCompanies", searchCompanies);
+            command.Parameters.AddWithValue("@IncludeContacts", searchContacts);
+            command.Parameters.AddWithValue("@ActiveOnly", active);
+            command.Parameters.AddWithValue("@ParentsOnly", parentsOnly);
+
+
+            return SqlExecutor.ExecuteQuery(loginUser, command);       
+           
+
+        }
+        private DataTable GetSearchForAll( int from, int count, string sprocName, bool? active, bool? parentsOnly = false)
+        {
+
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            List<string> results = new List<string>();
+
+            //Clean searchterm
+            SqlCommand command = new SqlCommand();
+
+            command.CommandText = sprocName;
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("@FromIndex", from + 1);
+            command.Parameters.AddWithValue("@ToIndex", from + count);
+            command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+            command.Parameters.AddWithValue("@UserID", loginUser.UserID);
+            command.Parameters.AddWithValue("@ActiveOnly", active);
+            command.Parameters.AddWithValue("@ParentsOnly", parentsOnly);
+
+
+           return SqlExecutor.ExecuteQuery(loginUser, command);  
+
+        }      
+
+        private string[] sendResults(DataTable table)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            List<string> results = new List<string>();
+
+            foreach (DataRow row in table.Rows)
+            {
+                if (row["UserID"] == DBNull.Value)
+                {
+                    CustomerSearchCompany company = new CustomerSearchCompany();
+                    company.name = (string) row["Organization"];
+                    company.organizationID = (int) row["OrganizationID"];
+                    company.isPortal = (bool) row["HasPortalAccess"];
+                    company.openTicketCount = 0;// (int)row["OrgOpenTickets"];
+                    company.website = GetDBString(row["Website"]);
+
+                List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
+                PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
+                    foreach (PhoneNumber number in phoneNumbers)
+                    {
+                        phones.Add(new CustomerSearchPhone(number));
+                    }
+                    company.phones = phones.ToArray();
+
+                    results.Add(JsonConvert.SerializeObject(company));
+                }
+                else
+                {
+                    CustomerSearchContact contact = new CustomerSearchContact();
+                    contact.organizationID = (int) row["OrganizationID"];
+                    contact.isPortal = (bool) row["IsPortalUser"];
+                    contact.openTicketCount = 0;// (int)row["ContactOpenTickets"];
+
+                    contact.userID = (int) row["UserID"];
+                    contact.fName = GetDBString(row["FirstName"]);
+                    contact.lName = GetDBString(row["LastName"]);
+                    contact.email = GetDBString(row["Email"]);
+                    contact.title = GetDBString(row["Title"]);
+                    contact.organization = GetDBString(row["Organization"]);
+
+                List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
+                PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
+                    foreach (PhoneNumber number in phoneNumbers)
+                    {
+                        phones.Add(new CustomerSearchPhone(number));
+                    }
+                    contact.phones = phones.ToArray();
+                    results.Add(JsonConvert.SerializeObject(contact));
+                }
+            }
+            return results.ToArray();
+        }
+
+        
         public static string GetDBString(object o)
         {
             if (o == null || o == DBNull.Value) return "";
