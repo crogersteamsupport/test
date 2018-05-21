@@ -215,9 +215,26 @@ namespace TeamSupport.Data
                             DataColumn column = Row.Table.Columns[field.ApiFieldName];
                             if (column.DataType == typeof(System.DateTime) || field.FieldType == CustomFieldType.Date)
                             {
-                                s = DateToLocal((DateTime)Row[field.ApiFieldName]).ToString("g", _baseCollection.LoginUser.CultureInfo);
+								DateTime fieldDateTime = DateTime.Parse(Row[field.ApiFieldName].ToString());
+								s = DateToLocal(fieldDateTime).ToString("g", _baseCollection.LoginUser.CultureInfo);
                             }
-                            else
+							else if (column.DataType == typeof(System.Boolean) || field.FieldType == CustomFieldType.Boolean)
+							{
+								bool flag = false;
+								int flagInt = 0;
+
+								s = flag.ToString();
+
+								if (Boolean.TryParse(Row[field.ApiFieldName].ToString(), out flag))
+								{
+									s = flag.ToString();
+								}
+								else if (int.TryParse(Row[field.ApiFieldName].ToString(), out flagInt))
+								{
+									s = (flagInt > 0).ToString();
+								}
+							}
+							else
                             {
                                 s = Row[field.ApiFieldName].ToString();
                             }
@@ -896,7 +913,7 @@ namespace TeamSupport.Data
 
 
 			StringBuilder builder = new StringBuilder();
-			builder.Append("(SELECT CAST(NULLIF(RTRIM(CustomValue), '') AS varchar(8000)) FROM CustomValues WHERE (CustomFieldID = ");
+			builder.Append("(SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = ");
 			builder.Append(field.CustomFieldID.ToString());
 			builder.Append(") AND (RefID = ");
 			builder.Append(refIDFieldName);
@@ -926,7 +943,7 @@ namespace TeamSupport.Data
 (
   CASE 
     WHEN ISDATE((SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))) = 1  
-    THEN (SELECT CAST(NULLIF(RTRIM(CustomValue), '') AS datetime) FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))
+    THEN (SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))
     ELSE NULL
   END
 ) AS [{2}]
@@ -940,7 +957,7 @@ namespace TeamSupport.Data
 (
   CASE 
     WHEN ISNUMERIC((SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))) = 1  
-    THEN (SELECT TRY_CAST(NULLIF(RTRIM(CustomValue), '') AS float) FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))
+    THEN (SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))
     ELSE NULL
   END
 ) AS [{2}]
@@ -953,8 +970,8 @@ namespace TeamSupport.Data
 			string sql = @"
 (
   CASE 
-    WHEN (SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1})) = 'true'  THEN CAST(1 AS bit)
-    WHEN (SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1})) = 'false'  THEN CAST(0 AS bit)
+    WHEN (SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1})) = 'true'  THEN '1'
+    WHEN (SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1})) = 'false'  THEN '0'
     ELSE NULL
   END 
 ) AS [{2}]

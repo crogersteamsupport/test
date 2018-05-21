@@ -112,14 +112,15 @@ TicketGrid = function (options) {
             loadingIndicator = null;
         }
         try {
+            grid.scrollRowIntoView(0);
             var vp = grid.getViewport();
             var t = vp.top;
             loader.clear();
             loader.ensureData(vp.top, vp.bottom + 50, function () {
-                if (t > 10) grid.scrollRowIntoView(t + 10, false);
                 grid.resizeCanvas();
                 self.hideLoadingIndicator();
             });
+
         } catch (e) {
             //alert(e.message);
         }
@@ -130,11 +131,13 @@ TicketGrid = function (options) {
             loadingIndicator.remove();
             loadingIndicator = null;
         }
+        grid.scrollRowIntoView(0);
         var vp = grid.getViewport();
         loader.clear();
         loader.ensureData(vp.top, vp.bottom, function () {
             self.hideLoadingIndicator();
         });
+
     }
 
     $('.tickets-new').click(function (e) {
@@ -1195,7 +1198,9 @@ TicketGrid = function (options) {
         var sortAsc = args.sortAsc;
         mainFrame.Ts.Services.Settings.WriteUserSetting('TicketGrid-sort-' + window.location.search, sortCol.field + '|' + sortAsc);
         loader.setSort(sortCol.field, sortAsc);
+        grid.scrollRowIntoView(0);
         var vp = grid.getViewport();
+        loader.clear();
         loader.ensureData(vp.top, vp.bottom, self.hideLoadingIndicator);
     });
 
@@ -1314,7 +1319,23 @@ TicketGrid = function (options) {
         grid.updateRowCount();
         grid.render();
 
-        $('.grid-count').text(loader.data.length + ' Tickets');
+        if (args.total || args.total == 0) {
+            if (args.total < 1) {
+                if (args.from > 0) {
+                    $('.grid-count').text(args.to + ' Tickets');
+                    loader.setEndTotal(args.to);
+                }
+                else $('.grid-count').text('0 Tickets');
+            }
+            else if (args.total < args.to) {
+                $('.grid-count').text(args.total + ' Tickets');
+                loader.setEndTotal(args.total);
+            }
+            else {
+                $('.grid-count').text(args.total - 99 + ' displayed, scroll to see more.');
+            }
+        }
+
         self.hideLoadingIndicator();
         if (self._currentTicket == null) {
             self._currentTicket = getActiveTicket();

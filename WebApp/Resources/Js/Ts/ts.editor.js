@@ -69,12 +69,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
                                 content = content.replace(/\{1\}/g, "font-family: " + FontName + ";");
                             else
                                 content = content.replace(/\{1\}/g, "");
-
-                            if (FontSize == "" && FontName == "")
-                                ed.setContent(ed.getContent());
-                            else
-                                ed.setContent(ed.getContent() + content);
-
+                            ed.setContent(ed.getContent() + content);
                         }, 10);
                     }
                 });
