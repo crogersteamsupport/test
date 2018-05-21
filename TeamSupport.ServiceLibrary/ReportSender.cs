@@ -62,7 +62,7 @@ namespace TeamSupport.ServiceLibrary
 
                             if (scheduledReport != null)
                             {
-                                string publicLogPath = AttachmentPath.GetPath(LoginUser, scheduledReport.OrganizationId, AttachmentPath.Folder.ScheduledReportsLogs);
+                                string publicLogPath = AttachmentPath.GetPath(LoginUser, scheduledReport.OrganizationId, AttachmentPath.Folder.ScheduledReportsLogs, scheduledReport.FilePathID);
                                 _publicLog = new ReportSenderPublicLog(publicLogPath, scheduledReport.Id, scheduledReport.OrganizationId);
                                 Log(string.Format("Date and times used for this log entries are in TimeZone {0}", _publicLog.OrganizationTimeZoneInfo.DisplayName), LogType.Public);
                                 QueueEmail(scheduledReport);

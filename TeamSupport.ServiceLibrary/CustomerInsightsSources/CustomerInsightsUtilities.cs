@@ -53,7 +53,7 @@ namespace TeamSupport.ServiceLibrary
                   attachment.Path = savePath;
                   attachment.FileType = string.IsNullOrEmpty(httpWebResponse.ContentType) ? "application/octet-stream" : httpWebResponse.ContentType;
                   attachment.FileSize = httpWebResponse.ContentLength;
-                  attachment.FilePathID = 3;
+                  //attachment.FilePathID = 3;
                   attachments.Save();
                 }
               }

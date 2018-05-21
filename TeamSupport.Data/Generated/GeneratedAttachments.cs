@@ -46,11 +46,9 @@ namespace TeamSupport.Data
       set { Row["ProductFamilyID"] = CheckValue("ProductFamilyID", value); }
     }
     
-
-    
-    public int FilePathID
+    public int? FilePathID
     {
-      get { return (int)Row["FilePathID"]; }
+      get { return Row["FilePathID"] != DBNull.Value ? (int?)Row["FilePathID"] : null; }
       set { Row["FilePathID"] = CheckValue("FilePathID", value); }
     }
     

@@ -308,18 +308,18 @@ namespace TeamSupport.Handlers
                 path = Path.ChangeExtension(path, ".jpg");
                 string imageFile = Path.GetFileName(path);
                 path = Path.GetDirectoryName(path);
-                string imagePath = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages, attachment.FilePathID), path);
+                string imagePath = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages, (int)attachment.FilePathID), path);
                 fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
                 if (!File.Exists(fileName))
                 {
-                    imagePath = Path.Combine(AttachmentPath.GetDefaultPath(LoginUser.Anonymous, AttachmentPath.Folder.ProfileImages, attachment.FilePathID), path);
+                    imagePath = Path.Combine(AttachmentPath.GetDefaultPath(LoginUser.Anonymous, AttachmentPath.Folder.ProfileImages, (int)attachment.FilePathID), path);
                     fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
                 }
 
             }
             else
             {
-                fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages, attachment.FilePathID), path);
+                fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages, (int)attachment.FilePathID), path);
             }
             if (File.Exists(fileName)) WriteImage(context, fileName);
         }
@@ -491,7 +491,7 @@ namespace TeamSupport.Handlers
             StringBuilder path = new StringBuilder();
             if (attachments.Count > 0)
             {
-                path.Append(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages, attachments[0].FilePathID));
+                path.Append(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages, (int)attachments[0].FilePathID));
             }
             else
             {
@@ -575,27 +575,7 @@ namespace TeamSupport.Handlers
             }
 
             //New image, check if one has been uploaded
-            //I might not be able to pull this one
-            //There are two problems:
-            //The first one is that we need the hubID to pull the hub logo. yet all we seem to have is the userid
-            //The second one (consistent with the first one) is that we are using the ProfileImages folder instead of the CustomerHubLogo
-            //This is either in error or I am missing something.
-            //I will need to dig deeper into this to find out if any a solution.
-            //Attachments attachments = new Attachments(LoginUser.Anonymous);
-            //attachments.LoadByReference(ReferenceType.CustomerHubLogo, DoWeHaveTheHubID ?);
-            StringBuilder path = new StringBuilder();
-            //if (attachments.Any())
-            //{
-            //    //Order by Descending so that we get the newest logo uploaded since more than one can exist. 
-            //    Data.Attachment attachment = attachments.OrderByDescending(a => a.DateCreated).First();
-            //    path.Append(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages, attachment.FilePathID));
-            //}
-            //else
-            //{
-                path.Append(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages));
-            //}
-
-            string originalFileName = AttachmentPath.GetImageFileName(path.ToString(), userID.ToString() + "avatar");
+            string originalFileName = AttachmentPath.GetImageFileName(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages), userID.ToString() + "avatar");
             if (File.Exists(originalFileName))
             {
                 // original image, resize, make circle, cache it
@@ -647,19 +627,7 @@ namespace TeamSupport.Handlers
             }
 
             //New image, check if one has been uploaded
-            Attachments attachments = new Attachments(LoginUser.Anonymous);
-            attachments.LoadByReferenceAndOrganizationID(ReferenceType.Organizations, organizationID);
-            StringBuilder path = new StringBuilder();
-            if (attachments.Count > 0)
-            {
-                path.Append(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.OrganizationsLogo, attachments[0].FilePathID));
-            }
-            else
-            {
-                path.Append(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.OrganizationsLogo));
-            }
-
-            string originalFileName = AttachmentPath.GetImageFileName(path.ToString(), logoOrganizationId.ToString());
+            string originalFileName = AttachmentPath.GetImageFileName(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.OrganizationsLogo), logoOrganizationId.ToString());
 
             if (File.Exists(originalFileName))
             {
@@ -729,19 +697,7 @@ namespace TeamSupport.Handlers
             }
 
             //New image, check if one has been uploaded
-            Attachments attachments = new Attachments(LoginUser.Anonymous);
-            attachments.LoadByReferenceOrganizationAndFileName(ReferenceType.Contacts, organizationID, userId.ToString() + "avatar.jpg");
-            StringBuilder path = new StringBuilder();
-            if (attachments.Count > 0)
-            {
-                path.Append(AttachmentPath.GetPath(LoginUser.Anonymous, organizationParentId, AttachmentPath.Folder.ContactImages, 3));
-            }
-            else
-            {
-                path.Append(AttachmentPath.GetPath(LoginUser.Anonymous, organizationParentId, AttachmentPath.Folder.ContactImages));
-            }
-
-            string originalFileName = AttachmentPath.GetImageFileName(path.ToString(), userId.ToString() + "avatar");
+            string originalFileName = AttachmentPath.GetImageFileName(AttachmentPath.GetPath(LoginUser.Anonymous, organizationParentId, AttachmentPath.Folder.ContactImages), userId.ToString() + "avatar");
 
             if (File.Exists(originalFileName))
             {
@@ -1622,7 +1578,7 @@ namespace TeamSupport.Handlers
             if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
             TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, attachmentID);
 
-            string attachmentPath = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ChatUploads, attachment.FilePathID);
+            string attachmentPath = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ChatUploads, (int)attachment.FilePathID);
             attachmentPath += "\\" + chatID;
 
             attachmentPath = Path.Combine(attachmentPath, attachment.FileName);

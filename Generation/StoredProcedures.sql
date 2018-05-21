@@ -1,390 +1,835 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectFacebookOption
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectFacebookOption
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
 
 (
-  @OrganizationID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
+    [AttachmentID],
     [OrganizationID],
-    [DisplayArticles],
-    [DisplayKB]
-  FROM [dbo].[FacebookOptions]
-  WHERE ([OrganizationID] = @OrganizationID)
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow],
+    [FilePathID]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertFacebookOption
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertFacebookOption
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
 
 (
   @OrganizationID int,
-  @DisplayArticles bit,
-  @DisplayKB bit,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
+  @FilePathID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[FacebookOptions]
+  INSERT INTO [dbo].[Attachments]
   (
     [OrganizationID],
-    [DisplayArticles],
-    [DisplayKB])
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow],
+    [FilePathID])
   VALUES (
     @OrganizationID,
-    @DisplayArticles,
-    @DisplayKB)
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
+    @Description,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID,
+    @ProductFamilyID,
+    @SentToTFS,
+    @SentToSnow,
+    @FilePathID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateFacebookOption
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateFacebookOption
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
 
 (
+  @AttachmentID int,
   @OrganizationID int,
-  @DisplayArticles bit,
-  @DisplayKB bit
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateModified datetime,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
+  @FilePathID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[FacebookOptions]
+  UPDATE [dbo].[Attachments]
   SET
-    [DisplayArticles] = @DisplayArticles,
-    [DisplayKB] = @DisplayKB
-  WHERE ([OrganizationID] = @OrganizationID)
+    [OrganizationID] = @OrganizationID,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID,
+    [ProductFamilyID] = @ProductFamilyID,
+    [SentToTFS] = @SentToTFS,
+    [SentToSnow] = @SentToSnow,
+    [FilePathID] = @FilePathID
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteFacebookOption
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteFacebookOption
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
 
 (
-  @OrganizationID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[FacebookOptions]
-  WHERE ([OrganizationID] = @OrganizationID)
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectFacebookOption
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectFacebookOption
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
 
 (
-  @OrganizationID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
+    [AttachmentID],
     [OrganizationID],
-    [DisplayArticles],
-    [DisplayKB]
-  FROM [dbo].[FacebookOptions]
-  WHERE ([OrganizationID] = @OrganizationID)
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow],
+    [FilePathID]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertFacebookOption
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertFacebookOption
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
 
 (
   @OrganizationID int,
-  @DisplayArticles bit,
-  @DisplayKB bit,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
+  @FilePathID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[FacebookOptions]
+  INSERT INTO [dbo].[Attachments]
   (
     [OrganizationID],
-    [DisplayArticles],
-    [DisplayKB])
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow],
+    [FilePathID])
   VALUES (
     @OrganizationID,
-    @DisplayArticles,
-    @DisplayKB)
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
+    @Description,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID,
+    @ProductFamilyID,
+    @SentToTFS,
+    @SentToSnow,
+    @FilePathID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateFacebookOption
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateFacebookOption
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
 
 (
+  @AttachmentID int,
   @OrganizationID int,
-  @DisplayArticles bit,
-  @DisplayKB bit
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateModified datetime,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
+  @FilePathID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[FacebookOptions]
+  UPDATE [dbo].[Attachments]
   SET
-    [DisplayArticles] = @DisplayArticles,
-    [DisplayKB] = @DisplayKB
-  WHERE ([OrganizationID] = @OrganizationID)
+    [OrganizationID] = @OrganizationID,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID,
+    [ProductFamilyID] = @ProductFamilyID,
+    [SentToTFS] = @SentToTFS,
+    [SentToSnow] = @SentToSnow,
+    [FilePathID] = @FilePathID
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteFacebookOption
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteFacebookOption
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
 
 (
-  @OrganizationID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[FacebookOptions]
-  WHERE ([OrganizationID] = @OrganizationID)
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectFacebookOption
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectFacebookOption
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
 
 (
-  @OrganizationID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
+    [AttachmentID],
     [OrganizationID],
-    [DisplayArticles],
-    [DisplayKB]
-  FROM [dbo].[FacebookOptions]
-  WHERE ([OrganizationID] = @OrganizationID)
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow],
+    [FilePathID]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertFacebookOption
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertFacebookOption
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
 
 (
   @OrganizationID int,
-  @DisplayArticles bit,
-  @DisplayKB bit,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
+  @FilePathID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[FacebookOptions]
+  INSERT INTO [dbo].[Attachments]
   (
     [OrganizationID],
-    [DisplayArticles],
-    [DisplayKB])
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow],
+    [FilePathID])
   VALUES (
     @OrganizationID,
-    @DisplayArticles,
-    @DisplayKB)
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
+    @Description,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID,
+    @ProductFamilyID,
+    @SentToTFS,
+    @SentToSnow,
+    @FilePathID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateFacebookOption
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateFacebookOption
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
 
 (
+  @AttachmentID int,
   @OrganizationID int,
-  @DisplayArticles bit,
-  @DisplayKB bit
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateModified datetime,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
+  @FilePathID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[FacebookOptions]
+  UPDATE [dbo].[Attachments]
   SET
-    [DisplayArticles] = @DisplayArticles,
-    [DisplayKB] = @DisplayKB
-  WHERE ([OrganizationID] = @OrganizationID)
+    [OrganizationID] = @OrganizationID,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID,
+    [ProductFamilyID] = @ProductFamilyID,
+    [SentToTFS] = @SentToTFS,
+    [SentToSnow] = @SentToSnow,
+    [FilePathID] = @FilePathID
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteFacebookOption
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteFacebookOption
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
 
 (
-  @OrganizationID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[FacebookOptions]
-  WHERE ([OrganizationID] = @OrganizationID)
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectFacebookOption
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectFacebookOption
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
 
 (
-  @OrganizationID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
+    [AttachmentID],
     [OrganizationID],
-    [DisplayArticles],
-    [DisplayKB]
-  FROM [dbo].[FacebookOptions]
-  WHERE ([OrganizationID] = @OrganizationID)
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow],
+    [FilePathID]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertFacebookOption
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertFacebookOption
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
 
 (
   @OrganizationID int,
-  @DisplayArticles bit,
-  @DisplayKB bit,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
+  @FilePathID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[FacebookOptions]
+  INSERT INTO [dbo].[Attachments]
   (
     [OrganizationID],
-    [DisplayArticles],
-    [DisplayKB])
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow],
+    [FilePathID])
   VALUES (
     @OrganizationID,
-    @DisplayArticles,
-    @DisplayKB)
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
+    @Description,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID,
+    @ProductFamilyID,
+    @SentToTFS,
+    @SentToSnow,
+    @FilePathID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateFacebookOption
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateFacebookOption
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
 
 (
+  @AttachmentID int,
   @OrganizationID int,
-  @DisplayArticles bit,
-  @DisplayKB bit
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateModified datetime,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
+  @FilePathID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[FacebookOptions]
+  UPDATE [dbo].[Attachments]
   SET
-    [DisplayArticles] = @DisplayArticles,
-    [DisplayKB] = @DisplayKB
-  WHERE ([OrganizationID] = @OrganizationID)
+    [OrganizationID] = @OrganizationID,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID,
+    [ProductFamilyID] = @ProductFamilyID,
+    [SentToTFS] = @SentToTFS,
+    [SentToSnow] = @SentToSnow,
+    [FilePathID] = @FilePathID
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteFacebookOption
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteFacebookOption
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
 
 (
-  @OrganizationID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[FacebookOptions]
-  WHERE ([OrganizationID] = @OrganizationID)
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectFacebookOption
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectFacebookOption
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
 
 (
-  @OrganizationID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
+    [AttachmentID],
     [OrganizationID],
-    [DisplayArticles],
-    [DisplayKB]
-  FROM [dbo].[FacebookOptions]
-  WHERE ([OrganizationID] = @OrganizationID)
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow],
+    [FilePathID]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertFacebookOption
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertFacebookOption
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
 
 (
   @OrganizationID int,
-  @DisplayArticles bit,
-  @DisplayKB bit,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
+  @FilePathID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[FacebookOptions]
+  INSERT INTO [dbo].[Attachments]
   (
     [OrganizationID],
-    [DisplayArticles],
-    [DisplayKB])
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow],
+    [FilePathID])
   VALUES (
     @OrganizationID,
-    @DisplayArticles,
-    @DisplayKB)
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
+    @Description,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID,
+    @ProductFamilyID,
+    @SentToTFS,
+    @SentToSnow,
+    @FilePathID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateFacebookOption
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateFacebookOption
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
 
 (
+  @AttachmentID int,
   @OrganizationID int,
-  @DisplayArticles bit,
-  @DisplayKB bit
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateModified datetime,
+  @ModifierID int,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
+  @FilePathID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[FacebookOptions]
+  UPDATE [dbo].[Attachments]
   SET
-    [DisplayArticles] = @DisplayArticles,
-    [DisplayKB] = @DisplayKB
-  WHERE ([OrganizationID] = @OrganizationID)
+    [OrganizationID] = @OrganizationID,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
+    [Description] = @Description,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID,
+    [ProductFamilyID] = @ProductFamilyID,
+    [SentToTFS] = @SentToTFS,
+    [SentToSnow] = @SentToSnow,
+    [FilePathID] = @FilePathID
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteFacebookOption
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteFacebookOption
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
 
 (
-  @OrganizationID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[FacebookOptions]
-  WHERE ([OrganizationID] = @OrganizationID)
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 

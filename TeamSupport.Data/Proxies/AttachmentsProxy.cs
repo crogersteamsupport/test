@@ -32,7 +32,7 @@ namespace TeamSupport.Data
     [DataMember] public string ProductFamily { get; set; }
     [DataMember] public bool SentToTFS { get; set; }
     [DataMember] public bool SentToSnow { get; set; }
-    [DataMember] public int FilePathID { get; set; }
+    [DataMember] public int? FilePathID { get; set; }
           
   }
   

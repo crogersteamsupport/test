@@ -31,7 +31,7 @@ namespace TeamSupport.Data
     [DataMember] public int? ProductFamilyID { get; set; }
     [DataMember] public bool SentToTFS { get; set; }
     [DataMember] public bool SentToSnow { get; set; }
-    [DataMember] public int FilePathID { get; set; }
+    [DataMember] public int? FilePathID { get; set; }
           
   }
   
