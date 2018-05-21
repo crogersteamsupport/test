@@ -43,7 +43,7 @@
             parentsOnly = true;
         }
         parent.Ts.System.logAction('Customer Page - Search Executed');
-        execFetchItems = parent.Ts.Services.Search.SearchCompaniesAndContacts2($('#searchString').val(), start, 10, searchCompanies, searchContacts, $('#cbActive').prop('checked') ? true : null, parentsOnly, function (items) {
+        execFetchItems = parent.Ts.Services.Search.SearchCompaniesAndContactsDt($('#searchString').val(), start, 10, searchCompanies, searchContacts, $('#cbActive').prop('checked') ? true : null, parentsOnly, function (items) {
             $('.searchresults').fadeTo(0, 1);
             if (start == 0) {
                 insertSearchResults(items);
