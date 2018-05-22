@@ -2792,7 +2792,7 @@ ORDER BY
                                     command.CommandText = "Org_MergeContacts_UpdatesSingle";
                                     command.CommandType = CommandType.StoredProcedure;
                                     command.Parameters.AddWithValue("@WinOrgID", winningOrganizationID);
-                                    command.Parameters.AddWithValue("@WinConctactID", winningOrganizationMatchingContact.UserID);
+                                    command.Parameters.AddWithValue("@WinContactId", winningOrganizationMatchingContact.UserID);
                                     command.Parameters.AddWithValue("@LooseContactID", losingOrganizationContact.UserID);
                                     command.Parameters.AddWithValue("@LoginUserID", loginUser.UserID);
                                     ExecuteNonQuery(command);
@@ -2814,7 +2814,17 @@ ORDER BY
                             }
                         }
                     }
-                }                
+                }
+
+                using (SqlCommand command = new SqlCommand())
+                {
+                    command.CommandText = @"
+			         UPDATE	Users SET OrganizationID = @winningOrganizationID, NeedsIndexing = 1 WHERE OrganizationID = @losingOrganizationID";
+                    command.CommandType = CommandType.Text;
+                    command.Parameters.AddWithValue("@winningOrganizationID", winningOrganizationID);
+                    command.Parameters.AddWithValue("@losingOrganizationID", losingOrganizationID);
+                    ExecuteNonQuery(command, "OrganizationContacts");
+                }
             }
         }
 
