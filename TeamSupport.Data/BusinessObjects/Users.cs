@@ -498,7 +498,6 @@ namespace TeamSupport.Data
 								((O.OrganizationID = @OrganizationID AND u.IsSystemAdmin = 1) OR (O.ParentID = @OrganizationID AND IsPortalUser = 1))
 								AND (u.Email = @Email)
 								AND (u.MarkDeleted = 0)
-								AND (u.IsActive = 1)
 								ORDER BY IsSystemAdmin DESC";
 
                 command.CommandType = CommandType.Text;
