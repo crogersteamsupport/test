@@ -486,7 +486,7 @@ namespace TeamSupport.Data
             }
         }
 
-        public void LoadHubUsersByEmail(int OrganizationID, string email)
+        public void LoadHubUsersByEmail(int organizationID, string email)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -502,7 +502,7 @@ namespace TeamSupport.Data
 								ORDER BY IsSystemAdmin DESC";
 
                 command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@OrganizationID", OrganizationID);
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
                 command.Parameters.AddWithValue("@Email", email.Trim());
                 Fill(command);
             }
