@@ -471,20 +471,25 @@
                 _grid.invalidateRow(i);
             }
 
-            if (args.total || args.total == 0) {
-                if (args.total < 1) {
-                    if (args.from > 0) {
-                        $('.reports-count').text(args.to + ' Rows');
-                        datamodel.setEndTotal(args.to);
+            if (_report.ReportType == 4) {
+                $('.reports-count').text(datamodel.data.length + ' Rows');
+            }
+            else {
+                if (args.total || args.total == 0) {
+                    if (args.total < 1) {
+                        if (args.from > 0) {
+                            $('.reports-count').text(args.to + ' Rows');
+                            datamodel.setEndTotal(args.to);
+                        }
+                        else $('.reports-count').text('0 Rows');
                     }
-                    else $('.reports-count').text('0 Rows');
-                }
-                else if (args.total <= args.to) {
-                    $('.reports-count').text(args.total + ' Rows');
-                    datamodel.setEndTotal(args.total);
-                }
-                else {
-                    $('.reports-count').text(args.total - 99 + ' displayed, scroll to see more.');
+                    else if (args.total <= args.to) {
+                        $('.reports-count').text(args.total + ' Rows');
+                        datamodel.setEndTotal(args.total);
+                    }
+                    else {
+                        $('.reports-count').text(args.total - 99 + ' displayed, scroll to see more.');
+                    }
                 }
             }
 
