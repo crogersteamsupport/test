@@ -1807,6 +1807,7 @@ namespace TSWebServices
                     clonedAttachment.ProductFamilyID = attachment.ProductFamilyID;
                     clonedAttachment.FileName = attachment.FileName;
                     clonedAttachment.RefID = actionID;
+                    clonedAttachment.FilePathID = attachment.FilePathID;
 
                     string originalAttachmentRefID = attachment.RefID.ToString();
                     string clonedActionAttachmentPath = attachment.Path.Substring(0, attachment.Path.IndexOf(@"\Actions\") + @"\Actions\".Length)

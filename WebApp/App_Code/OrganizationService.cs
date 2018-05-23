@@ -1730,6 +1730,7 @@ namespace TSWebServices
             import.RefType = (ReferenceType)refType;
             import.FileName = fileName;
             import.OrganizationID = TSAuthentication.OrganizationID;
+            import.FilePathID = 3;
             import.Collection.Save();
 
             List<ImportFieldMap> fields = JsonConvert.DeserializeObject<List<ImportFieldMap>>(fieldsData);
@@ -1774,7 +1775,7 @@ namespace TSWebServices
             result.ImportFields = simpleImportFieldsView.GetSimpleImportFieldsViewItemProxies();
 			uploadedFileName = Path.GetFileName(uploadedFileName);
 
-            string csvFile = Path.Combine(AttachmentPath.GetPath(loginUser, loginUser.OrganizationID, AttachmentPath.Folder.Imports), uploadedFileName);
+            string csvFile = Path.Combine(AttachmentPath.GetPath(loginUser, loginUser.OrganizationID, AttachmentPath.Folder.Imports, 3), uploadedFileName);
 
 			try
 			{

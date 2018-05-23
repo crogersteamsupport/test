@@ -279,6 +279,7 @@
     <Compile Include="BusinessObjects\ExceptionLogs.cs" />
     <Compile Include="BusinessObjects\ExceptionLogView.cs" />
     <Compile Include="BusinessObjects\FacebookOptions.cs" />
+    <Compile Include="BusinessObjects\FilePaths.cs" />
     <Compile Include="BusinessObjects\ForumCategories.cs" />
     <Compile Include="BusinessObjects\ForumPermissions.cs" />
     <Compile Include="BusinessObjects\ForumTickets.cs" />
@@ -416,6 +417,7 @@
     <Compile Include="FieldMaps\EmailTemplatesFieldMap.cs" />
     <Compile Include="FieldMaps\EmailTemplateTablesFieldMap.cs" />
     <Compile Include="FieldMaps\FacebookOptionsFieldMap.cs" />
+    <Compile Include="FieldMaps\FilePathsFieldMap.cs" />
     <Compile Include="FieldMaps\ForumCategoriesFieldMap.cs" />
     <Compile Include="FieldMaps\ForumLogsFieldMap.cs" />
     <Compile Include="FieldMaps\ForumPermissionsFieldMap.cs" />
@@ -695,6 +697,7 @@
     <Compile Include="Generated\GeneratedExceptionLogs.cs" />
     <Compile Include="Generated\GeneratedExceptionLogView.cs" />
     <Compile Include="Generated\GeneratedFacebookOptions.cs" />
+    <Compile Include="Generated\GeneratedFilePaths.cs" />
     <Compile Include="Generated\GeneratedForumCategories.cs" />
     <Compile Include="Generated\GeneratedForumLogs.cs" />
     <Compile Include="Generated\GeneratedForumPermissions.cs" />
@@ -838,6 +841,7 @@
     <Compile Include="Proxies\DeflectionLogProxy.cs" />
     <Compile Include="Proxies\DeletedTicketsProxy.cs" />
     <Compile Include="Proxies\EmailAddressesProxy.cs" />
+    <Compile Include="Proxies\FilePathsProxy.cs" />
     <Compile Include="Proxies\FullContactUpdatesProxy.cs" />
     <Compile Include="Proxies\GroupAssignmentHistoryProxy.cs" />
     <Compile Include="Proxies\ImportFieldsProxy.cs" />

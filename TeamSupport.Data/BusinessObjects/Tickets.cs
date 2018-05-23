@@ -756,6 +756,7 @@ AND ot.TicketID = @TicketID
                         clonedAttachment.SentToJira = attachment.SentToJira;
                         clonedAttachment.ProductFamilyID = attachment.ProductFamilyID;
                         clonedAttachment.FileName = attachment.FileName;
+                        clonedAttachment.FilePathID = attachment.FilePathID;
 
                         //these need to be for the new ticket
                         Action originalAction = originalActions.Where(a => a.ActionID == attachment.RefID).FirstOrDefault();

@@ -1,1185 +1,835 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
 
 (
-  @CustomerHubFeatureSettingID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [CustomerHubFeatureSettingID],
-    [CustomerHubID],
-    [EnableKnowledgeBase],
-    [EnableProducts],
-    [EnableTicketCreation],
-    [EnableMyTickets],
-    [EnableOrganizationTickets],
-    [EnableWiki],
-    [EnableTicketGroupSelection],
-    [EnableTicketProductSelection],
-    [EnableTicketProductVersionSelection],
-    [DefaultTicketTypeID],
-    [DefaultGroupTypeID],
-    [EnableCustomerProductAssociation],
-    [EnableChat],
-    [EnableCommunity],
-    [EnableScreenRecording],
-    [EnableVideoRecording],
+    [AttachmentID],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
     [DateModified],
+    [CreatorID],
     [ModifierID],
-    [EnableTicketSeverity],
-    [EnableTicketSeverityModification],
-    [RestrictProductVersions],
-    [EnableTicketNameModification],
-    [KnowledgeBaseSortTypeID],
-    [CommunitySortTypeID],
-    [EnableAnonymousProductAssociation],
-    [EnableCustomerSpecificKB],
-    [EnableCustomFieldModification],
-    [EnableProductFamilyFiltering]
-  FROM [dbo].[CustomerHubFeatureSettings]
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow],
+    [FilePathID]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
 
 (
-  @CustomerHubID int,
-  @EnableKnowledgeBase bit,
-  @EnableProducts bit,
-  @EnableTicketCreation bit,
-  @EnableMyTickets bit,
-  @EnableOrganizationTickets bit,
-  @EnableWiki bit,
-  @EnableTicketGroupSelection bit,
-  @EnableTicketProductSelection bit,
-  @EnableTicketProductVersionSelection bit,
-  @DefaultTicketTypeID int,
-  @DefaultGroupTypeID int,
-  @EnableCustomerProductAssociation bit,
-  @EnableChat bit,
-  @EnableCommunity bit,
-  @EnableScreenRecording bit,
-  @EnableVideoRecording bit,
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateCreated datetime,
   @DateModified datetime,
+  @CreatorID int,
   @ModifierID int,
-  @EnableTicketSeverity bit,
-  @EnableTicketSeverityModification bit,
-  @RestrictProductVersions bit,
-  @EnableTicketNameModification bit,
-  @KnowledgeBaseSortTypeID int,
-  @CommunitySortTypeID int,
-  @EnableAnonymousProductAssociation bit,
-  @EnableCustomerSpecificKB bit,
-  @EnableCustomFieldModification bit,
-  @EnableProductFamilyFiltering bit,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
+  @FilePathID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CustomerHubFeatureSettings]
+  INSERT INTO [dbo].[Attachments]
   (
-    [CustomerHubID],
-    [EnableKnowledgeBase],
-    [EnableProducts],
-    [EnableTicketCreation],
-    [EnableMyTickets],
-    [EnableOrganizationTickets],
-    [EnableWiki],
-    [EnableTicketGroupSelection],
-    [EnableTicketProductSelection],
-    [EnableTicketProductVersionSelection],
-    [DefaultTicketTypeID],
-    [DefaultGroupTypeID],
-    [EnableCustomerProductAssociation],
-    [EnableChat],
-    [EnableCommunity],
-    [EnableScreenRecording],
-    [EnableVideoRecording],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
     [DateModified],
+    [CreatorID],
     [ModifierID],
-    [EnableTicketSeverity],
-    [EnableTicketSeverityModification],
-    [RestrictProductVersions],
-    [EnableTicketNameModification],
-    [KnowledgeBaseSortTypeID],
-    [CommunitySortTypeID],
-    [EnableAnonymousProductAssociation],
-    [EnableCustomerSpecificKB],
-    [EnableCustomFieldModification],
-    [EnableProductFamilyFiltering])
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow],
+    [FilePathID])
   VALUES (
-    @CustomerHubID,
-    @EnableKnowledgeBase,
-    @EnableProducts,
-    @EnableTicketCreation,
-    @EnableMyTickets,
-    @EnableOrganizationTickets,
-    @EnableWiki,
-    @EnableTicketGroupSelection,
-    @EnableTicketProductSelection,
-    @EnableTicketProductVersionSelection,
-    @DefaultTicketTypeID,
-    @DefaultGroupTypeID,
-    @EnableCustomerProductAssociation,
-    @EnableChat,
-    @EnableCommunity,
-    @EnableScreenRecording,
-    @EnableVideoRecording,
+    @OrganizationID,
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
+    @Description,
+    @DateCreated,
     @DateModified,
+    @CreatorID,
     @ModifierID,
-    @EnableTicketSeverity,
-    @EnableTicketSeverityModification,
-    @RestrictProductVersions,
-    @EnableTicketNameModification,
-    @KnowledgeBaseSortTypeID,
-    @CommunitySortTypeID,
-    @EnableAnonymousProductAssociation,
-    @EnableCustomerSpecificKB,
-    @EnableCustomFieldModification,
-    @EnableProductFamilyFiltering)
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID,
+    @ProductFamilyID,
+    @SentToTFS,
+    @SentToSnow,
+    @FilePathID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
 
 (
-  @CustomerHubFeatureSettingID int,
-  @CustomerHubID int,
-  @EnableKnowledgeBase bit,
-  @EnableProducts bit,
-  @EnableTicketCreation bit,
-  @EnableMyTickets bit,
-  @EnableOrganizationTickets bit,
-  @EnableWiki bit,
-  @EnableTicketGroupSelection bit,
-  @EnableTicketProductSelection bit,
-  @EnableTicketProductVersionSelection bit,
-  @DefaultTicketTypeID int,
-  @DefaultGroupTypeID int,
-  @EnableCustomerProductAssociation bit,
-  @EnableChat bit,
-  @EnableCommunity bit,
-  @EnableScreenRecording bit,
-  @EnableVideoRecording bit,
+  @AttachmentID int,
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
   @DateModified datetime,
   @ModifierID int,
-  @EnableTicketSeverity bit,
-  @EnableTicketSeverityModification bit,
-  @RestrictProductVersions bit,
-  @EnableTicketNameModification bit,
-  @KnowledgeBaseSortTypeID int,
-  @CommunitySortTypeID int,
-  @EnableAnonymousProductAssociation bit,
-  @EnableCustomerSpecificKB bit,
-  @EnableCustomFieldModification bit,
-  @EnableProductFamilyFiltering bit
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
+  @FilePathID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CustomerHubFeatureSettings]
+  UPDATE [dbo].[Attachments]
   SET
-    [CustomerHubID] = @CustomerHubID,
-    [EnableKnowledgeBase] = @EnableKnowledgeBase,
-    [EnableProducts] = @EnableProducts,
-    [EnableTicketCreation] = @EnableTicketCreation,
-    [EnableMyTickets] = @EnableMyTickets,
-    [EnableOrganizationTickets] = @EnableOrganizationTickets,
-    [EnableWiki] = @EnableWiki,
-    [EnableTicketGroupSelection] = @EnableTicketGroupSelection,
-    [EnableTicketProductSelection] = @EnableTicketProductSelection,
-    [EnableTicketProductVersionSelection] = @EnableTicketProductVersionSelection,
-    [DefaultTicketTypeID] = @DefaultTicketTypeID,
-    [DefaultGroupTypeID] = @DefaultGroupTypeID,
-    [EnableCustomerProductAssociation] = @EnableCustomerProductAssociation,
-    [EnableChat] = @EnableChat,
-    [EnableCommunity] = @EnableCommunity,
-    [EnableScreenRecording] = @EnableScreenRecording,
-    [EnableVideoRecording] = @EnableVideoRecording,
+    [OrganizationID] = @OrganizationID,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
+    [Description] = @Description,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [EnableTicketSeverity] = @EnableTicketSeverity,
-    [EnableTicketSeverityModification] = @EnableTicketSeverityModification,
-    [RestrictProductVersions] = @RestrictProductVersions,
-    [EnableTicketNameModification] = @EnableTicketNameModification,
-    [KnowledgeBaseSortTypeID] = @KnowledgeBaseSortTypeID,
-    [CommunitySortTypeID] = @CommunitySortTypeID,
-    [EnableAnonymousProductAssociation] = @EnableAnonymousProductAssociation,
-    [EnableCustomerSpecificKB] = @EnableCustomerSpecificKB,
-    [EnableCustomFieldModification] = @EnableCustomFieldModification,
-    [EnableProductFamilyFiltering] = @EnableProductFamilyFiltering
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID,
+    [ProductFamilyID] = @ProductFamilyID,
+    [SentToTFS] = @SentToTFS,
+    [SentToSnow] = @SentToSnow,
+    [FilePathID] = @FilePathID
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
 
 (
-  @CustomerHubFeatureSettingID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CustomerHubFeatureSettings]
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
 
 (
-  @CustomerHubFeatureSettingID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [CustomerHubFeatureSettingID],
-    [CustomerHubID],
-    [EnableKnowledgeBase],
-    [EnableProducts],
-    [EnableTicketCreation],
-    [EnableMyTickets],
-    [EnableOrganizationTickets],
-    [EnableWiki],
-    [EnableTicketGroupSelection],
-    [EnableTicketProductSelection],
-    [EnableTicketProductVersionSelection],
-    [DefaultTicketTypeID],
-    [DefaultGroupTypeID],
-    [EnableCustomerProductAssociation],
-    [EnableChat],
-    [EnableCommunity],
-    [EnableScreenRecording],
-    [EnableVideoRecording],
+    [AttachmentID],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
     [DateModified],
+    [CreatorID],
     [ModifierID],
-    [EnableTicketSeverity],
-    [EnableTicketSeverityModification],
-    [RestrictProductVersions],
-    [EnableTicketNameModification],
-    [KnowledgeBaseSortTypeID],
-    [CommunitySortTypeID],
-    [EnableAnonymousProductAssociation],
-    [EnableCustomerSpecificKB],
-    [EnableCustomFieldModification],
-    [EnableProductFamilyFiltering]
-  FROM [dbo].[CustomerHubFeatureSettings]
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow],
+    [FilePathID]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
 
 (
-  @CustomerHubID int,
-  @EnableKnowledgeBase bit,
-  @EnableProducts bit,
-  @EnableTicketCreation bit,
-  @EnableMyTickets bit,
-  @EnableOrganizationTickets bit,
-  @EnableWiki bit,
-  @EnableTicketGroupSelection bit,
-  @EnableTicketProductSelection bit,
-  @EnableTicketProductVersionSelection bit,
-  @DefaultTicketTypeID int,
-  @DefaultGroupTypeID int,
-  @EnableCustomerProductAssociation bit,
-  @EnableChat bit,
-  @EnableCommunity bit,
-  @EnableScreenRecording bit,
-  @EnableVideoRecording bit,
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateCreated datetime,
   @DateModified datetime,
+  @CreatorID int,
   @ModifierID int,
-  @EnableTicketSeverity bit,
-  @EnableTicketSeverityModification bit,
-  @RestrictProductVersions bit,
-  @EnableTicketNameModification bit,
-  @KnowledgeBaseSortTypeID int,
-  @CommunitySortTypeID int,
-  @EnableAnonymousProductAssociation bit,
-  @EnableCustomerSpecificKB bit,
-  @EnableCustomFieldModification bit,
-  @EnableProductFamilyFiltering bit,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
+  @FilePathID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CustomerHubFeatureSettings]
+  INSERT INTO [dbo].[Attachments]
   (
-    [CustomerHubID],
-    [EnableKnowledgeBase],
-    [EnableProducts],
-    [EnableTicketCreation],
-    [EnableMyTickets],
-    [EnableOrganizationTickets],
-    [EnableWiki],
-    [EnableTicketGroupSelection],
-    [EnableTicketProductSelection],
-    [EnableTicketProductVersionSelection],
-    [DefaultTicketTypeID],
-    [DefaultGroupTypeID],
-    [EnableCustomerProductAssociation],
-    [EnableChat],
-    [EnableCommunity],
-    [EnableScreenRecording],
-    [EnableVideoRecording],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
     [DateModified],
+    [CreatorID],
     [ModifierID],
-    [EnableTicketSeverity],
-    [EnableTicketSeverityModification],
-    [RestrictProductVersions],
-    [EnableTicketNameModification],
-    [KnowledgeBaseSortTypeID],
-    [CommunitySortTypeID],
-    [EnableAnonymousProductAssociation],
-    [EnableCustomerSpecificKB],
-    [EnableCustomFieldModification],
-    [EnableProductFamilyFiltering])
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow],
+    [FilePathID])
   VALUES (
-    @CustomerHubID,
-    @EnableKnowledgeBase,
-    @EnableProducts,
-    @EnableTicketCreation,
-    @EnableMyTickets,
-    @EnableOrganizationTickets,
-    @EnableWiki,
-    @EnableTicketGroupSelection,
-    @EnableTicketProductSelection,
-    @EnableTicketProductVersionSelection,
-    @DefaultTicketTypeID,
-    @DefaultGroupTypeID,
-    @EnableCustomerProductAssociation,
-    @EnableChat,
-    @EnableCommunity,
-    @EnableScreenRecording,
-    @EnableVideoRecording,
+    @OrganizationID,
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
+    @Description,
+    @DateCreated,
     @DateModified,
+    @CreatorID,
     @ModifierID,
-    @EnableTicketSeverity,
-    @EnableTicketSeverityModification,
-    @RestrictProductVersions,
-    @EnableTicketNameModification,
-    @KnowledgeBaseSortTypeID,
-    @CommunitySortTypeID,
-    @EnableAnonymousProductAssociation,
-    @EnableCustomerSpecificKB,
-    @EnableCustomFieldModification,
-    @EnableProductFamilyFiltering)
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID,
+    @ProductFamilyID,
+    @SentToTFS,
+    @SentToSnow,
+    @FilePathID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
 
 (
-  @CustomerHubFeatureSettingID int,
-  @CustomerHubID int,
-  @EnableKnowledgeBase bit,
-  @EnableProducts bit,
-  @EnableTicketCreation bit,
-  @EnableMyTickets bit,
-  @EnableOrganizationTickets bit,
-  @EnableWiki bit,
-  @EnableTicketGroupSelection bit,
-  @EnableTicketProductSelection bit,
-  @EnableTicketProductVersionSelection bit,
-  @DefaultTicketTypeID int,
-  @DefaultGroupTypeID int,
-  @EnableCustomerProductAssociation bit,
-  @EnableChat bit,
-  @EnableCommunity bit,
-  @EnableScreenRecording bit,
-  @EnableVideoRecording bit,
+  @AttachmentID int,
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
   @DateModified datetime,
   @ModifierID int,
-  @EnableTicketSeverity bit,
-  @EnableTicketSeverityModification bit,
-  @RestrictProductVersions bit,
-  @EnableTicketNameModification bit,
-  @KnowledgeBaseSortTypeID int,
-  @CommunitySortTypeID int,
-  @EnableAnonymousProductAssociation bit,
-  @EnableCustomerSpecificKB bit,
-  @EnableCustomFieldModification bit,
-  @EnableProductFamilyFiltering bit
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
+  @FilePathID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CustomerHubFeatureSettings]
+  UPDATE [dbo].[Attachments]
   SET
-    [CustomerHubID] = @CustomerHubID,
-    [EnableKnowledgeBase] = @EnableKnowledgeBase,
-    [EnableProducts] = @EnableProducts,
-    [EnableTicketCreation] = @EnableTicketCreation,
-    [EnableMyTickets] = @EnableMyTickets,
-    [EnableOrganizationTickets] = @EnableOrganizationTickets,
-    [EnableWiki] = @EnableWiki,
-    [EnableTicketGroupSelection] = @EnableTicketGroupSelection,
-    [EnableTicketProductSelection] = @EnableTicketProductSelection,
-    [EnableTicketProductVersionSelection] = @EnableTicketProductVersionSelection,
-    [DefaultTicketTypeID] = @DefaultTicketTypeID,
-    [DefaultGroupTypeID] = @DefaultGroupTypeID,
-    [EnableCustomerProductAssociation] = @EnableCustomerProductAssociation,
-    [EnableChat] = @EnableChat,
-    [EnableCommunity] = @EnableCommunity,
-    [EnableScreenRecording] = @EnableScreenRecording,
-    [EnableVideoRecording] = @EnableVideoRecording,
+    [OrganizationID] = @OrganizationID,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
+    [Description] = @Description,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [EnableTicketSeverity] = @EnableTicketSeverity,
-    [EnableTicketSeverityModification] = @EnableTicketSeverityModification,
-    [RestrictProductVersions] = @RestrictProductVersions,
-    [EnableTicketNameModification] = @EnableTicketNameModification,
-    [KnowledgeBaseSortTypeID] = @KnowledgeBaseSortTypeID,
-    [CommunitySortTypeID] = @CommunitySortTypeID,
-    [EnableAnonymousProductAssociation] = @EnableAnonymousProductAssociation,
-    [EnableCustomerSpecificKB] = @EnableCustomerSpecificKB,
-    [EnableCustomFieldModification] = @EnableCustomFieldModification,
-    [EnableProductFamilyFiltering] = @EnableProductFamilyFiltering
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID,
+    [ProductFamilyID] = @ProductFamilyID,
+    [SentToTFS] = @SentToTFS,
+    [SentToSnow] = @SentToSnow,
+    [FilePathID] = @FilePathID
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
 
 (
-  @CustomerHubFeatureSettingID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CustomerHubFeatureSettings]
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
 
 (
-  @CustomerHubFeatureSettingID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [CustomerHubFeatureSettingID],
-    [CustomerHubID],
-    [EnableKnowledgeBase],
-    [EnableProducts],
-    [EnableTicketCreation],
-    [EnableMyTickets],
-    [EnableOrganizationTickets],
-    [EnableWiki],
-    [EnableTicketGroupSelection],
-    [EnableTicketProductSelection],
-    [EnableTicketProductVersionSelection],
-    [DefaultTicketTypeID],
-    [DefaultGroupTypeID],
-    [EnableCustomerProductAssociation],
-    [EnableChat],
-    [EnableCommunity],
-    [EnableScreenRecording],
-    [EnableVideoRecording],
+    [AttachmentID],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
     [DateModified],
+    [CreatorID],
     [ModifierID],
-    [EnableTicketSeverity],
-    [EnableTicketSeverityModification],
-    [RestrictProductVersions],
-    [EnableTicketNameModification],
-    [KnowledgeBaseSortTypeID],
-    [CommunitySortTypeID],
-    [EnableAnonymousProductAssociation],
-    [EnableCustomerSpecificKB],
-    [EnableCustomFieldModification],
-    [EnableProductFamilyFiltering]
-  FROM [dbo].[CustomerHubFeatureSettings]
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow],
+    [FilePathID]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
 
 (
-  @CustomerHubID int,
-  @EnableKnowledgeBase bit,
-  @EnableProducts bit,
-  @EnableTicketCreation bit,
-  @EnableMyTickets bit,
-  @EnableOrganizationTickets bit,
-  @EnableWiki bit,
-  @EnableTicketGroupSelection bit,
-  @EnableTicketProductSelection bit,
-  @EnableTicketProductVersionSelection bit,
-  @DefaultTicketTypeID int,
-  @DefaultGroupTypeID int,
-  @EnableCustomerProductAssociation bit,
-  @EnableChat bit,
-  @EnableCommunity bit,
-  @EnableScreenRecording bit,
-  @EnableVideoRecording bit,
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateCreated datetime,
   @DateModified datetime,
+  @CreatorID int,
   @ModifierID int,
-  @EnableTicketSeverity bit,
-  @EnableTicketSeverityModification bit,
-  @RestrictProductVersions bit,
-  @EnableTicketNameModification bit,
-  @KnowledgeBaseSortTypeID int,
-  @CommunitySortTypeID int,
-  @EnableAnonymousProductAssociation bit,
-  @EnableCustomerSpecificKB bit,
-  @EnableCustomFieldModification bit,
-  @EnableProductFamilyFiltering bit,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
+  @FilePathID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CustomerHubFeatureSettings]
+  INSERT INTO [dbo].[Attachments]
   (
-    [CustomerHubID],
-    [EnableKnowledgeBase],
-    [EnableProducts],
-    [EnableTicketCreation],
-    [EnableMyTickets],
-    [EnableOrganizationTickets],
-    [EnableWiki],
-    [EnableTicketGroupSelection],
-    [EnableTicketProductSelection],
-    [EnableTicketProductVersionSelection],
-    [DefaultTicketTypeID],
-    [DefaultGroupTypeID],
-    [EnableCustomerProductAssociation],
-    [EnableChat],
-    [EnableCommunity],
-    [EnableScreenRecording],
-    [EnableVideoRecording],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
     [DateModified],
+    [CreatorID],
     [ModifierID],
-    [EnableTicketSeverity],
-    [EnableTicketSeverityModification],
-    [RestrictProductVersions],
-    [EnableTicketNameModification],
-    [KnowledgeBaseSortTypeID],
-    [CommunitySortTypeID],
-    [EnableAnonymousProductAssociation],
-    [EnableCustomerSpecificKB],
-    [EnableCustomFieldModification],
-    [EnableProductFamilyFiltering])
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow],
+    [FilePathID])
   VALUES (
-    @CustomerHubID,
-    @EnableKnowledgeBase,
-    @EnableProducts,
-    @EnableTicketCreation,
-    @EnableMyTickets,
-    @EnableOrganizationTickets,
-    @EnableWiki,
-    @EnableTicketGroupSelection,
-    @EnableTicketProductSelection,
-    @EnableTicketProductVersionSelection,
-    @DefaultTicketTypeID,
-    @DefaultGroupTypeID,
-    @EnableCustomerProductAssociation,
-    @EnableChat,
-    @EnableCommunity,
-    @EnableScreenRecording,
-    @EnableVideoRecording,
+    @OrganizationID,
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
+    @Description,
+    @DateCreated,
     @DateModified,
+    @CreatorID,
     @ModifierID,
-    @EnableTicketSeverity,
-    @EnableTicketSeverityModification,
-    @RestrictProductVersions,
-    @EnableTicketNameModification,
-    @KnowledgeBaseSortTypeID,
-    @CommunitySortTypeID,
-    @EnableAnonymousProductAssociation,
-    @EnableCustomerSpecificKB,
-    @EnableCustomFieldModification,
-    @EnableProductFamilyFiltering)
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID,
+    @ProductFamilyID,
+    @SentToTFS,
+    @SentToSnow,
+    @FilePathID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
 
 (
-  @CustomerHubFeatureSettingID int,
-  @CustomerHubID int,
-  @EnableKnowledgeBase bit,
-  @EnableProducts bit,
-  @EnableTicketCreation bit,
-  @EnableMyTickets bit,
-  @EnableOrganizationTickets bit,
-  @EnableWiki bit,
-  @EnableTicketGroupSelection bit,
-  @EnableTicketProductSelection bit,
-  @EnableTicketProductVersionSelection bit,
-  @DefaultTicketTypeID int,
-  @DefaultGroupTypeID int,
-  @EnableCustomerProductAssociation bit,
-  @EnableChat bit,
-  @EnableCommunity bit,
-  @EnableScreenRecording bit,
-  @EnableVideoRecording bit,
+  @AttachmentID int,
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
   @DateModified datetime,
   @ModifierID int,
-  @EnableTicketSeverity bit,
-  @EnableTicketSeverityModification bit,
-  @RestrictProductVersions bit,
-  @EnableTicketNameModification bit,
-  @KnowledgeBaseSortTypeID int,
-  @CommunitySortTypeID int,
-  @EnableAnonymousProductAssociation bit,
-  @EnableCustomerSpecificKB bit,
-  @EnableCustomFieldModification bit,
-  @EnableProductFamilyFiltering bit
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
+  @FilePathID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CustomerHubFeatureSettings]
+  UPDATE [dbo].[Attachments]
   SET
-    [CustomerHubID] = @CustomerHubID,
-    [EnableKnowledgeBase] = @EnableKnowledgeBase,
-    [EnableProducts] = @EnableProducts,
-    [EnableTicketCreation] = @EnableTicketCreation,
-    [EnableMyTickets] = @EnableMyTickets,
-    [EnableOrganizationTickets] = @EnableOrganizationTickets,
-    [EnableWiki] = @EnableWiki,
-    [EnableTicketGroupSelection] = @EnableTicketGroupSelection,
-    [EnableTicketProductSelection] = @EnableTicketProductSelection,
-    [EnableTicketProductVersionSelection] = @EnableTicketProductVersionSelection,
-    [DefaultTicketTypeID] = @DefaultTicketTypeID,
-    [DefaultGroupTypeID] = @DefaultGroupTypeID,
-    [EnableCustomerProductAssociation] = @EnableCustomerProductAssociation,
-    [EnableChat] = @EnableChat,
-    [EnableCommunity] = @EnableCommunity,
-    [EnableScreenRecording] = @EnableScreenRecording,
-    [EnableVideoRecording] = @EnableVideoRecording,
+    [OrganizationID] = @OrganizationID,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
+    [Description] = @Description,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [EnableTicketSeverity] = @EnableTicketSeverity,
-    [EnableTicketSeverityModification] = @EnableTicketSeverityModification,
-    [RestrictProductVersions] = @RestrictProductVersions,
-    [EnableTicketNameModification] = @EnableTicketNameModification,
-    [KnowledgeBaseSortTypeID] = @KnowledgeBaseSortTypeID,
-    [CommunitySortTypeID] = @CommunitySortTypeID,
-    [EnableAnonymousProductAssociation] = @EnableAnonymousProductAssociation,
-    [EnableCustomerSpecificKB] = @EnableCustomerSpecificKB,
-    [EnableCustomFieldModification] = @EnableCustomFieldModification,
-    [EnableProductFamilyFiltering] = @EnableProductFamilyFiltering
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID,
+    [ProductFamilyID] = @ProductFamilyID,
+    [SentToTFS] = @SentToTFS,
+    [SentToSnow] = @SentToSnow,
+    [FilePathID] = @FilePathID
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
 
 (
-  @CustomerHubFeatureSettingID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CustomerHubFeatureSettings]
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
 
 (
-  @CustomerHubFeatureSettingID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [CustomerHubFeatureSettingID],
-    [CustomerHubID],
-    [EnableKnowledgeBase],
-    [EnableProducts],
-    [EnableTicketCreation],
-    [EnableMyTickets],
-    [EnableOrganizationTickets],
-    [EnableWiki],
-    [EnableTicketGroupSelection],
-    [EnableTicketProductSelection],
-    [EnableTicketProductVersionSelection],
-    [DefaultTicketTypeID],
-    [DefaultGroupTypeID],
-    [EnableCustomerProductAssociation],
-    [EnableChat],
-    [EnableCommunity],
-    [EnableScreenRecording],
-    [EnableVideoRecording],
+    [AttachmentID],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
     [DateModified],
+    [CreatorID],
     [ModifierID],
-    [EnableTicketSeverity],
-    [EnableTicketSeverityModification],
-    [RestrictProductVersions],
-    [EnableTicketNameModification],
-    [KnowledgeBaseSortTypeID],
-    [CommunitySortTypeID],
-    [EnableAnonymousProductAssociation],
-    [EnableCustomerSpecificKB],
-    [EnableCustomFieldModification],
-    [EnableProductFamilyFiltering]
-  FROM [dbo].[CustomerHubFeatureSettings]
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow],
+    [FilePathID]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
 
 (
-  @CustomerHubID int,
-  @EnableKnowledgeBase bit,
-  @EnableProducts bit,
-  @EnableTicketCreation bit,
-  @EnableMyTickets bit,
-  @EnableOrganizationTickets bit,
-  @EnableWiki bit,
-  @EnableTicketGroupSelection bit,
-  @EnableTicketProductSelection bit,
-  @EnableTicketProductVersionSelection bit,
-  @DefaultTicketTypeID int,
-  @DefaultGroupTypeID int,
-  @EnableCustomerProductAssociation bit,
-  @EnableChat bit,
-  @EnableCommunity bit,
-  @EnableScreenRecording bit,
-  @EnableVideoRecording bit,
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateCreated datetime,
   @DateModified datetime,
+  @CreatorID int,
   @ModifierID int,
-  @EnableTicketSeverity bit,
-  @EnableTicketSeverityModification bit,
-  @RestrictProductVersions bit,
-  @EnableTicketNameModification bit,
-  @KnowledgeBaseSortTypeID int,
-  @CommunitySortTypeID int,
-  @EnableAnonymousProductAssociation bit,
-  @EnableCustomerSpecificKB bit,
-  @EnableCustomFieldModification bit,
-  @EnableProductFamilyFiltering bit,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
+  @FilePathID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CustomerHubFeatureSettings]
+  INSERT INTO [dbo].[Attachments]
   (
-    [CustomerHubID],
-    [EnableKnowledgeBase],
-    [EnableProducts],
-    [EnableTicketCreation],
-    [EnableMyTickets],
-    [EnableOrganizationTickets],
-    [EnableWiki],
-    [EnableTicketGroupSelection],
-    [EnableTicketProductSelection],
-    [EnableTicketProductVersionSelection],
-    [DefaultTicketTypeID],
-    [DefaultGroupTypeID],
-    [EnableCustomerProductAssociation],
-    [EnableChat],
-    [EnableCommunity],
-    [EnableScreenRecording],
-    [EnableVideoRecording],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
     [DateModified],
+    [CreatorID],
     [ModifierID],
-    [EnableTicketSeverity],
-    [EnableTicketSeverityModification],
-    [RestrictProductVersions],
-    [EnableTicketNameModification],
-    [KnowledgeBaseSortTypeID],
-    [CommunitySortTypeID],
-    [EnableAnonymousProductAssociation],
-    [EnableCustomerSpecificKB],
-    [EnableCustomFieldModification],
-    [EnableProductFamilyFiltering])
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow],
+    [FilePathID])
   VALUES (
-    @CustomerHubID,
-    @EnableKnowledgeBase,
-    @EnableProducts,
-    @EnableTicketCreation,
-    @EnableMyTickets,
-    @EnableOrganizationTickets,
-    @EnableWiki,
-    @EnableTicketGroupSelection,
-    @EnableTicketProductSelection,
-    @EnableTicketProductVersionSelection,
-    @DefaultTicketTypeID,
-    @DefaultGroupTypeID,
-    @EnableCustomerProductAssociation,
-    @EnableChat,
-    @EnableCommunity,
-    @EnableScreenRecording,
-    @EnableVideoRecording,
+    @OrganizationID,
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
+    @Description,
+    @DateCreated,
     @DateModified,
+    @CreatorID,
     @ModifierID,
-    @EnableTicketSeverity,
-    @EnableTicketSeverityModification,
-    @RestrictProductVersions,
-    @EnableTicketNameModification,
-    @KnowledgeBaseSortTypeID,
-    @CommunitySortTypeID,
-    @EnableAnonymousProductAssociation,
-    @EnableCustomerSpecificKB,
-    @EnableCustomFieldModification,
-    @EnableProductFamilyFiltering)
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID,
+    @ProductFamilyID,
+    @SentToTFS,
+    @SentToSnow,
+    @FilePathID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
 
 (
-  @CustomerHubFeatureSettingID int,
-  @CustomerHubID int,
-  @EnableKnowledgeBase bit,
-  @EnableProducts bit,
-  @EnableTicketCreation bit,
-  @EnableMyTickets bit,
-  @EnableOrganizationTickets bit,
-  @EnableWiki bit,
-  @EnableTicketGroupSelection bit,
-  @EnableTicketProductSelection bit,
-  @EnableTicketProductVersionSelection bit,
-  @DefaultTicketTypeID int,
-  @DefaultGroupTypeID int,
-  @EnableCustomerProductAssociation bit,
-  @EnableChat bit,
-  @EnableCommunity bit,
-  @EnableScreenRecording bit,
-  @EnableVideoRecording bit,
+  @AttachmentID int,
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
   @DateModified datetime,
   @ModifierID int,
-  @EnableTicketSeverity bit,
-  @EnableTicketSeverityModification bit,
-  @RestrictProductVersions bit,
-  @EnableTicketNameModification bit,
-  @KnowledgeBaseSortTypeID int,
-  @CommunitySortTypeID int,
-  @EnableAnonymousProductAssociation bit,
-  @EnableCustomerSpecificKB bit,
-  @EnableCustomFieldModification bit,
-  @EnableProductFamilyFiltering bit
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
+  @FilePathID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CustomerHubFeatureSettings]
+  UPDATE [dbo].[Attachments]
   SET
-    [CustomerHubID] = @CustomerHubID,
-    [EnableKnowledgeBase] = @EnableKnowledgeBase,
-    [EnableProducts] = @EnableProducts,
-    [EnableTicketCreation] = @EnableTicketCreation,
-    [EnableMyTickets] = @EnableMyTickets,
-    [EnableOrganizationTickets] = @EnableOrganizationTickets,
-    [EnableWiki] = @EnableWiki,
-    [EnableTicketGroupSelection] = @EnableTicketGroupSelection,
-    [EnableTicketProductSelection] = @EnableTicketProductSelection,
-    [EnableTicketProductVersionSelection] = @EnableTicketProductVersionSelection,
-    [DefaultTicketTypeID] = @DefaultTicketTypeID,
-    [DefaultGroupTypeID] = @DefaultGroupTypeID,
-    [EnableCustomerProductAssociation] = @EnableCustomerProductAssociation,
-    [EnableChat] = @EnableChat,
-    [EnableCommunity] = @EnableCommunity,
-    [EnableScreenRecording] = @EnableScreenRecording,
-    [EnableVideoRecording] = @EnableVideoRecording,
+    [OrganizationID] = @OrganizationID,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
+    [Description] = @Description,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [EnableTicketSeverity] = @EnableTicketSeverity,
-    [EnableTicketSeverityModification] = @EnableTicketSeverityModification,
-    [RestrictProductVersions] = @RestrictProductVersions,
-    [EnableTicketNameModification] = @EnableTicketNameModification,
-    [KnowledgeBaseSortTypeID] = @KnowledgeBaseSortTypeID,
-    [CommunitySortTypeID] = @CommunitySortTypeID,
-    [EnableAnonymousProductAssociation] = @EnableAnonymousProductAssociation,
-    [EnableCustomerSpecificKB] = @EnableCustomerSpecificKB,
-    [EnableCustomFieldModification] = @EnableCustomFieldModification,
-    [EnableProductFamilyFiltering] = @EnableProductFamilyFiltering
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID,
+    [ProductFamilyID] = @ProductFamilyID,
+    [SentToTFS] = @SentToTFS,
+    [SentToSnow] = @SentToSnow,
+    [FilePathID] = @FilePathID
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
 
 (
-  @CustomerHubFeatureSettingID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CustomerHubFeatureSettings]
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
 
 (
-  @CustomerHubFeatureSettingID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [CustomerHubFeatureSettingID],
-    [CustomerHubID],
-    [EnableKnowledgeBase],
-    [EnableProducts],
-    [EnableTicketCreation],
-    [EnableMyTickets],
-    [EnableOrganizationTickets],
-    [EnableWiki],
-    [EnableTicketGroupSelection],
-    [EnableTicketProductSelection],
-    [EnableTicketProductVersionSelection],
-    [DefaultTicketTypeID],
-    [DefaultGroupTypeID],
-    [EnableCustomerProductAssociation],
-    [EnableChat],
-    [EnableCommunity],
-    [EnableScreenRecording],
-    [EnableVideoRecording],
+    [AttachmentID],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
     [DateModified],
+    [CreatorID],
     [ModifierID],
-    [EnableTicketSeverity],
-    [EnableTicketSeverityModification],
-    [RestrictProductVersions],
-    [EnableTicketNameModification],
-    [KnowledgeBaseSortTypeID],
-    [CommunitySortTypeID],
-    [EnableAnonymousProductAssociation],
-    [EnableCustomerSpecificKB],
-    [EnableCustomFieldModification],
-    [EnableProductFamilyFiltering]
-  FROM [dbo].[CustomerHubFeatureSettings]
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow],
+    [FilePathID]
+  FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
 
 (
-  @CustomerHubID int,
-  @EnableKnowledgeBase bit,
-  @EnableProducts bit,
-  @EnableTicketCreation bit,
-  @EnableMyTickets bit,
-  @EnableOrganizationTickets bit,
-  @EnableWiki bit,
-  @EnableTicketGroupSelection bit,
-  @EnableTicketProductSelection bit,
-  @EnableTicketProductVersionSelection bit,
-  @DefaultTicketTypeID int,
-  @DefaultGroupTypeID int,
-  @EnableCustomerProductAssociation bit,
-  @EnableChat bit,
-  @EnableCommunity bit,
-  @EnableScreenRecording bit,
-  @EnableVideoRecording bit,
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
+  @DateCreated datetime,
   @DateModified datetime,
+  @CreatorID int,
   @ModifierID int,
-  @EnableTicketSeverity bit,
-  @EnableTicketSeverityModification bit,
-  @RestrictProductVersions bit,
-  @EnableTicketNameModification bit,
-  @KnowledgeBaseSortTypeID int,
-  @CommunitySortTypeID int,
-  @EnableAnonymousProductAssociation bit,
-  @EnableCustomerSpecificKB bit,
-  @EnableCustomFieldModification bit,
-  @EnableProductFamilyFiltering bit,
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
+  @FilePathID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CustomerHubFeatureSettings]
+  INSERT INTO [dbo].[Attachments]
   (
-    [CustomerHubID],
-    [EnableKnowledgeBase],
-    [EnableProducts],
-    [EnableTicketCreation],
-    [EnableMyTickets],
-    [EnableOrganizationTickets],
-    [EnableWiki],
-    [EnableTicketGroupSelection],
-    [EnableTicketProductSelection],
-    [EnableTicketProductVersionSelection],
-    [DefaultTicketTypeID],
-    [DefaultGroupTypeID],
-    [EnableCustomerProductAssociation],
-    [EnableChat],
-    [EnableCommunity],
-    [EnableScreenRecording],
-    [EnableVideoRecording],
+    [OrganizationID],
+    [FileName],
+    [FileType],
+    [FileSize],
+    [Path],
+    [Description],
+    [DateCreated],
     [DateModified],
+    [CreatorID],
     [ModifierID],
-    [EnableTicketSeverity],
-    [EnableTicketSeverityModification],
-    [RestrictProductVersions],
-    [EnableTicketNameModification],
-    [KnowledgeBaseSortTypeID],
-    [CommunitySortTypeID],
-    [EnableAnonymousProductAssociation],
-    [EnableCustomerSpecificKB],
-    [EnableCustomFieldModification],
-    [EnableProductFamilyFiltering])
+    [RefType],
+    [RefID],
+    [SentToJira],
+    [AttachmentGUID],
+    [ProductFamilyID],
+    [SentToTFS],
+    [SentToSnow],
+    [FilePathID])
   VALUES (
-    @CustomerHubID,
-    @EnableKnowledgeBase,
-    @EnableProducts,
-    @EnableTicketCreation,
-    @EnableMyTickets,
-    @EnableOrganizationTickets,
-    @EnableWiki,
-    @EnableTicketGroupSelection,
-    @EnableTicketProductSelection,
-    @EnableTicketProductVersionSelection,
-    @DefaultTicketTypeID,
-    @DefaultGroupTypeID,
-    @EnableCustomerProductAssociation,
-    @EnableChat,
-    @EnableCommunity,
-    @EnableScreenRecording,
-    @EnableVideoRecording,
+    @OrganizationID,
+    @FileName,
+    @FileType,
+    @FileSize,
+    @Path,
+    @Description,
+    @DateCreated,
     @DateModified,
+    @CreatorID,
     @ModifierID,
-    @EnableTicketSeverity,
-    @EnableTicketSeverityModification,
-    @RestrictProductVersions,
-    @EnableTicketNameModification,
-    @KnowledgeBaseSortTypeID,
-    @CommunitySortTypeID,
-    @EnableAnonymousProductAssociation,
-    @EnableCustomerSpecificKB,
-    @EnableCustomFieldModification,
-    @EnableProductFamilyFiltering)
+    @RefType,
+    @RefID,
+    @SentToJira,
+    @AttachmentGUID,
+    @ProductFamilyID,
+    @SentToTFS,
+    @SentToSnow,
+    @FilePathID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
 
 (
-  @CustomerHubFeatureSettingID int,
-  @CustomerHubID int,
-  @EnableKnowledgeBase bit,
-  @EnableProducts bit,
-  @EnableTicketCreation bit,
-  @EnableMyTickets bit,
-  @EnableOrganizationTickets bit,
-  @EnableWiki bit,
-  @EnableTicketGroupSelection bit,
-  @EnableTicketProductSelection bit,
-  @EnableTicketProductVersionSelection bit,
-  @DefaultTicketTypeID int,
-  @DefaultGroupTypeID int,
-  @EnableCustomerProductAssociation bit,
-  @EnableChat bit,
-  @EnableCommunity bit,
-  @EnableScreenRecording bit,
-  @EnableVideoRecording bit,
+  @AttachmentID int,
+  @OrganizationID int,
+  @FileName nvarchar(1000),
+  @FileType varchar(255),
+  @FileSize bigint,
+  @Path nvarchar(1000),
+  @Description varchar(2000),
   @DateModified datetime,
   @ModifierID int,
-  @EnableTicketSeverity bit,
-  @EnableTicketSeverityModification bit,
-  @RestrictProductVersions bit,
-  @EnableTicketNameModification bit,
-  @KnowledgeBaseSortTypeID int,
-  @CommunitySortTypeID int,
-  @EnableAnonymousProductAssociation bit,
-  @EnableCustomerSpecificKB bit,
-  @EnableCustomFieldModification bit,
-  @EnableProductFamilyFiltering bit
+  @RefType int,
+  @RefID int,
+  @SentToJira bit,
+  @AttachmentGUID uniqueidentifier,
+  @ProductFamilyID int,
+  @SentToTFS bit,
+  @SentToSnow bit,
+  @FilePathID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CustomerHubFeatureSettings]
+  UPDATE [dbo].[Attachments]
   SET
-    [CustomerHubID] = @CustomerHubID,
-    [EnableKnowledgeBase] = @EnableKnowledgeBase,
-    [EnableProducts] = @EnableProducts,
-    [EnableTicketCreation] = @EnableTicketCreation,
-    [EnableMyTickets] = @EnableMyTickets,
-    [EnableOrganizationTickets] = @EnableOrganizationTickets,
-    [EnableWiki] = @EnableWiki,
-    [EnableTicketGroupSelection] = @EnableTicketGroupSelection,
-    [EnableTicketProductSelection] = @EnableTicketProductSelection,
-    [EnableTicketProductVersionSelection] = @EnableTicketProductVersionSelection,
-    [DefaultTicketTypeID] = @DefaultTicketTypeID,
-    [DefaultGroupTypeID] = @DefaultGroupTypeID,
-    [EnableCustomerProductAssociation] = @EnableCustomerProductAssociation,
-    [EnableChat] = @EnableChat,
-    [EnableCommunity] = @EnableCommunity,
-    [EnableScreenRecording] = @EnableScreenRecording,
-    [EnableVideoRecording] = @EnableVideoRecording,
+    [OrganizationID] = @OrganizationID,
+    [FileName] = @FileName,
+    [FileType] = @FileType,
+    [FileSize] = @FileSize,
+    [Path] = @Path,
+    [Description] = @Description,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [EnableTicketSeverity] = @EnableTicketSeverity,
-    [EnableTicketSeverityModification] = @EnableTicketSeverityModification,
-    [RestrictProductVersions] = @RestrictProductVersions,
-    [EnableTicketNameModification] = @EnableTicketNameModification,
-    [KnowledgeBaseSortTypeID] = @KnowledgeBaseSortTypeID,
-    [CommunitySortTypeID] = @CommunitySortTypeID,
-    [EnableAnonymousProductAssociation] = @EnableAnonymousProductAssociation,
-    [EnableCustomerSpecificKB] = @EnableCustomerSpecificKB,
-    [EnableCustomFieldModification] = @EnableCustomFieldModification,
-    [EnableProductFamilyFiltering] = @EnableProductFamilyFiltering
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [SentToJira] = @SentToJira,
+    [AttachmentGUID] = @AttachmentGUID,
+    [ProductFamilyID] = @ProductFamilyID,
+    [SentToTFS] = @SentToTFS,
+    [SentToSnow] = @SentToSnow,
+    [FilePathID] = @FilePathID
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
 
 (
-  @CustomerHubFeatureSettingID int
+  @AttachmentID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CustomerHubFeatureSettings]
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+  DELETE FROM [dbo].[Attachments]
+  WHERE ([AttachmentID] = @AttachmentID)
 GO
 
 

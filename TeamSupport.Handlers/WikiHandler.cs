@@ -69,7 +69,10 @@ namespace TeamSupport.Handlers
                 }
 
 				string path = HttpUtility.UrlDecode(builder.ToString().TrimEnd('\\'));
-				string root = SystemSettings.ReadString("FilePath", "");
+                //string root = SystemSettings.ReadString("FilePath", "");
+                FilePaths filePaths = new FilePaths(TSAuthentication.GetLoginUser());
+                filePaths.LoadByID(1);
+                string root = filePaths[0].Value;
 				string fileName = Path.Combine(root, path);
 				FileInfo info = new FileInfo(fileName);
 				context.Response.ContentType = DataUtils.MimeTypeFromFileName(fileName);
