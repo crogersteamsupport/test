@@ -34,7 +34,8 @@ namespace TeamSupport.CDI
         /// <summary>Round to the previous midnight</summary>
         public DateTime PreviousMidnight(DateTime value)
         {
-            return value.AddTicks(-(value.Ticks % IntervalTimeSpan.Ticks));
+            TimeSpan oneDay = new TimeSpan(24, 0, 0);
+            return value.AddTicks(-(value.Ticks % oneDay.Ticks));
         }
 
         public override string ToString()

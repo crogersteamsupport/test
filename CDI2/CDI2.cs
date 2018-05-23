@@ -33,7 +33,7 @@ namespace TeamSupport.CDI
             _verboseLog = false;
         }
 
-        void Log(string text)
+        void VerboseLog(string text)
         {
             if (_verboseLog)
                 CDIEventLog.WriteEntry(text);
@@ -49,51 +49,51 @@ namespace TeamSupport.CDI
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             _ticketReader.LoadAllTickets();
-            Log(String.Format("{0} Tickets loaded {1} in {2:0.00} sec",
+            VerboseLog(String.Format("{0} Tickets loaded {1} in {2:0.00} sec",
                  _ticketReader.AllTickets.Length, _dateRange, stopwatch.ElapsedMilliseconds / 1000));
-
 
             // analyze by organization
             stopwatch.Restart();
             LoadCustomers();
             //EntireDatabase();
-            Log(String.Format("Customers and Clients loaded in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
+            VerboseLog(String.Format("Customers and Clients loaded in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
 
-            // analyze by organization
+            // generate the interval data
             stopwatch.Restart();
             GenerateIntervals();
-            Log(String.Format("Interval data generated in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
+            VerboseLog(String.Format("Interval data generated in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
 
-            // Do the dirty work
+            // Do the CDI dirty work
             stopwatch.Restart();
             InvokeCDIStrategy();
-            Log(String.Format("Client CDI generated in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
+            VerboseLog(String.Format("Client CDI generated in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
 
             // test output
             for (int i = 0; i < args.Length; ++i)
             {
                 string arg = args[i];
-                Console.WriteLine(arg);
+                CDIEventLog.WriteLine(arg);
                 switch (arg)
                 {
                     case "customer":
                         {
-                            int organizationID = int.Parse(args[++i]);
-                            Customer customer = _customers.Where(c => c.OrganizationID == organizationID).FirstOrDefault();
+                            Customer customer = GetCustomer(int.Parse(args[++i]));
                             if (customer != null)
                                 customer.WriteCdiByOrganization();
-                            else
-                                Console.WriteLine("Customer ID not found");
                         }
                         break;
                     case "customerIntervals":
                         {
-                            int organizationID = int.Parse(args[++i]);
-                            Customer customer = _customers.Where(c => c.OrganizationID == organizationID).FirstOrDefault();
+                            Customer customer = GetCustomer(int.Parse(args[++i]));
                             if (customer != null)
                                 customer.WriteIntervals();
-                            else
-                                Console.WriteLine("Customer ID not found");
+                        }
+                        break;
+                    case "clients":
+                        {
+                            Customer customer = GetCustomer(int.Parse(args[++i]));
+                            if (customer != null)
+                                customer.WriteClients();
                         }
                         break;
                 }
@@ -105,13 +105,22 @@ namespace TeamSupport.CDI
             CDIEventLog.WriteEntry(String.Format("CDI Update complete"));
         }
 
+        Customer GetCustomer(int id)
+        {
+            Customer customer = _customers.Where(c => c._organizationAnalysis.OrganizationID == id).FirstOrDefault();
+            if (customer == null)
+                CDIEventLog.WriteLine("Customer ID not found");
+
+            return customer;
+        }
+
         public void EntireDatabase()
         {
             OrganizationAnalysis all = new OrganizationAnalysis(_dateRange, _ticketReader.AllTickets, 0, _ticketReader.AllTickets.Length);
             all.GenerateIntervals();
             IntervalData.WriteHeader();
             foreach (IntervalData interval in all.Intervals)
-                Console.WriteLine(interval.ToString());
+                CDIEventLog.WriteLine(interval.ToString());
         }
 
         void LoadCustomers()
@@ -160,7 +169,7 @@ namespace TeamSupport.CDI
 
         public void WriteIntervals(int customerID, int clientID)
         {
-            Customer customer = _customers.Where(c => c.OrganizationID == customerID).FirstOrDefault();
+            Customer customer = _customers.Where(c => c._organizationAnalysis.OrganizationID == customerID).FirstOrDefault();
             if(customer != null)
                 customer.WriteIntervals(clientID);
         }

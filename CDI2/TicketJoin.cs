@@ -32,7 +32,8 @@ namespace TeamSupport.CDI
         public double TotalDaysToClose {  get { return !DateClosed.HasValue ? 0 : (DateClosed.Value - DateCreated).TotalDays; } }
         public double TotalDaysOpenToTimestamp(DateTime timestamp)
         {
-            TimeSpan span = timestamp - DateCreated;
+            DateTime endTime = (DateClosed.HasValue && (DateClosed.Value < timestamp)) ? DateClosed.Value : timestamp;
+            TimeSpan span = endTime - DateCreated;
             return span.TotalDays;
         }
 

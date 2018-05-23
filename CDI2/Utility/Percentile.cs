@@ -10,24 +10,36 @@ namespace TeamSupport.CDI
     /// <summary>
     /// Collect percentiles to determine where the current value lies in the distribution
     /// </summary>
-    class Percentiles<T> where T : IComparable<T>
+    class Percentiles //where T : IComparable<T>
     {
         const int PercentileBucketCount = 20;   // 0%, 5%, 10%, 15%...
         const int PercentIncrement = 100 / PercentileBucketCount;  // 5% increments
-        T[] percentiles;
+        double[] percentiles;
 
-        public Percentiles(List<IntervalData> intervals, Func<IntervalData, T> getFunc)
+        public Percentiles(List<IntervalData> intervals, Func<IntervalData, double> getFunc)
         {
             // sort
             intervals.Sort((lhs, rhs) => getFunc(lhs).CompareTo(getFunc(rhs)));
 
             // collect percentile thresholds
-            percentiles = new T[PercentileBucketCount + 1];
+            percentiles = new double[PercentileBucketCount + 1];
             for (int i = 0; i <= PercentileBucketCount; ++i)
-                percentiles[i] = getFunc(intervals[(int)Math.Round((double)(intervals.Count - 1) * i / PercentileBucketCount)]);
+            {
+                double interpolate = (double)(intervals.Count - 1) * i / (double)PercentileBucketCount;
+                int index = (int)interpolate;
+                if ((interpolate - index != 0) && (index + 1 < intervals.Count()))
+                {
+                    double value = getFunc(intervals[index]) + (interpolate - index) * (getFunc(intervals[index + 1]) - getFunc(intervals[index]));
+                    percentiles[i] = value;
+                }
+                else
+                {
+                    percentiles[i] = getFunc(intervals[(int)Math.Round(interpolate)]);
+                }
+            }
         }
 
-        public int AsPercentile(T value)
+        public int AsPercentile(double value)
         {
             // where is std::lower_bound when you need it?
             int i = 0;
@@ -44,9 +56,9 @@ namespace TeamSupport.CDI
         public override string ToString()
         {
             StringBuilder builder = new StringBuilder();
-            foreach (T percentile in percentiles)
+            foreach (double percentile in percentiles)
             {
-                if(typeof(T) == typeof(double))
+                if(typeof(double) == typeof(double))
                     builder.Append(String.Format("{0:0.0}", percentile));
                 else
                     builder.Append(percentile);

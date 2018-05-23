@@ -24,8 +24,8 @@ namespace TeamSupport.CDI
             int IntervalCount = int.Parse(ConfigurationManager.AppSettings.Get("IntervalCount"));
             CDI2 cdi = new CDI2(TimeSpan.FromDays(IntervalTimeSpanInDays), IntervalCount);
             cdi.Run(args);
-            //cdi.WriteCdiByOrganization();
-            Console.WriteLine(String.Format("{0:0.00} sec", totalTimer.ElapsedMilliseconds / 1000));
+            cdi.WriteCdiByOrganization();
+            CDIEventLog.WriteLine(String.Format("{0:0.00} sec", totalTimer.ElapsedMilliseconds / 1000));
         }
 
         public static void AssignTicketSeverities()
@@ -33,13 +33,13 @@ namespace TeamSupport.CDI
             try
             {
                 TeamSupport.CDI.linq.TicketSeverity.AssignTicketSeverities();
-                Console.WriteLine("TicketSeverities assigned");
+                CDIEventLog.WriteLine("TicketSeverities assigned");
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-                Console.WriteLine("\nERROR: Did you run the following command on the database?");
-                Console.WriteLine(" \"ALTER TABLE dbo.TicketSeverities ADD Severity int NULL\"");
+                CDIEventLog.WriteLine(ex.ToString());
+                CDIEventLog.WriteLine("\nERROR: Did you run the following command on the database?");
+                CDIEventLog.WriteLine(" \"ALTER TABLE dbo.TicketSeverities ADD Severity int NULL\"");
             }
         }
     }

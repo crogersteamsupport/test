@@ -10,7 +10,7 @@ namespace TeamSupport.CDI
 {
     class Client
     {
-        OrganizationAnalysis _organizationAnalysis;
+        public OrganizationAnalysis _organizationAnalysis { get; private set; }
         ICDIStrategy _iCdiStrategy;
 
         public Client(OrganizationAnalysis organizationAnalysis)
@@ -18,19 +18,39 @@ namespace TeamSupport.CDI
             _organizationAnalysis = organizationAnalysis;
         }
 
-        public int? ClientOrganizationID { get { return _organizationAnalysis.ClientOrganizationID; } }
-
         public void GenerateIntervals()
         {
+            //List<IntervalData> intervals = _organizationAnalysis.Intervals;
             _organizationAnalysis.GenerateIntervals();
+        }
+
+        public IntervalData GetRawData()
+        {
+            IntervalData last = _organizationAnalysis.Intervals.Last();
+            IntervalData value = new IntervalData()
+            {
+                _timeStamp = last._timeStamp,
+                _totalTicketsCreated = last._totalTicketsCreated, // 1. Total Tickets Created
+                _newCount = last._newCount, // 2. Tickets Created in Last 30
+                _openCount = last._openCount,   // 3. Number of Tickets Currently Open
+                _medianDaysOpen = last._medianDaysOpen, // 4. Average Time Tickets have been open
+                _medianDaysToClose = IntervalData.MedianTotalDaysToClose(_organizationAnalysis.Tickets),  // 5. Average Time tickets took to close
+            };
+
+            return value;
+        }
+
+        public void CalculateCDI(IntervalPercentiles allClientsPercentiles)
+        {
+            allClientsPercentiles.CalculateCDI(_organizationAnalysis.Intervals.Last());
         }
 
         public void InvokeCDIStrategy(ICDIStrategy customerStrategy)
         {
-            _iCdiStrategy = new ClientPercentileStrategy(_organizationAnalysis.Intervals, customerStrategy, _organizationAnalysis.TicketCount);
+            _iCdiStrategy = new ClientPercentileStrategy(_organizationAnalysis.Intervals, customerStrategy);
             _iCdiStrategy.CalculateCDI();
             //if (_iCdiStrategy.CalculateCDI())
-            //    Debug.WriteLine(String.Format("\t{0}", ClientOrganizationID.Value));
+            //    CDIEventLog.WriteLine(String.Format("\t{0}", ClientOrganizationID.Value));
         }
 
         public override string ToString()
@@ -49,8 +69,14 @@ namespace TeamSupport.CDI
 
             int clientID = _organizationAnalysis.ClientOrganizationID.Value;
             Organization organization;
-            if(Organization.TryGet(clientID, out organization))
-                Console.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}\t{4}", clientID, organization.Name, _organizationAnalysis.Intervals.Count, organization.CustDisIndex, last.CDI));
+            if (Organization.TryGet(clientID, out organization))
+            {
+                //CDIEventLog.Write("ClientID\tClient\tCreatedLast30\tTotalTicketsCreated\tCDI\tnew\ttotal\tCDI-2\t");
+                CDIEventLog.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}", clientID, organization.Name, 
+                    organization.CreatedLast30, organization.TotalTicketsCreated, organization.CustDisIndex, 
+                    last._newCount, last._totalTicketsCreated, last.CDI));
+                //CDIEventLog.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", clientID, organization.Name, _organizationAnalysis.Intervals.Count, organization.CustDisIndex, last.CDI, last.ToString()));
+            }
         }
 
         public void WriteIntervals()
@@ -62,7 +88,7 @@ namespace TeamSupport.CDI
 
             string clientName = organization.Name;
             foreach (IntervalData interval in _organizationAnalysis.Intervals)
-                Debug.WriteLine(String.Format("{0}\t{1}\t{2}", clientID, clientName, interval.ToString()));
+                CDIEventLog.WriteLine(String.Format("{0}\t{1}\t{2}", clientID, clientName, interval.ToString()));
         }
 
     }

@@ -27,7 +27,7 @@ namespace TeamSupport.CDI
         IntervalStrategy _intervalStrategy;
         public List<IntervalData> Intervals { get; private set; }
         //public int CreatorIDCount { get; private set; }
-        public int TicketCount { get; private set; }
+        //public int TicketCount { get; private set; }
 
         public int? ClientOrganizationID
         {
@@ -48,7 +48,7 @@ namespace TeamSupport.CDI
                 _dateRange = analysisInterval;
 
                 // pull out the range for this organization
-                TicketCount = endIndex - startIndex;
+                //TicketCount = endIndex - startIndex;
                 Tickets = new TicketJoin[endIndex - startIndex];
                 Array.Copy(allTickets, startIndex, Tickets, 0, Tickets.Length);
                 OrganizationID = Tickets[0].OrganizationID;
@@ -96,7 +96,7 @@ namespace TeamSupport.CDI
         {
             IntervalData.WriteHeader();
             foreach (IntervalData interval in Intervals)
-                Console.WriteLine(interval.ToString());
+                CDIEventLog.WriteLine(interval.ToString());
         }
 
     }

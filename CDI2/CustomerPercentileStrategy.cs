@@ -13,19 +13,17 @@ namespace TeamSupport.CDI
         public IntervalPercentiles _cdiPercentile { get; private set; }
         public DateTime IntervalTimestamp { get; private set; }
         Action _callback;
-        public int TicketCount { get; private set; }
 
-        public CustomerPercentileStrategy(List<IntervalData> intervals, Action callback, int ticketCount)
+        public CustomerPercentileStrategy(List<IntervalData> intervals, Action callback)
         {
             _intervals = intervals;
             _callback = callback;
-            TicketCount = ticketCount;
         }
 
         /// <summary>calculate the CDI using a rolling percentile lookup</summary>
         public bool CalculateCDI()
         {
-            //Debug.WriteLine("Date\tNew\tOpen\tClosed\tDaysOpen\tDaysToClose\tActions\tSentiment\tCDI");
+            //CDIEventLog.WriteLine("Date\tNew\tOpen\tClosed\tDaysOpen\tDaysToClose\tActions\tSentiment\tCDI");
             _intervals.Sort((lhs, rhs) => lhs._timeStamp.CompareTo(rhs._timeStamp));
             DateTime begin = _intervals.First()._timeStamp;
             DateTime end = begin.AddDays(365);  // 1 year rolling average
@@ -52,7 +50,7 @@ namespace TeamSupport.CDI
                 if (update)
                     _cdiPercentile = new IntervalPercentiles(rollingYear);  // updated percentile strategy
 
-                //_cdiPercentile.CalculateCDI(interval);
+                _cdiPercentile.CalculateCDI(interval);  // TODO - remove, calculate CDI on Customer
 
                 IntervalTimestamp = interval._timeStamp;
                 _callback();

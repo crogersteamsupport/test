@@ -16,6 +16,7 @@ namespace TeamSupport.CDI
         public int _newCount; // new (this interval)
         public int _openCount;    // currently Open (since start)
         public double _medianDaysOpen; // median of currently open tickets (days)
+        public int _totalTicketsCreated;    // used for Robert's algorithm
 
         // closed tickets
         public int _closedCount;  // closed (this interval)
@@ -29,12 +30,13 @@ namespace TeamSupport.CDI
 
         public IntervalData() { }
 
-        public IntervalData(DateTime nextDay, HashSet<TicketJoin> openTickets, HashSet<TicketJoin> closedTickets, int ticketsCreated)
+        public IntervalData(DateTime nextDay, HashSet<TicketJoin> openTickets, HashSet<TicketJoin> closedTickets, int ticketsCreated, int totalTicketsCreated)
         {
             _timeStamp = nextDay;
             _newCount = ticketsCreated;
             _openCount = openTickets.Count;
             _medianDaysOpen = openTickets.Count == 0 ? 0 : MedianTotalDaysOpenToTimestamp(openTickets, _timeStamp).Value;
+            _totalTicketsCreated = totalTicketsCreated;
             _closedCount = closedTickets.Count;
 
             if (closedTickets.Count > 0)
@@ -47,7 +49,7 @@ namespace TeamSupport.CDI
             }
         }
 
-        private double Median(double[] values)
+        private static double Median(double[] values)
         {
             Array.Sort(values);
             int centerIndex = values.Length / 2;
@@ -55,7 +57,16 @@ namespace TeamSupport.CDI
             return result;
         }
 
-        private double? MedianTotalDaysToClose(HashSet<TicketJoin> tickets)
+        public static double? MedianTotalDaysToClose(TicketJoin[] tickets)
+        {
+            if (tickets.Length == 0)
+                return null;
+
+            double[] totalDays = tickets.Select(ticket => ticket.TotalDaysToClose).ToArray();
+            return Median(totalDays);
+        }
+
+        public static double? MedianTotalDaysToClose(HashSet<TicketJoin> tickets)
         {
             if (tickets.Count == 0)
                 return null;
@@ -75,14 +86,14 @@ namespace TeamSupport.CDI
 
         public static void WriteHeader()
         {
-            Console.WriteLine("Date\tNew\tOpen\tMedianDaysOpen\tClosed\tMedianDaysToClose\tAvgActions\tAvgSentiment\tAverageSeverity\tCDI\tClientCustomerID");
+            CDIEventLog.WriteLine("Date\tNew\tOpen\tMedianDaysOpen\tClosed\tMedianDaysToClose\tAvgActions\tAvgSentiment\tAverageSeverity\tCDI\tClientCustomerID");
         }
 
         public static void Write(List<IntervalData> intervals)
         {
             WriteHeader();
             foreach (IntervalData interval in intervals)
-                Debug.WriteLine(interval.ToString());
+                CDIEventLog.WriteLine(interval.ToString());
         }
 
         public override string ToString()

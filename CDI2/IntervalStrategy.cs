@@ -68,6 +68,7 @@ namespace TeamSupport.CDI
                     nextInterval += dateRange.IntervalTimeSpan;
 
                 // walk through all the ticket open/close and keep the running tally for each interval
+                int totalTicketsCreated = 0;
                 foreach (Tuple<DateTime, TicketJoin> pair in chronological)
                 {
                     while (pair.Item1 > nextInterval)
@@ -75,7 +76,8 @@ namespace TeamSupport.CDI
                         // snapshot of the data at this time
                         if ((currentlyOpenTickets.Count() > 0) || (intervalClosedTickets.Count() > 0) || (newTicketsCount > 0))
                         {
-                            results.Add(new IntervalData(nextInterval, currentlyOpenTickets, intervalClosedTickets, newTicketsCount));
+                            totalTicketsCreated += newTicketsCount;
+                            results.Add(new IntervalData(nextInterval, currentlyOpenTickets, intervalClosedTickets, newTicketsCount, totalTicketsCreated));
                             intervalClosedTickets.Clear();
                             newTicketsCount = 0;
                         }
@@ -96,7 +98,7 @@ namespace TeamSupport.CDI
                 }
 
                 // the final interval
-                results.Add(new IntervalData(nextInterval, currentlyOpenTickets, intervalClosedTickets, newTicketsCount));
+                results.Add(new IntervalData(nextInterval, currentlyOpenTickets, intervalClosedTickets, newTicketsCount, totalTicketsCreated));
             }
             catch (Exception e)
             {
@@ -109,7 +111,7 @@ namespace TeamSupport.CDI
         /// <summary> Count the days open </summary>
         void TimeOpenHistogram(TimeScale timeScale)
         {
-            Debug.WriteLine("TimeOpen({0})	TicketCount", timeScale);
+            CDIEventLog.WriteLine("TimeOpen({0})	TicketCount", timeScale);
             TallyDictionary<int> open = new TallyDictionary<int>();
             foreach (TicketJoin t in _tickets)
             {
@@ -123,7 +125,7 @@ namespace TeamSupport.CDI
         /// <summary> Count the ticket types </summary>
         //void TicketTypeHistogram(TimeScale timeScale)
         //{
-        //    Debug.WriteLine("TicketType({0})	TicketCount", timeScale);
+        //    CDIEventLog.WriteLine("TicketType({0})	TicketCount", timeScale);
         //    TallyDictionary<string> open = new TallyDictionary<string>();
         //    foreach (TicketJoin t in _tickets)
         //        open.Increment(t.TicketTypeName);

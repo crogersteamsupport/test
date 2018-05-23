@@ -23,12 +23,12 @@ namespace TeamSupport.CDI.linq
         [Column]
         public string Name;
 
-        //[Column]
-        //public int TotalTicketsCreated;
+        [Column]
+        public int TotalTicketsCreated;
         //[Column]
         //public int TicketsOpen;
-        //[Column]
-        //public int CreatedLast30;
+        [Column]
+        public int CreatedLast30;
         //[Column]
         //public int AvgTimeOpen;
         //[Column]

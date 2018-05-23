@@ -37,17 +37,41 @@ namespace TeamSupport.CDI
                 EventLog.WriteEntry("Application", "Unable to open TeamSupport log on CDI-2 source");
             }
         }
+        static bool _IsDebuggerAttached = Debugger.IsAttached;
+
+        public static void WriteLine(string format, params object[] args) { WriteEntry(String.Format(format, args)); }
+        public static void WriteLine(string message) { WriteEntry(message); }
+
+        public static void Write(string message)
+        {
+            if (_IsDebuggerAttached)
+            {
+                Debug.Write(message);
+            }
+            else
+            {
+                Console.Write(message);
+                _eventLog.WriteEntry(message, EventLogEntryType.Information);
+            }
+        }
 
         public static void WriteEntry(string message, EventLogEntryType type = EventLogEntryType.Information)
         {
-            Debug.WriteLine(message);
-            Console.WriteLine(message);
-            _eventLog.WriteEntry(message, type);
+            if (_IsDebuggerAttached)
+            {
+                Debug.WriteLine(message);
+            }
+            else
+            {
+                Console.WriteLine(message);
+                _eventLog.WriteEntry(message, type);
+            }
         }
 
         public static void WriteEntry(string message, Exception e)
         {
-            Debugger.Break();
+            if (_IsDebuggerAttached)
+                Debugger.Break();
             WriteEntry(message + e.ToString() + " ----- STACK: " + e.StackTrace.ToString(), EventLogEntryType.Error);
         }
     }

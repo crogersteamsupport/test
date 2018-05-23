@@ -9,20 +9,19 @@ namespace TeamSupport.CDI
 {
     class Customer
     {
-        OrganizationAnalysis _organizationAnalysis;
+        public OrganizationAnalysis _organizationAnalysis { get; private set; }
         HashSet<Client> _clients;
         ICDIStrategy _iCdiStrategy;
+        List<IntervalData> _clientIntervals;
 
         public Customer(OrganizationAnalysis organizationAnalysis)
         {
             _organizationAnalysis = organizationAnalysis;
             _clients = new HashSet<Client>();
+            _clientIntervals = new List<IntervalData>();
+
             LoadClients();
         }
-
-        public List<IntervalData> Intervals { get { return _organizationAnalysis.Intervals; } }
-        public int OrganizationID { get { return _organizationAnalysis.OrganizationID; } }
-        public void WriteItervals() { _organizationAnalysis.WriteItervals(); }
 
         void LoadClients()
         {
@@ -54,13 +53,32 @@ namespace TeamSupport.CDI
         {
             _organizationAnalysis.GenerateIntervals();
             foreach (Client client in _clients)
+            {
                 client.GenerateIntervals();
+            }
+
+            // roll up the clients into the customer distribution
+
         }
 
         public void InvokeCDIStrategy()
         {
-            _iCdiStrategy = new CustomerPercentileStrategy(Intervals, Callback, _organizationAnalysis.TicketCount);
-            _iCdiStrategy.CalculateCDI();    // test strategy with customer - TODO
+            foreach (Client client in _clients)
+            {
+                IntervalData interval = client.GetRawData();
+                if (interval._timeStamp > _organizationAnalysis._dateRange.EndDate.AddDays(-90)) // ignore data older than 90 days
+                    _clientIntervals.Add(interval);
+            }
+
+            IntervalPercentiles clientPercentiles = new IntervalPercentiles(_clientIntervals);
+
+            _iCdiStrategy = new CustomerPercentileStrategy(_clientIntervals, Callback);
+            //_iCdiStrategy.CalculateCDI();    // test strategy with customer - TODO
+
+            foreach(Client client in _clients)
+            {
+                client.CalculateCDI(clientPercentiles);
+            }
         }
 
         public void Callback()
@@ -80,30 +98,42 @@ namespace TeamSupport.CDI
 
         public void WriteCdiByOrganization()
         {
-            Console.WriteLine("------------------------------------------");
-            Console.WriteLine(_organizationAnalysis.OrganizationID);
-            Console.WriteLine("------------------------------------------");
-            Console.WriteLine("ClientID\tClient\tActiveWeeks\tCDI\tCDI-2");
+            CDIEventLog.WriteLine("------------------------------------------");
+            CDIEventLog.WriteLine(_organizationAnalysis.OrganizationID.ToString());
+            CDIEventLog.WriteLine("------------------------------------------");
+            //CDIEventLog.Write("ClientID\tClient\tActiveWeeks\tCDI\tCDI-2\t");
+
+            CDIEventLog.Write("ClientID\tClient\tCreatedLast30\tTotalTicketsCreated\tCDI\tnew\ttotal\tCDI-2\t");
+
+            IntervalData.WriteHeader();
             foreach (Client client in _clients)
                 client.WriteCdiByOrganization(_organizationAnalysis.Intervals[0]._timeStamp);
         }
 
         public void WriteIntervals()
         {
-            Console.WriteLine("------------------------------------------");
-            Console.WriteLine(_organizationAnalysis.OrganizationID);
-            Console.WriteLine("------------------------------------------");
+            CDIEventLog.WriteLine("------------------------------------------");
+            CDIEventLog.WriteLine(_organizationAnalysis.OrganizationID.ToString());
+            CDIEventLog.WriteLine("------------------------------------------");
             _organizationAnalysis.WriteItervals();
         }
 
         public void WriteIntervals(int clientID)
         {
-            Debug.Write("ClientID\tClient\t");
+            CDIEventLog.Write("ClientID\tClient\t");
             IntervalData.WriteHeader();
 
-            Client client = _clients.Where(c => c.ClientOrganizationID.HasValue && (c.ClientOrganizationID == clientID)).FirstOrDefault();
+            Client client = _clients.Where(c => c._organizationAnalysis.ClientOrganizationID.HasValue && (c._organizationAnalysis.ClientOrganizationID == clientID)).FirstOrDefault();
             if (client != null)
                 client.WriteIntervals();
+        }
+
+        public void WriteClients()
+        {
+            foreach (Client client in _clients)
+            {
+                IntervalData interval = client._organizationAnalysis.Intervals.First();
+            }
         }
 
     }
