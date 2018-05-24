@@ -490,14 +490,14 @@ namespace TeamSupport.Data
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = @"SELECT u.*
-								FROM Users u
-								INNER JOIN Organizations o
-								ON o.OrganizationID = u.OrganizationID
+                command.CommandText = @"SELECT U.*
+								FROM Users U
+								INNER JOIN Organizations O
+								ON O.OrganizationID = U.OrganizationID
 								WHERE 
-								((O.OrganizationID = @OrganizationID AND u.IsSystemAdmin = 1) OR (O.ParentID = @OrganizationID AND IsPortalUser = 1))
-								AND (u.Email = @Email)
-								AND (u.MarkDeleted = 0)
+								((O.OrganizationID = @OrganizationID AND U.IsSystemAdmin = 1) OR (O.ParentID = @OrganizationID AND U.IsPortalUser = 1))
+								AND (U.Email = @Email)
+								AND (U.MarkDeleted = 0)
 								ORDER BY IsSystemAdmin DESC";
 
                 command.CommandType = CommandType.Text;
