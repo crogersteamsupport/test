@@ -7,120 +7,91 @@ using System.Diagnostics;
 
 namespace TeamSupport.CDI
 {
+    enum Metrics
+    {
+        New,    // _newCount
+        Open,   // _openCount
+        DaysOpen,   // _medianDaysOpen
+        TotalTickets,   // _totalTicketsCreated
+        Closed, // _closedCount
+        DaysToClose,    // _medianDaysToClose
+        ActionCount,    // _averageActionCount
+        Severity    // _averageSeverity
+    };
+
     /// <summary>
     /// Use percentiles of the interval distribution
     /// </summary>
     public class IntervalPercentiles
     {
-        Percentiles _newCountPercentiles;  // new (this interval)
-        Percentiles _openCountPercentiles; // currently Open (since startDate)
-        Percentiles _medianDaysOpenPercentiles;   // days open of currently open
-        Percentiles _totalTicketsCreatedPercentiles;   // total tickets created across all the intervals
-        Percentiles _closedCountPercentiles;   // closed (this interval)
-        Percentiles _medianDaysToClosePercentiles;    // average time to close (this interval)
-        Percentiles _averageActionCountPercentiles;   // actions per ticket
-        Percentiles _averageSeverityPercentiles;   // ticket severity
+        Dictionary<Metrics, Percentile> _percentiles;
 
         public IntervalPercentiles(List<IntervalData> intervals)
         {
-            // counts
-            _newCountPercentiles = new Percentiles(intervals, x => x._newCount);
-            _openCountPercentiles = new Percentiles(intervals, x => x._openCount);
-            _closedCountPercentiles = new Percentiles(intervals, x => x._closedCount);
+            _percentiles = new Dictionary<Metrics, Percentile>();
 
-            // open tickets
-            _medianDaysOpenPercentiles = new Percentiles(intervals, x => x._medianDaysOpen);
-            _totalTicketsCreatedPercentiles = new Percentiles(intervals, x => x._totalTicketsCreated);
+            _percentiles[Metrics.New] = new Percentile(intervals, x => x._newCount);
+            _percentiles[Metrics.Open] = new Percentile(intervals, x => x._openCount);
+            _percentiles[Metrics.DaysOpen] = new Percentile(intervals, x => x._medianDaysOpen);
+            _percentiles[Metrics.TotalTickets] = new Percentile(intervals, x => x._totalTicketsCreated);
+            _percentiles[Metrics.Closed] = new Percentile(intervals, x => x._closedCount);
 
-            // closed tickets
+            // closed tickets?
             List<IntervalData> closedTickets = intervals.Where(t => t._closedCount > 0).ToList();
-            if (closedTickets.Count > 0)
+            if (closedTickets.Count == 0)
             {
-                _averageActionCountPercentiles = new Percentiles(closedTickets, x => x._averageActionCount.Value);
-                _medianDaysToClosePercentiles = new Percentiles(closedTickets, x => x._medianDaysToClose.Value);
-                try
-                {
-                    _averageSeverityPercentiles = new Percentiles(closedTickets, x => x._averageSeverity.Value);
-                }
-                catch(Exception)
-                {
-                    _averageSeverityPercentiles = null;
-                }
+                _percentiles[Metrics.DaysToClose] = new Percentile(closedTickets, x => x._medianDaysToClose.Value);
+                _percentiles[Metrics.ActionCount] = new Percentile(closedTickets, x => x._averageActionCount.Value);
+                _percentiles[Metrics.Severity] = new Percentile(closedTickets, x => x._averageSeverity.Value);
+                //_percentiles[Metrics.Sentiment] = new Percentiles(closedTickets, x => x._averageSeverity.Value);
             }
         }
 
-        public bool CalculateCDI(IntervalData interval)
+        public bool CDI1(IntervalData interval, linq.CDI_Settings weights)
         {
             // Create the CDI from the normalized fields
             IntervalData normalized = Normalize(interval);
+            linq.CDI cdi = new linq.CDI()
+            {
+                TotalTicketsCreated = _percentiles[Metrics.TotalTickets].AsPercentile(interval._totalTicketsCreated),
+                TicketsOpen = _percentiles[Metrics.Open].AsPercentile(interval._openCount),
+                CreatedLast30 = _percentiles[Metrics.New].AsPercentile(interval._newCount),
+                AvgTimeOpen = _percentiles[Metrics.DaysOpen].AsPercentile(interval._medianDaysOpen),
+            };
 
-            /// <summary>used by a normalized instance of Interval Data - See ICDIStrategy</summary>
-            CalculateNormalizedCDI(normalized); // keep this in the CDI strategy
-            interval.CDI = normalized.CDI;
+            if ((_percentiles[Metrics.DaysToClose] != null) && interval._medianDaysToClose.HasValue)
+                cdi.AvgTimeToClose = _percentiles[Metrics.DaysToClose].AsPercentile(interval._medianDaysToClose.Value);
 
-            //CDIEventLog.Write(normalized.ToString());
-            //CDIEventLog.WriteLine(interval.ToString());
+            double CustDisIndex = weights.GetCDI(cdi);
+            interval.CDI = (int)Math.Round(CustDisIndex);
             return true;
         }
 
         public IntervalData Normalize(IntervalData interval)
         {
-            // 1. Total Tickets Created
-            // 5. Average Time tickets took to close
-
             IntervalData normalized = new IntervalData()
             {
                 _timeStamp = interval._timeStamp,
-                _newCount = _newCountPercentiles.AsPercentile(interval._newCount),  // 2. Tickets Created in Last 30
-                _openCount = _openCountPercentiles.AsPercentile(interval._openCount),   // 3. Number of Tickets Currently Open
-                _medianDaysOpen = _medianDaysOpenPercentiles.AsPercentile(interval._medianDaysOpen),    // 4. Average Time Tickets have been open
-                _totalTicketsCreated = _totalTicketsCreatedPercentiles.AsPercentile(interval._totalTicketsCreated),
-                //_closedCount = _closedCountPercentiles.AsPercentile(interval._closedCount),
+                _newCount = _percentiles[Metrics.New].AsPercentile(interval._newCount),  // 2. Tickets Created in Last 30
+                _openCount = _percentiles[Metrics.Open].AsPercentile(interval._openCount),   // 3. Number of Tickets Currently Open
+                _medianDaysOpen = _percentiles[Metrics.DaysOpen].AsPercentile(interval._medianDaysOpen),    // 4. Average Time Tickets have been open
+                _totalTicketsCreated = _percentiles[Metrics.TotalTickets].AsPercentile(interval._totalTicketsCreated),  // 1. Total Tickets Created
+                _closedCount = _percentiles[Metrics.Closed].AsPercentile(interval._closedCount),
             };
 
-            if ((_medianDaysToClosePercentiles != null) && interval._medianDaysToClose.HasValue)
-                normalized._medianDaysToClose = _medianDaysToClosePercentiles.AsPercentile(interval._medianDaysToClose.Value);
+            if ((_percentiles[Metrics.DaysToClose] != null) && interval._medianDaysToClose.HasValue)
+                normalized._medianDaysToClose = _percentiles[Metrics.DaysToClose].AsPercentile(interval._medianDaysToClose.Value);  // 5. Average Time tickets took to close
 
-            //if (interval._averageActionCount.HasValue)
-            //    normalized._averageActionCount = _averageActionCountPercentiles.AsPercentile(interval._averageActionCount.Value);
+            if ((_percentiles[Metrics.ActionCount] != null) && interval._averageActionCount.HasValue)
+                normalized._averageActionCount = _percentiles[Metrics.ActionCount].AsPercentile(interval._averageActionCount.Value);
+
+            if ((_percentiles[Metrics.Severity] != null) && interval._averageSeverity.HasValue)
+                normalized._averageSeverity = _percentiles[Metrics.Severity].AsPercentile(interval._averageSeverity.Value);
 
             //if (interval._averageSentimentScore.HasValue)
             //    normalized._averageSentimentScore = interval._averageSentimentScore.Value / 10; // [0, 1000] => [0, 100]
 
-            //if ((interval._averageSeverity.HasValue) && (_averageSeverityPercentiles != null))
-            //    normalized._averageSeverity = _averageSeverityPercentiles.AsPercentile(interval._averageSeverity.Value);
-
             return normalized;
-        }
-
-        void CalculateNormalizedCDI(IntervalData normalized)
-        {
-            normalized.CDI = normalized._newCount;// (int)Math.Round(normalized._newCount);
-        }
-
-        void CalculateNormalizedCDI1(IntervalData normalized)
-        {
-            HashSet<double> contribution = new HashSet<double>
-            {
-                normalized._newCount,
-                normalized._openCount,
-                normalized._medianDaysOpen,
-                (100 - normalized._closedCount),    // less distress when tickets are closed
-            };
-
-            if (normalized._medianDaysToClose.HasValue)
-                contribution.Add(normalized._medianDaysToClose.Value);
-
-            if (normalized._averageActionCount.HasValue)
-                contribution.Add(normalized._averageActionCount.Value);
-
-            if (normalized._averageSentimentScore.HasValue)
-                contribution.Add(100 - normalized._averageSentimentScore.Value);  // [0, 1000] where low is in distress
-
-            if (normalized._averageSeverity.HasValue)
-                contribution.Add(100 - normalized._averageSeverity.Value);
-
-            normalized.CDI = (int)Math.Round(contribution.Average());
         }
 
     }

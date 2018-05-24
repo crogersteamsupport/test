@@ -50,7 +50,7 @@ namespace TeamSupport.CDI
                 if (update)
                     _cdiPercentile = new IntervalPercentiles(rollingYear);  // updated percentile strategy
 
-                _cdiPercentile.CalculateCDI(interval);  // TODO - remove, calculate CDI on Customer
+                //_cdiPercentile.CDI1(interval);  // TODO - remove, calculate CDI on Customer
 
                 IntervalTimestamp = interval._timeStamp;
                 _callback();
@@ -63,7 +63,8 @@ namespace TeamSupport.CDI
         /// <summary>calculate the CDI using a rolling percentile lookup</summary>
         public bool CalculateCDI(IntervalData interval)
         {
-            return _cdiPercentile.CalculateCDI(interval);
+            IntervalData normalized;
+            return _cdiPercentile.CDI1(interval, out normalized);
         }
 
     }

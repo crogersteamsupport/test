@@ -85,6 +85,9 @@ namespace TeamSupport.CDI
                     }
 
                     // running list of open and closed tickets
+                    if (pair.Item2.DateClosed.HasValue && (pair.Item2.DateCreated == pair.Item2.DateClosed.Value))
+                        Debugger.Break();
+
                     if (pair.Item1 == pair.Item2.DateCreated)
                     {
                         currentlyOpenTickets.Add(pair.Item2);    // new ticket opened
@@ -98,7 +101,7 @@ namespace TeamSupport.CDI
                 }
 
                 // the final interval
-                results.Add(new IntervalData(nextInterval, currentlyOpenTickets, intervalClosedTickets, newTicketsCount, totalTicketsCreated));
+                results.Add(new IntervalData(nextInterval, currentlyOpenTickets, intervalClosedTickets, newTicketsCount, totalTicketsCreated + newTicketsCount));
             }
             catch (Exception e)
             {
@@ -138,7 +141,7 @@ namespace TeamSupport.CDI
         {
             TallyDictionary<DateTime> open = new TallyDictionary<DateTime>();
             foreach (TicketJoin t in _tickets)
-                open.Increment(dateRange.PreviousMidnight(t.DateCreated));
+                open.Increment(dateRange.TonightMidnight(t.DateCreated));
 
             open.Write();
         }

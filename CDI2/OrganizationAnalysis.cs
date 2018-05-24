@@ -10,10 +10,10 @@ namespace TeamSupport.CDI
     /// <summary>
     /// Interface to CDI strategy
     /// </summary>
-    interface ICDIStrategy
-    {
-        bool CalculateCDI();
-    }
+    //interface ICDIStrategy
+    //{
+    //    bool CalculateCDI();
+    //}
 
 
     /// <summary>
@@ -23,16 +23,12 @@ namespace TeamSupport.CDI
     {
         public DateRange _dateRange { get; private set; }
         public TicketJoin[] Tickets { get; private set; }
-        public int OrganizationID { get; private set; }
+        public int OrganizationID { get { return Tickets[0].OrganizationID; } }
+        public int ParentID { get { return Tickets[0].ParentID; } }
         IntervalStrategy _intervalStrategy;
         public List<IntervalData> Intervals { get; private set; }
         //public int CreatorIDCount { get; private set; }
         //public int TicketCount { get; private set; }
-
-        public int? ClientOrganizationID
-        {
-            get { return (Tickets.Length > 0) ? Tickets[0].ClientOrganizationID : null; }
-        }
 
         /// <summary>
         /// Create from subset of all tickets (faster than using linq to query)
@@ -51,7 +47,6 @@ namespace TeamSupport.CDI
                 //TicketCount = endIndex - startIndex;
                 Tickets = new TicketJoin[endIndex - startIndex];
                 Array.Copy(allTickets, startIndex, Tickets, 0, Tickets.Length);
-                OrganizationID = Tickets[0].OrganizationID;
                 //CreatorIDCount = Tickets.Select(t => t.CreatorID).Distinct().Count();
 
                 // collect metrics for each interval
@@ -62,6 +57,15 @@ namespace TeamSupport.CDI
                 CDIEventLog.WriteEntry("New organization failed", ex);
             }
         }
+
+        public IntervalData Current()
+        {
+            if (Intervals.Last()._timeStamp == _dateRange.EndDate)
+                return Intervals.Last();
+
+            return null;
+        }
+
 
         public void GenerateIntervals()
         {

@@ -23,7 +23,7 @@ namespace TeamSupport.CDI
         public int ActionsCount;
         public bool IsClosed;
         public double? AverageActionSentiment;
-        public int? ClientOrganizationID;
+        public int ParentID;
         public int? Severity;
         //public int CreatorID;
 

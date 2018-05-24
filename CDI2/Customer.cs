@@ -4,45 +4,52 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Data.Linq;
+using System.Data.SqlClient;
+using System.Configuration;
 
 namespace TeamSupport.CDI
 {
     class Customer
     {
-        public OrganizationAnalysis _organizationAnalysis { get; private set; }
+        OrganizationAnalysis _organizationAnalysis;
         HashSet<Client> _clients;
-        ICDIStrategy _iCdiStrategy;
-        List<IntervalData> _clientIntervals;
+        IntervalPercentiles _percentiles;
+        //ICDIStrategy _iCdiStrategy;
 
         public Customer(OrganizationAnalysis organizationAnalysis)
         {
             _organizationAnalysis = organizationAnalysis;
             _clients = new HashSet<Client>();
-            _clientIntervals = new List<IntervalData>();
-
             LoadClients();
         }
 
+        public int OrganizationID { get { return _organizationAnalysis.ParentID; } }
+
+
+        /// <summary>
+        /// ParentID = Customer, OrganizationID = Client
+        /// </summary>
         void LoadClients()
         {
-            TicketJoin[] allTickets = _organizationAnalysis.Tickets.Where(t => t.ClientOrganizationID.HasValue).ToArray();
+            TicketJoin[] allTickets = _organizationAnalysis.Tickets;//.Where(t => t.OrganizationID).ToArray();
             if (allTickets.Length == 0)
                 return;
 
-            Array.Sort(allTickets, (lhs, rhs) => lhs.ClientOrganizationID.Value.CompareTo(rhs.ClientOrganizationID.Value));
+            Array.Sort(allTickets, (lhs, rhs) => lhs.OrganizationID.CompareTo(rhs.OrganizationID));
 
             // spin through each organization
             int startIndex = 0;
-            int startId = allTickets[startIndex].ClientOrganizationID.Value;
+            int startId = allTickets[startIndex].OrganizationID;
             for (int i = 1; i < allTickets.Length; ++i)
             {
-                if (allTickets[i].ClientOrganizationID != startId)
+                if (allTickets[i].OrganizationID != startId)
                 {
                     // not a client of ourselves
-                    if (startId != _organizationAnalysis.ClientOrganizationID)
+                    if (startId != _organizationAnalysis.OrganizationID)
                         _clients.Add(new Client(new OrganizationAnalysis(_organizationAnalysis._dateRange, allTickets, startIndex, i)));
                     startIndex = i;
-                    startId = allTickets[startIndex].ClientOrganizationID.Value;
+                    startId = allTickets[startIndex].OrganizationID;
                 }
             }
 
@@ -53,43 +60,76 @@ namespace TeamSupport.CDI
         {
             _organizationAnalysis.GenerateIntervals();
             foreach (Client client in _clients)
-            {
                 client.GenerateIntervals();
+        }
+
+        linq.CDI_Settings _weights;
+
+        public linq.CDI_Settings GetCDISettings()
+        {
+            if (_weights != null)
+                return _weights;
+
+            try
+            {
+                string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (DataContext db = new DataContext(connection))
+                {
+                    Table<linq.CDI_Settings> table = db.GetTable<linq.CDI_Settings>();
+                    _weights = Enumerable.ToArray(table).FirstOrDefault();
+                }
+            }
+            catch (Exception e)
+            {
+                CDIEventLog.WriteEntry("CDI_Settings Read failed", e);
             }
 
-            // roll up the clients into the customer distribution
-
+            if (_weights == null)
+            {
+                const float equalWeight = 1/5;
+                _weights = new linq.CDI_Settings()
+                {
+                    TotalTicketsWeight = equalWeight,
+                    OpenTicketsWeight = equalWeight,
+                    Last30Weight = equalWeight,
+                    AvgDaysOpenWeight = equalWeight,
+                    AvgDaysToCloseWeight = equalWeight
+                };
+            }
+            return _weights;
         }
 
         public void InvokeCDIStrategy()
         {
+            // calculate the percentiles for the client metrics
+            List<IntervalData> clientIntervals = new List<IntervalData>();
             foreach (Client client in _clients)
             {
-                IntervalData interval = client.GetRawData();
-                if (interval._timeStamp > _organizationAnalysis._dateRange.EndDate.AddDays(-90)) // ignore data older than 90 days
-                    _clientIntervals.Add(interval);
+                IntervalData current = client.GetCDIIntervalData();
+                if(current != null)
+                    clientIntervals.Add(current);
             }
+            _percentiles = new IntervalPercentiles(clientIntervals);
 
-            IntervalPercentiles clientPercentiles = new IntervalPercentiles(_clientIntervals);
+            // construct the customer strategy
+            //_iCdiStrategy = new CustomerPercentileStrategy(clientIntervals, Callback);
+            //_iCdiStrategy.CalculateCDI();    // customer CDI not used
 
-            _iCdiStrategy = new CustomerPercentileStrategy(_clientIntervals, Callback);
-            //_iCdiStrategy.CalculateCDI();    // test strategy with customer - TODO
-
-            foreach(Client client in _clients)
-            {
-                client.CalculateCDI(clientPercentiles);
-            }
-        }
-
-        public void Callback()
-        {
-            if (_clients == null)
-                return;
-
-            // run strategy against each client
+            // calculate the CDI for each client
             foreach (Client client in _clients)
-                client.InvokeCDIStrategy(_iCdiStrategy);
+                client.InvokeCDIStrategy(_percentiles, GetCDISettings());
         }
+
+        //public void Callback()
+        //{
+        //    if (_clients == null)
+        //        return;
+
+        //    // run strategy against each client
+        //    foreach (Client client in _clients)
+        //        client.InvokeCDIStrategy(_iCdiStrategy);
+        //}
 
         public override string ToString()
         {
@@ -120,19 +160,28 @@ namespace TeamSupport.CDI
 
         public void WriteIntervals(int clientID)
         {
-            CDIEventLog.Write("ClientID\tClient\t");
-            IntervalData.WriteHeader();
+            //CDIEventLog.Write("ClientID\tClient\t");
+            //IntervalData.WriteHeader();
 
-            Client client = _clients.Where(c => c._organizationAnalysis.ClientOrganizationID.HasValue && (c._organizationAnalysis.ClientOrganizationID == clientID)).FirstOrDefault();
-            if (client != null)
-                client.WriteIntervals();
+            //Client client = _clients.Where(c => c.ClientOrganizationID.HasValue && (c.ClientOrganizationID == clientID)).FirstOrDefault();
+            //if (client != null)
+            //    client.WriteIntervals();
         }
 
         public void WriteClients()
         {
+            CDIEventLog.WriteLine("ClientID\tClient\tTotalTicketsCreated\tTicketsOpen\tCreatedLast30\tAvgTimeOpen\tAvgTimeToClose\tCustDisIndex\tDate\tTotalTicketsCreated\tTicketsOpen\tCreatedLast30\tAvgTimeOpen\tAvgTimeToClose\tCustDisIndex-2" +
+                "CDI-2");
+            foreach (Client client in _clients)
+                client.Write();
+        }
+
+        public void Save(linq.CDI[] cdi2s, Table<linq.CDI> table)
+        {
             foreach (Client client in _clients)
             {
-                IntervalData interval = client._organizationAnalysis.Intervals.First();
+                linq.CDI cdi2 = cdi2s.Where(c => c.OrganizationID == client.OrganizationID).FirstOrDefault();
+                client.Save(cdi2, table);
             }
         }
 

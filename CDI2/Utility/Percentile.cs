@@ -10,62 +10,48 @@ namespace TeamSupport.CDI
     /// <summary>
     /// Collect percentiles to determine where the current value lies in the distribution
     /// </summary>
-    class Percentiles //where T : IComparable<T>
+    class Percentile //where T : IComparable<T>
     {
-        const int PercentileBucketCount = 20;   // 0%, 5%, 10%, 15%...
-        const int PercentIncrement = 100 / PercentileBucketCount;  // 5% increments
-        double[] percentiles;
+        int _intervalCount;
+        SortedDictionary<double, int> percentiles;
 
-        public Percentiles(List<IntervalData> intervals, Func<IntervalData, double> getFunc)
+        public Percentile(List<IntervalData> intervals, Func<IntervalData, double> getFunc)
         {
-            // sort
+            _intervalCount = intervals.Count();
             intervals.Sort((lhs, rhs) => getFunc(lhs).CompareTo(getFunc(rhs)));
+            percentiles = new SortedDictionary<double, int>();
 
-            // collect percentile thresholds
-            percentiles = new double[PercentileBucketCount + 1];
-            for (int i = 0; i <= PercentileBucketCount; ++i)
+            foreach(IntervalData interval in intervals)
             {
-                double interpolate = (double)(intervals.Count - 1) * i / (double)PercentileBucketCount;
-                int index = (int)interpolate;
-                if ((interpolate - index != 0) && (index + 1 < intervals.Count()))
-                {
-                    double value = getFunc(intervals[index]) + (interpolate - index) * (getFunc(intervals[index + 1]) - getFunc(intervals[index]));
-                    percentiles[i] = value;
-                }
+                double value = getFunc(interval);
+                if (percentiles.ContainsKey(value))
+                    ++percentiles[value];
                 else
-                {
-                    percentiles[i] = getFunc(intervals[(int)Math.Round(interpolate)]);
-                }
+                    percentiles[value] = 1;
             }
         }
 
+        /// <summary>
+        /// https://web.stanford.edu/class/archive/anthsci/anthsci192/anthsci192.1064/handouts/calculating%20percentiles.pdf
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public int AsPercentile(double value)
         {
-            // where is std::lower_bound when you need it?
-            int i = 0;
-            for(; i < percentiles.Length - 1; ++i)
+            double result;
+            int index = 1;
+            foreach(KeyValuePair<double, int> pair in percentiles)
             {
-                // found a match
-                if (percentiles[i + 1].CompareTo(value) > 0)
+                if (value <= pair.Key)  // use the lower bound of percentile (TODO - invert negative correlated metrics!)
                     break;
+                index += pair.Value;
             }
-
-            return i * PercentIncrement;
+            result = 100 * (index - 0.5) / _intervalCount;
+            if (result < 0)
+                return 0;
+            if (result > 99)
+                return 99;
+            return (int)Math.Round(result);
         }
-
-        public override string ToString()
-        {
-            StringBuilder builder = new StringBuilder();
-            foreach (double percentile in percentiles)
-            {
-                if(typeof(double) == typeof(double))
-                    builder.Append(String.Format("{0:0.0}", percentile));
-                else
-                    builder.Append(percentile);
-                builder.Append("  ");
-            }
-            return builder.ToString();
-        }
-
     }
 }

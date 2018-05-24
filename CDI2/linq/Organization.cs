@@ -19,9 +19,11 @@ namespace TeamSupport.CDI.linq
         public int OrganizationID { get { return _organizationID; } }
 
         [Column]
-        public int? ParentID;
+        public int ParentID;
         [Column]
         public string Name;
+        [Column]
+        public bool IsActive;
 
         [Column]
         public int TotalTicketsCreated;
@@ -29,10 +31,10 @@ namespace TeamSupport.CDI.linq
         //public int TicketsOpen;
         [Column]
         public int CreatedLast30;
-        //[Column]
-        //public int AvgTimeOpen;
-        //[Column]
-        //public int AvgTimeToClose;
+        [Column]
+        public int AvgTimeOpen;
+        [Column]
+        public int AvgTimeToClose;
         [Column]
         public int CustDisIndex;
 #pragma warning restore CS0649
@@ -77,6 +79,13 @@ namespace TeamSupport.CDI.linq
             }
 
             return allOrganizations;
+        }
+
+        public string ToStringCDI1()
+        {
+            // "ClientID\tClient\tTotalTicketsCreated\tTicketsOpen\tCreatedLast30\tAvgTimeOpen\tAvgTimeToClose\tCustDisIndex"
+            return String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}", OrganizationID, Name,
+                TotalTicketsCreated, CreatedLast30, AvgTimeOpen, AvgTimeToClose, CustDisIndex);
         }
     }
 }

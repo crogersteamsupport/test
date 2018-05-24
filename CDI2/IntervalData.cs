@@ -101,6 +101,19 @@ namespace TeamSupport.CDI
             return String.Format("{0} \t{1} \t{2} \t{3:0.00} \t{4} \t{5:0.00} \t{6:0.00} \t{7:0.00} \t{8:0.00} \t{9}",
                 _timeStamp.ToShortDateString(), _newCount, _openCount, _medianDaysOpen, _closedCount, _medianDaysToClose, _averageActionCount, _averageSentimentScore, _averageSeverity, CDI);
         }
+
+        public string ToStringCDI1()
+        {
+            return String.Format("{0} \t{1} \t{2} \t{3} \t{4:0.00} \t{5:0.00} \t{6}",
+                _timeStamp.ToShortDateString(),
+                _totalTicketsCreated, // 1. TotalTicketsCreated
+                _newCount, // 2. CreatedLast30
+                _openCount,   // 3. TicketsOpen
+                _medianDaysOpen, // 4. AvgTimeOpen
+                _medianDaysToClose,  // 5. AvgTimeToClose
+                CDI);
+        }
+
     }
 
 }

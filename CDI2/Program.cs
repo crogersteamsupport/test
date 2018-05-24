@@ -22,9 +22,8 @@ namespace TeamSupport.CDI
             totalTimer.Start();
             int IntervalTimeSpanInDays = int.Parse(ConfigurationManager.AppSettings.Get("IntervalTimeSpanInDays"));
             int IntervalCount = int.Parse(ConfigurationManager.AppSettings.Get("IntervalCount"));
-            CDI2 cdi = new CDI2(TimeSpan.FromDays(IntervalTimeSpanInDays), IntervalCount);
+            CDI2Engine cdi = new CDI2Engine(TimeSpan.FromDays(IntervalTimeSpanInDays), IntervalCount);
             cdi.Run(args);
-            cdi.WriteCdiByOrganization();
             CDIEventLog.WriteLine(String.Format("{0:0.00} sec", totalTimer.ElapsedMilliseconds / 1000));
         }
 
@@ -32,7 +31,7 @@ namespace TeamSupport.CDI
         {
             try
             {
-                TeamSupport.CDI.linq.TicketSeverity.AssignTicketSeverities();
+                linq.TicketSeverity.AssignTicketSeverities();
                 CDIEventLog.WriteLine("TicketSeverities assigned");
             }
             catch (Exception ex)
