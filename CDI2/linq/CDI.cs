@@ -13,7 +13,7 @@ namespace TeamSupport.CDI.linq
 #pragma warning disable CS0649  // Field is never assigned to, and will always have its default value null
         int _cdiID;
         [Column(Storage = "_cdiID", DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true)]
-        public int CDI2ID { get { return _cdiID; } }
+        public int CDIID { get { return _cdiID; } }
 
         [Column]
         public int OrganizationID;

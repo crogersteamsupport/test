@@ -58,7 +58,7 @@ namespace TeamSupport.CDI
 
         public void GenerateIntervals()
         {
-            _organizationAnalysis.GenerateIntervals();
+            //_organizationAnalysis.GenerateIntervals();
             foreach (Client client in _clients)
                 client.GenerateIntervals();
         }

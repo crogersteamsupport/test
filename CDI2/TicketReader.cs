@@ -30,22 +30,37 @@ namespace TeamSupport.CDI
             _dateRange = analysisInterval;
         }
 
-// TEST QUERY
-//use[TeamSupportNightly]
-//SELECT TOP 1000 [CDI2ID]
-//    ,c.[OrganizationID]
-//    ,c.[ParentID]
-//    ,c.[CreatedLast30]
-//    ,o.CreatedLast30
-//    ,(SELECT COUNT(*)
-//    FROM organizations AS o
-//    JOIN OrganizationTickets AS ot ON ot.OrganizationID=o.OrganizationID
-//    JOIN tickets AS t ON ot.ticketid=t.ticketid
-//    WHERE  o.isactive=1 
-//    and t.datecreated > cast(GETUTCDATE()-29 as date)
-//    and o.OrganizationID=c.OrganizationID) as CreatedLast30
-//    FROM[dbo].[CDI] AS c
-//    JOIN dbo.Organizations o on c.OrganizationID= o.OrganizationID
+        // TEST QUERY - CreatedLast30
+        //use[TeamSupportNightly]
+        //SELECT TOP 1000 [CDI2ID]
+        //    ,c.[OrganizationID]
+        //    ,c.[ParentID]
+        //    ,c.[CreatedLast30]
+        //    ,o.CreatedLast30
+        //    ,(SELECT COUNT(*)
+        //    FROM organizations AS o
+        //    JOIN OrganizationTickets AS ot ON ot.OrganizationID=o.OrganizationID
+        //    JOIN tickets AS t ON ot.ticketid=t.ticketid
+        //    WHERE  o.isactive=1 
+        //    and t.datecreated > cast(GETUTCDATE()-29 as date)
+        //    and o.OrganizationID=c.OrganizationID) as CreatedLast30
+        //    FROM[dbo].[CDI] AS c
+        //    JOIN dbo.Organizations o on c.OrganizationID= o.OrganizationID
+
+        // TEST QUERY - TicketsOpen
+        //use TeamSupportNightly
+        //SELECT o.OrganizationID, o.Name, Count(*) as TicketsOpen, c.TicketsOpen AS TicketsOpen2
+        //FROM   organizations       AS o
+        //	JOIN organizationtickets AS ot ON o.OrganizationID = ot.OrganizationID
+        //	JOIN Tickets AS t ON ot.TicketID = t.TicketID
+        //	JOIN TicketStatuses AS s ON t.TicketStatusID = s.TicketStatusID
+        //	JOIN CDI AS c on o.OrganizationID = c.OrganizationID
+        //WHERE  o.isactive=1 
+        //	AND    s.isclosed=0 
+        //	AND    o.ParentID=1078 
+        //	AND    t.DateCreated > GETUTCDATE() - 359
+        //GROUP BY o.OrganizationID, o.Name, c.TicketsOpen
+        //ORDER BY TicketsOpen DESC
 
         public void LoadAllTickets()
         {
@@ -74,7 +89,9 @@ namespace TeamSupport.CDI
                                 where (t.DateCreated > _dateRange.StartDate) &&
                                 (!ts.IsClosed || (t.DateClosed.Value > t.DateCreated)) &&
                                 (t.TicketSource != "SalesForce") &&    // ignore imported tickets
-                                (o.ParentID == 1078) &&
+                                //(o.ParentID == 1078) &&
+                                //(o.OrganizationID == 2899) &&
+                                (o.IsActive) &&
                                 (!tt.ExcludeFromCDI) &&
                                 (!ts.ExcludeFromCDI)
                                 select new TicketJoin()

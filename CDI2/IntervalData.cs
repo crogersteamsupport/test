@@ -49,11 +49,17 @@ namespace TeamSupport.CDI
             }
         }
 
-        private static double Median(double[] values)
+        private static double? Median(double[] values)
         {
-            Array.Sort(values);
-            int centerIndex = values.Length / 2;
-            double result = (values.Length % 2 == 1) ? values[centerIndex] : (values[centerIndex - 1] + values[centerIndex]) / 2;
+            double? result = null;
+            if (values.Length > 0)
+            {
+                result = values.Average();
+                //Array.Sort(values);
+                //int centerIndex = values.Length / 2;
+                //result = (values.Length % 2 == 1) ? values[centerIndex] : (values[centerIndex - 1] + values[centerIndex]) / 2;
+                //CDIEventLog.WriteLine(String.Format("{0:0.0}, {1:0.0}", values.Average(), result.Value));
+            }
             return result;
         }
 
@@ -62,7 +68,8 @@ namespace TeamSupport.CDI
             if (tickets.Length == 0)
                 return null;
 
-            double[] totalDays = tickets.Select(ticket => ticket.TotalDaysToClose).ToArray();
+            TicketJoin[] closedTickets = tickets.Where(t => t.IsClosed && t.DateClosed.HasValue).ToArray();
+            double[] totalDays = closedTickets.Select(ticket => ticket.TotalDaysToClose.Value).ToArray();
             return Median(totalDays);
         }
 
@@ -71,7 +78,8 @@ namespace TeamSupport.CDI
             if (tickets.Count == 0)
                 return null;
 
-            double[] totalDays = tickets.Select(ticket => ticket.TotalDaysToClose).ToArray();
+            TicketJoin[] closedTickets = tickets.Where(t => t.IsClosed && t.DateClosed.HasValue).ToArray();
+            double[] totalDays = closedTickets.Select(ticket => ticket.TotalDaysToClose.Value).ToArray();
             return Median(totalDays);
         }
 

@@ -33,9 +33,15 @@ namespace TeamSupport.CDI
             IntervalData end = _organizationAnalysis.Current();
             if (end == null)
             {
-                _cdiData = _default;
-                _cdiData._timeStamp = _organizationAnalysis._dateRange.EndDate;
-                _cdiData._totalTicketsCreated = _organizationAnalysis.Intervals.Last()._totalTicketsCreated;
+                IntervalData last = _organizationAnalysis.Intervals.Last();
+                _cdiData = new IntervalData()
+                {
+                    _timeStamp = _organizationAnalysis._dateRange.EndDate,
+                    _totalTicketsCreated = last._totalTicketsCreated,
+                    _newCount = 0,
+                    _openCount = last._openCount,
+                    _medianDaysOpen = last._medianDaysOpen
+                };
             }
             else
             {
@@ -46,9 +52,11 @@ namespace TeamSupport.CDI
                     _newCount = end._newCount, // 2. CreatedLast30
                     _openCount = end._openCount,   // 3. TicketsOpen
                     _medianDaysOpen = end._medianDaysOpen, // 4. AvgTimeOpen
-                    _medianDaysToClose = IntervalData.MedianTotalDaysToClose(_organizationAnalysis.Tickets),  // 5. AvgTimeToClose
                 };
             }
+
+
+            _cdiData._medianDaysToClose = IntervalData.MedianTotalDaysToClose(_organizationAnalysis.Tickets);  // 5. AvgTimeToClose
 
             return _cdiData;
         }
@@ -114,32 +122,19 @@ namespace TeamSupport.CDI
             {
                 if (cdi2 == null)
                 {
-                    cdi2 = new linq.CDI()
-                    {
-                        OrganizationID = _organizationAnalysis.OrganizationID,
-                        ParentID = _organizationAnalysis.ParentID,
-                        Timestamp = _cdiData._timeStamp,
-                        TotalTicketsCreated = _cdiData._totalTicketsCreated,
-                        TicketsOpen = _cdiData._totalTicketsCreated,
-                        CreatedLast30 = _cdiData._newCount,
-                        AvgTimeOpen = (int)Math.Round(_cdiData._medianDaysOpen),
-                        AvgTimeToClose = _cdiData._medianDaysToClose.HasValue ? (int)Math.Round(_cdiData._medianDaysToClose.Value) : 0,
-                        CustDisIndex = _cdiData.CDI.Value
-                    };
+                    cdi2 = new linq.CDI();
                     table.InsertOnSubmit(cdi2);
                 }
-                else
-                {
-                    cdi2.OrganizationID = _organizationAnalysis.OrganizationID;
-                    cdi2.ParentID = _organizationAnalysis.ParentID;
-                    cdi2.Timestamp = _cdiData._timeStamp;
-                    cdi2.TotalTicketsCreated = _cdiData._totalTicketsCreated;
-                    cdi2.TicketsOpen = _cdiData._totalTicketsCreated;
-                    cdi2.CreatedLast30 = _cdiData._newCount;
-                    cdi2.AvgTimeOpen = (int)Math.Round(_cdiData._medianDaysOpen);
-                    cdi2.AvgTimeToClose = _cdiData._medianDaysToClose.HasValue ? (int)Math.Round(_cdiData._medianDaysToClose.Value) : 0;
-                    cdi2.CustDisIndex = _cdiData.CDI.Value;
-                }
+
+                cdi2.OrganizationID = _organizationAnalysis.OrganizationID;
+                cdi2.ParentID = _organizationAnalysis.ParentID;
+                cdi2.Timestamp = _cdiData._timeStamp;
+                cdi2.TotalTicketsCreated = _cdiData._totalTicketsCreated;
+                cdi2.TicketsOpen = _cdiData._openCount;
+                cdi2.CreatedLast30 = _cdiData._newCount;
+                cdi2.AvgTimeOpen = (int)Math.Round(_cdiData._medianDaysOpen);
+                cdi2.AvgTimeToClose = _cdiData._medianDaysToClose.HasValue ? (int)Math.Round(_cdiData._medianDaysToClose.Value) : 0;
+                cdi2.CustDisIndex = _cdiData.CDI.Value;
             }
             catch (Exception e)
             {

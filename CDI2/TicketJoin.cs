@@ -29,7 +29,16 @@ namespace TeamSupport.CDI
 
         public int CompareTo(TicketJoin other) { return DateCreated.CompareTo(other.DateCreated); }
 
-        public double TotalDaysToClose {  get { return !DateClosed.HasValue ? 0 : (DateClosed.Value - DateCreated).TotalDays; } }
+        public double? TotalDaysToClose
+        {
+            get
+            {
+                double? result = null;
+                if (IsClosed && DateClosed.HasValue)
+                    result = (DateClosed.Value - DateCreated).TotalDays;
+                return result;
+            }
+        }
         public double TotalDaysOpenToTimestamp(DateTime timestamp)
         {
             DateTime endTime = (DateClosed.HasValue && (DateClosed.Value < timestamp)) ? DateClosed.Value : timestamp;

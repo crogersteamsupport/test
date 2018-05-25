@@ -85,8 +85,8 @@ namespace TeamSupport.CDI
                     }
 
                     // running list of open and closed tickets
-                    if (pair.Item2.DateClosed.HasValue && (pair.Item2.DateCreated == pair.Item2.DateClosed.Value))
-                        Debugger.Break();
+                    //if (pair.Item2.DateClosed.HasValue && (pair.Item2.DateCreated == pair.Item2.DateClosed.Value))
+                    //    Debugger.Break();
 
                     if (pair.Item1 == pair.Item2.DateCreated)
                     {

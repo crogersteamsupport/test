@@ -25,10 +25,11 @@ namespace TeamSupport.CDI.linq
         [Column]
         public bool IsActive;
 
+        // CDI fields
         [Column]
         public int TotalTicketsCreated;
-        //[Column]
-        //public int TicketsOpen;
+        [Column]
+        public int TicketsOpen;
         [Column]
         public int CreatedLast30;
         [Column]

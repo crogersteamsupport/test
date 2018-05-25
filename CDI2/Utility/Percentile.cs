@@ -13,22 +13,37 @@ namespace TeamSupport.CDI
     class Percentile //where T : IComparable<T>
     {
         int _intervalCount;
-        SortedDictionary<double, int> percentiles;
+        SortedDictionary<double, int> _counts;
+        SortedDictionary<double, int> _percentiles;
 
         public Percentile(List<IntervalData> intervals, Func<IntervalData, double> getFunc)
         {
             _intervalCount = intervals.Count();
             intervals.Sort((lhs, rhs) => getFunc(lhs).CompareTo(getFunc(rhs)));
-            percentiles = new SortedDictionary<double, int>();
+            _counts = new SortedDictionary<double, int>();
 
             foreach(IntervalData interval in intervals)
             {
                 double value = getFunc(interval);
-                if (percentiles.ContainsKey(value))
-                    ++percentiles[value];
+                if (_counts.ContainsKey(value))
+                    ++_counts[value];
                 else
-                    percentiles[value] = 1;
+                    _counts[value] = 1;
             }
+
+            _percentiles = new SortedDictionary<double, int>();
+            int index = 1;
+            foreach (KeyValuePair<double, int> pair in _counts)
+            {
+                double value = (index - 0.5) / _intervalCount;
+                value = value * value * value * value;
+                _percentiles[pair.Key] = (int)Math.Round(100 * value);
+                index += pair.Value;
+            }
+
+            //CDIEventLog.WriteLine("Value\tCount\tPercentile");
+            //foreach (KeyValuePair<double, int> pair in _counts)
+            //    CDIEventLog.WriteLine(String.Format("{0}\t{1}\t{2}", pair.Key, pair.Value, _percentiles[pair.Key]));
         }
 
         /// <summary>
@@ -38,20 +53,16 @@ namespace TeamSupport.CDI
         /// <returns></returns>
         public int AsPercentile(double value)
         {
-            double result;
-            int index = 1;
-            foreach(KeyValuePair<double, int> pair in percentiles)
+            if (_percentiles.ContainsKey(value))
+                return _percentiles[value];
+
+            // find closest...
+            foreach (KeyValuePair<double, int> pair in _percentiles)
             {
                 if (value <= pair.Key)  // use the lower bound of percentile (TODO - invert negative correlated metrics!)
-                    break;
-                index += pair.Value;
+                    return pair.Value;
             }
-            result = 100 * (index - 0.5) / _intervalCount;
-            if (result < 0)
-                return 0;
-            if (result > 99)
-                return 99;
-            return (int)Math.Round(result);
+            return 99;
         }
     }
 }

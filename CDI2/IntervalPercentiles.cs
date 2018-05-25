@@ -36,15 +36,14 @@ namespace TeamSupport.CDI
             _percentiles[Metrics.TotalTickets] = new Percentile(intervals, x => x._totalTicketsCreated);
             _percentiles[Metrics.Closed] = new Percentile(intervals, x => x._closedCount);
 
-            // closed tickets?
-            List<IntervalData> closedTickets = intervals.Where(t => t._closedCount > 0).ToList();
-            if (closedTickets.Count == 0)
-            {
-                _percentiles[Metrics.DaysToClose] = new Percentile(closedTickets, x => x._medianDaysToClose.Value);
-                _percentiles[Metrics.ActionCount] = new Percentile(closedTickets, x => x._averageActionCount.Value);
-                _percentiles[Metrics.Severity] = new Percentile(closedTickets, x => x._averageSeverity.Value);
-                //_percentiles[Metrics.Sentiment] = new Percentiles(closedTickets, x => x._averageSeverity.Value);
-            }
+            List<IntervalData> tmp = intervals.Where(m => m._medianDaysToClose.HasValue).ToList();
+            _percentiles[Metrics.DaysToClose] = new Percentile(tmp, t => t._medianDaysToClose.Value);
+
+            tmp = intervals.Where(t => t._averageActionCount.HasValue).ToList();
+            _percentiles[Metrics.ActionCount] = new Percentile(tmp, x => x._averageActionCount.Value);
+
+            tmp = intervals.Where(t => t._averageSeverity.HasValue).ToList();
+            _percentiles[Metrics.Severity] = new Percentile(tmp, x => x._averageSeverity.Value);
         }
 
         public bool CDI1(IntervalData interval, linq.CDI_Settings weights)
