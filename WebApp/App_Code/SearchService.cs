@@ -16,6 +16,7 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using NewRelic.Api;
 using System.Dynamic;
+using Microsoft.Security.Application;
 
 namespace TSWebServices
 {
@@ -231,25 +232,25 @@ namespace TSWebServices
                 fieldsList = GetFieldsList();
 
                 string query = @"
-        DECLARE @TempItems 
+        DECLARE @TempItems
         TABLE
-        ( 
-          ID            int IDENTITY, 
-          recordID      int, 
-          source        int, 
-          relevance     int, 
-          DateModified  datetime 
+        (
+          ID            int IDENTITY,
+          recordID      int,
+          source        int,
+          relevance     int,
+          DateModified  datetime
           {0}
         )
 
-        INSERT INTO @TempItems 
+        INSERT INTO @TempItems
         (
-          recordID, 
-          source, 
-          relevance, 
-          DateModified 
+          recordID,
+          source,
+          relevance,
+          DateModified
           {1}
-        ) 
+        )
         {2}
         {3}
         {4}
@@ -257,14 +258,14 @@ namespace TSWebServices
         {6}
         {7}
         {8}
-        
+
         SET @resultsCount = @@RowCount
 
         SELECT
           {9}
-        FROM 
-          @TempItems ti 
-          LEFT JOIN dbo.TicketsView tv 
+        FROM
+          @TempItems ti
+          LEFT JOIN dbo.TicketsView tv
             ON ti.source = 17
             AND ti.recordID = tv.TicketID
           LEFT JOIN dbo.WikiArticlesView wv
@@ -282,9 +283,9 @@ namespace TSWebServices
           LEFT JOIN dbo.NewWaterCoolerView wcv
             ON ti.source = 38
             AND ti.recordID = wcv.MessageID
-        WHERE 
+        WHERE
           ti.ID BETWEEN @FromIndex AND @toIndex
-        ORDER BY 
+        ORDER BY
           ti.ID
         ";
 
@@ -541,8 +542,8 @@ namespace TSWebServices
 	        {1}
         WHERE
           (
-            o.UseProductFamilies = 0 
-            OR tv.UserID = " + loginUser.UserID + @" 
+            o.UseProductFamilies = 0
+            OR tv.UserID = " + loginUser.UserID + @"
             OR urpf.UserID = " + loginUser.UserID + @"
             OR tv.ProductID IS NULL
           )
@@ -681,7 +682,7 @@ namespace TSWebServices
             ON pvv.ProductVersionID = dpvrt.RecordID
         WHERE
           (
-            o.UseProductFamilies = 0 
+            o.UseProductFamilies = 0
             OR urpf.UserID = " + loginUser.UserID + @"
           )
       ");
@@ -792,8 +793,8 @@ namespace TSWebServices
           (
             (wcv.MessageParent < 0 AND wcv.UserID = @userID) OR (wcv.MessageParent > 0 AND pwcv.UserID = @userID)
             OR userOrGroupAttachments.Count IS NULL
-            OR userAttachments.Count > 0    
-            OR groupAttachments.Count > 0    
+            OR userAttachments.Count > 0
+            OR groupAttachments.Count > 0
           )
       ");
 
@@ -1734,6 +1735,7 @@ SELECT
         [WebMethod]
         public string[] SearchCompaniesAndContacts2(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly)
         {
+            searchTerm = AntiXss.HtmlEncode(searchTerm);
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             string[] resultItems= new string[] { };
 
@@ -1761,7 +1763,7 @@ SELECT
 
             return resultItems;
         }
-        
+
         private DataTable GetAllCompaniesAndContactsWithTerm(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts, bool? active, bool? parentsOnly = false)
         {
 
@@ -1919,21 +1921,21 @@ SELECT
             //Clean searchterm
             searchTerm = searchTerm.Replace("\"", "").Replace("'", "");
             if (!String.IsNullOrEmpty(searchTerm))
-                searchTerm = "\"" + searchTerm + "\"";          
-            
-            
+                searchTerm = "\"" + searchTerm + "\"";
+
+
             command.CommandText = "AssetsSearch";
             command.CommandType = CommandType.StoredProcedure;
-            
+
             command.Parameters.AddWithValue("@FromIndex", from + 1);
             command.Parameters.AddWithValue("@ToIndex", from + count);
-            command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);           
+            command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
             command.Parameters.AddWithValue("@SearchTerm", searchTerm);
             command.Parameters.AddWithValue("@IncludeAssigned", searchAssigned);
             command.Parameters.AddWithValue("@IncludeWarehouse", searchWarehouse);
             command.Parameters.AddWithValue("@IncludeJunkyard", searchJunkyard);
-                   
-            
+
+
             DataTable table = SqlExecutor.ExecuteQuery(loginUser, command);
             foreach (DataRow row in table.Rows)
             {
@@ -1960,14 +1962,14 @@ SELECT
             SqlCommand command = new SqlCommand();
 
             string pageQuery = @"
-WITH 
+WITH
 q AS ({0}),
-r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY 
-    CASE 
-        WHEN [NAME] IS NULL THEN 1 
-        WHEN [NAME] = ''    THEN 2 
-        ELSE 3 
-    END DESC, 
+r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY
+    CASE
+        WHEN [NAME] IS NULL THEN 1
+        WHEN [NAME] = ''    THEN 2
+        ELSE 3
+    END DESC,
     [NAME] ASC) AS 'RowNum' FROM q)
 SELECT * INTO #X FROM r
 WHERE RowNum BETWEEN @From AND @To
@@ -1983,11 +1985,11 @@ select  a.AssetID,
         pv.VersionNumber
 FROM #X AS x
 LEFT JOIN Assets a on a.AssetID = x.AssetID
-LEFT JOIN Products p ON p.ProductID = x.ProductID 
+LEFT JOIN Products p ON p.ProductID = x.ProductID
 Left JOIN ProductVersions pv on pv.ProductVersionID = x.ProductVersionID";
 
             string assetQuery = @"
-SELECT 
+SELECT
   a.Name as Name,
   a.AssetID,
   a.ProductID,
@@ -2147,26 +2149,26 @@ SELECT
                             }
 
                             string query = @"
-                                DECLARE @TempItems 
+                                DECLARE @TempItems
                                 TABLE
-                                ( 
-                                  ID            int IDENTITY, 
-                                  recordID      int, 
-                                  source        int, 
-                                  relevance     int, 
-                                  DateModified  datetime 
+                                (
+                                  ID            int IDENTITY,
+                                  recordID      int,
+                                  source        int,
+                                  relevance     int,
+                                  DateModified  datetime
                                 )
 
-                                INSERT INTO @TempItems 
+                                INSERT INTO @TempItems
                                 (
-                                  recordID, 
-                                  source, 
-                                  relevance, 
-                                  DateModified 
-                                ) 
+                                  recordID,
+                                  source,
+                                  relevance,
+                                  DateModified
+                                )
                                 {0}
                                 {1}
-        
+
                                 SET @resultsCount = @@RowCount
 
                                 SELECT
@@ -2179,8 +2181,8 @@ SELECT
                                   pv.releaseDate,
                                   pv.isReleased,
                                   pvs.Name AS versionStatus
-                                FROM 
-                                  @TempItems ti 
+                                FROM
+                                  @TempItems ti
                                   LEFT JOIN dbo.Products p
                                     ON ti.source = 13
                                     AND ti.recordID = p.ProductID
@@ -2189,9 +2191,9 @@ SELECT
                                     AND ti.recordID = pv.ProductVersionID
                                   LEFT JOIN dbo.ProductVersionStatuses pvs
                                     ON pv.ProductVersionStatusID = pvs.ProductVersionStatusID
-                                WHERE 
+                                WHERE
                                   ti.ID BETWEEN @FromIndex AND @toIndex
-                                ORDER BY 
+                                ORDER BY
                                   " + orderByClause.ToString() + @"
                                 FOR JSON PATH";
 
