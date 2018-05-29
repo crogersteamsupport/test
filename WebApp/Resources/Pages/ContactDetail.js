@@ -1226,25 +1226,21 @@ $(document).ready(function () {
         if (_mainFrame.Ts.System.Organization.UseProductFamilies) {
             _mainFrame.Ts.Services.Customers.LoadNotesByUserRights(userID, _mainFrame.Ts.ReferenceTypes.Users, false, _userOrgID, function (note) {
                 $('#tblNotes tbody').empty();
+                var count = note.length;
+                $('#a-notes').text('Notes (' + count + ')');
                 var html;
                 for (var i = 0; i < note.length; i++) {
-                    if (_isAdmin || note[i].CreatorID == _mainFrame.Ts.System.User.UserID || _mainFrame.Ts.System.User.CanEditContact)
+                    if (_isAdmin || note[i].CreatorID == _mainFrame.Ts.System.User.UserID || _mainFrame.Ts.System.User.CanEditContact) {
                         html = '<td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
-                    else
+                    } else {
                         html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
-
+                    }
                     if (note[i].ProductFamilyID != null) {
                         html += '<td>' + note[i].ProductFamily + '</td>';
-                    }
-                    else {
+                    } else {
                         html += '<td>Unassigned</td>';
                     }
-
-                    $('<tr>').addClass("viewNote")
-                        .attr("id", note[i].NoteID)
-                        .html(html)
-                        .data("description", note[i].Description)
-                        .appendTo('#tblNotes > tbody:last');
+                    $('<tr>').addClass("viewNote").attr("id", note[i].NoteID).html(html).data("description", note[i].Description).appendTo('#tblNotes > tbody:last');
                     //$('#tblNotes > tbody:last').append('<tr id=' + note[i].NoteID + ' class="viewNote"><td><i class="glyphicon glyphicon-edit editNote"></i></td><td><i class="glyphicon glyphicon-trash deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td></tr>').data('description',note[i].Description);
                     if (noteID != null && noteID == note[i].NoteID) {
                         $('.noteDesc').html("<strong>Description</strong> <p>" + note[i].Description + "</p>");
@@ -1314,27 +1310,21 @@ $(document).ready(function () {
         $('#tblFiles tbody').empty();
         if (_mainFrame.Ts.System.Organization.UseProductFamilies) {
             _mainFrame.Ts.Services.Customers.LoadFilesByUserRights(userID, _mainFrame.Ts.ReferenceTypes.Users, false, function (files) {
+                var count = files.length;
+                $('#a-files').text('Files (' + count + ')');
                 var html;
                 for (var i = 0; i < files.length; i++) {
-
-                    if (_isAdmin || files[i].CreatorID == _mainFrame.Ts.System.User.UserID || _mainFrame.Ts.System.User.CanEditContact)
+                    if (_isAdmin || files[i].CreatorID == _mainFrame.Ts.System.User.UserID || _mainFrame.Ts.System.User.CanEditContact) {
                         html = '<td><i class="fa fa-trash-o delFile"></i></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>';
-                    else
+                    } else {
                         html = '<td></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>';
-
+                    }
                     if (files[i].ProductFamilyID != null) {
                         html += '<td>' + files[i].ProductFamily + '</td>';
-                    }
-                    else {
+                    } else {
                         html += '<td>Unassigned</td>';
                     }
-
-                    var tr = $('<tr>')
-                        .attr('id', files[i].AttachmentID)
-                        .html(html)
-                        .appendTo('#tblFiles > tbody:last');
-
-
+                    var tr = $('<tr>').attr('id', files[i].AttachmentID).html(html).appendTo('#tblFiles > tbody:last');
                     //$('#tblFiles > tbody:last').appendTo('<tr id=' +  + '></tr>');
                 }
             });
