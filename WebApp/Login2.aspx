@@ -15,13 +15,13 @@
   <link href="vcr/1_9_0/Pages/Login.css" rel="stylesheet" type="text/css" />
   <script src="/frontend/library/jquery-latest.min.js" type="text/javascript"></script>
   <script src="/frontend/library/bootstrap3.min.js" type="text/javascript"></script>
-  <script src="vcr/1_9_0/Pages/Login2.js" type="text/javascript"></script>
-  <script src="vcr/1_9_0/Js/Ts/ts.utils.js"></script>
+  <script src="/vcr/1_9_0/Pages/Login2.js" type="text/javascript"></script>
+  <script src="/vcr/1_9_0/Js/Ts/ts.utils.js"></script>
 </head>
 <body>
   <header>
     <div class="headerDiv">
-      <img alt="Logo" src="vcr/1_9_0/images/page_header.png" />
+      <img alt="Logo" src="/vcr/1_9_0/images/page_header.png" />
     </div>
   </header>
   <div class="container-fluid">
