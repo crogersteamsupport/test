@@ -24,7 +24,7 @@ namespace TeamSupport.CDI
         public DateRange _dateRange { get; private set; }
         public TicketJoin[] Tickets { get; private set; }
         public int OrganizationID { get { return Tickets[0].OrganizationID; } }
-        public int ParentID { get { return Tickets[0].ParentID; } }
+        public int ParentID { get { return Tickets[0].ParentID.Value; } }
         IntervalStrategy _intervalStrategy;
         public List<IntervalData> Intervals { get; private set; }
         //public int CreatorIDCount { get; private set; }
@@ -66,10 +66,17 @@ namespace TeamSupport.CDI
             return null;
         }
 
-
         public void GenerateIntervals()
         {
             Intervals = _intervalStrategy.GenerateIntervalData(_dateRange);
+        }
+
+        public double MedianDaysOpen()
+        {
+            double[] daysOpen = Tickets.Where(t => !t.IsClosed && !t.DateClosed.HasValue).Select(t => t.TotalDaysOpenToTimestamp(DateRange.EndTimeNow)).ToArray();
+            if (daysOpen.Length == 0)
+                return 0;
+            return IntervalData.Median(daysOpen).Value;
         }
 
         public override string ToString()

@@ -40,7 +40,7 @@ namespace TeamSupport.CDI
                     _totalTicketsCreated = last._totalTicketsCreated,
                     _newCount = 0,
                     _openCount = last._openCount,
-                    _medianDaysOpen = last._medianDaysOpen
+                    _medianDaysOpen = _organizationAnalysis.MedianDaysOpen()
                 };
             }
             else
@@ -116,32 +116,55 @@ namespace TeamSupport.CDI
             //CDIEventLog.WriteLine(String.Format("{0}\t{1}", organization.ToStringCDI1(), ToStringCDI1()));
         }
 
-        public void Save(linq.CDI cdi2, Table<linq.CDI> table)
+        public void Save(Dictionary<int, linq.CDI> distressIndices, Table<linq.CDI> table)
         {
             try
             {
-                if (cdi2 == null)
+                linq.CDI cdi = null;
+                if(distressIndices.ContainsKey(OrganizationID))
+                    cdi = distressIndices[OrganizationID];
+                if (cdi == null)
                 {
-                    cdi2 = new linq.CDI();
-                    table.InsertOnSubmit(cdi2);
+                    cdi = new linq.CDI();
+                    table.InsertOnSubmit(cdi);
                 }
 
-                cdi2.OrganizationID = _organizationAnalysis.OrganizationID;
-                cdi2.ParentID = _organizationAnalysis.ParentID;
-                cdi2.Timestamp = _cdiData._timeStamp;
-                cdi2.TotalTicketsCreated = _cdiData._totalTicketsCreated;
-                cdi2.TicketsOpen = _cdiData._openCount;
-                cdi2.CreatedLast30 = _cdiData._newCount;
-                cdi2.AvgTimeOpen = (int)Math.Round(_cdiData._medianDaysOpen);
-                cdi2.AvgTimeToClose = _cdiData._medianDaysToClose.HasValue ? (int)Math.Round(_cdiData._medianDaysToClose.Value) : 0;
-                cdi2.CustDisIndex = _cdiData.CDI.Value;
+                cdi.OrganizationID = _organizationAnalysis.OrganizationID;
+                cdi.ParentID = _organizationAnalysis.ParentID;
+                cdi.Timestamp = _cdiData._timeStamp;
+                cdi.TotalTicketsCreated = _cdiData._totalTicketsCreated;
+                cdi.TicketsOpen = _cdiData._openCount;
+                cdi.CreatedLast30 = _cdiData._newCount;
+                cdi.AvgTimeOpen = (int)Math.Round(_cdiData._medianDaysOpen);
+                cdi.AvgTimeToClose = _cdiData._medianDaysToClose.HasValue ? (int)Math.Round(_cdiData._medianDaysToClose.Value) : 0;
+                cdi.CustDisIndex = _cdiData.CDI.Value;
             }
             catch (Exception e)
             {
-                CDIEventLog.WriteEntry("Savbe failed", e);
+                CDIEventLog.WriteEntry("Save failed", e);
             }
 
         }
+
+        public void Save(Dictionary<int, linq.Organization> organizations, Table<linq.Organization> table)
+        {
+            try
+            {
+                linq.Organization organization = organizations[OrganizationID];
+                organization.TotalTicketsCreated = _cdiData._totalTicketsCreated;
+                organization.TicketsOpen = _cdiData._openCount;
+                organization.CreatedLast30 = _cdiData._newCount;
+                organization.AvgTimeOpen = (int)Math.Round(_cdiData._medianDaysOpen);
+                organization.AvgTimeToClose = _cdiData._medianDaysToClose.HasValue ? (int)Math.Round(_cdiData._medianDaysToClose.Value) : 0;
+                organization.CustDisIndex = _cdiData.CDI.Value;
+            }
+            catch (Exception e)
+            {
+                CDIEventLog.WriteEntry("Save failed", e);
+            }
+
+        }
+
 
     }
 }

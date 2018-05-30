@@ -35,7 +35,14 @@ namespace TeamSupport.CDI
             int index = 1;
             foreach (KeyValuePair<double, int> pair in _counts)
             {
-                double value = (index - 0.5) / _intervalCount;
+                // https://web.stanford.edu/class/archive/anthsci/anthsci192/anthsci192.1064/handouts/calculating%20percentiles.pdf
+                //double value = (index - 0.5) / _intervalCount;
+                //value = value * value * value * value;
+                //_percentiles[pair.Key] = (int)Math.Round(100 * value);
+                //index += pair.Value;
+
+                double offset = pair.Value / 2;
+                double value = (offset + index) / (double)_intervalCount;
                 value = value * value * value * value;
                 _percentiles[pair.Key] = (int)Math.Round(100 * value);
                 index += pair.Value;
@@ -47,7 +54,7 @@ namespace TeamSupport.CDI
         }
 
         /// <summary>
-        /// https://web.stanford.edu/class/archive/anthsci/anthsci192/anthsci192.1064/handouts/calculating%20percentiles.pdf
+        /// AsPercentile
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>

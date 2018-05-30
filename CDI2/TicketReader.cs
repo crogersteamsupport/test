@@ -87,23 +87,23 @@ namespace TeamSupport.CDI
                                 join tt in ticketTypesTable on t.TicketTypeID equals tt.TicketTypeID
                                 join ts in ticketStatusesTable on t.TicketStatusID equals ts.TicketStatusID
                                 where (t.DateCreated > _dateRange.StartDate) &&
-                                (!ts.IsClosed || (t.DateClosed.Value > t.DateCreated)) &&
-                                (t.TicketSource != "SalesForce") &&    // ignore imported tickets
-                                //(o.ParentID == 1078) &&
-                                //(o.OrganizationID == 2899) &&
-                                (o.IsActive) &&
-                                (!tt.ExcludeFromCDI) &&
-                                (!ts.ExcludeFromCDI)
+                                    (!ts.IsClosed || (t.DateClosed.Value > t.DateCreated)) &&
+                                    (t.TicketSource != "SalesForce") &&    // ignore imported tickets
+                                    //(o.ParentID == 300677) &&
+                                    //(o.OrganizationID == 563644) &&
+                                    (o.IsActive) &&
+                                    (!tt.ExcludeFromCDI) &&
+                                    (!ts.ExcludeFromCDI)
                                 select new TicketJoin()
                                 {
                                     OrganizationID = ot.OrganizationID,
                                     DateClosed = t.DateClosed,
                                     DateCreated = t.DateCreated,
                                     IsClosed = ts.IsClosed,
-                                    ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count(),
+                                    //ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count(),
                                     //AverageActionSentiment = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.AverageActionSentiment).First(),  // for some reason Min is faster than First()
                                     ParentID = o.ParentID,
-                                    Severity = (from s in severityTable where t.TicketSeverityID == s.TicketSeverityID select s.Severity).First()
+                                    //Severity = (from s in severityTable where t.TicketSeverityID == s.TicketSeverityID select s.Severity).First()
                                 };
 
                     // run the query

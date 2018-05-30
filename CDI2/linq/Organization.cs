@@ -19,7 +19,7 @@ namespace TeamSupport.CDI.linq
         public int OrganizationID { get { return _organizationID; } }
 
         [Column]
-        public int ParentID;
+        public int? ParentID;
         [Column]
         public string Name;
         [Column]
@@ -56,7 +56,7 @@ namespace TeamSupport.CDI.linq
         }
 
         static Dictionary<int, Organization> _organizations;
-        static Dictionary<int, Organization> LoadOrganizations()
+        public static Dictionary<int, Organization> LoadOrganizations()
         {
             Dictionary<int, Organization> allOrganizations = null;
             try
@@ -82,11 +82,11 @@ namespace TeamSupport.CDI.linq
             return allOrganizations;
         }
 
-        public string ToStringCDI1()
-        {
-            // "ClientID\tClient\tTotalTicketsCreated\tTicketsOpen\tCreatedLast30\tAvgTimeOpen\tAvgTimeToClose\tCustDisIndex"
-            return String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}", OrganizationID, Name,
-                TotalTicketsCreated, CreatedLast30, AvgTimeOpen, AvgTimeToClose, CustDisIndex);
-        }
+        //public string ToStringCDI1()
+        //{
+        //    // "ClientID\tClient\tTotalTicketsCreated\tTicketsOpen\tCreatedLast30\tAvgTimeOpen\tAvgTimeToClose\tCustDisIndex"
+        //    return String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}", OrganizationID, Name,
+        //        TotalTicketsCreated, CreatedLast30, AvgTimeOpen, AvgTimeToClose, CustDisIndex);
+        //}
     }
 }

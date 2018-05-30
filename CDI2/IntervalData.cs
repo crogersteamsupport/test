@@ -49,12 +49,12 @@ namespace TeamSupport.CDI
             }
         }
 
-        private static double? Median(double[] values)
+        public static double? Median(double[] values)
         {
             double? result = null;
             if (values.Length > 0)
             {
-                result = values.Average();
+                result = values.Average();  // use average for now so it more closely matches CDI1
                 //Array.Sort(values);
                 //int centerIndex = values.Length / 2;
                 //result = (values.Length % 2 == 1) ? values[centerIndex] : (values[centerIndex - 1] + values[centerIndex]) / 2;

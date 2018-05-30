@@ -19,6 +19,7 @@ namespace TeamSupport.CDI.linq
         public int OrganizationID;
         [Column]
         public int ParentID;
+        [Column]
         public DateTime Timestamp;
         [Column]
         public int TotalTicketsCreated;

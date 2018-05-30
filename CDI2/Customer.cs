@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Data.Linq;
 using System.Data.SqlClient;
 using System.Configuration;
+using TeamSupport.CDI.linq;
 
 namespace TeamSupport.CDI
 {
@@ -65,7 +66,7 @@ namespace TeamSupport.CDI
 
         linq.CDI_Settings _weights;
 
-        public linq.CDI_Settings GetCDISettings()
+        public linq.CDI_Settings GetCDISettings(int organizationID)
         {
             if (_weights != null)
                 return _weights;
@@ -77,7 +78,7 @@ namespace TeamSupport.CDI
                 using (DataContext db = new DataContext(connection))
                 {
                     Table<linq.CDI_Settings> table = db.GetTable<linq.CDI_Settings>();
-                    _weights = Enumerable.ToArray(table).FirstOrDefault();
+                    _weights = table.Where(s => s.OrganizationID==organizationID).FirstOrDefault();
                 }
             }
             catch (Exception e)
@@ -85,9 +86,14 @@ namespace TeamSupport.CDI
                 CDIEventLog.WriteEntry("CDI_Settings Read failed", e);
             }
 
-            if (_weights == null)
+            if ((_weights == null) ||
+                !_weights.TotalTicketsWeight.HasValue ||
+                !_weights.OpenTicketsWeight.HasValue ||
+                !_weights.Last30Weight.HasValue ||
+                !_weights.AvgDaysOpenWeight.HasValue ||
+                !_weights.AvgDaysToCloseWeight.HasValue)
             {
-                const float equalWeight = 1/5;
+                const float equalWeight = 0.2f;
                 _weights = new linq.CDI_Settings()
                 {
                     TotalTicketsWeight = equalWeight,
@@ -97,6 +103,7 @@ namespace TeamSupport.CDI
                     AvgDaysToCloseWeight = equalWeight
                 };
             }
+
             return _weights;
         }
 
@@ -117,8 +124,9 @@ namespace TeamSupport.CDI
             //_iCdiStrategy.CalculateCDI();    // customer CDI not used
 
             // calculate the CDI for each client
+            linq.CDI_Settings settings = GetCDISettings(_organizationAnalysis.ParentID);
             foreach (Client client in _clients)
-                client.InvokeCDIStrategy(_percentiles, GetCDISettings());
+                client.InvokeCDIStrategy(_percentiles, settings);
         }
 
         //public void Callback()
@@ -176,14 +184,24 @@ namespace TeamSupport.CDI
                 client.Write();
         }
 
-        public void Save(linq.CDI[] cdi2s, Table<linq.CDI> table)
+        public void Save(Dictionary<int, linq.CDI> cdi, Table<linq.CDI> table)
         {
             foreach (Client client in _clients)
             {
-                linq.CDI cdi2 = cdi2s.Where(c => c.OrganizationID == client.OrganizationID).FirstOrDefault();
-                client.Save(cdi2, table);
+                //linq.CDI clientCDI = cdi.Where(c => c.OrganizationID == client.OrganizationID);
+                client.Save(cdi, table);
             }
         }
+
+        public void Save(Dictionary<int, linq.Organization> organization, Table<linq.Organization> table)
+        {
+            foreach (Client client in _clients)
+            {
+                //linq.CDI clientCDI = cdi.Where(c => c.OrganizationID == client.OrganizationID);
+                client.Save(organization, table);
+            }
+        }
+
 
     }
 }
