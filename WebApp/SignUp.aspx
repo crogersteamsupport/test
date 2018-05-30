@@ -14,7 +14,7 @@
 
   <script src="/frontend/library/jquery-latest.min.js" type="text/javascript"></script>
 
-  <script src="vcr/1_9_0/Js/bootstrap3.min.js" type="text/javascript"></script>
+  <script src="/vcr/1_9_0/Js/bootstrap3.min.js" type="text/javascript"></script>
 
   <style type="text/css">
     .callout { background-color: #f4f8fa; padding: 20px; }
