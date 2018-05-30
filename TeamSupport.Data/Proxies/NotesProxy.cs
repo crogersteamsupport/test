@@ -30,6 +30,8 @@ namespace TeamSupport.Data
     [DataMember] public int? ImportFileID { get; set; }
     [DataMember] public int? ProductFamilyID { get; set; }
     [DataMember] public string ProductFamily { get; set; }
+    [DataMember] public string ActivityType { get; set; }
+    [DataMember] public string DateOccurred { get; set; }
   }
   
   public partial class Note : BaseItem
@@ -50,6 +52,8 @@ namespace TeamSupport.Data
       result.CreatorName = this.CreatorName;
       result.ProductFamily = this.ProductFamily;
       result.IsAlert = this.IsAlert;
+      result.ActivityType = this.ActivityType;
+      result.DateOccurred = this.DateOccurred == null ? "" : this.DateOccurred;
             
 
        

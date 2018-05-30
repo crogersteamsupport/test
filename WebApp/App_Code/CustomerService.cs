@@ -2731,7 +2731,7 @@ SELECT
         }
 
         [WebMethod]
-        public void SaveNote(string title, string noteText, int noteID, int refID, ReferenceType refType, bool isAlert = false, int productFamilyID = -1)
+        public void SaveNote(string title, string noteText, int noteID, int refID, ReferenceType refType, string ActivityType, string DateOccurred, bool isAlert = false, int productFamilyID = -1)
         {
             Note note = null;
             bool isNew = false;
@@ -2766,6 +2766,8 @@ SELECT
                 note.Description = noteText;
                 note.Title = title;
                 note.IsAlert = isAlert;
+                note.ActivityType = ActivityType;
+                note.DateOccurred = DateOccurred;
                 if (productFamilyID != -1)
                 {
                     note.ProductFamilyID = productFamilyID;

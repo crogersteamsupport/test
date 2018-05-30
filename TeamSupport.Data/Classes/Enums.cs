@@ -390,4 +390,12 @@ namespace TeamSupport.Data
 		Unknown = 0,
 		Integration = 1
 	}
+
+    public enum ActivityType
+    {
+        Call = 0,
+        Email,
+        Visit,
+        Note
+    }
 }

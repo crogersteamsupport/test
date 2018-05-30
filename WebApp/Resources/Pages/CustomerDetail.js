@@ -205,6 +205,7 @@ $(document).ready(function () {
         $('#taskTab').show();
     }
 
+    LoadNoteActivities();
     LoadNotes();
     LoadNotesAdditional();
     //LoadHistory();
@@ -1809,6 +1810,8 @@ $(document).ready(function () {
             else {
                 $('#ddlNoteProductFamily').val(-1);
             }
+            $('#ddlNoteActivityType').val(note.ActivityType);
+            $('#activityDate').data("DateTimePicker").setDate(moment(note.DateOccurred));
         });
     });
 
@@ -1868,6 +1871,9 @@ $(document).ready(function () {
     $("#btnNotesCancel").click(function (e) {
         e.preventDefault();
         _mainFrame.Ts.System.logAction('Customer Detail - Note Form Cancel');
+        $('#ddlNoteActivityType').val('');
+        $('#activityDate').val('');
+        $('#activityDate').datetimepicker('setDate', new Date());
         $('#fieldNoteTitle').val('');
         $('#fieldNoteDesc').val('');
         $('#fieldNoteID').val('-1');
@@ -1888,16 +1894,22 @@ $(document).ready(function () {
         var description = $('#fieldNoteDesc').val();
         var noteID = $('#fieldNoteID').val();
         var isAlert = $('#noteCustomerAlert').prop('checked');
+        var activityType = $('#ddlNoteActivityType').val();
+        var DateOccurred = $('#activityDate').val();
+
         if ((title.length || description.length) < 1) {
             alert("Please fill in all the required information");
             return;
         }
         $(this).prop('disabled', true);
         var productFamilyID = $("#ddlNoteProductFamily").val();
-        _mainFrame.Ts.Services.Customers.SaveNote(title, description, noteID, organizationID, _mainFrame.Ts.ReferenceTypes.Organizations, isAlert, productFamilyID, function (note) {
+        _mainFrame.Ts.Services.Customers.SaveNote(title, description, noteID, organizationID, _mainFrame.Ts.ReferenceTypes.Organizations, activityType, DateOccurred, isAlert, productFamilyID, function (note) {
             $('#fieldNoteTitle').val('');
             $('#fieldNoteDesc').val('');
             $('#fieldNoteID').val('-1');
+            $('#ddlNoteActivityType').val('');
+            $('#activityDate').val('');
+            $('#activityDate').data("DateTimePicker").setDate(new Date());
             $('#ddlNoteProductFamily').val('-1');
             $('#noteCustomerAlert').prop('checked', false);
             $('#btnNotesSave').text("Save");
@@ -2193,7 +2205,15 @@ $(document).ready(function () {
                     } else {
                         html += '<td>Unassigned</td>';
                     }
-                    $('<tr>').addClass("viewNote").attr("id", note[i].NoteID).html(html).data("description", note[i].Description).appendTo('#tblNotes > tbody:last');
+
+                    html += '<td>' + note[i].ActivityType + '</td>';
+                    html += '<td>' + note[i].DateOccurred + '</td>';
+
+                    $('<tr>').addClass("viewNote")
+                    .attr("id", note[i].NoteID)
+                    .html(html)
+                    .data("description", note[i].Description)
+                    .appendTo('#tblNotes > tbody:last');
                     //$('#tblNotes > tbody:last').append('<tr id=' + note[i].NoteID + ' class="viewNote"><td><i class="glyphicon glyphicon-edit editNote"></i></td><td><i class="glyphicon glyphicon-trash deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td></tr>').data('description',note[i].Description);
                     if (noteID != null && noteID == note[i].NoteID) {
                         $('.noteDesc').html("<strong>Description</strong> <p>" + note[i].Description + "</p>");
@@ -2210,8 +2230,15 @@ $(document).ready(function () {
                         html = '<td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
                     } else {
                         html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
-                    }
-                    $('<tr>').addClass("viewNote").attr("id", note[i].NoteID).html(html).data("description", note[i].Description).appendTo('#tblNotes > tbody:last');
+
+                    html += '<td>' + note[i].ActivityType + '</td>';
+                    html += '<td>' + note[i].DateOccurred + '</td>';
+
+                    $('<tr>').addClass("viewNote")
+                    .attr("id", note[i].NoteID)
+                    .html(html)
+                    .data("description", note[i].Description)
+                    .appendTo('#tblNotes > tbody:last');
                     //$('#tblNotes > tbody:last').append('<tr id=' + note[i].NoteID + ' class="viewNote"><td><i class="glyphicon glyphicon-edit editNote"></i></td><td><i class="glyphicon glyphicon-trash deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td></tr>').data('description',note[i].Description);
                     if (noteID != null && noteID == note[i].NoteID) {
                         $('.noteDesc').html("<strong>Description</strong> <p>" + note[i].Description + "</p>");
@@ -2237,6 +2264,9 @@ $(document).ready(function () {
                         html += '<td>Unassigned</td>';
                     }
 
+                    html += '<td>' + note[i].ActivityType + '</td>';
+                    html += '<td>' + note[i].DateOccurred + '</td>';
+
                     $('<tr>').addClass("viewNote")
                     .attr("id", note[i].NoteID)
                     .html(html)
@@ -2259,6 +2289,9 @@ $(document).ready(function () {
                         html = '<td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
                     else
                         html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+
+                    html += '<td>' + note[i].ActivityType + '</td>';
+                    html += '<td>' + note[i].DateOccurred + '</td>';
 
                     $('<tr>').addClass("viewNote")
                     .attr("id", note[i].NoteID)
@@ -4433,6 +4466,14 @@ function LoadProductFamilies() {
             $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#ddlNoteProductFamily');
             $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#ddlFileProductFamily');
             $('<option>').attr('value', productFamilies[i].ProductFamilyID).text(productFamilies[i].Name).data('o', productFamilies[i]).appendTo('#ddlRatingProductFamily');
+        }
+    });
+}
+
+function LoadNoteActivities(){
+    _mainFrame.Ts.Services.Organizations.LoadNoteActivities(function (activities) {
+        for (var i = 0; i < activities.length; i++) {
+            $('<option>').attr('value', activities[i]).text(activities[i]).appendTo('#ddlNoteActivityType');
         }
     });
 }
