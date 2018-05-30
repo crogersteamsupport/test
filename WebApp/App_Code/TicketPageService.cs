@@ -413,6 +413,17 @@ namespace TSWebServices
             string defaultOrder = "[{'CatID':'AssignedTo','CatName':'Assigned To','Disabled':'false'},{'CatID':'Group','CatName':'Group','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Type','CatName':'Type','Disabled':'false'},{'CatID':'Status','CatName':'Status','Disabled':'false'},{'CatID':'Severity','CatName':'Severity','Disabled':'false'},{'CatID':'Sentiment','CatName':'Sentiment','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'SLAStatus','CatName':'SLA Status','Disabled':'false'},{'CatID':'VisibleToCustomers','CatName':'Visible To Customers','Disabled':'false'},{'CatID':'KnowledgeBase','CatName':'Knowledge Base','Disabled':'false'},{'CatID':'Community','CatName':'Community','Disabled':'false'},{'CatID':'DaysOpened','CatName':'Days Opened','Disabled':'false'},{'CatID':'TotalTimeSpent','CatName':'Total Time Spent','Disabled':'false'},{'CatID':'DueDate','CatName':'Due Date','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Customers','CatName':'Customers','Disabled':'false'},{'CatID':'CustomFields','CatName':'Custom Fields','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Product','CatName':'Product','Disabled':'false'},{'CatID':'Reported','CatName':'Reported','Disabled':'false'},{'CatID':'Resolved','CatName':'Resolved','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Inventory','CatName':'Inventory','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Tags','CatName':'Tags','Disabled':'false'}" + reminderCatName + ",{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'AssociatedTickets','CatName':'Associated Tickets','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'UserQueue','CatName':'User Queue','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'SubscribedUsers','CatName':'Subscribed Users','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'true'},{'CatID':'Jira','CatName':'Jira','Disabled':'false'},{'CatID':'TFS','CatName':'TFS','Disabled':'false'},{'CatID':'Attachments','CatName':'Attachments','Disabled':'false'}]";
             List<TicketCategoryOrder> items = JsonConvert.DeserializeObject<List<TicketCategoryOrder>>(Settings.OrganizationDB.ReadString(KeyName, defaultOrder));
 
+            // custom field order configurations are a snapshot in time and might not contain sentiment
+            TicketCategoryOrder[] sentimentField = items.Where(t => t.CatName == "Sentiment").ToArray();
+            if (sentimentField.Length == 0)
+            {
+                // insert after severity
+                int i = 0;
+                while (items[i].CatID != "Severity")
+                    ++i;
+                items.Insert(++i, new TicketCategoryOrder() { CatID = "Sentiment", CatName = "Sentiment", Disabled = "false" });
+            }
+
             return items.ToArray();
         }
 
