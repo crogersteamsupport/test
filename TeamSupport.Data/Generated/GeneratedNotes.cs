@@ -97,9 +97,17 @@ namespace TeamSupport.Data
     }
     
 
-    /* DateTime */
+    public string ActivityType
+    {
+      get { return (string)Row["ActivityType"]; }
+      set { Row["ActivityType"] = CheckValue("ActivityType", value); }
+    }
     
-    
+    public string DateOccurred
+    {
+      get { return Row["DateOccurred"] != DBNull.Value ? (string)Row["DateOccurred"] : null; }
+      set { Row["DateOccurred"] = CheckValue("DateOccurred", value); }
+    }
     
 
     
@@ -211,9 +219,23 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Notes] SET     [RefType] = @RefType,    [RefID] = @RefID,    [Title] = @Title,    [Description] = @Description,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [NeedsIndexing] = @NeedsIndexing,    [IsAlert] = @IsAlert,    [ImportFileID] = @ImportFileID,    [ProductFamilyID] = @ProductFamilyID  WHERE ([NoteID] = @NoteID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Notes] SET     [RefType] = @RefType,    [RefID] = @RefID,    [Title] = @Title,    [Description] = @Description,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [NeedsIndexing] = @NeedsIndexing,    [IsAlert] = @IsAlert,    [ImportFileID] = @ImportFileID,    [ProductFamilyID] = @ProductFamilyID, [ActivityType] = @ActivityType, [DateOccurred] = @DateOccurred   WHERE ([NoteID] = @NoteID);";
 
 		
+		tempParameter = updateCommand.Parameters.Add("DateOccurred", SqlDbType.NVarChar, 50);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+
+		tempParameter = updateCommand.Parameters.Add("ActivityType", SqlDbType.NVarChar, 50);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+
 		tempParameter = updateCommand.Parameters.Add("NoteID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
@@ -296,8 +318,22 @@ namespace TeamSupport.Data
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Notes] (    [RefType],    [RefID],    [Title],    [Description],    [CreatorID],    [ModifierID],    [DateCreated],    [DateModified],    [NeedsIndexing],    [IsAlert],    [ImportFileID],    [ProductFamilyID]) VALUES ( @RefType, @RefID, @Title, @Description, @CreatorID, @ModifierID, @DateCreated, @DateModified, @NeedsIndexing, @IsAlert, @ImportFileID, @ProductFamilyID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Notes] (    [RefType],    [RefID],    [Title],    [Description],    [CreatorID],    [ModifierID],    [DateCreated],    [DateModified],    [NeedsIndexing],    [IsAlert],    [ImportFileID],    [ProductFamilyID], [ActivityType], [DateOccurred]) VALUES ( @RefType, @RefID, @Title, @Description, @CreatorID, @ModifierID, @DateCreated, @DateModified, @NeedsIndexing, @IsAlert, @ImportFileID, @ProductFamilyID, @ActivityType, @DateOccurred); SET @Identity = SCOPE_IDENTITY();";
 
+
+		tempParameter = insertCommand.Parameters.Add("DateOccurred", SqlDbType.NVarChar, 50);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+
+		tempParameter = insertCommand.Parameters.Add("ActivityType", SqlDbType.NVarChar, 50);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -495,7 +531,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [NoteID], [RefType], [RefID], [Title], [Description], [CreatorID], [ModifierID], [DateCreated], [DateModified], [NeedsIndexing], [IsAlert], [ImportFileID], [ProductFamilyID] FROM [dbo].[Notes] WHERE ([NoteID] = @NoteID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [NoteID], [RefType], [RefID], [Title], [Description], [CreatorID], [ModifierID], [DateCreated], [DateModified], [NeedsIndexing], [IsAlert], [ImportFileID], [ProductFamilyID], [ActivityType], [DateOccurred] FROM [dbo].[Notes] WHERE ([NoteID] = @NoteID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("NoteID", noteID);
         Fill(command);

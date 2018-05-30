@@ -31,6 +31,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ProductFamilyID", "ProductFamilyID", false, false, false);
       _fieldMap.AddMap("SentToTFS", "SentToTFS", false, false, false);
       _fieldMap.AddMap("SentToSnow", "SentToSnow", false, false, false);
+      _fieldMap.AddMap("FilePathID", "FilePathID", false, false, false);
             
     }
   }

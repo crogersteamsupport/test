@@ -17,7 +17,7 @@ namespace TeamSupport.Data
     [DataMember] public string FileName { get; set; }
     [DataMember] public int OrganizationID { get; set; }
     [DataMember] public Guid ImportGUID { get; set; }
-    [DataMember] public ReferenceType RefType { get; set; }
+    [DataMember] public int RefType { get; set; }
     [DataMember] public int? AuxID { get; set; }
     [DataMember] public bool IsDone { get; set; }
     [DataMember] public bool IsRunning { get; set; }
@@ -30,6 +30,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateCreated { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public bool IsRolledBack { get; set; }
+    [DataMember] public int FilePathID { get; set; }
           
   }
   
@@ -38,6 +39,7 @@ namespace TeamSupport.Data
     public ImportProxy GetProxy()
     {
       ImportProxy result = new ImportProxy();
+      result.FilePathID = this.FilePathID;
       result.IsRolledBack = this.IsRolledBack;
       result.CreatorID = this.CreatorID;
       result.CompletedRows = this.CompletedRows;

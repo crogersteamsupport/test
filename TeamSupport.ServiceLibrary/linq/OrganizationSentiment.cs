@@ -28,32 +28,6 @@ namespace WatsonToneAnalyzer
         [Column]
         public int TicketSentimentCount;
 #pragma warning restore CS0649
-        /// <summary>
-        /// Raw calculation
-        /// </summary>
-        /// <param name="organizationID"></param>
-        /// <returns></returns>
-        public static int GetOrganizationSentiment(int organizationID)
-        {
-            double result = 0;
-            try
-            {
-                string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                using (DataContext db = new DataContext(connection))
-                {
-                    Table<TicketSentiment> ticketSentimentTable = db.GetTable<TicketSentiment>();
-                    //result = ticketSentimentTable.Where(s => s.OrganizationID == organizationID).Select(s => s.TicketSentimentScore).Average();
-                    result = (from sentiment in ticketSentimentTable where (sentiment.OrganizationID == organizationID) select sentiment.TicketSentimentScore).Average();
-                }
-            }
-            catch (Exception e)
-            {
-                WatsonEventLog.WriteEntry("Exception caught at OrganizationSentiment:", e);
-                Console.WriteLine(e.ToString());
-            }
-            return (int)Math.Round(result);
-        }
 
         // first ticket for organization
         static bool CreateOrganizationSentiment(TicketSentiment sentiment, DataContext db, out OrganizationSentiment score)
@@ -67,7 +41,7 @@ namespace WatsonToneAnalyzer
                 {
                     OrganizationID = sentiment.OrganizationID,
                     IsAgent = sentiment.IsAgent,
-                    OrganizationSentimentScore = sentiment.TicketSentimentScore,
+                    OrganizationSentimentScore = sentiment.AverageActionSentiment,
                     TicketSentimentCount = 1
                 };
                 table.InsertOnSubmit(score);
@@ -79,13 +53,16 @@ namespace WatsonToneAnalyzer
         // new ticket for organization
         public static void AddTicket(TicketSentiment sentiment, DataContext db)
         {
+            if (sentiment.IsAgent)  // only client data
+                return;
+
             try
             {
                 OrganizationSentiment score;
                 if (!CreateOrganizationSentiment(sentiment, db, out score))
                 {
                     int count = score.TicketSentimentCount;
-                    score.OrganizationSentimentScore = ((count * score.OrganizationSentimentScore) + sentiment.TicketSentimentScore) / (count + 1);
+                    score.OrganizationSentimentScore = ((count * score.OrganizationSentimentScore) + sentiment.AverageActionSentiment) / (count + 1);
                     score.TicketSentimentCount = count + 1;
                 }
                 db.SubmitChanges();
@@ -98,21 +75,23 @@ namespace WatsonToneAnalyzer
         }
 
         // ticket has new action - recalculate
-        public static void UpdateTicket(TicketSentiment sentiment, int oldScore, DataContext db)
+        public static void UpdateTicket(TicketSentiment sentiment, double oldScore, DataContext db)
         {
+            if (sentiment.IsAgent)  // only client data
+                return;
+
             try
             {
                 // new ticket score == old ticket score
-                if (sentiment.TicketSentimentScore == oldScore)
+                if (sentiment.AverageActionSentiment == oldScore)
                     return;
 
                 OrganizationSentiment score;
                 if (!CreateOrganizationSentiment(sentiment, db, out score))
                 {
                     int count = score.TicketSentimentCount;
-                    score.OrganizationSentimentScore = score.OrganizationSentimentScore + (sentiment.TicketSentimentScore - oldScore) / count;
+                    score.OrganizationSentimentScore = score.OrganizationSentimentScore + (sentiment.AverageActionSentiment - oldScore) / count;
                 }
-                db.SubmitChanges();
             }
             catch(Exception e)
             {
