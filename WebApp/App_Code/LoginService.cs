@@ -72,7 +72,7 @@ namespace TSWebServices
                         _skipVerification = false;
                     }
 
-                    if (organization.TwoStepVerificationEnabled && verificationRequired && _skipVerification)
+                    if (organization.TwoStepVerificationEnabled && verificationRequired && !_skipVerification)
                     {
                         string userVerificationPhoneNumber = user.verificationPhoneNumber;
 
