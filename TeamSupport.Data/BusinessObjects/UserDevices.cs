@@ -18,7 +18,7 @@ namespace TeamSupport.Data
 	  {
 		  using (SqlCommand command = new SqlCommand())
 		  {
-			  command.CommandText = "SELECT [UserDeviceID], [UserID], [DeviceID], [DateActivated], [IsActivated] FROM [dbo].[UserDevices] WHERE ([UserID] = @UserID AND [DeviceID] = @DeviceID);";
+			  command.CommandText = "SELECT [UserDeviceID], [UserID], [DeviceID], [DateActivated], [IsActivated] FROM [dbo].[UserDevices] WHERE ([UserID] = @UserID AND [DeviceID] = @DeviceID) ORDER BY [UserDeviceID] DESC;";
 			  command.CommandType = CommandType.Text;
 			  command.Parameters.AddWithValue("UserID", userID);
 			  command.Parameters.AddWithValue("DeviceID", deviceID);
