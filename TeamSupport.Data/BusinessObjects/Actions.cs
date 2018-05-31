@@ -830,6 +830,8 @@ WHERE a.SalesForceID = @SalesForceID";
                     if (ticketSentimentScore == null)
                         return "negative";
 
+                    // display as [0, 100]%
+                    ticketSentimentScore.TicketSentimentScore = (int)Math.Round((double)ticketSentimentScore.TicketSentimentScore / 10);
                     return JsonConvert.SerializeObject(ticketSentimentScore);
                 }
             }
