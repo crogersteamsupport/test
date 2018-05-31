@@ -2473,43 +2473,113 @@ $.fn.autoGrow = function () {
 };
 
 var appendCustomValues = function (fields) {
-    if (fields === null || fields.length < 1) {
-        $('.customProperties').empty();
-        return;
-    }
-    var containerL = $('#customPropertiesL').empty();
-    var containerR = $('#customPropertiesR').empty();
+    _mainFrame.Ts.Services.Customers.GetCustomFieldContactCategories(function (categories) {
+        var noCatfields = 0;
+        for (var i = 0; i < fields.length; i++) {
+
+            if (fields[i].CustomFieldCategoryID == -1) {
+                noCatfields++;
+                var item = null;
+                var field = fields[i];
+                var div = $('<div>').addClass('form-group').data('field', field);
+
+                $('<label>')
+                  .addClass('col-xs-4 control-label')
+                  .text(field.Name)
+                  .appendTo(div);
+
+                switch (field.FieldType) {
+                    case _mainFrame.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
+                    case _mainFrame.Ts.CustomFieldType.Date: appendCustomEditDate(field, div); break;
+                    case _mainFrame.Ts.CustomFieldType.Time: appendCustomEditTime(field, div); break;
+                    case _mainFrame.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, div); break;
+                    case _mainFrame.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
+                    case _mainFrame.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
+                    case _mainFrame.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div); break;
+                    default:
+                }
 
 
-    for (var i = 0; i < fields.length; i++) {
-        var item = null;
-
-        var field = fields[i];
-
-        var div = $('<div>').addClass('form-group').data('field', field);
-        $('<label>')
-            .addClass('col-md-4 control-label')
-            .text(field.Name)
-            .appendTo(div);
-
-        switch (field.FieldType) {
-            case _mainFrame.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
-            case _mainFrame.Ts.CustomFieldType.Date: appendCustomEditDate(field, div); break;
-            case _mainFrame.Ts.CustomFieldType.Time: appendCustomEditTime(field, div); break;
-            case _mainFrame.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, div); break;
-            case _mainFrame.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
-            case _mainFrame.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
-            case _mainFrame.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div); break;
-            default:
+                //if (i < (fields.length / 2))
+                //    containerL.append(div);
+                //else
+                if (noCatfields % 2)
+                    $('#customPropertiesL').append(div);
+                else
+                    $('#customPropertiesR').append(div);
+            }
         }
 
-        if (i % 2)
-            containerR.append(div);
-        else
-            containerL.append(div);
+        if (noCatfields == 0) {
+            $('#customPropRow').hide();
+        }
 
-    }
-    $('.customProperties p').toggleClass("editable");
+        for (var c = 0; c < categories.length; c++) {
+            var custom = $('<div>').insertBefore($('#customPropRow'));
+
+            var box = $('<div>').addClass('box').appendTo(custom);
+            var header = $('<div>').addClass('box-header').attr('data-toggle', 'collapse').attr('data-target', '#cat' + c).appendTo(box);
+            $('<span>').addClass('ui-icon ui-icon-triangle-1-s').appendTo(header);
+            var h3title = $('<h3>').text(categories[c].Category).appendTo(header);
+            var boxcontent = $('<div>').addClass('box-content in').attr('id', 'cat' + c).appendTo(box);
+            var boxrow = $('<div>').addClass('row').appendTo(boxcontent);
+            var formh = $('<form>').addClass('form-horizontal').appendTo(boxrow);
+            var colxsL = $('<div>').addClass('col-xs-6 customProperties').appendTo(formh);
+            var colxsR = $('<div>').addClass('col-xs-6 customProperties').appendTo(formh);
+            var fieldcount = 0;
+
+            for (var i = 0; i < fields.length; i++) {
+
+                if (categories[c].CustomFieldCategoryID == fields[i].CustomFieldCategoryID) {
+                    var item = null;
+                    var field = fields[i];
+                    var div = $('<div>').addClass('form-group').data('field', field);
+
+                    $('<label>')
+                      .addClass('col-xs-4 control-label')
+                      .text(field.Name)
+                      .appendTo(div);
+
+                    switch (field.FieldType) {
+                        case _mainFrame.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
+                        case _mainFrame.Ts.CustomFieldType.Date: appendCustomEditDate(field, div); break;
+                        case _mainFrame.Ts.CustomFieldType.Time: appendCustomEditTime(field, div); break;
+                        case _mainFrame.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, div); break;
+                        case _mainFrame.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
+                        case _mainFrame.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
+                        case _mainFrame.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div); break;
+                        default:
+                    }
+
+                    if (fieldcount % 2)
+                        colxsR.append(div);
+                    else
+                        colxsL.append(div);
+                    fieldcount++;
+                    //if (i < (fields.length / 2))
+                    //    containerL.append(div);
+                    //else
+                    //    containerR.append(div);
+                }
+            }
+        }
+        $('.customProperties p').toggleClass("editable");
+        //$('.box-content').addClass("collapse, in");
+        $('[data-toggle="collapse"]').click(function (e) {
+            e.preventDefault();
+            if ($(this).next().is(':visible')) {
+                $(this).find('.ui-icon').addClass('ui-icon-triangle-1-e').removeClass('ui-icon-triangle-1-s');
+                $(this).addClass('collapsedCustomCategory');
+            }
+            else {
+                $(this).find('.ui-icon').addClass('ui-icon-triangle-1-s').removeClass('ui-icon-triangle-1-e');
+                $(this).removeClass('collapsedCustomCategory');
+            }
+            var target_element = $(this).attr("data-target");
+            $(target_element).collapse('toggle');
+            return false;
+        });
+    });
     //$('#contactName').toggleClass("editable");
 }
 
