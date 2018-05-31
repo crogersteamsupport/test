@@ -50,7 +50,12 @@ namespace TeamSupport.CDI
             // load all the tickets
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            _ticketReader.LoadAllTickets();
+
+            if (args.Contains("ForceCDIUpdate"))
+                _ticketReader.LoadNeedComputeOrganizationTickets();
+            else
+                _ticketReader.LoadAllTickets();
+
             VerboseLog(String.Format("{0} Tickets loaded {1} in {2:0.00} sec",
                  _ticketReader.AllTickets.Length, _dateRange, stopwatch.ElapsedMilliseconds / 1000));
 
@@ -69,15 +74,16 @@ namespace TeamSupport.CDI
             stopwatch.Restart();
             foreach (Customer customer in _customers)
                 customer.InvokeCDIStrategy();
-            VerboseLog(String.Format("Client CDI generated in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
+            CDIEventLog.WriteEntry(String.Format("Client CDI generated in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
 
             // Save
+            CDIEventLog.WriteEntry("Saving CDI data...");
             stopwatch.Restart();
             //SaveToCDITable();
             SaveToOrganizationsTable();
             VerboseLog(String.Format("Client CDI Saved in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
 
-            CDIEventLog.WriteEntry(String.Format("CDI Update complete"));
+            //CDIEventLog.WriteEntry(String.Format("CDI complete"));
             DumpTestResults(args);
         }
 

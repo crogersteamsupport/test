@@ -21,7 +21,9 @@ namespace TeamSupport.CDI
     class TicketReader
     {
         DateRange _dateRange;
-        public TicketJoin[] AllTickets { get; private set; }
+
+        TicketJoin[] _allTickets;
+        public TicketJoin[] AllTickets { get { return _allTickets; } }
 
         /// <summary>Time frame to analyze the ticket data</summary>
         /// <param name="analysisInterval"></param>
@@ -107,7 +109,7 @@ namespace TeamSupport.CDI
                                 };
 
                     // run the query
-                    AllTickets = query.ToArray();
+                   _allTickets = query.ToArray();
                 }
             }
             catch (Exception e)
@@ -116,18 +118,7 @@ namespace TeamSupport.CDI
             }
         }
 
-        /// <summary> 
-        /// Load the tickets since the start date 
-        /// 
-        /// Verified counts by the following query:
-        /// SELECT DISTINCT Count([TicketID])
-        ///  FROM [dbo].[Tickets] as t
-        ///  JOIN [dbo].[TicketTypes] as tt on t.TicketTypeID=tt.TicketTypeID
-        ///  JOIN [dbo].[TicketStatuses] as ts on t.TicketStatusID=ts.TicketStatusID
-        ///  WHERE t.DateCreated > '2013-04-29 00:00:00' AND (t.TicketSource != 'SalesForce') AND
-        ///  ((ts.IsClosed=0) OR (t.[DateClosed] > t.[DateCreated]))
-        /// </summary>
-        public void LoadAllTickets1()
+        public void LoadNeedComputeOrganizationTickets()
         {
             try
             {
@@ -135,47 +126,72 @@ namespace TeamSupport.CDI
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (DataContext db = new DataContext(connection))
                 {
-                    // define the tables we will reference in the query
-                    // - each table class only contains the fields we care about
-                    Table<Ticket> ticketsTable = db.GetTable<Ticket>();
-                    Table<TicketStatus> ticketStatusesTable = db.GetTable<TicketStatus>();
-                    Table<TicketType> ticketTypesTable = db.GetTable<TicketType>();
-                    Table<linq.Action> actionsTable = db.GetTable<TeamSupport.CDI.linq.Action>();
-                    Table<TicketSentiment> ticketSentimentsTable = db.GetTable<TicketSentiment>();
-                    Table<User> userTable = db.GetTable<User>();
-                    Table<TicketSeverity> severityTable = db.GetTable<TicketSeverity>();
-
-                    var query = (from t in ticketsTable
-                                 join tt in ticketTypesTable on t.TicketTypeID equals tt.TicketTypeID
-                                 join ts in ticketStatusesTable on t.TicketStatusID equals ts.TicketStatusID
-                                 where (t.DateCreated > _dateRange.StartDate) &&
-                                     (!ts.IsClosed || (t.DateClosed.Value > t.DateCreated)) &&
-                                     (t.TicketSource != "SalesForce") &&    // ignore imported tickets
-                                     (t.OrganizationID == 1078) &&
-                                     (t.TicketID == 13768605) &&
-                                     (!tt.ExcludeFromCDI) &&
-                                     (!ts.ExcludeFromCDI)
-                                 select new TicketJoin()
-                                 {
-                                     OrganizationID = t.OrganizationID,
-                                     DateClosed = t.DateClosed,
-                                     DateCreated = t.DateCreated,
-                                     IsClosed = ts.IsClosed,
-                                     //CreatorID = t.CreatorID,
-                                     ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count(),
-                                     //AverageActionSentiment = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.AverageActionSentiment).First(),  // for some reason Min is faster than First()
-                                     ParentID = (from u in userTable where u.UserID == t.CreatorID select u.OrganizationID).First(),
-                                     Severity = (from s in severityTable where t.TicketSeverityID == s.TicketSeverityID select s.Severity).First()
-                                 });
-
-                    // run the query
-                    AllTickets = query.ToArray();
+                    Table<CDI_Settings> table = db.GetTable<CDI_Settings>();
+                    CDI_Settings[] settings = table.Where(t => t.NeedCompute).ToArray();
+                    foreach(CDI_Settings setting in settings)
+                    {
+                        setting.NeedCompute = false;
+                        setting.LastCompute = DateRange.EndTimeNow;
+                        TicketJoin[] tickets = LoadTickets(db, setting.OrganizationID);
+                        if(AllTickets == null)
+                        {
+                            _allTickets = tickets;
+                        }
+                        else
+                        {
+                            int initialLength = _allTickets.Length;
+                            Array.Resize(ref _allTickets, _allTickets.Length + tickets.Length);
+                            Array.Copy(tickets, 0, _allTickets, initialLength, tickets.Length);
+                        }
+                    }
+                    db.SubmitChanges(); // turn off NeedCompute
                 }
             }
             catch (Exception e)
             {
                 CDIEventLog.WriteEntry("Ticket Read failed", e);
             }
+        }
+
+        TicketJoin[] LoadTickets(DataContext db, int organizationID)
+        {
+            // define the tables we will reference in the query
+            // - each table class only contains the fields we care about
+            Table<Organization> organizationTable = db.GetTable<Organization>();
+            Table<OrganizationTickets> organizationTicketsTable = db.GetTable<OrganizationTickets>();
+            Table<Ticket> ticketsTable = db.GetTable<Ticket>();
+            Table<TicketStatus> ticketStatusesTable = db.GetTable<TicketStatus>();
+            Table<TicketType> ticketTypesTable = db.GetTable<TicketType>();
+            Table<linq.Action> actionsTable = db.GetTable<TeamSupport.CDI.linq.Action>();
+            //Table<TicketSentiment> ticketSentimentsTable = db.GetTable<TicketSentiment>();
+            Table<TicketSeverity> severityTable = db.GetTable<TicketSeverity>();
+
+            var query = from o in organizationTable.Where(o => o.IsActive == true)
+                        join ot in organizationTicketsTable on o.OrganizationID equals ot.OrganizationID
+                        join t in ticketsTable on ot.TicketID equals t.TicketID
+                        join tt in ticketTypesTable on t.TicketTypeID equals tt.TicketTypeID
+                        join ts in ticketStatusesTable on t.TicketStatusID equals ts.TicketStatusID
+                        where (t.DateCreated > _dateRange.StartDate) &&
+                            (!ts.IsClosed || (t.DateClosed.Value > t.DateCreated)) &&
+                            (t.TicketSource != "SalesForce") &&    // ignore imported tickets
+                            (o.ParentID == organizationID) &&
+                            (o.IsActive) &&
+                            (!tt.ExcludeFromCDI) &&
+                            (!ts.ExcludeFromCDI)
+                        select new TicketJoin()
+                        {
+                            OrganizationID = ot.OrganizationID,
+                            DateClosed = t.DateClosed,
+                            DateCreated = t.DateCreated,
+                            IsClosed = ts.IsClosed,
+                            //ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count(),
+                            //AverageActionSentiment = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.AverageActionSentiment).First(),  // for some reason Min is faster than First()
+                            ParentID = o.ParentID,
+                            //Severity = (from s in severityTable where t.TicketSeverityID == s.TicketSeverityID select s.Severity).First()
+                        };
+
+            // run the query
+            return query.ToArray();
         }
 
     }

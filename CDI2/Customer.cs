@@ -79,6 +79,9 @@ namespace TeamSupport.CDI
                 {
                     Table<linq.CDI_Settings> table = db.GetTable<linq.CDI_Settings>();
                     _weights = table.Where(s => s.OrganizationID==organizationID).FirstOrDefault();
+                    if(_weights != null)
+                        _weights.LastCompute = DateRange.EndTimeNow;
+                    db.SubmitChanges();
                 }
             }
             catch (Exception e)

@@ -25,6 +25,10 @@ namespace TeamSupport.CDI.linq
         public float? AvgDaysOpenWeight;
         [Column]
         public float? AvgDaysToCloseWeight;
+        [Column]
+        public DateTime? LastCompute;
+        [Column]
+        public bool NeedCompute;
 #pragma warning restore CS0649
 
         public double GetCDI(CDI metrics)

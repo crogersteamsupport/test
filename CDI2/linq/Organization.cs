@@ -38,6 +38,8 @@ namespace TeamSupport.CDI.linq
         public int AvgTimeToClose;
         [Column]
         public int CustDisIndex;
+        [Column]
+        public int? CustDistIndexTrend; // Trending upwards (1 bad),  Trending down (-1 good), the same(0)
 #pragma warning restore CS0649
 
         // for test output...
