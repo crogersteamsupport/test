@@ -39,7 +39,7 @@ namespace TeamSupport.Data.BusinessObjects
                                      where (sentiment.OrganizationID == organizationID) && !sentiment.IsAgent
                                      select sentiment.OrganizationSentimentScore).ToArray();
                     if (rows.Length > 0)
-                        result = rows[0]/10;    // display as [0, 100]%
+                        result = rows[0];
                 }
             }
             catch (Exception e)
