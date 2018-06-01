@@ -419,9 +419,15 @@ namespace TSWebServices
             {
                 // insert after severity
                 int i = 0;
-                while (items[i].CatID != "Severity")
-                    ++i;
-                items.Insert(++i, new TicketCategoryOrder() { CatID = "Sentiment", CatName = "Sentiment", Disabled = "false" });
+                for (; i < items.Count; ++i)
+                {
+                    if (items[i].CatID == "Severity")
+                    {
+                        ++i;
+                        break;
+                    }
+                }
+                items.Insert(i, new TicketCategoryOrder() { CatID = "Sentiment", CatName = "Sentiment", Disabled = "false" });
             }
 
             return items.ToArray();
