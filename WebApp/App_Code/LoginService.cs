@@ -203,7 +203,7 @@ namespace TSWebServices
 							UserDevice device = devices.AddNewUserDevice();
 							device.DateActivated = DateTime.UtcNow;
 							device.IsActivated = true;
-							device.DeviceID = Guid.NewGuid().ToString();;
+							device.DeviceID = Guid.NewGuid().ToString();
 							device.UserID = users[0].UserID;
 							devices.Save();
 
