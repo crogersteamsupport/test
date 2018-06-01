@@ -6,6 +6,7 @@ using System.Text;
 using System.Data.SqlClient;
 using System.Data.Linq;
 using System.Configuration;
+using TeamSupport.CDI.linq;
 
 namespace TeamSupport.CDI
 {
@@ -39,52 +40,55 @@ namespace TeamSupport.CDI
         {
             if (_verboseLog)
                 CDIEventLog.WriteEntry(text);
+            else
+                Console.WriteLine(text);    // command line execution
         }
 
         public void Run(string[] args)
         {
-            CDIEventLog.WriteEntry("CDI Update started...");
             if (args.Contains("verbose"))
                 _verboseLog = true;
 
-            // load all the tickets
+            // Load the tickets
+            CDIEventLog.WriteEntry("CDI Update started...");
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-
             if (args.Contains("ForceCDIUpdate"))
                 _ticketReader.LoadNeedComputeOrganizationTickets();
             else
                 _ticketReader.LoadAllTickets();
-
             VerboseLog(String.Format("{0} Tickets loaded {1} in {2:0.00} sec",
-                 _ticketReader.AllTickets.Length, _dateRange, stopwatch.ElapsedMilliseconds / 1000));
+                 _ticketReader.AllTickets.Length, _dateRange, stopwatch.ElapsedMilliseconds / 1000.0));
 
-            // analyze by organization
+            // Load Customers and Clients
             stopwatch.Restart();
             LoadCustomers();
-            VerboseLog(String.Format("Customers and Clients loaded in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
+            VerboseLog(String.Format("Customers and Clients loaded in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000.0));
 
-            // generate the interval data
+            // Analyze the tickets
             stopwatch.Restart();
             foreach (Customer customer in _customers)
-                customer.GenerateIntervals();
-            VerboseLog(String.Format("Interval data generated in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
+                customer.AnalyzeTickets();
+            VerboseLog(String.Format("Tickets analyzed in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000.0));
 
             // Do the CDI dirty work
             stopwatch.Restart();
             foreach (Customer customer in _customers)
                 customer.InvokeCDIStrategy();
-            CDIEventLog.WriteEntry(String.Format("Client CDI generated in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
+            CDIEventLog.WriteEntry(String.Format("CDI values generated in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000.0));
 
-            // Save
-            CDIEventLog.WriteEntry("Saving CDI data...");
+            // Save to Client Organizations
             stopwatch.Restart();
-            //SaveToCDITable();
-            SaveToOrganizationsTable();
-            VerboseLog(String.Format("Client CDI Saved in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000));
+            SaveOrganizations();
+            VerboseLog(String.Format("Organization CDI Saved in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000.0));
 
-            //CDIEventLog.WriteEntry(String.Format("CDI complete"));
-            DumpTestResults(args);
+            // Save History
+            stopwatch.Restart();
+            SaveCustDistHistory();
+            VerboseLog(String.Format("CDI History Created in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000.0));
+
+            // unit test output...
+            UnitTest(args);
         }
 
         /// <summary>
@@ -112,7 +116,8 @@ namespace TeamSupport.CDI
             _customers.Add(new Customer(new OrganizationAnalysis(_dateRange, allTickets, startIndex, allTickets.Length)));
         }
 
-        public void SaveToCDITable()
+        /// <summary>Save client organization CDI data</summary>
+        void SaveOrganizations()
         {
             try
             {
@@ -120,14 +125,8 @@ namespace TeamSupport.CDI
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (DataContext db = new DataContext(connection))
                 {
-                    Table<linq.CDI> table = db.GetTable<linq.CDI>();
-                    linq.CDI[] CDIs = Enumerable.ToArray(table);
-                    Dictionary<int, linq.CDI> lookup = new Dictionary<int, linq.CDI>();
-                    foreach (linq.CDI cdi in CDIs)
-                        lookup[cdi.OrganizationID] = cdi;
-
                     foreach (Customer customer in _customers)
-                        customer.Save(lookup, table);
+                        customer.Save(db);
                     db.SubmitChanges();
                 }
             }
@@ -137,7 +136,8 @@ namespace TeamSupport.CDI
             }
         }
 
-        public void SaveToOrganizationsTable()
+        /// <summary>Save client organization CDI data</summary>
+        public void SaveCustDistHistory()
         {
             try
             {
@@ -145,14 +145,9 @@ namespace TeamSupport.CDI
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (DataContext db = new DataContext(connection))
                 {
-                    Table<linq.Organization> table = db.GetTable<linq.Organization>();
-                    linq.Organization[] organizations = Enumerable.ToArray(table);
-                    Dictionary<int, linq.Organization> lookup = new Dictionary<int, linq.Organization>();
-                    foreach (linq.Organization organization in organizations)
-                        lookup[organization.OrganizationID] = organization;
-
+                    Table<CustDistHistory> table = db.GetTable<CustDistHistory>();
                     foreach (Customer customer in _customers)
-                        customer.Save(lookup, table);
+                        customer.Save(table);
                     db.SubmitChanges();
                 }
             }
@@ -162,21 +157,13 @@ namespace TeamSupport.CDI
             }
         }
 
-
-        bool TryGetCustomer(int id, out Customer customer)
-        {
-            customer = _customers.Where(c => c.OrganizationID == id).FirstOrDefault();
-            return customer != null;
-        }
-
-        void DumpTestResults(string[] args)
+        void UnitTest(string[] args)
         {
             // test output
             Customer customer;
             for (int i = 0; i < args.Length; ++i)
             {
                 string arg = args[i];
-                CDIEventLog.WriteLine(arg);
                 switch (arg)
                 {
                     case "customer":
@@ -194,5 +181,13 @@ namespace TeamSupport.CDI
                 }
             }
         }
+
+        bool TryGetCustomer(int id, out Customer customer)
+        {
+            customer = _customers.Where(c => c.OrganizationID == id).FirstOrDefault();
+            return customer != null;
+        }
+
+
     }
 }

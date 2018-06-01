@@ -19,6 +19,17 @@ namespace TeamSupport.CDI
         Severity    // _averageSeverity
     };
 
+    public struct CDI1
+    {
+        public int TotalTicketsCreated;
+        public int TicketsOpen;
+        public int CreatedLast30;
+        public int AvgTimeOpen;
+        public int AvgTimeToClose;
+        public int CustDisIndex;
+    };
+
+
     /// <summary>
     /// Use percentiles of the interval distribution
     /// </summary>
@@ -50,7 +61,7 @@ namespace TeamSupport.CDI
         {
             // Create the CDI from the normalized fields
             IntervalData normalized = Normalize(interval);
-            linq.CDI cdi = new linq.CDI()
+            CDI1 cdi = new CDI1()
             {
                 TotalTicketsCreated = _percentiles[Metrics.TotalTickets].AsPercentile(interval._totalTicketsCreated),
                 TicketsOpen = _percentiles[Metrics.Open].AsPercentile(interval._openCount),

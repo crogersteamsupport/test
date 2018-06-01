@@ -57,11 +57,11 @@ namespace TeamSupport.CDI
             _clients.Add(new Client(new OrganizationAnalysis(_organizationAnalysis._dateRange, allTickets, startIndex, allTickets.Length)));
         }
 
-        public void GenerateIntervals()
+        public void AnalyzeTickets()
         {
             //_organizationAnalysis.GenerateIntervals();
             foreach (Client client in _clients)
-                client.GenerateIntervals();
+                client.AnalyzeTickets();
         }
 
         linq.CDI_Settings _weights;
@@ -187,22 +187,16 @@ namespace TeamSupport.CDI
                 client.Write();
         }
 
-        public void Save(Dictionary<int, linq.CDI> cdi, Table<linq.CDI> table)
+        public void Save(DataContext db)
         {
             foreach (Client client in _clients)
-            {
-                //linq.CDI clientCDI = cdi.Where(c => c.OrganizationID == client.OrganizationID);
-                client.Save(cdi, table);
-            }
+                client.Save(db);
         }
 
-        public void Save(Dictionary<int, linq.Organization> organization, Table<linq.Organization> table)
+        public void Save(Table<CustDistHistory> table)
         {
             foreach (Client client in _clients)
-            {
-                //linq.CDI clientCDI = cdi.Where(c => c.OrganizationID == client.OrganizationID);
-                client.Save(organization, table);
-            }
+                client.Save(table);
         }
 
 

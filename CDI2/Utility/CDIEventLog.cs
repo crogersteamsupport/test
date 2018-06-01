@@ -44,28 +44,20 @@ namespace TeamSupport.CDI
 
         public static void Write(string message)
         {
+            Console.Write(message);
             if (_IsDebuggerAttached)
-            {
                 Debug.Write(message);
-            }
             else
-            {
-                Console.Write(message);
                 _eventLog.WriteEntry(message, EventLogEntryType.Information);
-            }
         }
 
         public static void WriteEntry(string message, EventLogEntryType type = EventLogEntryType.Information)
         {
+            Console.WriteLine(message);
             if (_IsDebuggerAttached)
-            {
                 Debug.WriteLine(message);
-            }
             else
-            {
-                Console.WriteLine(message);
                 _eventLog.WriteEntry(message, type);
-            }
         }
 
         public static void WriteEntry(string message, Exception e)

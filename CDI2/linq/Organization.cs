@@ -20,8 +20,8 @@ namespace TeamSupport.CDI.linq
 
         [Column]
         public int? ParentID;
-        [Column]
-        public string Name;
+        //[Column]
+        //public string Name;   // slows it down
         [Column]
         public bool IsActive;
 

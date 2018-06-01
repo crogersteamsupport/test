@@ -31,7 +31,7 @@ namespace TeamSupport.CDI.linq
         public bool NeedCompute;
 #pragma warning restore CS0649
 
-        public double GetCDI(CDI metrics)
+        public double GetCDI(CDI1 metrics)
         {
             return metrics.TotalTicketsCreated * TotalTicketsWeight.Value +
                         metrics.TicketsOpen * OpenTicketsWeight.Value +

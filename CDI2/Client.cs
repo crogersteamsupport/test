@@ -21,8 +21,9 @@ namespace TeamSupport.CDI
 
         public int OrganizationID { get { return _organizationAnalysis.OrganizationID; } }
 
-        public void GenerateIntervals()
+        public void AnalyzeTickets()
         {
+            // summarize the data in IntervalTimeSpanInDays (30) day intervals
             _organizationAnalysis.GenerateIntervals();
         }
 
@@ -116,53 +117,48 @@ namespace TeamSupport.CDI
             //CDIEventLog.WriteLine(String.Format("{0}\t{1}", organization.ToStringCDI1(), ToStringCDI1()));
         }
 
-        public void Save(Dictionary<int, linq.CDI> distressIndices, Table<linq.CDI> table)
+        /// <summary>
+        /// The linq to sql save is very slow, including a WHERE clause for an exact record match.
+        /// Thus use a hard-coded update
+        /// </summary>
+        /// <param name="db"></param>
+        public void Save(DataContext db)
         {
-            try
-            {
-                linq.CDI cdi = null;
-                if(distressIndices.ContainsKey(OrganizationID))
-                    cdi = distressIndices[OrganizationID];
-                if (cdi == null)
-                {
-                    cdi = new linq.CDI();
-                    table.InsertOnSubmit(cdi);
-                }
-
-                cdi.OrganizationID = _organizationAnalysis.OrganizationID;
-                cdi.ParentID = _organizationAnalysis.ParentID;
-                cdi.Timestamp = _cdiData._timeStamp;
-                cdi.TotalTicketsCreated = _cdiData._totalTicketsCreated;
-                cdi.TicketsOpen = _cdiData._openCount;
-                cdi.CreatedLast30 = _cdiData._newCount;
-                cdi.AvgTimeOpen = (int)Math.Round(_cdiData._medianDaysOpen);
-                cdi.AvgTimeToClose = _cdiData._medianDaysToClose.HasValue ? (int)Math.Round(_cdiData._medianDaysToClose.Value) : 0;
-                cdi.CustDisIndex = _cdiData.CDI.Value;
-            }
-            catch (Exception e)
-            {
-                CDIEventLog.WriteEntry("Save failed", e);
-            }
-
+            // Organization
+            string updateQuery = String.Format(@"UPDATE Organizations SET TotalTicketsCreated = {0}, TicketsOpen = {1}, CreatedLast30 = {2}, AvgTimeOpen = {3}, AvgTimeToClose = {4}, CustDisIndex = {5}, CustDistIndexTrend = {6} WHERE OrganizationID = {7}",
+                _cdiData._totalTicketsCreated,  // TotalTicketsCreated
+                _cdiData._openCount,    // TicketsOpen
+                _cdiData._newCount, // CreatedLast30
+                (int)Math.Round(_cdiData._medianDaysOpen),  // AvgTimeOpen
+                _cdiData._medianDaysToClose.HasValue ? (int)Math.Round(_cdiData._medianDaysToClose.Value) : 0,  // AvgTimeToClose
+                _cdiData.CDI.Value, // CustDisIndex
+                0,  // CustDistIndexTrend
+                OrganizationID);    // OrganizationID
+            db.ExecuteCommand(updateQuery);
         }
 
-        public void Save(Dictionary<int, linq.Organization> organizations, Table<linq.Organization> table)
+        /// <summary>
+        /// Save - linq is fast enough on insert of new records
+        /// WARNING - there is a cron job in the product which deletes CustDistHistory records more than 10 days old
+        /// </summary>
+        /// <param name="table">table of existing customer distress history</param>
+        public void Save(Table<linq.CustDistHistory> table)
         {
             try
             {
-                linq.Organization organization = organizations[OrganizationID];
-                organization.TotalTicketsCreated = _cdiData._totalTicketsCreated;
-                organization.TicketsOpen = _cdiData._openCount;
-                organization.CreatedLast30 = _cdiData._newCount;
-                organization.AvgTimeOpen = (int)Math.Round(_cdiData._medianDaysOpen);
-                organization.AvgTimeToClose = _cdiData._medianDaysToClose.HasValue ? (int)Math.Round(_cdiData._medianDaysToClose.Value) : 0;
-                organization.CustDisIndex = _cdiData.CDI.Value;
+                linq.CustDistHistory history = new linq.CustDistHistory()
+                {
+                    ParentOrganizationID = _organizationAnalysis.ParentID,
+                    OrganizationID = OrganizationID,
+                    CDIDate = DateRange.EndTimeNow,
+                    CDIValue = _cdiData.CDI.Value
+                };
+                table.InsertOnSubmit(history);
             }
             catch (Exception e)
             {
                 CDIEventLog.WriteEntry("Save failed", e);
             }
-
         }
 
 
