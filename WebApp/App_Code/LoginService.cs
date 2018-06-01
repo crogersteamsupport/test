@@ -201,25 +201,20 @@ namespace TSWebServices
 
 							UserDevices devices = new UserDevices(loginUser);
 							devices.LoadByUserIDAndDeviceID(users[0].UserID, GetDeviceID());
-							if (devices.IsEmpty)
-							{
-								devices = new UserDevices(loginUser);
-								UserDevice device = devices.AddNewUserDevice();
-								device.DateActivated = DateTime.UtcNow;
-								device.IsActivated = true;
-								device.DeviceID = GetDeviceID();
-								device.UserID = users[0].UserID;
-								devices.Save();
 
-								EmailPosts.SendNewDevice(loginUser, users[0].UserID);
+							devices = new UserDevices(loginUser);
+							UserDevice device = devices.AddNewUserDevice();
+							device.DateActivated = DateTime.UtcNow;
+							device.IsActivated = true;
+							device.DeviceID = Guid.NewGuid().ToString();;
+							device.UserID = users[0].UserID;
+							devices.Save();
 
-							}
-							else
-							{
-								devices[0].DateActivated = DateTime.UtcNow;
-								devices[0].IsActivated = true;
-								devices.Save();
-							}
+							EmailPosts.SendNewDevice(loginUser, users[0].UserID);
+
+                            HttpCookie deviceCookie = new HttpCookie("di", device.DeviceID);
+                			deviceCookie.Expires = DateTime.Now.AddYears(14);
+                			HttpContext.Current.Response.Cookies.Add(deviceCookie);
 
 							result.Result = LoginResult.Success;
 							string authenticateResult = AuthenticateUser(users[0].UserID, users[0].OrganizationID, false, false);
@@ -640,14 +635,6 @@ namespace TSWebServices
 			LoginUser loginUser = new LoginUser(UserSession.ConnectionString, userId, organizationId, null);
 			User user = Users.GetUser(loginUser, userId);
 			string deviceID = GetDeviceID();
-
-			if (deviceID == "")
-			{
-				deviceID = Guid.NewGuid().ToString();
-				HttpCookie deviceCookie = new HttpCookie("di", deviceID);
-				deviceCookie.Expires = DateTime.Now.AddYears(14);
-				HttpContext.Current.Response.Cookies.Add(deviceCookie);
-			}
 
 			TSAuthentication.Authenticate(user, isBackDoor, deviceID);
 			if (!isBackDoor)
