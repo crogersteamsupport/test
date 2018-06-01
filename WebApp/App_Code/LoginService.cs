@@ -200,9 +200,6 @@ namespace TSWebServices
 							users.Save();
 
 							UserDevices devices = new UserDevices(loginUser);
-							devices.LoadByUserIDAndDeviceID(users[0].UserID, GetDeviceID());
-
-							devices = new UserDevices(loginUser);
 							UserDevice device = devices.AddNewUserDevice();
 							device.DateActivated = DateTime.UtcNow;
 							device.IsActivated = true;
