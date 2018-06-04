@@ -572,14 +572,17 @@ namespace TeamSupport.ServiceLibrary
 
       foreach (User item in users)
       {
+        if (Emails.IsEmailDisabled(LoginUser, user.UserID, "SLA")) continue;
         message.To.Add(new MailAddress(item.Email, item.FirstLastName));
       }
 
       if (user != null)
       {
-        message.To.Add(new MailAddress(user.Email, user.FirstLastName));
-        Logs.WriteEvent(string.Format("Adding Main User, Name:{0}  Email:{1}  UserID:{2}", user.FirstLastName, user.Email, user.UserID.ToString()));
-
+        if (!Emails.IsEmailDisabled(LoginUser, user.UserID, "SLA"))
+        {
+            message.To.Add(new MailAddress(user.Email, user.FirstLastName));
+            Logs.WriteEvent(string.Format("Adding Main User, Name:{0}  Email:{1}  UserID:{2}", user.FirstLastName, user.Email, user.UserID.ToString()));
+        }
       }
 
       if (message.To.Count > 0)

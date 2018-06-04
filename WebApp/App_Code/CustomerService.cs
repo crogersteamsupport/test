@@ -1158,16 +1158,22 @@ namespace TSWebServices
         public NoteProxy[] LoadNotes2(int refID, ReferenceType refType, bool includeChildren)
         {
             Notes notes = new Notes(TSAuthentication.GetLoginUser());
-            notes.LoadByReferenceType(refType, refID, "DateCreated", includeChildren);
+            if (refType == ReferenceType.Users)
+                notes.LoadByReferenceTypeUser(refType, refID, "DateCreated", includeChildren);
+            else
+                notes.LoadByReferenceType(refType, refID, "DateCreated", includeChildren);
             return notes.GetNoteProxies();
         }
 
         [WebMethod]
-        public NoteProxy[] LoadNotesByUserRights(int refID, ReferenceType refType, bool includeChildren)
+        public NoteProxy[] LoadNotesByUserRights(int refID, ReferenceType refType, bool includeChildren, string organizationID = "")
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Notes notes = new Notes(loginUser);
-            notes.LoadByReferenceTypeByUserRights(refType, refID, loginUser.UserID, "DateCreated", includeChildren);
+            if (organizationID != null)
+                notes.LoadByReferenceTypeByUserRightsUsers(refType, refID, loginUser.UserID, organizationID, "DateCreated", includeChildren);
+            else
+                notes.LoadByReferenceTypeByUserRights(refType, refID, loginUser.UserID, "DateCreated", includeChildren);
             return notes.GetNoteProxies();
         }
 
