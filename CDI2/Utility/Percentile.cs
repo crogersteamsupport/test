@@ -10,7 +10,7 @@ namespace TeamSupport.CDI
     /// <summary>
     /// Collect percentiles to determine where the current value lies in the distribution
     /// </summary>
-    class Percentile //where T : IComparable<T>
+    public class Percentile //where T : IComparable<T>
     {
         int _intervalCount;
         SortedDictionary<double, int> _counts;

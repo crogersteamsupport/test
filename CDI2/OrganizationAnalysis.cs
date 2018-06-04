@@ -4,16 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Data.Linq;
 
 namespace TeamSupport.CDI
 {
     /// <summary>
     /// Interface to CDI strategy
     /// </summary>
-    //interface ICDIStrategy
-    //{
-    //    bool CalculateCDI();
-    //}
+    public interface ICDIStrategy
+    {
+        IntervalData GetCDIIntervalData();
+        void InvokeCDIStrategy(IntervalPercentiles clientPercentiles, linq.CDI_Settings weights);
+        void Save(DataContext db);
+        void Save(Table<linq.CustDistHistory> table);
+        int GetCDI(IntervalData interval, IntervalData normalized, linq.CDI_Settings weights, Dictionary<Metrics, Percentile> _percentiles);
+    }
 
 
     /// <summary>

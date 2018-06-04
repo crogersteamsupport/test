@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 namespace TeamSupport.CDI
 {
-    enum Metrics
+    public enum Metrics
     {
         New,    // _newCount
         Open,   // _openCount
@@ -18,17 +18,6 @@ namespace TeamSupport.CDI
         ActionCount,    // _averageActionCount
         Severity    // _averageSeverity
     };
-
-    public struct CDI1
-    {
-        public int TotalTicketsCreated;
-        public int TicketsOpen;
-        public int CreatedLast30;
-        public int AvgTimeOpen;
-        public int AvgTimeToClose;
-        public int CustDisIndex;
-    };
-
 
     /// <summary>
     /// Use percentiles of the interval distribution
@@ -57,23 +46,11 @@ namespace TeamSupport.CDI
             _percentiles[Metrics.Severity] = new Percentile(tmp, x => x._averageSeverity.Value);
         }
 
-        public bool CDI1(IntervalData interval, linq.CDI_Settings weights)
+        public bool CDI(IntervalData interval, linq.CDI_Settings weights, ICDIStrategy iCDIStrategy)
         {
             // Create the CDI from the normalized fields
             IntervalData normalized = Normalize(interval);
-            CDI1 cdi = new CDI1()
-            {
-                TotalTicketsCreated = _percentiles[Metrics.TotalTickets].AsPercentile(interval._totalTicketsCreated),
-                TicketsOpen = _percentiles[Metrics.Open].AsPercentile(interval._openCount),
-                CreatedLast30 = _percentiles[Metrics.New].AsPercentile(interval._newCount),
-                AvgTimeOpen = _percentiles[Metrics.DaysOpen].AsPercentile(interval._medianDaysOpen),
-            };
-
-            if ((_percentiles[Metrics.DaysToClose] != null) && interval._medianDaysToClose.HasValue)
-                cdi.AvgTimeToClose = _percentiles[Metrics.DaysToClose].AsPercentile(interval._medianDaysToClose.Value);
-
-            double CustDisIndex = weights.GetCDI(cdi);
-            interval.CDI = (int)Math.Round(CustDisIndex);
+            interval.CDI = iCDIStrategy.GetCDI(interval, normalized, weights, _percentiles);
             return true;
         }
 

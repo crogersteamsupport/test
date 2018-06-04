@@ -11,12 +11,12 @@ namespace TeamSupport.CDI
     class Client
     {
         OrganizationAnalysis _organizationAnalysis;
-        IntervalData _cdiData;
-        //ICDIStrategy _iCdiStrategy;
+        ICDIStrategy _iCdiStrategy;
 
         public Client(OrganizationAnalysis organizationAnalysis)
         {
             _organizationAnalysis = organizationAnalysis;
+            _iCdiStrategy = new CDI1Strategy(_organizationAnalysis);
         }
 
         public int OrganizationID { get { return _organizationAnalysis.OrganizationID; } }
@@ -31,48 +31,12 @@ namespace TeamSupport.CDI
 
         public IntervalData GetCDIIntervalData()
         {
-            IntervalData end = _organizationAnalysis.Current();
-            if (end == null)
-            {
-                IntervalData last = _organizationAnalysis.Intervals.Last();
-                _cdiData = new IntervalData()
-                {
-                    _timeStamp = _organizationAnalysis._dateRange.EndDate,
-                    _totalTicketsCreated = last._totalTicketsCreated,
-                    _newCount = 0,
-                    _openCount = last._openCount,
-                    _medianDaysOpen = _organizationAnalysis.MedianDaysOpen()
-                };
-            }
-            else
-            {
-                _cdiData = new IntervalData()
-                {
-                    _timeStamp = end._timeStamp,
-                    _totalTicketsCreated = end._totalTicketsCreated, // 1. TotalTicketsCreated
-                    _newCount = end._newCount, // 2. CreatedLast30
-                    _openCount = end._openCount,   // 3. TicketsOpen
-                    _medianDaysOpen = end._medianDaysOpen, // 4. AvgTimeOpen
-                };
-            }
-
-
-            _cdiData._medianDaysToClose = IntervalData.MedianTotalDaysToClose(_organizationAnalysis.Tickets);  // 5. AvgTimeToClose
-
-            return _cdiData;
+            return _iCdiStrategy.GetCDIIntervalData();
         }
 
         public void InvokeCDIStrategy(IntervalPercentiles clientPercentiles, linq.CDI_Settings weights)
         {
-            clientPercentiles.CDI1(_cdiData, weights);
-        }
-
-        public string ToStringCDI1()
-        {
-            //return _organizationAnalysis.ToString();
-            if (_cdiData == null)
-                return string.Empty;
-            return _cdiData.ToStringCDI1();
+            _iCdiStrategy.InvokeCDIStrategy(clientPercentiles, weights);
         }
 
         public void WriteCdiByOrganization(DateTime timestamp)
@@ -124,17 +88,7 @@ namespace TeamSupport.CDI
         /// <param name="db"></param>
         public void Save(DataContext db)
         {
-            // Organization
-            string updateQuery = String.Format(@"UPDATE Organizations SET TotalTicketsCreated = {0}, TicketsOpen = {1}, CreatedLast30 = {2}, AvgTimeOpen = {3}, AvgTimeToClose = {4}, CustDisIndex = {5}, CustDistIndexTrend = {6} WHERE OrganizationID = {7}",
-                _cdiData._totalTicketsCreated,  // TotalTicketsCreated
-                _cdiData._openCount,    // TicketsOpen
-                _cdiData._newCount, // CreatedLast30
-                (int)Math.Round(_cdiData._medianDaysOpen),  // AvgTimeOpen
-                _cdiData._medianDaysToClose.HasValue ? (int)Math.Round(_cdiData._medianDaysToClose.Value) : 0,  // AvgTimeToClose
-                _cdiData.CDI.Value, // CustDisIndex
-                0,  // CustDistIndexTrend
-                OrganizationID);    // OrganizationID
-            db.ExecuteCommand(updateQuery);
+            _iCdiStrategy.Save(db);
         }
 
         /// <summary>
@@ -144,23 +98,7 @@ namespace TeamSupport.CDI
         /// <param name="table">table of existing customer distress history</param>
         public void Save(Table<linq.CustDistHistory> table)
         {
-            try
-            {
-                linq.CustDistHistory history = new linq.CustDistHistory()
-                {
-                    ParentOrganizationID = _organizationAnalysis.ParentID,
-                    OrganizationID = OrganizationID,
-                    CDIDate = DateRange.EndTimeNow,
-                    CDIValue = _cdiData.CDI.Value
-                };
-                table.InsertOnSubmit(history);
-            }
-            catch (Exception e)
-            {
-                CDIEventLog.WriteEntry("Save failed", e);
-            }
+            _iCdiStrategy.Save(table);
         }
-
-
     }
 }

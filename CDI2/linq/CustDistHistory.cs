@@ -8,7 +8,7 @@ using System.Data.Linq.Mapping;
 namespace TeamSupport.CDI.linq
 {
     [Table(Name = "CustDistHistory")]
-    class CustDistHistory
+    public class CustDistHistory
     {
 #pragma warning disable CS0649  // Field is never assigned to, and will always have its default value null
         int _custDistHistoryID;

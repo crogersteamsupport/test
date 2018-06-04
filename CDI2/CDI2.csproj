@@ -64,6 +64,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CDI1Strategy.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="Customer.cs" />
     <Compile Include="linq\CDI_Settings.cs" />
