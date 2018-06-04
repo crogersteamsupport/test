@@ -10,41 +10,66 @@ namespace TeamSupport.CDI
     /// <summary>
     /// Collect percentiles to determine where the current value lies in the distribution
     /// </summary>
-    class Percentiles<T> where T : IComparable<T>
+    public class Percentile //where T : IComparable<T>
     {
-        const int PercentileBucketCount = 20;   // 0%, 5%, 10%, 15%...
-        const int PercentIncrement = 100 / PercentileBucketCount;  // 5% increments
-        T[] percentiles;
+        int _intervalCount;
+        SortedDictionary<double, int> _counts;
+        SortedDictionary<double, int> _percentiles;
 
-        public Percentiles(List<IntervalData> intervalData, Func<IntervalData, T> getFunc)
+        public Percentile(List<IntervalData> intervals, Func<IntervalData, double> getFunc)
         {
-            // sort
-            intervalData.Sort((lhs, rhs) => getFunc(lhs).CompareTo(getFunc(rhs)));
+            _intervalCount = intervals.Count();
+            intervals.Sort((lhs, rhs) => getFunc(lhs).CompareTo(getFunc(rhs)));
+            _counts = new SortedDictionary<double, int>();
 
-            // collect percentile thresholds
-            percentiles = new T[PercentileBucketCount + 1];
-            for (int i = 0; i <= PercentileBucketCount; ++i)
-                percentiles[i] = getFunc(intervalData[(int)Math.Round((double)(intervalData.Count - 1) * i / PercentileBucketCount)]);
-        }
-
-        public int AsPercentile(T value)
-        {
-            // where is std::lower_bound when you need it?
-            int index = 0;
-            while (percentiles[index + 1].CompareTo(value) < 0)
-                index++;
-            return index * PercentIncrement;
-        }
-
-        public override string ToString()
-        {
-            StringBuilder builder = new StringBuilder();
-            foreach(T percentile in percentiles)
+            foreach(IntervalData interval in intervals)
             {
-                builder.Append(percentile);
-                builder.Append("\t");
+                double value = getFunc(interval);
+                if (_counts.ContainsKey(value))
+                    ++_counts[value];
+                else
+                    _counts[value] = 1;
             }
-            return builder.ToString();
+
+            _percentiles = new SortedDictionary<double, int>();
+            int index = 1;
+            foreach (KeyValuePair<double, int> pair in _counts)
+            {
+                // https://web.stanford.edu/class/archive/anthsci/anthsci192/anthsci192.1064/handouts/calculating%20percentiles.pdf
+                //double value = (index - 0.5) / _intervalCount;
+                //value = value * value * value * value;
+                //_percentiles[pair.Key] = (int)Math.Round(100 * value);
+                //index += pair.Value;
+
+                double offset = pair.Value / 2;
+                double value = (offset + index) / (double)_intervalCount;
+                value = value * value * value * value;
+                _percentiles[pair.Key] = (int)Math.Round(100 * value);
+                index += pair.Value;
+            }
+
+            //CDIEventLog.WriteLine("Value\tCount\tPercentile");
+            //foreach (KeyValuePair<double, int> pair in _counts)
+            //    CDIEventLog.WriteLine(String.Format("{0}\t{1}\t{2}", pair.Key, pair.Value, _percentiles[pair.Key]));
+        }
+
+        /// <summary>
+        /// AsPercentile
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public int AsPercentile(double value)
+        {
+            if (_percentiles.ContainsKey(value))
+                return _percentiles[value];
+
+            // find closest...
+            foreach (KeyValuePair<double, int> pair in _percentiles)
+            {
+                if (value <= pair.Key)  // use the lower bound of percentile (TODO - invert negative correlated metrics!)
+                    return pair.Value;
+            }
+            return 99;
         }
     }
 }

@@ -27,14 +27,15 @@ namespace TeamSupport.CDI
         {
             IntervalCount = intervalCount;
             IntervalTimeSpan = analysisInterval;
-            EndDate = PreviousMidnight(EndTimeNow);
+            EndDate = TonightMidnight(EndTimeNow);
             StartDate = EndDate - TimeSpan.FromDays(analysisInterval.TotalDays * intervalCount);
         }
 
         /// <summary>Round to the previous midnight</summary>
-        public DateTime PreviousMidnight(DateTime value)
+        public DateTime TonightMidnight(DateTime value)
         {
-            return value.AddTicks(-(value.Ticks % IntervalTimeSpan.Ticks));
+            TimeSpan oneDay = new TimeSpan(24, 0, 0);
+            return value.AddTicks(oneDay.Ticks - (value.Ticks % oneDay.Ticks));
         }
 
         public override string ToString()

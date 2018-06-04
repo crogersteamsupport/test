@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Linq.Mapping;
 
-namespace TeamSupport.CDI
+namespace TeamSupport.CDI.linq
 {
     [Table(Name = "Actions")]
     class Action
