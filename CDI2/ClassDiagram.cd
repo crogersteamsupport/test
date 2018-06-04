@@ -173,6 +173,16 @@
       <FileName>Program.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="TeamSupport.CDI.Statistics" Collapsed="true">
+    <Position X="11.5" Y="4" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AIRAAEAACAQAAAAAAIAAAACAAAAAIISAAAAAAAAAAgA=</HashCode>
+      <FileName>Utility\Statistics.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Struct Name="TeamSupport.CDI.CDI1">
     <Position X="11.25" Y="1.5" Width="1.5" />
     <TypeIdentifier>

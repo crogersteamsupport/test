@@ -14,7 +14,7 @@ namespace TeamSupport.CDI
     class Customer
     {
         OrganizationAnalysis _organizationAnalysis;
-        HashSet<Client> _clients;
+        public HashSet<Client> _clients;
         IntervalPercentiles _percentiles;
         //ICDIStrategy _iCdiStrategy;
 

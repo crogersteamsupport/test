@@ -31,5 +31,17 @@ namespace TeamSupport.CDI.linq
         public bool NeedCompute;
 #pragma warning restore CS0649
 
+        public void Normalize()
+        {
+            float total = TotalTicketsWeight.Value + OpenTicketsWeight.Value + Last30Weight.Value + AvgDaysOpenWeight.Value + AvgDaysToCloseWeight.Value;
+            float scalar = 1 / total;
+
+            TotalTicketsWeight *= scalar;
+            OpenTicketsWeight *= scalar;
+            Last30Weight *= scalar;
+            AvgDaysOpenWeight *= scalar;
+            AvgDaysToCloseWeight *= scalar;
+
+        }
     }
 }

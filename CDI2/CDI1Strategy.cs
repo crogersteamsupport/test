@@ -28,6 +28,8 @@ namespace TeamSupport.CDI
             _organizationAnalysis = organizationAnalysis;
         }
 
+        public IntervalData CDI { get { return _cdiData; } }
+
         public IntervalData GetCDIIntervalData()
         {
             IntervalData end = _organizationAnalysis.Current();
@@ -135,7 +137,8 @@ namespace TeamSupport.CDI
                 cdi.AvgTimeToClose = _percentiles[Metrics.DaysToClose].AsPercentile(interval._medianDaysToClose.Value);
 
             double CustDisIndex = GetCDI(cdi, weights);
-            return (int)Math.Round(CustDisIndex);
+            normalized.CDI = (int)Math.Round(CustDisIndex);
+            return normalized.CDI.Value;
         }
 
     }

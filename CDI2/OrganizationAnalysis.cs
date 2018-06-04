@@ -18,6 +18,7 @@ namespace TeamSupport.CDI
         void Save(DataContext db);
         void Save(Table<linq.CustDistHistory> table);
         int GetCDI(IntervalData interval, IntervalData normalized, linq.CDI_Settings weights, Dictionary<Metrics, Percentile> _percentiles);
+        IntervalData CDI { get; }
     }
 
 

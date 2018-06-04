@@ -74,7 +74,12 @@ namespace TeamSupport.CDI
             // Do the CDI dirty work
             stopwatch.Restart();
             foreach (Customer customer in _customers)
+            {
                 customer.InvokeCDIStrategy();
+                //Statistics stats = new Statistics(customer);
+                //stats.CalculatePercentiles();
+                //stats.FindOptimalMix();
+            }
             CDIEventLog.WriteEntry(String.Format("CDI values generated in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000.0));
 
             // Save to Client Organizations
