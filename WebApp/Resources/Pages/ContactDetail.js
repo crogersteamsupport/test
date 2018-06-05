@@ -1366,7 +1366,7 @@ $(document).ready(function () {
         $('#tblFiles tbody').empty();
         if (_mainFrame.Ts.System.Organization.UseProductFamilies) {
             _mainFrame.Ts.Services.Customers.LoadFilesByUserRights(userID, _mainFrame.Ts.ReferenceTypes.Users, false, function (files) {
-                var count = files.length;
+                var count = (files) ? files.length : 0;
                 $('#a-files').text('Files (' + count + ')');
                 var html;
                 for (var i = 0; i < files.length; i++) {
