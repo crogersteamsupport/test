@@ -59,7 +59,6 @@ namespace TeamSupport.CDI
 
         public void AnalyzeTickets()
         {
-            //_organizationAnalysis.GenerateIntervals();
             foreach (Client client in _clients)
                 client.AnalyzeTickets();
         }
@@ -132,15 +131,24 @@ namespace TeamSupport.CDI
                 client.InvokeCDIStrategy(_percentiles, settings);
         }
 
-        //public void Callback()
-        //{
-        //    if (_clients == null)
-        //        return;
+        public void Write()
+        {
+            CDIEventLog.WriteLine("------------------------------------------");
+            List<IntervalData> raw = new List<IntervalData>();
+            foreach (Client client in _clients)
+                raw.Add(client.RawMetrics);
+            IntervalData.Write(raw);
 
-        //    // run strategy against each client
-        //    foreach (Client client in _clients)
-        //        client.InvokeCDIStrategy(_iCdiStrategy);
-        //}
+            CDIEventLog.WriteLine("------------------------------------------");
+            raw.Clear();
+            foreach (Client client in _clients)
+                raw.Add(client.NormalizedMetrics);
+            IntervalData.Write(raw);
+
+            //IntervalData.WriteHeader();
+            //foreach (Client client in _clients)
+            //    CDIEventLog.WriteLine("{0}\t{1}", client.OrganizationID, client.NormalizedMetrics.ToString());
+        }
 
         public override string ToString()
         {
@@ -159,24 +167,6 @@ namespace TeamSupport.CDI
             IntervalData.WriteHeader();
             foreach (Client client in _clients)
                 client.WriteCdiByOrganization(_organizationAnalysis.Intervals[0]._timeStamp);
-        }
-
-        public void WriteIntervals()
-        {
-            CDIEventLog.WriteLine("------------------------------------------");
-            CDIEventLog.WriteLine(_organizationAnalysis.OrganizationID.ToString());
-            CDIEventLog.WriteLine("------------------------------------------");
-            _organizationAnalysis.WriteItervals();
-        }
-
-        public void WriteIntervals(int clientID)
-        {
-            //CDIEventLog.Write("ClientID\tClient\t");
-            //IntervalData.WriteHeader();
-
-            //Client client = _clients.Where(c => c.ClientOrganizationID.HasValue && (c.ClientOrganizationID == clientID)).FirstOrDefault();
-            //if (client != null)
-            //    client.WriteIntervals();
         }
 
         public void WriteClients()

@@ -43,5 +43,41 @@ namespace TeamSupport.CDI.linq
             AvgDaysToCloseWeight *= scalar;
 
         }
+
+        public double? Get(Metrics metric)
+        {
+            double? result = null;
+            switch (metric)
+            {
+                case Metrics.ActionCount:
+                    //result = _averageActionCount;
+                    break;
+                case Metrics.Closed:
+                    //result = _closedCount;
+                    break;
+                case Metrics.DaysOpen:
+                    result = AvgDaysOpenWeight;
+                    break;
+                case Metrics.DaysToClose:
+                    result = AvgDaysToCloseWeight;
+                    break;
+                case Metrics.New:
+                    result = Last30Weight;
+                    break;
+                case Metrics.Open:
+                    result = OpenTicketsWeight;
+                    break;
+                case Metrics.Sentiment:
+                    //result = _averageSentimentScore;
+                    break;
+                case Metrics.Severity:
+                    //result = _averageSeverity;
+                    break;
+                case Metrics.TotalTickets:
+                    result = TotalTicketsWeight;
+                    break;
+            }
+            return result;
+        }
     }
 }

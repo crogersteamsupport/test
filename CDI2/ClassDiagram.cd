@@ -46,7 +46,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>EAQAAIAAAACAASAMACAAAAAAABCIAAAAEAAwAAEABgQ=</HashCode>
+      <HashCode>EAQAAAAAAACAASBMACAAAAAAABCIAAAAEAAwAAEABgQ=</HashCode>
       <FileName>IntervalData.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -77,7 +77,7 @@
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAACAAAACAAEAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAACAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IntervalPercentiles.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -103,16 +103,19 @@
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="TeamSupport.CDI.Client" Collapsed="true">
-    <Position X="5.75" Y="2" Width="1.5" />
+    <Position X="8" Y="1.75" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>ADAAAIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAJAEEBAAg=</HashCode>
+      <HashCode>ADAAAIAAAAAAIAAAAAAAAAAAAYAIAAAAAAAJAEEBAAg=</HashCode>
       <FileName>Client.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="_organizationAnalysis" />
+      <Field Name="_iCdiStrategy" />
+      <Property Name="NormalizedMetrics" />
+      <Property Name="RawMetrics" />
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.CDI.Customer" Collapsed="true">
@@ -127,7 +130,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>IAAAAIAICAAAAAAEAAAAAAAAAQEAAIAAAIAJAEABAAw=</HashCode>
+      <HashCode>IAAAAIAICAAAAAAEAAAAAAAAAQEAAIAAAIAJAEEBAAA=</HashCode>
       <FileName>Customer.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -154,7 +157,7 @@
   <Class Name="TeamSupport.CDI.Percentile" Collapsed="true">
     <Position X="14" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAACAAAAAAAAAAAAAAAAAAACBAAAAAAABAAAAA=</HashCode>
+      <HashCode>AAAAAAAACAAAAAAAAAAAAAAAAAAACBAAAAIAABAAAAA=</HashCode>
       <FileName>Utility\Percentile.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -166,15 +169,8 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="TeamSupport.CDI.Program" Collapsed="true">
-    <Position X="9" Y="0.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
-      <FileName>Program.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="TeamSupport.CDI.Statistics" Collapsed="true">
-    <Position X="11.5" Y="4" Width="1.5" />
+    <Position X="11" Y="1.25" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
@@ -183,25 +179,26 @@
       <FileName>Utility\Statistics.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Struct Name="TeamSupport.CDI.CDI1">
-    <Position X="11.25" Y="1.5" Width="1.5" />
+  <Class Name="TeamSupport.CDI.CDI1Strategy" Collapsed="true">
+    <Position X="11.25" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAEAAAAQAAAAAAAAAAAAAAAAAACAAAAAAAIAIAAACAA=</HashCode>
+      <HashCode>AAAAAIAAAAAEIAAAAAAgAAAAAAIIAAAAEAAAgEABAAA=</HashCode>
       <FileName>CDI1Strategy.cs</FileName>
     </TypeIdentifier>
-  </Struct>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="TeamSupport.CDI.ICDIStrategy" Collapsed="true">
+    <Position X="11.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAEIAAAAAAAAAAAAAAIAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>OrganizationAnalysis.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
   <Enum Name="TeamSupport.CDI.Metrics">
     <Position X="14" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAABAAAAQAAICAAAAAAAAAAAgAAAACAAAAAAASAAAA=</HashCode>
-      <FileName>IntervalPercentiles.cs</FileName>
-    </TypeIdentifier>
-  </Enum>
-  <Enum Name="TeamSupport.CDI.TimeScale" Collapsed="true">
-    <Position X="9" Y="1.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAQAAAAQAAAAAAAAAAAAAAAQAAAAAAAAAE=</HashCode>
-      <FileName>TicketJoin.cs</FileName>
+      <HashCode>AAAABAAAAQAAICAAAAAAAAAAAgAAAECAAAAAAASAAAA=</HashCode>
+      <FileName>IntervalData.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Font Name="Segoe UI" Size="9" />

@@ -30,7 +30,7 @@ namespace TeamSupport.CDI
             int i = 0;
             foreach (Client client in _clients)
             {
-                IntervalData interval = client._iCdiStrategy.CDI;
+                IntervalData interval = client._iCdiStrategy.RawMetrics;
                 if (interval == null)
                     continue;
 
@@ -75,7 +75,7 @@ namespace TeamSupport.CDI
                 foreach (Client client in _clients)
                 {
                     client.InvokeCDIStrategy(_percentiles, weights);
-                    _cdi[i++] = client._iCdiStrategy.CDI.CDI.Value;
+                    _cdi[i++] = client._iCdiStrategy.RawMetrics.CDI.Value;
                 }
 
                 double sumAbsCorrelation = CheckCorrelation(combination);

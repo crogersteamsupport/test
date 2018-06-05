@@ -5,6 +5,20 @@ using System.Linq;
 
 namespace TeamSupport.CDI
 {
+    public enum Metrics
+    {
+        New,    // _newCount
+        Open,   // _openCount
+        DaysOpen,   // _medianDaysOpen
+        TotalTickets,   // _totalTicketsCreated
+        Closed, // _closedCount
+        DaysToClose,    // _medianDaysToClose
+        ActionCount,    // _averageActionCount
+        Severity,    // _averageSeverity
+        Sentiment
+    };
+
+
     /// <summary>
     /// Keep the results for the analysis of closed tickets for the given time interval
     /// </summary>
@@ -24,7 +38,7 @@ namespace TeamSupport.CDI
         public double? _averageActionCount;   // how many actions do the closed ticket have?
         public double? _averageSentimentScore;
         public double? _averageSeverity;
-        public int _CreatorIDCount;  // how many users created the closed tickets
+        //public int _CreatorIDCount;  // how many users created the closed tickets
 
         public int? CDI { get; set; }    // CDI !!
 
@@ -47,6 +61,42 @@ namespace TeamSupport.CDI
                 _averageSeverity = closedTickets.Average(x => x.Severity);
                 //_CreatorIDCount = closedTickets.Select(t => t.CreatorID).Distinct().Count();
             }
+        }
+
+        public double? Get(Metrics metric)
+        {
+            double? result = null;
+            switch(metric)
+            {
+                case Metrics.ActionCount:
+                    result = _averageActionCount;
+                    break;
+                case Metrics.Closed:
+                    result = 100 - _closedCount;  // invert - high is good
+                    break;
+                case Metrics.DaysOpen:
+                    result = _medianDaysOpen;
+                    break;
+                case Metrics.DaysToClose:
+                    result = _medianDaysToClose;
+                    break;
+                case Metrics.New:
+                    result = _newCount;
+                    break;
+                case Metrics.Open:
+                    result = _openCount;
+                    break;
+                case Metrics.Sentiment:
+                    result = 100 - _averageSentimentScore;  // invert - high is good
+                    break;
+                case Metrics.Severity:
+                    result = 100 - _averageSeverity;    // invert - high is good
+                    break;
+                case Metrics.TotalTickets:
+                    result = _totalTicketsCreated;
+                    break;
+            }
+            return result;
         }
 
         public static double? Median(double[] values)
@@ -83,7 +133,7 @@ namespace TeamSupport.CDI
             return Median(totalDays);
         }
 
-        private double? MedianTotalDaysOpenToTimestamp(HashSet<TicketJoin> tickets, DateTime timestamp)
+        private static double? MedianTotalDaysOpenToTimestamp(HashSet<TicketJoin> tickets, DateTime timestamp)
         {
             if (tickets.Count == 0)
                 return null;
@@ -94,7 +144,7 @@ namespace TeamSupport.CDI
 
         public static void WriteHeader()
         {
-            CDIEventLog.WriteLine("Date\tNew\tOpen\tMedianDaysOpen\tClosed\tMedianDaysToClose\tAvgActions\tAvgSentiment\tAverageSeverity\tCDI\tClientCustomerID");
+            CDIEventLog.WriteLine("Date\tNew\tOpen\tMedianDaysOpen\tClosed\tMedianDaysToClose\tAvgActions\tAvgSentiment\tAverageSeverity\tCDI");
         }
 
         public static void Write(List<IntervalData> intervals)

@@ -32,7 +32,7 @@ namespace TeamSupport.CDI
             }
 
             _percentiles = new SortedDictionary<double, int>();
-            int index = 1;
+            int index = 0;
             foreach (KeyValuePair<double, int> pair in _counts)
             {
                 // https://web.stanford.edu/class/archive/anthsci/anthsci192/anthsci192.1064/handouts/calculating%20percentiles.pdf
@@ -41,9 +41,9 @@ namespace TeamSupport.CDI
                 //_percentiles[pair.Key] = (int)Math.Round(100 * value);
                 //index += pair.Value;
 
-                double offset = pair.Value / 2;
+                double offset = (double)pair.Value / 2;
                 double value = (offset + index) / (double)_intervalCount;
-                value = value * value * value * value;
+                //value = value * value * value * value;
                 _percentiles[pair.Key] = (int)Math.Round(100 * value);
                 index += pair.Value;
             }

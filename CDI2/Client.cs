@@ -20,6 +20,8 @@ namespace TeamSupport.CDI
         }
 
         public int OrganizationID { get { return _organizationAnalysis.OrganizationID; } }
+        public IntervalData RawMetrics { get { return _iCdiStrategy.RawMetrics; } }
+        public IntervalData NormalizedMetrics { get { return _iCdiStrategy.NormalizedMetrics; } }
 
         public void AnalyzeTickets()
         {
@@ -29,9 +31,10 @@ namespace TeamSupport.CDI
 
         IntervalData _default = new IntervalData();
 
+
         public IntervalData GetCDIIntervalData()
         {
-            return _iCdiStrategy.GetCDIIntervalData();
+            return _iCdiStrategy.CalculateRawMetrics();
         }
 
         public void InvokeCDIStrategy(IntervalPercentiles clientPercentiles, linq.CDI_Settings weights)

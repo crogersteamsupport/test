@@ -7,18 +7,6 @@ using System.Diagnostics;
 
 namespace TeamSupport.CDI
 {
-    public enum Metrics
-    {
-        New,    // _newCount
-        Open,   // _openCount
-        DaysOpen,   // _medianDaysOpen
-        TotalTickets,   // _totalTicketsCreated
-        Closed, // _closedCount
-        DaysToClose,    // _medianDaysToClose
-        ActionCount,    // _averageActionCount
-        Severity    // _averageSeverity
-    };
-
     /// <summary>
     /// Use percentiles of the interval distribution
     /// </summary>
@@ -44,14 +32,9 @@ namespace TeamSupport.CDI
 
             tmp = intervals.Where(t => t._averageSeverity.HasValue).ToList();
             _percentiles[Metrics.Severity] = new Percentile(tmp, x => x._averageSeverity.Value);
-        }
 
-        public bool CDI(IntervalData interval, linq.CDI_Settings weights, ICDIStrategy iCDIStrategy)
-        {
-            // Create the CDI from the normalized fields
-            IntervalData normalized = Normalize(interval);
-            interval.CDI = iCDIStrategy.GetCDI(interval, normalized, weights, _percentiles);
-            return true;
+            tmp = intervals.Where(t => t._averageSentimentScore.HasValue).ToList();
+            _percentiles[Metrics.Sentiment] = new Percentile(tmp, x => x._averageSentimentScore.Value);
         }
 
         public IntervalData Normalize(IntervalData interval)
@@ -75,8 +58,8 @@ namespace TeamSupport.CDI
             if ((_percentiles[Metrics.Severity] != null) && interval._averageSeverity.HasValue)
                 normalized._averageSeverity = _percentiles[Metrics.Severity].AsPercentile(interval._averageSeverity.Value);
 
-            //if (interval._averageSentimentScore.HasValue)
-            //    normalized._averageSentimentScore = interval._averageSentimentScore.Value / 10; // [0, 1000] => [0, 100]
+            if (interval._averageSentimentScore.HasValue)
+                normalized._averageSentimentScore = interval._averageSentimentScore.Value / 10; // [0, 1000] => [0, 100]
 
             return normalized;
         }

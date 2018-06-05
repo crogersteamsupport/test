@@ -13,13 +13,13 @@ namespace TeamSupport.CDI
     /// </summary>
     public interface ICDIStrategy
     {
-        IntervalData GetCDIIntervalData();
+        IntervalData CalculateRawMetrics();
         void InvokeCDIStrategy(IntervalPercentiles clientPercentiles, linq.CDI_Settings weights);
         void Save(DataContext db);
         void Save(Table<linq.CustDistHistory> table);
-        int GetCDI(IntervalData interval, IntervalData normalized, linq.CDI_Settings weights, Dictionary<Metrics, Percentile> _percentiles);
-        IntervalData CDI { get; }
-    }
+        IntervalData RawMetrics { get; }
+        IntervalData NormalizedMetrics { get; }
+   }
 
 
     /// <summary>

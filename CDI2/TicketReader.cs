@@ -80,7 +80,7 @@ namespace TeamSupport.CDI
                     Table<TicketStatus> ticketStatusesTable = db.GetTable<TicketStatus>();
                     Table<TicketType> ticketTypesTable = db.GetTable<TicketType>();
                     Table<linq.Action> actionsTable = db.GetTable<TeamSupport.CDI.linq.Action>();
-                    //Table<TicketSentiment> ticketSentimentsTable = db.GetTable<TicketSentiment>();
+                    Table<TicketSentiment> ticketSentimentsTable = db.GetTable<TicketSentiment>();
                     Table<TicketSeverity> severityTable = db.GetTable<TicketSeverity>();
 
                     var query = from o in organizationTable.Where(o => o.IsActive == true)
@@ -91,7 +91,7 @@ namespace TeamSupport.CDI
                                 where (t.DateCreated > _dateRange.StartDate) &&
                                     (!ts.IsClosed || (t.DateClosed.Value > t.DateCreated)) &&
                                     (t.TicketSource != "SalesForce") &&    // ignore imported tickets
-                                    //(o.ParentID == 1078) &&
+                                    (o.ParentID == 1116568) && // [ParentOrganizationID]=1116568
                                     //(o.OrganizationID == 563644) &&
                                     (o.IsActive) &&
                                     (!tt.ExcludeFromCDI) &&
@@ -102,10 +102,10 @@ namespace TeamSupport.CDI
                                     DateClosed = t.DateClosed,
                                     DateCreated = t.DateCreated,
                                     IsClosed = ts.IsClosed,
-                                    //ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count(),
-                                    //AverageActionSentiment = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.AverageActionSentiment).First(),  // for some reason Min is faster than First()
+                                    ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count(),
+                                    AverageActionSentiment = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.AverageActionSentiment).First(),  // for some reason Min is faster than First()
                                     ParentID = o.ParentID,
-                                    //Severity = (from s in severityTable where t.TicketSeverityID == s.TicketSeverityID select s.Severity).First()
+                                    Severity = (from s in severityTable where t.TicketSeverityID == s.TicketSeverityID select s.Severity).First()
                                 };
 
                     // run the query
@@ -163,7 +163,7 @@ namespace TeamSupport.CDI
             Table<TicketStatus> ticketStatusesTable = db.GetTable<TicketStatus>();
             Table<TicketType> ticketTypesTable = db.GetTable<TicketType>();
             Table<linq.Action> actionsTable = db.GetTable<TeamSupport.CDI.linq.Action>();
-            //Table<TicketSentiment> ticketSentimentsTable = db.GetTable<TicketSentiment>();
+            Table<TicketSentiment> ticketSentimentsTable = db.GetTable<TicketSentiment>();
             Table<TicketSeverity> severityTable = db.GetTable<TicketSeverity>();
 
             var query = from o in organizationTable.Where(o => o.IsActive == true)
@@ -184,10 +184,10 @@ namespace TeamSupport.CDI
                             DateClosed = t.DateClosed,
                             DateCreated = t.DateCreated,
                             IsClosed = ts.IsClosed,
-                            //ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count(),
-                            //AverageActionSentiment = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.AverageActionSentiment).First(),  // for some reason Min is faster than First()
+                            ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count(),
+                            AverageActionSentiment = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.AverageActionSentiment).First(),  // for some reason Min is faster than First()
                             ParentID = o.ParentID,
-                            //Severity = (from s in severityTable where t.TicketSeverityID == s.TicketSeverityID select s.Severity).First()
+                            Severity = (from s in severityTable where t.TicketSeverityID == s.TicketSeverityID select s.Severity).First()
                         };
 
             // run the query

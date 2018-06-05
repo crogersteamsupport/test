@@ -76,6 +76,8 @@ namespace TeamSupport.CDI
             foreach (Customer customer in _customers)
             {
                 customer.InvokeCDIStrategy();
+                customer.Write();
+
                 //Statistics stats = new Statistics(customer);
                 //stats.CalculatePercentiles();
                 //stats.FindOptimalMix();
@@ -175,10 +177,10 @@ namespace TeamSupport.CDI
                         if (TryGetCustomer(int.Parse(args[++i]), out customer))
                             customer.WriteCdiByOrganization();
                         break;
-                    case "customerIntervals":
-                        if (TryGetCustomer(int.Parse(args[++i]), out customer))
-                            customer.WriteIntervals();
-                        break;
+                    //case "customerIntervals":
+                    //    if (TryGetCustomer(int.Parse(args[++i]), out customer))
+                    //        customer.WriteIntervals();
+                    //    break;
                     case "clients":
                         if (TryGetCustomer(int.Parse(args[++i]), out customer))
                             customer.WriteClients();
