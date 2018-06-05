@@ -2191,7 +2191,7 @@ $(document).ready(function () {
         if (_mainFrame.Ts.System.Organization.UseProductFamilies) {
             _mainFrame.Ts.Services.Customers.LoadNotesByUserRights(organizationID, _mainFrame.Ts.ReferenceTypes.Organizations, _isParentView, organizationID, function (note) {
                 $('#tblNotes tbody').empty();
-                var count = note.length;
+                var count = (note) ? note.length : 0;
                 $('#a-notes').text('Notes (' + count + ')');
                 var html;
                 for (var i = 0; i < note.length; i++) {
@@ -2230,6 +2230,7 @@ $(document).ready(function () {
                         html = '<td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
                     } else {
                         html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+                    }
 
                     html += '<td>' + note[i].ActivityType + '</td>';
                     html += '<td>' + note[i].DateOccurred + '</td>';
@@ -2346,7 +2347,7 @@ $(document).ready(function () {
         $('#tblFiles tbody').empty();
         if (_mainFrame.Ts.System.Organization.UseProductFamilies) {
             _mainFrame.Ts.Services.Customers.LoadFilesByUserRights(organizationID, _mainFrame.Ts.ReferenceTypes.Organizations, _isParentView, function (files) {
-                var count = files.length;
+                var count = (files) ? files.length : 0;
                 $('#a-files').text('Files (' + count + ')');
                 var html;
                 for (var i = 0; i < files.length; i++) {
