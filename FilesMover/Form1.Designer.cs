@@ -28,20 +28,22 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.start = new System.Windows.Forms.Button();
+            this.run = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.step = new System.Windows.Forms.Button();
+            this.stepAttachment = new System.Windows.Forms.Button();
+            this.stepImport = new System.Windows.Forms.Button();
+            this.stepScheduledReport = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // start
+            // run
             // 
-            this.start.Location = new System.Drawing.Point(490, 410);
-            this.start.Name = "start";
-            this.start.Size = new System.Drawing.Size(75, 23);
-            this.start.TabIndex = 0;
-            this.start.Text = "Run";
-            this.start.UseVisualStyleBackColor = true;
-            this.start.Click += new System.EventHandler(this.start_Click);
+            this.run.Location = new System.Drawing.Point(490, 410);
+            this.run.Name = "run";
+            this.run.Size = new System.Drawing.Size(75, 23);
+            this.run.TabIndex = 0;
+            this.run.Text = "Run";
+            this.run.UseVisualStyleBackColor = true;
+            this.run.Click += new System.EventHandler(this.run_Click);
             // 
             // textBox1
             // 
@@ -57,24 +59,46 @@
             this.textBox1.WordWrap = false;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged_1);
             // 
-            // step
+            // stepAttachment
             // 
-            this.step.Location = new System.Drawing.Point(409, 410);
-            this.step.Name = "step";
-            this.step.Size = new System.Drawing.Size(75, 23);
-            this.step.TabIndex = 2;
-            this.step.Text = "Step";
-            this.step.UseVisualStyleBackColor = true;
-            this.step.Click += new System.EventHandler(this.step_Click);
+            this.stepAttachment.Location = new System.Drawing.Point(43, 410);
+            this.stepAttachment.Name = "stepAttachment";
+            this.stepAttachment.Size = new System.Drawing.Size(143, 23);
+            this.stepAttachment.TabIndex = 2;
+            this.stepAttachment.Text = "Step Attachment";
+            this.stepAttachment.UseVisualStyleBackColor = true;
+            this.stepAttachment.Click += new System.EventHandler(this.stepAttachment_Click);
+            // 
+            // stepImport
+            // 
+            this.stepImport.Location = new System.Drawing.Point(192, 410);
+            this.stepImport.Name = "stepImport";
+            this.stepImport.Size = new System.Drawing.Size(143, 23);
+            this.stepImport.TabIndex = 3;
+            this.stepImport.Text = "Step Import";
+            this.stepImport.UseVisualStyleBackColor = true;
+            this.stepImport.Click += new System.EventHandler(this.stepImport_Click);
+            // 
+            // stepScheduledReport
+            // 
+            this.stepScheduledReport.Location = new System.Drawing.Point(341, 410);
+            this.stepScheduledReport.Name = "stepScheduledReport";
+            this.stepScheduledReport.Size = new System.Drawing.Size(143, 23);
+            this.stepScheduledReport.TabIndex = 4;
+            this.stepScheduledReport.Text = "Step Scheduled Report";
+            this.stepScheduledReport.UseVisualStyleBackColor = true;
+            this.stepScheduledReport.Click += new System.EventHandler(this.stepScheduledReport_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1002, 445);
-            this.Controls.Add(this.step);
+            this.Controls.Add(this.stepScheduledReport);
+            this.Controls.Add(this.stepImport);
+            this.Controls.Add(this.stepAttachment);
             this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.start);
+            this.Controls.Add(this.run);
             this.Name = "Form1";
             this.Text = "Form1";
             this.ResumeLayout(false);
@@ -84,9 +108,11 @@
 
         #endregion
 
-        private System.Windows.Forms.Button start;
+        private System.Windows.Forms.Button run;
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Button step;
+        private System.Windows.Forms.Button stepAttachment;
+        private System.Windows.Forms.Button stepImport;
+        private System.Windows.Forms.Button stepScheduledReport;
     }
 }
 
