@@ -72,10 +72,11 @@
     <Compile Include="linq\Organization.cs" />
     <Compile Include="linq\OrganizationTickets.cs" />
     <Compile Include="linq\TicketSeverity.cs" />
+    <Compile Include="OptimalWeighting.cs" />
     <Compile Include="Utility\DateRange.cs" />
     <Compile Include="CDI2Engine.cs" />
-    <Compile Include="IntervalData.cs" />
-    <Compile Include="IntervalPercentiles.cs" />
+    <Compile Include="Metrics.cs" />
+    <Compile Include="MetricPercentiles.cs" />
     <Compile Include="linq\Action.cs" />
     <Compile Include="TicketJoin.cs" />
     <Compile Include="linq\TicketSentiment.cs" />
@@ -89,7 +90,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IntervalStrategy.cs" />
     <Compile Include="Utility\Statistics.cs" />
-    <Compile Include="Utility\TallyDictionary.cs" />
     <Compile Include="Utility\CDIEventLog.cs" />
   </ItemGroup>
   <ItemGroup>

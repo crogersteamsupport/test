@@ -25,59 +25,104 @@ namespace TeamSupport.CDI.linq
         public float? AvgDaysOpenWeight;
         [Column]
         public float? AvgDaysToCloseWeight;
+
+        public float? AverageActionCountWeight;
+        public float? ClosedCountWeight;
+        public float? AverageSentimentScoreWeight;
+        public float? AverageSeverityWeight;
+
         [Column]
         public DateTime? LastCompute;
         [Column]
         public bool NeedCompute;
 #pragma warning restore CS0649
 
-        public void Normalize()
-        {
-            float total = TotalTicketsWeight.Value + OpenTicketsWeight.Value + Last30Weight.Value + AvgDaysOpenWeight.Value + AvgDaysToCloseWeight.Value;
-            float scalar = 1 / total;
-
-            TotalTicketsWeight *= scalar;
-            OpenTicketsWeight *= scalar;
-            Last30Weight *= scalar;
-            AvgDaysOpenWeight *= scalar;
-            AvgDaysToCloseWeight *= scalar;
-
-        }
-
-        public double? Get(Metrics metric)
+        public double? Get(EMetrics metric)
         {
             double? result = null;
             switch (metric)
             {
-                case Metrics.ActionCount:
-                    //result = _averageActionCount;
+                case EMetrics.ActionCountClosed:
+                    result = AverageActionCountWeight;
                     break;
-                case Metrics.Closed:
-                    //result = _closedCount;
+                case EMetrics.Closed30:
+                    result = ClosedCountWeight;
                     break;
-                case Metrics.DaysOpen:
+                case EMetrics.DaysOpen:
                     result = AvgDaysOpenWeight;
                     break;
-                case Metrics.DaysToClose:
+                case EMetrics.DaysToClose:
                     result = AvgDaysToCloseWeight;
                     break;
-                case Metrics.New:
+                case EMetrics.New30:
                     result = Last30Weight;
                     break;
-                case Metrics.Open:
+                case EMetrics.Open:
                     result = OpenTicketsWeight;
                     break;
-                case Metrics.Sentiment:
-                    //result = _averageSentimentScore;
+                case EMetrics.SentimentClosed:
+                    result = AverageSentimentScoreWeight;
                     break;
-                case Metrics.Severity:
-                    //result = _averageSeverity;
+                case EMetrics.SeverityClosed:
+                    result = AverageSeverityWeight;
                     break;
-                case Metrics.TotalTickets:
+                case EMetrics.TotalTickets:
                     result = TotalTicketsWeight;
                     break;
             }
             return result;
         }
+
+        public void Set(EMetrics metric, float? value)
+        {
+            switch (metric)
+            {
+                case EMetrics.ActionCountClosed:
+                    AverageActionCountWeight = value;
+                    break;
+                case EMetrics.Closed30:
+                    ClosedCountWeight = value;
+                    break;
+                case EMetrics.DaysOpen:
+                    AvgDaysOpenWeight = value;
+                    break;
+                case EMetrics.DaysToClose:
+                    AvgDaysToCloseWeight = value;
+                    break;
+                case EMetrics.New30:
+                    Last30Weight = value;
+                    break;
+                case EMetrics.Open:
+                    OpenTicketsWeight = value;
+                    break;
+                case EMetrics.SentimentClosed:
+                    AverageSentimentScoreWeight = value;
+                    break;
+                case EMetrics.SeverityClosed:
+                    AverageSeverityWeight = value;
+                    break;
+                case EMetrics.TotalTickets:
+                    TotalTicketsWeight = value;
+                    break;
+            }
+        }
+
+        public void Set(int mask)
+        {
+            float scalar = 0;
+            foreach (EMetrics metric in Enum.GetValues(typeof(EMetrics)))
+            {
+                if (((int)metric & mask) != 0)
+                    ++scalar;
+            }
+            scalar = 1 / scalar;
+
+            foreach (EMetrics metric in Enum.GetValues(typeof(EMetrics)))
+            {
+                if (((int)metric & mask) != 0)
+                    Set(metric, scalar);
+            }
+        }
+
     }
 }

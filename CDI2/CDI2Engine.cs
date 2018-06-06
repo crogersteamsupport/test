@@ -76,9 +76,9 @@ namespace TeamSupport.CDI
             foreach (Customer customer in _customers)
             {
                 customer.InvokeCDIStrategy();
-                customer.Write();
+                //customer.Write();
 
-                //Statistics stats = new Statistics(customer);
+                //OptimalWeighting stats = new OptimalWeighting(customer);
                 //stats.CalculatePercentiles();
                 //stats.FindOptimalMix();
             }

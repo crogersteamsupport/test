@@ -91,7 +91,7 @@ namespace TeamSupport.CDI
                                 where (t.DateCreated > _dateRange.StartDate) &&
                                     (!ts.IsClosed || (t.DateClosed.Value > t.DateCreated)) &&
                                     (t.TicketSource != "SalesForce") &&    // ignore imported tickets
-                                    (o.ParentID == 1116568) && // [ParentOrganizationID]=1116568
+                                    //(o.ParentID == 1078) && // 1116568
                                     //(o.OrganizationID == 563644) &&
                                     (o.IsActive) &&
                                     (!tt.ExcludeFromCDI) &&

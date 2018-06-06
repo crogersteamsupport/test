@@ -20,8 +20,8 @@ namespace TeamSupport.CDI
         }
 
         public int OrganizationID { get { return _organizationAnalysis.OrganizationID; } }
-        public IntervalData RawMetrics { get { return _iCdiStrategy.RawMetrics; } }
-        public IntervalData NormalizedMetrics { get { return _iCdiStrategy.NormalizedMetrics; } }
+        public Metrics RawMetrics { get { return _iCdiStrategy.RawMetrics; } }
+        public Metrics NormalizedMetrics { get { return _iCdiStrategy.NormalizedMetrics; } }
 
         public void AnalyzeTickets()
         {
@@ -29,15 +29,15 @@ namespace TeamSupport.CDI
             _organizationAnalysis.GenerateIntervals();
         }
 
-        IntervalData _default = new IntervalData();
+        Metrics _default = new Metrics();
 
 
-        public IntervalData GetCDIIntervalData()
+        public Metrics GetCDIIntervalData()
         {
             return _iCdiStrategy.CalculateRawMetrics();
         }
 
-        public void InvokeCDIStrategy(IntervalPercentiles clientPercentiles, linq.CDI_Settings weights)
+        public void InvokeCDIStrategy(MetricPercentiles clientPercentiles, linq.CDI_Settings weights)
         {
             _iCdiStrategy.InvokeCDIStrategy(clientPercentiles, weights);
         }

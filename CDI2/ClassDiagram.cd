@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="TeamSupport.CDI.DateRange" Collapsed="true">
-    <Position X="2.5" Y="3" Width="1.5" />
+    <Position X="2.5" Y="1.75" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
       <Compartment Name="Properties" Collapsed="true" />
@@ -13,7 +13,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="TeamSupport.CDI.TicketReader" Collapsed="true">
-    <Position X="0.5" Y="3" Width="1.5" />
+    <Position X="0.5" Y="1.75" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
@@ -29,7 +29,7 @@
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="TeamSupport.CDI.TicketJoin">
-    <Position X="2.5" Y="4.25" Width="1.75" />
+    <Position X="1.75" Y="4.25" Width="1.75" />
     <Compartments>
       <Compartment Name="Properties" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
@@ -40,23 +40,23 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="TeamSupport.CDI.IntervalData">
-    <Position X="8.25" Y="3.25" Width="2" />
+  <Class Name="TeamSupport.CDI.Metrics" Collapsed="true">
+    <Position X="8.5" Y="3.25" Width="2" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>EAQAAAAAAACAASBMACAAAAAAABCIAAAAEAAwAAEABgQ=</HashCode>
-      <FileName>IntervalData.cs</FileName>
+      <HashCode>EQQAAAAAAACAASAMACAAAAAAABCIAAAAEAAwAAEABgQ=</HashCode>
+      <FileName>Metrics.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TeamSupport.CDI.IntervalStrategy" Collapsed="true">
-    <Position X="5.25" Y="4.25" Width="1.5" />
+    <Position X="4.5" Y="4.25" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAAAAAAACAAAAAAAAAAAEgAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAACAAAAAAAAAAAEgAAAAAAAAAA=</HashCode>
       <FileName>IntervalStrategy.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -64,31 +64,30 @@
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="TeamSupport.CDI.CDIEventLog" Collapsed="true">
-    <Position X="14" Y="6" Width="1.5" />
+    <Position X="10.75" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAIAAAAIAAAAAAAAAIAAAAAAQEAAAA=</HashCode>
       <FileName>Utility\CDIEventLog.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="TeamSupport.CDI.IntervalPercentiles">
-    <Position X="13.75" Y="0.5" Width="1.75" />
+  <Class Name="TeamSupport.CDI.MetricPercentiles">
+    <Position X="6.5" Y="5.5" Width="1.75" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
     <TypeIdentifier>
       <HashCode>AAAAAAAACAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>IntervalPercentiles.cs</FileName>
+      <FileName>MetricPercentiles.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
       <Field Name="_percentiles" />
     </ShowAsCollectionAssociation>
   </Class>
-  <Class Name="TeamSupport.CDI.OrganizationAnalysis" Collapsed="true">
-    <Position X="5.25" Y="3" Width="1.75" />
+  <Class Name="TeamSupport.CDI.OrganizationAnalysis">
+    <Position X="5.25" Y="1.75" Width="1.75" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
-      <Compartment Name="Properties" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
       <HashCode>AAQAAEAAAEAAAAAFAICAACAAAAACAAAAAAABgAAAABA=</HashCode>
@@ -98,12 +97,9 @@
       <Field Name="_intervalStrategy" />
       <Property Name="_dateRange" />
     </ShowAsAssociation>
-    <ShowAsCollectionAssociation>
-      <Property Name="Intervals" />
-    </ShowAsCollectionAssociation>
   </Class>
   <Class Name="TeamSupport.CDI.Client" Collapsed="true">
-    <Position X="8" Y="1.75" Width="1.5" />
+    <Position X="8.5" Y="1.75" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
@@ -115,11 +111,10 @@
       <Field Name="_organizationAnalysis" />
       <Field Name="_iCdiStrategy" />
       <Property Name="NormalizedMetrics" />
-      <Property Name="RawMetrics" />
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.CDI.Customer" Collapsed="true">
-    <Position X="5.5" Y="0.5" Width="1.5" />
+    <Position X="8.5" Y="0.5" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
       <Compartment Name="Properties" Collapsed="true" />
@@ -155,50 +150,58 @@
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="TeamSupport.CDI.Percentile" Collapsed="true">
-    <Position X="14" Y="2.5" Width="1.5" />
+    <Position X="6.5" Y="7.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAACAAAAAAAAAAAAAAAAAAACBAAAAIAABAAAAA=</HashCode>
+      <HashCode>AAAAAAAACAAAAAAAAAAAAAAAAAAACBAAAAAAABAAAAA=</HashCode>
       <FileName>Utility\Percentile.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="TeamSupport.CDI.DateRangeEnumerator" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="3.75" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAABEAAAACAAAAAAAAAAAAAoAABQAAAAAA=</HashCode>
-      <FileName>Utility\DateRange.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
   <Class Name="TeamSupport.CDI.Statistics" Collapsed="true">
-    <Position X="11" Y="1.25" Width="1.5" />
+    <Position X="10.75" Y="4" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AIRAAEAACAQAAAAAAIAAAACAAAAAIISAAAAAAAAAAgA=</HashCode>
+      <HashCode>AAAAAAAAAAQAAAAAAIAAAAAABCAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Utility\Statistics.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="TeamSupport.CDI.CDI1Strategy" Collapsed="true">
-    <Position X="11.25" Y="3.25" Width="1.5" />
+  <Class Name="TeamSupport.CDI.CDI1Strategy">
+    <Position X="8.5" Y="4.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAIAAAAAEIAAAAAAgAAAAAAIIAAAAEAAAgEABAAA=</HashCode>
+      <HashCode>AAAAAIAAAAAEICAAAAAgAAAAAAIIAAAAEAAAgEABAAA=</HashCode>
       <FileName>CDI1Strategy.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_normalizedMetrics" />
+      <Field Name="_organizationAnalysis" />
+      <Field Name="_rawMetrics" />
+    </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
-  <Interface Name="TeamSupport.CDI.ICDIStrategy" Collapsed="true">
-    <Position X="11.25" Y="2" Width="1.5" />
+  <Class Name="TeamSupport.CDI.OptimalWeighting" Collapsed="true">
+    <Position X="10.75" Y="4.75" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAIAAAAAEIAAAAAAAAAAAAAAIAAAAAAAAAEAAAAA=</HashCode>
+      <HashCode>AIAAAEAACAAAAAAgAAAAAACAAAAAAICAAAAAIAAAAgA=</HashCode>
+      <FileName>OptimalWeighting.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="TeamSupport.CDI.ICDIStrategy" Collapsed="true">
+    <Position X="10.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAEICAAAAAAAAAAAAAIAAAAAAAAAEAAAAA=</HashCode>
       <FileName>OrganizationAnalysis.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Enum Name="TeamSupport.CDI.Metrics">
-    <Position X="14" Y="3.25" Width="1.5" />
+  <Enum Name="TeamSupport.CDI.EMetrics">
+    <Position X="4.5" Y="5.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAABAAAAQAAICAAAAAAAAAAAgAAAECAAAAAAASAAAA=</HashCode>
-      <FileName>IntervalData.cs</FileName>
+      <HashCode>AEAAAAAAAQAAIAAAAAAABAAAAgAAQACAAAAAAQgAAAA=</HashCode>
+      <FileName>Metrics.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Font Name="Segoe UI" Size="9" />

@@ -16,13 +16,13 @@ namespace TeamSupport.CDI
         SortedDictionary<double, int> _counts;
         SortedDictionary<double, int> _percentiles;
 
-        public Percentile(List<IntervalData> intervals, Func<IntervalData, double> getFunc)
+        public Percentile(List<Metrics> intervals, Func<Metrics, double> getFunc)
         {
             _intervalCount = intervals.Count();
             intervals.Sort((lhs, rhs) => getFunc(lhs).CompareTo(getFunc(rhs)));
             _counts = new SortedDictionary<double, int>();
 
-            foreach(IntervalData interval in intervals)
+            foreach(Metrics interval in intervals)
             {
                 double value = getFunc(interval);
                 if (_counts.ContainsKey(value))

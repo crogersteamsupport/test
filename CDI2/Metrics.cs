@@ -5,24 +5,23 @@ using System.Linq;
 
 namespace TeamSupport.CDI
 {
-    public enum Metrics
+    public enum EMetrics
     {
-        New,    // _newCount
-        Open,   // _openCount
-        DaysOpen,   // _medianDaysOpen
-        TotalTickets,   // _totalTicketsCreated
-        Closed, // _closedCount
-        DaysToClose,    // _medianDaysToClose
-        ActionCount,    // _averageActionCount
-        Severity,    // _averageSeverity
-        Sentiment
+        New30 = 0x1,    // _newCount
+        Open = 0x2,   // _openCount
+        DaysOpen = 0x4,   // _medianDaysOpen
+        TotalTickets = 0x8,   // _totalTicketsCreated
+        Closed30 = 0x10, // _closedCount
+        DaysToClose = 0x20,    // _medianDaysToClose
+        ActionCountClosed = 0x40,    // _averageActionCount
+        SeverityClosed = 0x80,    // _averageSeverity
+        SentimentClosed = 0x100
     };
-
 
     /// <summary>
     /// Keep the results for the analysis of closed tickets for the given time interval
     /// </summary>
-    public class IntervalData
+    public class Metrics
     {
         public DateTime _timeStamp; // date time for this data
 
@@ -42,9 +41,9 @@ namespace TeamSupport.CDI
 
         public int? CDI { get; set; }    // CDI !!
 
-        public IntervalData() { }
+        public Metrics() { }
 
-        public IntervalData(DateTime nextDay, HashSet<TicketJoin> openTickets, HashSet<TicketJoin> closedTickets, int ticketsCreated, int totalTicketsCreated)
+        public Metrics(DateTime nextDay, HashSet<TicketJoin> openTickets, HashSet<TicketJoin> closedTickets, int ticketsCreated, int totalTicketsCreated)
         {
             _timeStamp = nextDay;
             _newCount = ticketsCreated;
@@ -63,36 +62,36 @@ namespace TeamSupport.CDI
             }
         }
 
-        public double? Get(Metrics metric)
+        public double? GetAsCDIPercentile(EMetrics metric)
         {
             double? result = null;
             switch(metric)
             {
-                case Metrics.ActionCount:
+                case EMetrics.ActionCountClosed:
                     result = _averageActionCount;
                     break;
-                case Metrics.Closed:
+                case EMetrics.Closed30:
                     result = 100 - _closedCount;  // invert - high is good
                     break;
-                case Metrics.DaysOpen:
+                case EMetrics.DaysOpen:
                     result = _medianDaysOpen;
                     break;
-                case Metrics.DaysToClose:
+                case EMetrics.DaysToClose:
                     result = _medianDaysToClose;
                     break;
-                case Metrics.New:
+                case EMetrics.New30:
                     result = _newCount;
                     break;
-                case Metrics.Open:
+                case EMetrics.Open:
                     result = _openCount;
                     break;
-                case Metrics.Sentiment:
+                case EMetrics.SentimentClosed:
                     result = 100 - _averageSentimentScore;  // invert - high is good
                     break;
-                case Metrics.Severity:
+                case EMetrics.SeverityClosed:
                     result = 100 - _averageSeverity;    // invert - high is good
                     break;
-                case Metrics.TotalTickets:
+                case EMetrics.TotalTickets:
                     result = _totalTicketsCreated;
                     break;
             }
@@ -147,10 +146,10 @@ namespace TeamSupport.CDI
             CDIEventLog.WriteLine("Date\tNew\tOpen\tMedianDaysOpen\tClosed\tMedianDaysToClose\tAvgActions\tAvgSentiment\tAverageSeverity\tCDI");
         }
 
-        public static void Write(List<IntervalData> intervals)
+        public static void Write(List<Metrics> intervals)
         {
             WriteHeader();
-            foreach (IntervalData interval in intervals)
+            foreach (Metrics interval in intervals)
                 CDIEventLog.WriteLine(interval.ToString());
         }
 

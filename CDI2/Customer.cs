@@ -15,7 +15,7 @@ namespace TeamSupport.CDI
     {
         OrganizationAnalysis _organizationAnalysis;
         public HashSet<Client> _clients;
-        IntervalPercentiles _percentiles;
+        MetricPercentiles _percentiles;
         //ICDIStrategy _iCdiStrategy;
 
         public Customer(OrganizationAnalysis organizationAnalysis)
@@ -112,14 +112,14 @@ namespace TeamSupport.CDI
         public void InvokeCDIStrategy()
         {
             // calculate the percentiles for the client metrics
-            List<IntervalData> clientIntervals = new List<IntervalData>();
+            List<Metrics> clientIntervals = new List<Metrics>();
             foreach (Client client in _clients)
             {
-                IntervalData current = client.GetCDIIntervalData();
+                Metrics current = client.GetCDIIntervalData();
                 if(current != null)
                     clientIntervals.Add(current);
             }
-            _percentiles = new IntervalPercentiles(clientIntervals);
+            _percentiles = new MetricPercentiles(clientIntervals);
 
             // construct the customer strategy
             //_iCdiStrategy = new CustomerPercentileStrategy(clientIntervals, Callback);
@@ -134,16 +134,16 @@ namespace TeamSupport.CDI
         public void Write()
         {
             CDIEventLog.WriteLine("------------------------------------------");
-            List<IntervalData> raw = new List<IntervalData>();
+            List<Metrics> raw = new List<Metrics>();
             foreach (Client client in _clients)
                 raw.Add(client.RawMetrics);
-            IntervalData.Write(raw);
+            Metrics.Write(raw);
 
             CDIEventLog.WriteLine("------------------------------------------");
             raw.Clear();
             foreach (Client client in _clients)
                 raw.Add(client.NormalizedMetrics);
-            IntervalData.Write(raw);
+            Metrics.Write(raw);
 
             //IntervalData.WriteHeader();
             //foreach (Client client in _clients)
@@ -164,7 +164,7 @@ namespace TeamSupport.CDI
 
             CDIEventLog.Write("ClientID\tClient\tCreatedLast30\tTotalTicketsCreated\tCDI\tnew\ttotal\tCDI-2\t");
 
-            IntervalData.WriteHeader();
+            Metrics.WriteHeader();
             foreach (Client client in _clients)
                 client.WriteCdiByOrganization(_organizationAnalysis.Intervals[0]._timeStamp);
         }
