@@ -10,6 +10,10 @@ using System.Data.Linq;
 
 namespace TeamSupport.CDI.linq
 {
+    /// <summary> 
+    /// [dbo].[TicketSeverities] 
+    /// Assign a number to ticket severity (Priority/Severity 1 is the highest)
+    /// </summary>
     [Table(Name = "TicketSeverities")]
     class TicketSeverity
     {

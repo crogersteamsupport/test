@@ -10,6 +10,10 @@ using System.Data.Linq;
 
 namespace TeamSupport.CDI.linq
 {
+    /// <summary> 
+    /// [dbo].[Organizations] 
+    /// Customers and Clients
+    /// </summary>
     [Table(Name = "Organizations")]
     class Organization
     {

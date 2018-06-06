@@ -17,6 +17,10 @@ namespace TeamSupport.CDI.linq
     //and ts.isclosed = 0
     //and tt.name = 'issues'
 
+    /// <summary> 
+    /// [dbo].[TicketTypes] 
+    /// The types of tickets for an organization
+    /// </summary>
     [Table(Name = "TicketTypes")]
     class TicketType
     {

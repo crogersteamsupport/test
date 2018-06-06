@@ -7,6 +7,10 @@ using System.Data.Linq.Mapping;
 
 namespace TeamSupport.CDI.linq
 {
+    /// <summary> 
+    /// [dbo].[TicketSentiments] 
+    /// Sentiments rolled up into [0, 1000] where high is good and low is bad.  500 is neutral
+    /// </summary>
     [Table(Name = "TicketSentiments")]
     class TicketSentiment
     {

@@ -7,6 +7,9 @@ using System.Data.Linq.Mapping;
 
 namespace TeamSupport.CDI.linq
 {
+    /// <summary> 
+    /// [dbo].[Tickets] 
+    /// </summary>
     [Table(Name = "Tickets")]
     class Ticket : IComparable<Ticket>
     {

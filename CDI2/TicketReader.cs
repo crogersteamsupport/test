@@ -75,7 +75,7 @@ namespace TeamSupport.CDI
                     // define the tables we will reference in the query
                     // - each table class only contains the fields we care about
                     Table<Organization> organizationTable = db.GetTable<Organization>();
-                    Table<OrganizationTickets> organizationTicketsTable = db.GetTable<OrganizationTickets>();
+                    Table<OrganizationTicket> organizationTicketsTable = db.GetTable<OrganizationTicket>();
                     Table<Ticket> ticketsTable = db.GetTable<Ticket>();
                     Table<TicketStatus> ticketStatusesTable = db.GetTable<TicketStatus>();
                     Table<TicketType> ticketTypesTable = db.GetTable<TicketType>();
@@ -158,7 +158,7 @@ namespace TeamSupport.CDI
             // define the tables we will reference in the query
             // - each table class only contains the fields we care about
             Table<Organization> organizationTable = db.GetTable<Organization>();
-            Table<OrganizationTickets> organizationTicketsTable = db.GetTable<OrganizationTickets>();
+            Table<OrganizationTicket> organizationTicketsTable = db.GetTable<OrganizationTicket>();
             Table<Ticket> ticketsTable = db.GetTable<Ticket>();
             Table<TicketStatus> ticketStatusesTable = db.GetTable<TicketStatus>();
             Table<TicketType> ticketTypesTable = db.GetTable<TicketType>();

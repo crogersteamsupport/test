@@ -8,17 +8,18 @@ namespace TeamSupport.CDI
 {
     class OptimalWeighting
     {
-        int _organizationID;
+        Customer _customer;
         HashSet<Client> _clients;
         double?[][] _normalizedIntervals;
         double[] _cdi;
         MetricPercentiles _percentiles;
+        linq.CDI_Settings _weights;
 
         int MetricCount = Enum.GetValues(typeof(EMetrics)).Length;
 
         public OptimalWeighting(Customer customer)
         {
-            _organizationID = customer.OrganizationID;
+            _customer = customer;
             _clients = customer._clients;
             _normalizedIntervals = new double?[MetricCount][];
             for (int i = 0; i < MetricCount; ++i)
@@ -64,13 +65,13 @@ namespace TeamSupport.CDI
             int MaxMask = ((int)EMetrics.SentimentClosed) << 1;
             for (int mask = 1; mask < MaxMask; ++mask)
             {
-                linq.CDI_Settings weights = new linq.CDI_Settings();
-                weights.Set(mask);
+                _weights = new linq.CDI_Settings();
+                _weights.Set(mask);
 
                 int i = 0;
                 foreach (Client client in _clients)
                 {
-                    client.InvokeCDIStrategy(_percentiles, weights);
+                    client.InvokeCDIStrategy(_percentiles, _weights);
                     _cdi[i++] = client._iCdiStrategy.CDI.Value;
                 }
 
@@ -100,7 +101,7 @@ namespace TeamSupport.CDI
                 CDIEventLog.WriteLine("OrganizationID\tMetrics\tSumR^2\tNew30\tOpen\tDaysOpen\tTotalTickets\tClosed30\tDaysToClose\tActionCount\tSeverity\tSentiment");
                 _writeHeader = false;
             }
-            CDIEventLog.WriteLine("{0}\t{1}\t{2:0.00}{3}", _organizationID, Convert.ToString(maxCombination, 2), maxCorrelation, builder.ToString());
+            CDIEventLog.WriteLine("{0}\t{1}\t{2:0.00}{3}", _customer.OrganizationID, Convert.ToString(maxCombination, 2), maxCorrelation, builder.ToString());
         }
     }
 }

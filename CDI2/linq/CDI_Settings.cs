@@ -7,6 +7,10 @@ using System.Data.Linq.Mapping;
 
 namespace TeamSupport.CDI.linq
 {
+    /// <summary> 
+    /// [dbo].[CDI_Settings] 
+    /// Weights for CDI calculation
+    /// </summary>
     [Table(Name = "CDI_Settings")]
     public class CDI_Settings
     {

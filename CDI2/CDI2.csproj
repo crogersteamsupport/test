@@ -70,7 +70,7 @@
     <Compile Include="linq\CDI_Settings.cs" />
     <Compile Include="linq\CustDistHistory.cs" />
     <Compile Include="linq\Organization.cs" />
-    <Compile Include="linq\OrganizationTickets.cs" />
+    <Compile Include="linq\OrganizationTicket.cs" />
     <Compile Include="linq\TicketSeverity.cs" />
     <Compile Include="OptimalWeighting.cs" />
     <Compile Include="Utility\DateRange.cs" />

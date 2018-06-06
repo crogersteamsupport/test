@@ -7,6 +7,10 @@ using System.Data.Linq.Mapping;
 
 namespace TeamSupport.CDI.linq
 {
+    /// <summary> 
+    /// [dbo].[Actions] 
+    /// Actions on a Ticket
+    /// </summary>
     [Table(Name = "Actions")]
     class Action
     {

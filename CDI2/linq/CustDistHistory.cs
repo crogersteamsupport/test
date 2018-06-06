@@ -7,6 +7,10 @@ using System.Data.Linq.Mapping;
 
 namespace TeamSupport.CDI.linq
 {
+    /// <summary> 
+    /// [dbo].[CustDistHistory] 
+    /// Last 10 days of CDI data for trend detection
+    /// </summary>
     [Table(Name = "CustDistHistory")]
     public class CustDistHistory
     {
