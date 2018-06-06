@@ -123,7 +123,7 @@ IF EXISTS(SELECT * FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@Set
 					command.Parameters.AddWithValue("@SettingKey", key);
 					command.Parameters.AddWithValue("@SettingValue", value);
                     command.Parameters.AddWithValue("@Category", category);
-                    
+
 
                     command.ExecuteNonQuery();
 				}
@@ -131,6 +131,29 @@ IF EXISTS(SELECT * FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@Set
 			}
 		}
 
-        //TODO:  Add read category method
+        public static string PullSettings(LoginUser loginUser, int userID) {
+            try {
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString)) {
+                    using (SqlCommand command = new SqlCommand()) {
+                        command.Connection  = connection;
+                        command.CommandType = CommandType.Text;
+                        command.CommandText = "SELECT * FROM UserSettings WHERE UserID = @UserID FOR JSON PATH, ROOT('userSettings')";
+                        command.Parameters.AddWithValue("@UserID", userID);
+                        connection.Open();
+                        SqlDataReader reader = command.ExecuteReader();
+                        if (reader.HasRows && reader.Read()) {
+                            return reader.GetValue(0).ToString();
+                        } else {
+                            return "nothing";
+                        }
+                    }
+                }
+            } catch (SqlException e) {
+                return "negative";
+            } catch (Exception e) {
+                return "negative";
+            }
+        }
+
 	}
 }
