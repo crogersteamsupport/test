@@ -137,7 +137,7 @@ IF EXISTS(SELECT * FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@Set
                     using (SqlCommand command = new SqlCommand()) {
                         command.Connection  = connection;
                         command.CommandType = CommandType.Text;
-                        command.CommandText = "SELECT * FROM UserSettings WHERE UserID = @UserID FOR JSON PATH, ROOT('userSettings')";
+                        command.CommandText = "SELECT * FROM UserSettings WHERE UserID = @UserID AND Category = 'notification' FOR JSON PATH, ROOT('userSettings')";
                         command.Parameters.AddWithValue("@UserID", userID);
                         connection.Open();
                         SqlDataReader reader = command.ExecuteReader();

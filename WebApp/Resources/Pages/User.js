@@ -1,4 +1,5 @@
 var userPage = null;
+var testing = null;
 $(document).ready(function() {
     userPage = new UserPage();
     userPage.refresh();
@@ -148,7 +149,7 @@ UserPage = function() {
         $('#userAutoSubscribe').text((user.DoNotAutoSubscribe == true ? 'Yes' : 'No'));
         $('#userGroupNotify').text((user.ReceiveAllGroupNotifications == true ? 'Yes' : 'No'));
         $('#userUnassignedGroupNotify').text((user.ReceiveUnassignedGroupEmails == true ? 'Yes' : 'No'));
-
+        $('#userEmailAfterHours').text((user.OnlyEmailAfterHours == true ? 'Yes' : 'No'));
         $('#userDateFormat').text(user.CultureDisplay);
         $('#userSysAdmin').text((user.IsSystemAdmin == true ? 'Yes' : 'No'));
         $('#chatUser').text((user.IsChatUser == true ? 'Yes' : 'No'));
@@ -168,6 +169,15 @@ UserPage = function() {
 
         window.parent.parent.Ts.Services.Users.PullSettings(userID, function(r) {
             console.log(r);
+            if (r != 'negative' && r != 'nothing') {
+                var settings = JSON.parse(r);
+                $('#notifications-applause').text((r.applause == true ? 'Yes' : 'No'));
+                $('#notifications-assignment').text((r.assignment == true ? 'Yes' : 'No'));
+                $('#notifications-modification').text((r.modification == true ? 'Yes' : 'No'));
+                $('#notifications-sla').text((r.sla == true ? 'Yes' : 'No'));
+                $('#notifications-tasks').text((r.tasks == true ? 'Yes' : 'No'));
+            }
+
         });
 
         $('#userWebsite').parent().parent().hover(function(e) {
