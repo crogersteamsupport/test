@@ -19,8 +19,6 @@ $(document).on('click', 'a.setting', function(e) {
     });
 });
 
-
-
 function onShow() {
     userPage.refresh();
 };
