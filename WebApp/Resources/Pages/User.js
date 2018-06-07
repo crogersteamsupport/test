@@ -5,6 +5,22 @@ $(document).ready(function() {
     userPage.refresh();
 });
 
+$(document).on('click', 'a.setting', function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    alert('success');
+    console.log('success');
+    var option = $(this);
+    var key = option.attr('setting');
+    var value = (option.val() == 'Yes') ? 0 : 1;
+    var category = option.attr('category');
+    window.parent.parent.Ts.Services.Users.UpdateSetting(key, value, category, function(r) {
+        console.log(r);
+    });
+});
+
+
+
 function onShow() {
     userPage.refresh();
 };
@@ -177,7 +193,6 @@ UserPage = function() {
                 $('#notifications-sla').text((r.sla == true ? 'Yes' : 'No'));
                 $('#notifications-tasks').text((r.tasks == true ? 'Yes' : 'No'));
             }
-
         });
 
         $('#userWebsite').parent().parent().hover(function(e) {

@@ -155,7 +155,7 @@ IF EXISTS(SELECT * FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@Set
             }
         }
 
-        public static string UpdateSetting(LoginUser loginUser, int userID, string key, string value) {
+        public static string UpdateSetting(LoginUser loginUser, int userID, string key, string value, string category = "general") {
             try {
                 using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString)) {
                     using (SqlCommand command = new SqlCommand()) {
@@ -167,9 +167,9 @@ IF EXISTS(SELECT * FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@Set
                         command.CommandText += "COMMIT TRAN";
                         command.CommandType = CommandType.Text;
                         command.Parameters.AddWithValue("@UserID", loginUser.UserID);
-                        command.Parameters.AddWithValue("@ReceiverID", receiverID);
-                        command.Parameters.AddWithValue("@ReferenceID", actionID);
-                        command.Parameters.AddWithValue("@ReactionValue", value);
+                        command.Parameters.AddWithValue("@key", key);
+                        command.Parameters.AddWithValue("@value", value);
+                        command.Parameters.AddWithValue("@category", category);
                         command.Parameters.AddWithValue("@DateTime", DateTime.UtcNow);
                         connection.Open();
                         Int32 result = command.ExecuteNonQuery();
