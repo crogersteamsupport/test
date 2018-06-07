@@ -3537,10 +3537,16 @@ var appendCustomEdit = function (field, element) {
     var div = $('<div>')
     .addClass('col-xs-8')
     .appendTo(element);
+	var cssClass = 'form-control-static editable';
+	var pattern = /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
+	var isUrl = false;
+
+	//Check the value is url (valid) and if it does not include a script tag
+	if (pattern.test(field.Value) && field.Value.indexOf('<script>') < 0) {
+		isUrl = true;
+	}
 
     var result = $('<p>')
-      .text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : $("<div>").html(getUrls(field.Value)).text()))
-      .addClass('form-control-static editable')
       .appendTo(div)
       .click(function (e) {
           if ($(this).has('a') && !$(this).hasClass('editable')) {
@@ -3605,6 +3611,18 @@ var appendCustomEdit = function (field, element) {
               $('#customerEdit').addClass("disabled");
           }
       });
+
+	//If it is a URL then add the class to it and display it as it is, if not then display the value as text
+	if (isUrl) {
+		cssClass += ' link';
+		result
+			.html((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : getUrls(field.Value)))
+			.addClass(cssClass);
+	} else {
+		result.text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : $("<div>").html(getUrls(field.Value)).text()))
+			.addClass(cssClass);
+	}
+
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
         result.parent().addClass('has-error');
     }
