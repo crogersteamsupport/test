@@ -435,8 +435,6 @@ namespace TSWebServices
 
         }
 
-
-
         [WebMethod]
         public string SaveUserName(int userID, string firstName, string middleName, string lastName)
         {
@@ -1293,7 +1291,7 @@ namespace TSWebServices
           return users.GetUserProxies();
         }
 
-      [WebMethod]
+        [WebMethod]
         public UserProxy AdminGetUser(int userID)
         {
           if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return null;
@@ -2297,5 +2295,18 @@ namespace TSWebServices
           [DataMember]
           public int PageID { get; set; }
       }
+
+        [WebMethod]
+        public string PullSettings(int userID) {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            return TeamSupport.Data.UserSettings.PullSettings(loginUser, userID);
+        }
+
+        [WebMethod]
+        public string UpdateSetting(int userID, string key, string value) {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            return TeamSupport.Data.UserSettings.UpdateSetting(loginUser, userID, key, value);
+        }
+
     }
 }

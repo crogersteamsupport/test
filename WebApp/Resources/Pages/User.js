@@ -1,15 +1,25 @@
-﻿ /// <reference path="ts/ts.js" />
-/// <reference path="ts/window.parent.parent.Ts.Services.js" />
-/// <reference path="ts/ts.system.js" />
-/// <reference path="ts/ts.utils.js" />
-/// <reference path="ts/ts.pages.main.js" />
-/// <reference path="~/Default.aspx" />
-
 var userPage = null;
+var testing = null;
 $(document).ready(function() {
     userPage = new UserPage();
     userPage.refresh();
 });
+
+$(document).on('click', 'a.setting', function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    alert('success');
+    console.log('success');
+    var option = $(this);
+    var key = option.attr('setting');
+    var value = (option.val() == 'Yes') ? 0 : 1;
+    var category = option.attr('category');
+    window.parent.parent.Ts.Services.Users.UpdateSetting(key, value, category, function(r) {
+        console.log(r);
+    });
+});
+
+
 
 function onShow() {
     userPage.refresh();
@@ -30,7 +40,6 @@ UserPage = function() {
     var _user = null;
 
     $('button').button();
-
     $('a').addClass('ui-state-default ts-link');
 
     $('.ts-section').hover(function(e) {
@@ -143,12 +152,10 @@ UserPage = function() {
             $('#divProductFamiliesContainer').toggle(user.ProductFamiliesRights == 1);
             window.parent.parent.Ts.Services.Users.GetUserProductFamilies(_user.UserID, appendProductFamilies);
         }
-
         $('#userRightsAllTicketCustomers').html((user.AllowAnyTicketCustomer == true ? 'Yes' : 'No'));
         if (user.TicketRights == 3) {
             $('#userRightsAllTicketCustomers').closest('div').show();
         }
-
         $('#divCustomerContainer').toggle(user.TicketRights == 3 && isSysAdmin == true);
         $('#userLastLogin').text(user.LastLogin.toDateString());
         $('#userActive').text((user.IsActive == true ? 'Yes' : 'No'));
@@ -169,13 +176,23 @@ UserPage = function() {
         if (user.LinkedIn == '') {
             $('#userWebsite').html('None');
         } else {
-            $('#userWebsite').html(user.LinkedIn);
-            $('#userWebsite').attr("href", user.LinkedIn);
-            $('#userWebsite').attr("target", "_blank");
+            $('#userWebsite').attr("href", user.LinkedIn).attr("target", "_blank").html(user.LinkedIn);
         }
 
         window.parent.parent.Ts.Services.Users.GetCustomValues(userID, function(customValues) {
             appendCustomValues(customValues);
+        });
+
+        window.parent.parent.Ts.Services.Users.PullSettings(userID, function(r) {
+            console.log(r);
+            if (r != 'negative' && r != 'nothing') {
+                var settings = JSON.parse(r);
+                $('#notifications-applause').text((r.applause == true ? 'Yes' : 'No'));
+                $('#notifications-assignment').text((r.assignment == true ? 'Yes' : 'No'));
+                $('#notifications-modification').text((r.modification == true ? 'Yes' : 'No'));
+                $('#notifications-sla').text((r.sla == true ? 'Yes' : 'No'));
+                $('#notifications-tasks').text((r.tasks == true ? 'Yes' : 'No'));
+            }
         });
 
         $('#userWebsite').parent().parent().hover(function(e) {
@@ -217,14 +234,12 @@ UserPage = function() {
         window.parent.parent.Ts.Services.Users.GetUserPhoto(userID, function(att) {
             $('#userPhoto').attr("src", att);
         });
-
         window.parent.parent.Ts.Services.Users.GetUserSignature(userID, function(signature) {
             if (signature == '') {
                 signature = 'None';
             }
             $('#userSignature').html(signature);
         });
-
         window.parent.parent.Ts.Services.Users.GetUserCustomers(_user.UserID, appendCustomers);
     });
 
@@ -237,7 +252,7 @@ UserPage = function() {
         var types = window.parent.parent.Ts.Cache.getTicketTypes();
         for (var i = 0; i < types.length; i++) {
             if (types[i].IsActive) {
-                var input = $('<input>').attr('type','checkbox').attr('id', 'mniTicketType_' + types[i].TicketTypeID);
+                var input = $('<input>').attr('type', 'checkbox').attr('id', 'mniTicketType_' + types[i].TicketTypeID);
                 var label = $('<label>').addClass('checkbox').text(types[i].Name).append(input);
                 label.appendTo('#ulTicketTypes');
             }
@@ -448,18 +463,18 @@ UserPage = function() {
                 $(this).closest('div').remove();
                 header.show().find('img').show();
                 window.parent.parent.Ts.Services.Users.SaveUserInfo(_user.UserID, $(this).prev().val(), function(result) {
-                    window.parent.parent.Ts.System.logAction('User Info - User Info Changed');
-                    header.show().find('img').hide().next().show().delay(800).fadeOut(400);
-                    if (result != '') {
-                        $('#userInfo').html(result.replace(/\n\r?/g, '<br />'));
-                    } else {
-                        $('#userInfo').html('No Additional Information');
+                        window.parent.parent.Ts.System.logAction('User Info - User Info Changed');
+                        header.show().find('img').hide().next().show().delay(800).fadeOut(400);
+                        if (result != '') {
+                            $('#userInfo').html(result.replace(/\n\r?/g, '<br />'));
+                        } else {
+                            $('#userInfo').html('No Additional Information');
                         }
-                },
-                function(error) {
-                    header.show().find('img').hide();
-                    alert('There was an error saving the users information.');
-                });
+                    },
+                    function(error) {
+                        header.show().find('img').hide();
+                        alert('There was an error saving the users information.');
+                    });
             }).appendTo(container)
 
             $('<span>').addClass('fa fa-window-close').click(function(e) {
@@ -507,18 +522,18 @@ UserPage = function() {
                 $(this).closest('div').remove();
                 header.show().find('img').show();
                 window.parent.parent.Ts.Services.Users.SaveUserEmail(_user.UserID, $(this).prev().val(), function(result) {
-                    header.show().find('img').hide().next().show().delay(800).fadeOut(400);
-                    if (result.substring(0, 6) == "_error") {
-                        alert("The email you have specified is invalid.  Please choose another email.");
-                    } else {
-                        $('#userEmail').html('<a href="mailto:' + result + '">' + result + '</a>');
-                        window.parent.parent.Ts.System.logAction('User Info - User Email Changed');
-                    }
-                },
-                function(error) {
-                    header.show().find('img').hide();
-                    alert('There was an error saving the email.');
-                });
+                        header.show().find('img').hide().next().show().delay(800).fadeOut(400);
+                        if (result.substring(0, 6) == "_error") {
+                            alert("The email you have specified is invalid.  Please choose another email.");
+                        } else {
+                            $('#userEmail').html('<a href="mailto:' + result + '">' + result + '</a>');
+                            window.parent.parent.Ts.System.logAction('User Info - User Email Changed');
+                        }
+                    },
+                    function(error) {
+                        header.show().find('img').hide();
+                        alert('There was an error saving the email.');
+                    });
             }).appendTo(container)
 
             $('<span>').addClass('fa fa-window-close').click(function(e) {
