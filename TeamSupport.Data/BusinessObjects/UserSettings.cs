@@ -155,5 +155,32 @@ IF EXISTS(SELECT * FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@Set
             }
         }
 
+        public static string UpdateSetting(LoginUser loginUser, int userID, string key, string value) {
+            try {
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString)) {
+                    using (SqlCommand command = new SqlCommand()) {
+                        command.Connection   = connection;
+                        command.CommandText  = "BEGIN TRAN ";
+                        command.CommandText += "IF EXISTS (SELECT * FROM dbo.UserSettings WHERE SettingKey = @key AND UserID = @UserID) ";
+                        command.CommandText += "BEGIN UPDATE dbo.UserSettings SET SettingValue = @value, DateModified = @DateTime WHERE UserID = @UserID AND ModifierID = @UserID AND DateModified = @ReferenceID END ";
+                        command.CommandText += "ELSE BEGIN INSERT dbo.UserSettings (UserID, SettingKey, SettingValue, DateCreated, CreatorID, Category) VALUES (@UserID, @key, @value, @DateTime, @UserID, @Category) END ";
+                        command.CommandText += "COMMIT TRAN";
+                        command.CommandType = CommandType.Text;
+                        command.Parameters.AddWithValue("@UserID", loginUser.UserID);
+                        command.Parameters.AddWithValue("@ReceiverID", receiverID);
+                        command.Parameters.AddWithValue("@ReferenceID", actionID);
+                        command.Parameters.AddWithValue("@ReactionValue", value);
+                        command.Parameters.AddWithValue("@DateTime", DateTime.UtcNow);
+                        connection.Open();
+                        Int32 result = command.ExecuteNonQuery();
+                        return (result > 0) ? "positive" : "negative";
+                    }
+                }
+            } catch (SqlException e) {
+                return "negative";
+            } catch (Exception e) {
+                return "negative";
+            }
+        }
 	}
 }

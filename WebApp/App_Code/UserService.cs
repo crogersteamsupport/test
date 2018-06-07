@@ -2297,13 +2297,16 @@ namespace TSWebServices
       }
 
         [WebMethod]
-        public string PullSettings(int userID)
-        {
+        public string PullSettings(int userID) {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            // TeamSupport.Data.UserSettings userSettings = new UserSettings(loginUser);
             return TeamSupport.Data.UserSettings.PullSettings(loginUser, userID);
         }
 
+        [WebMethod]
+        public string UpdateSetting(int userID, string key, string value) {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            return TeamSupport.Data.UserSettings.UpdateSetting(loginUser, userID, key, value);
+        }
 
     }
 }
