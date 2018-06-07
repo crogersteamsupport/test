@@ -2303,9 +2303,9 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string UpdateSetting(int userID, string key, string value) {
+        public string UpdateSetting(string key, string value, string category = "general") {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            return TeamSupport.Data.UserSettings.UpdateSetting(loginUser, userID, key, value);
+            return TeamSupport.Data.UserSettings.UpdateSetting(loginUser, key, value, category);
         }
 
     }

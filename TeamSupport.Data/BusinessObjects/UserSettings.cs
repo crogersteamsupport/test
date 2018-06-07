@@ -137,7 +137,7 @@ IF EXISTS(SELECT * FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@Set
                     using (SqlCommand command = new SqlCommand()) {
                         command.Connection  = connection;
                         command.CommandType = CommandType.Text;
-                        command.CommandText = "SELECT * FROM UserSettings WHERE UserID = @UserID AND Category = 'notification' FOR JSON PATH, ROOT('userSettings')";
+                        command.CommandText = "SELECT SettingKey, SettingValue, Category FROM UserSettings WHERE UserID = @UserID AND Category = 'notification' FOR JSON PATH, ROOT('userSettings')";
                         command.Parameters.AddWithValue("@UserID", userID);
                         connection.Open();
                         SqlDataReader reader = command.ExecuteReader();
@@ -155,14 +155,14 @@ IF EXISTS(SELECT * FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@Set
             }
         }
 
-        public static string UpdateSetting(LoginUser loginUser, int userID, string key, string value, string category = "general") {
+        public static string UpdateSetting(LoginUser loginUser, string key, string value, string category = "general") {
             try {
                 using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString)) {
                     using (SqlCommand command = new SqlCommand()) {
                         command.Connection   = connection;
                         command.CommandText  = "BEGIN TRAN ";
                         command.CommandText += "IF EXISTS (SELECT * FROM dbo.UserSettings WHERE SettingKey = @key AND UserID = @UserID) ";
-                        command.CommandText += "BEGIN UPDATE dbo.UserSettings SET SettingValue = @value, DateModified = @DateTime WHERE UserID = @UserID AND ModifierID = @UserID AND DateModified = @ReferenceID END ";
+                        command.CommandText += "BEGIN UPDATE dbo.UserSettings SET SettingValue = @value, DateModified = @DateTime WHERE UserID = @UserID AND SettingKey = @key END ";
                         command.CommandText += "ELSE BEGIN INSERT dbo.UserSettings (UserID, SettingKey, SettingValue, DateCreated, CreatorID, Category) VALUES (@UserID, @key, @value, @DateTime, @UserID, @Category) END ";
                         command.CommandText += "COMMIT TRAN";
                         command.CommandType = CommandType.Text;
@@ -177,9 +177,9 @@ IF EXISTS(SELECT * FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@Set
                     }
                 }
             } catch (SqlException e) {
-                return "negative";
+                return "fault: " + e.Message;
             } catch (Exception e) {
-                return "negative";
+                return "fault: " + e.Message;
             }
         }
 	}
