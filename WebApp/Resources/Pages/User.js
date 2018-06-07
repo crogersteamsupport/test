@@ -8,14 +8,16 @@ $(document).ready(function() {
 $(document).on('click', 'a.setting', function(e) {
     e.stopPropagation();
     e.preventDefault();
-    alert('success');
-    console.log('success');
     var option = $(this);
     var key = option.attr('setting');
-    var value = (option.val() == 'Yes') ? 0 : 1;
+    var value = (option.text() == 'Yes') ? 1 : 0;
+    var opposite = (value == 1) ? 0 : 1;
     var category = option.attr('category');
-    window.parent.parent.Ts.Services.Users.UpdateSetting(key, value, category, function(r) {
-        console.log(r);
+    window.parent.parent.Ts.Services.Users.UpdateSetting(key, opposite, category, function(r) {
+        if (r === 'positive') {
+            var replacement = (value == 1) ? 'No' : 'Yes';
+            option.text(replacement);
+        }
     });
 });
 
@@ -182,14 +184,13 @@ UserPage = function() {
         });
 
         window.parent.parent.Ts.Services.Users.PullSettings(userID, function(r) {
-            console.log(r);
             if (r != 'negative' && r != 'nothing') {
-                var settings = JSON.parse(r);
-                $('#notifications-applause').text((r.applause == true ? 'Yes' : 'No'));
-                $('#notifications-assignment').text((r.assignment == true ? 'Yes' : 'No'));
-                $('#notifications-modification').text((r.modification == true ? 'Yes' : 'No'));
-                $('#notifications-sla').text((r.sla == true ? 'Yes' : 'No'));
-                $('#notifications-tasks').text((r.tasks == true ? 'Yes' : 'No'));
+                var data = JSON.parse(r);
+                $.each(data.userSettings, function(trash, setting) {
+                    var target = '[category=' + setting.Category + '][setting=' + setting.SettingKey + ']';
+                    var text = (setting.SettingValue == 1) ? 'Yes' : 'No';
+                    $(target).text(text);
+                });
             }
         });
 
