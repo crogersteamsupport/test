@@ -1,835 +1,495 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomFieldCategory
 
 (
-  @AttachmentID int
+  @CustomFieldCategoryID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [AttachmentID],
+    [CustomFieldCategoryID],
     [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
+    [Category],
+    [Position],
     [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID],
-    [ProductFamilyID],
-    [SentToTFS],
-    [SentToSnow],
-    [FilePathID]
-  FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+    [AuxID],
+    [ProductFamilyID]
+  FROM [dbo].[CustomFieldCategories]
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomFieldCategory
 
 (
   @OrganizationID int,
-  @FileName nvarchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path nvarchar(1000),
-  @Description varchar(2000),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
+  @Category varchar(250),
+  @Position int,
   @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
+  @AuxID int,
   @ProductFamilyID int,
-  @SentToTFS bit,
-  @SentToSnow bit,
-  @FilePathID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Attachments]
+  INSERT INTO [dbo].[CustomFieldCategories]
   (
     [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
+    [Category],
+    [Position],
     [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID],
-    [ProductFamilyID],
-    [SentToTFS],
-    [SentToSnow],
-    [FilePathID])
+    [AuxID],
+    [ProductFamilyID])
   VALUES (
     @OrganizationID,
-    @FileName,
-    @FileType,
-    @FileSize,
-    @Path,
-    @Description,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
+    @Category,
+    @Position,
     @RefType,
-    @RefID,
-    @SentToJira,
-    @AttachmentGUID,
-    @ProductFamilyID,
-    @SentToTFS,
-    @SentToSnow,
-    @FilePathID)
+    @AuxID,
+    @ProductFamilyID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomFieldCategory
 
 (
-  @AttachmentID int,
+  @CustomFieldCategoryID int,
   @OrganizationID int,
-  @FileName nvarchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path nvarchar(1000),
-  @Description varchar(2000),
-  @DateModified datetime,
-  @ModifierID int,
+  @Category varchar(250),
+  @Position int,
   @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
-  @ProductFamilyID int,
-  @SentToTFS bit,
-  @SentToSnow bit,
-  @FilePathID int
+  @AuxID int,
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Attachments]
+  UPDATE [dbo].[CustomFieldCategories]
   SET
     [OrganizationID] = @OrganizationID,
-    [FileName] = @FileName,
-    [FileType] = @FileType,
-    [FileSize] = @FileSize,
-    [Path] = @Path,
-    [Description] = @Description,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
+    [Category] = @Category,
+    [Position] = @Position,
     [RefType] = @RefType,
-    [RefID] = @RefID,
-    [SentToJira] = @SentToJira,
-    [AttachmentGUID] = @AttachmentGUID,
-    [ProductFamilyID] = @ProductFamilyID,
-    [SentToTFS] = @SentToTFS,
-    [SentToSnow] = @SentToSnow,
-    [FilePathID] = @FilePathID
-  WHERE ([AttachmentID] = @AttachmentID)
+    [AuxID] = @AuxID,
+    [ProductFamilyID] = @ProductFamilyID
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomFieldCategory
 
 (
-  @AttachmentID int
+  @CustomFieldCategoryID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+  DELETE FROM [dbo].[CustomFieldCategories]
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomFieldCategory
 
 (
-  @AttachmentID int
+  @CustomFieldCategoryID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [AttachmentID],
+    [CustomFieldCategoryID],
     [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
+    [Category],
+    [Position],
     [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID],
-    [ProductFamilyID],
-    [SentToTFS],
-    [SentToSnow],
-    [FilePathID]
-  FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+    [AuxID],
+    [ProductFamilyID]
+  FROM [dbo].[CustomFieldCategories]
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomFieldCategory
 
 (
   @OrganizationID int,
-  @FileName nvarchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path nvarchar(1000),
-  @Description varchar(2000),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
+  @Category varchar(250),
+  @Position int,
   @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
+  @AuxID int,
   @ProductFamilyID int,
-  @SentToTFS bit,
-  @SentToSnow bit,
-  @FilePathID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Attachments]
+  INSERT INTO [dbo].[CustomFieldCategories]
   (
     [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
+    [Category],
+    [Position],
     [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID],
-    [ProductFamilyID],
-    [SentToTFS],
-    [SentToSnow],
-    [FilePathID])
+    [AuxID],
+    [ProductFamilyID])
   VALUES (
     @OrganizationID,
-    @FileName,
-    @FileType,
-    @FileSize,
-    @Path,
-    @Description,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
+    @Category,
+    @Position,
     @RefType,
-    @RefID,
-    @SentToJira,
-    @AttachmentGUID,
-    @ProductFamilyID,
-    @SentToTFS,
-    @SentToSnow,
-    @FilePathID)
+    @AuxID,
+    @ProductFamilyID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomFieldCategory
 
 (
-  @AttachmentID int,
+  @CustomFieldCategoryID int,
   @OrganizationID int,
-  @FileName nvarchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path nvarchar(1000),
-  @Description varchar(2000),
-  @DateModified datetime,
-  @ModifierID int,
+  @Category varchar(250),
+  @Position int,
   @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
-  @ProductFamilyID int,
-  @SentToTFS bit,
-  @SentToSnow bit,
-  @FilePathID int
+  @AuxID int,
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Attachments]
+  UPDATE [dbo].[CustomFieldCategories]
   SET
     [OrganizationID] = @OrganizationID,
-    [FileName] = @FileName,
-    [FileType] = @FileType,
-    [FileSize] = @FileSize,
-    [Path] = @Path,
-    [Description] = @Description,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
+    [Category] = @Category,
+    [Position] = @Position,
     [RefType] = @RefType,
-    [RefID] = @RefID,
-    [SentToJira] = @SentToJira,
-    [AttachmentGUID] = @AttachmentGUID,
-    [ProductFamilyID] = @ProductFamilyID,
-    [SentToTFS] = @SentToTFS,
-    [SentToSnow] = @SentToSnow,
-    [FilePathID] = @FilePathID
-  WHERE ([AttachmentID] = @AttachmentID)
+    [AuxID] = @AuxID,
+    [ProductFamilyID] = @ProductFamilyID
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomFieldCategory
 
 (
-  @AttachmentID int
+  @CustomFieldCategoryID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+  DELETE FROM [dbo].[CustomFieldCategories]
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomFieldCategory
 
 (
-  @AttachmentID int
+  @CustomFieldCategoryID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [AttachmentID],
+    [CustomFieldCategoryID],
     [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
+    [Category],
+    [Position],
     [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID],
-    [ProductFamilyID],
-    [SentToTFS],
-    [SentToSnow],
-    [FilePathID]
-  FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+    [AuxID],
+    [ProductFamilyID]
+  FROM [dbo].[CustomFieldCategories]
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomFieldCategory
 
 (
   @OrganizationID int,
-  @FileName nvarchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path nvarchar(1000),
-  @Description varchar(2000),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
+  @Category varchar(250),
+  @Position int,
   @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
+  @AuxID int,
   @ProductFamilyID int,
-  @SentToTFS bit,
-  @SentToSnow bit,
-  @FilePathID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Attachments]
+  INSERT INTO [dbo].[CustomFieldCategories]
   (
     [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
+    [Category],
+    [Position],
     [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID],
-    [ProductFamilyID],
-    [SentToTFS],
-    [SentToSnow],
-    [FilePathID])
+    [AuxID],
+    [ProductFamilyID])
   VALUES (
     @OrganizationID,
-    @FileName,
-    @FileType,
-    @FileSize,
-    @Path,
-    @Description,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
+    @Category,
+    @Position,
     @RefType,
-    @RefID,
-    @SentToJira,
-    @AttachmentGUID,
-    @ProductFamilyID,
-    @SentToTFS,
-    @SentToSnow,
-    @FilePathID)
+    @AuxID,
+    @ProductFamilyID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomFieldCategory
 
 (
-  @AttachmentID int,
+  @CustomFieldCategoryID int,
   @OrganizationID int,
-  @FileName nvarchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path nvarchar(1000),
-  @Description varchar(2000),
-  @DateModified datetime,
-  @ModifierID int,
+  @Category varchar(250),
+  @Position int,
   @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
-  @ProductFamilyID int,
-  @SentToTFS bit,
-  @SentToSnow bit,
-  @FilePathID int
+  @AuxID int,
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Attachments]
+  UPDATE [dbo].[CustomFieldCategories]
   SET
     [OrganizationID] = @OrganizationID,
-    [FileName] = @FileName,
-    [FileType] = @FileType,
-    [FileSize] = @FileSize,
-    [Path] = @Path,
-    [Description] = @Description,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
+    [Category] = @Category,
+    [Position] = @Position,
     [RefType] = @RefType,
-    [RefID] = @RefID,
-    [SentToJira] = @SentToJira,
-    [AttachmentGUID] = @AttachmentGUID,
-    [ProductFamilyID] = @ProductFamilyID,
-    [SentToTFS] = @SentToTFS,
-    [SentToSnow] = @SentToSnow,
-    [FilePathID] = @FilePathID
-  WHERE ([AttachmentID] = @AttachmentID)
+    [AuxID] = @AuxID,
+    [ProductFamilyID] = @ProductFamilyID
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomFieldCategory
 
 (
-  @AttachmentID int
+  @CustomFieldCategoryID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+  DELETE FROM [dbo].[CustomFieldCategories]
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomFieldCategory
 
 (
-  @AttachmentID int
+  @CustomFieldCategoryID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [AttachmentID],
+    [CustomFieldCategoryID],
     [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
+    [Category],
+    [Position],
     [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID],
-    [ProductFamilyID],
-    [SentToTFS],
-    [SentToSnow],
-    [FilePathID]
-  FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+    [AuxID],
+    [ProductFamilyID]
+  FROM [dbo].[CustomFieldCategories]
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomFieldCategory
 
 (
   @OrganizationID int,
-  @FileName nvarchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path nvarchar(1000),
-  @Description varchar(2000),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
+  @Category varchar(250),
+  @Position int,
   @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
+  @AuxID int,
   @ProductFamilyID int,
-  @SentToTFS bit,
-  @SentToSnow bit,
-  @FilePathID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Attachments]
+  INSERT INTO [dbo].[CustomFieldCategories]
   (
     [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
+    [Category],
+    [Position],
     [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID],
-    [ProductFamilyID],
-    [SentToTFS],
-    [SentToSnow],
-    [FilePathID])
+    [AuxID],
+    [ProductFamilyID])
   VALUES (
     @OrganizationID,
-    @FileName,
-    @FileType,
-    @FileSize,
-    @Path,
-    @Description,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
+    @Category,
+    @Position,
     @RefType,
-    @RefID,
-    @SentToJira,
-    @AttachmentGUID,
-    @ProductFamilyID,
-    @SentToTFS,
-    @SentToSnow,
-    @FilePathID)
+    @AuxID,
+    @ProductFamilyID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomFieldCategory
 
 (
-  @AttachmentID int,
+  @CustomFieldCategoryID int,
   @OrganizationID int,
-  @FileName nvarchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path nvarchar(1000),
-  @Description varchar(2000),
-  @DateModified datetime,
-  @ModifierID int,
+  @Category varchar(250),
+  @Position int,
   @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
-  @ProductFamilyID int,
-  @SentToTFS bit,
-  @SentToSnow bit,
-  @FilePathID int
+  @AuxID int,
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Attachments]
+  UPDATE [dbo].[CustomFieldCategories]
   SET
     [OrganizationID] = @OrganizationID,
-    [FileName] = @FileName,
-    [FileType] = @FileType,
-    [FileSize] = @FileSize,
-    [Path] = @Path,
-    [Description] = @Description,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
+    [Category] = @Category,
+    [Position] = @Position,
     [RefType] = @RefType,
-    [RefID] = @RefID,
-    [SentToJira] = @SentToJira,
-    [AttachmentGUID] = @AttachmentGUID,
-    [ProductFamilyID] = @ProductFamilyID,
-    [SentToTFS] = @SentToTFS,
-    [SentToSnow] = @SentToSnow,
-    [FilePathID] = @FilePathID
-  WHERE ([AttachmentID] = @AttachmentID)
+    [AuxID] = @AuxID,
+    [ProductFamilyID] = @ProductFamilyID
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomFieldCategory
 
 (
-  @AttachmentID int
+  @CustomFieldCategoryID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+  DELETE FROM [dbo].[CustomFieldCategories]
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomFieldCategory
 
 (
-  @AttachmentID int
+  @CustomFieldCategoryID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [AttachmentID],
+    [CustomFieldCategoryID],
     [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
+    [Category],
+    [Position],
     [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID],
-    [ProductFamilyID],
-    [SentToTFS],
-    [SentToSnow],
-    [FilePathID]
-  FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+    [AuxID],
+    [ProductFamilyID]
+  FROM [dbo].[CustomFieldCategories]
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomFieldCategory
 
 (
   @OrganizationID int,
-  @FileName nvarchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path nvarchar(1000),
-  @Description varchar(2000),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
+  @Category varchar(250),
+  @Position int,
   @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
+  @AuxID int,
   @ProductFamilyID int,
-  @SentToTFS bit,
-  @SentToSnow bit,
-  @FilePathID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Attachments]
+  INSERT INTO [dbo].[CustomFieldCategories]
   (
     [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
+    [Category],
+    [Position],
     [RefType],
-    [RefID],
-    [SentToJira],
-    [AttachmentGUID],
-    [ProductFamilyID],
-    [SentToTFS],
-    [SentToSnow],
-    [FilePathID])
+    [AuxID],
+    [ProductFamilyID])
   VALUES (
     @OrganizationID,
-    @FileName,
-    @FileType,
-    @FileSize,
-    @Path,
-    @Description,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
+    @Category,
+    @Position,
     @RefType,
-    @RefID,
-    @SentToJira,
-    @AttachmentGUID,
-    @ProductFamilyID,
-    @SentToTFS,
-    @SentToSnow,
-    @FilePathID)
+    @AuxID,
+    @ProductFamilyID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomFieldCategory
 
 (
-  @AttachmentID int,
+  @CustomFieldCategoryID int,
   @OrganizationID int,
-  @FileName nvarchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path nvarchar(1000),
-  @Description varchar(2000),
-  @DateModified datetime,
-  @ModifierID int,
+  @Category varchar(250),
+  @Position int,
   @RefType int,
-  @RefID int,
-  @SentToJira bit,
-  @AttachmentGUID uniqueidentifier,
-  @ProductFamilyID int,
-  @SentToTFS bit,
-  @SentToSnow bit,
-  @FilePathID int
+  @AuxID int,
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Attachments]
+  UPDATE [dbo].[CustomFieldCategories]
   SET
     [OrganizationID] = @OrganizationID,
-    [FileName] = @FileName,
-    [FileType] = @FileType,
-    [FileSize] = @FileSize,
-    [Path] = @Path,
-    [Description] = @Description,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
+    [Category] = @Category,
+    [Position] = @Position,
     [RefType] = @RefType,
-    [RefID] = @RefID,
-    [SentToJira] = @SentToJira,
-    [AttachmentGUID] = @AttachmentGUID,
-    [ProductFamilyID] = @ProductFamilyID,
-    [SentToTFS] = @SentToTFS,
-    [SentToSnow] = @SentToSnow,
-    [FilePathID] = @FilePathID
-  WHERE ([AttachmentID] = @AttachmentID)
+    [AuxID] = @AuxID,
+    [ProductFamilyID] = @ProductFamilyID
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomFieldCategory
 
 (
-  @AttachmentID int
+  @CustomFieldCategoryID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+  DELETE FROM [dbo].[CustomFieldCategories]
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
 

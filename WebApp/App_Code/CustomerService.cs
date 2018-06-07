@@ -857,7 +857,7 @@ namespace TSWebServices
         public CustomFieldCategoryProxy[] GetCustomFieldCategories()
         {
             CustomFieldCategories cats = new CustomFieldCategories(TSAuthentication.GetLoginUser());
-            cats.LoadByRefType(ReferenceType.Organizations, -1);
+            cats.LoadByRefTypeWithUserRights(ReferenceType.Organizations, -1);
             return cats.GetCustomFieldCategoryProxies();
         }
 
