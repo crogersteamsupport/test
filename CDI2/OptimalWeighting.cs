@@ -101,7 +101,9 @@ namespace TeamSupport.CDI
                 CDIEventLog.WriteLine("OrganizationID\tMetrics\tSumR^2\tNew30\tOpen\tDaysOpen\tTotalTickets\tClosed30\tDaysToClose\tActionCount\tSeverity\tSentiment");
                 _writeHeader = false;
             }
-            CDIEventLog.WriteLine("{0}\t{1}\t{2:0.00}{3}", _customer.OrganizationID, Convert.ToString(maxCombination, 2), maxCorrelation, builder.ToString());
+            char[] charArray = Convert.ToString(maxCombination, 2).ToCharArray();   // convert to base 2 and reverse the bits
+            Array.Reverse(charArray);
+            CDIEventLog.WriteLine("{0}\t{1}\t{2:0.00}{3}", _customer.OrganizationID, new string(charArray), maxCorrelation, builder.ToString());
         }
     }
 }

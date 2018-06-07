@@ -72,6 +72,8 @@ namespace TeamSupport.CDI
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (DataContext db = new DataContext(connection))
                 {
+                    db.ObjectTrackingEnabled = false;   // read-only
+
                     // define the tables we will reference in the query
                     // - each table class only contains the fields we care about
                     Table<Organization> organizationTable = db.GetTable<Organization>();
@@ -103,9 +105,9 @@ namespace TeamSupport.CDI
                                     DateCreated = t.DateCreated,
                                     IsClosed = ts.IsClosed,
                                     ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count(),
-                                    AverageActionSentiment = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.AverageActionSentiment).First(),  // for some reason Min is faster than First()
+                                    AverageActionSentiment = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.AverageActionSentiment).Min(),  // for some reason Min is faster than First()
                                     ParentID = o.ParentID,
-                                    Severity = (from s in severityTable where t.TicketSeverityID == s.TicketSeverityID select s.Severity).First()
+                                    Severity = (from s in severityTable where t.TicketSeverityID == s.TicketSeverityID select s.Severity).Min()
                                 };
 
                     // run the query

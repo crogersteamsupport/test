@@ -19,74 +19,75 @@ namespace TeamSupport.CDI.linq
     {
 #pragma warning disable CS0649  // Field is never assigned to, and will always have its default value null
         int _organizationID;
-        [Column(Storage = "_organizationID", DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true)]
+        [Column(Storage = "_organizationID", DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true, UpdateCheck = UpdateCheck.Never)]
         public int OrganizationID { get { return _organizationID; } }
 
-        [Column]
+        [Column(UpdateCheck = UpdateCheck.Never)]
         public int? ParentID;
         //[Column]
         //public string Name;   // slows it down
-        [Column]
+        [Column(UpdateCheck = UpdateCheck.Never)]
         public bool IsActive;
 
         // CDI fields
-        [Column]
+        [Column(UpdateCheck = UpdateCheck.Never)]
         public int TotalTicketsCreated;
-        [Column]
+        [Column(UpdateCheck = UpdateCheck.Never)]
         public int TicketsOpen;
-        [Column]
+        [Column(UpdateCheck = UpdateCheck.Never)]
         public int CreatedLast30;
-        [Column]
+        [Column(UpdateCheck = UpdateCheck.Never)]
         public int AvgTimeOpen;
-        [Column]
+        [Column(UpdateCheck = UpdateCheck.Never)]
         public int AvgTimeToClose;
-        [Column]
+        [Column(UpdateCheck = UpdateCheck.Never)]
         public int CustDisIndex;
-        [Column]
+        [Column(UpdateCheck = UpdateCheck.Never)]
         public int? CustDistIndexTrend; // Trending upwards (1 bad),  Trending down (-1 good), the same(0)
 #pragma warning restore CS0649
 
-        // for test output...
-        public static bool TryGet(int organizationID, out Organization organization)
-        {
-            if (_organizations == null)
-                _organizations = LoadOrganizations();
+        //// for test output...
+        //public static bool TryGet(int organizationID, out Organization organization)
+        //{
+        //    if (_organizations == null)
+        //        _organizations = LoadOrganizations();
 
-            if (!_organizations.ContainsKey(organizationID))
-            {
-                organization = null;
-                return false;
-            }
-            organization = _organizations[organizationID];
-            return true;
-        }
+        //    if (!_organizations.ContainsKey(organizationID))
+        //    {
+        //        organization = null;
+        //        return false;
+        //    }
+        //    organization = _organizations[organizationID];
+        //    return true;
+        //}
 
-        static Dictionary<int, Organization> _organizations;
-        public static Dictionary<int, Organization> LoadOrganizations()
-        {
-            Dictionary<int, Organization> allOrganizations = null;
-            try
-            {
-                Organization[] organizations = null;
-                string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                using (DataContext db = new DataContext(connection))
-                {
-                    Table<Organization> OrganizationsTable = db.GetTable<Organization>();
-                    organizations = (from o in OrganizationsTable select o).ToArray();
-                }
+        //static Dictionary<int, Organization> _organizations;
+        //public static Dictionary<int, Organization> LoadOrganizations()
+        //{
+        //    Dictionary<int, Organization> allOrganizations = null;
+        //    try
+        //    {
+        //        Organization[] organizations = null;
+        //        string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
+        //        using (SqlConnection connection = new SqlConnection(connectionString))
+        //        using (DataContext db = new DataContext(connection))
+        //        {
+        //            db.ObjectTrackingEnabled = false;   // read-only
+        //            Table<Organization> OrganizationsTable = db.GetTable<Organization>();
+        //            organizations = (from o in OrganizationsTable select o).ToArray();
+        //        }
 
-                allOrganizations = new Dictionary<int, Organization>();
-                foreach (Organization og in organizations)
-                    allOrganizations[og.OrganizationID] = og;
-            }
-            catch (Exception e)
-            {
-                CDIEventLog.WriteEntry("Organization Read failed", e);
-            }
+        //        allOrganizations = new Dictionary<int, Organization>();
+        //        foreach (Organization og in organizations)
+        //            allOrganizations[og.OrganizationID] = og;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        CDIEventLog.WriteEntry("Organization Read failed", e);
+        //    }
 
-            return allOrganizations;
-        }
+        //    return allOrganizations;
+        //}
 
     }
 }
