@@ -71,5 +71,9 @@ namespace TSWebServices
       return Settings.SystemDB.ReadString(key, defaultValue);
     }
 
+    [WebMethod]
+    public void WriteSystemSetting(string key, string value) {
+        Settings.SystemDB.WriteString(key, value);
+    }
   }
 }
