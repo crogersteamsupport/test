@@ -104,7 +104,7 @@ AdminCustomFields = function () {
             })
             .appendTo(div);
 
-        if (refType == 9 || refType == 17) {
+        if (refType == 9 || refType == 17 || refType == 32) {
           var addCat = $('<a>')
             .text('Add Category')
             .attr('href', '#')

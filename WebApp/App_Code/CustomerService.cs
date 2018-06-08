@@ -862,6 +862,14 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public CustomFieldCategoryProxy[] GetCustomFieldContactCategories()
+        {
+            CustomFieldCategories cats = new CustomFieldCategories(TSAuthentication.GetLoginUser());
+            cats.LoadByRefType(ReferenceType.Contacts, -1);
+            return cats.GetCustomFieldCategoryProxies();
+        }
+
+        [WebMethod]
         public string LoadCustomProperties(int refID, ReferenceType refType)
         {
             CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
