@@ -478,14 +478,17 @@ namespace TeamSupport.Api
             ticket.OrganizationID = (int)command.Organization.ParentID;
             ticket.ReadFromXml(command.Data, true);
             ticket.Collection.Save();
-            ticket.UpdateCustomFieldsFromXml(command.Data);
+			string description = string.Empty;
+			int? contactID = null;
+			int? customerID = null;
+			ticket.FullReadFromXml(command.Data, true, ref description, ref contactID, ref customerID);
 
             Actions actions = new Actions(command.LoginUser);
-            TeamSupport.Data.Action action = actions.AddNewAction();
+            Data.Action action = actions.AddNewAction();
             action.ActionTypeID = null;
             action.Name = "Description";
             action.SystemActionTypeID = SystemActionType.Description;
-            action.Description = "";
+			action.Description = description;
             action.IsVisibleOnPortal = ticket.IsVisibleOnPortal;
             action.IsKnowledgeBase = ticket.IsKnowledgeBase;
             action.TicketID = ticket.TicketID;
