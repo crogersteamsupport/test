@@ -177,9 +177,9 @@ IF EXISTS(SELECT * FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@Set
                     }
                 }
             } catch (SqlException e) {
-                return "fault: " + e.Message;
+                return "fault";
             } catch (Exception e) {
-                return "fault: " + e.Message;
+                return "fault";
             }
         }
 	}
