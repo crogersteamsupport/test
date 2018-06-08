@@ -86,7 +86,7 @@ namespace TeamSupport.CDI
                     maxCorrelation = sumAbsCorrelation;
                     maxRSquared = rSquared;
                 }
-                //CDIEventLog.WriteLine("{0}\t{1}", mask, sumAbsCorrelation);
+                //CDIEventLog.Instance.WriteLine("{0}\t{1}", mask, sumAbsCorrelation);
             }
 
             StringBuilder builder = new StringBuilder();
@@ -98,12 +98,12 @@ namespace TeamSupport.CDI
 
             if (_writeHeader)
             {
-                CDIEventLog.WriteLine("OrganizationID\tMetrics\tSumR^2\tNew30\tOpen\tDaysOpen\tTotalTickets\tClosed30\tDaysToClose\tActionCount\tSeverity\tSentiment");
+                CDIEventLog.Instance.WriteLine("OrganizationID\tMetrics\tSumR^2\tNew30\tOpen\tDaysOpen\tTotalTickets\tClosed30\tDaysToClose\tActionCount\tSeverity\tSentiment");
                 _writeHeader = false;
             }
             char[] charArray = Convert.ToString(maxCombination, 2).ToCharArray();   // convert to base 2 and reverse the bits
             Array.Reverse(charArray);
-            CDIEventLog.WriteLine("{0}\t{1}\t{2:0.00}{3}", _customer.OrganizationID, new string(charArray), maxCorrelation, builder.ToString());
+            CDIEventLog.Instance.WriteLine("{0}\t{1}\t{2:0.00}{3}", _customer.OrganizationID, new string(charArray), maxCorrelation, builder.ToString());
         }
     }
 }

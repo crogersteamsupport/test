@@ -55,11 +55,11 @@ namespace TeamSupport.CDI
             //linq.Organization organization;
             //if (linq.Organization.TryGet(clientID, out organization))
             //{
-            //    //CDIEventLog.Write("ClientID\tClient\tCreatedLast30\tTotalTicketsCreated\tCDI\tnew\ttotal\tCDI-2\t");
-            //    CDIEventLog.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}", clientID, organization.Name,
+            //    //CDIEventLog.Instance.Write("ClientID\tClient\tCreatedLast30\tTotalTicketsCreated\tCDI\tnew\ttotal\tCDI-2\t");
+            //    CDIEventLog.Instance.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}", clientID, organization.Name,
             //        organization.CreatedLast30, organization.TotalTicketsCreated, organization.CustDisIndex,
             //        last._newCount, last._totalTicketsCreated, last.CDI));
-            //    //CDIEventLog.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", clientID, organization.Name, _organizationAnalysis.Intervals.Count, organization.CustDisIndex, last.CDI, last.ToString()));
+            //    //CDIEventLog.Instance.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", clientID, organization.Name, _organizationAnalysis.Intervals.Count, organization.CustDisIndex, last.CDI, last.ToString()));
             //}
         }
 
@@ -72,16 +72,16 @@ namespace TeamSupport.CDI
 
             //string clientName = organization.Name;
             //foreach (IntervalData interval in _organizationAnalysis.Intervals)
-            //    CDIEventLog.WriteLine(String.Format("{0}\t{1}\t{2}", clientID, clientName, interval.ToString()));
+            //    CDIEventLog.Instance.WriteLine(String.Format("{0}\t{1}\t{2}", clientID, clientName, interval.ToString()));
         }
 
         public void Write()
         {
-            ////CDIEventLog.Write("ClientID\tClient\tTotalTicketsCreated\tTicketsOpen\tCreatedLast30\tAvgTimeOpen\tAvgTimeToClose\tCustDisIndex\tCDI-2");
+            ////CDIEventLog.Instance.Write("ClientID\tClient\tTotalTicketsCreated\tTicketsOpen\tCreatedLast30\tAvgTimeOpen\tAvgTimeToClose\tCustDisIndex\tCDI-2");
             //int clientID = _organizationAnalysis.ClientOrganizationID.Value;
             //linq.Organization organization;
             //linq.Organization.TryGet(clientID, out organization);
-            //CDIEventLog.WriteLine(String.Format("{0}\t{1}", organization.ToStringCDI1(), ToStringCDI1()));
+            //CDIEventLog.Instance.WriteLine(String.Format("{0}\t{1}", organization.ToStringCDI1(), ToStringCDI1()));
         }
 
         /// <summary>

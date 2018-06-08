@@ -101,7 +101,7 @@ namespace TeamSupport.CDI
             }
             catch (Exception e)
             {
-                CDIEventLog.WriteEntry("AnalyzeDaysOpen failed", e);
+                CDIEventLog.Instance.WriteEntry("AnalyzeDaysOpen failed", e);
             }
 
             return results;
@@ -110,7 +110,7 @@ namespace TeamSupport.CDI
         /// <summary> Count the days open </summary>
         //void TimeOpenHistogram(TimeScale timeScale)
         //{
-        //    CDIEventLog.WriteLine("TimeOpen({0})	TicketCount", timeScale);
+        //    CDIEventLog.Instance.WriteLine("TimeOpen({0})	TicketCount", timeScale);
         //    TallyDictionary<int> open = new TallyDictionary<int>();
         //    foreach (TicketJoin t in _tickets)
         //    {
@@ -124,7 +124,7 @@ namespace TeamSupport.CDI
         /// <summary> Count the ticket types </summary>
         //void TicketTypeHistogram(TimeScale timeScale)
         //{
-        //    CDIEventLog.WriteLine("TicketType({0})	TicketCount", timeScale);
+        //    CDIEventLog.Instance.WriteLine("TicketType({0})	TicketCount", timeScale);
         //    TallyDictionary<string> open = new TallyDictionary<string>();
         //    foreach (TicketJoin t in _tickets)
         //        open.Increment(t.TicketTypeName);

@@ -119,23 +119,13 @@ namespace TeamSupport.CDI
         }
 
         /// <summary>
-        /// The linq to sql save is very slow, including a WHERE clause for an exact record match.
-        /// Thus use a hard-coded update
+        /// The linq to sql update compares object tracking as well as uses parameterization to protect
+        /// against sql-injection attackes. Thus use a hard-coded update here...
         /// </summary>
         /// <param name="db"></param>
         public void Save(DataContext db)
         {
-            // Organization
-            string updateQuery = String.Format(@"UPDATE Organizations SET TotalTicketsCreated = {0}, TicketsOpen = {1}, CreatedLast30 = {2}, AvgTimeOpen = {3}, AvgTimeToClose = {4}, CustDisIndex = {5}, CustDistIndexTrend = {6} WHERE OrganizationID = {7}",
-                _rawMetrics._totalTicketsCreated,  // TotalTicketsCreated
-                _rawMetrics._openCount,    // TicketsOpen
-                _rawMetrics._newCount, // CreatedLast30
-                (int)Math.Round(_rawMetrics._medianDaysOpen),  // AvgTimeOpen
-                _rawMetrics._medianDaysToClose.HasValue ? (int)Math.Round(_rawMetrics._medianDaysToClose.Value) : 0,  // AvgTimeToClose
-                _rawMetrics.CDI.Value, // CustDisIndex
-                0,  // CustDistIndexTrend
-                _organizationAnalysis.OrganizationID);    // OrganizationID
-            db.ExecuteCommand(updateQuery);
+            db.ExecuteCommand(linq.Organization.RawUpdateQuery(_rawMetrics, _organizationAnalysis.OrganizationID));
         }
 
         public void Save(Table<linq.CustDistHistory> table)
@@ -153,7 +143,7 @@ namespace TeamSupport.CDI
             }
             catch (Exception e)
             {
-                CDIEventLog.WriteEntry("Save failed", e);
+                CDIEventLog.Instance.WriteEntry("Save failed", e);
             }
         }
 

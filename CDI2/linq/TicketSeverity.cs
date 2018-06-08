@@ -36,6 +36,7 @@ namespace TeamSupport.CDI.linq
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (DataContext db = new DataContext(connection))
                 {
+                    //db.Log = CDIEventLog.Instance;
                     Table<TicketSeverity> severityTable = db.GetTable<TicketSeverity>();
 
                     var query = (from t in severityTable
@@ -50,7 +51,7 @@ namespace TeamSupport.CDI.linq
             }
             catch (Exception e)
             {
-                CDIEventLog.WriteEntry("Ticket Read failed", e);
+                CDIEventLog.Instance.WriteEntry("Ticket Read failed", e);
             }
         }
 

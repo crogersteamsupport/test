@@ -76,6 +76,7 @@ namespace TeamSupport.CDI
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (DataContext db = new DataContext(connection))
                 {
+                    //db.Log = CDIEventLog.Instance;
                     Table<linq.CDI_Settings> table = db.GetTable<linq.CDI_Settings>();
                     _weights = table.Where(s => s.OrganizationID==organizationID).FirstOrDefault();
                     if(_weights != null)
@@ -85,7 +86,7 @@ namespace TeamSupport.CDI
             }
             catch (Exception e)
             {
-                CDIEventLog.WriteEntry("CDI_Settings Read failed", e);
+                CDIEventLog.Instance.WriteEntry("CDI_Settings Read failed", e);
             }
 
             if ((_weights == null) ||
@@ -133,13 +134,13 @@ namespace TeamSupport.CDI
 
         public void Write()
         {
-            CDIEventLog.WriteLine("------------------------------------------");
+            CDIEventLog.Instance.WriteLine("------------------------------------------");
             List<Metrics> raw = new List<Metrics>();
             foreach (Client client in _clients)
                 raw.Add(client.RawMetrics);
             Metrics.Write(raw);
 
-            CDIEventLog.WriteLine("------------------------------------------");
+            CDIEventLog.Instance.WriteLine("------------------------------------------");
             raw.Clear();
             foreach (Client client in _clients)
                 raw.Add(client.NormalizedMetrics);
@@ -147,7 +148,7 @@ namespace TeamSupport.CDI
 
             //IntervalData.WriteHeader();
             //foreach (Client client in _clients)
-            //    CDIEventLog.WriteLine("{0}\t{1}", client.OrganizationID, client.NormalizedMetrics.ToString());
+            //    CDIEventLog.Instance.WriteLine("{0}\t{1}", client.OrganizationID, client.NormalizedMetrics.ToString());
         }
 
         public override string ToString()
@@ -157,12 +158,12 @@ namespace TeamSupport.CDI
 
         public void WriteCdiByOrganization()
         {
-            CDIEventLog.WriteLine("------------------------------------------");
-            CDIEventLog.WriteLine(_organizationAnalysis.OrganizationID.ToString());
-            CDIEventLog.WriteLine("------------------------------------------");
-            //CDIEventLog.Write("ClientID\tClient\tActiveWeeks\tCDI\tCDI-2\t");
+            CDIEventLog.Instance.WriteLine("------------------------------------------");
+            CDIEventLog.Instance.WriteLine(_organizationAnalysis.OrganizationID.ToString());
+            CDIEventLog.Instance.WriteLine("------------------------------------------");
+            //CDIEventLog.Instance.Write("ClientID\tClient\tActiveWeeks\tCDI\tCDI-2\t");
 
-            CDIEventLog.Write("ClientID\tClient\tCreatedLast30\tTotalTicketsCreated\tCDI\tnew\ttotal\tCDI-2\t");
+            CDIEventLog.Instance.Write("ClientID\tClient\tCreatedLast30\tTotalTicketsCreated\tCDI\tnew\ttotal\tCDI-2\t");
 
             Metrics.WriteHeader();
             foreach (Client client in _clients)
@@ -171,7 +172,7 @@ namespace TeamSupport.CDI
 
         public void WriteClients()
         {
-            CDIEventLog.WriteLine("ClientID\tClient\tTotalTicketsCreated\tTicketsOpen\tCreatedLast30\tAvgTimeOpen\tAvgTimeToClose\tCustDisIndex\tDate\tTotalTicketsCreated\tTicketsOpen\tCreatedLast30\tAvgTimeOpen\tAvgTimeToClose\tCustDisIndex-2" +
+            CDIEventLog.Instance.WriteLine("ClientID\tClient\tTotalTicketsCreated\tTicketsOpen\tCreatedLast30\tAvgTimeOpen\tAvgTimeToClose\tCustDisIndex\tDate\tTotalTicketsCreated\tTicketsOpen\tCreatedLast30\tAvgTimeOpen\tAvgTimeToClose\tCustDisIndex-2" +
                 "CDI-2");
             foreach (Client client in _clients)
                 client.Write();

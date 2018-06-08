@@ -107,7 +107,7 @@ namespace TeamSupport.CDI
                 //Array.Sort(values);
                 //int centerIndex = values.Length / 2;
                 //result = (values.Length % 2 == 1) ? values[centerIndex] : (values[centerIndex - 1] + values[centerIndex]) / 2;
-                //CDIEventLog.WriteLine(String.Format("{0:0.0}, {1:0.0}", values.Average(), result.Value));
+                //CDIEventLog.Instance.WriteLine(String.Format("{0:0.0}, {1:0.0}", values.Average(), result.Value));
             }
             return result;
         }
@@ -143,14 +143,14 @@ namespace TeamSupport.CDI
 
         public static void WriteHeader()
         {
-            CDIEventLog.WriteLine("Date\tNew\tOpen\tMedianDaysOpen\tClosed\tMedianDaysToClose\tAvgActions\tAvgSentiment\tAverageSeverity\tCDI");
+            CDIEventLog.Instance.WriteLine("Date\tNew\tOpen\tMedianDaysOpen\tClosed\tMedianDaysToClose\tAvgActions\tAvgSentiment\tAverageSeverity\tCDI");
         }
 
         public static void Write(List<Metrics> intervals)
         {
             WriteHeader();
             foreach (Metrics interval in intervals)
-                CDIEventLog.WriteLine(interval.ToString());
+                CDIEventLog.Instance.WriteLine(interval.ToString());
         }
 
         public override string ToString()

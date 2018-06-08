@@ -46,6 +46,23 @@ namespace TeamSupport.CDI.linq
         public int? CustDistIndexTrend; // Trending upwards (1 bad),  Trending down (-1 good), the same(0)
 #pragma warning restore CS0649
 
+        /// <summary>
+        /// This is really fast because there is no linq to sql change tracking or 
+        /// parameterization which sql-server uses to test for sql-injection attacks
+        /// </summary>
+        public static string RawUpdateQuery(Metrics metrics, int organizationID)
+        {
+            return String.Format(@"UPDATE Organizations SET TotalTicketsCreated = {0}, TicketsOpen = {1}, CreatedLast30 = {2}, AvgTimeOpen = {3}, AvgTimeToClose = {4}, CustDisIndex = {5}, CustDistIndexTrend = {6} WHERE OrganizationID = {7}",
+                metrics._totalTicketsCreated,  // TotalTicketsCreated
+                metrics._openCount,    // TicketsOpen
+                metrics._newCount, // CreatedLast30
+                (int)Math.Round(metrics._medianDaysOpen),  // AvgTimeOpen
+                metrics._medianDaysToClose.HasValue ? (int)Math.Round(metrics._medianDaysToClose.Value) : 0,  // AvgTimeToClose
+                metrics.CDI.Value, // CustDisIndex
+                0,  // CustDistIndexTrend
+                organizationID);    // OrganizationID
+        }
+
         //// for test output...
         //public static bool TryGet(int organizationID, out Organization organization)
         //{
@@ -83,7 +100,7 @@ namespace TeamSupport.CDI.linq
         //    }
         //    catch (Exception e)
         //    {
-        //        CDIEventLog.WriteEntry("Organization Read failed", e);
+        //        CDIEventLog.Instance.WriteEntry("Organization Read failed", e);
         //    }
 
         //    return allOrganizations;

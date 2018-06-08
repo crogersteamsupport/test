@@ -64,7 +64,18 @@ namespace TeamSupport.CDI
         //GROUP BY o.OrganizationID, o.Name, c.TicketsOpen
         //ORDER BY TicketsOpen DESC
 
-        public void LoadAllTickets()
+        /*public static string CleanString(string RawHtml)
+        {
+            String text = Regex.Replace(RawHtml, @"<[^>]*>", String.Empty); //remove html tags
+            text = Regex.Replace(text, "&nbsp;", " "); //remove HTML space
+            text = Regex.Replace(text, @"[\d-]", " "); //removes all digits [0-9]
+            text = Regex.Replace(text, @"[\w\d]+\@[\w\d]+\.com", " "); //removes email adresses
+            text = Regex.Replace(text, @"\s+", " ");   // remove whitespace
+
+            return text;
+        }
+
+        public void WatsonActionSize()
         {
             try
             {
@@ -72,6 +83,47 @@ namespace TeamSupport.CDI
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (DataContext db = new DataContext(connection))
                 {
+                    //db.Log = CDIEventLog.Instance;
+                    Table<linq.Action> actionTable = db.GetTable<linq.Action>();
+                    Table<linq.ActionSentiment> sentimentTable = db.GetTable<linq.ActionSentiment>();
+
+                    var query = (from st in sentimentTable
+                                join a in actionTable on st.ActionID equals a.ActionID
+                                orderby st.ActionSentimentID descending
+                                select a).Take(50000);
+
+                    linq.Action[] all = query.ToArray();
+                    double[] length = new double[all.Length];
+                    for (int i = 0; i < all.Length; ++i)
+                    {
+                        all[i].Description = CleanString(all[i].Description);
+                        length[i] = all[i].Description.Length;
+                        if (length[i] > 10000)
+                            Debugger.Break();
+                    }
+
+                    double avg = length.Average();
+                    double stdev = Statistics.StandardDeviation(length, avg);
+                    foreach (double value in length)
+                        Debug.WriteLine(value);
+                }
+            }
+            catch (Exception e)
+            {
+                CDIEventLog.Instance.WriteEntry("Ticket Read failed", e);
+            }
+        }*/
+
+        public void LoadAllTickets()
+        {
+            //WatsonActionSize();
+            try
+            {
+                string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (DataContext db = new DataContext(connection))
+                {
+                    //db.Log = CDIEventLog.Instance;
                     db.ObjectTrackingEnabled = false;   // read-only
 
                     // define the tables we will reference in the query
@@ -116,7 +168,7 @@ namespace TeamSupport.CDI
             }
             catch (Exception e)
             {
-                CDIEventLog.WriteEntry("Ticket Read failed", e);
+                CDIEventLog.Instance.WriteEntry("Ticket Read failed", e);
             }
         }
 
@@ -128,6 +180,7 @@ namespace TeamSupport.CDI
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (DataContext db = new DataContext(connection))
                 {
+                    //db.Log = CDIEventLog.Instance;
                     Table<CDI_Settings> table = db.GetTable<CDI_Settings>();
                     CDI_Settings[] settings = table.Where(t => t.NeedCompute).ToArray();
                     foreach(CDI_Settings setting in settings)
@@ -151,7 +204,7 @@ namespace TeamSupport.CDI
             }
             catch (Exception e)
             {
-                CDIEventLog.WriteEntry("Ticket Read failed", e);
+                CDIEventLog.Instance.WriteEntry("Ticket Read failed", e);
             }
         }
 

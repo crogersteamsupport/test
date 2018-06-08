@@ -63,7 +63,7 @@ namespace TeamSupport.CDI
             }
             catch(Exception ex)
             {
-                CDIEventLog.WriteEntry("New organization failed", ex);
+                CDIEventLog.Instance.WriteEntry("New organization failed", ex);
             }
         }
 
@@ -116,7 +116,7 @@ namespace TeamSupport.CDI
         {
             Metrics.WriteHeader();
             foreach (Metrics interval in Intervals)
-                CDIEventLog.WriteLine(interval.ToString());
+                CDIEventLog.Instance.WriteLine(interval.ToString());
         }
 
     }
