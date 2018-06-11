@@ -24,3 +24,14 @@ function WatsonTicket(ticketid) {
         }
     });
 }
+
+
+
+function WatsonCustomer(organizationID) {
+    _mainFrame.Ts.Services.Customers.GetOrganizationSentiment(organizationID, function(e) {
+        if (e.length > 0) {
+            $('#organizationSentiment').show().find('.box-content');
+            setSentiment(mapSentimentToDegrees(e));
+        }
+    });
+}
