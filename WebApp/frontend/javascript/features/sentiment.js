@@ -1,7 +1,9 @@
 function getColor(value){
     //value from 0 to 1
-    var hue=((1-value)*120).toString(10);
-    return ["hsl(",hue,",100%,50%)"].join("");
+    if (value > 0) {
+        var hue = ((1 - value) * 120).toString(10);
+        return ["hsl(",hue,",100%,50%)"].join("");
+    }
 }
 
 function WatsonTicket(ticketid) {
@@ -9,13 +11,16 @@ function WatsonTicket(ticketid) {
         console.log(result);
         if (result != 'negative' && result != 'nothing' && result != 'hidden') {
             var data = jQuery.parseJSON(result);
-            var color = getColor(data.TicketSentimentScor);
+            var percentage = data.TicketSentimentScore / 1000;
+            var reverse = 1 - percentage;
+            var display = percentage * 100;
+            var color = getColor(reverse);
             console.log(data.TicketSentimentScore + ' / ' + color);
+            $('#ticketSentiment').css({ 'color':color });
+            $('#health-ticket').text('Ticket Health: ' + display + '%');
         } else {
             var color = getColor(0.100);
             console.log(color);
         }
-
-        $('#ticketSentiment').css({ 'color':color });
     });
 }

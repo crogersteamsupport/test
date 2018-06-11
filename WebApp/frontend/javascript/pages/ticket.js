@@ -456,7 +456,6 @@ function AddTicketProperty(item) {
 
 function SetupTicketProperties(order) {
     window.parent.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function(info) {
-        console.log(info);
         if (info == null) {
             var url = window.location.href;
             if (url.indexOf('.') > -1) {
@@ -3735,10 +3734,6 @@ var SetupDueDateField = function(duedate) {
 
 var SetupStatusField = function(StatusId) {
     var statuses = window.parent.Ts.Cache.getNextStatuses(StatusId);
-
-    console.log(statuses);
-
-
     _ticketCurrStatus = StatusId;
     if ($('#ticket-status').length) {
         $("#ticket-status").selectize({
