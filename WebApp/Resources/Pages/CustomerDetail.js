@@ -3166,6 +3166,10 @@ $(document).ready(function () {
             });
         }
     });
+
+
+    WatsonCustomer(organizationID);
+
 });
 
 var initEditor = function (element, init) {

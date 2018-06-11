@@ -30,8 +30,14 @@ function WatsonTicket(ticketid) {
 function WatsonCustomer(organizationID) {
     _mainFrame.Ts.Services.Customers.GetOrganizationSentiment(organizationID, function(e) {
         if (e.length > 0) {
-            $('#organizationSentiment').show().find('.box-content');
-            setSentiment(mapSentimentToDegrees(e));
+            $('#organizationSentiment').show();
+            var percentage = e / 1000;
+            var reverse = 1 - percentage;
+            var display = percentage * 100;
+            var color = getColor(reverse);
+            console.log(data.TicketSentimentScore + ' / ' + color);
+            $('#health-organization').css({ 'color':color });
+            $('#health-score').text('Health: ' + display + '%');
         }
     });
 }
