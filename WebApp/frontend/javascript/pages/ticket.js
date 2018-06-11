@@ -1667,6 +1667,9 @@ function LoadTicketControls() {
 
     WatsonTicketField(_ticketInfo.Ticket.TicketID);
 
+    WatsonTicket(_ticketInfo.Ticket.TicketID);
+
+
     var dueDate = _ticketInfo.Ticket.DueDate;
     SetupDueDateField(dueDate);
 
