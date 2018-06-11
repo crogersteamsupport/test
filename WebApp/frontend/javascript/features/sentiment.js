@@ -37,7 +37,7 @@ function WatsonCustomer(organizationID) {
             var color = getColor(reverse);
             console.log(e + ' / ' + color);
             $('#health-organization').css({ 'color':color });
-            $('#health-score').text('Health: ' + display + '%');
+            $('#health-percentage').text('Health: ' + display + '%');
         }
     });
 }
