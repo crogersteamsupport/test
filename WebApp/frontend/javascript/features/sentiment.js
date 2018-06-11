@@ -35,7 +35,7 @@ function WatsonCustomer(organizationID) {
             var reverse = 1 - percentage;
             var display = percentage * 100;
             var color = getColor(reverse);
-            console.log(data.TicketSentimentScore + ' / ' + color);
+            console.log(e + ' / ' + color);
             $('#health-organization').css({ 'color':color });
             $('#health-score').text('Health: ' + display + '%');
         }
