@@ -13,7 +13,7 @@ function WatsonTicket(ticketid) {
             var data = jQuery.parseJSON(result);
             var percentage = data.TicketSentimentScore / 1000;
             var reverse = 1 - percentage;
-            var display = percentage * 100;
+            var display = parseInt(percentage * 100);
             var color = getColor(reverse);
             console.log(data.TicketSentimentScore + ' / ' + color);
             $('#health-ticket').css({ 'border-color':color }).css({ 'background-color':'#FFFFFF' });
