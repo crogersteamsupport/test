@@ -1,15 +1,15 @@
 #health-ticket {
     padding:2px;
-    background-color: #EEE;
-    -webkit-box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.1);
-    box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.1);
+    background-color: #F8F8F8;
+    -webkit-box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.05);
+    box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.05);
     border-radius:5px;
     border:2px solid rgba(0,0,0,0.2);
     max-width:100px;
     height:29px;
     text-align:center;
     vertical-align:middle;
-    line-height:23px;
+    line-height:22px;
     font-size:10px;
     color:rgba(0,0,0,0.7);
     text-shadow:1px 1px 0px rgba(0,0,0,0.1);
