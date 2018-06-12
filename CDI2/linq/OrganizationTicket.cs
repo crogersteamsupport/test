@@ -7,8 +7,12 @@ using System.Data.Linq.Mapping;
 
 namespace TeamSupport.CDI.linq
 {
+    /// <summary> 
+    /// [dbo].[OrganizationTickets] 
+    /// Client Tickets (customer is Organization.Parent) 
+    /// </summary>
     [Table(Name = "OrganizationTickets")]
-    class OrganizationTickets
+    class OrganizationTicket
     {
 #pragma warning disable CS0649  // Field is never assigned to, and will always have its default value null
         int _ticketID;

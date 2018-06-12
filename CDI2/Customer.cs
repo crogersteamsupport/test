@@ -15,7 +15,7 @@ namespace TeamSupport.CDI
     {
         OrganizationAnalysis _organizationAnalysis;
         public HashSet<Client> _clients;
-        IntervalPercentiles _percentiles;
+        MetricPercentiles _percentiles;
         //ICDIStrategy _iCdiStrategy;
 
         public Customer(OrganizationAnalysis organizationAnalysis)
@@ -59,7 +59,6 @@ namespace TeamSupport.CDI
 
         public void AnalyzeTickets()
         {
-            //_organizationAnalysis.GenerateIntervals();
             foreach (Client client in _clients)
                 client.AnalyzeTickets();
         }
@@ -77,6 +76,7 @@ namespace TeamSupport.CDI
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (DataContext db = new DataContext(connection))
                 {
+                    //db.Log = CDIEventLog.Instance;
                     Table<linq.CDI_Settings> table = db.GetTable<linq.CDI_Settings>();
                     _weights = table.Where(s => s.OrganizationID==organizationID).FirstOrDefault();
                     if(_weights != null)
@@ -86,7 +86,7 @@ namespace TeamSupport.CDI
             }
             catch (Exception e)
             {
-                CDIEventLog.WriteEntry("CDI_Settings Read failed", e);
+                CDIEventLog.Instance.WriteEntry("CDI_Settings Read failed", e);
             }
 
             if ((_weights == null) ||
@@ -113,14 +113,14 @@ namespace TeamSupport.CDI
         public void InvokeCDIStrategy()
         {
             // calculate the percentiles for the client metrics
-            List<IntervalData> clientIntervals = new List<IntervalData>();
+            List<Metrics> clientIntervals = new List<Metrics>();
             foreach (Client client in _clients)
             {
-                IntervalData current = client.GetCDIIntervalData();
+                Metrics current = client.GetCDIIntervalData();
                 if(current != null)
                     clientIntervals.Add(current);
             }
-            _percentiles = new IntervalPercentiles(clientIntervals);
+            _percentiles = new MetricPercentiles(clientIntervals);
 
             // construct the customer strategy
             //_iCdiStrategy = new CustomerPercentileStrategy(clientIntervals, Callback);
@@ -132,15 +132,24 @@ namespace TeamSupport.CDI
                 client.InvokeCDIStrategy(_percentiles, settings);
         }
 
-        //public void Callback()
-        //{
-        //    if (_clients == null)
-        //        return;
+        public void Write()
+        {
+            CDIEventLog.Instance.WriteLine("------------------------------------------");
+            List<Metrics> raw = new List<Metrics>();
+            foreach (Client client in _clients)
+                raw.Add(client.RawMetrics);
+            Metrics.Write(raw);
 
-        //    // run strategy against each client
-        //    foreach (Client client in _clients)
-        //        client.InvokeCDIStrategy(_iCdiStrategy);
-        //}
+            CDIEventLog.Instance.WriteLine("------------------------------------------");
+            raw.Clear();
+            foreach (Client client in _clients)
+                raw.Add(client.NormalizedMetrics);
+            Metrics.Write(raw);
+
+            //IntervalData.WriteHeader();
+            //foreach (Client client in _clients)
+            //    CDIEventLog.Instance.WriteLine("{0}\t{1}", client.OrganizationID, client.NormalizedMetrics.ToString());
+        }
 
         public override string ToString()
         {
@@ -149,39 +158,21 @@ namespace TeamSupport.CDI
 
         public void WriteCdiByOrganization()
         {
-            CDIEventLog.WriteLine("------------------------------------------");
-            CDIEventLog.WriteLine(_organizationAnalysis.OrganizationID.ToString());
-            CDIEventLog.WriteLine("------------------------------------------");
-            //CDIEventLog.Write("ClientID\tClient\tActiveWeeks\tCDI\tCDI-2\t");
+            CDIEventLog.Instance.WriteLine("------------------------------------------");
+            CDIEventLog.Instance.WriteLine(_organizationAnalysis.OrganizationID.ToString());
+            CDIEventLog.Instance.WriteLine("------------------------------------------");
+            //CDIEventLog.Instance.Write("ClientID\tClient\tActiveWeeks\tCDI\tCDI-2\t");
 
-            CDIEventLog.Write("ClientID\tClient\tCreatedLast30\tTotalTicketsCreated\tCDI\tnew\ttotal\tCDI-2\t");
+            CDIEventLog.Instance.Write("ClientID\tClient\tCreatedLast30\tTotalTicketsCreated\tCDI\tnew\ttotal\tCDI-2\t");
 
-            IntervalData.WriteHeader();
+            Metrics.WriteHeader();
             foreach (Client client in _clients)
                 client.WriteCdiByOrganization(_organizationAnalysis.Intervals[0]._timeStamp);
         }
 
-        public void WriteIntervals()
-        {
-            CDIEventLog.WriteLine("------------------------------------------");
-            CDIEventLog.WriteLine(_organizationAnalysis.OrganizationID.ToString());
-            CDIEventLog.WriteLine("------------------------------------------");
-            _organizationAnalysis.WriteItervals();
-        }
-
-        public void WriteIntervals(int clientID)
-        {
-            //CDIEventLog.Write("ClientID\tClient\t");
-            //IntervalData.WriteHeader();
-
-            //Client client = _clients.Where(c => c.ClientOrganizationID.HasValue && (c.ClientOrganizationID == clientID)).FirstOrDefault();
-            //if (client != null)
-            //    client.WriteIntervals();
-        }
-
         public void WriteClients()
         {
-            CDIEventLog.WriteLine("ClientID\tClient\tTotalTicketsCreated\tTicketsOpen\tCreatedLast30\tAvgTimeOpen\tAvgTimeToClose\tCustDisIndex\tDate\tTotalTicketsCreated\tTicketsOpen\tCreatedLast30\tAvgTimeOpen\tAvgTimeToClose\tCustDisIndex-2" +
+            CDIEventLog.Instance.WriteLine("ClientID\tClient\tTotalTicketsCreated\tTicketsOpen\tCreatedLast30\tAvgTimeOpen\tAvgTimeToClose\tCustDisIndex\tDate\tTotalTicketsCreated\tTicketsOpen\tCreatedLast30\tAvgTimeOpen\tAvgTimeToClose\tCustDisIndex-2" +
                 "CDI-2");
             foreach (Client client in _clients)
                 client.Write();

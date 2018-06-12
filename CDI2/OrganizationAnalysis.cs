@@ -13,12 +13,15 @@ namespace TeamSupport.CDI
     /// </summary>
     public interface ICDIStrategy
     {
-        IntervalData GetCDIIntervalData();
-        void InvokeCDIStrategy(IntervalPercentiles clientPercentiles, linq.CDI_Settings weights);
+        Metrics CalculateRawMetrics();
+        void InvokeCDIStrategy(MetricPercentiles clientPercentiles, linq.CDI_Settings weights);
         void Save(DataContext db);
         void Save(Table<linq.CustDistHistory> table);
-        int GetCDI(IntervalData interval, IntervalData normalized, linq.CDI_Settings weights, Dictionary<Metrics, Percentile> _percentiles);
-        IntervalData CDI { get; }
+        int? CDI { get; }
+
+        // for unit testing
+        Metrics RawMetrics { get; }
+        Metrics NormalizedMetrics { get; }
     }
 
 
@@ -32,7 +35,7 @@ namespace TeamSupport.CDI
         public int OrganizationID { get { return Tickets[0].OrganizationID; } }
         public int ParentID { get { return Tickets[0].ParentID.Value; } }
         IntervalStrategy _intervalStrategy;
-        public List<IntervalData> Intervals { get; private set; }
+        public List<Metrics> Intervals { get; private set; }
         //public int CreatorIDCount { get; private set; }
         //public int TicketCount { get; private set; }
 
@@ -60,11 +63,11 @@ namespace TeamSupport.CDI
             }
             catch(Exception ex)
             {
-                CDIEventLog.WriteEntry("New organization failed", ex);
+                CDIEventLog.Instance.WriteEntry("New organization failed", ex);
             }
         }
 
-        public IntervalData Current()
+        public Metrics Current()
         {
             if (Intervals.Last()._timeStamp == _dateRange.EndDate)
                 return Intervals.Last();
@@ -82,7 +85,7 @@ namespace TeamSupport.CDI
             double[] daysOpen = Tickets.Where(t => !t.IsClosed && !t.DateClosed.HasValue).Select(t => t.TotalDaysOpenToTimestamp(DateRange.EndTimeNow)).ToArray();
             if (daysOpen.Length == 0)
                 return 0;
-            return IntervalData.Median(daysOpen).Value;
+            return Metrics.Median(daysOpen).Value;
         }
 
         public override string ToString()
@@ -111,9 +114,9 @@ namespace TeamSupport.CDI
 
         public void WriteItervals()
         {
-            IntervalData.WriteHeader();
-            foreach (IntervalData interval in Intervals)
-                CDIEventLog.WriteLine(interval.ToString());
+            Metrics.WriteHeader();
+            foreach (Metrics interval in Intervals)
+                CDIEventLog.Instance.WriteLine(interval.ToString());
         }
 
     }

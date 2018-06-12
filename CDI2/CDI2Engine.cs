@@ -39,7 +39,7 @@ namespace TeamSupport.CDI
         void VerboseLog(string text)
         {
             if (_verboseLog)
-                CDIEventLog.WriteEntry(text);
+                CDIEventLog.Instance.WriteEntry(text);
             else
                 Console.WriteLine(text);    // command line execution
         }
@@ -50,7 +50,7 @@ namespace TeamSupport.CDI
                 _verboseLog = true;
 
             // Load the tickets
-            CDIEventLog.WriteEntry("CDI Update started...");
+            CDIEventLog.Instance.WriteEntry("CDI Update started...");
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             if (args.Contains("ForceCDIUpdate"))
@@ -76,11 +76,13 @@ namespace TeamSupport.CDI
             foreach (Customer customer in _customers)
             {
                 customer.InvokeCDIStrategy();
-                //Statistics stats = new Statistics(customer);
+                //customer.Write();
+
+                //OptimalWeighting stats = new OptimalWeighting(customer);
                 //stats.CalculatePercentiles();
                 //stats.FindOptimalMix();
             }
-            CDIEventLog.WriteEntry(String.Format("CDI values generated in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000.0));
+            CDIEventLog.Instance.WriteEntry(String.Format("CDI values generated in {0:0.00} sec", stopwatch.ElapsedMilliseconds / 1000.0));
 
             // Save to Client Organizations
             stopwatch.Restart();
@@ -130,6 +132,7 @@ namespace TeamSupport.CDI
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (DataContext db = new DataContext(connection))
                 {
+                    //db.Log = CDIEventLog.Instance;
                     foreach (Customer customer in _customers)
                         customer.Save(db);
                     db.SubmitChanges();
@@ -137,7 +140,7 @@ namespace TeamSupport.CDI
             }
             catch (Exception e)
             {
-                CDIEventLog.WriteEntry("Save failed", e);
+                CDIEventLog.Instance.WriteEntry("Save failed", e);
             }
         }
 
@@ -150,6 +153,7 @@ namespace TeamSupport.CDI
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (DataContext db = new DataContext(connection))
                 {
+                    //db.Log = CDIEventLog.Instance;
                     Table<CustDistHistory> table = db.GetTable<CustDistHistory>();
                     foreach (Customer customer in _customers)
                         customer.Save(table);
@@ -158,7 +162,7 @@ namespace TeamSupport.CDI
             }
             catch (Exception e)
             {
-                CDIEventLog.WriteEntry("Save failed", e);
+                CDIEventLog.Instance.WriteEntry("Save failed", e);
             }
         }
 
@@ -175,10 +179,10 @@ namespace TeamSupport.CDI
                         if (TryGetCustomer(int.Parse(args[++i]), out customer))
                             customer.WriteCdiByOrganization();
                         break;
-                    case "customerIntervals":
-                        if (TryGetCustomer(int.Parse(args[++i]), out customer))
-                            customer.WriteIntervals();
-                        break;
+                    //case "customerIntervals":
+                    //    if (TryGetCustomer(int.Parse(args[++i]), out customer))
+                    //        customer.WriteIntervals();
+                    //    break;
                     case "clients":
                         if (TryGetCustomer(int.Parse(args[++i]), out customer))
                             customer.WriteClients();

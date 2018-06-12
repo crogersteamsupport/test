@@ -7,6 +7,10 @@ using System.Data.Linq.Mapping;
 
 namespace TeamSupport.CDI.linq
 {
+    /// <summary> 
+    /// [dbo].[TicketStatuses] 
+    /// The status values allowed for an organization
+    /// </summary>
     [Table(Name = "TicketStatuses")]
     class TicketStatus
     {

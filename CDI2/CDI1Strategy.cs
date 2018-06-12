@@ -21,77 +21,111 @@ namespace TeamSupport.CDI
     class CDI1Strategy : ICDIStrategy
     {
         OrganizationAnalysis _organizationAnalysis;
-        IntervalData _cdiData;
+        Metrics _rawMetrics;
+        Metrics _normalizedMetrics;
 
         public CDI1Strategy(OrganizationAnalysis organizationAnalysis)
         {
             _organizationAnalysis = organizationAnalysis;
         }
 
-        public IntervalData CDI { get { return _cdiData; } }
+        public Metrics RawMetrics { get { return _rawMetrics; } }
+        public Metrics NormalizedMetrics { get { return _normalizedMetrics; } }
+        public int? CDI { get { return RawMetrics.CDI; } }  // note that _rawMetrics.CDI == _normalizedMetrics.CDI
 
-        public IntervalData GetCDIIntervalData()
+        public Metrics CalculateRawMetrics()
         {
-            IntervalData end = _organizationAnalysis.Current();
+            Metrics end = _organizationAnalysis.Current();
             if (end == null)
             {
-                IntervalData last = _organizationAnalysis.Intervals.Last();
-                _cdiData = new IntervalData()
+                Metrics last = _organizationAnalysis.Intervals.Last();
+                _rawMetrics = new Metrics()
                 {
                     _timeStamp = _organizationAnalysis._dateRange.EndDate,
                     _totalTicketsCreated = last._totalTicketsCreated,
                     _newCount = 0,
                     _openCount = last._openCount,
-                    _medianDaysOpen = _organizationAnalysis.MedianDaysOpen()
+                    _closedCount = 0,
+                    _medianDaysOpen = _organizationAnalysis.MedianDaysOpen(),
+                    _averageSeverity = last._averageSeverity,
+                    _averageActionCount = last._averageActionCount,
+                    _averageSentimentScore = last._averageSentimentScore
                 };
             }
             else
             {
-                _cdiData = new IntervalData()
+                _rawMetrics = new Metrics()
                 {
                     _timeStamp = end._timeStamp,
                     _totalTicketsCreated = end._totalTicketsCreated, // 1. TotalTicketsCreated
                     _newCount = end._newCount, // 2. CreatedLast30
                     _openCount = end._openCount,   // 3. TicketsOpen
+                    _closedCount = end._closedCount,
                     _medianDaysOpen = end._medianDaysOpen, // 4. AvgTimeOpen
+                    _averageSeverity = end._averageSeverity,
+                    _averageActionCount = end._averageActionCount,
+                    _averageSentimentScore = end._averageSentimentScore
                 };
             }
 
-            _cdiData._medianDaysToClose = IntervalData.MedianTotalDaysToClose(_organizationAnalysis.Tickets);  // 5. AvgTimeToClose
-            return _cdiData;
+            _rawMetrics._medianDaysToClose = Metrics.MedianTotalDaysToClose(_organizationAnalysis.Tickets);  // 5. AvgTimeToClose
+            return _rawMetrics;
         }
 
-        public void InvokeCDIStrategy(IntervalPercentiles clientPercentiles, linq.CDI_Settings weights)
+        /// <summary> 
+        /// CDI2 
+        /// temporarily turn off weights...
+        /// </summary>
+        public void InvokeCDIStrategy2(MetricPercentiles clientPercentiles, linq.CDI_Settings weights)
         {
-            clientPercentiles.CDI(_cdiData, weights, this);
+            _normalizedMetrics = clientPercentiles.Normalize(_rawMetrics);
+
+            List<double> result = new List<double>();
+            foreach (EMetrics metric in Enum.GetValues(typeof(EMetrics)))
+            {
+                double? value = _normalizedMetrics.GetAsCDIPercentile(metric);
+                double? weight = weights.Get(metric);
+
+                if (value.HasValue)
+                    result.Add(value.Value);
+            }
+            _normalizedMetrics.CDI = _rawMetrics.CDI = (int)Math.Round(result.Average());
+        }
+
+        /// <summary> CDI1 </summary>
+        public void InvokeCDIStrategy(MetricPercentiles clientPercentiles, linq.CDI_Settings weights)
+        {
+            _normalizedMetrics = clientPercentiles.Normalize(_rawMetrics);
+
+            double result = 0;
+            foreach (EMetrics metric in Enum.GetValues(typeof(EMetrics)))
+            {
+                double? value = _normalizedMetrics.GetAsCDIPercentile(metric);
+                double? weight = weights.Get(metric);
+                if (value.HasValue && weight.HasValue)
+                    result += value.Value * weight.Value;
+            }
+
+            // square it to get a better distribution?
+            _normalizedMetrics.CDI = _rawMetrics.CDI = (int)Math.Round(result);
         }
 
         public string ToStringCDI1()
         {
             //return _organizationAnalysis.ToString();
-            if (_cdiData == null)
+            if (_rawMetrics == null)
                 return string.Empty;
-            return _cdiData.ToStringCDI1();
+            return _rawMetrics.ToStringCDI1();
         }
 
         /// <summary>
-        /// The linq to sql save is very slow, including a WHERE clause for an exact record match.
-        /// Thus use a hard-coded update
+        /// The linq to sql update compares object tracking as well as uses parameterization to protect
+        /// against sql-injection attackes. Thus use a hard-coded update here...
         /// </summary>
         /// <param name="db"></param>
         public void Save(DataContext db)
         {
-            // Organization
-            string updateQuery = String.Format(@"UPDATE Organizations SET TotalTicketsCreated = {0}, TicketsOpen = {1}, CreatedLast30 = {2}, AvgTimeOpen = {3}, AvgTimeToClose = {4}, CustDisIndex = {5}, CustDistIndexTrend = {6} WHERE OrganizationID = {7}",
-                _cdiData._totalTicketsCreated,  // TotalTicketsCreated
-                _cdiData._openCount,    // TicketsOpen
-                _cdiData._newCount, // CreatedLast30
-                (int)Math.Round(_cdiData._medianDaysOpen),  // AvgTimeOpen
-                _cdiData._medianDaysToClose.HasValue ? (int)Math.Round(_cdiData._medianDaysToClose.Value) : 0,  // AvgTimeToClose
-                _cdiData.CDI.Value, // CustDisIndex
-                0,  // CustDistIndexTrend
-                _organizationAnalysis.OrganizationID);    // OrganizationID
-            db.ExecuteCommand(updateQuery);
+            db.ExecuteCommand(linq.Organization.RawUpdateQuery(_rawMetrics, _organizationAnalysis.OrganizationID));
         }
 
         public void Save(Table<linq.CustDistHistory> table)
@@ -103,13 +137,13 @@ namespace TeamSupport.CDI
                     ParentOrganizationID = _organizationAnalysis.ParentID,
                     OrganizationID = _organizationAnalysis.OrganizationID,
                     CDIDate = DateRange.EndTimeNow,
-                    CDIValue = _cdiData.CDI.Value
+                    CDIValue = _rawMetrics.CDI.Value
                 };
                 table.InsertOnSubmit(history);
             }
             catch (Exception e)
             {
-                CDIEventLog.WriteEntry("Save failed", e);
+                CDIEventLog.Instance.WriteEntry("Save failed", e);
             }
         }
 
@@ -122,19 +156,19 @@ namespace TeamSupport.CDI
                         metrics.AvgTimeToClose * settings.AvgDaysToCloseWeight.Value;
         }
 
-        public int GetCDI(IntervalData interval, IntervalData normalized, linq.CDI_Settings weights, Dictionary<Metrics, Percentile> _percentiles)
+        public int GetCDI1(Metrics interval, Metrics normalized, linq.CDI_Settings weights, Dictionary<EMetrics, Percentile> _percentiles)
         {
             // Create the CDI from the normalized fields
             CDI1 cdi = new CDI1()
             {
-                TotalTicketsCreated = _percentiles[Metrics.TotalTickets].AsPercentile(interval._totalTicketsCreated),
-                TicketsOpen = _percentiles[Metrics.Open].AsPercentile(interval._openCount),
-                CreatedLast30 = _percentiles[Metrics.New].AsPercentile(interval._newCount),
-                AvgTimeOpen = _percentiles[Metrics.DaysOpen].AsPercentile(interval._medianDaysOpen),
+                TotalTicketsCreated = _percentiles[EMetrics.TotalTickets].AsPercentile(interval._totalTicketsCreated),
+                TicketsOpen = _percentiles[EMetrics.Open].AsPercentile(interval._openCount),
+                CreatedLast30 = _percentiles[EMetrics.New30].AsPercentile(interval._newCount),
+                AvgTimeOpen = _percentiles[EMetrics.DaysOpen].AsPercentile(interval._medianDaysOpen),
             };
 
-            if ((_percentiles[Metrics.DaysToClose] != null) && interval._medianDaysToClose.HasValue)
-                cdi.AvgTimeToClose = _percentiles[Metrics.DaysToClose].AsPercentile(interval._medianDaysToClose.Value);
+            if ((_percentiles[EMetrics.DaysToClose] != null) && interval._medianDaysToClose.HasValue)
+                cdi.AvgTimeToClose = _percentiles[EMetrics.DaysToClose].AsPercentile(interval._medianDaysToClose.Value);
 
             double CustDisIndex = GetCDI(cdi, weights);
             normalized.CDI = (int)Math.Round(CustDisIndex);

@@ -49,9 +49,9 @@ namespace TeamSupport.CDI
         /// Sample the days open at the specified interval
         /// </summary>
         /// <param name="dateRange">how often do we sample - daily, weekly,... </param>
-        public List<IntervalData> GenerateIntervalData(DateRange dateRange)
+        public List<Metrics> GenerateIntervalData(DateRange dateRange)
         {
-            List<IntervalData> results = new List<IntervalData>();
+            List<Metrics> results = new List<Metrics>();
             try
             {
                 // tickets open at that moment in time
@@ -77,16 +77,12 @@ namespace TeamSupport.CDI
                         if ((currentlyOpenTickets.Count() > 0) || (intervalClosedTickets.Count() > 0) || (newTicketsCount > 0))
                         {
                             totalTicketsCreated += newTicketsCount;
-                            results.Add(new IntervalData(nextInterval, currentlyOpenTickets, intervalClosedTickets, newTicketsCount, totalTicketsCreated));
+                            results.Add(new Metrics(nextInterval, currentlyOpenTickets, intervalClosedTickets, newTicketsCount, totalTicketsCreated));
                             intervalClosedTickets.Clear();
                             newTicketsCount = 0;
                         }
                         nextInterval += dateRange.IntervalTimeSpan;
                     }
-
-                    // running list of open and closed tickets
-                    //if (pair.Item2.DateClosed.HasValue && (pair.Item2.DateCreated == pair.Item2.DateClosed.Value))
-                    //    Debugger.Break();
 
                     if (pair.Item1 == pair.Item2.DateCreated)
                     {
@@ -101,34 +97,34 @@ namespace TeamSupport.CDI
                 }
 
                 // the final interval
-                results.Add(new IntervalData(nextInterval, currentlyOpenTickets, intervalClosedTickets, newTicketsCount, totalTicketsCreated + newTicketsCount));
+                results.Add(new Metrics(nextInterval, currentlyOpenTickets, intervalClosedTickets, newTicketsCount, totalTicketsCreated + newTicketsCount));
             }
             catch (Exception e)
             {
-                CDIEventLog.WriteEntry("AnalyzeDaysOpen failed", e);
+                CDIEventLog.Instance.WriteEntry("AnalyzeDaysOpen failed", e);
             }
 
             return results;
         }
 
         /// <summary> Count the days open </summary>
-        void TimeOpenHistogram(TimeScale timeScale)
-        {
-            CDIEventLog.WriteLine("TimeOpen({0})	TicketCount", timeScale);
-            TallyDictionary<int> open = new TallyDictionary<int>();
-            foreach (TicketJoin t in _tickets)
-            {
-                int timeOpen = (int)Math.Round(t.ScaledTimeOpen(timeScale));
-                open.Increment(timeOpen);
-            }
+        //void TimeOpenHistogram(TimeScale timeScale)
+        //{
+        //    CDIEventLog.Instance.WriteLine("TimeOpen({0})	TicketCount", timeScale);
+        //    TallyDictionary<int> open = new TallyDictionary<int>();
+        //    foreach (TicketJoin t in _tickets)
+        //    {
+        //        int timeOpen = (int)Math.Round(t.ScaledTimeOpen(timeScale));
+        //        open.Increment(timeOpen);
+        //    }
 
-            open.Write();
-        }
+        //    open.Write();
+        //}
 
         /// <summary> Count the ticket types </summary>
         //void TicketTypeHistogram(TimeScale timeScale)
         //{
-        //    CDIEventLog.WriteLine("TicketType({0})	TicketCount", timeScale);
+        //    CDIEventLog.Instance.WriteLine("TicketType({0})	TicketCount", timeScale);
         //    TallyDictionary<string> open = new TallyDictionary<string>();
         //    foreach (TicketJoin t in _tickets)
         //        open.Increment(t.TicketTypeName);
@@ -137,14 +133,14 @@ namespace TeamSupport.CDI
         //}
 
         /// <summary> Count the ticket types </summary>
-        void TicketDateCreatedHistogram(DateRange dateRange)
-        {
-            TallyDictionary<DateTime> open = new TallyDictionary<DateTime>();
-            foreach (TicketJoin t in _tickets)
-                open.Increment(dateRange.TonightMidnight(t.DateCreated));
+        //void TicketDateCreatedHistogram(DateRange dateRange)
+        //{
+        //    TallyDictionary<DateTime> open = new TallyDictionary<DateTime>();
+        //    foreach (TicketJoin t in _tickets)
+        //        open.Increment(dateRange.TonightMidnight(t.DateCreated));
 
-            open.Write();
-        }
+        //    open.Write();
+        //}
     }
 }
 

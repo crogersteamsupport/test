@@ -9,15 +9,28 @@ namespace TeamSupport.CDI
 {
     /// <summary>
     /// Send detailed logging to TeamSupport custom log
+    /// Inheriting from TextWriter allows it to be used as DataContext.Log = CDIEventLog
     /// </summary>
-    class CDIEventLog
+    class CDIEventLog : System.IO.TextWriter
     {
-        public static EventLog _eventLog;
+        public static CDIEventLog Instance = new CDIEventLog();
+
+        public EventLog _eventLog;
+
+        public override void Write(char[] buffer, int index, int count)
+        {
+            Write(new String(buffer, index, count));
+        }
+
+        public override Encoding Encoding
+        {
+            get { return Encoding.Default; }
+        }
 
         /// <summary>
         /// Static constructor
         /// </summary>
-        static CDIEventLog()
+        CDIEventLog()
         {
             try
             {
@@ -37,12 +50,11 @@ namespace TeamSupport.CDI
                 EventLog.WriteEntry("Application", "Unable to open TeamSupport log on CDI-2 source");
             }
         }
-        static bool _IsDebuggerAttached = Debugger.IsAttached;
+        bool _IsDebuggerAttached = Debugger.IsAttached;
 
-        public static void WriteLine(string format, params object[] args) { WriteEntry(String.Format(format, args)); }
-        public static void WriteLine(string message) { WriteEntry(message); }
+        public override void WriteLine(string message) { WriteEntry(message); }
 
-        public static void Write(string message)
+        public override void Write(string message)
         {
             Console.Write(message);
             if (_IsDebuggerAttached)
@@ -51,7 +63,7 @@ namespace TeamSupport.CDI
                 _eventLog.WriteEntry(message, EventLogEntryType.Information);
         }
 
-        public static void WriteEntry(string message, EventLogEntryType type = EventLogEntryType.Information)
+        public void WriteEntry(string message, EventLogEntryType type = EventLogEntryType.Information)
         {
             Console.WriteLine(message);
             if (_IsDebuggerAttached)
@@ -60,7 +72,7 @@ namespace TeamSupport.CDI
                 _eventLog.WriteEntry(message, type);
         }
 
-        public static void WriteEntry(string message, Exception e)
+        public void WriteEntry(string message, Exception e)
         {
             if (_IsDebuggerAttached)
                 Debugger.Break();
