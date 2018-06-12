@@ -17,7 +17,7 @@ function WatsonTicket(ticketid) {
             var color = getColor(reverse);
             console.log(data.TicketSentimentScore + ' / ' + color);
             $('#health-ticket').css({ 'border-color':color }).css({ 'background-color':'#FFFFFF' });
-            $('#health-message').css({ 'opacity':'1' }).text('Health is ' + display + '%');
+            $('#health-message').css({ 'opacity':'1' }).text('Health ' + display + '%');
         } else {
             var color = getColor(0.100);
             console.log(color);
