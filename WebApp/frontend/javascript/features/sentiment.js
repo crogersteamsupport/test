@@ -16,8 +16,8 @@ function WatsonTicket(ticketid) {
             var display = percentage * 100;
             var color = getColor(reverse);
             console.log(data.TicketSentimentScore + ' / ' + color);
-            $('#ticketSentiment').css({ 'color':color });
-            $('#health-ticket').text('Ticket Health: ' + display + '%');
+            $('#health-ticket').css({ 'color':color });
+            $('#health-message').text('Health is ' + display + '%');
         } else {
             var color = getColor(0.100);
             console.log(color);
@@ -36,8 +36,8 @@ function WatsonCustomer(organizationID) {
             var display = percentage * 100;
             var color = getColor(reverse);
             console.log(e + ' / ' + color);
-            $('#health-organization').css({ 'color':color });
-            $('#health-percentage').text('Health: ' + display + '%');
+            $('#health-ticket').css({ 'background-color':color });
+            $('#health-message').text('Health is ' + display + '%');
         }
     });
 }
