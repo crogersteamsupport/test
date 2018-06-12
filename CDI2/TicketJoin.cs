@@ -7,35 +7,51 @@ using System.Data.Linq.Mapping;
 
 namespace TeamSupport.CDI
 {
+    public enum TimeScale
+    {
+        Minutes,
+        Hours,
+        Days,
+        Weeks
+    }
+
     public class TicketJoin : IComparable<TicketJoin>
     {
-        //public int TicketID;
-        //public string TicketStatusName;
-        //public string TicketTypeName;
         public int OrganizationID;
         public DateTime? DateClosed;
-        //public string TicketSource;
         public DateTime DateCreated;
         public int ActionsCount;
         public bool IsClosed;
-        public int? TicketSentimentScore;
+        public double? AverageActionSentiment;
+        public int? ParentID;
+        public int? Severity;
+        //public int CreatorID;
 
         public int CompareTo(TicketJoin other) { return DateCreated.CompareTo(other.DateCreated); }
-        public TimeSpan TimeOpen
+
+        public double? TotalDaysToClose
         {
             get
             {
-                DateTime dateClosed = (IsClosed && DateClosed.HasValue) ? DateClosed.Value : DateRange.EndTimeNow;
-                return dateClosed - DateCreated;
+                double? result = null;
+                if (IsClosed && DateClosed.HasValue)
+                    result = (DateClosed.Value - DateCreated).TotalDays;
+                return result;
             }
         }
-
-        public double TotalDaysOpen { get { return TimeOpen.TotalDays; } }
-        public override string ToString() { return String.Format("{0} {1:0.00}", DateCreated.ToShortDateString(), TimeOpen.TotalMinutes); }
+        public double TotalDaysOpenToTimestamp(DateTime timestamp)
+        {
+            DateTime endTime = (DateClosed.HasValue && (DateClosed.Value < timestamp)) ? DateClosed.Value : timestamp;
+            TimeSpan span = endTime - DateCreated;
+            return span.TotalDays;
+        }
 
         public double ScaledTimeOpen(TimeScale scale)
         {
-            TimeSpan timeSpan = TimeOpen;
+            if (!DateClosed.HasValue)
+                return 0;
+
+            TimeSpan timeSpan = DateClosed.Value - DateCreated;
             double result;
             switch (scale)
             {

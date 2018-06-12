@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Linq.Mapping;
 
-namespace TeamSupport.CDI
+namespace TeamSupport.CDI.linq
 {
     [Table(Name = "TicketSentiments")]
     class TicketSentiment
@@ -18,7 +18,7 @@ namespace TeamSupport.CDI
         [Column]
         public int TicketID;
         [Column]
-        public int TicketSentimentScore;
+        public double AverageActionSentiment;
 #pragma warning restore CS0649
     }
 }
