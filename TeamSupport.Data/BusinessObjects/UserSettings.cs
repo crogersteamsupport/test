@@ -123,7 +123,7 @@ IF EXISTS(SELECT * FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@Set
 					command.Parameters.AddWithValue("@SettingKey", key);
 					command.Parameters.AddWithValue("@SettingValue", value);
                     command.Parameters.AddWithValue("@Category", category);
-                    
+
 
                     command.ExecuteNonQuery();
 				}
@@ -131,6 +131,56 @@ IF EXISTS(SELECT * FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@Set
 			}
 		}
 
-        //TODO:  Add read category method
+        public static string PullSettings(LoginUser loginUser, int userID) {
+            try {
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString)) {
+                    using (SqlCommand command = new SqlCommand()) {
+                        command.Connection  = connection;
+                        command.CommandType = CommandType.Text;
+                        command.CommandText = "SELECT SettingKey, SettingValue, Category FROM UserSettings WHERE UserID = @UserID AND Category = 'notification' FOR JSON PATH, ROOT('userSettings')";
+                        command.Parameters.AddWithValue("@UserID", userID);
+                        connection.Open();
+                        SqlDataReader reader = command.ExecuteReader();
+                        if (reader.HasRows && reader.Read()) {
+                            return reader.GetValue(0).ToString();
+                        } else {
+                            return "nothing";
+                        }
+                    }
+                }
+            } catch (SqlException e) {
+                return "negative";
+            } catch (Exception e) {
+                return "negative";
+            }
+        }
+
+        public static string UpdateSetting(LoginUser loginUser, string key, string value, string category = "general") {
+            try {
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString)) {
+                    using (SqlCommand command = new SqlCommand()) {
+                        command.Connection   = connection;
+                        command.CommandText  = "BEGIN TRAN ";
+                        command.CommandText += "IF EXISTS (SELECT * FROM dbo.UserSettings WHERE SettingKey = @key AND UserID = @UserID) ";
+                        command.CommandText += "BEGIN UPDATE dbo.UserSettings SET SettingValue = @value, DateModified = @DateTime WHERE UserID = @UserID AND SettingKey = @key END ";
+                        command.CommandText += "ELSE BEGIN INSERT dbo.UserSettings (UserID, SettingKey, SettingValue, DateCreated, CreatorID, Category) VALUES (@UserID, @key, @value, @DateTime, @UserID, @Category) END ";
+                        command.CommandText += "COMMIT TRAN";
+                        command.CommandType = CommandType.Text;
+                        command.Parameters.AddWithValue("@UserID", loginUser.UserID);
+                        command.Parameters.AddWithValue("@key", key);
+                        command.Parameters.AddWithValue("@value", value);
+                        command.Parameters.AddWithValue("@category", category);
+                        command.Parameters.AddWithValue("@DateTime", DateTime.UtcNow);
+                        connection.Open();
+                        Int32 result = command.ExecuteNonQuery();
+                        return (result > 0) ? "positive" : "negative";
+                    }
+                }
+            } catch (SqlException e) {
+                return "fault";
+            } catch (Exception e) {
+                return "fault";
+            }
+        }
 	}
 }

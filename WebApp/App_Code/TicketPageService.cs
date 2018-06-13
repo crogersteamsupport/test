@@ -404,8 +404,7 @@ namespace TSWebServices
 
             if (organization.ProductType == ProductType.Enterprise)
             {
-                reminderCatName = @",{'CatID':'hr','CatName':'Line Break','Disabled':'false'},
-                    {'CatID':'Tasks','CatName':'Tasks','Disabled':'false'}";
+                reminderCatName = ",{'CatID':'Sentiment','CatName':'Sentiment','Disabled':'false'},{'CatID':'hr','CatName':'Line Break','Disabled':'false'},{'CatID':'Tasks','CatName':'Tasks','Disabled':'false'}";
                 if (KeyName == "NewTicketFieldsOrder")
                 {
                     reminderCatName = string.Empty;
@@ -436,8 +435,8 @@ namespace TSWebServices
                 {'CatID':'hr','CatName':'Line Break','Disabled':'false'},
                 {'CatID':'Inventory','CatName':'Inventory','Disabled':'false'},
                 {'CatID':'hr','CatName':'Line Break','Disabled':'false'},
-                {'CatID':'Tags','CatName':'Tags','Disabled':'false'}" 
-                + reminderCatName 
+                {'CatID':'Tags','CatName':'Tags','Disabled':'false'}"
+                + reminderCatName
                 + @",{'CatID':'hr','CatName':'Line Break','Disabled':'false'},
                 {'CatID':'AssociatedTickets','CatName':'Associated Tickets','Disabled':'false'},
                 {'CatID':'hr','CatName':'Line Break','Disabled':'false'},
@@ -461,9 +460,15 @@ namespace TSWebServices
             {
                 // insert after severity
                 int i = 0;
-                while (items[i].CatID != "Severity")
-                    ++i;
-                items.Insert(++i, new TicketCategoryOrder() { CatID = "Sentiment", CatName = "Sentiment", Disabled = "false" });
+                for (; i < items.Count; ++i)
+                {
+                    if (items[i].CatID == "Severity")
+                    {
+                        ++i;
+                        break;
+                    }
+                }
+                items.Insert(i, new TicketCategoryOrder() { CatID = "Sentiment", CatName = "Sentiment", Disabled = "false" });
             }
 
             return items.ToArray();
