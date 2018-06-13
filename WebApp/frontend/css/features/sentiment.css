@@ -8,7 +8,6 @@
     border:3px solid rgba(0,0,0,0.2);
     max-width:100px;
     height:29px;
-
 }
 
 #health-meter {
@@ -40,9 +39,8 @@
     opacity:0.30;
     text-align:left;
     font-size:18px;
-    line-height:18px;
+    line-height:10px;
     vertical-align:middle;
     color:rgba(255,255,255,0.7);
     text-shadow:1px 1px 0px rgba(0,0,0,0.1);
-    padding:2px 5px;
 }
