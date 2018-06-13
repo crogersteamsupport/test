@@ -16,8 +16,9 @@ function WatsonTicket(ticketid) {
             var display = parseInt(percentage * 100);
             var color = getColor(reverse);
             console.log(data.TicketSentimentScore + ' / ' + color);
-            $('#health-ticket').css({ 'border-color':color }).css({ 'background-color':'#FFFFFF' });
-            $('#health-message').css({ 'opacity':'1' }).text('Health ' + display + '%');
+            $('#health-ticket').css({ 'border-color':color }).css({ 'text-align':'left' }); // .css({ 'background-color':'#FFFFFF' });
+            $('#health-meter').css({ 'width':display + 'px' });
+            $('#health-message').css({ 'opacity':'1' }).text(display + '%');
         } else {
             var color = getColor(0.100);
             console.log(color);
@@ -40,4 +41,20 @@ function WatsonCustomer(organizationID) {
             $('#health-message').text('Health is ' + display + '%');
         }
     });
+}
+
+
+
+function meter () {
+    var elem = document.getElementById("myBar");
+    var width = 1;
+    var id = setInterval(frame, 10);
+    function frame() {
+        if (width >= 100) {
+            clearInterval(id);
+        } else {
+            width++;
+            elem.style.width = width + '%';
+        }
+    }
 }
