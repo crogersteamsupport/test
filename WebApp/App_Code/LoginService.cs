@@ -72,7 +72,7 @@ namespace TSWebServices
                         _skipVerification = false;
                     }
 
-                    if (organization.TwoStepVerificationEnabled && verificationRequired && _skipVerification)
+                    if (organization.TwoStepVerificationEnabled && verificationRequired && !_skipVerification)
                     {
                         string userVerificationPhoneNumber = user.verificationPhoneNumber;
 
@@ -200,26 +200,18 @@ namespace TSWebServices
 							users.Save();
 
 							UserDevices devices = new UserDevices(loginUser);
-							devices.LoadByUserIDAndDeviceID(users[0].UserID, GetDeviceID());
-							if (devices.IsEmpty)
-							{
-								devices = new UserDevices(loginUser);
-								UserDevice device = devices.AddNewUserDevice();
-								device.DateActivated = DateTime.UtcNow;
-								device.IsActivated = true;
-								device.DeviceID = GetDeviceID();
-								device.UserID = users[0].UserID;
-								devices.Save();
+							UserDevice device = devices.AddNewUserDevice();
+							device.DateActivated = DateTime.UtcNow;
+							device.IsActivated = true;
+							device.DeviceID = Guid.NewGuid().ToString();
+							device.UserID = users[0].UserID;
+							devices.Save();
 
-								EmailPosts.SendNewDevice(loginUser, users[0].UserID);
+							EmailPosts.SendNewDevice(loginUser, users[0].UserID);
 
-							}
-							else
-							{
-								devices[0].DateActivated = DateTime.UtcNow;
-								devices[0].IsActivated = true;
-								devices.Save();
-							}
+                            HttpCookie deviceCookie = new HttpCookie("di", device.DeviceID);
+                			deviceCookie.Expires = DateTime.Now.AddYears(14);
+                			HttpContext.Current.Response.Cookies.Add(deviceCookie);
 
 							result.Result = LoginResult.Success;
 							string authenticateResult = AuthenticateUser(users[0].UserID, users[0].OrganizationID, false, false);
@@ -640,14 +632,6 @@ namespace TSWebServices
 			LoginUser loginUser = new LoginUser(UserSession.ConnectionString, userId, organizationId, null);
 			User user = Users.GetUser(loginUser, userId);
 			string deviceID = GetDeviceID();
-
-			if (deviceID == "")
-			{
-				deviceID = Guid.NewGuid().ToString();
-				HttpCookie deviceCookie = new HttpCookie("di", deviceID);
-				deviceCookie.Expires = DateTime.Now.AddYears(14);
-				HttpContext.Current.Response.Cookies.Add(deviceCookie);
-			}
 
 			TSAuthentication.Authenticate(user, isBackDoor, deviceID);
 			if (!isBackDoor)
