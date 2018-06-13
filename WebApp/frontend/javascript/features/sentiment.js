@@ -16,9 +16,9 @@ function WatsonTicket(ticketid) {
             var display = parseInt(percentage * 100);
             var color = getColor(reverse);
             console.log(data.TicketSentimentScore + ' / ' + color);
-            $('#health-ticket').css({ 'border-color':color }).css({ 'text-align':'left' }); // .css({ 'background-color':'#FFFFFF' });
+            $('#health-ticket').css({ 'background-color':color }).css({ 'text-align':'left' });
             $('#health-meter').css({ 'width':display + 'px' });
-            $('#health-message').css({ 'opacity':'1' }).text(display + '%');
+            $('#health-message').removeClass('disabled').addClass('enabled').text(display + '%');
         } else {
             var color = getColor(0.100);
             console.log(color);
