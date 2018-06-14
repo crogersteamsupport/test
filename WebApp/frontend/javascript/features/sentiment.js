@@ -58,3 +58,23 @@ function meter () {
         }
     }
 }
+
+
+
+function WatsonTicketField(ticketid) {
+    window.parent.Ts.Services.TicketPage.WatsonTicket(ticketid, function(result) {
+        if (result != 'negative' && result != 'nothing' && result != 'hidden') {
+            var data = jQuery.parseJSON(result);
+            var display = [];
+            display.push("<strong>Emotions</strong><br>");
+            if (data.Sad) display.push("Sad<br>");
+            if (data.Frustrated) display.push("Frustrated<br>");
+            if (data.Satisfied) display.push("Satisfied<br>");
+            if (data.Excited) display.push("Excited<br>");
+            if (data.Polite) display.push("Polite<br>");
+            if (data.Impolite) display.push("Impolite<br>");
+            if (data.Sympathetic) display.push("Sympathetic<br>");
+            $('#health-emotions').append(display.join(' '));
+        }
+    });
+}

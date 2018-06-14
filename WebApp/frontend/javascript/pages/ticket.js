@@ -5783,24 +5783,6 @@ var SetSolved = function(ResolvedID) {
     }
 };
 
-function WatsonTicketField(ticketid) {
-    window.parent.Ts.Services.TicketPage.WatsonTicket(ticketid, function(result) {
-        if (result != 'negative' && result != 'nothing' && result != 'hidden') {
-            var data = jQuery.parseJSON(result);
-            var display = [];
-            display.push(data.TicketSentimentScore + " - ");
-            if (data.Sad) display.push("Sad");
-            if (data.Frustrated) display.push("Frustrated");
-            if (data.Satisfied) display.push("Satisfied");
-            if (data.Excited) display.push("Excited");
-            if (data.Polite) display.push("Polite");
-            if (data.Impolite) display.push("Impolite");
-            if (data.Sympathetic) display.push("Sympathetic");
-            $('#ticket-Sentiment').append(display.join(' '));
-        }
-    });
-}
-
 function ticketmenu() {
     var width = $('#menu-container').width();
     // $('#ticketmenu-container').css('width',width);
