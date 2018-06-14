@@ -1177,6 +1177,10 @@ namespace TSWebServices
             var notesProxy = notes.GetNoteProxies();
             foreach (var note in notesProxy)
             {
+                if (refType == ReferenceType.Users)
+                {
+                    note.Owner = Users.GetUserFullName(TSAuthentication.GetLoginUser(), note.RefID);
+                }
                 note.Attachments = LoadFiles(note.NoteID, refType == ReferenceType.Organizations ? ReferenceType.CompanyActivity : ReferenceType.ContactActivity);
                 if (note.ActivityType < 5) //default values
                 {
@@ -1208,6 +1212,10 @@ namespace TSWebServices
             foreach (var note in notesProxy)
             {
                 note.Attachments = LoadFiles(note.NoteID, refType == ReferenceType.Organizations ? ReferenceType.CompanyActivity : ReferenceType.ContactActivity);
+                if(refType == ReferenceType.Users)
+                {
+                    note.Owner = Users.GetUserFullName(TSAuthentication.GetLoginUser(), note.RefID);
+                }
                 if (note.ActivityType < 5) //default values
                 {
                     note.ActivityTypeString = Enum.GetName(typeof(ActivityTypeEnum), note.ActivityType);
