@@ -2236,7 +2236,7 @@ $(document).ready(function () {
             _mainFrame.Ts.Services.Customers.LoadNotesByUserRights(organizationID, _mainFrame.Ts.ReferenceTypes.Organizations, _isParentView, organizationID, function (note) {
                 $('#tblNotes tbody').empty();
                 var count = (note) ? note.length : 0;
-                $('#a-notes').text('Notes (' + count + ')');
+                $('#a-notes').text('Activities (' + count + ')');
                 var html;
                 for (var i = 0; i < note.length; i++) {
                     if (!_isParentView && (_isAdmin || note[i].CreatorID == _mainFrame.Ts.System.User.UserID || _mainFrame.Ts.System.User.CanEditCompany)) {
