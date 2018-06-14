@@ -1825,19 +1825,40 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public List<string> LoadNoteActivities()
+        public List<ActivityTypesDropDown> LoadNoteActivities()
         {
-            var results = new List<string>();
-            foreach (ActivityType activity in Enum.GetValues(typeof(ActivityType)))
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            var results = new List<ActivityTypesDropDown>();
+
+            ActivityTypes activities = new ActivityTypes(loginUser);
+            activities.LoadByOrganizationID(loginUser.OrganizationID);
+
+            //Get default activity types
+            foreach (ActivityTypeEnum activity in Enum.GetValues(typeof(ActivityTypeEnum)))
             {
-                results.Add(activity.ToString());
+                var value = Enum.Parse(typeof(ActivityTypeEnum), activity.ToString());
+                results.Add(new ActivityTypesDropDown() { Name = activity.ToString(), Value = (int)value });
             }
+
+            //Get custom activity types
+            var customActivityTypes = activities.GetActivityTypeProxies().ToList();
+            foreach (ActivityTypeProxy activityproxy in customActivityTypes)
+            {
+                results.Add(new ActivityTypesDropDown() { Name = activityproxy.Name, Value = activityproxy.ActivityTypeID });
+            }
+
             return results;
         }
 
+
+}
+    public class ActivityTypesDropDown
+    {
+        public string Name { get; set; }
+        public int Value { get; set; }
     }
 
-    [DataContract]
+[DataContract]
     public class ApiInfo
     {
         [DataMember]

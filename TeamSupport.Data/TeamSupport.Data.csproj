@@ -218,6 +218,7 @@
     <Compile Include="BusinessObjects\ActionsView.cs" />
     <Compile Include="BusinessObjects\ActionToAnalyze.cs" />
     <Compile Include="BusinessObjects\ActionTypes.cs" />
+    <Compile Include="BusinessObjects\ActivityTypes.cs" />
     <Compile Include="BusinessObjects\Addresses.cs" />
     <Compile Include="BusinessObjects\AgentRatings.cs" />
     <Compile Include="BusinessObjects\AgentRatingsOptions.cs" />
@@ -376,6 +377,7 @@
     <Compile Include="FieldMaps\ActionLinkToJiraFieldMap.cs" />
     <Compile Include="FieldMaps\ActionLinkToSnowFieldMap.cs" />
     <Compile Include="FieldMaps\ActionLinkToTFSFieldMap.cs" />
+    <Compile Include="FieldMaps\ActivityTypesFieldMap.cs" />
     <Compile Include="FieldMaps\AgentRatingsFieldMap.cs" />
     <Compile Include="FieldMaps\AgentRatingsOptionsFieldMap.cs" />
     <Compile Include="FieldMaps\AgentRatingUsersFieldMap.cs" />
@@ -496,6 +498,7 @@
     <Compile Include="Generated\GeneratedActionLinkToJira.cs" />
     <Compile Include="Generated\GeneratedActionLinkToSnow.cs" />
     <Compile Include="Generated\GeneratedActionLinkToTFS.cs" />
+    <Compile Include="Generated\GeneratedActivityTypes.cs" />
     <Compile Include="Generated\GeneratedAgentRatings.cs" />
     <Compile Include="Generated\GeneratedAgentRatingsOptions.cs" />
     <Compile Include="Generated\GeneratedAgentRatingUsers.cs" />
@@ -825,6 +828,7 @@
     <Compile Include="Generated\GeneratedWikiHistoryCollection.cs" />
     <Compile Include="Proxies\ActionLinkToSnowProxy.cs" />
     <Compile Include="Proxies\ActionLinkToTFSProxy.cs" />
+    <Compile Include="Proxies\ActivityTypesProxy.cs" />
     <Compile Include="Proxies\BackdoorLoginsProxy.cs" />
     <Compile Include="Proxies\CalendarEventsProxy.cs" />
     <Compile Include="Proxies\CalendarRefProxy.cs" />
