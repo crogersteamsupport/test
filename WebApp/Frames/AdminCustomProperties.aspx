@@ -4,7 +4,7 @@
 <%@ Register Assembly="Telerik.Web.UI" Namespace="Telerik.Web.UI" TagPrefix="telerik" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
 
-    <script src="../js_5/ajaxupload.js" type="text/javascript"></script>
+    <script src="/frontend/library/ajaxupload.js" type="text/javascript"></script>
 
     <style type="text/css">
         .types thead {

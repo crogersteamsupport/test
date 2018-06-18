@@ -3,8 +3,8 @@
 
 <%@ Register Assembly="Telerik.Web.UI" Namespace="Telerik.Web.UI" TagPrefix="telerik" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
-  <script src="../Resources/Js/jquery-latest.min.js" type="text/javascript"></script>
-  <script src="../Resources/Js/jquery.maskedinput.min.js" type="text/javascript"></script>
+  <script src="/frontend/library/jquery-latest.min.js" type="text/javascript"></script>
+  <script src="/frontend/library/jquery.maskedinput.min.js" type="text/javascript"></script>
   <script language="javascript" type="text/javascript">
     function OnClientItemsRequesting(sender, eventArgs) {
       var context = eventArgs.get_context();
@@ -14,8 +14,8 @@
     function OnClientDropDownClosed(sender, args) {
       sender.clearItems();
     }
-  
-  
+
+
   </script>
 
 
@@ -73,7 +73,7 @@
           <span id="spanIsPortalUser" runat="server" >Portal User:</span>
         </td>
         <td class="inputColTD">
-          <asp:CheckBox ID="cbIsPortalUser" runat="server" Text="" CssClass="" 
+          <asp:CheckBox ID="cbIsPortalUser" runat="server" Text="" CssClass=""
             AutoPostBack="True" oncheckedchanged="cbIsPortalUser_CheckedChanged" />
         </td>
         <td class="labelColTD">
