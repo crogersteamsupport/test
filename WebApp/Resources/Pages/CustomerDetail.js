@@ -2315,7 +2315,7 @@ $(document).ready(function () {
                 $('#tblNotesAdditional tbody').empty();
                 var html;
                 for (var i = 0; i < note.length; i++) {
-                    html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+                    html = '<td></td><td>' + note[i].Owner + '</td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
                     if (note[i].ProductFamilyID != null) {
                         html += '<td>' + note[i].ProductFamily + '</td>';
                     }
@@ -2354,7 +2354,7 @@ $(document).ready(function () {
                     if (!_isParentView && (_isAdmin || note[i].CreatorID == _mainFrame.Ts.System.User.UserID || _mainFrame.Ts.System.User.CanEditCompany))
                         html = '<td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
                     else
-                        html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+                        html = '<td></td><td>' + note[i].Owner + '</td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
 
                     html += '<td>' + note[i].ActivityTypeString + '</td>';
                     if (note[i].DateOccurred != null) {
