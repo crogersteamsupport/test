@@ -693,7 +693,7 @@ namespace TSWebServices
               //users.CustomerLoadByLikeName(loginUser.OrganizationID, filter, startIndex, true);
 
               //if (users.Count > 0)
-              //{
+              //{            
 
               //    foreach (UsersViewItem item in users)
               //    {
@@ -2187,30 +2187,30 @@ namespace TSWebServices
             SqlCommand command = new SqlCommand();
 
             string pageQuery = @"
-WITH
+WITH 
 q AS ({0}),
-r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY
-    CASE
-        WHEN [NAME] IS NULL THEN 1
-        WHEN [NAME] = ''    THEN 2
-        ELSE 3
-    END DESC,
+r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY 
+    CASE 
+        WHEN [NAME] IS NULL THEN 1 
+        WHEN [NAME] = ''    THEN 2 
+        ELSE 3 
+    END DESC, 
     [NAME] ASC) AS 'RowNum' FROM q)
 SELECT * INTO #X FROM r
 --WHERE RowNum BETWEEN @From AND @To
 
-SELECT
-	o.Name AS Organization,
-	o.OrganizationID,
-	o.Website,
-	o.HasPortalAccess,
+SELECT 
+	o.Name AS Organization, 
+	o.OrganizationID, 
+	o.Website, 
+	o.HasPortalAccess, 
 	(SELECT COUNT(*) FROM TicketsView t LEFT JOIN OrganizationTickets ot ON ot.TicketID = t.TicketID WHERE ot.OrganizationID = o.OrganizationID AND t.IsClosed = 0) AS OrgOpenTickets
 FROM #X AS x
 LEFT JOIN Organizations o ON o.OrganizationID = x.OrganizationID";
 
             string companyQuery = @"
-SELECT
-  LTRIM(o.Name) AS Name,
+SELECT 
+  LTRIM(o.Name) AS Name, 
   o.OrganizationID
   FROM Organizations o
   JOIN CustomerRelationships cr
@@ -2343,7 +2343,7 @@ SELECT
                                 </div>
                                 <div class='col-xs-6'>
                                     <p class='list-group-item-text'>{4} Open Tickets</p>
-                                    <p class='list-group-item-text'>{5} Closed Tickets</p>
+                                    <p class='list-group-item-text'>{5} Closed Tickets</p>                            
                                 </div>
                             </div>
                             </div>
@@ -2407,7 +2407,7 @@ SELECT
                                 </div>
                                 <div class='col-xs-6'>
                                     <p class='list-group-item-text'>{4} Open Tickets</p>
-                                    <p class='list-group-item-text'>{5} Closed Tickets</p>
+                                    <p class='list-group-item-text'>{5} Closed Tickets</p>                            
                                 </div>
                             </div>
                             </div>
@@ -3438,7 +3438,7 @@ SELECT
                 u.LoadByUserID(recent.RefID);
                 PhoneNumbers phone = new PhoneNumbers(TSAuthentication.GetLoginUser());
                 phone.LoadByID(u[0].UserID, ReferenceType.Users);
-                recentHTML = @"
+                recentHTML = @" 
                 <li>
                         <div class=""recent-info"">
                             <h4><a class=""contactlink"" data-userid=""{3}"" href=""""><i class=""fa fa-user color-orange""></i>{0}</a></h4>
@@ -3457,7 +3457,7 @@ SELECT
                 PhoneNumbers phone = new PhoneNumbers(TSAuthentication.GetLoginUser());
                 phone.LoadByID(org[0].OrganizationID, ReferenceType.Organizations);
 
-                recentHTML = @"
+                recentHTML = @" 
                 <li>
                         <div class=""recent-info"">
                             <h4><a class=""companylink"" data-organizationid=""{2}"" href=""""><i class=""fa fa-building-o color-green""></i>{0}</a></h4>{1}
@@ -3963,12 +3963,12 @@ SELECT
             Organization loosingCompany = Organizations.GetOrganization(loginUser, losingOrganizationID);
             string lossingCompanyNameForHistoryEntries = loosingCompany.Name + " (" + loosingCompany.OrganizationID.ToString() + ")";
             String errLocation = "";
-
+         
             try
             {
                 //Merge Contacts - runs sp Org_MergeContacts_Updates
                 company.Collection.MergeUpdateContacts(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-
+            
                 company.Collection.MergeUpdateFiles(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
 
                 //Company Merge - runs sp Org_MergeCompanies_Updates
@@ -3978,7 +3978,7 @@ SELECT
                 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
 
                 company.NeedsIndexing = true;
-                company.Collection.Save();
+                company.Collection.Save();               
 
                 return errLocation;
 
@@ -3991,8 +3991,8 @@ SELECT
                 log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
                 log.Collection.Save();
                 errLocation=string.Format("Error merging companies. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-                return errLocation;
-            }
+                return errLocation;                
+            }              
         }
 
         [WebMethod]
@@ -4242,11 +4242,11 @@ SELECT
             if (isEditable)
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
-                html.AppendFormat(@"<div class='form-group'>
-                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label>
-                                        <div class='col-xs-9'>
-                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p>
-                                        </div>
+                html.AppendFormat(@"<div class='form-group'> 
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
+                                        <div class='col-xs-9'> 
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
+                                        </div> 
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
@@ -4262,11 +4262,11 @@ SELECT
             if (isEditable)
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
-                html.AppendFormat(@"<div class='form-group'>
-                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label>
-                                        <div class='col-xs-9'>
-                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p>
-                                        </div>
+                html.AppendFormat(@"<div class='form-group'> 
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
+                                        <div class='col-xs-9'> 
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
+                                        </div> 
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
@@ -4281,11 +4281,11 @@ SELECT
             if (isEditable)
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
-                html.AppendFormat(@"<div class='form-group'>
-                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label>
-                                        <div class='col-xs-3'>
-                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p>
-                                        </div>
+                html.AppendFormat(@"<div class='form-group'> 
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
+                                        <div class='col-xs-3'> 
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
+                                        </div> 
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
@@ -4300,11 +4300,11 @@ SELECT
             if (isEditable)
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
-                html.AppendFormat(@"<div class='form-group'>
-                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label>
-                                        <div class='col-xs-3'>
-                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p>
-                                        </div>
+                html.AppendFormat(@"<div class='form-group'> 
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
+                                        <div class='col-xs-3'> 
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
+                                        </div> 
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
@@ -4319,11 +4319,11 @@ SELECT
             if (isEditable)
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
-                html.AppendFormat(@"<div class='form-group'>
-                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label>
-                                        <div class='col-xs-3'>
-                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p>
-                                        </div>
+                html.AppendFormat(@"<div class='form-group'> 
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
+                                        <div class='col-xs-3'> 
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
+                                        </div> 
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
@@ -4338,11 +4338,11 @@ SELECT
             if (isEditable)
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
-                html.AppendFormat(@"<div class='form-group'>
-                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label>
-                                        <div class='col-xs-9'>
-                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p>
-                                        </div>
+                html.AppendFormat(@"<div class='form-group'> 
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
+                                        <div class='col-xs-9'> 
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
+                                        </div> 
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
@@ -4359,11 +4359,11 @@ SELECT
             if (isEditable)
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
-                html.AppendFormat(@"<div class='form-group'>
-                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label>
-                                        <div class='col-xs-9'>
-                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='select'>{2}</a></p>
-                                        </div>
+                html.AppendFormat(@"<div class='form-group'> 
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
+                                        <div class='col-xs-9'> 
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='select'>{2}</a></p> 
+                                        </div> 
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
