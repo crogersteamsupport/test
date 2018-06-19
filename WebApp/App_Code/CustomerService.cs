@@ -3439,6 +3439,7 @@ SELECT
         {
             string recentHTML;
             string phoneStr;
+            var sanitizer = new HtmlSanitizer();
             //user
             if (recent.RefType == 0)
             {
@@ -3473,7 +3474,7 @@ SELECT
                 </li>";
                 phoneStr = phone.IsEmpty ? "" : string.Format("<ul><li><a href=\"tel:{0}\" target=\"_blank\">{0}</a></li></ul>", phone[0].Number);
 
-                return string.Format(recentHTML, org[0].Name, phoneStr, org[0].OrganizationID);
+                return string.Format(recentHTML, sanitizer.Sanitize(org[0].Name), phoneStr, org[0].OrganizationID);
             }
         }
 
