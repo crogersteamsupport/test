@@ -34,6 +34,8 @@ namespace TeamSupport.Data
     [DataMember] public DateTime? DateOccurred { get; set; }
     [DataMember] public string ActivityTypeString { get; set; }
     [DataMember] public AttachmentProxy[] Attachments { get; set; }
+
+    [DataMember] public string Owner { get; set; }
   }
   
   public partial class Note : BaseItem

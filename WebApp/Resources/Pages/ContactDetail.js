@@ -1105,6 +1105,7 @@ $(document).ready(function () {
             }
             else
             {
+                _userOrgID = null;
                 LoadNotes();
             }
             $('#fieldNoteTitle').val('');
