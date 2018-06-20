@@ -2079,11 +2079,12 @@ namespace TeamSupport.Data
 
         public static DataTable StripHtmlDataTable(DataTable table)
         {
+            char[] chars = new char[] { '<', '\\' };
             foreach (DataRow objRow in table.Rows)
             {
                 for (int i = 0; i < objRow.ItemArray.Count(); i++)
                 {
-                    if (objRow[i].GetType().Name.ToLower() == "string")
+                    if (objRow[i].GetType().Name == "String" && (objRow[i].ToString().IndexOfAny(chars, 0) >= 0))
                     {
                         objRow.BeginEdit();
                         objRow[i] = HtmlUtility.StripHTML(objRow[i].ToString());
