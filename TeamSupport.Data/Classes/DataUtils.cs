@@ -2079,11 +2079,13 @@ namespace TeamSupport.Data
 
         public static DataTable StripHtmlDataTable(DataTable table)
         {
+            
             char[] chars = new char[] { '<', '\\' };
             foreach (DataRow objRow in table.Rows)
             {
                 for (int i = 0; i < objRow.ItemArray.Count(); i++)
                 {
+                    //Check first to see whether there's potentially any HTML to strip out, because Strip() is slow
                     if (objRow[i].GetType().Name == "String" && (objRow[i].ToString().IndexOfAny(chars, 0) >= 0))
                     {
                         objRow.BeginEdit();
