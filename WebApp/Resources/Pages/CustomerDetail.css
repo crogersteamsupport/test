@@ -44,7 +44,8 @@
 }
 
 .note-list{
-    border-bottom: 3px solid #DDDDDD;
+    margin-top: 10px;
+    /*border-bottom: 3px solid #DDDDDD;*/
     max-height: 208px;
     overflow: auto;
 }

@@ -214,10 +214,18 @@
                                 <div class="box-content">
                                     <form class="form-horizontal file-upload-activity" action="Upload/Actions/555" method="POST"
                                           enctype="multipart/form-data" title="You can drag and drop your attachments here.">
-                                        <div><label for="inputName" class="control-label">Title</label></div>
-                                        <div><input class="form-control" id="fieldNoteTitle"></div>
-                                        <div><label for="inputName" class="control-label">Description</label></div>
-                                        <div><textarea class="form-control" id="fieldNoteDesc"></textarea></div>
+                                        <div class="form-group">
+                                            <label for="inputName" class="col-sm-1 control-label">Title</label>
+                                            <div class="col-md-10">
+                                                <input class="col-md-10 form-control" id="fieldNoteTitle" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="inputName" class="col-sm-1 control-label">Description</label>
+                                            <div class="col-md-10">
+                                                <textarea class="col-md-3 form-control" id="fieldNoteDesc"></textarea>
+                                            </div>
+                                        </div>
                                         <div class="form-group productFamilyRow" style="display:none;">
                                             <div class="row">
                                                 <label for="ddlNoteProductFamily" class="col-sm-1 control-label">Product Line</label>
@@ -275,38 +283,38 @@
                                     <button id="noteToggle" class="btn btn-primary">Log Activity</button>
                                 </div>
                                 <div class="box-content">
-                                    <strong>User Activity</strong>
+                                    <h4>User Activity</h4>
                                     <div class="row note-list">
                                         <div class="col-md-12">
                                             <table class="table table-hover" id="tblNotes">
                                                 <thead>
-                                                <th></th>
-                                                <th></th>
-                                                <th>Title</th>
-                                                <th>Author</th>
-                                                <th>Date Written</th>
-                                                <th class="productFamilyColumn" style="display: none;">Product Line</th>
-                                                <th>Activity Type</th>
-                                                <th>Date Occurred</th>
+                                                <th style="width:5%"></th>
+                                                <th style="width:5%"></th>
+                                                <th style="width:20%">Title</th>
+                                                <th style="width:10%">Author</th>
+                                                <th style="width:10%">Date Written</th>
+                                                <th class="productFamilyColumn" style="display: none;width:10%">Product Line</th>
+                                                <th style="width:10%">Activity Type</th>
+                                                <th style="width:10%">Date Occurred</th>
                                                 </thead>
                                                 <tbody></tbody>
                                             </table>
                                         </div>
                                     </div>
                                     <br />
-                                    <strong>Company Activity</strong>
+                                    <h4>Company Activity</h4>
                                     <div class="row note-list">
                                         <div class="col-md-12">
                                             <table class="table table-hover" id="tblNotesAdditional">
                                                 <thead>
-                                                <th></th>
-                                                <th></th>
-                                                <th>Title</th>
-                                                <th>Author</th>
-                                                <th>Date Written</th>
-                                                <th class="productFamilyColumn" style="display: none;">Product Line</th>
-                                                <th>Activity Type</th>
-                                                <th>Date Occurred</th>
+                                                <th style="width:5%"></th>
+                                                <th style="width:5%"></th>
+                                                <th style="width:20%">Title</th>
+                                                <th style="width:10%">Author</th>
+                                                <th style="width:10%">Date Written</th>
+                                                <th class="productFamilyColumn" style="display: none;width:10%">Product Line</th>
+                                                <th style="width:10%">Activity Type</th>
+                                                <th style="width:10%">Date Occurred</th>
                                                 </thead>
                                                 <tbody></tbody>
                                             </table>

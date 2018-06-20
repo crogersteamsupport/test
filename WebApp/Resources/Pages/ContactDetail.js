@@ -1047,7 +1047,7 @@ $(document).ready(function () {
         $(this).addClass("active");
         $('.noteDesc').toggle();
         if ($('.noteDesc').is(':visible')) {
-            $('.noteDesc').html("<strong>Description</strong> <p>" + desc + "</p>");
+            $('.noteDesc').html("<h4>Description</h4> <p>" + desc + "</p>");
             BuildFileDescription($(this).data('attachments'));
         }
         _mainFrame.Ts.System.logAction('Contact Detail - View Note');
@@ -1061,7 +1061,7 @@ $(document).ready(function () {
         $(this).addClass("active");
         $('.noteDesc').toggle();
         if ($('.noteDesc').is(':visible')) {
-        $('.noteDesc').html("<strong>Description</strong> <p>" + desc + "</p>");
+        $('.noteDesc').html("<h4>Description</h4> <p>" + desc + "</p>");
         BuildFileDescription($(this).data('attachments'));        }
         _mainFrame.Ts.System.logAction('Contact Detail - View Note');
     });
@@ -1302,9 +1302,9 @@ $(document).ready(function () {
                 var html;
                 for (var i = 0; i < note.length; i++) {
                     if (_isAdmin || note[i].CreatorID == _mainFrame.Ts.System.User.UserID || _mainFrame.Ts.System.User.CanEditContact) {
-                        html = '<td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+                        html = '<td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td scope="row">' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
                     } else {
-                        html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+                        html = '<td></td><td></td><td scope="row">' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
                     }
                     if (note[i].ProductFamilyID != null) {
                         html += '<td>' + note[i].ProductFamily + '</td>';
@@ -1328,7 +1328,7 @@ $(document).ready(function () {
                         .appendTo('#tblNotes > tbody:last');
                     //$('#tblNotes > tbody:last').append('<tr id=' + note[i].NoteID + ' class="viewNote"><td><i class="glyphicon glyphicon-edit editNote"></i></td><td><i class="glyphicon glyphicon-trash deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td></tr>').data('description',note[i].Description);
                     if (noteID != null && noteID == note[i].NoteID) {
-                        $('.noteDesc').html("<strong>Description</strong> <p>" + note[i].Description + "</p>");
+                        $('.noteDesc').html("<h4>Description</h4> <p>" + note[i].Description + "</p>");
                         BuildFileDescription(note[i].Attachments);
                         $('.noteDesc').show();
                     }
@@ -1342,9 +1342,9 @@ $(document).ready(function () {
                 for (var i = 0; i < note.length; i++) {
 
                     if (_isAdmin || note[i].CreatorID == _mainFrame.Ts.System.User.UserID || _mainFrame.Ts.System.User.CanEditContact)
-                        html = '<td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+                        html = '<td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td scope="row">' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
                     else
-                        html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+                        html = '<td></td><td></td><td scope="row">' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
 
                     html += '<td>' + note[i].ActivityTypeString + '</td>';
                     if (note[i].DateOccurred != null) {
@@ -1362,7 +1362,7 @@ $(document).ready(function () {
                         .appendTo('#tblNotes > tbody:last');
                     //$('#tblNotes > tbody:last').append('<tr id=' + note[i].NoteID + ' class="viewNote"><td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td></tr>').data('description',note[i].Description);
                     if (noteID != null && noteID == note[i].NoteID) {
-                        $('.noteDesc').html("<strong>Description</strong> <p>" + note[i].Description + "</p>");
+                        $('.noteDesc').html("<h4>Description</h4> <p>" + note[i].Description + "</p>");
                         BuildFileDescription(note[i].Attachments);
                         $('.noteDesc').show();
                     }
@@ -1404,7 +1404,7 @@ $(document).ready(function () {
                     //$('#tblNotes > tbody:last').append('<tr id=' + note[i].NoteID + ' class="viewNote"><td><i class="glyphicon glyphicon-edit editNote"></i></td><td><i class="glyphicon glyphicon-trash deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td></tr>').data('description',note[i].Description);
 
                     if (noteID != null && noteID == note[i].NoteID) {
-                        $('.noteDesc').html("<strong>Description</strong> <p>" + note[i].Description + "</p>");
+                        $('.noteDesc').html("<h4>Description</h4> <p>" + note[i].Description + "</p>");
                         $('.noteDesc').show();
                     }
                 }
@@ -1415,11 +1415,7 @@ $(document).ready(function () {
                 $('#tblNotesAdditional tbody').empty();
                 var html;
                 for (var i = 0; i < note.length; i++) {
-                    if (!_isParentView && (_isAdmin || note[i].CreatorID == _mainFrame.Ts.System.User.UserID || _mainFrame.Ts.System.User.CanEditCompany))
-                        html = '<td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
-                    else
-                        html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
-
+                    html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
                     html += '<td>' + note[i].ActivityTypeString + '</td>';
                     if (note[i].DateOccurred != null) {
                         html += '<td>' + note[i].DateOccurred.toDateString() + '</td>';
@@ -1439,7 +1435,7 @@ $(document).ready(function () {
 
                     if (noteID != null && noteID == note[i].NoteID) {
                         $('.noteDesc').show();
-                        $('.noteDesc').html("<strong>Description</strong> <p>" + note[i].Description + "</p>");
+                        $('.noteDesc').html("<h4>Description</h4> <p>" + note[i].Description + "</p>");
                     }
                 }
             });
@@ -3160,7 +3156,7 @@ function openNote(noteID) {
         var desc = note.Description;
         desc = desc.replace(/<br\s?\/?>/g, "\n");
         $('.noteDesc').show();
-        $('.noteDesc').html("<strong>Description</strong> <p>" + desc + "</p>");
+        $('.noteDesc').html("<h4>Description</h4> <p>" + desc + "</p>");
         $('#contactTabs a[href="#contact-notes"]').tab('show');
     });
 }
