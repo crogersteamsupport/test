@@ -1967,6 +1967,8 @@ function createCustomFields() {
             }
         }
         parentContainer.show();
+        var container = $('#ticket-group-categorized-custom-fields');
+        container.empty();  // clear ticket-group-categorized-custom-fields
         appendCategorizedCustomFields(result, null);
     });
 };
@@ -1974,7 +1976,6 @@ function createCustomFields() {
 var appendCategorizedCustomFields = function (fields, className) {
     parent.Ts.Services.CustomFields.GetAllTypesCategories(parent.Ts.ReferenceTypes.Tickets, function (categories) {
         var container = $('#ticket-group-categorized-custom-fields');
-        container.empty();  // clear ticket-group-categorized-custom-fields
         for (var j = 0; j < categories.length; j++) {
             var catWrap = $('#CFCatWrap-' + categories[j].CustomFieldCategoryID);
             //TODO:  Wrap header and hr together inside a span so they can both be removed easily
