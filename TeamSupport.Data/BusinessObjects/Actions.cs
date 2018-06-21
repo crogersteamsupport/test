@@ -826,7 +826,7 @@ WHERE a.SalesForceID = @SalesForceID";
                     connection.Open();
                     DataContext db = new DataContext(connection);
                     Table<TicketSentiment> ticketScoresTable = db.GetTable<TicketSentiment>();
-                    TicketSentiment ticketSentimentScore = (from u in ticketScoresTable where u.TicketID == ticketID select u).FirstOrDefault();
+                    TicketSentiment ticketSentimentScore = (from u in ticketScoresTable where u.TicketID == ticketID && !u.IsAgent select u).FirstOrDefault();
                     if (ticketSentimentScore == null)
                         return "negative";
 
