@@ -416,6 +416,7 @@ function SetupTicketProperties() {
         showCustomFields();
         _lastTicketTypeID = $(this).val();
         AppendTicketTypeTemplate(_lastTicketTypeID);
+        createCustomFields();   // ticket type changed - reload the custom fields
     });
 
     //Status
@@ -1925,7 +1926,8 @@ function AddAssociatedTickets(ticketid, IsParent) {
 };
 
 function createCustomFields() {
-    parent.Ts.Services.CustomFields.GetParentCustomFields(parent.Ts.ReferenceTypes.Tickets, null, function (result) {
+    var ticketTypeID = $('#ticket-type').val(); // load only the custom fields for this ticket type
+    parent.Ts.Services.CustomFields.GetParentCustomFields(parent.Ts.ReferenceTypes.Tickets, ticketTypeID, function (result) {
         var parentContainer = $('#ticket-group-custom-fields');
         if (result === null || result.length < 1) { parentContainer.empty().hide(); return; }
         parentContainer.empty()
@@ -1965,6 +1967,8 @@ function createCustomFields() {
             }
         }
         parentContainer.show();
+        var container = $('#ticket-group-categorized-custom-fields');
+        container.empty();  // clear ticket-group-categorized-custom-fields
         appendCategorizedCustomFields(result, null);
     });
 };
