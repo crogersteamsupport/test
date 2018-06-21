@@ -204,56 +204,18 @@ namespace TSWebServices
                 }
             }
 
-            string query = @"
-        DECLARE @TempItems
-        TABLE
-        (
-          ID        int IDENTITY,
-          TicketID  int
-        )
-
-        INSERT INTO @TempItems
-        (
-          TicketID
-        )
-        SELECT
-          utv.TicketID
-        FROM
-          UserTicketsView utv
-        WHERE
-          utv.OrganizationID              = @OrganizationID
-          AND utv.IsKnowledgeBase         = 1
-          AND utv.ViewerID                = @ViewerID " +
-                categoryIdClause + @"
-        ORDER BY
-          " + orderByClause + @"
-
-        SET @resultsCount = @@RowCount
-
-        SELECT
-          t.TicketID
-          , t.Name
-        FROM
-          @TempItems ti
-          JOIN dbo.Tickets t
-            ON ti.TicketID = t.TicketID
-        WHERE
-          ti.ID BETWEEN @FromIndex AND @toIndex
-        ORDER BY
-          ti.ID
-      ";
+            string query = @"SELECT utv.TicketID, utv.Name, COUNT(*) OVER() as resultsCount FROM Tickets utv
+                WHERE utv.OrganizationID = @OrganizationID AND utv.IsKnowledgeBase = 1 " +
+                categoryIdClause +
+                @" ORDER BY " + orderByClause +
+                @" OFFSET @FromIndex -1 ROWS FETCH NEXT @PageSize ROWS ONLY";
 
             SqlCommand command = new SqlCommand();
             command.CommandText = query;
             command.CommandType = CommandType.Text;
 
-            SqlParameter resultsCount = new SqlParameter("@resultsCount", SqlDbType.Int)
-            {
-                Direction = ParameterDirection.Output
-            };
-            command.Parameters.Add(resultsCount);
             command.Parameters.AddWithValue("@FromIndex", firstItemIndex + 1);
-            command.Parameters.AddWithValue("@ToIndex", firstItemIndex + pageSize);
+            command.Parameters.AddWithValue("@PageSize", pageSize);
             command.Parameters.AddWithValue("@OrganizationID", TSAuthentication.OrganizationID);
             command.Parameters.AddWithValue("@ViewerID", TSAuthentication.GetLoginUser().UserID);
 
@@ -272,10 +234,7 @@ namespace TSWebServices
                     try
                     {
                         adapter.Fill(table);
-                        if (resultsCount.Value != DBNull.Value)
-                        {
-                            result.Count = (int)resultsCount.Value;
-                        }
+                        result.Count = (table.Rows.Count > 0) ? (int)table.Rows[0]["resultsCount"] : 0;
                     }
                     catch (Exception e)
                     {
