@@ -79,7 +79,7 @@ public partial class Dialogs_AttachFile : BaseDialogPage
     {
       string directory = TSUtils.GetAttachmentPath(folderName, _refID);
       string fileName = file.GetName();
-
+	  fileName = Path.GetFileName(fileName);
       fileName = DataUtils.VerifyUniqueFileName(directory, fileName);
 
       Attachment attachment = attachments.AddNewAttachment();

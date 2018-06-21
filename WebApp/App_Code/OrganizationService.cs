@@ -1772,8 +1772,12 @@ namespace TSWebServices
             SimpleImportFieldsView simpleImportFieldsView = new SimpleImportFieldsView(loginUser);
             simpleImportFieldsView.LoadByRefType(refType);
             result.ImportFields = simpleImportFieldsView.GetSimpleImportFieldsViewItemProxies();
+			uploadedFileName = Path.GetFileName(uploadedFileName);
 
             string csvFile = Path.Combine(AttachmentPath.GetPath(loginUser, loginUser.OrganizationID, AttachmentPath.Folder.Imports), uploadedFileName);
+
+			try
+			{
             using (CsvReader csv = new CsvReader(new StreamReader(csvFile), true))
             {
                 string[] headers = csv.GetFieldHeaders();
@@ -1801,6 +1805,12 @@ namespace TSWebServices
                     break;
                 }
             }
+			}
+			catch (IOException ioException)
+			{
+				ExceptionLogs.LogException(loginUser, ioException, "OrganizationService.GetImportPanels", string.Format("OrgId: {0}", loginUser.OrganizationID));
+			}
+            
             return JsonConvert.SerializeObject(result);
         }
 

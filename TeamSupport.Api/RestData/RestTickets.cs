@@ -7,6 +7,8 @@ using System.Data;
 using TeamSupport.Data;
 using System.Net;
 using System.Collections.Specialized;
+using Microsoft.CSharp;
+using Newtonsoft.Json;
 
 namespace TeamSupport.Api
 {
@@ -146,7 +148,77 @@ namespace TeamSupport.Api
             return xml;
         }
 
-        public static string GetZapierTickets(RestCommand command, int limitNumber)
+		public static string GetTicketAssignments(RestCommand command, bool isPost = false)
+		{
+			string ticketIdFilter = "ticketids";
+			string ticketNumberFilter = "ticketnumbers";
+			string xml = "";
+			bool byId = false;
+			dynamic errors = new System.Dynamic.ExpandoObject();
+
+			if (!isPost && !command.Filters.AllKeys.Where(p => p.ToLower() == "ticketids").Any() && !command.Filters.AllKeys.Where(p => p.ToLower() == "ticketnumbers").Any())
+			{
+				errors.Error = "This call requires a filter. TicketIds or TicketNumbers should be used to filter the results.";
+				throw new RestException(HttpStatusCode.BadRequest, JsonConvert.SerializeObject(errors));
+			}
+			else if (isPost && string.IsNullOrEmpty(command.Data))
+			{
+				errors.Error = "This call requires a filter in the POST body. TicketIds or TicketNumbers should be used to filter the results.";
+				throw new RestException(HttpStatusCode.BadRequest, JsonConvert.SerializeObject(errors));
+			}
+
+			string tickets = string.Empty;
+
+			if (isPost)
+			{
+				System.Xml.Linq.XDocument xmlDoc = System.Xml.Linq.XDocument.Parse(command.Data.ToLower());
+				string jsonText = JsonConvert.SerializeXNode(xmlDoc);
+				dynamic filters = JsonConvert.DeserializeObject<System.Dynamic.ExpandoObject>(jsonText);
+
+				if (((IDictionary<String, object>)filters).ContainsKey(ticketIdFilter))
+				{
+					tickets = filters.ticketids;
+					byId = true;
+				}
+				else if (((IDictionary<String, object>)filters).ContainsKey(ticketNumberFilter))
+				{
+					tickets = filters.ticketnumbers;
+				}
+			}
+			else
+			{
+				foreach (string key in command.Filters)
+				{
+					if (key.ToLower().Trim() == ticketIdFilter)
+					{
+						tickets = command.Filters[key.ToLower().Trim()];
+						byId = true;
+						break;
+					}
+
+					if (key.ToLower().Trim() == ticketNumberFilter)
+					{
+						tickets = command.Filters[key.ToLower().Trim()];
+						break;
+					}
+				}
+			}
+
+			TicketUserAssignment userTicketAssignments = new TicketUserAssignment(command.LoginUser);
+			userTicketAssignments.LoadByTicketList(command.Organization.OrganizationID, tickets, byId);
+
+			int pageNumber = command.IsPaging && command.PageNumber != null ? (int)--command.PageNumber : 0;
+			int pageSize = command.IsPaging && command.PageSize != null ? (int)command.PageSize : userTicketAssignments.History.Select(p => p.TicketID).Distinct().Count();
+			TicketUserAssignment.TicketUserAssignmentHistory assignments = userTicketAssignments.GetTicketUserAssignmentHistory(pageNumber, pageSize);
+
+			string jsonResult = JsonConvert.SerializeObject(assignments);
+			var doc = JsonConvert.DeserializeXNode(jsonResult, "TicketAssignments");
+			xml = doc.ToString();
+
+			return xml;
+		}
+
+		public static string GetZapierTickets(RestCommand command, int limitNumber)
         {
             string xml = "";
 
@@ -406,14 +478,17 @@ namespace TeamSupport.Api
             ticket.OrganizationID = (int)command.Organization.ParentID;
             ticket.ReadFromXml(command.Data, true);
             ticket.Collection.Save();
-            ticket.UpdateCustomFieldsFromXml(command.Data);
+			string description = string.Empty;
+			int? contactID = null;
+			int? customerID = null;
+			ticket.FullReadFromXml(command.Data, true, ref description, ref contactID, ref customerID);
 
             Actions actions = new Actions(command.LoginUser);
-            TeamSupport.Data.Action action = actions.AddNewAction();
+            Data.Action action = actions.AddNewAction();
             action.ActionTypeID = null;
             action.Name = "Description";
             action.SystemActionTypeID = SystemActionType.Description;
-            action.Description = "";
+			action.Description = description;
             action.IsVisibleOnPortal = ticket.IsVisibleOnPortal;
             action.IsKnowledgeBase = ticket.IsKnowledgeBase;
             action.TicketID = ticket.TicketID;

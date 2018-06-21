@@ -17,6 +17,7 @@ using System.Globalization;
 using Ganss.XSS;
 using System.Linq;
 using Newtonsoft.Json;
+using Microsoft.Security.Application;
 
 namespace TSWebServices
 {
@@ -37,8 +38,9 @@ namespace TSWebServices
 
         [WebMethod]
         public string SetCompanyName(int orgID, string value)
-        {
-            Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
+		{
+			value = DataUtils.CleanValueScript(value);
+			Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
             o.Name = value;
             o.Collection.Save();
             string description = String.Format("{0} set company name to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
@@ -60,7 +62,7 @@ namespace TSWebServices
         public string SetCompanyWeb(int orgID, string value)
         {
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
-            o.Website = value;
+            o.Website = DataUtils.CleanValueScript(value);
             o.Collection.Save();
             string description = String.Format("{0} set company website to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
@@ -114,8 +116,8 @@ namespace TSWebServices
         public string SetCompanyDomain(int orgID, string value)
         {
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
-            o.CompanyDomains = value;
-            o.Collection.Save();
+            o.CompanyDomains = DataUtils.CleanValueScript(value);
+			o.Collection.Save();
             string description = String.Format("{0} set company domain to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value != "" ? value : "Empty";
@@ -155,10 +157,14 @@ namespace TSWebServices
         public string SetCompanySAE(int orgID, string value)
         {
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
-            if (value != "" && value != null)
-                o.SAExpirationDate = DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), Convert.ToDateTime(value + " 12:00:00"));
-            else
-                o.SAExpirationDate = null;
+
+			if (value != "" && value != null)
+			{
+				value = DataUtils.CleanValueScript(value);
+				o.SAExpirationDate = DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), Convert.ToDateTime(value + " 12:00:00"));
+			}
+			else
+				o.SAExpirationDate = null;
             o.Collection.Save();
             string description = String.Format("{0} set company service expirated date to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
@@ -189,7 +195,7 @@ namespace TSWebServices
         public string SetCompanyDescription(int orgID, string value)
         {
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
-            o.Description = value;
+            o.Description = DataUtils.CleanValueScript(value);
             o.Collection.Save();
             string description = String.Format("{0} set company description to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
@@ -199,8 +205,8 @@ namespace TSWebServices
         public string SetCompanyInactive(int orgID, string value)
         {
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
-            o.InActiveReason = value;
-            o.Collection.Save();
+            o.InActiveReason = DataUtils.CleanValueScript(value);
+			o.Collection.Save();
             string description = String.Format("{0} set company inactive to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
@@ -210,7 +216,7 @@ namespace TSWebServices
         public string SetContactEmail(int userID, string email)
         {
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
-            u.Email = email;
+            u.Email = DataUtils.CleanValueScript(email);
             u.Collection.Save();
             string description = String.Format("{0} set contact email to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, email);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
@@ -220,10 +226,10 @@ namespace TSWebServices
         public string SetContactName(int userID, string fname, string mname, string lname)
         {
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
-            u.FirstName = fname;
-            u.MiddleName = mname;
-            u.LastName = lname;
-            u.Collection.Save();
+            u.FirstName = DataUtils.CleanValueScript(fname);
+			u.MiddleName = DataUtils.CleanValueScript(mname);
+			u.LastName = DataUtils.CleanValueScript(lname);
+			u.Collection.Save();
             string description = String.Format("{0} set contact name to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, u.FirstLastName);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
             return u.FirstLastName;
@@ -233,8 +239,8 @@ namespace TSWebServices
         public string SetContactLinkedIn(int userID, string linkedin)
         {
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
-            u.LinkedIn = linkedin;
-            u.Collection.Save();
+            u.LinkedIn = DataUtils.CleanValueScript(linkedin);
+			u.Collection.Save();
             string description = String.Format("{0} set contact linkedin to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, linkedin);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
             return linkedin != "" ? linkedin : "Empty";
@@ -344,8 +350,8 @@ namespace TSWebServices
         public string SetContactTitle(int userID, string title)
         {
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
-            u.Title = title;
-            u.Collection.Save();
+            u.Title = DataUtils.CleanValueScript(title);
+			u.Collection.Save();
             string description = String.Format("{0} set contact title to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, title);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
             return title != "" ? title : "Empty";
@@ -687,7 +693,7 @@ namespace TSWebServices
               //users.CustomerLoadByLikeName(loginUser.OrganizationID, filter, startIndex, true);
 
               //if (users.Count > 0)
-              //{            
+              //{
 
               //    foreach (UsersViewItem item in users)
               //    {
@@ -2131,30 +2137,30 @@ namespace TSWebServices
             SqlCommand command = new SqlCommand();
 
             string pageQuery = @"
-WITH 
+WITH
 q AS ({0}),
-r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY 
-    CASE 
-        WHEN [NAME] IS NULL THEN 1 
-        WHEN [NAME] = ''    THEN 2 
-        ELSE 3 
-    END DESC, 
+r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY
+    CASE
+        WHEN [NAME] IS NULL THEN 1
+        WHEN [NAME] = ''    THEN 2
+        ELSE 3
+    END DESC,
     [NAME] ASC) AS 'RowNum' FROM q)
 SELECT * INTO #X FROM r
 --WHERE RowNum BETWEEN @From AND @To
 
-SELECT 
-	o.Name AS Organization, 
-	o.OrganizationID, 
-	o.Website, 
-	o.HasPortalAccess, 
+SELECT
+	o.Name AS Organization,
+	o.OrganizationID,
+	o.Website,
+	o.HasPortalAccess,
 	(SELECT COUNT(*) FROM TicketsView t LEFT JOIN OrganizationTickets ot ON ot.TicketID = t.TicketID WHERE ot.OrganizationID = o.OrganizationID AND t.IsClosed = 0) AS OrgOpenTickets
 FROM #X AS x
 LEFT JOIN Organizations o ON o.OrganizationID = x.OrganizationID";
 
             string companyQuery = @"
-SELECT 
-  LTRIM(o.Name) AS Name, 
+SELECT
+  LTRIM(o.Name) AS Name,
   o.OrganizationID
   FROM Organizations o
   JOIN CustomerRelationships cr
@@ -2287,7 +2293,7 @@ SELECT
                                 </div>
                                 <div class='col-xs-6'>
                                     <p class='list-group-item-text'>{4} Open Tickets</p>
-                                    <p class='list-group-item-text'>{5} Closed Tickets</p>                            
+                                    <p class='list-group-item-text'>{5} Closed Tickets</p>
                                 </div>
                             </div>
                             </div>
@@ -2351,7 +2357,7 @@ SELECT
                                 </div>
                                 <div class='col-xs-6'>
                                     <p class='list-group-item-text'>{4} Open Tickets</p>
-                                    <p class='list-group-item-text'>{5} Closed Tickets</p>                            
+                                    <p class='list-group-item-text'>{5} Closed Tickets</p>
                                 </div>
                             </div>
                             </div>
@@ -2734,10 +2740,9 @@ SELECT
 
                 foreach (UserNoteSetting u in uns)
                 {
-                    u.IsDismissed = false;
-                    u.IsSnoozed = false;
-                    u.Collection.Save();
+                    u.Delete();
                 }
+                uns.Save();
             }
             else
             {
@@ -3380,7 +3385,7 @@ SELECT
                 u.LoadByUserID(recent.RefID);
                 PhoneNumbers phone = new PhoneNumbers(TSAuthentication.GetLoginUser());
                 phone.LoadByID(u[0].UserID, ReferenceType.Users);
-                recentHTML = @" 
+                recentHTML = @"
                 <li>
                         <div class=""recent-info"">
                             <h4><a class=""contactlink"" data-userid=""{3}"" href=""""><i class=""fa fa-user color-orange""></i>{0}</a></h4>
@@ -3399,7 +3404,7 @@ SELECT
                 PhoneNumbers phone = new PhoneNumbers(TSAuthentication.GetLoginUser());
                 phone.LoadByID(org[0].OrganizationID, ReferenceType.Organizations);
 
-                recentHTML = @" 
+                recentHTML = @"
                 <li>
                         <div class=""recent-info"">
                             <h4><a class=""companylink"" data-organizationid=""{2}"" href=""""><i class=""fa fa-building-o color-green""></i>{0}</a></h4>{1}
@@ -3452,6 +3457,13 @@ SELECT
             TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
 
             return tickets.GetOrganizationTicketCount(organizationID, closed, includeChildren).ToString();
+        }
+
+        [WebMethod]
+        public string GetOrganizationSentiment(int organizationID)
+        {
+            double? result = TeamSupport.Data.BusinessObjects.OrganizationSentiment.GetOrganizationSentiment(organizationID);
+            return result.HasValue ? ((int)Math.Round(result.Value)).ToString() : string.Empty;
         }
 
         [WebMethod]
@@ -3898,12 +3910,12 @@ SELECT
             Organization loosingCompany = Organizations.GetOrganization(loginUser, losingOrganizationID);
             string lossingCompanyNameForHistoryEntries = loosingCompany.Name + " (" + loosingCompany.OrganizationID.ToString() + ")";
             String errLocation = "";
-         
+
             try
             {
                 //Merge Contacts - runs sp Org_MergeContacts_Updates
                 company.Collection.MergeUpdateContacts(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
-            
+
                 company.Collection.MergeUpdateFiles(losingOrganizationID, winningOrganizationID, lossingCompanyNameForHistoryEntries, loginUser);
 
                 //Company Merge - runs sp Org_MergeCompanies_Updates
@@ -3913,7 +3925,7 @@ SELECT
                 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
 
                 company.NeedsIndexing = true;
-                company.Collection.Save();               
+                company.Collection.Save();
 
                 return errLocation;
 
@@ -3926,8 +3938,8 @@ SELECT
                 log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
                 log.Collection.Save();
                 errLocation=string.Format("Error merging companies. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-                return errLocation;                
-            }              
+                return errLocation;
+            }
         }
 
         [WebMethod]
@@ -4177,11 +4189,11 @@ SELECT
             if (isEditable)
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
-                html.AppendFormat(@"<div class='form-group'> 
-                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
-                                        <div class='col-xs-9'> 
-                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
-                                        </div> 
+                html.AppendFormat(@"<div class='form-group'>
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label>
+                                        <div class='col-xs-9'>
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p>
+                                        </div>
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
@@ -4197,11 +4209,11 @@ SELECT
             if (isEditable)
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
-                html.AppendFormat(@"<div class='form-group'> 
-                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
-                                        <div class='col-xs-9'> 
-                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
-                                        </div> 
+                html.AppendFormat(@"<div class='form-group'>
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label>
+                                        <div class='col-xs-9'>
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p>
+                                        </div>
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
@@ -4216,11 +4228,11 @@ SELECT
             if (isEditable)
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
-                html.AppendFormat(@"<div class='form-group'> 
-                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
-                                        <div class='col-xs-3'> 
-                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
-                                        </div> 
+                html.AppendFormat(@"<div class='form-group'>
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label>
+                                        <div class='col-xs-3'>
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p>
+                                        </div>
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
@@ -4235,11 +4247,11 @@ SELECT
             if (isEditable)
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
-                html.AppendFormat(@"<div class='form-group'> 
-                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
-                                        <div class='col-xs-3'> 
-                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
-                                        </div> 
+                html.AppendFormat(@"<div class='form-group'>
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label>
+                                        <div class='col-xs-3'>
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p>
+                                        </div>
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
@@ -4254,11 +4266,11 @@ SELECT
             if (isEditable)
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
-                html.AppendFormat(@"<div class='form-group'> 
-                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
-                                        <div class='col-xs-3'> 
-                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
-                                        </div> 
+                html.AppendFormat(@"<div class='form-group'>
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label>
+                                        <div class='col-xs-3'>
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p>
+                                        </div>
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
@@ -4273,11 +4285,11 @@ SELECT
             if (isEditable)
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
-                html.AppendFormat(@"<div class='form-group'> 
-                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
-                                        <div class='col-xs-9'> 
-                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
-                                        </div> 
+                html.AppendFormat(@"<div class='form-group'>
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label>
+                                        <div class='col-xs-9'>
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p>
+                                        </div>
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
@@ -4294,11 +4306,11 @@ SELECT
             if (isEditable)
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
-                html.AppendFormat(@"<div class='form-group'> 
-                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label> 
-                                        <div class='col-xs-9'> 
-                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='select'>{2}</a></p> 
-                                        </div> 
+                html.AppendFormat(@"<div class='form-group'>
+                                        <label for='{0}' class='col-xs-3 control-label'>{1}</label>
+                                        <div class='col-xs-9'>
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='select'>{2}</a></p>
+                                        </div>
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
