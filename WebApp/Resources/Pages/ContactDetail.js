@@ -15,6 +15,7 @@ var _productsSortColumn = 'Date Created';
 var _productsSortDirection = 'DESC';
 var _productHeadersAdded = false;
 var _completeCommentTaskID = 0;
+var _userOrgID = null;
 
 function getMainFrame() {
     var result = window.parent;
@@ -48,6 +49,9 @@ $(document).ready(function () {
     }
 
     LoadNotes();
+    _mainFrame.Ts.Services.Customers.GetUser(userID, function (user) {
+        _userOrgID = user.OrganizationID;        LoadNotesAdditional();
+    });
     LoadFiles();
     LoadProductTypes();
     LoadCustomControls(_mainFrame.Ts.ReferenceTypes.UserProducts);
@@ -786,8 +790,10 @@ $(document).ready(function () {
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         if (e.target.innerHTML == "Tickets")
             $('#ticketIframe').attr("src", "tickettabs.html?ContactID=" + userID);
-        else if (e.target.innerHTML == "Notes")
+        else if (e.target.innerHTML == "Notes") {
             LoadNotes();
+            LoadNotesAdditional();
+        }
         else if (e.target.innerHTML == "Files")
             LoadFiles();
         else if (e.target.innerHTML == "Products")
@@ -1024,6 +1030,17 @@ $(document).ready(function () {
         _mainFrame.Ts.System.logAction('Contact Detail - View Note');
     });
 
+    $('#tblNotesAdditional').on('click', '.viewNote', function (e) {
+        e.preventDefault();
+        var desc = $(this).data('description');
+        $('#tblNotesAdditional tbody tr').removeClass("active");
+
+        $(this).addClass("active");
+        $('.noteDesc').toggle();
+        $('.noteDesc').html("<strong>Description</strong> <p>" + desc + "</p>");
+        _mainFrame.Ts.System.logAction('Contact Detail - View Note');
+    });
+
     $("#btnNotesCancel").click(function (e) {
         e.preventDefault();
         $('#fieldNoteTitle').val('');
@@ -1207,7 +1224,7 @@ $(document).ready(function () {
 
     function LoadNotes() {
         if (_mainFrame.Ts.System.Organization.UseProductFamilies) {
-            _mainFrame.Ts.Services.Customers.LoadNotesByUserRights(userID, _mainFrame.Ts.ReferenceTypes.Users, false, function (note) {
+            _mainFrame.Ts.Services.Customers.LoadNotesByUserRights(userID, _mainFrame.Ts.ReferenceTypes.Users, false, _userOrgID, function (note) {
                 $('#tblNotes tbody').empty();
                 var html;
                 for (var i = 0; i < note.length; i++) {
@@ -1257,6 +1274,36 @@ $(document).ready(function () {
                     if (noteID != null && noteID == note[i].NoteID) {
                         $('.noteDesc').html("<strong>Description</strong> <p>" + note[i].Description + "</p>");
                         $('.noteDesc').show();
+                    }
+                }
+            });
+        }
+    }
+
+    //Load notes for organization
+    function LoadNotesAdditional() {
+        if (_mainFrame.Ts.System.Organization.UseProductFamilies) {
+            _mainFrame.Ts.Services.Customers.LoadNotesByUserRights(_userOrgID, _mainFrame.Ts.ReferenceTypes.Organizations, false, _userOrgID, function (note) {
+                $('#tblNotesAdditional tbody').empty();                var html;                for (var i = 0; i < note.length; i++) {
+                    html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';                    if (note[i].ProductFamilyID != null) {
+                        html += '<td>' + note[i].ProductFamily + '</td>';
+                    }                    else {
+                        html += '<td>Unassigned</td>';
+                    }
+                    $('<tr>').addClass("viewNote")                    .attr("id", note[i].NoteID)                    .html(html)                    .data("description", note[i].Description)                    .appendTo('#tblNotesAdditional > tbody:last');                    //$('#tblNotes > tbody:last').append('<tr id=' + note[i].NoteID + ' class="viewNote"><td><i class="glyphicon glyphicon-edit editNote"></i></td><td><i class="glyphicon glyphicon-trash deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td></tr>').data('description',note[i].Description);
+                    if (noteID != null && noteID == note[i].NoteID) {
+                        $('.noteDesc').html("<strong>Description</strong> <p>" + note[i].Description + "</p>");                        $('.noteDesc').show();
+                    }
+                }
+            });
+        }        else {
+            _mainFrame.Ts.Services.Customers.LoadNotes2(_userOrgID, _mainFrame.Ts.ReferenceTypes.Organizations, false, function (note) {
+                $('#tblNotesAdditional tbody').empty();                var html;                for (var i = 0; i < note.length; i++) {
+                    if (!_isParentView && (_isAdmin || note[i].CreatorID == _mainFrame.Ts.System.User.UserID || _mainFrame.Ts.System.User.CanEditCompany))                        html = '<td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';                    else                        html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+                    $('<tr>').addClass("viewNote")                    .attr("id", note[i].NoteID)                    .html(html)                    .data("description", note[i].Description)                    .appendTo('#tblNotesAdditional > tbody:last');
+                    //$('#tblNotes > tbody:last').append('<tr id=' + note[i].NoteID + ' class="viewNote"><td><i class="glyphicon glyphicon-edit editNote"></i></td><td><i class="glyphicon glyphicon-trash deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td></tr>').data('description',note[i].Description);
+                    if (noteID != null && noteID == note[i].NoteID) {
+                        $('.noteDesc').html("<strong>Description</strong> <p>" + note[i].Description + "</p>");                        $('.noteDesc').show();
                     }
                 }
             });

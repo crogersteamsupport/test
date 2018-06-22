@@ -853,7 +853,7 @@ namespace TSWebServices
             }
             else
             {
-                customValue.Value = value.ToString();
+                customValue.Value = DataUtils.CleanValueScript(value.ToString());
             }
 
             customValue.Collection.Save();
