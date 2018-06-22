@@ -29,19 +29,24 @@ namespace TeamSupport.CDI.linq
         public float? AvgDaysOpenWeight;
         [Column]
         public float? AvgDaysToCloseWeight;
-
-        public float? AverageActionCountWeight;
-        public float? ClosedCountWeight;
-        public float? AverageSentimentScoreWeight;
-        public float? AverageSeverityWeight;
-
         [Column]
         public DateTime? LastCompute;
         [Column]
         public bool NeedCompute;
+
+        // new CDI2
+        [Column]
+        public float? ClosedLast30Weight;
+        [Column]
+        public float? AverageActionCountWeight;
+        [Column]
+        public float? AverageSentimentScoreWeight;
+        [Column]
+        public float? AverageSeverityWeight;
+
 #pragma warning restore CS0649
 
-        public double? Get(EMetrics metric)
+        public double? GetWeight(EMetrics metric)
         {
             double? result = null;
             switch (metric)
@@ -50,7 +55,7 @@ namespace TeamSupport.CDI.linq
                     result = AverageActionCountWeight;
                     break;
                 case EMetrics.Closed30:
-                    result = ClosedCountWeight;
+                    result = ClosedLast30Weight;
                     break;
                 case EMetrics.DaysOpen:
                     result = AvgDaysOpenWeight;
@@ -77,7 +82,7 @@ namespace TeamSupport.CDI.linq
             return result;
         }
 
-        public void Set(EMetrics metric, float? value)
+        public void SetWeight(EMetrics metric, float? value)
         {
             switch (metric)
             {
@@ -85,7 +90,7 @@ namespace TeamSupport.CDI.linq
                     AverageActionCountWeight = value;
                     break;
                 case EMetrics.Closed30:
-                    ClosedCountWeight = value;
+                    ClosedLast30Weight = value;
                     break;
                 case EMetrics.DaysOpen:
                     AvgDaysOpenWeight = value;
@@ -111,7 +116,7 @@ namespace TeamSupport.CDI.linq
             }
         }
 
-        public void Set(int mask)
+        public void SetEqualWeights(int mask)
         {
             float scalar = 0;
             foreach (EMetrics metric in Enum.GetValues(typeof(EMetrics)))
@@ -124,7 +129,7 @@ namespace TeamSupport.CDI.linq
             foreach (EMetrics metric in Enum.GetValues(typeof(EMetrics)))
             {
                 if (((int)metric & mask) != 0)
-                    Set(metric, scalar);
+                    SetWeight(metric, scalar);
             }
         }
 

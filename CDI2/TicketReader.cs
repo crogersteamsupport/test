@@ -64,56 +64,6 @@ namespace TeamSupport.CDI
         //GROUP BY o.OrganizationID, o.Name, c.TicketsOpen
         //ORDER BY TicketsOpen DESC
 
-        /*public static string CleanString(string RawHtml)
-        {
-            String text = Regex.Replace(RawHtml, @"<[^>]*>", String.Empty); //remove html tags
-            text = Regex.Replace(text, "&nbsp;", " "); //remove HTML space
-            text = Regex.Replace(text, @"[\d-]", " "); //removes all digits [0-9]
-            text = Regex.Replace(text, @"[\w\d]+\@[\w\d]+\.com", " "); //removes email adresses
-            text = Regex.Replace(text, @"\s+", " ");   // remove whitespace
-
-            return text;
-        }
-
-        public void WatsonActionSize()
-        {
-            try
-            {
-                string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                using (DataContext db = new DataContext(connection))
-                {
-                    //db.Log = CDIEventLog.Instance;
-                    Table<linq.Action> actionTable = db.GetTable<linq.Action>();
-                    Table<linq.ActionSentiment> sentimentTable = db.GetTable<linq.ActionSentiment>();
-
-                    var query = (from st in sentimentTable
-                                join a in actionTable on st.ActionID equals a.ActionID
-                                orderby st.ActionSentimentID descending
-                                select a).Take(50000);
-
-                    linq.Action[] all = query.ToArray();
-                    double[] length = new double[all.Length];
-                    for (int i = 0; i < all.Length; ++i)
-                    {
-                        all[i].Description = CleanString(all[i].Description);
-                        length[i] = all[i].Description.Length;
-                        if (length[i] > 10000)
-                            Debugger.Break();
-                    }
-
-                    double avg = length.Average();
-                    double stdev = Statistics.StandardDeviation(length, avg);
-                    foreach (double value in length)
-                        Debug.WriteLine(value);
-                }
-            }
-            catch (Exception e)
-            {
-                CDIEventLog.Instance.WriteEntry("Ticket Read failed", e);
-            }
-        }*/
-
         public void LoadAllTickets()
         {
             //WatsonActionSize();
@@ -124,16 +74,15 @@ namespace TeamSupport.CDI
                 using (DataContext db = new DataContext(connection))
                 {
                     //db.Log = CDIEventLog.Instance;
-                    db.ObjectTrackingEnabled = false;   // read-only
 
                     // define the tables we will reference in the query
                     // - each table class only contains the fields we care about
+                    db.ObjectTrackingEnabled = false;   // read-only
                     Table<Organization> organizationTable = db.GetTable<Organization>();
                     Table<OrganizationTicket> organizationTicketsTable = db.GetTable<OrganizationTicket>();
                     Table<Ticket> ticketsTable = db.GetTable<Ticket>();
                     Table<TicketStatus> ticketStatusesTable = db.GetTable<TicketStatus>();
                     Table<TicketType> ticketTypesTable = db.GetTable<TicketType>();
-                    Table<linq.Action> actionsTable = db.GetTable<TeamSupport.CDI.linq.Action>();
                     Table<TicketSentiment> ticketSentimentsTable = db.GetTable<TicketSentiment>();
                     Table<TicketSeverity> severityTable = db.GetTable<TicketSeverity>();
 
@@ -156,7 +105,7 @@ namespace TeamSupport.CDI
                                     DateClosed = t.DateClosed,
                                     DateCreated = t.DateCreated,
                                     IsClosed = ts.IsClosed,
-                                    ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count(),
+                                    ActionsCount = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.ActionSentimentCount).Min(),
                                     AverageActionSentiment = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.AverageActionSentiment).Min(),  // for some reason Min is faster than First()
                                     ParentID = o.ParentID,
                                     Severity = (from s in severityTable where t.TicketSeverityID == s.TicketSeverityID select s.Severity).Min()
@@ -190,10 +139,11 @@ namespace TeamSupport.CDI
                         TicketJoin[] tickets = LoadTickets(db, setting.OrganizationID);
                         if(AllTickets == null)
                         {
-                            _allTickets = tickets;
+                            _allTickets = tickets;  // first time just use the array
                         }
                         else
                         {
+                            // append additional tickets to analyze
                             int initialLength = _allTickets.Length;
                             Array.Resize(ref _allTickets, _allTickets.Length + tickets.Length);
                             Array.Copy(tickets, 0, _allTickets, initialLength, tickets.Length);
@@ -217,7 +167,6 @@ namespace TeamSupport.CDI
             Table<Ticket> ticketsTable = db.GetTable<Ticket>();
             Table<TicketStatus> ticketStatusesTable = db.GetTable<TicketStatus>();
             Table<TicketType> ticketTypesTable = db.GetTable<TicketType>();
-            Table<linq.Action> actionsTable = db.GetTable<TeamSupport.CDI.linq.Action>();
             Table<TicketSentiment> ticketSentimentsTable = db.GetTable<TicketSentiment>();
             Table<TicketSeverity> severityTable = db.GetTable<TicketSeverity>();
 
@@ -239,10 +188,10 @@ namespace TeamSupport.CDI
                             DateClosed = t.DateClosed,
                             DateCreated = t.DateCreated,
                             IsClosed = ts.IsClosed,
-                            ActionsCount = (from a in actionsTable where a.TicketID == t.TicketID select a.ActionID).Count(),
-                            AverageActionSentiment = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.AverageActionSentiment).First(),  // for some reason Min is faster than First()
+                            ActionsCount = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.ActionSentimentCount).Min(),
+                            AverageActionSentiment = (from tst in ticketSentimentsTable where t.TicketID == tst.TicketID select tst.AverageActionSentiment).Min(),  // for some reason Min is faster than First()
                             ParentID = o.ParentID,
-                            Severity = (from s in severityTable where t.TicketSeverityID == s.TicketSeverityID select s.Severity).First()
+                            Severity = (from s in severityTable where t.TicketSeverityID == s.TicketSeverityID select s.Severity).Min()
                         };
 
             // run the query
