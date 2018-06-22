@@ -101,7 +101,7 @@ namespace TeamSupport.Data
 IF EXISTS(SELECT * FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@SettingKey))
   BEGIN
     UPDATE [dbo].[UserSettings]
-  	SET SettingValue = @SettingValue, Category @Category
+  	SET SettingValue = @SettingValue, Category = @Category
     WHERE (UserID = @UserID)
 	  AND (SettingKey = @SettingKey)
   END
