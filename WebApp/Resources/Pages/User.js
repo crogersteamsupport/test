@@ -148,7 +148,7 @@ UserPage = function() {
         $('#userTicketRights').html(userRightsToString(user.TicketRights)).data('o', user.TicketRights);
         $('#userProductFamiliesRights').html(userProductFamiliesRightsToString(user.ProductFamiliesRights)).data('o', user.ProductFamiliesRights);
         if (window.parent.parent.Ts.System.Organization.UseProductFamilies && window.parent.parent.Ts.System.User.IsSystemAdmin) {
-            $('#userProductFamiliesRights').closest('div').show();
+            $('#userProductFamiliesRights').closest('.ui-helper-hidden').show();
             $('#divProductFamiliesContainer').toggle(user.ProductFamiliesRights == 1);
             window.parent.parent.Ts.Services.Users.GetUserProductFamilies(_user.UserID, appendProductFamilies);
         }
