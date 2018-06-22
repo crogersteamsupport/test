@@ -342,7 +342,6 @@ Namespace TeamSupport
 							End If
 
 							updateTicketFlag = True
-							'sendCustomMappingFields = CRMLinkRow.IncludeIssueNonRequired
 
 							'Check if Ticket Description Action has Attachment
 							If (attachmentEnabled AndAlso actionDescriptionId > 0) Then
@@ -572,16 +571,12 @@ Namespace TeamSupport
 					If workItem.Id IsNot Nothing Then
 						PushActionsAsComments(ticket.TicketID, ticket.TicketNumber, workItem, attachmentEnabled, attachmentFileSizeLimit)
 
-						'If sendCustomMappingFields Then
 						'We are now updating the custom mapping fields. We do a call per field to minimize the impact of invalid values attempted to be assigned.
 						If workItemFields IsNot Nothing Then
 							For Each field As TFSLibrary.WorkItemField In workItemFields
 								UpdateWorkItemField(workItem.Id, customMappingFields, ticket, field, crmLinkErrors, URI)
 							Next
 						End If
-						'ElseIf isNew Then
-						'	AddLog("Include Non-Required Fields On Issue Creation: Off. Only creating issue with required fields.")
-						'End If
 					End If
 				Next
 			End Sub
@@ -699,65 +694,6 @@ Namespace TeamSupport
 				Return fields
 			End Function
 
-			'//vv probably this is not needed anymore. Delete soon.
-			'Private Function GetAPIJObject(ByVal URI As String, ByVal verb As String, ByVal body As String) As JObject
-			'	AddLog(String.Format("{0} URI: {1}", verb, URI))
-
-			'	If verb <> "GET" AndAlso Not String.IsNullOrEmpty(body) Then
-			'		AddLog("body: " + body)
-			'	End If
-
-			'	Dim result As JObject
-
-			'	Using response As HttpWebResponse = MakeHTTPRequest(_encodedCredentials, URI, verb, "application/json", Client, body)
-			'		Dim responseReader As New StreamReader(response.GetResponseStream())
-			'		result = JObject.Parse(responseReader.ReadToEnd)
-			'		responseReader.Close()
-			'		response.Close()
-
-			'		AddLog("responseReader and response closed. Exiting Using.")
-			'	End Using
-
-			'	Return result
-			'End Function
-
-			'//vv probably this is not needed anymore. Delete soon.
-			'	Private Function MakeHTTPRequest(
-			'ByVal encodedCredentials As String,
-			'ByVal URI As String,
-			'ByVal method As String,
-			'ByVal contentType As String,
-			'ByVal userAgent As String,
-			'ByVal body As String) As HttpWebResponse
-
-			'		Dim request As HttpWebRequest = WebRequest.Create(URI)
-			'		request.Headers.Add("Authorization", "Basic " + encodedCredentials)
-			'		request.Method = method
-			'		request.ContentType = contentType
-			'		request.UserAgent = userAgent
-
-			'		If CRMLinkRow.OrganizationID = 869700 OrElse CRMLinkRow.OrganizationID = 794765 OrElse CRMLinkRow.OrganizationID = 881342 Then
-			'			request.Timeout = 600000
-			'		ElseIf CRMLinkRow.OrganizationID = 1081853 Then
-			'			request.Timeout = 180000
-			'		Else
-			'			request.Timeout = 120000
-			'		End If
-
-			'		If method.ToUpper = "POST" OrElse method.ToUpper = "PUT" Then
-			'			Dim bodyByteArray = UTF8Encoding.UTF8.GetBytes(body)
-			'			request.ContentLength = bodyByteArray.Length
-
-			'			Using requestStream As Stream = request.GetRequestStream()
-			'				requestStream.Write(bodyByteArray, 0, bodyByteArray.Length)
-			'				requestStream.Close()
-			'				Log.Write("requestStream closed. Exiting Using.")
-			'			End Using
-			'		End If
-
-			'		Return request.GetResponse()
-			'	End Function
-
 			Private Function GetTicketData(ByVal ticket As TicketsViewItem,
 										ByVal workItemFields As List(Of TFSLibrary.WorkItemField),
 										ByVal TFSProjectName As String,
@@ -794,95 +730,36 @@ Namespace TeamSupport
 				End If
 
 				Dim customField As StringBuilder = New StringBuilder()
-				'ToDo //vv seems like the only required field in TFS to create work item is the Title, do we need this next line then??
-				'customField = BuildRequiredFields(ticket, fields, customMappingFields, crmLinkErrors)
+
+				For Each tfsField As TFSLibrary.WorkItemField In workItemFields
+					Dim customValues As New CustomValues(User)
+					Dim cRMLinkField As CRMLinkField = customMappingFields.FindByCRMFieldName(tfsField.referenceName)
+
+					If cRMLinkField IsNot Nothing AndAlso cRMLinkField.CustomFieldID IsNot Nothing Then
+						customValues.LoadByFieldID(cRMLinkField.CustomFieldID, ticket.TicketID)
+
+						If customValues.Count > 0 Then
+							fieldValue.value = customValues(0).Value
+							workItemValues.Add(fieldValue)
+						Else
+							Dim customFields As New CustomFields(User)
+							customFields.LoadByCustomFieldID(cRMLinkField.CustomFieldID)
+
+							If customFields(0).FieldType = CustomFieldType.Boolean Then
+								fieldValue.value = False.ToString()
+								workItemValues.Add(fieldValue)
+							End If
+						End If
+					ElseIf cRMLinkField IsNot Nothing AndAlso cRMLinkField.TSFieldName IsNot Nothing AndAlso ticket.Row(cRMLinkField.TSFieldName) IsNot Nothing Then
+						fieldValue.value = ticket.Row(cRMLinkField.TSFieldName)
+						workItemValues.Add(fieldValue)
+					ElseIf cRMLinkField IsNot Nothing Then
+						AddLog("TicketID " + ticket.TicketID.ToString() + "'s field '" + cRMLinkField.CRMFieldName + "' was not included because custom field " +
+											cRMLinkField.CRMFieldID.ToString() + " CustomFieldID and TSFieldName are null.")
+					End If
+				Next
 
 				Return workItemValues
-			End Function
-
-			'ToDo //vv seems like the only required field in TFS to create work item is the Title, do we need this function then??
-			Private Function BuildRequiredFields(ByVal ticket As TicketsViewItem,
-											ByRef fields As JObject,
-											ByRef customMappingFields As CRMLinkFields,
-											ByRef crmLinkErrors As CRMLinkErrors)
-				Dim result As StringBuilder = New StringBuilder()
-				Dim crmLinkError As CRMLinkError
-
-				Try
-					If (fields IsNot Nothing) Then
-						Dim requiredFields As List(Of String) = New List(Of String)()
-
-						For Each field As KeyValuePair(Of String, JToken) In fields
-							If field.Value("required") Then
-								If field.Key = "summary" OrElse field.Key = "workitemtype" OrElse field.Key = "project" OrElse field.Key = "description" Then
-									Continue For
-								End If
-
-								Dim value As String = Nothing
-								Dim fieldName As String = field.Value("name").ToString()
-								Dim notIncludedMessage As String = String.Empty
-								crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticket.TicketID.ToString(), fieldName)
-								Dim cRMLinkField As CRMLinkField = customMappingFields.FindByCRMFieldName(fieldName)
-								requiredFields.Add(fieldName)
-
-								If cRMLinkField IsNot Nothing Then
-									If cRMLinkField.CustomFieldID IsNot Nothing Then
-										Dim findCustom As New CustomValues(User)
-										findCustom.LoadByFieldID(cRMLinkField.CustomFieldID, ticket.TicketID)
-										If findCustom.Count > 0 Then
-											value = GetDataLineValue(field.Key.ToString(), field.Value, findCustom(0).Value)
-										Else
-											notIncludedMessage = GetFieldNotIncludedMessage(ticket.TicketID, fieldName, findCustom.Count = 0)
-										End If
-									ElseIf cRMLinkField.TSFieldName IsNot Nothing Then
-										If ticket.Row(cRMLinkField.TSFieldName) IsNot Nothing Then
-											value = GetDataLineValue(field.Key.ToString(), field.Value, ticket.Row(cRMLinkField.TSFieldName))
-										Else
-											notIncludedMessage = GetFieldNotIncludedMessage(ticket.TicketID, fieldName, ticket.Row(cRMLinkField.TSFieldName) Is Nothing)
-										End If
-									Else
-										AddLog("TicketID " + ticket.TicketID.ToString() + "'s field '" + fieldName + "' was not included because custom field " +
-											cRMLinkField.CRMFieldID.ToString() + " CustomFieldID and TSFieldName are null.")
-									End If
-								End If
-
-								If value IsNot Nothing Then
-									If result.ToString().Trim().Length > 0 Then
-										result.Append(",")
-									End If
-
-									result.Append("""" + field.Key.ToString() + """:" + value)
-									ClearCrmLinkError(crmLinkError)
-								Else
-									AddLog("No value found for the required field " + fieldName,
-									LogType.TextAndReport,
-									crmLinkError,
-									If(String.IsNullOrEmpty(notIncludedMessage), "No value found for the required field " + fieldName, notIncludedMessage),
-									Orientation.OutToJira,
-									ObjectType.Ticket,
-									ticket.TicketID,
-									fieldName,
-									Nothing,
-									OperationType.Update)
-								End If
-							End If
-						Next
-
-						'//Clear required fields errors that are not required anymore
-						crmLinkErrors.ClearRequiredFieldErrors(ticket.TicketID, requiredFields)
-					Else
-						AddLog("Cannot build the required fields because there is no fields returned from Jira for the project and issue type to check.")
-					End If
-				Catch ex As Exception
-					Dim requiredField As String = String.Empty
-					If (fields IsNot Nothing) Then
-						requiredField = fields.ToString()
-					End If
-
-					AddLog("Exception building the required fields: " + requiredField + Environment.NewLine + ex.ToString() + ex.StackTrace)
-				End Try
-
-				Return result
 			End Function
 
 			Private Function GetDataLineValue(ByVal fieldKey As String, ByVal fieldType As Object, ByVal fieldValue As String, Optional ByVal workItemID As Integer = 0) As String

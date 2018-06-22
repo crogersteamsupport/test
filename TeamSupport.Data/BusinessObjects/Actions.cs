@@ -678,8 +678,8 @@ WHERE a.SalesForceID = @SalesForceID";
                 {
                     using (SqlCommand command = new SqlCommand())
                     {
-                        command.Connection = connection;
-                        command.CommandText = "BEGIN TRAN ";
+                        command.Connection   = connection;
+                        command.CommandText  = "BEGIN TRAN ";
                         command.CommandText += "IF EXISTS (SELECT * FROM dbo.Reactions WHERE ReferenceID = @ReferenceID AND UserID = @UserID) ";
                         command.CommandText += "BEGIN UPDATE dbo.Reactions SET ReactionValue = @ReactionValue, DateTimeChanged = @DateTime WHERE UserID = @UserID AND ReceiverID = @ReceiverID AND ReferenceID = @ReferenceID END ";
                         command.CommandText += "ELSE BEGIN INSERT dbo.Reactions (UserID,ReceiverID,ReferenceID,ReactionValue,DateTimeCreated) VALUES (@UserID,@ReceiverID,@ReferenceID,@ReactionValue,@DateTime) END ";
