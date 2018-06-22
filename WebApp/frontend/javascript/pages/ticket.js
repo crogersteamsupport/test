@@ -5902,7 +5902,6 @@ function taskCheckBox(id, status) {
     document.getElementById('task-' + id).checked = (status) ? true : false;
 }
 
-
 // Invalid Ticket Status.
 function invalidStatus(StatusId) {
     teamsupport.modals.overlay.show();
@@ -5920,5 +5919,16 @@ $(document).on('click', '#updateStatus', function(e) {
         if (result !== null) {
             parent.document.getElementById(window.frameElement.id).contentDocument.location.reload(true);
         }
+    });
+});
+
+
+
+
+$(document).ready(function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    window.parent.Ts.Services.WatsonTickets.WatsonTest(1, function(r) {
+        console.log(r);
     });
 });

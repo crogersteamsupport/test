@@ -163,6 +163,7 @@
         <asp:ServiceReference Path="~/Services/ChatService.asmx" />
         <asp:ServiceReference Path="~/Services/TaskService.asmx" />
         <asp:ServiceReference Path="~/Services/DispatchService.asmx" />
+        <asp:ServiceReference Path="~/Services/WatsonTickets.asmx" />
       </services>
     <scripts>
 
