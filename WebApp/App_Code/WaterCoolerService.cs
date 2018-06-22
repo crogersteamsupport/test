@@ -13,8 +13,6 @@ using System.Text;
 using TeamSupport.Data;
 using TeamSupport.WebUtils;
 using System.Runtime.Serialization;
-//using SignalR.Hubs;
-using Microsoft.AspNet.SignalR.Hubs;
 
 namespace TSWebServices
 {

@@ -17,8 +17,9 @@ namespace TeamSupport.Data
     [DataMember] public int OrganizationID { get; set; }
     [DataMember] public string Category { get; set; }
     [DataMember] public int Position { get; set; }
-    [DataMember] public ReferenceType RefType { get; set; }
+    [DataMember] public int RefType { get; set; }
     [DataMember] public int? AuxID { get; set; }
+    [DataMember] public int? ProductFamilyID { get; set; }
           
   }
   
@@ -27,6 +28,7 @@ namespace TeamSupport.Data
     public CustomFieldCategoryProxy GetProxy()
     {
       CustomFieldCategoryProxy result = new CustomFieldCategoryProxy();
+      result.ProductFamilyID = this.ProductFamilyID;
       result.AuxID = this.AuxID;
       result.RefType = this.RefType;
       result.Position = this.Position;

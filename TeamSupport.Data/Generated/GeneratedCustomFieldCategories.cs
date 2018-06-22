@@ -40,6 +40,11 @@ namespace TeamSupport.Data
       set { Row["AuxID"] = CheckValue("AuxID", value); }
     }
     
+    public int? ProductFamilyID
+    {
+      get { return Row["ProductFamilyID"] != DBNull.Value ? (int?)Row["ProductFamilyID"] : null; }
+      set { Row["ProductFamilyID"] = CheckValue("ProductFamilyID", value); }
+    }
 
     
     public ReferenceType RefType
@@ -159,7 +164,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomFieldCategories] SET     [OrganizationID] = @OrganizationID,    [Category] = @Category,    [Position] = @Position,    [RefType] = @RefType,    [AuxID] = @AuxID  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomFieldCategories] SET     [OrganizationID] = @OrganizationID,    [Category] = @Category,    [Position] = @Position,    [RefType] = @RefType,    [AuxID] = @AuxID,    [ProductFamilyID] = @ProductFamilyID  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CustomFieldCategoryID", SqlDbType.Int, 4);
@@ -204,13 +209,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomFieldCategories] (    [OrganizationID],    [Category],    [Position],    [RefType],    [AuxID]) VALUES ( @OrganizationID, @Category, @Position, @RefType, @AuxID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomFieldCategories] (    [OrganizationID],    [Category],    [Position],    [RefType],    [AuxID],    [ProductFamilyID]) VALUES ( @OrganizationID, @Category, @Position, @RefType, @AuxID, @ProductFamilyID); SET @Identity = SCOPE_IDENTITY();";
 
+
+		tempParameter = insertCommand.Parameters.Add("ProductFamilyID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("AuxID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -359,7 +378,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomFieldCategoryID], [OrganizationID], [Category], [Position], [RefType], [AuxID] FROM [dbo].[CustomFieldCategories] WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomFieldCategoryID], [OrganizationID], [Category], [Position], [RefType], [AuxID], [ProductFamilyID] FROM [dbo].[CustomFieldCategories] WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CustomFieldCategoryID", customFieldCategoryID);
         Fill(command);

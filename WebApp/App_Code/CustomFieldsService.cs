@@ -147,6 +147,14 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public CustomFieldCategoryProxy[] GetCategoriesWithUserRights(ReferenceType refType, int? auxID)
+        {
+            CustomFieldCategories cats = new CustomFieldCategories(TSAuthentication.GetLoginUser());
+            cats.LoadByRefTypeWithUserRights(refType, auxID);
+            return cats.GetCustomFieldCategoryProxies();
+        }
+
+        [WebMethod]
         public CustomFieldCategoryProxy[] GetAllTypesCategories(ReferenceType refType)
         {
             CustomFieldCategories cats = new CustomFieldCategories(TSAuthentication.GetLoginUser());
@@ -174,7 +182,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public CustomFieldCategoryProxy NewCategory(ReferenceType refType, int? auxID, string text)
+        public CustomFieldCategoryProxy NewCategory(ReferenceType refType, int? auxID, string text, int productFamilyID)
         {
             if (!TSAuthentication.IsSystemAdmin) return null;
             CustomFieldCategory cat = (new CustomFieldCategories(TSAuthentication.GetLoginUser()).AddNewCustomFieldCategory());
@@ -183,17 +191,29 @@ namespace TSWebServices
             cat.OrganizationID = TSAuthentication.OrganizationID;
             cat.AuxID = auxID;
             cat.RefType = refType;
+            if (productFamilyID != -1)
+            {
+                cat.ProductFamilyID = productFamilyID;
+            }
             cat.Collection.Save();
             return cat.GetProxy();
         }
 
         [WebMethod]
-        public CustomFieldCategoryProxy SaveCategory(int categoryID, string text)
+        public CustomFieldCategoryProxy SaveCategory(int categoryID, string text, int productFamilyID)
         {
             if (!TSAuthentication.IsSystemAdmin) return null;
             CustomFieldCategory cat = CustomFieldCategories.GetCustomFieldCategory(TSAuthentication.GetLoginUser(), categoryID);
             if (cat.OrganizationID != TSAuthentication.OrganizationID) return null;
             cat.Category = text.Trim();
+            if (productFamilyID != -1)
+            {
+                cat.ProductFamilyID = productFamilyID;
+            }
+            else
+            {
+                cat.ProductFamilyID = null;
+            }
             cat.Collection.Save();
             return cat.GetProxy();
         }

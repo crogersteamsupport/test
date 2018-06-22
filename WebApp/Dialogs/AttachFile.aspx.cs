@@ -77,7 +77,7 @@ public partial class Dialogs_AttachFile : BaseDialogPage
 
     foreach (UploadedFile file in ulFile.UploadedFiles)
     {
-      string directory = TSUtils.GetAttachmentPath(folderName, _refID);
+      string directory = TSUtils.GetAttachmentPath(folderName, _refID, 3);
       string fileName = file.GetName();
 	  fileName = Path.GetFileName(fileName);
       fileName = DataUtils.VerifyUniqueFileName(directory, fileName);
@@ -87,7 +87,8 @@ public partial class Dialogs_AttachFile : BaseDialogPage
       attachment.RefID = _refID;
       attachment.OrganizationID = UserSession.LoginUser.OrganizationID;
       attachment.FileName = fileName;
-      attachment.Path = Path.Combine(directory, fileName);
+      //attachment.Path = Path.Combine(directory, fileName);
+      attachment.FilePathID = 3;
       attachment.FileType = string.IsNullOrEmpty(file.ContentType) ? "application/octet-stream" : file.ContentType;
       attachment.FileSize = file.ContentLength;
       attachment.Description = textDescription.Text;

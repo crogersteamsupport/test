@@ -17,7 +17,7 @@
         <div class="panel-body">
             <form id="newChatForm" class="container">
                 <div class="row">
-                    <div class="col-xs-9 col-sm-10 col-md-11">                        
+                    <div class="col-xs-9 col-sm-10 col-md-11">
                         <div class="alert alert-info chatOfflineWarning" role="alert">
                             Our live chat is not available at this time.  Please submit a ticket request in the form below, and a member of our team will follow up with you as soon as possible.<br />Thank you!
                         </div>
@@ -33,7 +33,7 @@
                             <label for="userEmail">Email address</label>
                             <input type="email" class="form-control" id="userEmail" placeholder="Email" />
                         </div>
-                    </div>    
+                    </div>
                     <div class="col-xs-3 col-sm-2 col-md-1">
                         <div class="chat-logo pull-right"></div>
                     </div>
@@ -51,9 +51,9 @@
 </body>
     <%-- JS --%>
     <script src="https://js.pusher.com/3.1/pusher.min.js"></script>
-    <script src="../vcr/1_9_0/Js/jquery-1.11.0.min.js" type="text/javascript"></script>
-    <script src="../vcr/1_9_0/Js/jquery.placeholder.js" type="text/javascript"></script>
-    <script src="../vcr/1_9_0/Js/bootstrap3.min.js" type="text/javascript"></script>
+    <script src="/frontend/library/jquery-1.11.0.min.js" type="text/javascript"></script>
+    <script src="/frontend/library/jquery.placeholder.js" type="text/javascript"></script>
+    <script src="/frontend/library/bootstrap3.min.js" type="text/javascript"></script>
     <script src="../vcr/1_9_0/Js/Ts/ts.utils.js"></script>
     <script src="../vcr/1_9_0/Pages/CustomerChatInit.js"></script>
 </html>

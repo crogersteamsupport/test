@@ -177,14 +177,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("ActionValue", SqlDbType.VarChar, 5000);
+		tempParameter = updateCommand.Parameters.Add("ActionValue", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("ActionValue2", SqlDbType.VarChar, 5000);
+		tempParameter = updateCommand.Parameters.Add("ActionValue2", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -199,14 +199,14 @@ namespace TeamSupport.Data
 		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketAutomationActions] (    [TriggerID],    [ActionID],    [ActionValue],    [ActionValue2]) VALUES ( @TriggerID, @ActionID, @ActionValue, @ActionValue2); SET @Identity = SCOPE_IDENTITY();";
 
 		
-		tempParameter = insertCommand.Parameters.Add("ActionValue2", SqlDbType.VarChar, 5000);
+		tempParameter = insertCommand.Parameters.Add("ActionValue2", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("ActionValue", SqlDbType.VarChar, 5000);
+		tempParameter = insertCommand.Parameters.Add("ActionValue", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

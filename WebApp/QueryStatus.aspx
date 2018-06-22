@@ -8,8 +8,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="vcr/1_9_0/Css/bootstrap3.min.css" rel="stylesheet" />
-    <script src="vcr/1_9_0/Js/jquery-latest.min.js"></script>
-    <script src="vcr/1_9_0/Js/bootstrap3.min.js"></script>
+    <script src="/frontend/library/jquery-latest.min.js"></script>
+    <script src="/frontend/library/bootstrap3.min.js"></script>
 
     <title></title>
 

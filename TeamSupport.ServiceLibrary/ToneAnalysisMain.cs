@@ -15,6 +15,8 @@ namespace WatsonToneAnalyzer
 
         static void Main(string[] args)
         {
+            //TicketSentiment.RecreateTableFromActionSentiments(); // we can recreate TicketSentiments from ActionSentiments
+
             using (var service = new WatsonToneAnalyzerService())
             {
                 if (!Environment.UserInteractive)

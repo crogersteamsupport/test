@@ -31,6 +31,26 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -44,14 +64,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CDI1Strategy.cs" />
+    <Compile Include="Client.cs" />
+    <Compile Include="Customer.cs" />
+    <Compile Include="linq\CDI_Settings.cs" />
+    <Compile Include="linq\CustDistHistory.cs" />
+    <Compile Include="linq\Organization.cs" />
+    <Compile Include="linq\OrganizationTicket.cs" />
+    <Compile Include="linq\TicketSeverity.cs" />
+    <Compile Include="OptimalWeighting.cs" />
     <Compile Include="Utility\DateRange.cs" />
-    <Compile Include="CDI2.cs" />
-    <Compile Include="IntervalData.cs" />
-    <Compile Include="CDIPercentileStrategy.cs" />
+    <Compile Include="CDI2Engine.cs" />
+    <Compile Include="Metrics.cs" />
+    <Compile Include="MetricPercentiles.cs" />
     <Compile Include="linq\Action.cs" />
-    <Compile Include="linq\TicketJoin.cs" />
+    <Compile Include="TicketJoin.cs" />
     <Compile Include="linq\TicketSentiment.cs" />
-    <Compile Include="Organization.cs" />
+    <Compile Include="OrganizationAnalysis.cs" />
     <Compile Include="Utility\Percentile.cs" />
     <Compile Include="TicketReader.cs" />
     <Compile Include="linq\Ticket.cs" />
@@ -60,7 +89,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IntervalStrategy.cs" />
-    <Compile Include="Utility\TallyDictionary.cs" />
+    <Compile Include="Utility\Statistics.cs" />
     <Compile Include="Utility\CDIEventLog.cs" />
   </ItemGroup>
   <ItemGroup>

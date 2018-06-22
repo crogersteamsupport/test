@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
   <title></title>
-  <link href="../css_5/ui.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/ui.css" rel="stylesheet" type="text/css" />
   <style type="text/css">
     body{background-color:#ffffff;}
   </style>

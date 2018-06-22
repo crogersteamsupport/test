@@ -34,6 +34,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateCreated { get; set; }
     [DataMember] public DateTime? DateModified { get; set; }
     [DataMember] public int? LockProcessId { get; set; }
+    [DataMember] public int FilePathID { get; set; }
           
   }
   
@@ -42,6 +43,7 @@ namespace TeamSupport.Data
     public ScheduledReportProxy GetProxy()
     {
       ScheduledReportProxy result = new ScheduledReportProxy();
+      result.FilePathID = this.FilePathID;
       result.LockProcessId = this.LockProcessId;
       result.ModifierId = this.ModifierId;
       result.CreatorId = this.CreatorId;
