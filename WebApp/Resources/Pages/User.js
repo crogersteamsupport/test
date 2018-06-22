@@ -162,7 +162,7 @@ UserPage = function() {
         $('#userEmailNotify').text((user.ReceiveTicketNotifications == true ? 'Yes' : 'No'));
         $('#userSubscribeTickets').text((user.SubscribeToNewTickets == true ? 'Yes' : 'No'));
         $('#userSubscribeActions').text((user.SubscribeToNewActions == true ? 'Yes' : 'No'));
-        $('#userAutoSubscribe').text((user.DoNotAutoSubscribe == true ? 'Yes' : 'No'));
+        $('#userAutoSubscribe').text((user.DoNotAutoSubscribe == true ? 'No' : 'Yes'));
         $('#userGroupNotify').text((user.ReceiveAllGroupNotifications == true ? 'Yes' : 'No'));
         $('#userUnassignedGroupNotify').text((user.ReceiveUnassignedGroupEmails == true ? 'Yes' : 'No'));
         $('#userEmailAfterHours').text((user.OnlyEmailAfterHours == true ? 'Yes' : 'No'));
