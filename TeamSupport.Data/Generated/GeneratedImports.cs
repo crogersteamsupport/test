@@ -42,6 +42,12 @@ namespace TeamSupport.Data
     
 
     
+    public int FilePathID
+    {
+      get { return (int)Row["FilePathID"]; }
+      set { Row["FilePathID"] = CheckValue("FilePathID", value); }
+    }
+    
     public bool IsRolledBack
     {
       get { return (bool)Row["IsRolledBack"]; }
@@ -240,7 +246,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Imports] SET     [FileName] = @FileName,    [OrganizationID] = @OrganizationID,    [ImportGUID] = @ImportGUID,    [RefType] = @RefType,    [AuxID] = @AuxID,    [IsDone] = @IsDone,    [IsRunning] = @IsRunning,    [IsDeleted] = @IsDeleted,    [NeedsDeleted] = @NeedsDeleted,    [TotalRows] = @TotalRows,    [CompletedRows] = @CompletedRows,    [DateStarted] = @DateStarted,    [DateEnded] = @DateEnded,    [IsRolledBack] = @IsRolledBack  WHERE ([ImportID] = @ImportID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Imports] SET     [FileName] = @FileName,    [OrganizationID] = @OrganizationID,    [ImportGUID] = @ImportGUID,    [RefType] = @RefType,    [AuxID] = @AuxID,    [IsDone] = @IsDone,    [IsRunning] = @IsRunning,    [IsDeleted] = @IsDeleted,    [NeedsDeleted] = @NeedsDeleted,    [TotalRows] = @TotalRows,    [CompletedRows] = @CompletedRows,    [DateStarted] = @DateStarted,    [DateEnded] = @DateEnded,    [IsRolledBack] = @IsRolledBack,    [FilePathID] = @FilePathID  WHERE ([ImportID] = @ImportID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ImportID", SqlDbType.Int, 4);
@@ -348,13 +354,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("FilePathID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Imports] (    [FileName],    [OrganizationID],    [ImportGUID],    [RefType],    [AuxID],    [IsDone],    [IsRunning],    [IsDeleted],    [NeedsDeleted],    [TotalRows],    [CompletedRows],    [DateStarted],    [DateEnded],    [DateCreated],    [CreatorID],    [IsRolledBack]) VALUES ( @FileName, @OrganizationID, @ImportGUID, @RefType, @AuxID, @IsDone, @IsRunning, @IsDeleted, @NeedsDeleted, @TotalRows, @CompletedRows, @DateStarted, @DateEnded, @DateCreated, @CreatorID, @IsRolledBack); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Imports] (    [FileName],    [OrganizationID],    [ImportGUID],    [RefType],    [AuxID],    [IsDone],    [IsRunning],    [IsDeleted],    [NeedsDeleted],    [TotalRows],    [CompletedRows],    [DateStarted],    [DateEnded],    [DateCreated],    [CreatorID],    [IsRolledBack],    [FilePathID]) VALUES ( @FileName, @OrganizationID, @ImportGUID, @RefType, @AuxID, @IsDone, @IsRunning, @IsDeleted, @NeedsDeleted, @TotalRows, @CompletedRows, @DateStarted, @DateEnded, @DateCreated, @CreatorID, @IsRolledBack, @FilePathID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("FilePathID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("IsRolledBack", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -580,7 +600,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ImportID], [FileName], [OrganizationID], [ImportGUID], [RefType], [AuxID], [IsDone], [IsRunning], [IsDeleted], [NeedsDeleted], [TotalRows], [CompletedRows], [DateStarted], [DateEnded], [DateCreated], [CreatorID], [IsRolledBack] FROM [dbo].[Imports] WHERE ([ImportID] = @ImportID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ImportID], [FileName], [OrganizationID], [ImportGUID], [RefType], [AuxID], [IsDone], [IsRunning], [IsDeleted], [NeedsDeleted], [TotalRows], [CompletedRows], [DateStarted], [DateEnded], [DateCreated], [CreatorID], [IsRolledBack], [FilePathID] FROM [dbo].[Imports] WHERE ([ImportID] = @ImportID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ImportID", importID);
         Fill(command);

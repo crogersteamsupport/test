@@ -30,6 +30,12 @@ namespace TeamSupport.Data
     [DataMember] public int? ImportFileID { get; set; }
     [DataMember] public int? ProductFamilyID { get; set; }
     [DataMember] public string ProductFamily { get; set; }
+    [DataMember] public int ActivityType { get; set; }
+    [DataMember] public DateTime? DateOccurred { get; set; }
+    [DataMember] public string ActivityTypeString { get; set; }
+    [DataMember] public AttachmentProxy[] Attachments { get; set; }
+
+    [DataMember] public string Owner { get; set; }
   }
   
   public partial class Note : BaseItem
@@ -50,9 +56,9 @@ namespace TeamSupport.Data
       result.CreatorName = this.CreatorName;
       result.ProductFamily = this.ProductFamily;
       result.IsAlert = this.IsAlert;
+      result.ActivityType = this.ActivityType;
+      result.DateOccurred = this.DateOccurred == null ? null : (DateTime?)DateTime.SpecifyKind((DateTime)this.DateOccurred, DateTimeKind.Utc);
             
-
-       
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        

@@ -3,8 +3,8 @@
 
 <%@ Register Assembly="Telerik.Web.UI" Namespace="Telerik.Web.UI" TagPrefix="telerik" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
-  <link href="../css_5/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
-  <link href="../css_5/ui.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/ui.css" rel="stylesheet" type="text/css" />
   <script src="../vcr/1_9_0/Js/Ts/ts.pendo.js" type="text/javascript"></script>
     <script src="/frontend/javascript/vendors/growthscore.js?1515087127" type="text/javascript"></script>
 

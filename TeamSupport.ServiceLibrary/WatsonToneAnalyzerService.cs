@@ -106,12 +106,12 @@ namespace WatsonToneAnalyzer
         public void OnTimer(object sender, System.Timers.ElapsedEventArgs args)
         {
             // only do the Action table query every 20 minutes to catch what we might have missed?
-            TimeSpan timeSince = DateTime.Now - _lastQueryTime;
-            if(timeSince.Minutes >= WatsonQueryIntervalMinutes)
+            TimeSpan timeSince = DateTime.UtcNow - _lastQueryTime;
+            if(timeSince.TotalMinutes >= WatsonQueryIntervalMinutes)
             {
                 WatsonEventLog.WriteEntry("Query for ActionsToAnalyze");
                 ActionsToAnalyzer.FindActionsToAnalyze();
-                _lastQueryTime = DateTime.Now;
+                _lastQueryTime = DateTime.UtcNow;
                 WatsonEventLog.WriteEntry("Actions Analyzed " + WatsonAnalyzer.ActionsAnalyzed.ToString());
             }
 

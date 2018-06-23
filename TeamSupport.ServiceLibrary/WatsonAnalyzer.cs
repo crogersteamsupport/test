@@ -147,9 +147,6 @@ namespace WatsonToneAnalyzer
                 _singleThreadedTransactions.ReleaseMutex();
                 ++_actionsAnalyzed;
             }
-
-            // update the corresponding ticket sentiment
-            TicketSentiment.TicketSentimentStrategy(actionToAnalyze.TicketID, actionToAnalyze.OrganizationID, actionToAnalyze.IsAgent);
         }
 
         /// <summary>

@@ -21,7 +21,7 @@ using System.IO;
 
 public partial class Frames_AdminCustomProperties : BaseFramePage
 {
-  public enum SelectedType { ActionTypes = 0, PhoneTypes=1, ProductVersionStatuses=2, TicketSeverities=3, TicketStatuses=4, TicketTypes=5 };
+  public enum SelectedType { ActionTypes = 0, PhoneTypes=1, ProductVersionStatuses=2, TicketSeverities=3, TicketStatuses=4, TicketTypes=5, ActivityTypes = 6 };
 
   protected override void OnInit(EventArgs e)
   {
@@ -40,7 +40,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
       cmbTypes.Items.Add(new RadComboBoxItem("Ticket Severities", ((int)SelectedType.TicketSeverities).ToString()));
       cmbTypes.Items.Add(new RadComboBoxItem("Ticket Statuses", ((int)SelectedType.TicketStatuses).ToString()));
       cmbTypes.Items.Add(new RadComboBoxItem("Ticket Types", ((int)SelectedType.TicketTypes).ToString()));
-
+      cmbTypes.Items.Add(new RadComboBoxItem("Activity Types", ((int)SelectedType.ActivityTypes).ToString()));
 
       /*int type = Settings.UserDB.ReadInt("SelectedCustomPropertyValue", ((int) SelectedType.ActionTypes));
       RadComboBoxItem item = cmbTypes.FindItemByValue(type.ToString());
@@ -191,6 +191,12 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
         collection = ticketTypes;
         idColName = "TicketTypeID";
         break;
+      case SelectedType.ActivityTypes:
+        ActivityTypes activityTypes = new ActivityTypes(UserSession.LoginUser);
+        activityTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+        collection = activityTypes;
+        idColName = "ActivityTypeID";
+        break;
       default:
         break;
     }
@@ -310,6 +316,14 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
                     }
                 }
                 break;
+            case SelectedType.ActivityTypes:
+                ActivityTypes activityTypes = new ActivityTypes(UserSession.LoginUser);
+                activityTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+                foreach (ActivityType activityType in activityTypes)
+                {
+                    table.Rows.Add(new string[] { activityType.ActivityTypeID.ToString(), activityType.Name, activityType.Description });
+                }
+                break;
             default:
                 break;
         }
@@ -414,6 +428,14 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
             }
         }
         break;
+        case SelectedType.ActivityTypes:
+            ActivityTypes activityTypes = new ActivityTypes(UserSession.LoginUser);
+            activityTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+            foreach (ActivityType activityType in activityTypes)
+            {
+              table.Rows.Add(new string[] { activityType.ActivityTypeID.ToString(), activityType.Name, activityType.Description });
+            }
+        break;
       default:
         break;
     }
@@ -488,6 +510,8 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
         Tickets tickets = new Tickets(UserSession.LoginUser);
         tickets.LoadByTicketType(id);
         if (tickets.Count > 0) result = string.Format("This ticket type contains {0} tickets.  Please reassign these tickets before deleting this ticket type.  Please note that you can also rename this ticket type as well", tickets.Count);
+        break;
+      case SelectedType.ActivityTypes:
         break;
       default:
         break;
@@ -575,6 +599,14 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
 		}
 		
         break;
+        case SelectedType.ActivityTypes:
+            if (ActivityTypes.GetActivityType(UserSession.LoginUser, oldID).OrganizationID != UserSession.LoginUser.OrganizationID) return "";
+            if (ActivityTypes.GetActivityType(UserSession.LoginUser, newID).OrganizationID != UserSession.LoginUser.OrganizationID) return "";
+            (new PhoneNumbers(UserSession.LoginUser)).ReplacePhoneType(oldID, newID);
+            ActivityTypes activityTypes = new ActivityTypes(UserSession.LoginUser);
+            activityTypes.DeleteFromDB(oldID);
+            activityTypes.ValidatePositions(UserSession.LoginUser.OrganizationID);
+        break;
       default:
         break;
     }
@@ -593,6 +625,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
       case SelectedType.TicketSeverities: (new TicketSeverities(UserSession.LoginUser)).MovePositionUp(id); break;
       case SelectedType.TicketStatuses: (new TicketStatuses(UserSession.LoginUser)).MovePositionUp(id); break;
       case SelectedType.TicketTypes: (new TicketTypes(UserSession.LoginUser)).MovePositionUp(id); break;
+      case SelectedType.ActivityTypes: (new PhoneTypes(UserSession.LoginUser)).MovePositionUp(id); break;
       default: break;
     }
     return GetTypesHtml(type, arg);
@@ -610,6 +643,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
       case SelectedType.TicketSeverities: (new TicketSeverities(UserSession.LoginUser)).MovePositionDown(id); break;
       case SelectedType.TicketStatuses: (new TicketStatuses(UserSession.LoginUser)).MovePositionDown(id); break;
       case SelectedType.TicketTypes: (new TicketTypes(UserSession.LoginUser)).MovePositionDown(id); break;
+      case SelectedType.ActivityTypes: (new PhoneTypes(UserSession.LoginUser)).MovePositionDown(id); break;
       default: break;
     }
     return GetTypesHtml(type, arg);
@@ -678,6 +712,12 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
             result.ProductFamilyID = (int)ticketType.ProductFamilyID;
         }
 
+        break;
+        case SelectedType.ActivityTypes:
+            ActivityType activityType = ActivityTypes.GetActivityType(UserSession.LoginUser, id);
+            result.ID = activityType.ActivityTypeID;
+            result.Name = activityType.Name;
+            result.Description = activityType.Description;
         break;
       default:
         break;
@@ -835,6 +875,15 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
           ticketNextStatuses.Save();*/
         }
 
+        break;
+        case SelectedType.ActivityTypes:
+            ActivityType activityType = id == null ? (new ActivityTypes(UserSession.LoginUser)).AddNewActivityType() : ActivityTypes.GetActivityType(UserSession.LoginUser, (int)id);
+            activityType.Name = name;
+            activityType.Description = description;
+            if (id == null) activityType.Position = activityType.Collection.GetMaxPosition(UserSession.LoginUser.OrganizationID) + 1;
+            if (id == null) activityType.OrganizationID = UserSession.LoginUser.OrganizationID;
+            activityType.Collection.Save();
+            activityType.Collection.ValidatePositions(UserSession.LoginUser.OrganizationID);
         break;
       default:
         break;

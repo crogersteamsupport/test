@@ -48,7 +48,7 @@ namespace TeamSupport.ServiceLibrary
                             if (!isClosed && !isStatusPaused)
                             {
                                 DateTime? lastActionDateCreated = Actions.GetLastActionDateCreated(LoginUser, ticket.TicketID);
-                                int totalActions = Actions.TotalActionsForSla(LoginUser, ticket.TicketID);
+                                int totalActions = Actions.TotalActionsForSla(LoginUser, ticket.TicketID, ticket.OrganizationID);
 
                                 Organization organization = Organizations.GetOrganization(LoginUser, ticket.OrganizationID);
                                 SlaTrigger slaTrigger = SlaTriggers.GetSlaTrigger(LoginUser, slaTicket.SlaTriggerId);

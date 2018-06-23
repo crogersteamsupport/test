@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Linq.Mapping;
 
-namespace TeamSupport.CDI
+namespace TeamSupport.CDI.linq
 {
 
     //--Avg age of open tickets
@@ -17,6 +17,10 @@ namespace TeamSupport.CDI
     //and ts.isclosed = 0
     //and tt.name = 'issues'
 
+    /// <summary> 
+    /// [dbo].[TicketTypes] 
+    /// The types of tickets for an organization
+    /// </summary>
     [Table(Name = "TicketTypes")]
     class TicketType
     {

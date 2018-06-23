@@ -534,36 +534,24 @@ ORDER BY TicketNumber DESC";
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = @"
-        SELECT 
-          tv.*
-        FROM
-          TicketsView tv
-        WHERE
-          tv.OrganizationID = @OrganizationID
-          AND tv.TicketID IN 
-          (
-            SELECT
-              tr2.Ticket2ID
-            FROM
-              TicketRelationships tr2
-              JOIN Tickets t2
-                ON tr2.Ticket1ID = t2.TicketID
-            WHERE 
-              t2.TicketNumber = @TicketNumber
-              AND t2.OrganizationID = @OrganizationID
-          ) 
-          OR tv.TicketID IN 
-          (
-            SELECT
-              tr1.Ticket1ID
-            FROM
-              TicketRelationships tr1
-              JOIN Tickets t1
-                ON tr1.Ticket2ID = t1.TicketID
-            WHERE
-              t1.TicketNumber = @TicketNumber
-              AND t1.OrganizationID = @OrganizationID
-          )";
+SELECT tv.* from TicketsView tv 
+WHERE tv.Ticketid in(
+SELECT
+    tr.Ticket2ID
+FROM 
+Tickets t 
+Join TicketRelationships tr on tr.ticket1id = t.ticketid 
+WHERE T.organizationid = @OrganizationID AND t.ticketnumber = @TicketNumber
+UNION
+
+SELECT
+    tr.Ticket1ID
+FROM 
+Tickets t 
+Join TicketRelationships tr on tr.Ticket2ID = t.ticketid 
+WHERE t.organizationid = @OrganizationID AND t.ticketnumber = @TicketNumber)
+and tv.OrganizationID=@OrganizationID
+          ";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
                 command.Parameters.AddWithValue("@TicketNumber", ticketNumber);

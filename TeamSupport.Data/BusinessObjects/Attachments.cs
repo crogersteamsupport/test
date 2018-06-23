@@ -393,6 +393,90 @@ order by o.Name, a.DateCreated desc
       return Path.Combine(Path.Combine(root, type), refID.ToString()) + "\\";
     }
 
+    public static string GetAttachmentPath(LoginUser loginUser, ReferenceType refType, int refID, int filePathID)
+    {
+      string root = AttachmentPath.GetRoot(loginUser, loginUser.OrganizationID, filePathID);
+      string type = null;
+      switch (refType)
+      {
+        case ReferenceType.None:
+          break;
+        case ReferenceType.Actions: type = "Actions"; break;
+        case ReferenceType.ActionTypes:
+          break;
+        case ReferenceType.Addresses:
+          break;
+        case ReferenceType.Attachments:
+          break;
+        case ReferenceType.CustomFields:
+          break;
+        case ReferenceType.CustomValues:
+          break;
+        case ReferenceType.Groups:
+          break;
+        case ReferenceType.GroupUsers:
+          break;
+        case ReferenceType.OrganizationProducts:
+          break;
+        case ReferenceType.Organizations: type = "OrganizationAttachments"; break;
+        case ReferenceType.OrganizationTickets:
+          break;
+        case ReferenceType.PhoneNumbers:
+          break;
+        case ReferenceType.PhoneTypes:
+          break;
+        case ReferenceType.Products:
+          break;
+        case ReferenceType.ProductVersions:
+          break;
+        case ReferenceType.ProductVersionStatuses:
+          break;
+        case ReferenceType.TechDocs:
+          break;
+        case ReferenceType.Tickets:
+          break;
+        case ReferenceType.TicketSeverities:
+          break;
+        case ReferenceType.TicketStatuses:
+          break;
+        case ReferenceType.Subscriptions:
+          break;
+        case ReferenceType.TicketTypes:
+          break;
+        case ReferenceType.Users:
+          break;
+        case ReferenceType.ActionLogs:
+          break;
+        case ReferenceType.BillingInfo:
+          break;
+        case ReferenceType.ExceptionLogs:
+          break;
+        case ReferenceType.Invoices:
+          break;
+        case ReferenceType.SystemSettings:
+          break;
+        case ReferenceType.TicketNextStatuses:
+          break;
+        case ReferenceType.UserSettings:
+          break;
+        case ReferenceType.TicketQueue:
+          break;
+        case ReferenceType.CreditCards:
+          break;
+        case ReferenceType.Contacts:
+          break;
+        case ReferenceType.UserPhoto:
+          type = "UserPhoto";
+          break;
+        default:
+          break;
+      }
+
+      if (type == null) throw new Exception("Error: Cannot convert reference type to string.");
+
+      return Path.Combine(Path.Combine(root, type), refID.ToString()) + "\\";
+    }
+
     public static string VerifyUniqueFileName(string directory, string fileName)
     {
       string path = Path.Combine(directory, fileName);
