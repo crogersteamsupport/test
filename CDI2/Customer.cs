@@ -78,7 +78,7 @@ namespace TeamSupport.CDI
                     //db.Log = CDIEventLog.Instance;
                     db.ObjectTrackingEnabled = false;   // read-only
                     Table<CDI_Settings> table = db.GetTable<CDI_Settings>();
-                    _weights = table.Where(s => s.OrganizationID==organizationID).First();
+                    _weights = table.Where(s => s.OrganizationID==organizationID).FirstOrDefault();
                 }
             }
             catch (Exception e)

@@ -32,7 +32,7 @@ namespace TeamSupport.CDI.linq
         [Column]
         public DateTime? LastCompute;
         [Column]
-        public bool NeedCompute;
+        public bool? NeedCompute;
 
         // new CDI2
         [Column]
