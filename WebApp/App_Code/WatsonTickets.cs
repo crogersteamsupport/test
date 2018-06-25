@@ -35,6 +35,9 @@ namespace TSWebServices {
 
         [WebMethod]
         public string WatsonTest (int ticketID) {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            string json = WatsonScores.PullSummary(loginUser, ticketID);
+
             return "negative";
         }
 

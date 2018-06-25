@@ -12,9 +12,9 @@ using TeamSupport.Data.BusinessObjects;
 
 namespace TeamSupport.Data {
 
-    public partial class WatsonTickets {
+    public partial class WatsonScores {
 
-        public static string PullTicket(LoginUser loginUser, int ticketID) {
+        public static string PullSummary(LoginUser loginUser, int ticketID) {
             try {
                 using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString)) {
                     using (SqlCommand command = new SqlCommand()) {
@@ -24,7 +24,7 @@ namespace TeamSupport.Data {
                         command.CommandText += "INNER JOIN dbo.ActionSentiments ON ActionSentiments.ActionSentimentID = ActionSentimentScores.ActionSentimentID ";
                         command.CommandText += "WHERE ActionSentiments.TicketID = @TicketID ";
                         command.CommandText += "GROUP BY ActionSentimentScores.SentimentID ";
-                        command.CommandText += "FOR JSON PATH, ROOT('scores')";
+                        command.CommandText += "FOR JSON PATH, ROOT('scores') ";
                         command.Parameters.AddWithValue("@TicketID", ticketID);
                         connection.Open();
                         SqlDataReader reader = command.ExecuteReader();

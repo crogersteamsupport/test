@@ -45,6 +45,24 @@ function WatsonTicket(ticketid) {
 
 }
 
+
+function WatsonTest(organizationID) {
+    _mainFrame.Ts.Services.Customers.GetOrganizationSentiment(organizationID, function(e) {
+        if (e.length > 0) {
+            $('#organizationSentiment').show();
+            var percentage = e / 1000;
+            var reverse = 1 - percentage;
+            var display = percentage * 100;
+            var color = getColor(reverse);
+            console.log(e + ' / ' + color);
+            $('#health-ticket').css({ 'background-color':color });
+            $('#health-message').text('Health is ' + display + '%');
+        }
+    });
+}
+
+
+
 function WatsonCustomer(organizationID) {
     _mainFrame.Ts.Services.Customers.GetOrganizationSentiment(organizationID, function(e) {
         if (e.length > 0) {

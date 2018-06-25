@@ -5926,8 +5926,7 @@ $(document).on('click', '#updateStatus', function(e) {
 
 
 $(document).ready(function(e) {
-    e.preventDefault();
-    e.stopPropagation();
+
     window.parent.Ts.Services.WatsonTickets.WatsonTest(1, function(r) {
         console.log(r);
     });
