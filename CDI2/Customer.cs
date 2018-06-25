@@ -101,10 +101,7 @@ namespace TeamSupport.CDI
                     Last30Weight = equalWeight,
                     AvgDaysOpenWeight = equalWeight,
                     AvgDaysToCloseWeight = equalWeight,
-                    ClosedLast30Weight = 0f,
-                    AverageActionCountWeight = 0f,
-                    AverageSentimentScoreWeight = 0f,
-                    AverageSeverityWeight = 0f
+                    NeedCompute=false
                 };
             }
 
