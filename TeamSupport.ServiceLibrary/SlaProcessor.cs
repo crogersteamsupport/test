@@ -572,7 +572,7 @@ namespace TeamSupport.ServiceLibrary
 
       foreach (User item in users)
       {
-        if (Emails.IsEmailDisabled(LoginUser, user.UserID, "SLA")) continue;
+        if (Emails.IsEmailDisabled(LoginUser, item.UserID, "SLA")) continue;
         message.To.Add(new MailAddress(item.Email, item.FirstLastName));
       }
 
