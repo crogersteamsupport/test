@@ -4366,30 +4366,35 @@ function CreateHandleBarHelpers() {
         }
         //if (this.item.OrganizationID != '1078') { return; }
         var ticketID = this.item.TicketID;
-        var actionID = this.item.RefID;
-        var output = window.parent.Ts.Services.TicketPage.WatsonAction(ticketID, actionID, function(result) {
-            if (result != 'negative' && result != 'nothing' && result != 'hidden') {
-                var data = jQuery.parseJSON(result);
-                var sentiments = {
-                    1: 'Sad',
-                    2: 'Frustrated',
-                    3: 'Satisfied',
-                    4: 'Excited',
-                    5: 'Polite',
-                    6: 'Impolite',
-                    7: 'Sympathetic'
-                }
-                var display = [];
-                $.each(data.watson, function(key, sentiment) {
-                    if (sentiment.SentimentID > 0) {
-                        var emotion = sentiments[sentiment.SentimentID];
-                        var percent = Math.round(sentiment.SentimentScore * 100);
-                        display.push(emotion + ': ' + percent + '%');
-                    }
-                });
-                $('#watson-' + actionID).text(display.join(', '));
-            }
-        });
+		var actionID = this.item.RefID;
+
+		if (window.parent.Ts.System.Organization.UseWatson) {
+			var output = window.parent.Ts.Services.TicketPage.WatsonAction(ticketID, actionID, function (result) {
+				if (result != 'negative' && result != 'nothing' && result != 'hidden') {
+					var data = jQuery.parseJSON(result);
+					var sentiments = {
+						1: 'Sad',
+						2: 'Frustrated',
+						3: 'Satisfied',
+						4: 'Excited',
+						5: 'Polite',
+						6: 'Impolite',
+						7: 'Sympathetic'
+					}
+					var display = [];
+					$.each(data.watson, function (key, sentiment) {
+						if (sentiment.SentimentID > 0) {
+							var emotion = sentiments[sentiment.SentimentID];
+							var percent = Math.round(sentiment.SentimentScore * 100);
+							display.push(emotion + ': ' + percent + '%');
+						}
+					});
+					$('#watson-' + actionID).text(display.join(', '));
+				}
+			});
+		} else {
+			$('#ticket-Sentiment').parent().parent().parent().hide();
+		}
     });
 
     Handlebars.registerHelper('Applause', function() {
@@ -5786,21 +5791,25 @@ var SetSolved = function(ResolvedID) {
 };
 
 function WatsonTicketField(ticketid) {
-    window.parent.Ts.Services.TicketPage.WatsonTicket(ticketid, function(result) {
-        if (result != 'negative' && result != 'nothing' && result != 'hidden') {
-            var data = jQuery.parseJSON(result);
-            var display = [];
-            display.push(data.TicketSentimentScore + " - ");
-            if (data.Sad) display.push("Sad");
-            if (data.Frustrated) display.push("Frustrated");
-            if (data.Satisfied) display.push("Satisfied");
-            if (data.Excited) display.push("Excited");
-            if (data.Polite) display.push("Polite");
-            if (data.Impolite) display.push("Impolite");
-            if (data.Sympathetic) display.push("Sympathetic");
-            $('#ticket-Sentiment').append(display.join(' '));
-        }
-    });
+	if (window.parent.Ts.System.Organization.UseWatson) {
+		window.parent.Ts.Services.TicketPage.WatsonTicket(ticketid, function(result) {
+			if (result != 'negative' && result != 'nothing' && result != 'hidden') {
+				var data = jQuery.parseJSON(result);
+				var display = [];
+				display.push(data.TicketSentimentScore + " - ");
+				if (data.Sad) display.push("Sad");
+				if (data.Frustrated) display.push("Frustrated");
+				if (data.Satisfied) display.push("Satisfied");
+				if (data.Excited) display.push("Excited");
+				if (data.Polite) display.push("Polite");
+				if (data.Impolite) display.push("Impolite");
+				if (data.Sympathetic) display.push("Sympathetic");
+				$('#ticket-Sentiment').append(display.join(' '));
+			}
+		});
+	} else {
+		$('#ticket-Sentiment').parent().parent().hide();
+	}
 }
 
 function ticketmenu() {

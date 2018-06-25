@@ -3524,7 +3524,7 @@ SELECT
         [WebMethod]
         public string GetOrganizationSentiment(int organizationID)
         {
-            double? result = TeamSupport.Data.BusinessObjects.OrganizationSentiment.GetOrganizationSentiment(organizationID);
+            double? result = TeamSupport.Data.BusinessObjects.OrganizationSentiment.GetOrganizationSentiment(organizationID, TSAuthentication.OrganizationID);
             return result.HasValue ? ((int)Math.Round(result.Value)).ToString() : string.Empty;
         }
 
