@@ -100,8 +100,7 @@ namespace TeamSupport.CDI
                     OpenTicketsWeight = equalWeight,
                     Last30Weight = equalWeight,
                     AvgDaysOpenWeight = equalWeight,
-                    AvgDaysToCloseWeight = equalWeight,
-                    NeedCompute=false
+                    AvgDaysToCloseWeight = equalWeight
                 };
             }
 
