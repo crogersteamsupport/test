@@ -1124,11 +1124,11 @@ $(document).ready(function () {
         if ($('#noteForm:visible').length == 0)
         {
             initEditor($('#fieldNoteDesc'), function (ed) {
+                $('#activityDate').data("DateTimePicker").setDate(new Date());
             });
-            $('#fieldNoteTitle').focus();
-            $('#activityDate').data("DateTimePicker").setDate(new Date());
         }
         $('#noteForm').toggle();
+        $('#fieldNoteTitle').focus();
     });
 
     $('#fileToggle').click(function (e) {
@@ -1800,9 +1800,8 @@ $(document).ready(function () {
             $('#noteForm').show();
             initEditor($('#fieldNoteDesc'), function (ed) {
                 $('#fieldNoteDesc').tinymce().setContent(desc);
-                $('#fieldNoteDesc').tinymce().focus();
+                //$('#fieldNoteDesc').tinymce().focus();
             });
-            $('#fieldNoteDesc').focus();
 
             if (note.ProductFamilyID) {
                 $('#ddlNoteProductFamily').val(note.ProductFamilyID);
@@ -1883,7 +1882,7 @@ $(document).ready(function () {
         e.preventDefault();
         _mainFrame.Ts.System.logAction('Customer Detail - Note Form Cancel');
         $('.upload-queue-activity').empty();
-        $('#ddlNoteActivityType').val('');
+        $('#ddlNoteActivityType').val('4');
         $('#activityDate').val('');
         $('#activityDate').datetimepicker('setDate', new Date());
         $('#fieldNoteTitle').val('');
@@ -3254,6 +3253,8 @@ $(document).ready(function () {
 
 var initEditor = function (element, init) {
     _mainFrame.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
+        var FontName = '';
+        var FontSize = '';
         var editorOptions = {
             plugins: "autoresize paste link code textcolor",
             toolbar1: "link unlink | undo redo removeformat | cut copy paste pastetext | code | outdent indent | bullist numlist",
@@ -3280,22 +3281,53 @@ var initEditor = function (element, init) {
             paste_data_images: true,
             images_upload_url: "/Services/UserService.asmx/SaveTinyMCEPasteImage",
             setup: function (ed) {
+                ed.on('BeforeSetContent', function (e) {
+                    if (e.content == '' && !e.initial) {
+                        setTimeout(function () {
+                            var content = '<p style="{0} {1}"></p>';
+                            if (FontSize != "")
+                                content = content.replace(/\{0\}/g, "font-size: " + FontSize + ";");
+                            else
+                                content = content.replace(/\{0\}/g, "");
+                            if (FontName != "")
+                                content = content.replace(/\{1\}/g, "font-family: " + FontName + ";");
+                            else
+                                content = content.replace(/\{1\}/g, "");
+                            ed.setContent(ed.getContent() + content, { no_events: true });
+                        }, 10);
+                    }
+                });
+
                 ed.on('init', function (e) {
                     _mainFrame.Ts.System.refreshUser(function () {
                         if (_mainFrame.Ts.System.User.FontFamilyDescription != "Unassigned") {
-                            ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily));
+                            FontName = GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily);
                         }
-                        else if (_mainFrame.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-                            ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily));
+                        else if (_mainFrame.Ts.System.Organization.FontFamily != "Unassigned") {
+                            FontName = GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily);
                         }
 
                         if (_mainFrame.Ts.System.User.FontSize != "0") {
-                            ed.execCommand("FontSize", false, _mainFrame.Ts.System.User.FontSizeDescription);
+                            FontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize);
                         }
                         else if (_mainFrame.Ts.System.Organization.FontSize != "0") {
-                            ed.execCommand("FontSize", false, _mainFrame.Ts.System.Organization.FontSizeDescription);
+                            FontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize);
                         }
+                        var content = '<p style="{0} {1}"></p>';
+                        if (FontSize != "")
+                            content = content.replace(/\{0\}/g, "font-size: " + FontSize + ";");
+                        else
+                            content = content.replace(/\{0\}/g, "");
+                        if (FontName != "")
+                            content = content.replace(/\{1\}/g, "font-family: " + FontName + ";");
+                        else
+                            content = content.replace(/\{1\}/g, "");
+                        ed.setContent(ed.getContent() + content, { no_events: true });
+                        
+
+
                     });
+                    _insertedKBTicketID = null;
                 });
 
                 ed.on('paste', function (ed, e) {
@@ -4069,6 +4101,34 @@ function openNote(noteID) {
         $('.noteDesc').html("<h4>Description</h4> <p>" + desc + "</p>");
 
     });
+}
+
+function GetTinyMCEFontSize(fontSize) {
+    var result = '';
+    switch (fontSize) {
+        case 1:
+            result = "8pt";
+            break;
+        case 2:
+            result = "10pt";
+            break;
+        case 3:
+            result = "12pt";
+            break;
+        case 4:
+            result = "14pt";
+            break;
+        case 5:
+            result = "18pt";
+            break;
+        case 6:
+            result = "24pt";
+            break;
+        case 7:
+            result = "36pt";
+            break;
+    }
+    return result;
 }
 
 function GetTinyMCEFontName(fontFamily) {
