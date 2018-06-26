@@ -40,10 +40,6 @@ $(document).ready(function () {
     var historyLoaded = 0;
     $('input, textarea').placeholder();
 
-    initEditor($('#fieldNoteDesc'), function (ed) {
-        $('#fieldNoteDesc').tinymce().focus();
-    });
-
     if (_mainFrame.Ts.System.Organization.UseProductFamilies) {
         LoadProductFamilies();
         $('.productFamilyRow, .productFamilyColumn, .productLineRow').show();
@@ -783,9 +779,10 @@ $(document).ready(function () {
     $('#noteToggle').click(function (e) {
         if ($('#noteForm:visible').length == 0) {
             initEditor($('#fieldNoteDesc'), function (ed) {
+                $('#fieldNoteTitle').focus();
+                $('#activityDate').data("DateTimePicker").setDate(new Date());
             });
-            $('#fieldNoteTitle').focus();
-            $('#activityDate').data("DateTimePicker").setDate(new Date());
+
         }
         $('#noteForm').toggle();
 
@@ -1013,8 +1010,10 @@ $(document).ready(function () {
             $('#btnNotesSave').text("Save");
             $('#btnNotesCancel').show();
             $('#noteForm').show();
-            $('#fieldNoteDesc').tinymce().setContent(desc);
-            $('#fieldNoteDesc').tinymce().focus();
+            initEditor($('#fieldNoteDesc'), function (ed) {
+                $('#fieldNoteDesc').tinymce().setContent(desc);
+                $('#fieldNoteDesc').tinymce().focus();
+            });
             if (note.ProductFamilyID) {
                 $('#ddlNoteProductFamily').val(note.ProductFamilyID);
             }
@@ -1068,7 +1067,7 @@ $(document).ready(function () {
 
     $("#btnNotesCancel").click(function (e) {
         e.preventDefault();
-        $('#ddlNoteActivityType').val('');
+        $('#ddlNoteActivityType').val('4');
         $('#activityDate').val('');
         $('#activityDate').datetimepicker('setDate', new Date());
         $('#fieldNoteTitle').val('');
@@ -1076,6 +1075,10 @@ $(document).ready(function () {
         $('#fieldNoteID').val('-1');
         $('#noteContactAlert').prop('checked', false);
         $('#btnNotesSave').text("Save");
+        for (var i = tinymce.editors.length - 1 ; i > -1 ; i--) {
+            var ed_id = tinymce.editors[i].id;
+            tinyMCE.execCommand("mceRemoveEditor", true, ed_id);
+        }
         $('#noteForm').toggle();
         _mainFrame.Ts.System.logAction('Contact Detail - Cancel Note Edit / Add');
     });
@@ -2447,6 +2450,8 @@ $(document).ready(function () {
 
 var initEditor = function (element, init) {
     _mainFrame.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
+        var FontName = '';
+        var FontSize = '';
         var editorOptions = {
             plugins: "autoresize paste link code textcolor",
             toolbar1: "link unlink | undo redo removeformat | cut copy paste pastetext | code | outdent indent | bullist numlist",
@@ -2473,22 +2478,53 @@ var initEditor = function (element, init) {
             paste_data_images: true,
             images_upload_url: "/Services/UserService.asmx/SaveTinyMCEPasteImage",
             setup: function (ed) {
+                ed.on('BeforeSetContent', function (e) {
+                    if (e.content == '' && !e.initial) {
+                        setTimeout(function () {
+                            var content = '<p style="{0} {1}"></p>';
+                            if (FontSize != "")
+                                content = content.replace(/\{0\}/g, "font-size: " + FontSize + ";");
+                            else
+                                content = content.replace(/\{0\}/g, "");
+                            if (FontName != "")
+                                content = content.replace(/\{1\}/g, "font-family: " + FontName + ";");
+                            else
+                                content = content.replace(/\{1\}/g, "");
+                            ed.setContent(ed.getContent() + content, { no_events: true });
+                        }, 10);
+                    }
+                });
+
                 ed.on('init', function (e) {
                     _mainFrame.Ts.System.refreshUser(function () {
                         if (_mainFrame.Ts.System.User.FontFamilyDescription != "Unassigned") {
-                            ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily));
+                            FontName = GetTinyMCEFontName(_mainFrame.Ts.System.User.FontFamily);
                         }
-                        else if (_mainFrame.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-                            ed.execCommand("FontName", false, GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily));
+                        else if (_mainFrame.Ts.System.Organization.FontFamily != "Unassigned") {
+                            FontName = GetTinyMCEFontName(_mainFrame.Ts.System.Organization.FontFamily);
                         }
 
                         if (_mainFrame.Ts.System.User.FontSize != "0") {
-                            ed.execCommand("FontSize", false, _mainFrame.Ts.System.User.FontSizeDescription);
+                            FontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.User.FontSize);
                         }
                         else if (_mainFrame.Ts.System.Organization.FontSize != "0") {
-                            ed.execCommand("FontSize", false, _mainFrame.Ts.System.Organization.FontSizeDescription);
+                            FontSize = GetTinyMCEFontSize(_mainFrame.Ts.System.Organization.FontSize);
                         }
+                        var content = '<p style="{0} {1}"></p>';
+                        if (FontSize != "")
+                            content = content.replace(/\{0\}/g, "font-size: " + FontSize + ";");
+                        else
+                            content = content.replace(/\{0\}/g, "");
+                        if (FontName != "")
+                            content = content.replace(/\{1\}/g, "font-family: " + FontName + ";");
+                        else
+                            content = content.replace(/\{1\}/g, "");
+                        ed.setContent(ed.getContent() + content, { no_events: true });
+
+
+
                     });
+                    _insertedKBTicketID = null;
                 });
 
                 ed.on('paste', function (ed, e) {
@@ -3161,6 +3197,34 @@ function openNote(noteID) {
     });
 }
 
+function GetTinyMCEFontSize(fontSize) {
+    var result = '';
+    switch (fontSize) {
+        case 1:
+            result = "8pt";
+            break;
+        case 2:
+            result = "10pt";
+            break;
+        case 3:
+            result = "12pt";
+            break;
+        case 4:
+            result = "14pt";
+            break;
+        case 5:
+            result = "18pt";
+            break;
+        case 6:
+            result = "24pt";
+            break;
+        case 7:
+            result = "36pt";
+            break;
+    }
+    return result;
+}
+
 function GetTinyMCEFontName(fontFamily) {
     var result = '';
     switch (fontFamily) {
@@ -3218,7 +3282,6 @@ function GetTinyMCEFontName(fontFamily) {
     }
     return result;
 }
-
 function convertToValidDate(val) {
     var value = '';
     if (val == "")
