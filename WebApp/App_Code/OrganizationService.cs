@@ -1730,6 +1730,7 @@ namespace TSWebServices
             import.RefType = (ReferenceType)refType;
             import.FileName = fileName;
             import.OrganizationID = TSAuthentication.OrganizationID;
+            import.FilePathID = 3;
             import.Collection.Save();
 
             List<ImportFieldMap> fields = JsonConvert.DeserializeObject<List<ImportFieldMap>>(fieldsData);
@@ -1774,7 +1775,7 @@ namespace TSWebServices
             result.ImportFields = simpleImportFieldsView.GetSimpleImportFieldsViewItemProxies();
 			uploadedFileName = Path.GetFileName(uploadedFileName);
 
-            string csvFile = Path.Combine(AttachmentPath.GetPath(loginUser, loginUser.OrganizationID, AttachmentPath.Folder.Imports), uploadedFileName);
+            string csvFile = Path.Combine(AttachmentPath.GetPath(loginUser, loginUser.OrganizationID, AttachmentPath.Folder.Imports, 3), uploadedFileName);
 
 			try
 			{
@@ -1823,9 +1824,41 @@ namespace TSWebServices
             return items.GetEMailAlternateInboundItemProxies();
         }
 
+        [WebMethod]
+        public List<ActivityTypesDropDown> LoadNoteActivities()
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            var results = new List<ActivityTypesDropDown>();
+
+            ActivityTypes activities = new ActivityTypes(loginUser);
+            activities.LoadByOrganizationID(loginUser.OrganizationID);
+
+            //Get default activity types
+            foreach (ActivityTypeEnum activity in Enum.GetValues(typeof(ActivityTypeEnum)))
+            {
+                var value = Enum.Parse(typeof(ActivityTypeEnum), activity.ToString());
+                results.Add(new ActivityTypesDropDown() { Name = activity.ToString(), Value = (int)value });
+            }
+
+            //Get custom activity types
+            var customActivityTypes = activities.GetActivityTypeProxies().ToList();
+            foreach (ActivityTypeProxy activityproxy in customActivityTypes)
+            {
+                results.Add(new ActivityTypesDropDown() { Name = activityproxy.Name, Value = activityproxy.ActivityTypeID });
+            }
+
+            return results;
+        }
+
+
+}
+    public class ActivityTypesDropDown
+    {
+        public string Name { get; set; }
+        public int Value { get; set; }
     }
 
-    [DataContract]
+[DataContract]
     public class ApiInfo
     {
         [DataMember]

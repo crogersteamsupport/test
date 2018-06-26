@@ -49,6 +49,10 @@ namespace WatsonToneAnalyzer
             // insert child records - ActionSentimentScore(s)
             List<ActionSentimentScore> scores = InsertSentimentScores(tones, _db, actionSentimentID);
 
+            // update the corresponding ticket sentiment
+            ActionSentimentScore maxScore = scores.Where(s => s.SentimentScore == scores.Max(a => a.SentimentScore)).First();
+            TicketSentiment.TicketSentimentStrategy(_db, actionToAnalyze, maxScore);
+
             // Delete ActionToAnalyze
             actionToAnalyze.DeleteOnSubmit(_db);
             _db.SubmitChanges();
@@ -75,7 +79,7 @@ namespace WatsonToneAnalyzer
                 UserID = actionToAnalyze.UserID,
                 OrganizationID = actionToAnalyze.OrganizationID,
                 IsAgent = actionToAnalyze.IsAgent,
-                DateCreated = DateTime.Now
+                DateCreated = DateTime.UtcNow
             };
             table.InsertOnSubmit(sentiment);
             return sentiment;

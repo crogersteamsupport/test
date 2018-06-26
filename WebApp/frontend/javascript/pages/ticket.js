@@ -1665,7 +1665,6 @@ function LoadTicketControls() {
         $('#label-days').text('Days Opened');
     }
 
-    // WatsonTicketField(_ticketInfo.Ticket.TicketID);
     WatsonTicket(_ticketInfo.Ticket.TicketID);
 
     var dueDate = _ticketInfo.Ticket.DueDate;

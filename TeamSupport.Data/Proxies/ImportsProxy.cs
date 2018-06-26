@@ -28,6 +28,7 @@ namespace TeamSupport.Data
     [DataMember] public int CompletedRows { get; set; }
     [DataMember] public int TotalRows { get; set; }
     [DataMember] public bool IsRolledBack { get; set; }
+    [DataMember] public int FilePathID { get; set; }
           
   }
   
@@ -36,6 +37,7 @@ namespace TeamSupport.Data
     public ImportProxy GetProxy()
     {
       ImportProxy result = new ImportProxy();
+      result.FilePathID = this.FilePathID;
       result.IsRolledBack = this.IsRolledBack;
       result.CreatorID = this.CreatorID;
       result.IsRunning = this.IsRunning;

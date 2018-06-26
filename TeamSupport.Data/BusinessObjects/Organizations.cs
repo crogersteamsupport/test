@@ -2585,17 +2585,21 @@ ORDER BY
 
         private static void DeleteAttachments(LoginUser loginUser, int organizationID)
         {
-            string path = AttachmentPath.GetRoot(loginUser, organizationID);
-            if (Directory.Exists(path))
+            FilePaths filePaths = new FilePaths(loginUser);
+            filePaths.LoadThemAll();
+            foreach (FilePath filePath in filePaths)
             {
-                try
+                if (Directory.Exists(filePath.Value))
                 {
-                    Directory.Delete(path, true);
-                }
-                catch (Exception)
-                {
-                }
+                    try
+                    {
+                        Directory.Delete(filePath.Value, true);
+                    }
+                    catch (Exception)
+                    {
+                    }
 
+                }
             }
         }
 
