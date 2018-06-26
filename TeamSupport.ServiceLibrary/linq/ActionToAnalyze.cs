@@ -8,6 +8,7 @@ using System.Data.Linq.Mapping;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Configuration;
 
 namespace WatsonToneAnalyzer
 {
@@ -42,15 +43,20 @@ namespace WatsonToneAnalyzer
         /// <summary>remove HTML, whitespace, email addresses...</summary>
         public string WatsonText() { return CleanString(ActionDescription); }
 
+        static int MaxWatsonActionTextLength = Int32.Parse(ConfigurationManager.AppSettings.Get("MaxWatsonActionTextLength"));
+
         public static string CleanString(string RawHtml)
         {
-            String text = Regex.Replace(RawHtml, @"<[^>]*>", String.Empty); //remove html tags
+            // remove email addresses first (even if contains spaces)
+            string text = Regex.Replace(RawHtml, @"\s+@", "@");
+            Regex ItemRegex = new Regex(@"[\w\d._%+-]+@[ \w\d.-]+\.[\w]{2,3}");
+
+            text = Regex.Replace(text, @"<[^>]*>", String.Empty); //remove html tags
             text = Regex.Replace(text, "&nbsp;", " "); //remove HTML space
-            text = Regex.Replace(text, @"[\d-]", " "); //removes all digits [0-9]
-            text = Regex.Replace(text, @"[\w\d]+\@[\w\d]+\.com", " "); //removes email adresses
+            text = Regex.Replace(text, @"[\d-]", String.Empty); //removes all digits [0-9]
             text = Regex.Replace(text, @"\s+", " ");   // remove whitespace
-            if (text.Length > 500)
-                text = text.Substring(0, 499);
+            if (text.Length > MaxWatsonActionTextLength)
+                text = text.Substring(0, MaxWatsonActionTextLength - 1);
             return text;
         }
 
