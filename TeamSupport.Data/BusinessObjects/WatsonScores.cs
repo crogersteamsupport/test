@@ -20,11 +20,12 @@ namespace TeamSupport.Data {
                     using (SqlCommand command = new SqlCommand()) {
                         command.Connection   = connection;
                         command.CommandType  = CommandType.Text;
-                        command.CommandText  = "SELECT ActionSentimentScores.* FROM dbo.ActionSentimentScores ";
+                        command.CommandText  = "SELECT ActionSentimentScores.SentimentID, COUNT(ActionSentimentScores.ActionSentimentScoreID) AS count, AVG(ActionSentimentScores.SentimentScore) AS average FROM dbo.ActionSentimentScores ";
                         command.CommandText += "INNER JOIN dbo.ActionSentiments ON ActionSentiments.ActionSentimentID = ActionSentimentScores.ActionSentimentID ";
                         command.CommandText += "WHERE ActionSentiments.TicketID = @TicketID ";
                         command.CommandText += "GROUP BY ActionSentimentScores.SentimentID ";
-                        command.CommandText += "FOR JSON PATH, ROOT('scores') ";
+                        command.CommandText += "ORDER BY count DESC ";
+                        command.CommandText += "FOR JSON PATH, ROOT('summary') ";
                         command.Parameters.AddWithValue("@TicketID", ticketID);
                         connection.Open();
                         SqlDataReader reader = command.ExecuteReader();
@@ -37,9 +38,62 @@ namespace TeamSupport.Data {
                 }
             }
             catch (SqlException e) {
+                return "fault:" + e.Message;
+            }
+            catch (Exception e) {
+                return "fault:" + e.Message;
+            }
+        }
+
+
+        public static string PullTicket (LoginUser loginUser, int ticketID) {
+            try {
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString)) {
+                    connection.Open();
+                    DataContext db = new DataContext(connection);
+                    Table<TicketSentiment> ticketScoresTable = db.GetTable<TicketSentiment>();
+                    TicketSentiment ticketSentimentScore = (from u in ticketScoresTable where u.TicketID == ticketID && !u.IsAgent select u).FirstOrDefault();
+                    if (ticketSentimentScore == null) {
+                        return "negative";
+                    } else {
+                        return JsonConvert.SerializeObject(ticketSentimentScore);
+                    }
+                }
+            }
+            catch (SqlException e) {
                 return "negative";
             }
             catch (Exception e) {
+                return "negative";
+            }
+        }
+
+        public static string PullAction(LoginUser loginUser, int ticketID, int actionID) {
+            try {
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString)) {
+                    using (SqlCommand command = new SqlCommand()) {
+                        command.Connection = connection;
+                        command.CommandType = CommandType.Text;
+
+                        command.CommandText = "SELECT ActionSentiments.*, ActionSentimentScores.SentimentID, ActionSentimentScores.SentimentScore FROM dbo.ActionSentiments ";
+                        command.CommandText += "INNER JOIN dbo.ActionSentimentScores ON ActionSentiments.ActionSentimentID = ActionSentimentScores.ActionSentimentID ";
+                        command.CommandText += "WHERE ActionSentiments.TicketID = @TicketID AND ActionSentiments.ActionID = @ActionID ";
+                        command.CommandText += "FOR JSON PATH, ROOT('watson')";
+
+                        command.Parameters.AddWithValue("@TicketID", ticketID);
+                        command.Parameters.AddWithValue("@ActionID", actionID);
+                        connection.Open();
+                        SqlDataReader reader = command.ExecuteReader();
+                        if (reader.HasRows && reader.Read()) {
+                            return reader.GetValue(0).ToString();
+                        } else {
+                            return "nothing";
+                        }
+                    }
+                }
+            } catch (SqlException e) {
+                return "negative";
+            } catch (Exception e) {
                 return "negative";
             }
         }

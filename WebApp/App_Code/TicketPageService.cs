@@ -978,28 +978,6 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string WatsonTicket (int ticketID) {
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-            string json = Actions.WatsonPullTicket(loginUser, ticketID);
-            if (json != "nothing" && json != "negative") {
-                return json;
-            } else {
-                return "negative";
-            }
-        }
-
-        [WebMethod]
-        public string WatsonAction (int ticketID, int actionID) {
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-            string json = Actions.WatsonPullAction(loginUser, ticketID, actionID);
-            if (json != "nothing" && json != "negative") {
-                return json;
-            } else {
-                return "negative";
-            }
-        }
-
-        [WebMethod]
         public string PullReactions(int ticketID, int actionID) {
             TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
             LoginUser loginUser = TSAuthentication.GetLoginUser();

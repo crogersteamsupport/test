@@ -34,17 +34,20 @@ namespace TSWebServices {
         public WatsonTickets() { }
 
         [WebMethod]
-        public string WatsonTest (int ticketID) {
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-            string json = WatsonScores.PullSummary(loginUser, ticketID);
-
-            return "negative";
+        public string Summary (int ticketID = 0) {
+            if (ticketID == 0) {
+                return "fault";
+            } else {
+                LoginUser loginUser = TSAuthentication.GetLoginUser();
+                string json = WatsonScores.PullSummary(loginUser, ticketID);
+                return json;
+            }
         }
 
         [WebMethod]
-        public string TicketScores (int ticketID) {
+        public string Ticket(int ticketID) {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            string json = Actions.WatsonPullTicket(loginUser, ticketID);
+            string json = WatsonScores.PullTicket(loginUser, ticketID);
             if (json != "nothing" && json != "negative") {
                 return json;
             } else {
@@ -53,77 +56,15 @@ namespace TSWebServices {
         }
 
         [WebMethod]
-        public string WatsonAction (int ticketID, int actionID) {
+        public string Action (int ticketID, int actionID) {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            string json = Actions.WatsonPullAction(loginUser, ticketID, actionID);
+            string json = WatsonScores.PullAction(loginUser, ticketID, actionID);
             if (json != "nothing" && json != "negative") {
                 return json;
             } else {
                 return "negative";
             }
         }
-
-        [WebMethod]
-        public string PullReactions(int ticketID, int actionID) {
-            TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-            User author = Users.GetUser(loginUser, action.CreatorID);
-            if (author != null) {
-                if (loginUser.OrganizationID == author.OrganizationID) {
-                    string json1 = Actions.CountReactions(loginUser, ticketID, actionID);
-                    string json2 = Actions.CheckReaction(loginUser, ticketID, actionID);
-                    if (json1 == "negative" || json2 == "negative") {
-                        return "negative";
-                    } else if (json1 == "nothing" && json2 == "nothing") {
-                        return "nothing";
-                    } else if (json1 != "nothing" && json2 != "nothing") {
-                        return string.Format("[{0},{1}]", json1, json2);
-                    } else if (json1 != "nothing") {
-                        return json1;
-                    } else if (json2 != "nothing") {
-                        return json2;
-                    } else {
-                        return "negative";
-                    }
-                } else {
-                    return "hidden";
-                }
-            } else {
-                return "hidden";
-            }
-        }
-
-        [WebMethod]
-        public string PullUserList(int ticketID) {
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-            return Actions.PullUserList(loginUser, ticketID);
-        }
-
-        [WebMethod]
-        public string ListReactions(int ticketID, int actionID) {
-            TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-            User user = TSAuthentication.GetUser(loginUser);
-            User author = Users.GetUser(loginUser, action.CreatorID);
-            return Actions.ListReactions(loginUser, ticketID, actionID);
-        }
-
-        [WebMethod]
-        public string UpdateReaction(int ticketID, int actionID, int value) {
-            string updateReaction = string.Empty;
-            TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-
-            int receiverID = Convert.ToInt32(action.CreatorID);
-
-            updateReaction = Actions.UpdateReaction(loginUser, receiverID, ticketID, actionID, value);
-
-            if (updateReaction == "positive" && value > 0 && action.CreatorID != loginUser.UserID) {
-                // EmailReaction(loginUser, receiverID, ticketID);
-            }
-            return updateReaction;
-        }
-
 
 
     }

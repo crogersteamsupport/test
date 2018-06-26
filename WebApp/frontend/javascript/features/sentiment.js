@@ -1,3 +1,13 @@
+var sentiments = {
+    1: 'Sad',
+    2: 'Frustrated',
+    3: 'Satisfied',
+    4: 'Excited',
+    5: 'Polite',
+    6: 'Impolite',
+    7: 'Sympathetic'
+}
+
 function getColor(value){
     //value from 0 to 1
     if (value > 0) {
@@ -7,61 +17,30 @@ function getColor(value){
 }
 
 function WatsonTicket(ticketid) {
-    window.parent.Ts.Services.TicketPage.WatsonTicket(ticketid, function(result) {
-        console.log(result);
+    window.parent.Ts.Services.WatsonTickets.Ticket(ticketid, function(result) {
         if (result != 'negative' && result != 'nothing' && result != 'hidden') {
             var data = jQuery.parseJSON(result);
             var percentage = data.TicketSentimentScore / 1000;
             var reverse = 1 - percentage;
             var display = parseInt(percentage * 100);
             var color = getColor(reverse);
-            console.log(data.TicketSentimentScore + ' / ' + color);
             $('#health-ticket').css({ 'background-color':color }).css({ 'text-align':'left' });
             $('#health-meter').css({ 'width':display + 'px' });
             $('#health-message').removeClass('disabled').addClass('enabled').text(display + '%');
         } else {
             var color = getColor(0.100);
-            console.log(color);
         }
     });
 
-    window.parent.Ts.Services.TicketPage.WatsonTicket(ticketid, function(result) {
-        console.log(result);
-        if (result != 'negative' && result != 'nothing' && result != 'hidden') {
-            var data = jQuery.parseJSON(result);
-            var percentage = data.TicketSentimentScore / 1000;
-            var reverse = 1 - percentage;
-            var display = parseInt(percentage * 100);
-            var color = getColor(reverse);
-            console.log(data.TicketSentimentScore + ' / ' + color);
-            $('#health-ticket').css({ 'background-color':color }).css({ 'text-align':'left' });
-            $('#health-meter').css({ 'width':display + 'px' });
-            $('#health-message').removeClass('disabled').addClass('enabled').text(display + '%');
-        } else {
-            var color = getColor(0.100);
-            console.log(color);
-        }
-    });
-
-}
-
-
-function WatsonTest(organizationID) {
-    _mainFrame.Ts.Services.Customers.GetOrganizationSentiment(organizationID, function(e) {
-        if (e.length > 0) {
-            $('#organizationSentiment').show();
-            var percentage = e / 1000;
-            var reverse = 1 - percentage;
-            var display = percentage * 100;
-            var color = getColor(reverse);
-            console.log(e + ' / ' + color);
-            $('#health-ticket').css({ 'background-color':color });
-            $('#health-message').text('Health is ' + display + '%');
+    window.parent.Ts.Services.WatsonTickets.Summary(_ticketID, function(r) {
+        if (r != 'negative' && r != 'nothing' && r != 'faults') {
+            var data = jQuery.parseJSON(r);
+            var highest = data.summary[0];
+            var emotion = sentiments[highest.SentimentID];
+            $('#health-emotions').text(emotion);
         }
     });
 }
-
-
 
 function WatsonCustomer(organizationID) {
     _mainFrame.Ts.Services.Customers.GetOrganizationSentiment(organizationID, function(e) {
@@ -71,25 +50,10 @@ function WatsonCustomer(organizationID) {
             var reverse = 1 - percentage;
             var display = percentage * 100;
             var color = getColor(reverse);
-            console.log(e + ' / ' + color);
             $('#health-ticket').css({ 'background-color':color });
             $('#health-message').text('Health is ' + display + '%');
         }
     });
-}
-
-function meter () {
-    var elem = document.getElementById("myBar");
-    var width = 1;
-    var id = setInterval(frame, 10);
-    function frame() {
-        if (width >= 100) {
-            clearInterval(id);
-        } else {
-            width++;
-            elem.style.width = width + '%';
-        }
-    }
 }
 
 function WatsonTicketField(ticketid) {

@@ -369,6 +369,7 @@ var loadTicket = function(ticketNumber, refresh) {
         SetupSnowFieldValues();
         LoadGroups();
         LoadPlugins(info);
+
     });
 };
 
@@ -1664,10 +1665,8 @@ function LoadTicketControls() {
         $('#label-days').text('Days Opened');
     }
 
-    WatsonTicketField(_ticketInfo.Ticket.TicketID);
-
+    // WatsonTicketField(_ticketInfo.Ticket.TicketID);
     WatsonTicket(_ticketInfo.Ticket.TicketID);
-
 
     var dueDate = _ticketInfo.Ticket.DueDate;
     SetupDueDateField(dueDate);
@@ -4365,7 +4364,7 @@ function CreateHandleBarHelpers() {
         //if (this.item.OrganizationID != '1078') { return; }
         var ticketID = this.item.TicketID;
         var actionID = this.item.RefID;
-        var output = window.parent.Ts.Services.TicketPage.WatsonAction(ticketID, actionID, function(result) {
+        var output = window.parent.Ts.Services.WatsonTickets.Action(ticketID, actionID, function(result) {
             if (result != 'negative' && result != 'nothing' && result != 'hidden') {
                 var data = jQuery.parseJSON(result);
                 var sentiments = {
@@ -5919,15 +5918,5 @@ $(document).on('click', '#updateStatus', function(e) {
         if (result !== null) {
             parent.document.getElementById(window.frameElement.id).contentDocument.location.reload(true);
         }
-    });
-});
-
-
-
-
-$(document).ready(function(e) {
-
-    window.parent.Ts.Services.WatsonTickets.WatsonTest(1, function(r) {
-        console.log(r);
     });
 });
