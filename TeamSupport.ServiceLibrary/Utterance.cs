@@ -10,18 +10,21 @@ namespace WatsonToneAnalyzer
 {
     public enum User
     {
-        c,  // customer
-        a   // agent
+        customer,
+        agent
     }
 
     public class Utterance
     {
-        public User user;
-        public string text;
+        public string user;  // do not rename - must match IBM spec "user"
+        public string text;  // do not rename - must match IBM spec "text"
+
         public Utterance(bool isAgent, string inputText)
         {
-            user = isAgent ? User.a: User.c;
+            user = (isAgent ? User.agent : User.customer).ToString();
             text = inputText;
+            if (inputText.Length > MaxUtteranceLength)
+                throw new Exception(String.Format("utterance text overflow: {0}", inputText));
         }
 
         static int MaxUtteranceLength = Int32.Parse(ConfigurationManager.AppSettings.Get("MaxUtteranceLength"));
@@ -39,22 +42,23 @@ namespace WatsonToneAnalyzer
                 }
 
                 // pack sentences into utterances
-                StringBuilder utterance = new StringBuilder();
+                StringBuilder utteranceText = new StringBuilder();
                 string[] sentences = Regex.Split(text, @"(?<=[.?!,;:])");
                 foreach (string sentence in sentences)
                 {
                     // sentence fit in utterance
-                    if (utterance.Length + sentence.Length <= MaxUtteranceLength)
+                    if (utteranceText.Length + sentence.Length <= MaxUtteranceLength)
                     {
-                        utterance.Append(sentence);
+                        utteranceText.Append(sentence);
                         continue;
                     }
 
                     // utterance full
                     if (sentence.Length < MaxUtteranceLength)
                     {
-                        results.Add(new Utterance(isAgent, text));
-                        utterance.Clear();
+                        results.Add(new Utterance(isAgent, utteranceText.ToString()));
+                        utteranceText.Clear();
+                        utteranceText.Append(sentence);
                         continue;
                     }
 
@@ -62,15 +66,15 @@ namespace WatsonToneAnalyzer
                     int offset = 0;
                     while (sentence.Length - offset > MaxUtteranceLength)
                     {
-                        int appendLength = MaxUtteranceLength - utterance.Length;
-                        utterance.Append(sentence.Substring(offset, appendLength));
-                        results.Add(new Utterance(isAgent, text));
-                        utterance.Clear();
+                        int appendLength = MaxUtteranceLength - utteranceText.Length;
+                        utteranceText.Append(sentence.Substring(offset, appendLength));
+                        results.Add(new Utterance(isAgent, utteranceText.ToString()));
+                        utteranceText.Clear();
                         offset += appendLength;
                     }
-                    utterance.Append(sentence.Substring(offset));
+                    utteranceText.Append(sentence.Substring(offset));
                 }
-                results.Add(new Utterance(isAgent, text));
+                results.Add(new Utterance(isAgent, utteranceText.ToString()));
             }
             catch (Exception e)
             {

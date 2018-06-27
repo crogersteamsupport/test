@@ -39,14 +39,21 @@ namespace WatsonToneAnalyzer
             }
         }
 
+        static bool _IsDebuggerAttached = Debugger.IsAttached;
+
         public static void WriteEntry(string message, EventLogEntryType type = EventLogEntryType.Information)
         {
-            _eventLog.WriteEntry(message, type);
+            Console.WriteLine(message);
+            if (_IsDebuggerAttached)
+                Debug.WriteLine(message);
+            else
+                _eventLog.WriteEntry(message, type);
         }
 
         public static void WriteEntry(string message, Exception e)
         {
-            //Debugger.Break();
+            if (_IsDebuggerAttached)
+                Debugger.Break();
             WriteEntry(message + e.ToString() + " ----- STACK: " + e.StackTrace.ToString(), EventLogEntryType.Error);
         }
     }

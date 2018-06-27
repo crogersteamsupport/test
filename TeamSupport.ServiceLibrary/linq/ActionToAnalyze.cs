@@ -43,7 +43,7 @@ namespace WatsonToneAnalyzer
         /// <summary>remove HTML, whitespace, email addresses...</summary>
         public string WatsonText() { return CleanString(ActionDescription); }
 
-        static int MaxWatsonActionTextLength = Int32.Parse(ConfigurationManager.AppSettings.Get("MaxWatsonActionTextLength"));
+        static int MaxActionTextLength = Int32.Parse(ConfigurationManager.AppSettings.Get("MaxActionTextLength"));
 
         public static string CleanString(string RawHtml)
         {
@@ -55,8 +55,8 @@ namespace WatsonToneAnalyzer
             text = Regex.Replace(text, "&nbsp;", " "); //remove HTML space
             text = Regex.Replace(text, @"[\d-]", String.Empty); //removes all digits [0-9]
             text = Regex.Replace(text, @"\s+", " ");   // remove whitespace
-            if (text.Length > MaxWatsonActionTextLength)
-                text = text.Substring(0, MaxWatsonActionTextLength - 1);
+            if (text.Length > MaxActionTextLength)
+                text = text.Substring(0, MaxActionTextLength - 1);
             return text;
         }
 

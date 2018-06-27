@@ -53,7 +53,7 @@ namespace WatsonToneAnalyzer
                     IQueryable<ActionToAnalyze> actionToAnalyzeQuery = from action in actionToAnalyzeTable select action;
 
                     List<ActionToAnalyze> utteranceActions = new List<ActionToAnalyze>();
-                    WatsonPostContent postContent = new WatsonPostContent();
+                    WatsonMessage message = new WatsonMessage();
                     foreach (ActionToAnalyze actionToAnalyze in actionToAnalyzeQuery)
                     {
                         // ActionSentiment record already exists?
@@ -65,7 +65,8 @@ namespace WatsonToneAnalyzer
                             continue;
                         }
 
-                        Task task = PackUtterances(ref utteranceActions, ref postContent, actionToAnalyze);
+                        // add action to message?
+                        Task task = PackUtterances(actionToAnalyze, ref message);
                         if (task != null)
                             asyncTransactionsInProcess.Add(task);   // wait for watson results
                     }
@@ -85,99 +86,39 @@ namespace WatsonToneAnalyzer
             }
         }
 
-        private static Task PackUtterances(ref List<ActionToAnalyze> utteranceActions, ref WatsonPostContent postContent, ActionToAnalyze actionToAnalyze)
+        private static Task PackUtterances(ActionToAnalyze actionToAnalyze, ref WatsonMessage message)
         {
-            // single utterance?
+            Task result = null;
             Utterance utterance;
             if (actionToAnalyze.TryGetUtterance(out utterance))
             {
-                utteranceActions.Add(actionToAnalyze);
-                postContent.Add(utterance);
-                if (utteranceActions.Count >= WatsonUtterancePerAPICall)
-                    return Send(ref utteranceActions, ref postContent);
+                // fits in single utterance
+                if (!message.TryAdd(actionToAnalyze, utterance))
+                {
+                    result = HTTP_POST(message);
+                    message = new WatsonMessage();
+                    message.TryAdd(actionToAnalyze, utterance);
+                }
+                return null;
             }
-
-            // multiple utterances fit?
-            List<Utterance> utterances = actionToAnalyze.ParseUtterances();
-            if (utteranceActions.Count + utterances.Count > WatsonUtterancePerAPICall)
-                return Send(ref utteranceActions, ref postContent);
-
-            // pack the utterances into the API call
-            postContent.Add(utterances);
-            for(int i = 0; i < utterances.Count; ++i)
-                utteranceActions.Add(actionToAnalyze);  // same action for multiple utterances
-
-            if (utteranceActions.Count >= WatsonUtterancePerAPICall)
-                return Send(ref utteranceActions, ref postContent);
-
-            return null;
-        }
-
-        private static Task Send(ref List<ActionToAnalyze> utteranceActions, ref WatsonPostContent postContent)
-        {
-            if (utteranceActions.Count != postContent.utterances.Count)
-                Debugger.Break();
-
-            List<ActionToAnalyze> actionToUtterance = utteranceActions;
-            string jsonContent = postContent.ToString();
-            utteranceActions = new List<ActionToAnalyze>(); // new list of 50 (preserves old list for async call)
-            postContent = new WatsonPostContent();
-            //asyncTransactionsInProcess.Add(HTTP_POST(tmp, (result) => PublishToTable(result)));
-            return (HTTP_POST(actionToUtterance, jsonContent, (result) => PublishResponse(result)));
-        }
-
-        static void PublishResponse(Response response)
-        {
-            try
+            else
             {
-                foreach (UtteranceResponse utterance in response.WatsonResponse.utterances_tone)
-                    PublishActionSentiment(response.ActionsToAnalyze[utterance.utterance_id], utterance);
-            }
-            catch(Exception e)
-            {
-                Debugger.Break();
+                // multiple utterances
+                List<Utterance> utterances = actionToAnalyze.ParseUtterances();
+                if (!message.TryAdd(actionToAnalyze, utterances))
+                {
+                    result = HTTP_POST(message);
+                    message = new WatsonMessage();
+                    message.TryAdd(actionToAnalyze, utterances);
+                }
             }
 
+            return result;
         }
 
         static int _actionsAnalyzed = 0;
         public static int ActionsAnalyzed { get { return _actionsAnalyzed; } }
 
-        /// <summary>
-        /// Async callback from HTTP_POST to put the watson response into the db
-        /// </summary>
-        /// <param name="result">Watson results</param>
-        /// <param name="actionToAnalyze">ActionToAnalyze record we are processing</param>
-        static Mutex _singleThreadedTransactions = new Mutex(false);
-        static void PublishActionSentiment(ActionToAnalyze actionToAnalyze, UtteranceResponse result)
-        {
-            // Process The ActionToAnalyze results
-            WatsonTransaction transaction = null;  // Transaction that can be rolled back
-            try
-            {
-                // 1. Insert ActionSentiment and ActionSentimentScores
-                // 2. run the TicketSentimentStrategy to create TicketSentimentScore
-                // 3. delete the ActionToAnalyze
-                _singleThreadedTransactions.WaitOne();  // connection does not support parallel transactions
-                transaction = new WatsonTransaction();
-                transaction.RecordWatsonResults(result, actionToAnalyze);
-                transaction.Commit();
-            }
-            catch (Exception e2)
-            {
-                if (transaction != null)
-                    transaction.Rollback();
-                WatsonEventLog.WriteEntry("Watson analysis failed - system will retry", e2);
-                Console.WriteLine(e2.ToString());
-            }
-            finally
-            {
-                if (transaction != null)
-                    transaction.Dispose();
-                _singleThreadedTransactions.ReleaseMutex();
-                ++_actionsAnalyzed;
-            }
-        }
 
         static string WatsonGatewayUrl = ConfigurationManager.AppSettings.Get("WatsonGatewayUrl");
         static string WatsonUsername = ConfigurationManager.AppSettings.Get("WatsonUsername");
@@ -186,17 +127,16 @@ namespace WatsonToneAnalyzer
         /// <summary>
         /// Post to IBM watson with Authorization and JSON formatted utterances to process
         /// </summary>
-        /// <param name="UserID">DB ID of user inserting the action</param>
-        /// <param name="InputText">Action text</param>
-        /// <param name="callback">Callback function</param>
-        static async Task HTTP_POST(List<ActionToAnalyze> utteranceActions, string jsonString, Action<Response> callback)
+        static async Task HTTP_POST(WatsonMessage message)
         {
-            //Create Json Readable String with user input:                
+            if (message.Empty)
+                return;
+
+            //Create Json Readable String with user input:        
+            string result = String.Empty;
+            string jsonContent = String.Empty;
             try
             {
-                if (utteranceActions.Count == 0)
-                    return;
-
                 using (HttpClient client = new HttpClient())
                 {
                     // credentials
@@ -209,33 +149,29 @@ namespace WatsonToneAnalyzer
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                     //Make Post call and await response
-                    using (var response = await client.PostAsJsonAsync(WatsonGatewayUrl, JObject.Parse(jsonString)))
+                    jsonContent = message.ToJSON();
+                    using (var response = await client.PostAsJsonAsync(WatsonGatewayUrl, JObject.Parse(jsonContent)))
                     {
                         HttpContent content = response.Content;
-                        string result = await content.ReadAsStringAsync() ?? " ";
+                        result = await content.ReadAsStringAsync() ?? " ";
+                        UtteranceToneList watsonResponse = JsonConvert.DeserializeObject<UtteranceToneList>(result);
 
-                        //Create result object to organize response
-                        var ResultResponse = new Response();
-                        ResultResponse.ActionsToAnalyze = utteranceActions;
-                        ResultResponse.WatsonResponse = JsonConvert.DeserializeObject<UtteranceToneList>(result);
-
-                        callback(ResultResponse); //returns the response object to pass on to the postSQL class
+                        // publish results to DB
+                        message.PublishWatsonResponse(watsonResponse);
+                        _actionsAnalyzed += message.ActionCount;
                     }
                 }
             }
             catch (Exception ex)
             {
-                WatsonEventLog.WriteEntry("********************: Error durring watson analysis:", ex);
+                WatsonEventLog.WriteEntry("********************: Error during watson analysis:", ex);
+                if (!String.IsNullOrEmpty(jsonContent))
+                    WatsonEventLog.WriteEntry(jsonContent);
+                if (!String.IsNullOrEmpty(result))
+                    WatsonEventLog.WriteEntry(result);
                 Console.WriteLine(ex.ToString());
             }
         }
-    }
-
-    // send the transaction data back to the action sentiment strategy
-    class Response
-    {
-        public List<ActionToAnalyze> ActionsToAnalyze { get; set; }
-        public UtteranceToneList WatsonResponse { get; set; }
     }
 
     //Creates the deserialize object for Json Returning from Watson
@@ -259,6 +195,7 @@ namespace WatsonToneAnalyzer
 }
 
 /*
+ *  TODO - Add MQChannel.cs and MQConnection.cs to csproj
 //using RabbitMQ.Client;
 //using RabbitMQ.Client.Events;
 

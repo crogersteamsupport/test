@@ -45,7 +45,7 @@ namespace WatsonToneAnalyzer
 
             // timer to add a 1 minute delay between each execution
             _timer = new System.Timers.Timer();
-            _timer.Interval = Convert.ToDouble(ConfigurationManager.AppSettings.Get("WatsonInterval"));
+            _timer.Interval = 1000 * Convert.ToDouble(ConfigurationManager.AppSettings.Get("WatsonIntervalMinutes"));   // convert to ms
             _timer.Elapsed += new System.Timers.ElapsedEventHandler(this.OnTimer);
             _timer.AutoReset = false;
             _timerEnable = true;
@@ -71,34 +71,6 @@ namespace WatsonToneAnalyzer
             _timerEnable = false;
         }
 
-        protected override void OnStart(string[] args)
-        {
-            //base.EventLog.WriteEntry("In OnStart");
-
-            // Update the service state to Start Pending.  
-            ServiceStatus serviceStatus = new ServiceStatus
-            {
-                dwCurrentState = ServiceState.SERVICE_START_PENDING,
-                dwWaitHint = 100000
-            };
-            SetServiceStatus(this.ServiceHandle, ref serviceStatus);
-
-            StartTimer();
-
-            // Update the service state to Running.  
-            serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
-            SetServiceStatus(this.ServiceHandle, ref serviceStatus);
-        }
-
-        protected override void OnStop()
-        {
-            StopTimer();
-        }
-
-        protected override void OnContinue()
-        {
-        }
-
         // only query periodically
         static int WatsonQueryIntervalMinutes = Int32.Parse(ConfigurationManager.AppSettings.Get("WatsonQueryIntervalMinutes"));
         DateTime _lastQueryTime = DateTime.MinValue;
@@ -118,10 +90,6 @@ namespace WatsonToneAnalyzer
             WatsonAnalyzer.AnalyzeActions();
             if(_timerEnable)
                 _timer.Start();
-        }
-
-        private void InitializeComponent()
-        {
         }
     }
 }
