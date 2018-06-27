@@ -48,10 +48,11 @@ function WatsonCustomer(organizationID) {
             $('#organizationSentiment').show();
             var percentage = e / 1000;
             var reverse = 1 - percentage;
-            var display = percentage * 100;
+            var display = parseInt(percentage * 100);
             var color = getColor(reverse);
-            $('#health-ticket').css({ 'background-color':color });
-            $('#health-message').text('Health is ' + display + '%');
+            $('#health-ticket').css({ 'background-color':color }).css({ 'text-align':'left' });
+            $('#health-meter').css({ 'width':display + 'px' });
+            $('#health-message').removeClass('disabled').addClass('enabled').text(display + '%');
         }
     });
 }
