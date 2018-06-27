@@ -80,22 +80,41 @@ namespace TeamSupport.CDI
                     var query = (from st in sentimentTable
                                  join a in actionTable on st.ActionID equals a.ActionID
                                  orderby st.ActionSentimentID descending
-                                 select a).Take(50000);
+                                 select a).Take(10000);
 
                     Action[] all = query.ToArray();
-                    double[] length = new double[all.Length];
+                    //double[] length = new double[all.Length];
+                    int longSentenceCount = 0;
+                    int totalSentenceCount = 0;
                     for (int i = 0; i < all.Length; ++i)
                     {
                         all[i].Description = CleanString(all[i].Description);
-                        length[i] = all[i].Description.Length;
-                        if (length[i] > 10000)
-                            Debugger.Break();
-                    }
 
-                    double avg = length.Average();
-                    double stdev = Statistics.StandardDeviation(length, avg);
-                    foreach (double value in length)
-                        Debug.WriteLine(value);
+                        // break into sentences
+                        string[] sentences = Regex.Split(all[i].Description, @"(?<=[.?!,;:])");
+                        totalSentenceCount += sentences.Length;
+
+                        foreach (string sentence in sentences)
+                        {
+                            if (sentence.Length <= 500)
+                                continue;
+
+                            ++longSentenceCount;
+                            Debug.WriteLine(sentence);
+                            //string  excellent = Regex.Replace(sentence, @"([-_=.]+){3,}\1", "$1");   // remove duplicates
+                        }
+
+                        //length[i] = all[i].Description.Length;
+                        //if (length[i] > 10000)
+                        //    Debugger.Break();
+
+                    }                    
+
+                    //double avg = length.Average();
+                    //double stdev = Statistics.StandardDeviation(length, avg);
+                    //foreach (double value in length)
+                    //    Debug.WriteLine(value);
+                    double longPercent = (double)longSentenceCount / totalSentenceCount;
                 }
             }
             catch (Exception e)

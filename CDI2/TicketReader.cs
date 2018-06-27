@@ -66,7 +66,8 @@ namespace TeamSupport.CDI
 
         public void LoadAllTickets()
         {
-            //WatsonActionSize();
+            //new WatsonTicketSize().WatsonActionSize();;
+            
             try
             {
                 string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
@@ -131,7 +132,7 @@ namespace TeamSupport.CDI
                 {
                     //db.Log = CDIEventLog.Instance;
                     Table<CDI_Settings> table = db.GetTable<CDI_Settings>();
-                    CDI_Settings[] settings = table.Where(t => t.NeedCompute).ToArray();
+                    CDI_Settings[] settings = table.Where(t => t.NeedCompute.HasValue && t.NeedCompute.Value).ToArray();
                     foreach(CDI_Settings setting in settings)
                     {
                         setting.NeedCompute = false;
