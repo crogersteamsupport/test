@@ -98,6 +98,7 @@
     <Compile Include="RebuildTicketSentimentsTable.cs" />
     <Compile Include="ToneAnalysisMain.cs" />
     <Compile Include="linq\ToneSentiment.cs" />
+    <Compile Include="Utterance.cs" />
     <Compile Include="WatsonEventLog.cs" />
     <Compile Include="WatsonAnalyzer.cs" />
     <Compile Include="WatsonPostContent.cs" />

@@ -35,7 +35,7 @@ namespace WatsonToneAnalyzer
         public void Commit() { _db.Transaction.Commit(); }
         public void Rollback() { _db.Transaction.Rollback(); }
 
-        public void RecordWatsonResults(Utterance utterance, ActionToAnalyze actionToAnalyze)
+        public void RecordWatsonResults(UtteranceResponse utterance, ActionToAnalyze actionToAnalyze)
         {
             List<Tones> tones = utterance.tones;
             if (tones == null)

@@ -49,10 +49,11 @@ namespace WatsonToneAnalyzer
                 using (DataContext db = new DataContext(connection))
                 {
                     Table<ActionSentiment> actionSentimentTable = db.GetTable<ActionSentiment>();
-                    List<ActionToAnalyze> actionsForAPICall = new List<ActionToAnalyze>();
-
                     Table<ActionToAnalyze> actionToAnalyzeTable = db.GetTable<ActionToAnalyze>();
                     IQueryable<ActionToAnalyze> actionToAnalyzeQuery = from action in actionToAnalyzeTable select action;
+
+                    List<ActionToAnalyze> utteranceActions = new List<ActionToAnalyze>();
+                    WatsonPostContent postContent = new WatsonPostContent();
                     foreach (ActionToAnalyze actionToAnalyze in actionToAnalyzeQuery)
                     {
                         // ActionSentiment record already exists?
@@ -64,28 +65,17 @@ namespace WatsonToneAnalyzer
                             continue;
                         }
 
-                        // pack actionsToAnalyze into a single billable API call
-                        actionsForAPICall.Add(actionToAnalyze);
-                        if (actionsForAPICall.Count >= WatsonUtterancePerAPICall)
-                        {
-                            // send them all off to watson - async
-                            List<ActionToAnalyze> tmp = actionsForAPICall;
-                            actionsForAPICall = new List<ActionToAnalyze>(); // new list of 50 (preserves old list for async call)
-                            asyncTransactionsInProcess.Add(HTTP_POST(tmp, (result) => PublishToTable(result)));
-                        }
+                        Task task = PackUtterances(ref utteranceActions, ref postContent, actionToAnalyze);
+                        if (task != null)
+                            asyncTransactionsInProcess.Add(task);   // wait for watson results
                     }
 
                     // the remainder can wait to be packed into a call when we have more...
                 }
             }
-            catch (SqlException e1)
-            {
-                WatsonEventLog.WriteEntry("There was an issues with the sql server:", e1);
-                Console.WriteLine(e1.ToString());
-            }
             catch (Exception e2)
             {
-                WatsonEventLog.WriteEntry("Exception caught at select from ACtionsToAnalyze or HttpPOST:", e2);
+                WatsonEventLog.WriteEntry("Exception in AnalyzeActions", e2);
                 Console.WriteLine(e2.ToString());
             }
             finally
@@ -95,19 +85,59 @@ namespace WatsonToneAnalyzer
             }
         }
 
-        static void PublishToTable(Response response)
+        private static Task PackUtterances(ref List<ActionToAnalyze> utteranceActions, ref WatsonPostContent postContent, ActionToAnalyze actionToAnalyze)
         {
-            foreach (Utterance utterance in response.WatsonResponse.utterances_tone)
+            // single utterance?
+            Utterance utterance;
+            if (actionToAnalyze.TryGetUtterance(out utterance))
             {
-                // missmatch?
-                if ((utterance.utterance_id < 0) || (utterance.utterance_id >= response.ActionsToAnalyze.Count))
-                {
-                    WatsonEventLog.WriteEntry("utterance_id " + utterance.utterance_id + " out of range", EventLogEntryType.Error);
-                    continue;
-                }
-
-                PublishToTable(response.ActionsToAnalyze[utterance.utterance_id], utterance);
+                utteranceActions.Add(actionToAnalyze);
+                postContent.Add(utterance);
+                if (utteranceActions.Count >= WatsonUtterancePerAPICall)
+                    return Send(ref utteranceActions, ref postContent);
             }
+
+            // multiple utterances fit?
+            List<Utterance> utterances = actionToAnalyze.ParseUtterances();
+            if (utteranceActions.Count + utterances.Count > WatsonUtterancePerAPICall)
+                return Send(ref utteranceActions, ref postContent);
+
+            // pack the utterances into the API call
+            postContent.Add(utterances);
+            for(int i = 0; i < utterances.Count; ++i)
+                utteranceActions.Add(actionToAnalyze);  // same action for multiple utterances
+
+            if (utteranceActions.Count >= WatsonUtterancePerAPICall)
+                return Send(ref utteranceActions, ref postContent);
+
+            return null;
+        }
+
+        private static Task Send(ref List<ActionToAnalyze> utteranceActions, ref WatsonPostContent postContent)
+        {
+            if (utteranceActions.Count != postContent.utterances.Count)
+                Debugger.Break();
+
+            List<ActionToAnalyze> actionToUtterance = utteranceActions;
+            string jsonContent = postContent.ToString();
+            utteranceActions = new List<ActionToAnalyze>(); // new list of 50 (preserves old list for async call)
+            postContent = new WatsonPostContent();
+            //asyncTransactionsInProcess.Add(HTTP_POST(tmp, (result) => PublishToTable(result)));
+            return (HTTP_POST(actionToUtterance, jsonContent, (result) => PublishResponse(result)));
+        }
+
+        static void PublishResponse(Response response)
+        {
+            try
+            {
+                foreach (UtteranceResponse utterance in response.WatsonResponse.utterances_tone)
+                    PublishActionSentiment(response.ActionsToAnalyze[utterance.utterance_id], utterance);
+            }
+            catch(Exception e)
+            {
+                Debugger.Break();
+            }
+
         }
 
         static int _actionsAnalyzed = 0;
@@ -119,7 +149,7 @@ namespace WatsonToneAnalyzer
         /// <param name="result">Watson results</param>
         /// <param name="actionToAnalyze">ActionToAnalyze record we are processing</param>
         static Mutex _singleThreadedTransactions = new Mutex(false);
-        static void PublishToTable(ActionToAnalyze actionToAnalyze, Utterance result)
+        static void PublishActionSentiment(ActionToAnalyze actionToAnalyze, UtteranceResponse result)
         {
             // Process The ActionToAnalyze results
             WatsonTransaction transaction = null;  // Transaction that can be rolled back
@@ -149,38 +179,32 @@ namespace WatsonToneAnalyzer
             }
         }
 
+        static string WatsonGatewayUrl = ConfigurationManager.AppSettings.Get("WatsonGatewayUrl");
+        static string WatsonUsername = ConfigurationManager.AppSettings.Get("WatsonUsername");
+        static string WatsonPassword = ConfigurationManager.AppSettings.Get("WatsonPassword");
+
         /// <summary>
         /// Post to IBM watson with Authorization and JSON formatted utterances to process
         /// </summary>
         /// <param name="UserID">DB ID of user inserting the action</param>
         /// <param name="InputText">Action text</param>
         /// <param name="callback">Callback function</param>
-        static async Task HTTP_POST(List<ActionToAnalyze> analyzeList, Action<Response> callback)
+        static async Task HTTP_POST(List<ActionToAnalyze> utteranceActions, string jsonString, Action<Response> callback)
         {
-            string WatsonGatewayUrl = ConfigurationManager.AppSettings.Get("WatsonGatewayUrl");
-            string WatsonUsername = ConfigurationManager.AppSettings.Get("WatsonUsername");
-            string WatsonPassword = ConfigurationManager.AppSettings.Get("WatsonPassword");
-
             //Create Json Readable String with user input:                
             try
             {
-                if (analyzeList.Count == 0)
+                if (utteranceActions.Count == 0)
                     return;
 
-                //This is the format that Watson excepts for the Json Input. The two text fields have to be formatted without any protected charecters
-                WatsonPostContent toJson = new WatsonPostContent();
-                foreach (ActionToAnalyze actionToAnalyze in analyzeList)
-                    toJson.Add(actionToAnalyze.ActionID.ToString(), actionToAnalyze.WatsonText());  // extract the first 500 characters of raw text
-                string jsonString = toJson.ToString();
-
                 using (HttpClient client = new HttpClient())
-                {   //Establish client
-                    //Concatonate credentials and pass authorization to the client header
+                {
+                    // credentials
                     var Auth = WatsonUsername + ":" + WatsonPassword;
                     var byteArray = Encoding.ASCII.GetBytes(Auth);
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
 
-                    //add header with input type: json
+                    // JSON content
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -188,13 +212,11 @@ namespace WatsonToneAnalyzer
                     using (var response = await client.PostAsJsonAsync(WatsonGatewayUrl, JObject.Parse(jsonString)))
                     {
                         HttpContent content = response.Content;
-
-                        //Format response and write to console (should be changed eventually to post to table using sql protocol
                         string result = await content.ReadAsStringAsync() ?? " ";
 
                         //Create result object to organize response
                         var ResultResponse = new Response();
-                        ResultResponse.ActionsToAnalyze = analyzeList;
+                        ResultResponse.ActionsToAnalyze = utteranceActions;
                         ResultResponse.WatsonResponse = JsonConvert.DeserializeObject<UtteranceToneList>(result);
 
                         callback(ResultResponse); //returns the response object to pass on to the postSQL class
@@ -219,10 +241,10 @@ namespace WatsonToneAnalyzer
     //Creates the deserialize object for Json Returning from Watson
     public class UtteranceToneList
     {
-        public List<Utterance> utterances_tone { get; set; }
+        public List<UtteranceResponse> utterances_tone { get; set; }
     }
 
-    public class Utterance
+    public class UtteranceResponse
     {
         public int utterance_id;    // index [0, 49] corresponding to the index of the utterance in the request
         public string utterance_text;   // text that was processed

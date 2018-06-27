@@ -85,5 +85,22 @@ namespace WatsonToneAnalyzer
             return JsonConvert.DeserializeObject<ActionToAnalyze>(message);
         }
 
+        static int MaxUtteranceLength = Int32.Parse(ConfigurationManager.AppSettings.Get("MaxUtteranceLength"));
+        public bool TryGetUtterance(out Utterance utterance)
+        {
+            if (WatsonText().Length > MaxUtteranceLength)
+            {
+                utterance = null;
+                return false;
+            }
+
+            utterance = new Utterance(IsAgent, WatsonText());
+            return true;
+        }
+
+        public List<Utterance> ParseUtterances()
+        {
+            return Utterance.ParseToUtteranceRequest(IsAgent, WatsonText());
+        }
     }
 }
