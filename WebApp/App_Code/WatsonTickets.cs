@@ -31,39 +31,25 @@ namespace TSWebServices {
     [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
     public class WatsonTickets : System.Web.Services.WebService {
 
-        public WatsonTickets() { }
-
         [WebMethod]
         public string Summary (int ticketID = 0) {
-            if (ticketID == 0) {
-                return "fault";
-            } else {
-                LoginUser loginUser = TSAuthentication.GetLoginUser();
-                string json = WatsonScores.PullSummary(loginUser, ticketID);
-                return json;
-            }
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            string json = WatsonScores.PullSummary(loginUser, ticketID);
+            return json;
         }
 
         [WebMethod]
         public string Ticket (int ticketID) {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             string json = WatsonScores.PullTicket(loginUser, ticketID);
-            if (json != "nothing" && json != "negative") {
-                return json;
-            } else {
-                return "negative";
-            }
+            return (json != "nothing" && json != "negative") ? json : "negative";
         }
 
         [WebMethod]
         public string Action (int ticketID, int actionID) {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             string json = WatsonScores.PullAction(loginUser, ticketID, actionID);
-            if (json != "nothing" && json != "negative") {
-                return json;
-            } else {
-                return "negative";
-            }
+            return (json != "nothing" && json != "negative") ? json : "negative";
         }
 
 
