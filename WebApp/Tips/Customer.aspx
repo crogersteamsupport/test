@@ -52,7 +52,7 @@
             </div>
 
             <div class="ui-widget-content ts-separator"></div>
-                <span class="title">Notes</span>
+                <span class="title">Activities</span>
                 <div id="tipNotes" runat="server"></div>
             <div class="ui-helper-clearfix"></div>
         </div>

@@ -44,7 +44,8 @@
 }
 
 .note-list{
-    border-bottom: 3px solid #DDDDDD;
+    margin-top: 10px;
+    /*border-bottom: 3px solid #DDDDDD;*/
     max-height: 208px;
     overflow: auto;
 }
@@ -54,23 +55,23 @@
     opacity:0;
 }
 
-.upload-queue {
+.upload-queue, .upload-queue-activity {
     list-style: none outside none;
     margin: 0;
     padding: 0.5em 0;
 }
-.upload-queue .ts-color-bg-accent {
+.upload-queue .ts-color-bg-accent, .upload-queue-activity .ts-color-bg-accent{
     float: left;
     margin-bottom: 0.25em;
     padding: 0.25em;
     background-color: #EEEEEE;
     margin-right:10px;
 }
-.upload-queue li .filename {
+.upload-queue li .filename, .upload-queue-activity li .filename{
     float: left;
     line-height: 16px;
 }
-.upload-queue li .glyphicon {
+.upload-queue li .glyphicon, .upload-queue-activity li .glyphicon,{
     cursor: pointer;
     float: left;
     margin-left: 0.25em;
@@ -374,4 +375,4 @@ tr.over-due > td > span > i, .over-due > td > a {
         cursor: pointer;
     }
 
-    .noteDesc{        margin-top: 30px;    }
+    .noteDesc{        margin-top: 30px;    }    .activity-file{    cursor: pointer;    color: blue;}

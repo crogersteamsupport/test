@@ -77,7 +77,9 @@ namespace TeamSupport.Data
         Sla = 59,
         ChatAttachments = 60,
         Tasks = 61,
-        DeletedTickets = 62
+        DeletedTickets = 62,
+        CompanyActivity = 63,
+        ContactActivity = 64
     };
 
     public enum SlaViolationType
@@ -391,9 +393,9 @@ namespace TeamSupport.Data
 		Integration = 1
 	}
 
-    public enum ActivityType
+    public enum ActivityTypeEnum
     {
-        Call = 0,
+        Call = 1,
         Email,
         Visit,
         Note

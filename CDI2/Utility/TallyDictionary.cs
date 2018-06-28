@@ -37,7 +37,7 @@ namespace TeamSupport.CDI
         public void Write()
         {
             foreach (KeyValuePair<T, int> pair in _sum)
-                Debug.WriteLine("{0}\t{1}", pair.Key, pair.Value);
+                CDIEventLog.WriteLine("{0}\t{1}", pair.Key, pair.Value);
         }
     }
 }

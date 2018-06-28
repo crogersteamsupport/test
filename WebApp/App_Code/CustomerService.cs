@@ -857,7 +857,7 @@ namespace TSWebServices
         public CustomFieldCategoryProxy[] GetCustomFieldCategories()
         {
             CustomFieldCategories cats = new CustomFieldCategories(TSAuthentication.GetLoginUser());
-            cats.LoadByRefType(ReferenceType.Organizations, -1);
+            cats.LoadByRefTypeWithUserRights(ReferenceType.Organizations, -1);
             return cats.GetCustomFieldCategoryProxies();
         }
 
@@ -1170,7 +1170,29 @@ namespace TSWebServices
                 notes.LoadByReferenceTypeUser(refType, refID, "DateCreated", includeChildren);
             else
                 notes.LoadByReferenceType(refType, refID, "DateCreated", includeChildren);
-            return notes.GetNoteProxies();
+
+            ActivityTypes activities = new ActivityTypes(TSAuthentication.GetLoginUser());
+            activities.LoadByOrganizationID(TSAuthentication.GetLoginUser().OrganizationID);
+
+            var notesProxy = notes.GetNoteProxies();
+            foreach (var note in notesProxy)
+            {
+                if (refType == ReferenceType.Users)
+                {
+                    note.Owner = Users.GetUserFullName(TSAuthentication.GetLoginUser(), note.RefID);
+                }
+                note.Attachments = LoadFiles(note.NoteID, refType == ReferenceType.Organizations ? ReferenceType.CompanyActivity : ReferenceType.ContactActivity);
+                if (note.ActivityType < 5) //default values
+                {
+                    note.ActivityTypeString = Enum.GetName(typeof(ActivityTypeEnum), note.ActivityType);
+                }
+                else //custom values
+                {
+                    note.ActivityTypeString = activities.Where(x => x.ActivityTypeID == note.ActivityType).Select(x => x.Name).ToString();
+                }
+            }
+
+            return notesProxy;
         }
 
         [WebMethod]
@@ -1182,7 +1204,29 @@ namespace TSWebServices
                 notes.LoadByReferenceTypeByUserRightsUsers(refType, refID, loginUser.UserID, organizationID, "DateCreated", includeChildren);
             else
                 notes.LoadByReferenceTypeByUserRights(refType, refID, loginUser.UserID, "DateCreated", includeChildren);
-            return notes.GetNoteProxies();
+            var notesProxy = notes.GetNoteProxies();
+
+            ActivityTypes activities = new ActivityTypes(TSAuthentication.GetLoginUser());
+            activities.LoadByOrganizationID(TSAuthentication.GetLoginUser().OrganizationID);
+
+            foreach (var note in notesProxy)
+            {
+                note.Attachments = LoadFiles(note.NoteID, refType == ReferenceType.Organizations ? ReferenceType.CompanyActivity : ReferenceType.ContactActivity);
+                if(refType == ReferenceType.Users)
+                {
+                    note.Owner = Users.GetUserFullName(TSAuthentication.GetLoginUser(), note.RefID);
+                }
+                if (note.ActivityType < 5) //default values
+                {
+                    note.ActivityTypeString = Enum.GetName(typeof(ActivityTypeEnum), note.ActivityType);
+                }
+                else //custom values
+                {
+                    note.ActivityTypeString = activities.First(x => x.ActivityTypeID == note.ActivityType).Name;
+                }
+            }
+
+            return notesProxy;
         }
 
         [WebMethod]
@@ -2739,7 +2783,7 @@ SELECT
         }
 
         [WebMethod]
-        public void SaveNote(string title, string noteText, int noteID, int refID, ReferenceType refType, string ActivityType, string DateOccurred, bool isAlert = false, int productFamilyID = -1)
+        public int SaveNote(string title, string noteText, int noteID, int refID, ReferenceType refType, int ActivityType, string DateOccurred, bool isAlert = false, int productFamilyID = -1)
         {
             Note note = null;
             bool isNew = false;
@@ -2775,7 +2819,8 @@ SELECT
                 note.Title = title;
                 note.IsAlert = isAlert;
                 note.ActivityType = ActivityType;
-                note.DateOccurred = DateOccurred;
+                if(!string.IsNullOrEmpty(DateOccurred))
+                    note.DateOccurred = DateTime.Parse(DateOccurred);
                 if (productFamilyID != -1)
                 {
                     note.ProductFamilyID = productFamilyID;
@@ -2792,7 +2837,7 @@ SELECT
                 }
 
             }
-
+            return note.NoteID;
         }
 
         [WebMethod]
@@ -3394,6 +3439,7 @@ SELECT
         {
             string recentHTML;
             string phoneStr;
+            var sanitizer = new HtmlSanitizer();
             //user
             if (recent.RefType == 0)
             {
@@ -3428,7 +3474,7 @@ SELECT
                 </li>";
                 phoneStr = phone.IsEmpty ? "" : string.Format("<ul><li><a href=\"tel:{0}\" target=\"_blank\">{0}</a></li></ul>", phone[0].Number);
 
-                return string.Format(recentHTML, org[0].Name, phoneStr, org[0].OrganizationID);
+                return string.Format(recentHTML, sanitizer.Sanitize(org[0].Name), phoneStr, org[0].OrganizationID);
             }
         }
 
@@ -3478,7 +3524,7 @@ SELECT
         [WebMethod]
         public string GetOrganizationSentiment(int organizationID)
         {
-            double? result = TeamSupport.Data.BusinessObjects.OrganizationSentiment.GetOrganizationSentiment(organizationID);
+            double? result = TeamSupport.Data.BusinessObjects.OrganizationSentiment.GetOrganizationSentiment(organizationID, TSAuthentication.OrganizationID);
             return result.HasValue ? ((int)Math.Round(result.Value)).ToString() : string.Empty;
         }
 

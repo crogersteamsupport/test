@@ -5,16 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Linq.Mapping;
 
-namespace TeamSupport.CDI
+namespace TeamSupport.CDI.linq
 {
-    public enum TimeScale
-    {
-        Minutes,
-        Hours,
-        Days,
-        Weeks
-    }
-
+    /// <summary> 
+    /// [dbo].[Tickets] 
+    /// </summary>
     [Table(Name = "Tickets")]
     class Ticket : IComparable<Ticket>
     {
@@ -27,6 +22,8 @@ namespace TeamSupport.CDI
         public int TicketStatusID;
         [Column]
         public int TicketTypeID;
+        [Column]
+        public int TicketSeverityID;
         [Column]
         public int OrganizationID;
         [Column]

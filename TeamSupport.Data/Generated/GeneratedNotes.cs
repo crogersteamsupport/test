@@ -97,15 +97,15 @@ namespace TeamSupport.Data
     }
     
 
-    public string ActivityType
+    public int ActivityType
     {
-      get { return (string)Row["ActivityType"]; }
+      get { return (int)Row["ActivityType"]; }
       set { Row["ActivityType"] = CheckValue("ActivityType", value); }
     }
     
-    public string DateOccurred
+    public DateTime? DateOccurred
     {
-      get { return Row["DateOccurred"] != DBNull.Value ? (string)Row["DateOccurred"] : null; }
+      get { return Row["DateOccurred"] != DBNull.Value ? DateToUtc((DateTime?)Row["DateOccurred"]) : null; }
       set { Row["DateOccurred"] = CheckValue("DateOccurred", value); }
     }
     
@@ -222,11 +222,11 @@ namespace TeamSupport.Data
 		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Notes] SET     [RefType] = @RefType,    [RefID] = @RefID,    [Title] = @Title,    [Description] = @Description,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [NeedsIndexing] = @NeedsIndexing,    [IsAlert] = @IsAlert,    [ImportFileID] = @ImportFileID,    [ProductFamilyID] = @ProductFamilyID, [ActivityType] = @ActivityType, [DateOccurred] = @DateOccurred   WHERE ([NoteID] = @NoteID);";
 
 		
-		tempParameter = updateCommand.Parameters.Add("DateOccurred", SqlDbType.NVarChar, 50);
+		tempParameter = updateCommand.Parameters.Add("DateOccurred", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
 		}
 
 		tempParameter = updateCommand.Parameters.Add("ActivityType", SqlDbType.NVarChar, 50);
@@ -321,11 +321,11 @@ namespace TeamSupport.Data
 		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Notes] (    [RefType],    [RefID],    [Title],    [Description],    [CreatorID],    [ModifierID],    [DateCreated],    [DateModified],    [NeedsIndexing],    [IsAlert],    [ImportFileID],    [ProductFamilyID], [ActivityType], [DateOccurred]) VALUES ( @RefType, @RefID, @Title, @Description, @CreatorID, @ModifierID, @DateCreated, @DateModified, @NeedsIndexing, @IsAlert, @ImportFileID, @ProductFamilyID, @ActivityType, @DateOccurred); SET @Identity = SCOPE_IDENTITY();";
 
 
-		tempParameter = insertCommand.Parameters.Add("DateOccurred", SqlDbType.NVarChar, 50);
+		tempParameter = insertCommand.Parameters.Add("DateOccurred", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
 		}
 
 		tempParameter = insertCommand.Parameters.Add("ActivityType", SqlDbType.NVarChar, 50);

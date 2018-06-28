@@ -35,8 +35,10 @@ namespace TeamSupport.Data
         ScheduledReports,
         ScheduledReportsLogs,
         ChatUploads,
-        Tasks
-    };
+        Tasks,
+        CompanyActivityAttachments,
+        ContactActivityAttachments
+        };
 
     /// <summary>
     /// Gets the root path for attachments as specified in the SystemSettings table
@@ -172,6 +174,8 @@ namespace TeamSupport.Data
         case Folder.ScheduledReportsLogs: result = "ScheduledReports\\Logs"; break;
         case Folder.ChatUploads: result = "ChatAttachments"; break;
         case Folder.Tasks: result = "Tasks"; break;
+        case Folder.CompanyActivityAttachments: result = "CustomerActivityAttachments"; break;
+        case Folder.ContactActivityAttachments: result = "ContactActivityAttachments"; break;
         default: result = ""; break;
       }
       return result;
@@ -198,6 +202,8 @@ namespace TeamSupport.Data
 		case Folder.CustomerHubLogo: result = ReferenceType.CustomerHubLogo; break;
         case Folder.ChatUploads: result = ReferenceType.ChatAttachments; break;
         case Folder.Tasks: result = ReferenceType.Tasks; break;
+        case Folder.ContactActivityAttachments: result = ReferenceType.ContactActivity; break;
+        case Folder.CompanyActivityAttachments: result = ReferenceType.CompanyActivity; break;
         default: result = ReferenceType.None; break;
       }
       return result;

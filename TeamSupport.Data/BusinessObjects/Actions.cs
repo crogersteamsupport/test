@@ -253,7 +253,7 @@ namespace TeamSupport.Data
             return result;
         }
 
-        public static int TotalActionsForSla(LoginUser loginUser, int ticketId)
+        public static int TotalActionsForSla(LoginUser loginUser, int ticketId, int organizationId)
         {
             int result = 0;
 
@@ -263,6 +263,7 @@ namespace TeamSupport.Data
 FROM Actions ax
 LEFT JOIN Tickets tx ON ax.TicketID = tx.TicketID
 LEFT JOIN Organizations ox ON ox.OrganizationID = tx.OrganizationID
+JOIN Users ON ax.CreatorID = Users.UserID AND Users.OrganizationID = @OrganizationID
 WHERE ax.SystemActionTypeID <> 1
     AND(
     ax.IsVisibleOnPortal = 1
@@ -272,6 +273,7 @@ GROUP BY ax.TicketID
 HAVING ax.TicketID = @TicketId";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@TicketId", ticketId);
+				command.Parameters.AddWithValue("@OrganizationID", organizationId);
                 Actions actions = new Actions(loginUser);
                 var resultVar = actions.ExecuteScalar(command);
 
@@ -678,8 +680,8 @@ WHERE a.SalesForceID = @SalesForceID";
                 {
                     using (SqlCommand command = new SqlCommand())
                     {
-                        command.Connection = connection;
-                        command.CommandText = "BEGIN TRAN ";
+                        command.Connection   = connection;
+                        command.CommandText  = "BEGIN TRAN ";
                         command.CommandText += "IF EXISTS (SELECT * FROM dbo.Reactions WHERE ReferenceID = @ReferenceID AND UserID = @UserID) ";
                         command.CommandText += "BEGIN UPDATE dbo.Reactions SET ReactionValue = @ReactionValue, DateTimeChanged = @DateTime WHERE UserID = @UserID AND ReceiverID = @ReceiverID AND ReferenceID = @ReferenceID END ";
                         command.CommandText += "ELSE BEGIN INSERT dbo.Reactions (UserID,ReceiverID,ReferenceID,ReactionValue,DateTimeCreated) VALUES (@UserID,@ReceiverID,@ReferenceID,@ReactionValue,@DateTime) END ";

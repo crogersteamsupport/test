@@ -201,6 +201,18 @@ AdminCustomFields = function () {
           .addClass('caption')
           .appendTo(header);
 
+    if (window.parent.parent.Ts.System.Organization.UseProductFamilies && $('.admin-cf-type').val() == 9) {
+        var catProductFamilyName = '';
+        if (category && category.ProductFamilyID) {
+            catProductFamilyName = ' (' + category.ProductFamilyName + ')';
+        }
+
+        $('<span>')
+              .text(catProductFamilyName)
+              .addClass('productFamilyCaption')
+              .appendTo(header);
+    }
+
     $('<span>')
           .addClass('ts-icon ts-icon-edit')
           .click(function (e) {
@@ -341,33 +353,90 @@ AdminCustomFields = function () {
       .addClass('admin-cf-cat-edit')
       .insertAfter(header)
 
+    var catNameDiv = $('<div>')
+      .addClass('label-block')
+      .appendTo(div);
+
+    $('<span>')
+      .addClass('label')
+      .text('Category Name')
+      .appendTo(catNameDiv);
+
     $('<input>')
       .addClass('ui-widget-content ui-corner-all text')
-      .appendTo(div)
+      .appendTo(catNameDiv)
       .val(header.find('.caption').text());
+
+    if (window.parent.parent.Ts.System.Organization.UseProductFamilies && $('.admin-cf-type').val() == 9) {
+        var catProductFamilyDiv = $('<div>')
+            .addClass('label-block')
+            .appendTo(div);
+
+        $('<span>')
+            .addClass('label')
+            .text('Product Line')
+            .appendTo(catProductFamilyDiv);
+
+        var catProductFamilySelect = $('<select>')
+            .addClass('admin-cf-cat-productfamily')
+            .appendTo(catProductFamilyDiv);
+
+        //build product families ddl dinamycaly
+        $('<option>')
+            .text('Unassigned')
+            .attr('value', -1)
+            .appendTo(catProductFamilySelect);
+
+        var productFamilies = window.parent.parent.Ts.Cache.getProductFamilies();
+        for (var i = 0; i < productFamilies.length; i++) {
+            $('<option>')
+              .text(productFamilies[i].Name)
+              .data('ProductFamily', productFamilies[i])
+              .attr('value', productFamilies[i].ProductFamilyID)
+              .appendTo(catProductFamilySelect);
+        }
+
+        if (cat && cat.ProductFamilyID)
+        {
+            catProductFamilySelect.val(cat.ProductFamilyID);
+        }
+    }
 
     $('<span>')
     .addClass('ts-icon ts-icon-save')
     .click(function (e) {
       e.preventDefault();
-      if ($.trim($(this).prev().val()) === '') {
+
+      var catName = '';
+      var productFamilyID = -1;
+      var productFamilyName = '';
+
+      if (window.parent.parent.Ts.System.Organization.UseProductFamilies && $('.admin-cf-type').val() == 9) {
+          catName = $(this).prev().prev().find('.text').val();
+          productFamilyID = $(this).prev().find('.admin-cf-cat-productfamily').val();
+          productFamilyName = ' (' + $(this).prev().find('.admin-cf-cat-productfamily option:selected').text() + ')';
+      }
+      else {
+          catName = $(this).prev().find('.text').val();
+      }
+
+      if ($.trim(catName) === '') {
         alert('Please enter a name for the category.');
         return;
       }
       if (cat === null) {
-        window.parent.parent.Ts.Services.CustomFields.NewCategory($('.admin-cf-type').val(), ($('.admin-cf-type').val() == 17 ? $('.admin-cf-tickettype').val() : null), $(this).prev().val(), function (result) {
+          window.parent.parent.Ts.Services.CustomFields.NewCategory($('.admin-cf-type').val(), ($('.admin-cf-type').val() == 17 ? $('.admin-cf-tickettype').val() : null), catName, productFamilyID, function (result) {
           element.closest('.admin-cf-cat').data('Category', result);
           window.parent.parent.Ts.System.logAction('Admin Custom Fields - Category Created');
-
         });
       }
       else {
-        window.parent.parent.Ts.Services.CustomFields.SaveCategory(cat.CustomFieldCategoryID, $(this).prev().val());
+        window.parent.parent.Ts.Services.CustomFields.SaveCategory(cat.CustomFieldCategoryID, catName, productFamilyID);
         window.parent.parent.Ts.System.logAction('Admin Custom Fields - Category Edited');
-
       }
 
-      header.show().find('.caption').text($(this).prev().val());
+      header.show().find('.caption').text(catName);
+      header.find('.productFamilyCaption').text(productFamilyName);
       $(this).closest('.admin-cf-cat-edit').remove();
     })
     .appendTo(div);

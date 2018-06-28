@@ -25,9 +25,8 @@ namespace TSWebServices
 
     public SettingService()
     {
-
-      //Uncomment the following line if using designed components 
-      //InitializeComponent(); 
+      //Uncomment the following line if using designed components
+      //InitializeComponent();
     }
 
     [WebMethod]
@@ -73,10 +72,8 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public void WriteSystemSetting(string key, string value)
-    {
-      Settings.SystemDB.WriteString(key, value);
+    public void WriteSystemSetting(string key, string value) {
+        Settings.SystemDB.WriteString(key, value);
     }
-
   }
 }

@@ -215,7 +215,7 @@ namespace TSWebServices
             command.CommandType = CommandType.Text;
 
             command.Parameters.AddWithValue("@FromIndex", firstItemIndex + 1);
-            command.Parameters.AddWithValue("@ToIndex", firstItemIndex + pageSize);
+            command.Parameters.AddWithValue("@PageSize", pageSize);
             command.Parameters.AddWithValue("@OrganizationID", TSAuthentication.OrganizationID);
             command.Parameters.AddWithValue("@ViewerID", TSAuthentication.GetLoginUser().UserID);
 
