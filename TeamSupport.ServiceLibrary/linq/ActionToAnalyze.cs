@@ -40,8 +40,51 @@ namespace WatsonToneAnalyzer
         public string ActionDescription;
 #pragma warning restore CS0649
 
+        string _watsonText = null;
+        Dictionary<string, Tones> _tones = null;
+
+        static Dictionary<string, int> _sentimentMultiplier = null;
+        public static void Initialize(DataContext db)
+        {
+            // we need the multipliers from ToneSentiment (frustrated = -1, satisfied = +1...)
+            if (_sentimentMultiplier == null)
+            {
+                Table<ToneSentiment> table = db.GetTable<ToneSentiment>();
+                ToneSentiment[] toneSentiments = (from toneSentiment in table select toneSentiment).ToArray();
+                _sentimentMultiplier = new Dictionary<string, int>();
+                foreach (ToneSentiment toneSentiment in toneSentiments)
+                    _sentimentMultiplier[toneSentiment.SentimentName.Trim()] = Convert.ToInt32(toneSentiment.SentimentMultiplier);
+            }
+        }
+
+        public List<Tones> GetTones()
+        {
+            // no sentiment detected
+            List<Tones> result = new List<Tones>();
+            if ((_tones == null) || !_tones.Any())
+                return result;
+
+            // one sentiment
+            if (_tones.Count == 1)
+            {
+                result.Add(_tones.First().Value);
+                return result;
+            }
+
+            // negative sentiment?
+            if(_tones.Where(t => _sentimentMultiplier[t.Value.tone_id] < 0).Any())
+                return _tones.Where(t => _sentimentMultiplier[t.Value.tone_id] < 0).Select(pair => pair.Value).ToList();
+
+            return _tones.Where(t => _sentimentMultiplier[t.Value.tone_id] > 0).Select(u => u.Value).ToList();
+        }
+
         /// <summary>remove HTML, whitespace, email addresses...</summary>
-        public string WatsonText() { return CleanString(ActionDescription); }
+        public string WatsonText()
+        {
+            if (_watsonText != null)
+                return _watsonText;
+            return _watsonText = CleanString(ActionDescription);
+        }
 
         static int MaxActionTextLength = Int32.Parse(ConfigurationManager.AppSettings.Get("MaxActionTextLength"));
 
@@ -56,7 +99,7 @@ namespace WatsonToneAnalyzer
             text = Regex.Replace(text, @"[\d-]", String.Empty); //removes all digits [0-9]
             text = Regex.Replace(text, @"\s+", " ");   // remove whitespace
             if (text.Length > MaxActionTextLength)
-                text = text.Substring(0, MaxActionTextLength - 1);
+                text = text.Substring(0, MaxActionTextLength);
             return text;
         }
 
@@ -88,19 +131,35 @@ namespace WatsonToneAnalyzer
         static int MaxUtteranceLength = Int32.Parse(ConfigurationManager.AppSettings.Get("MaxUtteranceLength"));
         public bool TryGetUtterance(out Utterance utterance)
         {
-            if (WatsonText().Length > MaxUtteranceLength)
+            string watsonText = WatsonText();
+            if (watsonText.Length > MaxUtteranceLength)
             {
                 utterance = null;
                 return false;
             }
 
-            utterance = new Utterance(IsAgent, WatsonText());
+            utterance = new Utterance(IsAgent, watsonText);
             return true;
         }
 
         public List<Utterance> ParseUtterances()
         {
             return Utterance.ParseToUtteranceRequest(IsAgent, WatsonText());
+        }
+
+        public void AddSentiment(UtteranceResponse utterance)
+        {
+            if (!utterance.tones.Any())
+                return;
+
+            if (_tones == null)
+                _tones = new Dictionary<string, Tones>();
+
+            foreach (Tones tone in utterance.tones)
+            {
+                if (!_tones.ContainsKey(tone.tone_id) || (tone.score > _tones[tone.tone_id].score))
+                    _tones[tone.tone_id] = tone;
+            }
         }
     }
 }

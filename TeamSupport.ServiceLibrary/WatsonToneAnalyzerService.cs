@@ -72,14 +72,14 @@ namespace WatsonToneAnalyzer
         }
 
         // only query periodically
-        static int WatsonQueryIntervalMinutes = Int32.Parse(ConfigurationManager.AppSettings.Get("WatsonQueryIntervalMinutes"));
+        static double WatsonQueryIntervalMinutes = Double.Parse(ConfigurationManager.AppSettings.Get("WatsonQueryIntervalMinutes"));
         DateTime _lastQueryTime = DateTime.MinValue;
 
         public void OnTimer(object sender, System.Timers.ElapsedEventArgs args)
         {
             // only do the Action table query every 20 minutes to catch what we might have missed?
             TimeSpan timeSince = DateTime.UtcNow - _lastQueryTime;
-            if(timeSince.TotalMinutes >= WatsonQueryIntervalMinutes)
+            if (timeSince.TotalMinutes >= WatsonQueryIntervalMinutes)
             {
                 WatsonEventLog.WriteEntry("Query for ActionsToAnalyze");
                 ActionsToAnalyzer.FindActionsToAnalyze();

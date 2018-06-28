@@ -13,14 +13,19 @@ namespace WatsonToneAnalyzer
     {
         WatsonPostContent _postContent;
         List<ActionToAnalyze> _utteranceActions;
+        List<ActionToAnalyze> _uniqueActions;
+
+        static int totalActionCount = 0;
+        static int totalUtteranceCount = 0;
 
         public WatsonMessage()
         {
             _postContent = new WatsonPostContent();
             _utteranceActions = new List<ActionToAnalyze>();
+            _uniqueActions = new List<ActionToAnalyze>();
         }
 
-        public bool Empty {  get { return _utteranceActions.Count == 0; } }
+        public bool Empty {  get { return !_utteranceActions.Any(); } }
 
         public int ActionCount { get; private set; }
 
@@ -38,8 +43,13 @@ namespace WatsonToneAnalyzer
             if (_utteranceActions.Count >= WatsonUtterancePerAPICall)
                 return false;
 
-            _utteranceActions.Add(actionToAnalyze);
+            // empty so it fit and is done
+            if (String.IsNullOrEmpty(utterance.text))
+                return true;
+
             _postContent.Add(utterance);
+            _uniqueActions.Add(actionToAnalyze);
+            _utteranceActions.Add(actionToAnalyze);
             check();
             ++ActionCount;
             return true;
@@ -52,6 +62,7 @@ namespace WatsonToneAnalyzer
                 return false;
 
             _postContent.Add(utterances);
+            _uniqueActions.Add(actionToAnalyze);
             for (int i = 0; i < utterances.Count; ++i)
                 _utteranceActions.Add(actionToAnalyze);  // same action for multiple utterances
             check();
@@ -67,8 +78,17 @@ namespace WatsonToneAnalyzer
 
         public void PublishWatsonResponse(UtteranceToneList watsonResponse)
         {
+            totalActionCount += _uniqueActions.Count;
+            totalUtteranceCount += _utteranceActions.Count;
+            WatsonEventLog.WriteEntry(String.Format("Actions {0}, Utterances {1}", totalActionCount, totalUtteranceCount));
+
+            // update the actions with the corresponding utterances
             foreach (UtteranceResponse utterance in watsonResponse.utterances_tone)
-                PublishActionSentiment(_utteranceActions[utterance.utterance_id], utterance);
+                _utteranceActions[utterance.utterance_id].AddSentiment(utterance);
+
+            // update the action with the accumulated results
+            foreach(ActionToAnalyze action in _uniqueActions)
+                PublishActionSentiment(action);
         }
 
         /// <summary>
@@ -78,7 +98,7 @@ namespace WatsonToneAnalyzer
         /// <param name="actionToAnalyze">ActionToAnalyze record we are processing</param>
         static Mutex _singleThreadedTransactions = new Mutex(false);
 
-        static void PublishActionSentiment(ActionToAnalyze actionToAnalyze, UtteranceResponse result)
+        static void PublishActionSentiment(ActionToAnalyze actionToAnalyze)
         {
             // Process The ActionToAnalyze results
             WatsonTransaction transaction = null;  // Transaction that can be rolled back
@@ -89,7 +109,7 @@ namespace WatsonToneAnalyzer
                 // 3. delete the ActionToAnalyze
                 _singleThreadedTransactions.WaitOne();  // connection does not support parallel transactions
                 transaction = new WatsonTransaction();
-                transaction.RecordWatsonResults(result, actionToAnalyze);
+                transaction.RecordWatsonResults(actionToAnalyze);
                 transaction.Commit();
             }
             catch (Exception e2)

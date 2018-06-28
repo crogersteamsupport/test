@@ -51,24 +51,33 @@ namespace WatsonToneAnalyzer
                     Table<ActionSentiment> actionSentimentTable = db.GetTable<ActionSentiment>();
                     Table<ActionToAnalyze> actionToAnalyzeTable = db.GetTable<ActionToAnalyze>();
                     IQueryable<ActionToAnalyze> actionToAnalyzeQuery = from action in actionToAnalyzeTable select action;
+                    ActionToAnalyze[] actions = actionToAnalyzeQuery.ToArray();
 
                     List<ActionToAnalyze> utteranceActions = new List<ActionToAnalyze>();
                     WatsonMessage message = new WatsonMessage();
-                    foreach (ActionToAnalyze actionToAnalyze in actionToAnalyzeQuery)
+                    ActionToAnalyze.Initialize(db);
+                    foreach (ActionToAnalyze actionToAnalyze in actions)
                     {
                         // ActionSentiment record already exists?
-                        if (actionSentimentTable.Where(u => u.ActionID == actionToAnalyze.ActionID).Any())
+                        bool duplicateActionSentiment = actionSentimentTable.Where(u => u.ActionID == actionToAnalyze.ActionID).Any();
+                        if (duplicateActionSentiment)
+                            WatsonEventLog.WriteEntry("duplicate ActionID in ActionSentiment table " + actionToAnalyze.ActionID, EventLogEntryType.Error);
+
+                        // empty so continue
+                        if (duplicateActionSentiment || (actionToAnalyze.WatsonText().Length == 0))
                         {
                             actionToAnalyze.DeleteOnSubmit(db);
                             db.SubmitChanges();
-                            WatsonEventLog.WriteEntry("duplicate ActionID in ActionSentiment table " + actionToAnalyze.ActionID, EventLogEntryType.Error);
                             continue;
                         }
 
                         // add action to message?
                         Task task = PackUtterances(actionToAnalyze, ref message);
                         if (task != null)
+                        {
                             asyncTransactionsInProcess.Add(task);   // wait for watson results
+                            //break;    // test single call
+                        }
                     }
 
                     // the remainder can wait to be packed into a call when we have more...
@@ -95,11 +104,11 @@ namespace WatsonToneAnalyzer
                 // fits in single utterance
                 if (!message.TryAdd(actionToAnalyze, utterance))
                 {
-                    result = HTTP_POST(message);
+                    WatsonMessage tmp = message;
+                    result = HTTP_POST(tmp);
                     message = new WatsonMessage();
                     message.TryAdd(actionToAnalyze, utterance);
                 }
-                return null;
             }
             else
             {
@@ -107,7 +116,8 @@ namespace WatsonToneAnalyzer
                 List<Utterance> utterances = actionToAnalyze.ParseUtterances();
                 if (!message.TryAdd(actionToAnalyze, utterances))
                 {
-                    result = HTTP_POST(message);
+                    WatsonMessage tmp = message;
+                    result = HTTP_POST(tmp);
                     message = new WatsonMessage();
                     message.TryAdd(actionToAnalyze, utterances);
                 }
@@ -123,6 +133,7 @@ namespace WatsonToneAnalyzer
         static string WatsonGatewayUrl = ConfigurationManager.AppSettings.Get("WatsonGatewayUrl");
         static string WatsonUsername = ConfigurationManager.AppSettings.Get("WatsonUsername");
         static string WatsonPassword = ConfigurationManager.AppSettings.Get("WatsonPassword");
+        static int totalPost = 0;
 
         /// <summary>
         /// Post to IBM watson with Authorization and JSON formatted utterances to process
@@ -150,6 +161,9 @@ namespace WatsonToneAnalyzer
 
                     //Make Post call and await response
                     jsonContent = message.ToJSON();
+                    ++totalPost;
+                    WatsonEventLog.WriteEntry(String.Format("HTTP_POST {0}", totalPost));
+                    WatsonEventLog.WriteEntry(totalPost.ToString());
                     using (var response = await client.PostAsJsonAsync(WatsonGatewayUrl, JObject.Parse(jsonContent)))
                     {
                         HttpContent content = response.Content;

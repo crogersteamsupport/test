@@ -35,9 +35,9 @@ namespace WatsonToneAnalyzer
         public void Commit() { _db.Transaction.Commit(); }
         public void Rollback() { _db.Transaction.Rollback(); }
 
-        public void RecordWatsonResults(UtteranceResponse utterance, ActionToAnalyze actionToAnalyze)
+        public void RecordWatsonResults(ActionToAnalyze actionToAnalyze)
         {
-            List<Tones> tones = utterance.tones;
+            List<Tones> tones = actionToAnalyze.GetTones();
             if (tones == null)
                 throw new Exception("Error: no data returned from Watson");
 
