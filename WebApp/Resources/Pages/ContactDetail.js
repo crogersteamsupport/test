@@ -1378,7 +1378,7 @@ $(document).ready(function () {
 
     function LoadNotesAdditional() {
         if (_mainFrame.Ts.System.Organization.UseProductFamilies) {
-            _mainFrame.Ts.Services.Customers.LoadNotesByUserRights(_userOrgID, _mainFrame.Ts.ReferenceTypes.Organizations, false, _userOrgID, function (note) {
+            _mainFrame.Ts.Services.Customers.LoadNotesByUserRights(_userOrgID, _mainFrame.Ts.ReferenceTypes.Organizations, false, null, function (note) {
                 $('#tblNotesAdditional tbody').empty();
                 var html;
                 for (var i = 0; i < note.length; i++) {
