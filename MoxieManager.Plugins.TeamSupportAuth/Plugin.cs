@@ -22,7 +22,10 @@ namespace MoxieManager.Plugins.TeamSupportAuth
         {
             if (!TSAuthentication.IsAuthenticated()) return false;
             var config = ManagerContext.Current.Config;
-            string root = SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "FilePath", "C:\\TSData");
+            //string root = SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "FilePath", "C:\\TSData");
+            Data.FilePaths filePaths = new FilePaths(TSAuthentication.GetLoginUser());
+            filePaths.LoadByID(1);
+            string root = filePaths[0].Value;
             root = Path.Combine(root, "WikiDocs\\" + TSAuthentication.OrganizationID.ToString());
             Directory.CreateDirectory(Path.Combine(root, "images"));
             Directory.CreateDirectory(Path.Combine(root, "documents"));

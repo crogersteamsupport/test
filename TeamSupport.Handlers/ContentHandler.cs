@@ -308,18 +308,18 @@ namespace TeamSupport.Handlers
                 path = Path.ChangeExtension(path, ".jpg");
                 string imageFile = Path.GetFileName(path);
                 path = Path.GetDirectoryName(path);
-                string imagePath = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages), path);
+                string imagePath = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages, (int)attachment.FilePathID), path);
                 fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
                 if (!File.Exists(fileName))
                 {
-                    imagePath = Path.Combine(AttachmentPath.GetDefaultPath(LoginUser.Anonymous, AttachmentPath.Folder.ProfileImages), path);
+                    imagePath = Path.Combine(AttachmentPath.GetDefaultPath(LoginUser.Anonymous, AttachmentPath.Folder.ProfileImages, (int)attachment.FilePathID), path);
                     fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
                 }
 
             }
             else
             {
-                fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages), path);
+                fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages, (int)attachment.FilePathID), path);
             }
             if (File.Exists(fileName)) WriteImage(context, fileName);
         }
@@ -486,7 +486,18 @@ namespace TeamSupport.Handlers
             }
 
             //New image, check if one has been uploaded
-            string originalFileName = AttachmentPath.GetImageFileName(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages), userID.ToString() + "avatar");
+            Attachments attachments = new Attachments(LoginUser.Anonymous);
+            attachments.LoadByReference(ReferenceType.UserPhoto, userID);
+            StringBuilder path = new StringBuilder();
+            if (attachments.Count > 0)
+            {
+                path.Append(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages, (int)attachments[0].FilePathID));
+            }
+            else
+            {
+                path.Append(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages));
+            }
+            string originalFileName = AttachmentPath.GetImageFileName(path.ToString(), userID.ToString() + "avatar");
             if (File.Exists(originalFileName))
             {
                 // original image, resize, make circle, cache it
@@ -1129,7 +1140,7 @@ namespace TeamSupport.Handlers
                 return;
             }
 
-            string logPath = AttachmentPath.GetPath(import.Collection.LoginUser, import.OrganizationID, AttachmentPath.Folder.ImportLogs);
+            string logPath = AttachmentPath.GetPath(import.Collection.LoginUser, import.OrganizationID, AttachmentPath.Folder.ImportLogs, import.FilePathID);
             string fileName = import.ImportID.ToString() + ".txt";
             logPath = Path.Combine(logPath, fileName);
 
@@ -1541,7 +1552,7 @@ namespace TeamSupport.Handlers
                 return;
             }
 
-            string logPath = AttachmentPath.GetPath(scheduledReport.Collection.LoginUser, scheduledReport.OrganizationId, AttachmentPath.Folder.ScheduledReportsLogs);
+            string logPath = AttachmentPath.GetPath(scheduledReport.Collection.LoginUser, scheduledReport.OrganizationId, AttachmentPath.Folder.ScheduledReportsLogs, scheduledReport.FilePathID);
             string fileName = scheduledReport.Id.ToString() + ".txt";
             logPath = Path.Combine(logPath, fileName);
 
@@ -1567,7 +1578,7 @@ namespace TeamSupport.Handlers
             if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
             TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, attachmentID);
 
-            string attachmentPath = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ChatUploads);
+            string attachmentPath = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ChatUploads, (int)attachment.FilePathID);
             attachmentPath += "\\" + chatID;
 
             attachmentPath = Path.Combine(attachmentPath, attachment.FileName);

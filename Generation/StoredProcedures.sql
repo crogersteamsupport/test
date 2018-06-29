@@ -1,1185 +1,495 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomFieldCategory
 
 (
-  @CustomerHubFeatureSettingID int
+  @CustomFieldCategoryID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [CustomerHubFeatureSettingID],
-    [CustomerHubID],
-    [EnableKnowledgeBase],
-    [EnableProducts],
-    [EnableTicketCreation],
-    [EnableMyTickets],
-    [EnableOrganizationTickets],
-    [EnableWiki],
-    [EnableTicketGroupSelection],
-    [EnableTicketProductSelection],
-    [EnableTicketProductVersionSelection],
-    [DefaultTicketTypeID],
-    [DefaultGroupTypeID],
-    [EnableCustomerProductAssociation],
-    [EnableChat],
-    [EnableCommunity],
-    [EnableScreenRecording],
-    [EnableVideoRecording],
-    [DateModified],
-    [ModifierID],
-    [EnableTicketSeverity],
-    [EnableTicketSeverityModification],
-    [RestrictProductVersions],
-    [EnableTicketNameModification],
-    [KnowledgeBaseSortTypeID],
-    [CommunitySortTypeID],
-    [EnableAnonymousProductAssociation],
-    [EnableCustomerSpecificKB],
-    [EnableCustomFieldModification],
-    [EnableProductFamilyFiltering]
-  FROM [dbo].[CustomerHubFeatureSettings]
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+    [CustomFieldCategoryID],
+    [OrganizationID],
+    [Category],
+    [Position],
+    [RefType],
+    [AuxID],
+    [ProductFamilyID]
+  FROM [dbo].[CustomFieldCategories]
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomFieldCategory
 
 (
-  @CustomerHubID int,
-  @EnableKnowledgeBase bit,
-  @EnableProducts bit,
-  @EnableTicketCreation bit,
-  @EnableMyTickets bit,
-  @EnableOrganizationTickets bit,
-  @EnableWiki bit,
-  @EnableTicketGroupSelection bit,
-  @EnableTicketProductSelection bit,
-  @EnableTicketProductVersionSelection bit,
-  @DefaultTicketTypeID int,
-  @DefaultGroupTypeID int,
-  @EnableCustomerProductAssociation bit,
-  @EnableChat bit,
-  @EnableCommunity bit,
-  @EnableScreenRecording bit,
-  @EnableVideoRecording bit,
-  @DateModified datetime,
-  @ModifierID int,
-  @EnableTicketSeverity bit,
-  @EnableTicketSeverityModification bit,
-  @RestrictProductVersions bit,
-  @EnableTicketNameModification bit,
-  @KnowledgeBaseSortTypeID int,
-  @CommunitySortTypeID int,
-  @EnableAnonymousProductAssociation bit,
-  @EnableCustomerSpecificKB bit,
-  @EnableCustomFieldModification bit,
-  @EnableProductFamilyFiltering bit,
+  @OrganizationID int,
+  @Category varchar(250),
+  @Position int,
+  @RefType int,
+  @AuxID int,
+  @ProductFamilyID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CustomerHubFeatureSettings]
+  INSERT INTO [dbo].[CustomFieldCategories]
   (
-    [CustomerHubID],
-    [EnableKnowledgeBase],
-    [EnableProducts],
-    [EnableTicketCreation],
-    [EnableMyTickets],
-    [EnableOrganizationTickets],
-    [EnableWiki],
-    [EnableTicketGroupSelection],
-    [EnableTicketProductSelection],
-    [EnableTicketProductVersionSelection],
-    [DefaultTicketTypeID],
-    [DefaultGroupTypeID],
-    [EnableCustomerProductAssociation],
-    [EnableChat],
-    [EnableCommunity],
-    [EnableScreenRecording],
-    [EnableVideoRecording],
-    [DateModified],
-    [ModifierID],
-    [EnableTicketSeverity],
-    [EnableTicketSeverityModification],
-    [RestrictProductVersions],
-    [EnableTicketNameModification],
-    [KnowledgeBaseSortTypeID],
-    [CommunitySortTypeID],
-    [EnableAnonymousProductAssociation],
-    [EnableCustomerSpecificKB],
-    [EnableCustomFieldModification],
-    [EnableProductFamilyFiltering])
+    [OrganizationID],
+    [Category],
+    [Position],
+    [RefType],
+    [AuxID],
+    [ProductFamilyID])
   VALUES (
-    @CustomerHubID,
-    @EnableKnowledgeBase,
-    @EnableProducts,
-    @EnableTicketCreation,
-    @EnableMyTickets,
-    @EnableOrganizationTickets,
-    @EnableWiki,
-    @EnableTicketGroupSelection,
-    @EnableTicketProductSelection,
-    @EnableTicketProductVersionSelection,
-    @DefaultTicketTypeID,
-    @DefaultGroupTypeID,
-    @EnableCustomerProductAssociation,
-    @EnableChat,
-    @EnableCommunity,
-    @EnableScreenRecording,
-    @EnableVideoRecording,
-    @DateModified,
-    @ModifierID,
-    @EnableTicketSeverity,
-    @EnableTicketSeverityModification,
-    @RestrictProductVersions,
-    @EnableTicketNameModification,
-    @KnowledgeBaseSortTypeID,
-    @CommunitySortTypeID,
-    @EnableAnonymousProductAssociation,
-    @EnableCustomerSpecificKB,
-    @EnableCustomFieldModification,
-    @EnableProductFamilyFiltering)
+    @OrganizationID,
+    @Category,
+    @Position,
+    @RefType,
+    @AuxID,
+    @ProductFamilyID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomFieldCategory
 
 (
-  @CustomerHubFeatureSettingID int,
-  @CustomerHubID int,
-  @EnableKnowledgeBase bit,
-  @EnableProducts bit,
-  @EnableTicketCreation bit,
-  @EnableMyTickets bit,
-  @EnableOrganizationTickets bit,
-  @EnableWiki bit,
-  @EnableTicketGroupSelection bit,
-  @EnableTicketProductSelection bit,
-  @EnableTicketProductVersionSelection bit,
-  @DefaultTicketTypeID int,
-  @DefaultGroupTypeID int,
-  @EnableCustomerProductAssociation bit,
-  @EnableChat bit,
-  @EnableCommunity bit,
-  @EnableScreenRecording bit,
-  @EnableVideoRecording bit,
-  @DateModified datetime,
-  @ModifierID int,
-  @EnableTicketSeverity bit,
-  @EnableTicketSeverityModification bit,
-  @RestrictProductVersions bit,
-  @EnableTicketNameModification bit,
-  @KnowledgeBaseSortTypeID int,
-  @CommunitySortTypeID int,
-  @EnableAnonymousProductAssociation bit,
-  @EnableCustomerSpecificKB bit,
-  @EnableCustomFieldModification bit,
-  @EnableProductFamilyFiltering bit
+  @CustomFieldCategoryID int,
+  @OrganizationID int,
+  @Category varchar(250),
+  @Position int,
+  @RefType int,
+  @AuxID int,
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CustomerHubFeatureSettings]
+  UPDATE [dbo].[CustomFieldCategories]
   SET
-    [CustomerHubID] = @CustomerHubID,
-    [EnableKnowledgeBase] = @EnableKnowledgeBase,
-    [EnableProducts] = @EnableProducts,
-    [EnableTicketCreation] = @EnableTicketCreation,
-    [EnableMyTickets] = @EnableMyTickets,
-    [EnableOrganizationTickets] = @EnableOrganizationTickets,
-    [EnableWiki] = @EnableWiki,
-    [EnableTicketGroupSelection] = @EnableTicketGroupSelection,
-    [EnableTicketProductSelection] = @EnableTicketProductSelection,
-    [EnableTicketProductVersionSelection] = @EnableTicketProductVersionSelection,
-    [DefaultTicketTypeID] = @DefaultTicketTypeID,
-    [DefaultGroupTypeID] = @DefaultGroupTypeID,
-    [EnableCustomerProductAssociation] = @EnableCustomerProductAssociation,
-    [EnableChat] = @EnableChat,
-    [EnableCommunity] = @EnableCommunity,
-    [EnableScreenRecording] = @EnableScreenRecording,
-    [EnableVideoRecording] = @EnableVideoRecording,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [EnableTicketSeverity] = @EnableTicketSeverity,
-    [EnableTicketSeverityModification] = @EnableTicketSeverityModification,
-    [RestrictProductVersions] = @RestrictProductVersions,
-    [EnableTicketNameModification] = @EnableTicketNameModification,
-    [KnowledgeBaseSortTypeID] = @KnowledgeBaseSortTypeID,
-    [CommunitySortTypeID] = @CommunitySortTypeID,
-    [EnableAnonymousProductAssociation] = @EnableAnonymousProductAssociation,
-    [EnableCustomerSpecificKB] = @EnableCustomerSpecificKB,
-    [EnableCustomFieldModification] = @EnableCustomFieldModification,
-    [EnableProductFamilyFiltering] = @EnableProductFamilyFiltering
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+    [OrganizationID] = @OrganizationID,
+    [Category] = @Category,
+    [Position] = @Position,
+    [RefType] = @RefType,
+    [AuxID] = @AuxID,
+    [ProductFamilyID] = @ProductFamilyID
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomFieldCategory
 
 (
-  @CustomerHubFeatureSettingID int
+  @CustomFieldCategoryID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CustomerHubFeatureSettings]
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+  DELETE FROM [dbo].[CustomFieldCategories]
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomFieldCategory
 
 (
-  @CustomerHubFeatureSettingID int
+  @CustomFieldCategoryID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [CustomerHubFeatureSettingID],
-    [CustomerHubID],
-    [EnableKnowledgeBase],
-    [EnableProducts],
-    [EnableTicketCreation],
-    [EnableMyTickets],
-    [EnableOrganizationTickets],
-    [EnableWiki],
-    [EnableTicketGroupSelection],
-    [EnableTicketProductSelection],
-    [EnableTicketProductVersionSelection],
-    [DefaultTicketTypeID],
-    [DefaultGroupTypeID],
-    [EnableCustomerProductAssociation],
-    [EnableChat],
-    [EnableCommunity],
-    [EnableScreenRecording],
-    [EnableVideoRecording],
-    [DateModified],
-    [ModifierID],
-    [EnableTicketSeverity],
-    [EnableTicketSeverityModification],
-    [RestrictProductVersions],
-    [EnableTicketNameModification],
-    [KnowledgeBaseSortTypeID],
-    [CommunitySortTypeID],
-    [EnableAnonymousProductAssociation],
-    [EnableCustomerSpecificKB],
-    [EnableCustomFieldModification],
-    [EnableProductFamilyFiltering]
-  FROM [dbo].[CustomerHubFeatureSettings]
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+    [CustomFieldCategoryID],
+    [OrganizationID],
+    [Category],
+    [Position],
+    [RefType],
+    [AuxID],
+    [ProductFamilyID]
+  FROM [dbo].[CustomFieldCategories]
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomFieldCategory
 
 (
-  @CustomerHubID int,
-  @EnableKnowledgeBase bit,
-  @EnableProducts bit,
-  @EnableTicketCreation bit,
-  @EnableMyTickets bit,
-  @EnableOrganizationTickets bit,
-  @EnableWiki bit,
-  @EnableTicketGroupSelection bit,
-  @EnableTicketProductSelection bit,
-  @EnableTicketProductVersionSelection bit,
-  @DefaultTicketTypeID int,
-  @DefaultGroupTypeID int,
-  @EnableCustomerProductAssociation bit,
-  @EnableChat bit,
-  @EnableCommunity bit,
-  @EnableScreenRecording bit,
-  @EnableVideoRecording bit,
-  @DateModified datetime,
-  @ModifierID int,
-  @EnableTicketSeverity bit,
-  @EnableTicketSeverityModification bit,
-  @RestrictProductVersions bit,
-  @EnableTicketNameModification bit,
-  @KnowledgeBaseSortTypeID int,
-  @CommunitySortTypeID int,
-  @EnableAnonymousProductAssociation bit,
-  @EnableCustomerSpecificKB bit,
-  @EnableCustomFieldModification bit,
-  @EnableProductFamilyFiltering bit,
+  @OrganizationID int,
+  @Category varchar(250),
+  @Position int,
+  @RefType int,
+  @AuxID int,
+  @ProductFamilyID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CustomerHubFeatureSettings]
+  INSERT INTO [dbo].[CustomFieldCategories]
   (
-    [CustomerHubID],
-    [EnableKnowledgeBase],
-    [EnableProducts],
-    [EnableTicketCreation],
-    [EnableMyTickets],
-    [EnableOrganizationTickets],
-    [EnableWiki],
-    [EnableTicketGroupSelection],
-    [EnableTicketProductSelection],
-    [EnableTicketProductVersionSelection],
-    [DefaultTicketTypeID],
-    [DefaultGroupTypeID],
-    [EnableCustomerProductAssociation],
-    [EnableChat],
-    [EnableCommunity],
-    [EnableScreenRecording],
-    [EnableVideoRecording],
-    [DateModified],
-    [ModifierID],
-    [EnableTicketSeverity],
-    [EnableTicketSeverityModification],
-    [RestrictProductVersions],
-    [EnableTicketNameModification],
-    [KnowledgeBaseSortTypeID],
-    [CommunitySortTypeID],
-    [EnableAnonymousProductAssociation],
-    [EnableCustomerSpecificKB],
-    [EnableCustomFieldModification],
-    [EnableProductFamilyFiltering])
+    [OrganizationID],
+    [Category],
+    [Position],
+    [RefType],
+    [AuxID],
+    [ProductFamilyID])
   VALUES (
-    @CustomerHubID,
-    @EnableKnowledgeBase,
-    @EnableProducts,
-    @EnableTicketCreation,
-    @EnableMyTickets,
-    @EnableOrganizationTickets,
-    @EnableWiki,
-    @EnableTicketGroupSelection,
-    @EnableTicketProductSelection,
-    @EnableTicketProductVersionSelection,
-    @DefaultTicketTypeID,
-    @DefaultGroupTypeID,
-    @EnableCustomerProductAssociation,
-    @EnableChat,
-    @EnableCommunity,
-    @EnableScreenRecording,
-    @EnableVideoRecording,
-    @DateModified,
-    @ModifierID,
-    @EnableTicketSeverity,
-    @EnableTicketSeverityModification,
-    @RestrictProductVersions,
-    @EnableTicketNameModification,
-    @KnowledgeBaseSortTypeID,
-    @CommunitySortTypeID,
-    @EnableAnonymousProductAssociation,
-    @EnableCustomerSpecificKB,
-    @EnableCustomFieldModification,
-    @EnableProductFamilyFiltering)
+    @OrganizationID,
+    @Category,
+    @Position,
+    @RefType,
+    @AuxID,
+    @ProductFamilyID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomFieldCategory
 
 (
-  @CustomerHubFeatureSettingID int,
-  @CustomerHubID int,
-  @EnableKnowledgeBase bit,
-  @EnableProducts bit,
-  @EnableTicketCreation bit,
-  @EnableMyTickets bit,
-  @EnableOrganizationTickets bit,
-  @EnableWiki bit,
-  @EnableTicketGroupSelection bit,
-  @EnableTicketProductSelection bit,
-  @EnableTicketProductVersionSelection bit,
-  @DefaultTicketTypeID int,
-  @DefaultGroupTypeID int,
-  @EnableCustomerProductAssociation bit,
-  @EnableChat bit,
-  @EnableCommunity bit,
-  @EnableScreenRecording bit,
-  @EnableVideoRecording bit,
-  @DateModified datetime,
-  @ModifierID int,
-  @EnableTicketSeverity bit,
-  @EnableTicketSeverityModification bit,
-  @RestrictProductVersions bit,
-  @EnableTicketNameModification bit,
-  @KnowledgeBaseSortTypeID int,
-  @CommunitySortTypeID int,
-  @EnableAnonymousProductAssociation bit,
-  @EnableCustomerSpecificKB bit,
-  @EnableCustomFieldModification bit,
-  @EnableProductFamilyFiltering bit
+  @CustomFieldCategoryID int,
+  @OrganizationID int,
+  @Category varchar(250),
+  @Position int,
+  @RefType int,
+  @AuxID int,
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CustomerHubFeatureSettings]
+  UPDATE [dbo].[CustomFieldCategories]
   SET
-    [CustomerHubID] = @CustomerHubID,
-    [EnableKnowledgeBase] = @EnableKnowledgeBase,
-    [EnableProducts] = @EnableProducts,
-    [EnableTicketCreation] = @EnableTicketCreation,
-    [EnableMyTickets] = @EnableMyTickets,
-    [EnableOrganizationTickets] = @EnableOrganizationTickets,
-    [EnableWiki] = @EnableWiki,
-    [EnableTicketGroupSelection] = @EnableTicketGroupSelection,
-    [EnableTicketProductSelection] = @EnableTicketProductSelection,
-    [EnableTicketProductVersionSelection] = @EnableTicketProductVersionSelection,
-    [DefaultTicketTypeID] = @DefaultTicketTypeID,
-    [DefaultGroupTypeID] = @DefaultGroupTypeID,
-    [EnableCustomerProductAssociation] = @EnableCustomerProductAssociation,
-    [EnableChat] = @EnableChat,
-    [EnableCommunity] = @EnableCommunity,
-    [EnableScreenRecording] = @EnableScreenRecording,
-    [EnableVideoRecording] = @EnableVideoRecording,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [EnableTicketSeverity] = @EnableTicketSeverity,
-    [EnableTicketSeverityModification] = @EnableTicketSeverityModification,
-    [RestrictProductVersions] = @RestrictProductVersions,
-    [EnableTicketNameModification] = @EnableTicketNameModification,
-    [KnowledgeBaseSortTypeID] = @KnowledgeBaseSortTypeID,
-    [CommunitySortTypeID] = @CommunitySortTypeID,
-    [EnableAnonymousProductAssociation] = @EnableAnonymousProductAssociation,
-    [EnableCustomerSpecificKB] = @EnableCustomerSpecificKB,
-    [EnableCustomFieldModification] = @EnableCustomFieldModification,
-    [EnableProductFamilyFiltering] = @EnableProductFamilyFiltering
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+    [OrganizationID] = @OrganizationID,
+    [Category] = @Category,
+    [Position] = @Position,
+    [RefType] = @RefType,
+    [AuxID] = @AuxID,
+    [ProductFamilyID] = @ProductFamilyID
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomFieldCategory
 
 (
-  @CustomerHubFeatureSettingID int
+  @CustomFieldCategoryID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CustomerHubFeatureSettings]
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+  DELETE FROM [dbo].[CustomFieldCategories]
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomFieldCategory
 
 (
-  @CustomerHubFeatureSettingID int
+  @CustomFieldCategoryID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [CustomerHubFeatureSettingID],
-    [CustomerHubID],
-    [EnableKnowledgeBase],
-    [EnableProducts],
-    [EnableTicketCreation],
-    [EnableMyTickets],
-    [EnableOrganizationTickets],
-    [EnableWiki],
-    [EnableTicketGroupSelection],
-    [EnableTicketProductSelection],
-    [EnableTicketProductVersionSelection],
-    [DefaultTicketTypeID],
-    [DefaultGroupTypeID],
-    [EnableCustomerProductAssociation],
-    [EnableChat],
-    [EnableCommunity],
-    [EnableScreenRecording],
-    [EnableVideoRecording],
-    [DateModified],
-    [ModifierID],
-    [EnableTicketSeverity],
-    [EnableTicketSeverityModification],
-    [RestrictProductVersions],
-    [EnableTicketNameModification],
-    [KnowledgeBaseSortTypeID],
-    [CommunitySortTypeID],
-    [EnableAnonymousProductAssociation],
-    [EnableCustomerSpecificKB],
-    [EnableCustomFieldModification],
-    [EnableProductFamilyFiltering]
-  FROM [dbo].[CustomerHubFeatureSettings]
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+    [CustomFieldCategoryID],
+    [OrganizationID],
+    [Category],
+    [Position],
+    [RefType],
+    [AuxID],
+    [ProductFamilyID]
+  FROM [dbo].[CustomFieldCategories]
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomFieldCategory
 
 (
-  @CustomerHubID int,
-  @EnableKnowledgeBase bit,
-  @EnableProducts bit,
-  @EnableTicketCreation bit,
-  @EnableMyTickets bit,
-  @EnableOrganizationTickets bit,
-  @EnableWiki bit,
-  @EnableTicketGroupSelection bit,
-  @EnableTicketProductSelection bit,
-  @EnableTicketProductVersionSelection bit,
-  @DefaultTicketTypeID int,
-  @DefaultGroupTypeID int,
-  @EnableCustomerProductAssociation bit,
-  @EnableChat bit,
-  @EnableCommunity bit,
-  @EnableScreenRecording bit,
-  @EnableVideoRecording bit,
-  @DateModified datetime,
-  @ModifierID int,
-  @EnableTicketSeverity bit,
-  @EnableTicketSeverityModification bit,
-  @RestrictProductVersions bit,
-  @EnableTicketNameModification bit,
-  @KnowledgeBaseSortTypeID int,
-  @CommunitySortTypeID int,
-  @EnableAnonymousProductAssociation bit,
-  @EnableCustomerSpecificKB bit,
-  @EnableCustomFieldModification bit,
-  @EnableProductFamilyFiltering bit,
+  @OrganizationID int,
+  @Category varchar(250),
+  @Position int,
+  @RefType int,
+  @AuxID int,
+  @ProductFamilyID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CustomerHubFeatureSettings]
+  INSERT INTO [dbo].[CustomFieldCategories]
   (
-    [CustomerHubID],
-    [EnableKnowledgeBase],
-    [EnableProducts],
-    [EnableTicketCreation],
-    [EnableMyTickets],
-    [EnableOrganizationTickets],
-    [EnableWiki],
-    [EnableTicketGroupSelection],
-    [EnableTicketProductSelection],
-    [EnableTicketProductVersionSelection],
-    [DefaultTicketTypeID],
-    [DefaultGroupTypeID],
-    [EnableCustomerProductAssociation],
-    [EnableChat],
-    [EnableCommunity],
-    [EnableScreenRecording],
-    [EnableVideoRecording],
-    [DateModified],
-    [ModifierID],
-    [EnableTicketSeverity],
-    [EnableTicketSeverityModification],
-    [RestrictProductVersions],
-    [EnableTicketNameModification],
-    [KnowledgeBaseSortTypeID],
-    [CommunitySortTypeID],
-    [EnableAnonymousProductAssociation],
-    [EnableCustomerSpecificKB],
-    [EnableCustomFieldModification],
-    [EnableProductFamilyFiltering])
+    [OrganizationID],
+    [Category],
+    [Position],
+    [RefType],
+    [AuxID],
+    [ProductFamilyID])
   VALUES (
-    @CustomerHubID,
-    @EnableKnowledgeBase,
-    @EnableProducts,
-    @EnableTicketCreation,
-    @EnableMyTickets,
-    @EnableOrganizationTickets,
-    @EnableWiki,
-    @EnableTicketGroupSelection,
-    @EnableTicketProductSelection,
-    @EnableTicketProductVersionSelection,
-    @DefaultTicketTypeID,
-    @DefaultGroupTypeID,
-    @EnableCustomerProductAssociation,
-    @EnableChat,
-    @EnableCommunity,
-    @EnableScreenRecording,
-    @EnableVideoRecording,
-    @DateModified,
-    @ModifierID,
-    @EnableTicketSeverity,
-    @EnableTicketSeverityModification,
-    @RestrictProductVersions,
-    @EnableTicketNameModification,
-    @KnowledgeBaseSortTypeID,
-    @CommunitySortTypeID,
-    @EnableAnonymousProductAssociation,
-    @EnableCustomerSpecificKB,
-    @EnableCustomFieldModification,
-    @EnableProductFamilyFiltering)
+    @OrganizationID,
+    @Category,
+    @Position,
+    @RefType,
+    @AuxID,
+    @ProductFamilyID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomFieldCategory
 
 (
-  @CustomerHubFeatureSettingID int,
-  @CustomerHubID int,
-  @EnableKnowledgeBase bit,
-  @EnableProducts bit,
-  @EnableTicketCreation bit,
-  @EnableMyTickets bit,
-  @EnableOrganizationTickets bit,
-  @EnableWiki bit,
-  @EnableTicketGroupSelection bit,
-  @EnableTicketProductSelection bit,
-  @EnableTicketProductVersionSelection bit,
-  @DefaultTicketTypeID int,
-  @DefaultGroupTypeID int,
-  @EnableCustomerProductAssociation bit,
-  @EnableChat bit,
-  @EnableCommunity bit,
-  @EnableScreenRecording bit,
-  @EnableVideoRecording bit,
-  @DateModified datetime,
-  @ModifierID int,
-  @EnableTicketSeverity bit,
-  @EnableTicketSeverityModification bit,
-  @RestrictProductVersions bit,
-  @EnableTicketNameModification bit,
-  @KnowledgeBaseSortTypeID int,
-  @CommunitySortTypeID int,
-  @EnableAnonymousProductAssociation bit,
-  @EnableCustomerSpecificKB bit,
-  @EnableCustomFieldModification bit,
-  @EnableProductFamilyFiltering bit
+  @CustomFieldCategoryID int,
+  @OrganizationID int,
+  @Category varchar(250),
+  @Position int,
+  @RefType int,
+  @AuxID int,
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CustomerHubFeatureSettings]
+  UPDATE [dbo].[CustomFieldCategories]
   SET
-    [CustomerHubID] = @CustomerHubID,
-    [EnableKnowledgeBase] = @EnableKnowledgeBase,
-    [EnableProducts] = @EnableProducts,
-    [EnableTicketCreation] = @EnableTicketCreation,
-    [EnableMyTickets] = @EnableMyTickets,
-    [EnableOrganizationTickets] = @EnableOrganizationTickets,
-    [EnableWiki] = @EnableWiki,
-    [EnableTicketGroupSelection] = @EnableTicketGroupSelection,
-    [EnableTicketProductSelection] = @EnableTicketProductSelection,
-    [EnableTicketProductVersionSelection] = @EnableTicketProductVersionSelection,
-    [DefaultTicketTypeID] = @DefaultTicketTypeID,
-    [DefaultGroupTypeID] = @DefaultGroupTypeID,
-    [EnableCustomerProductAssociation] = @EnableCustomerProductAssociation,
-    [EnableChat] = @EnableChat,
-    [EnableCommunity] = @EnableCommunity,
-    [EnableScreenRecording] = @EnableScreenRecording,
-    [EnableVideoRecording] = @EnableVideoRecording,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [EnableTicketSeverity] = @EnableTicketSeverity,
-    [EnableTicketSeverityModification] = @EnableTicketSeverityModification,
-    [RestrictProductVersions] = @RestrictProductVersions,
-    [EnableTicketNameModification] = @EnableTicketNameModification,
-    [KnowledgeBaseSortTypeID] = @KnowledgeBaseSortTypeID,
-    [CommunitySortTypeID] = @CommunitySortTypeID,
-    [EnableAnonymousProductAssociation] = @EnableAnonymousProductAssociation,
-    [EnableCustomerSpecificKB] = @EnableCustomerSpecificKB,
-    [EnableCustomFieldModification] = @EnableCustomFieldModification,
-    [EnableProductFamilyFiltering] = @EnableProductFamilyFiltering
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+    [OrganizationID] = @OrganizationID,
+    [Category] = @Category,
+    [Position] = @Position,
+    [RefType] = @RefType,
+    [AuxID] = @AuxID,
+    [ProductFamilyID] = @ProductFamilyID
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomFieldCategory
 
 (
-  @CustomerHubFeatureSettingID int
+  @CustomFieldCategoryID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CustomerHubFeatureSettings]
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+  DELETE FROM [dbo].[CustomFieldCategories]
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomFieldCategory
 
 (
-  @CustomerHubFeatureSettingID int
+  @CustomFieldCategoryID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [CustomerHubFeatureSettingID],
-    [CustomerHubID],
-    [EnableKnowledgeBase],
-    [EnableProducts],
-    [EnableTicketCreation],
-    [EnableMyTickets],
-    [EnableOrganizationTickets],
-    [EnableWiki],
-    [EnableTicketGroupSelection],
-    [EnableTicketProductSelection],
-    [EnableTicketProductVersionSelection],
-    [DefaultTicketTypeID],
-    [DefaultGroupTypeID],
-    [EnableCustomerProductAssociation],
-    [EnableChat],
-    [EnableCommunity],
-    [EnableScreenRecording],
-    [EnableVideoRecording],
-    [DateModified],
-    [ModifierID],
-    [EnableTicketSeverity],
-    [EnableTicketSeverityModification],
-    [RestrictProductVersions],
-    [EnableTicketNameModification],
-    [KnowledgeBaseSortTypeID],
-    [CommunitySortTypeID],
-    [EnableAnonymousProductAssociation],
-    [EnableCustomerSpecificKB],
-    [EnableCustomFieldModification],
-    [EnableProductFamilyFiltering]
-  FROM [dbo].[CustomerHubFeatureSettings]
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+    [CustomFieldCategoryID],
+    [OrganizationID],
+    [Category],
+    [Position],
+    [RefType],
+    [AuxID],
+    [ProductFamilyID]
+  FROM [dbo].[CustomFieldCategories]
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomFieldCategory
 
 (
-  @CustomerHubID int,
-  @EnableKnowledgeBase bit,
-  @EnableProducts bit,
-  @EnableTicketCreation bit,
-  @EnableMyTickets bit,
-  @EnableOrganizationTickets bit,
-  @EnableWiki bit,
-  @EnableTicketGroupSelection bit,
-  @EnableTicketProductSelection bit,
-  @EnableTicketProductVersionSelection bit,
-  @DefaultTicketTypeID int,
-  @DefaultGroupTypeID int,
-  @EnableCustomerProductAssociation bit,
-  @EnableChat bit,
-  @EnableCommunity bit,
-  @EnableScreenRecording bit,
-  @EnableVideoRecording bit,
-  @DateModified datetime,
-  @ModifierID int,
-  @EnableTicketSeverity bit,
-  @EnableTicketSeverityModification bit,
-  @RestrictProductVersions bit,
-  @EnableTicketNameModification bit,
-  @KnowledgeBaseSortTypeID int,
-  @CommunitySortTypeID int,
-  @EnableAnonymousProductAssociation bit,
-  @EnableCustomerSpecificKB bit,
-  @EnableCustomFieldModification bit,
-  @EnableProductFamilyFiltering bit,
+  @OrganizationID int,
+  @Category varchar(250),
+  @Position int,
+  @RefType int,
+  @AuxID int,
+  @ProductFamilyID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CustomerHubFeatureSettings]
+  INSERT INTO [dbo].[CustomFieldCategories]
   (
-    [CustomerHubID],
-    [EnableKnowledgeBase],
-    [EnableProducts],
-    [EnableTicketCreation],
-    [EnableMyTickets],
-    [EnableOrganizationTickets],
-    [EnableWiki],
-    [EnableTicketGroupSelection],
-    [EnableTicketProductSelection],
-    [EnableTicketProductVersionSelection],
-    [DefaultTicketTypeID],
-    [DefaultGroupTypeID],
-    [EnableCustomerProductAssociation],
-    [EnableChat],
-    [EnableCommunity],
-    [EnableScreenRecording],
-    [EnableVideoRecording],
-    [DateModified],
-    [ModifierID],
-    [EnableTicketSeverity],
-    [EnableTicketSeverityModification],
-    [RestrictProductVersions],
-    [EnableTicketNameModification],
-    [KnowledgeBaseSortTypeID],
-    [CommunitySortTypeID],
-    [EnableAnonymousProductAssociation],
-    [EnableCustomerSpecificKB],
-    [EnableCustomFieldModification],
-    [EnableProductFamilyFiltering])
+    [OrganizationID],
+    [Category],
+    [Position],
+    [RefType],
+    [AuxID],
+    [ProductFamilyID])
   VALUES (
-    @CustomerHubID,
-    @EnableKnowledgeBase,
-    @EnableProducts,
-    @EnableTicketCreation,
-    @EnableMyTickets,
-    @EnableOrganizationTickets,
-    @EnableWiki,
-    @EnableTicketGroupSelection,
-    @EnableTicketProductSelection,
-    @EnableTicketProductVersionSelection,
-    @DefaultTicketTypeID,
-    @DefaultGroupTypeID,
-    @EnableCustomerProductAssociation,
-    @EnableChat,
-    @EnableCommunity,
-    @EnableScreenRecording,
-    @EnableVideoRecording,
-    @DateModified,
-    @ModifierID,
-    @EnableTicketSeverity,
-    @EnableTicketSeverityModification,
-    @RestrictProductVersions,
-    @EnableTicketNameModification,
-    @KnowledgeBaseSortTypeID,
-    @CommunitySortTypeID,
-    @EnableAnonymousProductAssociation,
-    @EnableCustomerSpecificKB,
-    @EnableCustomFieldModification,
-    @EnableProductFamilyFiltering)
+    @OrganizationID,
+    @Category,
+    @Position,
+    @RefType,
+    @AuxID,
+    @ProductFamilyID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomFieldCategory
 
 (
-  @CustomerHubFeatureSettingID int,
-  @CustomerHubID int,
-  @EnableKnowledgeBase bit,
-  @EnableProducts bit,
-  @EnableTicketCreation bit,
-  @EnableMyTickets bit,
-  @EnableOrganizationTickets bit,
-  @EnableWiki bit,
-  @EnableTicketGroupSelection bit,
-  @EnableTicketProductSelection bit,
-  @EnableTicketProductVersionSelection bit,
-  @DefaultTicketTypeID int,
-  @DefaultGroupTypeID int,
-  @EnableCustomerProductAssociation bit,
-  @EnableChat bit,
-  @EnableCommunity bit,
-  @EnableScreenRecording bit,
-  @EnableVideoRecording bit,
-  @DateModified datetime,
-  @ModifierID int,
-  @EnableTicketSeverity bit,
-  @EnableTicketSeverityModification bit,
-  @RestrictProductVersions bit,
-  @EnableTicketNameModification bit,
-  @KnowledgeBaseSortTypeID int,
-  @CommunitySortTypeID int,
-  @EnableAnonymousProductAssociation bit,
-  @EnableCustomerSpecificKB bit,
-  @EnableCustomFieldModification bit,
-  @EnableProductFamilyFiltering bit
+  @CustomFieldCategoryID int,
+  @OrganizationID int,
+  @Category varchar(250),
+  @Position int,
+  @RefType int,
+  @AuxID int,
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CustomerHubFeatureSettings]
+  UPDATE [dbo].[CustomFieldCategories]
   SET
-    [CustomerHubID] = @CustomerHubID,
-    [EnableKnowledgeBase] = @EnableKnowledgeBase,
-    [EnableProducts] = @EnableProducts,
-    [EnableTicketCreation] = @EnableTicketCreation,
-    [EnableMyTickets] = @EnableMyTickets,
-    [EnableOrganizationTickets] = @EnableOrganizationTickets,
-    [EnableWiki] = @EnableWiki,
-    [EnableTicketGroupSelection] = @EnableTicketGroupSelection,
-    [EnableTicketProductSelection] = @EnableTicketProductSelection,
-    [EnableTicketProductVersionSelection] = @EnableTicketProductVersionSelection,
-    [DefaultTicketTypeID] = @DefaultTicketTypeID,
-    [DefaultGroupTypeID] = @DefaultGroupTypeID,
-    [EnableCustomerProductAssociation] = @EnableCustomerProductAssociation,
-    [EnableChat] = @EnableChat,
-    [EnableCommunity] = @EnableCommunity,
-    [EnableScreenRecording] = @EnableScreenRecording,
-    [EnableVideoRecording] = @EnableVideoRecording,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [EnableTicketSeverity] = @EnableTicketSeverity,
-    [EnableTicketSeverityModification] = @EnableTicketSeverityModification,
-    [RestrictProductVersions] = @RestrictProductVersions,
-    [EnableTicketNameModification] = @EnableTicketNameModification,
-    [KnowledgeBaseSortTypeID] = @KnowledgeBaseSortTypeID,
-    [CommunitySortTypeID] = @CommunitySortTypeID,
-    [EnableAnonymousProductAssociation] = @EnableAnonymousProductAssociation,
-    [EnableCustomerSpecificKB] = @EnableCustomerSpecificKB,
-    [EnableCustomFieldModification] = @EnableCustomFieldModification,
-    [EnableProductFamilyFiltering] = @EnableProductFamilyFiltering
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+    [OrganizationID] = @OrganizationID,
+    [Category] = @Category,
+    [Position] = @Position,
+    [RefType] = @RefType,
+    [AuxID] = @AuxID,
+    [ProductFamilyID] = @ProductFamilyID
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomFieldCategory
 
 (
-  @CustomerHubFeatureSettingID int
+  @CustomFieldCategoryID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CustomerHubFeatureSettings]
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+  DELETE FROM [dbo].[CustomFieldCategories]
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomFieldCategory
 
 (
-  @CustomerHubFeatureSettingID int
+  @CustomFieldCategoryID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [CustomerHubFeatureSettingID],
-    [CustomerHubID],
-    [EnableKnowledgeBase],
-    [EnableProducts],
-    [EnableTicketCreation],
-    [EnableMyTickets],
-    [EnableOrganizationTickets],
-    [EnableWiki],
-    [EnableTicketGroupSelection],
-    [EnableTicketProductSelection],
-    [EnableTicketProductVersionSelection],
-    [DefaultTicketTypeID],
-    [DefaultGroupTypeID],
-    [EnableCustomerProductAssociation],
-    [EnableChat],
-    [EnableCommunity],
-    [EnableScreenRecording],
-    [EnableVideoRecording],
-    [DateModified],
-    [ModifierID],
-    [EnableTicketSeverity],
-    [EnableTicketSeverityModification],
-    [RestrictProductVersions],
-    [EnableTicketNameModification],
-    [KnowledgeBaseSortTypeID],
-    [CommunitySortTypeID],
-    [EnableAnonymousProductAssociation],
-    [EnableCustomerSpecificKB],
-    [EnableCustomFieldModification],
-    [EnableProductFamilyFiltering]
-  FROM [dbo].[CustomerHubFeatureSettings]
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+    [CustomFieldCategoryID],
+    [OrganizationID],
+    [Category],
+    [Position],
+    [RefType],
+    [AuxID],
+    [ProductFamilyID]
+  FROM [dbo].[CustomFieldCategories]
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomFieldCategory
 
 (
-  @CustomerHubID int,
-  @EnableKnowledgeBase bit,
-  @EnableProducts bit,
-  @EnableTicketCreation bit,
-  @EnableMyTickets bit,
-  @EnableOrganizationTickets bit,
-  @EnableWiki bit,
-  @EnableTicketGroupSelection bit,
-  @EnableTicketProductSelection bit,
-  @EnableTicketProductVersionSelection bit,
-  @DefaultTicketTypeID int,
-  @DefaultGroupTypeID int,
-  @EnableCustomerProductAssociation bit,
-  @EnableChat bit,
-  @EnableCommunity bit,
-  @EnableScreenRecording bit,
-  @EnableVideoRecording bit,
-  @DateModified datetime,
-  @ModifierID int,
-  @EnableTicketSeverity bit,
-  @EnableTicketSeverityModification bit,
-  @RestrictProductVersions bit,
-  @EnableTicketNameModification bit,
-  @KnowledgeBaseSortTypeID int,
-  @CommunitySortTypeID int,
-  @EnableAnonymousProductAssociation bit,
-  @EnableCustomerSpecificKB bit,
-  @EnableCustomFieldModification bit,
-  @EnableProductFamilyFiltering bit,
+  @OrganizationID int,
+  @Category varchar(250),
+  @Position int,
+  @RefType int,
+  @AuxID int,
+  @ProductFamilyID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CustomerHubFeatureSettings]
+  INSERT INTO [dbo].[CustomFieldCategories]
   (
-    [CustomerHubID],
-    [EnableKnowledgeBase],
-    [EnableProducts],
-    [EnableTicketCreation],
-    [EnableMyTickets],
-    [EnableOrganizationTickets],
-    [EnableWiki],
-    [EnableTicketGroupSelection],
-    [EnableTicketProductSelection],
-    [EnableTicketProductVersionSelection],
-    [DefaultTicketTypeID],
-    [DefaultGroupTypeID],
-    [EnableCustomerProductAssociation],
-    [EnableChat],
-    [EnableCommunity],
-    [EnableScreenRecording],
-    [EnableVideoRecording],
-    [DateModified],
-    [ModifierID],
-    [EnableTicketSeverity],
-    [EnableTicketSeverityModification],
-    [RestrictProductVersions],
-    [EnableTicketNameModification],
-    [KnowledgeBaseSortTypeID],
-    [CommunitySortTypeID],
-    [EnableAnonymousProductAssociation],
-    [EnableCustomerSpecificKB],
-    [EnableCustomFieldModification],
-    [EnableProductFamilyFiltering])
+    [OrganizationID],
+    [Category],
+    [Position],
+    [RefType],
+    [AuxID],
+    [ProductFamilyID])
   VALUES (
-    @CustomerHubID,
-    @EnableKnowledgeBase,
-    @EnableProducts,
-    @EnableTicketCreation,
-    @EnableMyTickets,
-    @EnableOrganizationTickets,
-    @EnableWiki,
-    @EnableTicketGroupSelection,
-    @EnableTicketProductSelection,
-    @EnableTicketProductVersionSelection,
-    @DefaultTicketTypeID,
-    @DefaultGroupTypeID,
-    @EnableCustomerProductAssociation,
-    @EnableChat,
-    @EnableCommunity,
-    @EnableScreenRecording,
-    @EnableVideoRecording,
-    @DateModified,
-    @ModifierID,
-    @EnableTicketSeverity,
-    @EnableTicketSeverityModification,
-    @RestrictProductVersions,
-    @EnableTicketNameModification,
-    @KnowledgeBaseSortTypeID,
-    @CommunitySortTypeID,
-    @EnableAnonymousProductAssociation,
-    @EnableCustomerSpecificKB,
-    @EnableCustomFieldModification,
-    @EnableProductFamilyFiltering)
+    @OrganizationID,
+    @Category,
+    @Position,
+    @RefType,
+    @AuxID,
+    @ProductFamilyID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomFieldCategory
 
 (
-  @CustomerHubFeatureSettingID int,
-  @CustomerHubID int,
-  @EnableKnowledgeBase bit,
-  @EnableProducts bit,
-  @EnableTicketCreation bit,
-  @EnableMyTickets bit,
-  @EnableOrganizationTickets bit,
-  @EnableWiki bit,
-  @EnableTicketGroupSelection bit,
-  @EnableTicketProductSelection bit,
-  @EnableTicketProductVersionSelection bit,
-  @DefaultTicketTypeID int,
-  @DefaultGroupTypeID int,
-  @EnableCustomerProductAssociation bit,
-  @EnableChat bit,
-  @EnableCommunity bit,
-  @EnableScreenRecording bit,
-  @EnableVideoRecording bit,
-  @DateModified datetime,
-  @ModifierID int,
-  @EnableTicketSeverity bit,
-  @EnableTicketSeverityModification bit,
-  @RestrictProductVersions bit,
-  @EnableTicketNameModification bit,
-  @KnowledgeBaseSortTypeID int,
-  @CommunitySortTypeID int,
-  @EnableAnonymousProductAssociation bit,
-  @EnableCustomerSpecificKB bit,
-  @EnableCustomFieldModification bit,
-  @EnableProductFamilyFiltering bit
+  @CustomFieldCategoryID int,
+  @OrganizationID int,
+  @Category varchar(250),
+  @Position int,
+  @RefType int,
+  @AuxID int,
+  @ProductFamilyID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CustomerHubFeatureSettings]
+  UPDATE [dbo].[CustomFieldCategories]
   SET
-    [CustomerHubID] = @CustomerHubID,
-    [EnableKnowledgeBase] = @EnableKnowledgeBase,
-    [EnableProducts] = @EnableProducts,
-    [EnableTicketCreation] = @EnableTicketCreation,
-    [EnableMyTickets] = @EnableMyTickets,
-    [EnableOrganizationTickets] = @EnableOrganizationTickets,
-    [EnableWiki] = @EnableWiki,
-    [EnableTicketGroupSelection] = @EnableTicketGroupSelection,
-    [EnableTicketProductSelection] = @EnableTicketProductSelection,
-    [EnableTicketProductVersionSelection] = @EnableTicketProductVersionSelection,
-    [DefaultTicketTypeID] = @DefaultTicketTypeID,
-    [DefaultGroupTypeID] = @DefaultGroupTypeID,
-    [EnableCustomerProductAssociation] = @EnableCustomerProductAssociation,
-    [EnableChat] = @EnableChat,
-    [EnableCommunity] = @EnableCommunity,
-    [EnableScreenRecording] = @EnableScreenRecording,
-    [EnableVideoRecording] = @EnableVideoRecording,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [EnableTicketSeverity] = @EnableTicketSeverity,
-    [EnableTicketSeverityModification] = @EnableTicketSeverityModification,
-    [RestrictProductVersions] = @RestrictProductVersions,
-    [EnableTicketNameModification] = @EnableTicketNameModification,
-    [KnowledgeBaseSortTypeID] = @KnowledgeBaseSortTypeID,
-    [CommunitySortTypeID] = @CommunitySortTypeID,
-    [EnableAnonymousProductAssociation] = @EnableAnonymousProductAssociation,
-    [EnableCustomerSpecificKB] = @EnableCustomerSpecificKB,
-    [EnableCustomFieldModification] = @EnableCustomFieldModification,
-    [EnableProductFamilyFiltering] = @EnableProductFamilyFiltering
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+    [OrganizationID] = @OrganizationID,
+    [Category] = @Category,
+    [Position] = @Position,
+    [RefType] = @RefType,
+    [AuxID] = @AuxID,
+    [ProductFamilyID] = @ProductFamilyID
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomerHubFeatureSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomerHubFeatureSetting
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomFieldCategory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomFieldCategory
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCustomerHubFeatureSetting
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomFieldCategory
 
 (
-  @CustomerHubFeatureSettingID int
+  @CustomFieldCategoryID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CustomerHubFeatureSettings]
-  WHERE ([CustomerHubFeatureSettingID] = @CustomerHubFeatureSettingID)
+  DELETE FROM [dbo].[CustomFieldCategories]
+  WHERE ([CustomFieldCategoryID] = @CustomFieldCategoryID)
 GO
 
 

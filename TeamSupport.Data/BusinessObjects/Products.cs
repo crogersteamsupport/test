@@ -453,6 +453,23 @@ namespace TeamSupport.Data
         }
     }
 
+    public void LoadByProductFamilyID(int productFamilyID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+	        SELECT 
+		        * 
+	        FROM 
+		        Products 
+	        WHERE 
+		        ProductFamilyID = @ProductFamilyID";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
+            Fill(command);
+        }
+    }
+
     public static Product GetProductByUserRights(LoginUser loginUser, int productID)
     {
         Products products = new Products(loginUser);

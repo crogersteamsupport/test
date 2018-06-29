@@ -12,13 +12,13 @@
     .ticket { padding-top: 1em; lineheight: 16px;}
     .ticket .ts-icon { float:left; margin-right:0.5em;}
     .no-tickets { padding-top: 1em;}
-  
-  </style>
-  <script src="../vcr/1_9_0/Js/jquery-latest.min.js" type="text/javascript"></script>
-  <script src="../vcr/1_9_0/Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
 
-  <script src="../vcr/1_9_0/Js/jquery.hoverIntent.min.js" type="text/javascript"></script>
-  <script src="../vcr/1_9_0/Js/jquery.cluetip.js" type="text/javascript"></script>
+  </style>
+  <script src="/frontend/library/jquery-latest.min.js" type="text/javascript"></script>
+  <script src="/frontend/library/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
+
+  <script src="/frontend/library/jquery.hoverIntent.min.js" type="text/javascript"></script>
+  <script src="/frontend/library/jquery.cluetip.js" type="text/javascript"></script>
 
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
@@ -158,7 +158,7 @@
             <div class="groupBodyWrapperDiv">
               <div class="groupBodyDiv">
                 <div id="openTickets" class="tickets">
-                
+
                 </div>
               </div>
             </div>
@@ -176,7 +176,7 @@
             <div class="groupBodyWrapperDiv">
               <div class="groupBodyDiv">
                 <div id="closedTickets" class="tickets">
-                
+
                 </div>
               </div>
             </div>
@@ -267,8 +267,8 @@
 
 
       });
-    
-    
+
+
     </script>
 
   </telerik:RadScriptBlock>

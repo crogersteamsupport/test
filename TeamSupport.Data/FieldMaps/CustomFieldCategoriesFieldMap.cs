@@ -19,6 +19,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("Position", "Position", false, false, false);
       _fieldMap.AddMap("RefType", "RefType", false, false, false);
       _fieldMap.AddMap("AuxID", "AuxID", false, false, false);
+      _fieldMap.AddMap("ProductFamilyID", "ProductFamilyID", false, false, false);
             
     }
   }

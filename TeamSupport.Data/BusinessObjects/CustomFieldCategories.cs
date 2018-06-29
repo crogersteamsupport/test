@@ -9,6 +9,17 @@ namespace TeamSupport.Data
 {
   public partial class CustomFieldCategory
   {
+        public string ProductFamilyName
+        {
+            get
+            {
+                if (Row.Table.Columns.Contains("ProductFamilyName") && Row["ProductFamilyName"] != DBNull.Value)
+                {
+                    return (string)Row["ProductFamilyName"];
+                }
+                else return "";
+            }
+        }
   }
   
   public partial class CustomFieldCategories
@@ -36,15 +47,62 @@ namespace TeamSupport.Data
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText =
-@"SELECT * FROM CustomFieldCategories 
-WHERE (RefType = @RefType) 
-AND (AuxID = @AuxID OR @AuxID < 0)
-AND (OrganizationID = @OrganizationID)
-ORDER BY Position";
+            @"
+            SELECT 
+                c.*, 
+                pf.Name AS 'ProductFamilyName' 
+            FROM 
+                CustomFieldCategories c
+                LEFT JOIN ProductFamilies pf
+                    ON c.ProductFamilyID = pf.ProductFamilyID
+            WHERE 
+                c.RefType = @RefType
+                AND (c.AuxID = @AuxID OR @AuxID < 0)
+                AND c.OrganizationID = @OrganizationID
+            ORDER BY 
+                c.Position";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@RefType", refType);
         command.Parameters.AddWithValue("@AuxID", auxID == null ? -1 : (int)auxID);
         command.Parameters.AddWithValue("@OrganizationID", LoginUser.OrganizationID);
+        Fill(command);
+      }
+
+    }
+
+    public void LoadByRefTypeWithUserRights(ReferenceType refType, int? auxID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText =
+            @"
+                SELECT 
+                    c.*, 
+                    pf.Name AS 'ProductFamilyName' 
+                FROM
+                    CustomFieldCategories c
+                    JOIN Organizations o
+                        ON c.OrganizationID = o.OrganizationID
+                    LEFT JOIN ProductFamilies pf
+                        ON c.ProductFamilyID = pf.ProductFamilyID
+                WHERE 
+                    RefType = @RefType
+                    AND (AuxID = @AuxID OR @AuxID < 0)
+                    AND c.OrganizationID = @OrganizationID
+                    AND
+                    (
+                        o.UseProductFamilies = 0
+                        OR (SELECT ProductFamiliesRights FROM Users WHERE UserID = @UserID) = 0
+                        OR c.ProductFamilyID IS NULL
+                        OR c.ProductFamilyID IN (SELECT ProductFamilyID FROM UserRightsProductFamilies WHERE UserID = @UserID)
+                    )
+                ORDER BY 
+                    Position";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@RefType", refType);
+        command.Parameters.AddWithValue("@AuxID", auxID == null ? -1 : (int)auxID);
+        command.Parameters.AddWithValue("@OrganizationID", LoginUser.OrganizationID);
+        command.Parameters.AddWithValue("@UserID", LoginUser.UserID);
         Fill(command);
       }
 

@@ -69,7 +69,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
         Boolean FileSaved = false;
 
         //String path = HttpContext.Current.Request.PhysicalApplicationPath + "images\\tempupload\\";
-        string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages);
+        string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages, 3);
         string fileName = "tmpavatar" + Upload.FileName.Replace(" ",string.Empty);
 		  uploadedFileName = fileName;
 		  string testpath = "";
@@ -91,8 +91,8 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
         {
             try
             {
-				    testpath = Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages), fileName);
-                Upload.PostedFile.SaveAs(Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages), fileName));
+				    testpath = Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages, 3), fileName);
+                Upload.PostedFile.SaveAs(Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages, 3), fileName));
                 FileSaved = true;
             }
             catch (Exception ex)
@@ -136,14 +136,14 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
     {
         try
         {
-            String temppath = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages);//HttpContext.Current.Request.PhysicalApplicationPath + "images\\";
-            string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages);
+            String temppath = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages, 3);//HttpContext.Current.Request.PhysicalApplicationPath + "images\\";
+            string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages, 3);
             RemoveCachedImages(UserSession.LoginUser.OrganizationID, _userID);
 
             if (img1.Value != "")
             {
                 img1.Value = img1.Value.Replace(".ashx", "");
-                string source = Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages), Session["WorkingImage"].ToString());//temppath + "\\" + ImageResizer.Util.PathUtils.RemoveQueryString(img1.Value).Replace('/','\\');
+                string source = Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages, 3), Session["WorkingImage"].ToString());//temppath + "\\" + ImageResizer.Util.PathUtils.RemoveQueryString(img1.Value).Replace('/','\\');
                 string dest = path + '\\' + _userID + "avatar.jpg";
                 try
                 {
@@ -167,6 +167,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
                 {
                     att[0].FileName = _userID + "avatar.jpg";
                     att[0].Path = path + '\\' + _userID + "avatar.jpg";
+                    att[0].FilePathID = 3;
                     att.Save();
                 }
                 else
@@ -177,6 +178,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
                     attachment.OrganizationID = _organizationID;
                     attachment.FileName = _userID + "avatar.jpg";
                     attachment.Path = path + '\\' + _userID + "avatar.jpg";
+                    attachment.FilePathID = 3;
                     attachment.FileType = "image/jpeg";
                     attachment.FileSize = -1;
 

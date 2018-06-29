@@ -118,6 +118,19 @@ namespace TeamSupport.Data
                 return knowledgeBaseCategories[0].CategoryName;
             }
         }
+
+        public KnowledgeBaseCategoryProxy[] GetPortalKnowledgeBaseCategoryProxies()
+        {
+            List<KnowledgeBaseCategoryProxy> list = new List<KnowledgeBaseCategoryProxy>();
+
+            foreach (KnowledgeBaseCategory item in this)
+            {
+                if (item.VisibleOnPortal == true)
+                    list.Add(item.GetProxy());
+            }
+
+            return list.ToArray();
+        }
     }
 
 }

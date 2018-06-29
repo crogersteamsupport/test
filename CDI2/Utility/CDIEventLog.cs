@@ -9,15 +9,28 @@ namespace TeamSupport.CDI
 {
     /// <summary>
     /// Send detailed logging to TeamSupport custom log
+    /// Inheriting from TextWriter allows it to be used as DataContext.Log = CDIEventLog
     /// </summary>
-    class CDIEventLog
+    class CDIEventLog : System.IO.TextWriter
     {
-        public static EventLog _eventLog;
+        public static CDIEventLog Instance = new CDIEventLog();
+
+        public EventLog _eventLog;
+
+        public override void Write(char[] buffer, int index, int count)
+        {
+            Write(new String(buffer, index, count));
+        }
+
+        public override Encoding Encoding
+        {
+            get { return Encoding.Default; }
+        }
 
         /// <summary>
         /// Static constructor
         /// </summary>
-        static CDIEventLog()
+        CDIEventLog()
         {
             try
             {
@@ -37,16 +50,32 @@ namespace TeamSupport.CDI
                 EventLog.WriteEntry("Application", "Unable to open TeamSupport log on CDI-2 source");
             }
         }
+        bool _IsDebuggerAttached = Debugger.IsAttached;
 
-        public static void WriteEntry(string message, EventLogEntryType type = EventLogEntryType.Information)
+        public override void WriteLine(string message) { WriteEntry(message); }
+
+        public override void Write(string message)
         {
-            Debug.WriteLine(message);
-            _eventLog.WriteEntry(message, type);
+            Console.Write(message);
+            if (_IsDebuggerAttached)
+                Debug.Write(message);
+            else
+                _eventLog.WriteEntry(message, EventLogEntryType.Information);
         }
 
-        public static void WriteEntry(string message, Exception e)
+        public void WriteEntry(string message, EventLogEntryType type = EventLogEntryType.Information)
         {
-            Debugger.Break();
+            Console.WriteLine(message);
+            if (_IsDebuggerAttached)
+                Debug.WriteLine(message);
+            else
+                _eventLog.WriteEntry(message, type);
+        }
+
+        public void WriteEntry(string message, Exception e)
+        {
+            if (_IsDebuggerAttached)
+                Debugger.Break();
             WriteEntry(message + e.ToString() + " ----- STACK: " + e.StackTrace.ToString(), EventLogEntryType.Error);
         }
     }
