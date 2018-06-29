@@ -36,7 +36,7 @@ namespace TeamSupport.Handlers
             ReferenceType refType = AttachmentPath.GetFolderReferenceType(folder);
             List<UploadResult> result = new List<UploadResult>();
 
-            string path = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, folder);
+            string path = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, folder, 3);
             if (itemID != null) path = Path.Combine(path, itemID.ToString());
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
             HttpFileCollection files = context.Request.Files;
@@ -58,6 +58,7 @@ namespace TeamSupport.Handlers
                         attachment.Path = Path.Combine(path, fileName);
                         attachment.FileType = files[i].ContentType;
                         attachment.FileSize = files[i].ContentLength;
+                        attachment.FilePathID = 3;
                         if (context.Request.Form["description"] != null)
                             attachment.Description = context.Request.Form["description"].Replace("\n", "<br />");
                         if (context.Request.Form["productFamilyID"] != null && context.Request.Form["productFamilyID"] != "-1")

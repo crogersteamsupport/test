@@ -35,3 +35,5 @@ _ReSharper*/
 /.vs/config/applicationhost.config
 *.bak
 
+/BusinessObjectGenerator/.vs/BusinessObjectGenerator/v15/Server/sqlite3
+/.vs

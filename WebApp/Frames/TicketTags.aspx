@@ -4,16 +4,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head id="Head1" runat="server">
   <title></title>
-  <link href="../css_5/ui.css" rel="stylesheet" type="text/css" />
-  <link href="../css_5/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
-  <link href="../css_5/frame.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/ui.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/frame.css" rel="stylesheet" type="text/css" />
   <script src="../vcr/1_9_0/Js/Ts/ts.pendo.js" type="text/javascript"></script>
-  <script src="../js_5/jquery-1.4.2.min.js" type="text/javascript"></script>
-  <script src="../js_5/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
-  <script src="../js_5/ts.system.old.js" type="text/javascript"></script>
-  <script src="../js_5/ts.data.tickets.js" type="text/javascript"></script>
-  <script src="../js_5/json2.js" type="text/javascript"></script>
-  <script src="../js_5/jquery.layout.min.js" type="text/javascript"></script>
+  <script src="/frontend/library/jquery-1.4.2.min.js" type="text/javascript"></script>
+  <script src="/frontend/library/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
+  <script src="../Js/ts.system.old.js" type="text/javascript"></script>
+  <script src="../Js/ts.data.tickets.js" type="text/javascript"></script>
+  <script src="/frontend/library/json2.js" type="text/javascript"></script>
+  <script src="/frontend/library/jquery.layout.1.3.0.min.js" type="text/javascript"></script>
 
   <style type="text/css">
 

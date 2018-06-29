@@ -200,6 +200,7 @@
             this.button4.Text = "Start Task Processor";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
+            /*
 				// 
 				// btnWebHooks
 				// 
@@ -211,7 +212,7 @@
 				this.btnWebHooks.TabIndex = 37;
 				this.btnWebHooks.Text = "Start WebHooks Processor";
 				this.btnWebHooks.UseVisualStyleBackColor = true;
-				this.btnWebHooks.Click += new System.EventHandler(this.btnWebHooks_Click);
+				this.btnWebHooks.Click += new System.EventHandler(this.btnWebHooks_Click);*/
             // 
             // Form1
             // 

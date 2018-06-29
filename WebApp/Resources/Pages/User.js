@@ -221,6 +221,7 @@ UserPage = function() {
         if (window.parent.parent.Ts.System.Organization.ProductType == window.parent.parent.Ts.ProductType.Express || window.parent.parent.Ts.System.Organization.ProductType == window.parent.parent.Ts.ProductType.HelpDesk) {
             $('#mniProducts').hide();
             $('#mniTasks').hide();
+            $('[category=notification][setting=tasks]').closest('.flexbox').hide();
         }
 
         if (user.IsSystemAdmin == false) {
@@ -241,6 +242,7 @@ UserPage = function() {
         });
         window.parent.parent.Ts.Services.Users.GetUserCustomers(_user.UserID, appendCustomers);
     });
+
 
     var canEdit = window.parent.parent.Ts.System.User.UserID == userID || window.parent.parent.Ts.System.User.IsSystemAdmin;
     var isSysAdmin = window.parent.parent.Ts.System.User.IsSystemAdmin;
@@ -327,7 +329,7 @@ UserPage = function() {
                 //    callback(countryCode);
                 //  });
                 //},
-                utilsScript: "../../Resources/js/utils.js" // just for formatting/placeholders etc
+                utilsScript: "/frontend/library/utils.js" // just for formatting/placeholders etc
             });
 
             $('#userTwoFactorCell').click(function(e) {

@@ -5,8 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Linq.Mapping;
 
-namespace TeamSupport.CDI
+namespace TeamSupport.CDI.linq
 {
+    /// <summary> 
+    /// [dbo].[TicketStatuses] 
+    /// The status values allowed for an organization
+    /// </summary>
     [Table(Name = "TicketStatuses")]
     class TicketStatus
     {

@@ -427,6 +427,7 @@ WHERE
 			this.Modifier = scheduledReport.Modifier ?? "Unknown";
 			this.DateCreated = scheduledReport.DateCreated;
 			this.DateModified = scheduledReport.DateModified;
+            this.FilePathID = scheduledReport.FilePathID;
 		}
 
 		[DataMember]
@@ -465,7 +466,9 @@ WHERE
 		public DateTime DateCreated { get; set; }
 		[DataMember]
 		public DateTime? DateModified { get; set; }
-		[DataMember]
+        [DataMember]
+        public int FilePathID { get; set; }
+        [DataMember]
 		public bool HasLogFile
 		{
 			get
@@ -474,7 +477,7 @@ WHERE
 
 					if (OrganizationId != null && Id > 0)
 					{
-						string path = AttachmentPath.GetPath(LoginUser.Anonymous, (int)OrganizationId, AttachmentPath.Folder.ScheduledReportsLogs);
+						string path = AttachmentPath.GetPath(LoginUser.Anonymous, (int)OrganizationId, AttachmentPath.Folder.ScheduledReportsLogs, FilePathID);
 						string fileName = Id.ToString() + ".txt";
 						hasLogFile = System.IO.File.Exists(System.IO.Path.Combine(path, fileName));
 					}
