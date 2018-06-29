@@ -2232,7 +2232,7 @@ $(document).ready(function () {
 
     function LoadNotes() {
         if (_mainFrame.Ts.System.Organization.UseProductFamilies) {
-            _mainFrame.Ts.Services.Customers.LoadNotesByUserRights(organizationID, _mainFrame.Ts.ReferenceTypes.Organizations, _isParentView, organizationID, function (note) {
+            _mainFrame.Ts.Services.Customers.LoadNotesByUserRights(organizationID, _mainFrame.Ts.ReferenceTypes.Organizations, _isParentView, null, function (note) {
                 $('#tblNotes tbody').empty();
                 var count = (note) ? note.length : 0;
                 $('#a-notes').text('Activities (' + count + ')');
