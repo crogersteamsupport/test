@@ -13,7 +13,7 @@ namespace WatsonToneAnalyzer
     {
         WatsonPostContent _postContent;
         List<ActionToAnalyze> _utteranceActions;
-        List<ActionToAnalyze> _uniqueActions;
+        List<ActionToAnalyze> _actions;
 
         static int totalActionCount = 0;
         static int totalUtteranceCount = 0;
@@ -22,12 +22,17 @@ namespace WatsonToneAnalyzer
         {
             _postContent = new WatsonPostContent();
             _utteranceActions = new List<ActionToAnalyze>();
-            _uniqueActions = new List<ActionToAnalyze>();
+            _actions = new List<ActionToAnalyze>();
         }
 
         public bool Empty {  get { return !_utteranceActions.Any(); } }
+        public int ActionCount { get { return _actions.Count; } }
+        public int UtteranceCount { get { return _utteranceActions.Count; } }
 
-        public int ActionCount { get; private set; }
+        public override string ToString()
+        {
+            return String.Format("Actions {0} Utterances {1}", ActionCount, UtteranceCount);
+        }
 
         void check()
         {
@@ -48,10 +53,9 @@ namespace WatsonToneAnalyzer
                 return true;
 
             _postContent.Add(utterance);
-            _uniqueActions.Add(actionToAnalyze);
+            _actions.Add(actionToAnalyze);
             _utteranceActions.Add(actionToAnalyze);
             check();
-            ++ActionCount;
             return true;
         }
 
@@ -62,11 +66,10 @@ namespace WatsonToneAnalyzer
                 return false;
 
             _postContent.Add(utterances);
-            _uniqueActions.Add(actionToAnalyze);
+            _actions.Add(actionToAnalyze);
             for (int i = 0; i < utterances.Count; ++i)
                 _utteranceActions.Add(actionToAnalyze);  // same action for multiple utterances
             check();
-            ++ActionCount;
             return true;
         }
 
@@ -76,18 +79,18 @@ namespace WatsonToneAnalyzer
             return _postContent.ToJSON(); // JSON string
         }
 
+        /// <summary> Write the message results back to the database </summary>
         public void PublishWatsonResponse(UtteranceToneList watsonResponse)
         {
-            totalActionCount += _uniqueActions.Count;
+            totalActionCount += _actions.Count;
             totalUtteranceCount += _utteranceActions.Count;
-            WatsonEventLog.WriteEntry(String.Format("Actions {0}, Utterances {1}", totalActionCount, totalUtteranceCount));
 
             // update the actions with the corresponding utterances
             foreach (UtteranceResponse utterance in watsonResponse.utterances_tone)
                 _utteranceActions[utterance.utterance_id].AddSentiment(utterance);
 
             // update the action with the accumulated results
-            foreach(ActionToAnalyze action in _uniqueActions)
+            foreach(ActionToAnalyze action in _actions)
                 PublishActionSentiment(action);
         }
 

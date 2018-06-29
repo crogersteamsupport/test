@@ -45,7 +45,7 @@ namespace WatsonToneAnalyzer
 
             // timer to add a 1 minute delay between each execution
             _timer = new System.Timers.Timer();
-            _timer.Interval = 1000 * Convert.ToDouble(ConfigurationManager.AppSettings.Get("WatsonIntervalMinutes"));   // convert to ms
+            _timer.Interval = Convert.ToDouble(ConfigurationManager.AppSettings.Get("WatsonInterval"));
             _timer.Elapsed += new System.Timers.ElapsedEventHandler(this.OnTimer);
             _timer.AutoReset = false;
             _timerEnable = true;

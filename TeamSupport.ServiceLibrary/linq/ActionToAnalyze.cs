@@ -21,8 +21,8 @@ namespace WatsonToneAnalyzer
 #pragma warning disable CS0649  // Field is never assigned to, and will always have its default value null
         // note Int64 - different ID data type from other ID's
         private Int64 _actionToAnalyzeID;
-        [Column(Storage="_actionToAnalyzeID", IsPrimaryKey = true, IsDbGenerated = true)]
-        public Int64 ActionToAnalyzeID {  get { return _actionToAnalyzeID; } }
+        [Column(Storage = "_actionToAnalyzeID", IsPrimaryKey = true, IsDbGenerated = true)]
+        public Int64 ActionToAnalyzeID { get { return _actionToAnalyzeID; } }
 
         [Column]
         public int ActionID;
@@ -49,14 +49,32 @@ namespace WatsonToneAnalyzer
             // we need the multipliers from ToneSentiment (frustrated = -1, satisfied = +1...)
             if (_sentimentMultiplier == null)
             {
-                Table<ToneSentiment> table = db.GetTable<ToneSentiment>();
-                ToneSentiment[] toneSentiments = (from toneSentiment in table select toneSentiment).ToArray();
+                ToneSentiment[] toneSentiments = ToneSentiment.ToneSentiments;
                 _sentimentMultiplier = new Dictionary<string, int>();
                 foreach (ToneSentiment toneSentiment in toneSentiments)
                     _sentimentMultiplier[toneSentiment.SentimentName.Trim()] = Convert.ToInt32(toneSentiment.SentimentMultiplier);
             }
         }
 
+        bool ContainsNegativeTones()
+        {
+            return _tones.Where(t => _sentimentMultiplier[t.Value.tone_id] < 0).Any();
+        }
+
+        IEnumerable<Tones> NegativeTones()
+        {
+            return _tones.Where(t => _sentimentMultiplier[t.Value.tone_id] < 0).Select(pair => pair.Value);
+        }
+
+        IEnumerable<Tones> PositiveTones()
+        {
+            return _tones.Where(t => _sentimentMultiplier[t.Value.tone_id] > 0).Select(pair => pair.Value);
+        }
+
+        /// <summary> 
+        /// Decide if the action is primarily positive or negative sentiment
+        /// Return the list of only those tones
+        /// </summary>
         public List<Tones> GetTones()
         {
             // no sentiment detected
@@ -72,10 +90,10 @@ namespace WatsonToneAnalyzer
             }
 
             // negative sentiment?
-            if(_tones.Where(t => _sentimentMultiplier[t.Value.tone_id] < 0).Any())
-                return _tones.Where(t => _sentimentMultiplier[t.Value.tone_id] < 0).Select(pair => pair.Value).ToList();
+            if (ContainsNegativeTones())
+                return NegativeTones().ToList();
 
-            return _tones.Where(t => _sentimentMultiplier[t.Value.tone_id] > 0).Select(u => u.Value).ToList();
+            return PositiveTones().ToList();
         }
 
         /// <summary>remove HTML, whitespace, email addresses...</summary>
@@ -110,7 +128,7 @@ namespace WatsonToneAnalyzer
             try
             {
                 // linq classes have an attach state to the DB table row
-                if(table.GetOriginalEntityState(this) == null)
+                if (table.GetOriginalEntityState(this) == null)
                     table.Attach(this); // must be attached to delete
             }
             catch (Exception e2)
@@ -142,11 +160,43 @@ namespace WatsonToneAnalyzer
             return true;
         }
 
-        public List<Utterance> ParseUtterances()
+        public List<Utterance> PackActionToUtterances()
         {
-            return Utterance.ParseToUtteranceRequest(IsAgent, WatsonText());
+            // forward to pure function
+            return PackActionToUtterances(IsAgent, WatsonText());
         }
 
+        /// <summary> Pack Action to Utterances </summary>
+        public static List<Utterance> PackActionToUtterances(bool isAgent, string text)
+        {
+            // action fit in utterance?
+            List<Utterance> results = new List<Utterance>();
+            if (text.Length <= MaxUtteranceLength)
+            {
+                results.Add(new Utterance(isAgent, text));
+                return results;
+            }
+
+            // pack sentences into utterances
+            StringBuilder utteranceBuilder = new StringBuilder();
+            string[] sentences = Regex.Split(text, @"(?<=[.?!,;:])");
+            foreach (string sentence in sentences)
+            {
+                // sentence fits in utterance
+                if (utteranceBuilder.Length + sentence.Length <= MaxUtteranceLength)
+                {
+                    utteranceBuilder.Append(sentence);
+                    continue;
+                }
+
+                Utterance.PackSentenceToUtterances(sentence, utteranceBuilder, isAgent, results);
+            }
+            results.Add(new Utterance(isAgent, utteranceBuilder.ToString()));
+
+            return results;
+        }
+
+        /// <summary> Accumulate all the sentiments for all the utterances </summary>
         public void AddSentiment(UtteranceResponse utterance)
         {
             if (!utterance.tones.Any())
