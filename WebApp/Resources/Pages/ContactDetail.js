@@ -3287,29 +3287,7 @@ function convertToValidDate(val) {
     if (val == "")
         return value;
 
-    if (_dateFormat.indexOf("M") != 0) {
-        var dateArr = val.replace(/\./g, '/').replace(/-/g, '/').split('/');
-        if (_dateFormat.indexOf("D") == 0)
-            var day = dateArr[0];
-        if (_dateFormat.indexOf("Y") == 0)
-            var year = dateArr[0];
-        if (_dateFormat.indexOf("M") == 3 || _dateFormat.indexOf("M") == 5)
-            var month = dateArr[1];
-
-        var timeSplit = dateArr[2].split(' ');
-        if (_dateFormat.indexOf("Y") == 6)
-            var year = timeSplit[0];
-        else
-            var day = timeSplit[0];
-
-        var theTime = timeSplit[1];
-
-        var formattedDate = month + "/" + day + "/" + year;
-        value = parent.Ts.Utils.getMsDate(formattedDate);
-        return formattedDate;
-    }
-    else
-        return val;
+    return moment(val, _dateFormat).format('MM/DD/YYYY');
 }
 
 function LoadProductFamilies() {
