@@ -57,7 +57,7 @@ namespace TeamSupport.Data
       result.ProductFamily = this.ProductFamily;
       result.IsAlert = this.IsAlert;
       result.ActivityType = this.ActivityType;
-      result.DateOccurred = this.DateOccurred == null ? null : (DateTime?)DateTime.SpecifyKind((DateTime)this.DateOccurred, DateTimeKind.Utc);
+      result.DateOccurred = this.DateOccurred == null ? null : this.DateOccurred;
             
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
