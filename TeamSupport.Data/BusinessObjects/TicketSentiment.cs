@@ -80,7 +80,7 @@ namespace TeamSupport.Data.BusinessObjects
                 using (DataContext db = new DataContext(connection))
                 {
                     Table<TicketSentiment> ticketSentimentTable = db.GetTable<TicketSentiment>();
-                    result = (from sentiment in ticketSentimentTable where (sentiment.OrganizationID == organizationID) select sentiment.TicketSentimentScore).Average();
+                    result = (from sentiment in ticketSentimentTable where (sentiment.OrganizationID == organizationID) && !sentiment.IsAgent select sentiment.TicketSentimentScore).Average();
                 }
             }
             catch (Exception e)
