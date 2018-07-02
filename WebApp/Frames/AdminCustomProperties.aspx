@@ -187,6 +187,10 @@
                         <div id="divIsActive">
                             <asp:CheckBox ID="cbIsActive" runat="server" Text="Is Active" />&nbsp&nbsp
                         </div>
+                        <div id="divExcludeFromCDI">
+                            <asp:CheckBox ID="cbExcludeFromCDI" runat="server" Text="Exclude From CDI" />&nbsp&nbsp
+                        </div>                        
+                        
                     </div>
                     <div style="float: right; margin: 0px 0px 0 0;">
                         <asp:Button ID="btnOk1" runat="server" Text="OK" OnClientClick="closeEditTypeWindow(true); return false;" />&nbsp
@@ -324,13 +328,14 @@ function loadTicketTypeCombo() {
               $('#divVisibleOnPortal').hide();
               $('#divUploadResults').hide();
               $('#divIsActive').hide();
+              $('#divExcludeFromCDI').hide();
 
               switch (_type) {
                   case '0': $('#divActionType').show(); break;
                   case '2': $('#divProductVersionStatus').show(); break;
                   case '3': $('#divVisibleOnPortal').show(); break;
                   case '4': $('#divTicketStatus').show(); break;
-                  case '5': $('#divTicketTypeIcon').show();$('#divVisibleOnPortal').show();$('#divIsActive').show(); break;
+                  case '5': $('#divTicketTypeIcon').show();$('#divVisibleOnPortal').show();$('#divIsActive').show();$('#divExcludeFromCDI').show();  break;
               }
 
               if (_useProductFamilies && _type == 5) {
@@ -351,7 +356,8 @@ function loadTicketTypeCombo() {
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsDiscontinued").ClientID %>').checked = false;
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsVisibleOnPortal").ClientID %>').checked = false;
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsActive").ClientID %>').checked = false; //vv
-
+            $get('<%= wndEditType.ContentContainer.FindControl("cbExcludeFromCDI").ClientID %>').checked = false; //vv
+              
             if (id != null) {
                 PageMethods.GetTypeObject(_type, id, function(result) {
                     $find('<%= wndEditType.ContentContainer.FindControl("textName").ClientID %>').set_value(result.Name);
@@ -365,7 +371,7 @@ function loadTicketTypeCombo() {
                   $get('<%= wndEditType.ContentContainer.FindControl("cbIsDiscontinued").ClientID %>').checked = result.IsDiscontinued;
                   $get('<%= wndEditType.ContentContainer.FindControl("cbIsVisibleOnPortal").ClientID %>').checked = result.IsVisibleOnPortal;
                   $get('<%= wndEditType.ContentContainer.FindControl("cbIsActive").ClientID %>').checked = result.IsActive; //vv
-
+                  $get('<%= wndEditType.ContentContainer.FindControl("cbExcludeFromCDI").ClientID %>').checked = result.ExcludeFromCDI; //vv
                   if (_type == 5) {
                       loadTicketTypeImageCombo(result.IconUrl.toLowerCase());
                       loadTicketTypeProductFamilyCombo(result.ProductFamilyID);
@@ -414,6 +420,7 @@ function loadTicketTypeCombo() {
             $find('<%= wndEditType.ContentContainer.FindControl("cmbTicketTypeIcons").ClientID %>').get_value(),
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsVisibleOnPortal").ClientID %>').checked,
             $get('<%= wndEditType.ContentContainer.FindControl("cbIsActive").ClientID %>').checked, //vv
+            $get('<%= wndEditType.ContentContainer.FindControl("cbExcludeFromCDI").ClientID %>').checked, //vv
             function (html) {
                 $('#divTypes').html(html);
                 if (_type == 5) loadTicketTypeCombo();

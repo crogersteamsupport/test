@@ -24,15 +24,28 @@ namespace TeamSupport.Data
       get { return _cDI_Settings; }
     }
         
-    
-    
-    
-
-    
     public float? TotalTicketsWeight
     {
       get { return Row["TotalTicketsWeight"] != DBNull.Value ? (float?)Row["TotalTicketsWeight"] : null; }
       set { Row["TotalTicketsWeight"] = CheckValue("TotalTicketsWeight", value); }
+    }    
+    
+    public float? AverageActionCountWeight
+        {
+      get { return Row["AverageActionCountWeight"] != DBNull.Value ? (float?)Row["AverageActionCountWeight"] : null; }
+      set { Row["AverageActionCountWeight"] = CheckValue("AverageActionCountWeight", value); }
+    }    
+
+    public float? AverageSentimentScoreWeight
+        {
+      get { return Row["AverageSentimentScoreWeight"] != DBNull.Value ? (float?)Row["AverageSentimentScoreWeight"] : null; }
+      set { Row["AverageSentimentScoreWeight"] = CheckValue("AverageSentimentScoreWeight", value); }
+    }
+    
+    public float? AverageSeverityWeight
+        {
+      get { return Row["AverageSeverityWeight"] != DBNull.Value ? (float?)Row["AverageSeverityWeight"] : null; }
+      set { Row["AverageSeverityWeight"] = CheckValue("AverageSeverityWeight", value); }
     }
     
     public float? OpenTicketsWeight
@@ -199,9 +212,29 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CDI_Settings] SET     [TotalTicketsWeight] = @TotalTicketsWeight,    [OpenTicketsWeight] = @OpenTicketsWeight,    [Last30Weight] = @Last30Weight,    [AvgDaysOpenWeight] = @AvgDaysOpenWeight,    [AvgDaysToCloseWeight] = @AvgDaysToCloseWeight,    [GreenUpperRange] = @GreenUpperRange,    [YellowUpperRange] = @YellowUpperRange,    [LastCompute] = @LastCompute,    [NeedCompute] = @NeedCompute  WHERE ([OrganizationID] = @OrganizationID);";
-
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CDI_Settings] SET     [TotalTicketsWeight] = @TotalTicketsWeight,    [OpenTicketsWeight] = @OpenTicketsWeight,    [Last30Weight] = @Last30Weight,    [AvgDaysOpenWeight] = @AvgDaysOpenWeight,    [AvgDaysToCloseWeight] = @AvgDaysToCloseWeight,    [GreenUpperRange] = @GreenUpperRange,    [YellowUpperRange] = @YellowUpperRange,    [LastCompute] = @LastCompute,    [NeedCompute] = @NeedCompute, [AverageActionCountWeight] = @AverageActionCountWeight, [AverageSentimentScoreWeight]=@AverageSentimentScoreWeight, [AverageSeverityWeight]=@AverageSeverityWeight  WHERE ([OrganizationID] = @OrganizationID);";
 		
+        tempParameter = updateCommand.Parameters.Add("AverageActionCountWeight", SqlDbType.Real, 4);
+        if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 7;
+		  tempParameter.Scale = 7;
+		}
+
+		tempParameter = updateCommand.Parameters.Add("AverageSentimentScoreWeight", SqlDbType.Real, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 7;
+		  tempParameter.Scale = 7;
+		}		
+
+		tempParameter = updateCommand.Parameters.Add("AverageSeverityWeight", SqlDbType.Real, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 7;
+		  tempParameter.Scale = 7;
+		}
+
 		tempParameter = updateCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
@@ -277,8 +310,28 @@ namespace TeamSupport.Data
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CDI_Settings] (    [OrganizationID],    [TotalTicketsWeight],    [OpenTicketsWeight],    [Last30Weight],    [AvgDaysOpenWeight],    [AvgDaysToCloseWeight],    [GreenUpperRange],    [YellowUpperRange],    [LastCompute],    [NeedCompute]) VALUES ( @OrganizationID, @TotalTicketsWeight, @OpenTicketsWeight, @Last30Weight, @AvgDaysOpenWeight, @AvgDaysToCloseWeight, @GreenUpperRange, @YellowUpperRange, @LastCompute, @NeedCompute); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CDI_Settings] (    [OrganizationID],    [TotalTicketsWeight],    [OpenTicketsWeight],    [Last30Weight],    [AvgDaysOpenWeight],    [AvgDaysToCloseWeight],    [GreenUpperRange],    [YellowUpperRange],    [LastCompute],    [NeedCompute], [AverageActionCountWeight], [AverageSentimentScoreWeight], [AverageSeverityWeight]) VALUES ( @OrganizationID, @TotalTicketsWeight, @OpenTicketsWeight, @Last30Weight, @AvgDaysOpenWeight, @AvgDaysToCloseWeight, @GreenUpperRange, @YellowUpperRange, @LastCompute, @NeedCompute, @AverageActionCountWeight, @AverageSentimentScoreWeight, @AverageSeverityWeight); SET @Identity = SCOPE_IDENTITY();";
 
+        tempParameter = insertCommand.Parameters.Add("AverageActionCountWeight", SqlDbType.Real, 4);
+        if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 7;
+		  tempParameter.Scale = 7;
+		}
+
+		tempParameter = insertCommand.Parameters.Add("AverageSentimentScoreWeight", SqlDbType.Real, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 7;
+		  tempParameter.Scale = 7;
+		}		
+
+		tempParameter = insertCommand.Parameters.Add("AverageSeverityWeight", SqlDbType.Real, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 7;
+		  tempParameter.Scale = 7;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("NeedCompute", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -462,7 +515,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationID], [TotalTicketsWeight], [OpenTicketsWeight], [Last30Weight], [AvgDaysOpenWeight], [AvgDaysToCloseWeight], [GreenUpperRange], [YellowUpperRange], [LastCompute], [NeedCompute] FROM [dbo].[CDI_Settings] WHERE ([OrganizationID] = @OrganizationID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationID], [TotalTicketsWeight], [OpenTicketsWeight], [Last30Weight], [AvgDaysOpenWeight], [AvgDaysToCloseWeight], [GreenUpperRange], [YellowUpperRange], [LastCompute], [NeedCompute], [AverageActionCountWeight], [AverageSentimentScoreWeight], [AverageSeverityWeight] FROM [dbo].[CDI_Settings] WHERE ([OrganizationID] = @OrganizationID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("OrganizationID", organizationID);
         Fill(command);

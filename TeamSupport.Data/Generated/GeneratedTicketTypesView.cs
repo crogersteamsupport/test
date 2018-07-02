@@ -41,7 +41,11 @@ namespace TeamSupport.Data
       set { Row["ProductFamilyName"] = CheckValue("ProductFamilyName", value); }
     }
     
-
+    public bool ExcludeFromCDI
+        {
+      get { return (bool)Row["ExcludeFromCDI"]; }
+      set { Row["ExcludeFromCDI"] = CheckValue("ExcludeFromCDI", value); }
+    }
     
     public bool IsActive
     {
@@ -228,7 +232,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketTypesView] SET     [Name] = @Name,    [Description] = @Description,    [Position] = @Position,    [OrganizationID] = @OrganizationID,    [IconUrl] = @IconUrl,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [ProductFamilyID] = @ProductFamilyID,    [ProductFamilyName] = @ProductFamilyName,    [IsActive] = @IsActive  WHERE ([TicketTypeID] = @TicketTypeID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketTypesView] SET     [Name] = @Name,    [Description] = @Description,    [Position] = @Position,    [OrganizationID] = @OrganizationID,    [IconUrl] = @IconUrl,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [ProductFamilyID] = @ProductFamilyID,    [ProductFamilyName] = @ProductFamilyName,    [IsActive] = @IsActive, [ExcludeFromCDI] = @ExcludeFromCDI  WHERE ([TicketTypeID] = @TicketTypeID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("TicketTypeID", SqlDbType.Int, 4);
@@ -315,15 +319,28 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ExcludeFromCDI", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 
+        
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketTypesView] (    [TicketTypeID],    [Name],    [Description],    [Position],    [OrganizationID],    [IconUrl],    [IsVisibleOnPortal],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [ProductFamilyID],    [ProductFamilyName],    [IsActive]) VALUES ( @TicketTypeID, @Name, @Description, @Position, @OrganizationID, @IconUrl, @IsVisibleOnPortal, @DateCreated, @DateModified, @CreatorID, @ModifierID, @ProductFamilyID, @ProductFamilyName, @IsActive); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketTypesView] (    [TicketTypeID],    [Name],    [Description],    [Position],    [OrganizationID],    [IconUrl],    [IsVisibleOnPortal],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [ProductFamilyID],    [ProductFamilyName],    [IsActive], [ExcludeFromCDI]) VALUES ( @TicketTypeID, @Name, @Description, @Position, @OrganizationID, @IconUrl, @IsVisibleOnPortal, @DateCreated, @DateModified, @CreatorID, @ModifierID, @ProductFamilyID, @ProductFamilyName, @IsActive, @ExcludeFromCDI); SET @Identity = SCOPE_IDENTITY();";
+            
+        tempParameter = insertCommand.Parameters.Add("ExcludeFromCDI", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 
-		
-		tempParameter = insertCommand.Parameters.Add("IsActive", SqlDbType.Bit, 1);
+        tempParameter = insertCommand.Parameters.Add("IsActive", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

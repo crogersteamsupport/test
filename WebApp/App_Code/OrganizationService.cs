@@ -213,10 +213,16 @@ namespace TSWebServices
                 cdiSetting.AvgDaysToCloseWeight = cdi.AvgDaysToCloseWeight;
                 cdiSetting.GreenUpperRange = cdi.GreenUpperRange;
                 cdiSetting.YellowUpperRange = cdi.YellowUpperRange;
+                cdiSetting.AverageActionCountWeight = cdi.AverageActionCountWeight;
+                cdiSetting.AverageSentimentScoreWeight = cdi.AverageSentimentScoreWeight;
+                cdiSetting.AverageSeverityWeight = cdi.AverageSeverityWeight;
                 cdiSetting.Collection.Save();
             }
             else
             {
+                cdiSettings.AverageActionCountWeight = cdi.AverageActionCountWeight;
+                cdiSettings.AverageSentimentScoreWeight = cdi.AverageSentimentScoreWeight;
+                cdiSettings.AverageSeverityWeight = cdi.AverageSeverityWeight;
                 cdiSettings.TotalTicketsWeight = cdi.TotalTicketsWeight;
                 cdiSettings.OpenTicketsWeight = cdi.OpenTicketsWeight;
                 cdiSettings.Last30Weight = cdi.Last30Weight;

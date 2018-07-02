@@ -300,9 +300,10 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
                     ticketTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
                     table.Columns.Add("Product Line");
                     table.Columns.Add("Active");
+                    table.Columns.Add("Exclude From CDI");
                     foreach (TicketTypesViewItem ticketType in ticketTypes)
                     {
-                        table.Rows.Add(new string[] { ticketType.TicketTypeID.ToString(), ticketType.Name, ticketType.Description, string.Format(icon, ticketType.IconUrl), ticketType.IsVisibleOnPortal.ToString(), ticketType.ProductFamilyName, ticketType.IsActive.ToString() });
+                        table.Rows.Add(new string[] { ticketType.TicketTypeID.ToString(), ticketType.Name, ticketType.Description, string.Format(icon, ticketType.IconUrl), ticketType.IsVisibleOnPortal.ToString(), ticketType.ProductFamilyName, ticketType.IsActive.ToString(), ticketType.ExcludeFromCDI.ToString() });
                     }
                 }
                 else
@@ -310,9 +311,10 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
                     table.Columns.Add("Active");
                     TicketTypes ticketTypes = new TicketTypes(UserSession.LoginUser);
                     ticketTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+                    table.Columns.Add("Exclude From CDI");
                     foreach (TicketType ticketType in ticketTypes)
                     {
-                        table.Rows.Add(new string[] { ticketType.TicketTypeID.ToString(), ticketType.Name, ticketType.Description, string.Format(icon, ticketType.IconUrl), ticketType.IsVisibleOnPortal.ToString(), ticketType.IsActive.ToString() });
+                        table.Rows.Add(new string[] { ticketType.TicketTypeID.ToString(), ticketType.Name, ticketType.Description, string.Format(icon, ticketType.IconUrl), ticketType.IsVisibleOnPortal.ToString(), ticketType.IsActive.ToString(), ticketType.ExcludeFromCDI.ToString() });
                     }
                 }
                 break;
@@ -702,6 +704,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
         result.IsVisibleOnPortal = ticketType.IsVisibleOnPortal;
         result.IconUrl = ticketType.IconUrl;
         result.IsActive = ticketType.IsActive;
+        result.ExcludeFromCDI = ticketType.ExcludeFromCDI;
 
         if (ticketType.ProductFamilyID == null)
         {
@@ -742,7 +745,8 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
       string productFamilyID,
       string iconUrl, 
       bool isVisibleOnPortal,
-      bool isActive)
+      bool isActive,
+      bool ExcludeFromCDI)
   {
     if (!UserSession.CurrentUser.IsSystemAdmin) return "";
     switch (type)
@@ -819,6 +823,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
         ticketType.IconUrl = iconUrl;
         ticketType.IsVisibleOnPortal = isVisibleOnPortal;
         ticketType.IsActive = isActive;
+        ticketType.ExcludeFromCDI = ExcludeFromCDI;
         if (id == null) ticketType.Position = ticketType.Collection.GetMaxPosition(UserSession.LoginUser.OrganizationID) + 1;
         if (id == null) ticketType.OrganizationID = UserSession.LoginUser.OrganizationID;
         if (productFamilyID == "-1")
@@ -931,6 +936,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
     public bool IsVisibleOnPortal { get; set; }
     public int ProductFamilyID { get; set; }
     public bool IsActive { get; set; }
+    public bool ExcludeFromCDI { get; set; }
   }
 
     [Serializable]
