@@ -9,35 +9,36 @@ using System.Threading;
 
 namespace WatsonToneAnalyzer
 {
+    class MessageUtterance
+    {
+        public ActionToAnalyze _action { get; private set; }
+        public Utterance _utterance { get; private set; }
+
+        public MessageUtterance(ActionToAnalyze actionToAnalyze, Utterance utterance)
+        {
+            _action = actionToAnalyze;
+            _utterance = utterance;
+        }
+    }
+
     class WatsonMessage
     {
-        WatsonPostContent _postContent;
-        List<ActionToAnalyze> _utteranceActions;
+        List<MessageUtterance> _messageUtterances;
         List<ActionToAnalyze> _actions;
-
-        static int totalActionCount = 0;
-        static int totalUtteranceCount = 0;
 
         public WatsonMessage()
         {
-            _postContent = new WatsonPostContent();
-            _utteranceActions = new List<ActionToAnalyze>();
+            _messageUtterances = new List<MessageUtterance>();
             _actions = new List<ActionToAnalyze>();
         }
 
-        public bool Empty {  get { return !_utteranceActions.Any(); } }
+        public bool Empty {  get { return UtteranceCount == 0; } }
         public int ActionCount { get { return _actions.Count; } }
-        public int UtteranceCount { get { return _utteranceActions.Count; } }
+        public int UtteranceCount { get { return _messageUtterances.Count; } }
 
         public override string ToString()
         {
             return String.Format("Actions {0} Utterances {1}", ActionCount, UtteranceCount);
-        }
-
-        void check()
-        {
-            if (_utteranceActions.Count != _postContent.utterances.Count)
-                Debugger.Break();
         }
 
         static int WatsonUtterancePerAPICall = Int32.Parse(ConfigurationManager.AppSettings.Get("WatsonUtterancePerAPICall"));
@@ -45,49 +46,47 @@ namespace WatsonToneAnalyzer
         public bool TryAdd(ActionToAnalyze actionToAnalyze, Utterance utterance)
         {
             // Max 50 per call
-            if (_utteranceActions.Count >= WatsonUtterancePerAPICall)
+            if (UtteranceCount + 1 > WatsonUtterancePerAPICall)
                 return false;
 
-            // empty so it fit and is done
-            if (String.IsNullOrEmpty(utterance.text))
-                return true;
-
-            _postContent.Add(utterance);
             _actions.Add(actionToAnalyze);
-            _utteranceActions.Add(actionToAnalyze);
-            check();
+            _messageUtterances.Add(new MessageUtterance(actionToAnalyze, utterance));
             return true;
         }
 
         public bool TryAdd(ActionToAnalyze actionToAnalyze, List<Utterance> utterances)
         {
             // Max 50 per call
-            if (_utteranceActions.Count + utterances.Count > WatsonUtterancePerAPICall)
+            if (UtteranceCount + utterances.Count > WatsonUtterancePerAPICall)
                 return false;
 
-            _postContent.Add(utterances);
             _actions.Add(actionToAnalyze);
-            for (int i = 0; i < utterances.Count; ++i)
-                _utteranceActions.Add(actionToAnalyze);  // same action for multiple utterances
-            check();
+            foreach(Utterance utterance in utterances)
+                _messageUtterances.Add(new MessageUtterance(actionToAnalyze, utterance));
             return true;
         }
 
         /// <summary>serialize to JSON</summary>
         public string ToJSON()
         {
-            return _postContent.ToJSON(); // JSON string
+            WatsonPostContent content = new WatsonPostContent();
+            content.utterances = _messageUtterances.Select(u => u._utterance).ToList();
+            return content.ToJSON();
         }
 
         /// <summary> Write the message results back to the database </summary>
         public void PublishWatsonResponse(UtteranceToneList watsonResponse)
         {
-            totalActionCount += _actions.Count;
-            totalUtteranceCount += _utteranceActions.Count;
+            foreach (UtteranceResponse response in watsonResponse.utterances_tone)
+            {
+                MessageUtterance messageUtterance = _messageUtterances[response.utterance_id];
+                Utterance sent = messageUtterance._utterance;
+                if (string.CompareOrdinal(sent.text, response.utterance_text) != 0)
+                    Debugger.Break();
 
-            // update the actions with the corresponding utterances
-            foreach (UtteranceResponse utterance in watsonResponse.utterances_tone)
-                _utteranceActions[utterance.utterance_id].AddSentiment(utterance);
+                ActionToAnalyze action = messageUtterance._action;
+                action.AddSentiment(response);
+            }
 
             // update the action with the accumulated results
             foreach(ActionToAnalyze action in _actions)

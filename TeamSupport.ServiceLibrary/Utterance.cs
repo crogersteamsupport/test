@@ -30,17 +30,8 @@ namespace WatsonToneAnalyzer
         static int MaxUtteranceLength = Int32.Parse(ConfigurationManager.AppSettings.Get("MaxUtteranceLength"));
 
         /// <summary> Pack Sentence to Utterances </summary>
-        public static void PackSentenceToUtterances(string sentence, StringBuilder utteranceBuilder, bool isAgent, List<Utterance> results)
+        public static void PackLongSentenceToUtterances(string sentence, StringBuilder utteranceBuilder, bool isAgent, List<Utterance> results)
         {
-            // utterance full
-            if (sentence.Length < MaxUtteranceLength)
-            {
-                results.Add(new Utterance(isAgent, utteranceBuilder.ToString()));
-                utteranceBuilder.Clear();
-                utteranceBuilder.Append(sentence);
-                return;
-            }
-
             // sentence length overflow
             int offset = 0;
             while (sentence.Length - offset > MaxUtteranceLength)

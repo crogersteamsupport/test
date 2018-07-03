@@ -43,17 +43,14 @@ namespace WatsonToneAnalyzer
         string _watsonText = null;
         Dictionary<string, Tones> _tones = null;
 
-        static Dictionary<string, int> _sentimentMultiplier = null;
+        static Dictionary<string, int> _sentimentMultiplier;
         public static void Initialize(DataContext db)
         {
             // we need the multipliers from ToneSentiment (frustrated = -1, satisfied = +1...)
-            if (_sentimentMultiplier == null)
-            {
-                ToneSentiment[] toneSentiments = ToneSentiment.ToneSentiments;
-                _sentimentMultiplier = new Dictionary<string, int>();
-                foreach (ToneSentiment toneSentiment in toneSentiments)
-                    _sentimentMultiplier[toneSentiment.SentimentName.Trim()] = Convert.ToInt32(toneSentiment.SentimentMultiplier);
-            }
+            ToneSentiment[] toneSentiments = ToneSentiment.ToneSentiments;
+            _sentimentMultiplier = new Dictionary<string, int>();
+            foreach (ToneSentiment toneSentiment in toneSentiments)
+                _sentimentMultiplier[toneSentiment.SentimentName.Trim()] = Convert.ToInt32(toneSentiment.SentimentMultiplier);
         }
 
         bool ContainsNegativeTones()
@@ -147,6 +144,8 @@ namespace WatsonToneAnalyzer
         }
 
         static int MaxUtteranceLength = Int32.Parse(ConfigurationManager.AppSettings.Get("MaxUtteranceLength"));
+
+        /// <summary> Can we fit the action into a single utterance? </summary>
         public bool TryGetUtterance(out Utterance utterance)
         {
             string watsonText = WatsonText();
@@ -160,6 +159,7 @@ namespace WatsonToneAnalyzer
             return true;
         }
 
+        /// <summary> Pack the action into utterances </summary>
         public List<Utterance> PackActionToUtterances()
         {
             // forward to pure function
@@ -169,15 +169,11 @@ namespace WatsonToneAnalyzer
         /// <summary> Pack Action to Utterances </summary>
         public static List<Utterance> PackActionToUtterances(bool isAgent, string text)
         {
-            // action fit in utterance?
-            List<Utterance> results = new List<Utterance>();
             if (text.Length <= MaxUtteranceLength)
-            {
-                results.Add(new Utterance(isAgent, text));
-                return results;
-            }
+                throw new Exception("Action would have fit into a single utterance");
 
             // pack sentences into utterances
+            List<Utterance> results = new List<Utterance>();
             StringBuilder utteranceBuilder = new StringBuilder();
             string[] sentences = Regex.Split(text, @"(?<=[.?!,;:])");
             foreach (string sentence in sentences)
@@ -189,9 +185,27 @@ namespace WatsonToneAnalyzer
                     continue;
                 }
 
-                Utterance.PackSentenceToUtterances(sentence, utteranceBuilder, isAgent, results);
+                // sentence too long to fit into current utterance
+                if (sentence.Length < MaxUtteranceLength)
+                {
+                    results.Add(new Utterance(isAgent, utteranceBuilder.ToString()));
+                    utteranceBuilder.Clear();
+                    utteranceBuilder.Append(sentence);  // start a new utterance
+                    continue;
+                }
+
+                Utterance.PackLongSentenceToUtterances(sentence, utteranceBuilder, isAgent, results);
             }
+
+            // create an utterance with the remainder
             results.Add(new Utterance(isAgent, utteranceBuilder.ToString()));
+
+            // does collection of utterances add up to text?
+            string test = String.Empty;
+            foreach (Utterance utterance in results)
+                test += utterance.text;
+            if (String.CompareOrdinal(text, test) != 0)
+                Debugger.Break();
 
             return results;
         }

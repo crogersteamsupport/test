@@ -48,9 +48,9 @@ namespace WatsonToneAnalyzer
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (DataContext db = new DataContext(connection))
                 {
-                    ActionToAnalyze.Initialize(db);
+                    // initialize static data
                     ToneSentiment.Initialize(db);
-                    TicketSentiment.Initialize();
+                    ActionToAnalyze.Initialize(db);
 
                     // read ActionToAnalyze
                     Table<ActionSentiment> actionSentimentTable = db.GetTable<ActionSentiment>();
@@ -61,7 +61,7 @@ namespace WatsonToneAnalyzer
                     // Pack the actions to analyze into watson messages
                     PackActionsToMessages(asyncTransactionsInProcess, db, actionSentimentTable, actions);
 
-                    // the remainder can wait to be packed into a call when we have more...
+                    // ...the remainder can wait to be packed into a call when we have more
                 }
             }
             catch (Exception e2)
@@ -83,12 +83,10 @@ namespace WatsonToneAnalyzer
             WatsonMessage message = new WatsonMessage();
             foreach (ActionToAnalyze actionToAnalyze in actions)
             {
-                // ActionSentiment record already exists?
+                // ActionSentiment already exists or emtpy?
                 bool duplicateActionSentiment = actionSentimentTable.Where(u => u.ActionID == actionToAnalyze.ActionID).Any();
                 if (duplicateActionSentiment)
                     WatsonEventLog.WriteEntry("duplicate ActionID in ActionSentiment table " + actionToAnalyze.ActionID, EventLogEntryType.Error);
-
-                // empty so continue
                 if (duplicateActionSentiment || (actionToAnalyze.WatsonText().Length == 0))
                 {
                     actionToAnalyze.DeleteOnSubmit(db);
@@ -104,10 +102,14 @@ namespace WatsonToneAnalyzer
                     break;    // uncomment to test with a single HTTP post
                 }
             }
+
+            // Send the remainder message if mostly full
+            if (message.UtteranceCount > 40)
+                SendMessage(ref message);
         }
 
         public static int MessageCount { get; private set; }
-        static Task SendMessage(WatsonMessage message)
+        static Task SendMessage(ref WatsonMessage message)
         {
             ++MessageCount;
             Debug.WriteLine(String.Format("HTTP_POST {0} {1}", MessageCount, message.ToString()));
@@ -121,14 +123,17 @@ namespace WatsonToneAnalyzer
         private static Task PackActionToMessage(ActionToAnalyze actionToAnalyze, ref WatsonMessage message)
         {
             Task result = null;
+
+            // Action fit into a single utterance?
             Utterance utterance;
             if (actionToAnalyze.TryGetUtterance(out utterance))
             {
-                // fits in single utterance
+                // Utterance fit into message?
                 if (!message.TryAdd(actionToAnalyze, utterance))
                 {
-                    result = SendMessage(message);
-                    message.TryAdd(actionToAnalyze, utterance); // add Utterance
+                    result = SendMessage(ref message);  // send this one
+                    if (!message.TryAdd(actionToAnalyze, utterance)) // start a new message
+                        Debugger.Break();
                 }
             }
             else
@@ -137,8 +142,9 @@ namespace WatsonToneAnalyzer
                 List<Utterance> utterances = actionToAnalyze.PackActionToUtterances();
                 if (!message.TryAdd(actionToAnalyze, utterances))
                 {
-                    result = SendMessage(message);
-                    message.TryAdd(actionToAnalyze, utterances);    // add List<Utterance>
+                    result = SendMessage(ref message);  // send this one
+                    if(!message.TryAdd(actionToAnalyze, utterances)) // start a new message
+                        Debugger.Break();
                 }
             }
 

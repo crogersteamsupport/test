@@ -77,11 +77,6 @@ namespace WatsonToneAnalyzer
         }
 
         static Mutex _mutex = new Mutex(false);
-        static ToneSentiment[] _toneSentiment = null;
-        public static void Initialize()
-        {
-            _toneSentiment = ToneSentiment.ToneSentiments;
-        }
 
         /// <summary>
         /// Callback on insert of Watson results - using the transaction submitted but NOT committed
@@ -98,7 +93,7 @@ namespace WatsonToneAnalyzer
             try
             {
                 // normalize to [0, 1000]
-                double actionScore = Convert.ToDouble(_toneSentiment[maxScore.SentimentID].SentimentMultiplier.Value) * Convert.ToDouble(maxScore.SentimentScore);
+                double actionScore = Convert.ToDouble(ToneSentiment.ToneSentiments[maxScore.SentimentID].SentimentMultiplier.Value) * Convert.ToDouble(maxScore.SentimentScore);
                 actionScore = 500 * actionScore + 500;
 
                 // submit TicketSentiment and update OrganizationSentiment

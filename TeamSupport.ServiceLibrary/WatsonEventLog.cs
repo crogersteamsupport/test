@@ -45,7 +45,11 @@ namespace WatsonToneAnalyzer
         {
             Console.WriteLine(message);
             if (_IsDebuggerAttached)
+            {
                 Debug.WriteLine(message);
+                if (type == EventLogEntryType.Error)
+                    Debugger.Break();
+            }
             else
                 _eventLog.WriteEntry(message, type);
         }
