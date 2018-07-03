@@ -99,7 +99,7 @@ namespace WatsonToneAnalyzer
                 if (task != null)
                 {
                     asyncTransactionsInProcess.Add(task);   // wait for watson results
-                    break;    // uncomment to test with a single HTTP post
+                    //break;    // uncomment to test with a single HTTP post
                 }
             }
 
@@ -112,7 +112,7 @@ namespace WatsonToneAnalyzer
         static Task SendMessage(ref WatsonMessage message)
         {
             ++MessageCount;
-            Debug.WriteLine(String.Format("HTTP_POST {0} {1}", MessageCount, message.ToString()));
+            //Debug.WriteLine(String.Format("HTTP_POST {0} {1}", MessageCount, message.ToString()));
             WatsonMessage tmp = message;
             Task result = HTTP_POST(tmp);
             message = new WatsonMessage();

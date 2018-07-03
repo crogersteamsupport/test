@@ -56,8 +56,6 @@ namespace WatsonToneAnalyzer
 
         public static void WriteEntry(string message, Exception e)
         {
-            if (_IsDebuggerAttached)
-                Debugger.Break();
             WriteEntry(message + e.ToString() + " ----- STACK: " + e.StackTrace.ToString(), EventLogEntryType.Error);
         }
     }
