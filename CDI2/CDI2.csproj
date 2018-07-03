@@ -77,7 +77,6 @@
     <Compile Include="CDI2Engine.cs" />
     <Compile Include="Metrics.cs" />
     <Compile Include="MetricPercentiles.cs" />
-    <Compile Include="linq\Action.cs" />
     <Compile Include="TicketJoin.cs" />
     <Compile Include="linq\TicketSentiment.cs" />
     <Compile Include="OrganizationAnalysis.cs" />
@@ -91,6 +90,7 @@
     <Compile Include="IntervalStrategy.cs" />
     <Compile Include="Utility\Statistics.cs" />
     <Compile Include="Utility\CDIEventLog.cs" />
+    <Compile Include="WatsonActionSize.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

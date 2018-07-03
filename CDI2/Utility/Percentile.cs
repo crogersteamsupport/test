@@ -37,7 +37,7 @@ namespace TeamSupport.CDI
             {
                 double offset = (double)pair.Value / 2;
                 double value = (offset + index) / (double)_intervalCount;
-                //value = value * value * value * value;
+                value = value * value * value * value;  // intentionally skews the results to more closely match CDI1
                 _percentiles[pair.Key] = (int)Math.Round(100 * value);
                 index += pair.Value;
             }

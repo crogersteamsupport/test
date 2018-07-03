@@ -8,16 +8,6 @@ using System.Data.Linq;
 
 namespace TeamSupport.CDI
 {
-    public struct CDI1
-    {
-        public int TotalTicketsCreated;
-        public int TicketsOpen;
-        public int CreatedLast30;
-        public int AvgTimeOpen;
-        public int AvgTimeToClose;
-        public int CustDisIndex;
-    };
-
     class CDI1Strategy : ICDIStrategy
     {
         OrganizationAnalysis _organizationAnalysis;
@@ -72,26 +62,6 @@ namespace TeamSupport.CDI
             return _rawMetrics;
         }
 
-        /// <summary> 
-        /// CDI2 
-        /// temporarily turn off weights...
-        /// </summary>
-        public void InvokeCDIStrategy2(MetricPercentiles clientPercentiles, linq.CDI_Settings weights)
-        {
-            _normalizedMetrics = clientPercentiles.Normalize(_rawMetrics);
-
-            List<double> result = new List<double>();
-            foreach (EMetrics metric in Enum.GetValues(typeof(EMetrics)))
-            {
-                double? value = _normalizedMetrics.GetAsCDIPercentile(metric);
-                double? weight = weights.Get(metric);
-
-                if (value.HasValue)
-                    result.Add(value.Value);
-            }
-            _normalizedMetrics.CDI = _rawMetrics.CDI = (int)Math.Round(result.Average());
-        }
-
         /// <summary> CDI1 </summary>
         public void InvokeCDIStrategy(MetricPercentiles clientPercentiles, linq.CDI_Settings weights)
         {
@@ -101,7 +71,7 @@ namespace TeamSupport.CDI
             foreach (EMetrics metric in Enum.GetValues(typeof(EMetrics)))
             {
                 double? value = _normalizedMetrics.GetAsCDIPercentile(metric);
-                double? weight = weights.Get(metric);
+                double? weight = weights.GetWeight(metric);
                 if (value.HasValue && weight.HasValue)
                     result += value.Value * weight.Value;
             }
@@ -146,34 +116,5 @@ namespace TeamSupport.CDI
                 CDIEventLog.Instance.WriteEntry("Save failed", e);
             }
         }
-
-        public double GetCDI(CDI1 metrics, linq.CDI_Settings settings)
-        {
-            return metrics.TotalTicketsCreated * settings.TotalTicketsWeight.Value +
-                        metrics.TicketsOpen * settings.OpenTicketsWeight.Value +
-                        metrics.CreatedLast30 * settings.Last30Weight.Value +
-                        metrics.AvgTimeOpen * settings.AvgDaysOpenWeight.Value +
-                        metrics.AvgTimeToClose * settings.AvgDaysToCloseWeight.Value;
-        }
-
-        public int GetCDI1(Metrics interval, Metrics normalized, linq.CDI_Settings weights, Dictionary<EMetrics, Percentile> _percentiles)
-        {
-            // Create the CDI from the normalized fields
-            CDI1 cdi = new CDI1()
-            {
-                TotalTicketsCreated = _percentiles[EMetrics.TotalTickets].AsPercentile(interval._totalTicketsCreated),
-                TicketsOpen = _percentiles[EMetrics.Open].AsPercentile(interval._openCount),
-                CreatedLast30 = _percentiles[EMetrics.New30].AsPercentile(interval._newCount),
-                AvgTimeOpen = _percentiles[EMetrics.DaysOpen].AsPercentile(interval._medianDaysOpen),
-            };
-
-            if ((_percentiles[EMetrics.DaysToClose] != null) && interval._medianDaysToClose.HasValue)
-                cdi.AvgTimeToClose = _percentiles[EMetrics.DaysToClose].AsPercentile(interval._medianDaysToClose.Value);
-
-            double CustDisIndex = GetCDI(cdi, weights);
-            normalized.CDI = (int)Math.Round(CustDisIndex);
-            return normalized.CDI.Value;
-        }
-
     }
 }
