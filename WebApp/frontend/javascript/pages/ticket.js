@@ -369,6 +369,7 @@ var loadTicket = function(ticketNumber, refresh) {
         SetupSnowFieldValues();
         LoadGroups();
         LoadPlugins(info);
+
     });
 };
 
@@ -456,7 +457,6 @@ function AddTicketProperty(item) {
 
 function SetupTicketProperties(order) {
     window.parent.Ts.Services.TicketPage.GetTicketInfo(_ticketNumber, function(info) {
-        console.log(info);
         if (info == null) {
             var url = window.location.href;
             if (url.indexOf('.') > -1) {
@@ -1665,7 +1665,7 @@ function LoadTicketControls() {
         $('#label-days').text('Days Opened');
     }
 
-    WatsonTicketField(_ticketInfo.Ticket.TicketID);
+    WatsonTicket(_ticketInfo.Ticket.TicketID);
 
     var dueDate = _ticketInfo.Ticket.DueDate;
     SetupDueDateField(dueDate);
@@ -3732,10 +3732,6 @@ var SetupDueDateField = function(duedate) {
 
 var SetupStatusField = function(StatusId) {
     var statuses = window.parent.Ts.Cache.getNextStatuses(StatusId);
-
-    console.log(statuses);
-
-
     _ticketCurrStatus = StatusId;
     if ($('#ticket-status').length) {
         $("#ticket-status").selectize({
@@ -4367,7 +4363,7 @@ function CreateHandleBarHelpers() {
         //if (this.item.OrganizationID != '1078') { return; }
         var ticketID = this.item.TicketID;
         var actionID = this.item.RefID;
-        var output = window.parent.Ts.Services.TicketPage.WatsonAction(ticketID, actionID, function(result) {
+        var output = window.parent.Ts.Services.WatsonTickets.Action(ticketID, actionID, function(result) {
             if (result != 'negative' && result != 'nothing' && result != 'hidden') {
                 var data = jQuery.parseJSON(result);
                 var sentiments = {
@@ -5785,24 +5781,6 @@ var SetSolved = function(ResolvedID) {
     }
 };
 
-function WatsonTicketField(ticketid) {
-    window.parent.Ts.Services.TicketPage.WatsonTicket(ticketid, function(result) {
-        if (result != 'negative' && result != 'nothing' && result != 'hidden') {
-            var data = jQuery.parseJSON(result);
-            var display = [];
-            display.push(data.TicketSentimentScore + " - ");
-            if (data.Sad) display.push("Sad");
-            if (data.Frustrated) display.push("Frustrated");
-            if (data.Satisfied) display.push("Satisfied");
-            if (data.Excited) display.push("Excited");
-            if (data.Polite) display.push("Polite");
-            if (data.Impolite) display.push("Impolite");
-            if (data.Sympathetic) display.push("Sympathetic");
-            $('#ticket-Sentiment').append(display.join(' '));
-        }
-    });
-}
-
 function ticketmenu() {
     var width = $('#menu-container').width();
     // $('#ticketmenu-container').css('width',width);
@@ -5921,7 +5899,6 @@ function Unsubscribe() {
 function taskCheckBox(id, status) {
     document.getElementById('task-' + id).checked = (status) ? true : false;
 }
-
 
 // Invalid Ticket Status.
 function invalidStatus(StatusId) {

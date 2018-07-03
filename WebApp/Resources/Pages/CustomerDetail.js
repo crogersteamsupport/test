@@ -2232,7 +2232,7 @@ $(document).ready(function () {
 
     function LoadNotes() {
         if (_mainFrame.Ts.System.Organization.UseProductFamilies) {
-            _mainFrame.Ts.Services.Customers.LoadNotesByUserRights(organizationID, _mainFrame.Ts.ReferenceTypes.Organizations, _isParentView, organizationID, function (note) {
+            _mainFrame.Ts.Services.Customers.LoadNotesByUserRights(organizationID, _mainFrame.Ts.ReferenceTypes.Organizations, _isParentView, null, function (note) {
                 $('#tblNotes tbody').empty();
                 var count = (note) ? note.length : 0;
                 $('#a-notes').text('Activities (' + count + ')');
@@ -2379,12 +2379,6 @@ $(document).ready(function () {
     }
 
     var ellipseString = function (text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
-
-    _mainFrame.Ts.Services.Customers.GetOrganizationSentiment(organizationID, function (e) {
-        if (e.length > 0) {
-            $('#organizationSentiment').show().find('.box-content').text("Score: " + e);
-        }
-    });
 
     _mainFrame.Ts.Services.Customers.GetOrganizationTickets2(organizationID, 0, _isParentView, function (e) {
         $('#openTicketCount').text("Open Tickets: " + e);
@@ -3249,6 +3243,10 @@ $(document).ready(function () {
             });
         }
     });
+
+
+    WatsonCustomer(organizationID);
+
 });
 
 var initEditor = function (element, init) {
@@ -4013,29 +4011,7 @@ function convertToValidDate(val) {
     if (val == "")
         return value;
 
-    if (_dateFormat.indexOf("M") != 0) {
-        var dateArr = val.replace(/\./g, '/').replace(/-/g, '/').split('/');
-        if (_dateFormat.indexOf("D") == 0)
-            var day = dateArr[0];
-        if (_dateFormat.indexOf("Y") == 0)
-            var year = dateArr[0];
-        if (_dateFormat.indexOf("M") == 3 || _dateFormat.indexOf("M") == 5)
-            var month = dateArr[1];
-
-        var timeSplit = dateArr[2].split(' ');
-        if (_dateFormat.indexOf("Y") == 6)
-            var year = timeSplit[0];
-        else
-            var day = timeSplit[0];
-
-        var theTime = timeSplit[1];
-
-        var formattedDate = month + "/" + day + "/" + year;
-        value = parent.Ts.Utils.getMsDate(formattedDate);
-        return formattedDate;
-    }
-    else
-        return val;
+    return moment(val, _dateFormat).format('MM/DD/YYYY');
 }
 
 function convertToValidDateTime(val) {
