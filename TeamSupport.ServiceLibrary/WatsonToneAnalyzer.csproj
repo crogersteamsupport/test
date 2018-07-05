@@ -95,6 +95,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="linq\TicketSentiment.cs" />
+    <Compile Include="RebuildTicketSentimentsTable.cs" />
     <Compile Include="ToneAnalysisMain.cs" />
     <Compile Include="linq\ToneSentiment.cs" />
     <Compile Include="WatsonEventLog.cs" />

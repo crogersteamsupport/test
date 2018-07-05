@@ -412,11 +412,13 @@ function SetupTicketProperties() {
     }
 
     $('#ticket-type').change(function (e) {
+        CacheCurrentCustomValues();  // cache the current custom values
         SetupStatusField();
         showCustomFields();
         _lastTicketTypeID = $(this).val();
         AppendTicketTypeTemplate(_lastTicketTypeID);
         createCustomFields();   // ticket type changed - reload the custom fields
+        AppendProductMatchingCustomFields();    // also reload the product custom fields
     });
 
     //Status
@@ -495,6 +497,51 @@ function SetupTicketProperties() {
 
 };
 
+var _customValuesDictionary = new Object();
+
+function UpdateValueFromCache(field) {
+    var value = _customValuesDictionary[field.Name];
+    if ((field.Value == null) && (value != null))
+        field.Value = value;
+}
+
+function CacheCurrentCustomValues() { GetCustomValues(); }
+
+// copied from SaveTicket()
+function GetCustomValues() {
+    // Custom Values
+    var customValues = new Array();
+    $('.custom-field:visible').each(function () {
+        var data = $(this).data('field');
+        var field = new Object();
+        field.CustomFieldID = data.CustomFieldID;
+        switch (data.FieldType) {
+            case parent.Ts.CustomFieldType.Boolean:
+                field.Value = $(this).find('input').prop('checked');
+                break;
+            case parent.Ts.CustomFieldType.PickList:
+                field.Value = $(this).find('select').val();
+                break;
+            case parent.Ts.CustomFieldType.Time:
+                var text = $(this).find('a').text();
+                var value = parent.Ts.Utils.getMsDate("1/1/1900 " + text);
+                field.Value = text == null ? null : value.toUTCString();
+                break;
+            case parent.Ts.CustomFieldType.Date:
+            case parent.Ts.CustomFieldType.DateTime:
+                var text = $(this).find('a').text();
+                var value = parent.Ts.Utils.getMsDate(text);
+                field.Value = text == null ? null : value.toUTCString();
+                break;
+            default:
+                field.Value = $(this).find('input').val();
+        }
+        customValues.push(field);
+        _customValuesDictionary[data.Name] = field.Value;   // preserve current values across ticket types
+    });
+    return customValues;
+}
+
 function SaveTicket() {
     if ($("#recorder").length == 0) {
         isFormValid(function (isValid) {
@@ -530,34 +577,7 @@ function SaveTicket() {
                 info.TimeSpent = timeSpent;
 
                 // Custom Values
-                info.Fields = new Array();
-                $('.custom-field:visible').each(function () {
-                    var data = $(this).data('field');
-                    var field = new Object();
-                    field.CustomFieldID = data.CustomFieldID;
-                    switch (data.FieldType) {
-                        case parent.Ts.CustomFieldType.Boolean:
-                            field.Value = $(this).find('input').prop('checked');
-                            break;
-                        case parent.Ts.CustomFieldType.PickList:
-                            field.Value = $(this).find('select').val();
-                            break;
-                        case parent.Ts.CustomFieldType.Time:
-                            var text = $(this).find('a').text();
-                            var value = parent.Ts.Utils.getMsDate("1/1/1900 " + text);
-                            field.Value = text == null ? null : value.toUTCString();
-                            break;
-                        case parent.Ts.CustomFieldType.Date:
-                        case parent.Ts.CustomFieldType.DateTime:
-                            var text = $(this).find('a').text();
-                            var value = parent.Ts.Utils.getMsDate(text);
-                            field.Value = text == null ? null : value.toUTCString();
-                            break;
-                        default:
-                            field.Value = $(this).find('input').val();
-                    }
-                    info.Fields[info.Fields.length] = field;
-                });
+                info.Fields = GetCustomValues();
 
                 // Associated Tickets
                 info.ChildTickets = new Array();
@@ -1925,6 +1945,41 @@ function AddAssociatedTickets(ticketid, IsParent) {
     });
 };
 
+function AddCustomField(field, parentContainer, loadConditionalFields) {
+    try {
+        UpdateValueFromCache(field);     // preserve current values across ticket types
+        switch (field.FieldType) {
+            case parent.Ts.CustomFieldType.Text:
+                AddCustomFieldEdit(field, parentContainer);
+                break;
+            case parent.Ts.CustomFieldType.Date:
+                AddCustomFieldDate(field, parentContainer);
+                break;
+            case parent.Ts.CustomFieldType.Time:
+                AddCustomFieldTime(field, parentContainer);
+                break;
+            case parent.Ts.CustomFieldType.DateTime:
+                AddCustomFieldDateTime(field, parentContainer);
+                break;
+            case parent.Ts.CustomFieldType.Boolean:
+                AddCustomFieldBool(field, parentContainer);
+                break;
+            case parent.Ts.CustomFieldType.Number:
+                AddCustomFieldNumber(field, parentContainer);
+                break;
+            case parent.Ts.CustomFieldType.PickList:
+                AddCustomFieldSelect(field, parentContainer, loadConditionalFields);
+                break;
+        }
+    }
+    catch (err) {
+        var errorString = '1001 NewTicket.js createCustomFields   FieldType: ' + field.FieldType + '  CustomFieldID: ' + field.CustomFieldID + ' ::  Exception Properties: ';
+        for (var property in err) { errorString += property + ': ' + err[property] + '; '; }
+        parent.Ts.Services.System.LogException(err.message, errorString);
+    }
+
+}
+
 function createCustomFields() {
     var ticketTypeID = $('#ticket-type').val(); // load only the custom fields for this ticket type
     parent.Ts.Services.CustomFields.GetParentCustomFields(parent.Ts.ReferenceTypes.Tickets, ticketTypeID, function (result) {
@@ -1935,35 +1990,7 @@ function createCustomFields() {
         _parentFields = [];
         for (var i = 0; i < result.length; i++) {
             if (!result[i].CustomFieldCategoryID) {
-                try {
-                    switch (result[i].FieldType) {
-                        case parent.Ts.CustomFieldType.Text:
-                            AddCustomFieldEdit(result[i], parentContainer);
-                            break;
-                        case parent.Ts.CustomFieldType.Date:
-                            AddCustomFieldDate(result[i], parentContainer);
-                            break;
-                        case parent.Ts.CustomFieldType.Time:
-                            AddCustomFieldTime(result[i], parentContainer);
-                            break;
-                        case parent.Ts.CustomFieldType.DateTime:
-                            AddCustomFieldDateTime(result[i], parentContainer);
-                            break;
-                        case parent.Ts.CustomFieldType.Boolean:
-                            AddCustomFieldBool(result[i], parentContainer);
-                            break;
-                        case parent.Ts.CustomFieldType.Number:
-                            AddCustomFieldNumber(result[i], parentContainer);
-                            break;
-                        case parent.Ts.CustomFieldType.PickList:
-                            AddCustomFieldSelect(result[i], parentContainer, true);
-                            break;
-                    }
-                } catch (err) {
-                    var errorString = '1001 NewTicket.js createCustomFields   FieldType: ' + result[i].FieldType + '  CustomFieldID: ' + result[i].CustomFieldID + ' ::  Exception Properties: ';
-                    for (var property in err) { errorString += property + ': ' + err[property] + '; '; }
-                    parent.Ts.Services.System.LogException(err.message, errorString);
-                }
+                AddCustomField(result[i], parentContainer, true);
             }
         }
         parentContainer.show();
@@ -1993,32 +2020,7 @@ var appendCategorizedCustomFields = function (fields, className) {
                 var field = fields[i];
                 if (field.CustomFieldCategoryID == categories[j].CustomFieldCategoryID) {
                     catWrap.show();
-                    //TODO: need container for categories.
-                    // var container = $('.category-' + categories[j].CustomFieldCategoryID);
-                    switch (field.FieldType) {
-                        case parent.Ts.CustomFieldType.Text:
-                            AddCustomFieldEdit(field, catWrap);
-                            break;
-                        case parent.Ts.CustomFieldType.Date:
-                            AddCustomFieldDate(field, catWrap);
-                            break;
-                        case parent.Ts.CustomFieldType.Time:
-                            AddCustomFieldTime(field, catWrap);
-                            break;
-                        case parent.Ts.CustomFieldType.DateTime:
-                            AddCustomFieldDateTime(field, catWrap);
-                            break;
-                        case parent.Ts.CustomFieldType.Boolean:
-                            AddCustomFieldBool(field, catWrap);
-                            break;
-                        case parent.Ts.CustomFieldType.Number:
-                            AddCustomFieldNumber(field, catWrap);
-                            break;
-                        case parent.Ts.CustomFieldType.PickList:
-                            AddCustomFieldSelect(field, catWrap, false);
-                            break;
-                        default:
-                    }
+                    AddCustomField(field, catWrap, false);
                 }
             }
         }
@@ -2482,30 +2484,7 @@ var appendMatchingParentValueFields = function (container, field, value) {
                 var field = result[i];
                 var div = $('<div>').addClass('custom-field').data('field', field);
                 container.append(div);
-                switch (field.FieldType) {
-                    case parent.Ts.CustomFieldType.Text:
-                        AddCustomFieldEdit(field, div);
-                        break;
-                    case parent.Ts.CustomFieldType.Date:
-                        AddCustomFieldDate(field, div);
-                        break;
-                    case parent.Ts.CustomFieldType.Time:
-                        AddCustomFieldTime(field, div);
-                        break;
-                    case parent.Ts.CustomFieldType.DateTime:
-                        AddCustomFieldDateTime(field, div);
-                        break;
-                    case parent.Ts.CustomFieldType.Boolean:
-                        AddCustomFieldBool(field, div);
-                        break;
-                    case parent.Ts.CustomFieldType.Number:
-                        AddCustomFieldNumber(field, div);
-                        break;
-                    case parent.Ts.CustomFieldType.PickList:
-                        AddCustomFieldSelect(field, div, true);
-                        break;
-                    default:
-                }
+                AddCustomField(field, div, true);
             }
         });
     }
@@ -2518,40 +2497,9 @@ function AppendProductMatchingCustomFields() {
     if (productID == undefined || productID == "") productID = "-1";
     parent.Ts.Services.CustomFields.GetProductMatchingCustomFields(parent.Ts.ReferenceTypes.Tickets, _lastTicketTypeID, productID, function (result) {
         var container = $('#ticket-group-custom-fields');
-
         for (var i = 0; i < result.length; i++) {
             if (!result[i].CustomFieldCategoryID) {
-                try {
-                    var field = result[i];
-                    switch (field.FieldType) {
-                        case parent.Ts.CustomFieldType.Text:
-                            AddCustomFieldEdit(field, container);
-                            break;
-                        case parent.Ts.CustomFieldType.Date:
-                            AddCustomFieldDate(field, container);
-                            break;
-                        case parent.Ts.CustomFieldType.Time:
-                            AddCustomFieldTime(field, container);
-                            break;
-                        case parent.Ts.CustomFieldType.DateTime:
-                            AddCustomFieldDateTime(field, container);
-                            break;
-                        case parent.Ts.CustomFieldType.Boolean:
-                            AddCustomFieldBool(field, container);
-                            break;
-                        case parent.Ts.CustomFieldType.Number:
-                            AddCustomFieldNumber(field, container);
-                            break;
-                        case parent.Ts.CustomFieldType.PickList:
-                            AddCustomFieldSelect(field, container, false);
-                            break;
-                        default:
-                    }
-                } catch (err) {
-                    var errorString = '1001 NewTicket.js createCustomFields   FieldType: ' + result[i].FieldType + '  CustomFieldID: ' + result[i].CustomFieldID + ' ::  Exception Properties: ';
-                    for (var property in err) { errorString += property + ': ' + err[property] + '; '; }
-                    parent.Ts.Services.System.LogException(err.message, errorString);
-                }
+                AddCustomField(result[i], container, false);
             }
         }
         appendCategorizedCustomFields(result, null);
