@@ -105,7 +105,7 @@ namespace TeamSupport.Data
     
     public DateTime? DateOccurred
     {
-      get { return Row["DateOccurred"] != DBNull.Value ? DateToUtc((DateTime?)Row["DateOccurred"]) : null; }
+      get { return Row["DateOccurred"] != DBNull.Value ? ((DateTime?)Row["DateOccurred"]) : null; }
       set { Row["DateOccurred"] = CheckValue("DateOccurred", value); }
     }
     
