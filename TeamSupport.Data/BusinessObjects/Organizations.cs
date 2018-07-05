@@ -2589,16 +2589,17 @@ ORDER BY
             filePaths.LoadThemAll();
             foreach (FilePath filePath in filePaths)
             {
-                if (Directory.Exists(filePath.Value))
+                string path = Path.Combine(Path.Combine(filePath.Value, "Organizations"), organizationID.ToString());
+                if (Directory.Exists(path))
                 {
                     try
                     {
-                        Directory.Delete(filePath.Value, true);
+                        Directory.Delete(path, true);
                     }
                     catch (Exception)
                     {
-                    }
 
+                    }
                 }
             }
         }
