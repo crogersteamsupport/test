@@ -2380,12 +2380,6 @@ $(document).ready(function () {
 
     var ellipseString = function (text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
 
-    _mainFrame.Ts.Services.Customers.GetOrganizationSentiment(organizationID, function (e) {
-        if (e.length > 0) {
-            $('#organizationSentiment').show().find('.box-content').text("Score: " + e);
-        }
-    });
-
     _mainFrame.Ts.Services.Customers.GetOrganizationTickets2(organizationID, 0, _isParentView, function (e) {
         $('#openTicketCount').text("Open Tickets: " + e);
     });
@@ -3249,6 +3243,10 @@ $(document).ready(function () {
             });
         }
     });
+
+
+    WatsonCustomer(organizationID);
+
 });
 
 var initEditor = function (element, init) {

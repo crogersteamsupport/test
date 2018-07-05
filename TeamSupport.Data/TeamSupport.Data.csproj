@@ -354,6 +354,7 @@
     <Compile Include="BusinessObjects\WatercoolerLikes.cs" />
     <Compile Include="BusinessObjects\WatercoolerMsg.cs" />
     <Compile Include="BusinessObjects\WaterCoolerView.cs" />
+    <Compile Include="BusinessObjects\WatsonScores.cs" />
     <Compile Include="BusinessObjects\WebHooksPending.cs" />
     <Compile Include="BusinessObjects\WebHooksToken.cs" />
     <Compile Include="Classes\AccountClone.cs" />
