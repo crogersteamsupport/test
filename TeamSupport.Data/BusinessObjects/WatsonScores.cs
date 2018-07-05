@@ -22,7 +22,7 @@ namespace TeamSupport.Data {
                         command.CommandType  = CommandType.Text;
                         command.CommandText  = "SELECT ActionSentimentScores.SentimentID, COUNT(ActionSentimentScores.ActionSentimentScoreID) AS count, AVG(ActionSentimentScores.SentimentScore) AS average FROM dbo.ActionSentimentScores ";
                         command.CommandText += "INNER JOIN dbo.ActionSentiments ON ActionSentiments.ActionSentimentID = ActionSentimentScores.ActionSentimentID ";
-                        command.CommandText += "WHERE ActionSentiments.TicketID = @TicketID AND ActionSentiments.IsAgent = 0";
+                        command.CommandText += "WHERE ActionSentiments.TicketID = @TicketID AND ActionSentiments.IsAgent = 0 AND ActionSentimentScores.SentimentID > 0 ";
                         command.CommandText += "GROUP BY ActionSentimentScores.SentimentID ";
                         command.CommandText += "ORDER BY count DESC ";
                         command.CommandText += "FOR JSON PATH, ROOT('summary') ";

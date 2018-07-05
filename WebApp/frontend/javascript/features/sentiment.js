@@ -12,7 +12,7 @@ function getColor(value){
     //value from 0 to 1
     if (value > 0) {
         var hue = ((1 - value) * 120).toString(10);
-        return ["hsl(",hue,",100%,50%)"].join("");
+        return ["hsl(",hue,",100%,70%)"].join("");
     }
 }
 
@@ -21,7 +21,7 @@ function WatsonTicket(ticketid) {
         if (result != 'negative' && result != 'nothing' && result != 'hidden') {
             var data = jQuery.parseJSON(result);
             var percentage = data.TicketSentimentScore / 1000;
-            var reverse = 1 - percentage;
+            var reverse = 1 - percentage; 
             var display = parseInt(percentage * 100);
             var color = getColor(reverse);
             $('#health-ticket').css({ 'background-color':color }).css({ 'text-align':'left' });
