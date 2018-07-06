@@ -22,6 +22,8 @@ namespace TeamSupport.CDI.linq
         [Column]
         public int TicketID;
         [Column]
+        public bool IsAgent;
+        [Column]
         public double AverageActionSentiment;
         [Column]
         public int ActionSentimentCount;

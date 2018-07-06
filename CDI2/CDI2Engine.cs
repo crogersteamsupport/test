@@ -138,8 +138,14 @@ namespace TeamSupport.CDI
                 using (DataContext db = new DataContext(connection))
                 {
                     //db.Log = CDIEventLog.Instance;
+                    Table<OrganizationSentiment> table = db.GetTable<OrganizationSentiment>();
+                    OrganizationSentiment.Initialize(db);
                     foreach (Customer customer in _customers)
-                        customer.Save(db);
+                        customer.Save(db, table);
+                    db.SubmitChanges();
+
+                    // only keep the records for organizations with data
+                    OrganizationSentiment.DeleteRemainder(db);
                     db.SubmitChanges();
                 }
             }
