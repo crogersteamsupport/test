@@ -35,18 +35,15 @@ namespace WatsonToneAnalyzer
         public void Commit() { _db.Transaction.Commit(); }
         public void Rollback() { _db.Transaction.Rollback(); }
 
-        public void RecordWatsonResults(Utterance utterance, ActionToAnalyze actionToAnalyze)
+        public void RecordWatsonResults(ActionToAnalyze actionToAnalyze)
         {
-            List<Tones> tones = utterance.tones;
-            if (tones == null)
-                throw new Exception("Error: no data returned from Watson");
-
             // insert ActionSentiment
             ActionSentiment sentiment = InsertActionSentiment(_db, actionToAnalyze);
             _db.SubmitChanges();    // get the DB generated ID
             int actionSentimentID = sentiment.ActionSentimentID;
 
             // insert child records - ActionSentimentScore(s)
+            List<Tones> tones = actionToAnalyze.GetTones();
             List<ActionSentimentScore> scores = InsertSentimentScores(tones, _db, actionSentimentID);
 
             // update the corresponding ticket sentiment
