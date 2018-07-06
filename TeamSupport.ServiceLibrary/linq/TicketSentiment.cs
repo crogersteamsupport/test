@@ -96,18 +96,9 @@ namespace WatsonToneAnalyzer
                 double actionScore = Convert.ToDouble(ToneSentiment.ToneSentiments[maxScore.SentimentID].SentimentMultiplier.Value) * Convert.ToDouble(maxScore.SentimentScore);
                 actionScore = 500 * actionScore + 500;
 
-                // submit TicketSentiment and update OrganizationSentiment
+                // submit TicketSentiment
                 TicketSentiment score = null;
-                if (CreateTicketSentiment(db, actionToAnalyze, actionScore, out score))
-                {
-                    // new ticket
-                    OrganizationSentiment.AddTicket(score, db);
-                }
-                else
-                {
-                    UpdateAverageSentiment(db, actionScore, score);
-                }
-
+                CreateTicketSentiment(db, actionToAnalyze, actionScore, out score);
                 score.TicketSentimentScore = (int)Math.Round(score.AverageActionSentiment);
                 score.SetSentimentID(maxScore.SentimentID);
                 db.SubmitChanges();
@@ -117,16 +108,6 @@ namespace WatsonToneAnalyzer
                 WatsonEventLog.WriteEntry("Exception caught at select from ACtionsToAnalyze or HttpPOST:", e2);
                 Console.WriteLine(e2.ToString());
             }
-        }
-
-        private static void UpdateAverageSentiment(DataContext db, double actionScore, TicketSentiment score)
-        {
-            // new action on existing ticket
-            int count = score.ActionSentimentCount;
-            double oldScore = score.AverageActionSentiment;
-            score.AverageActionSentiment = (count * score.AverageActionSentiment + actionScore) / (count + 1);
-            score.ActionSentimentCount = count + 1;
-            OrganizationSentiment.UpdateTicket(score, oldScore, db);
         }
 
         static bool CreateTicketSentiment(DataContext db, ActionToAnalyze actionToAnalyze, double actionScore, out TicketSentiment score)
