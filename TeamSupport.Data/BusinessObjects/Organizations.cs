@@ -2857,7 +2857,6 @@ ORDER BY
             }
             string description = "Merged '" + companyName + "' tickets.";
             ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
-            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.TicketID)winningOrganizationID, description);
         }
 
         public void MergeUpdateNotes(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
@@ -2880,7 +2879,6 @@ ORDER BY
             }
             string description = "Merged '" + companyName + "' Notes.";
             ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
-            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Notes, winningOrganizationID, description);
         }
 
         public void MergeUpdateFiles(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
@@ -2911,7 +2909,6 @@ ORDER BY
                 attachments.Save();
                 string description = "Merged '" + companyName + "' Files.";
                 ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
-                ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Attachments, winningOrganizationID, description);
             }
         }
 
@@ -2944,7 +2941,6 @@ ORDER BY
             }
             string description = "Merged '" + companyName + "' Products.";
             ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
-            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Products, winningOrganizationID, description);
         }
 
         public void MergeUpdateAssets(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
@@ -2985,7 +2981,6 @@ ORDER BY
             }
             string description = "Merged '" + companyName + "' Assets.";
             ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
-            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, winningOrganizationID, description);
         }
 
         public void MergeUpdateWaterCoolerMessages(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
@@ -3013,7 +3008,6 @@ ORDER BY
             }
             string description = "Merged '" + companyName + "' WaterCoolerMessages.";
             ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
-            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.WaterCooler, winningOrganizationID, description);
         }
 
         public void MergeUpdateRatings(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
@@ -3036,7 +3030,6 @@ ORDER BY
             }
             string description = "Merged '" + companyName + "' AgentRatings.";
             ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
-            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.AgentRating, winningOrganizationID, description);
         }
 
         public void MergeUpdateCalendar(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
@@ -3077,7 +3070,6 @@ ORDER BY
             }
             string description = "Merged '" + companyName + "' CalendarEvents.";
             //ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
-            //ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType., winningOrganizationID, description);
         }
 
         public void MergeUpdateCustomValues(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
@@ -3182,7 +3174,6 @@ ORDER BY
 
             string description = "Merged '" + companyName + "' CustomValues.";
             ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
-            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.CustomValues, winningOrganizationID, description);
         }
 
         public void DeleteRecentlyViewItems(int losingOrganizationID)

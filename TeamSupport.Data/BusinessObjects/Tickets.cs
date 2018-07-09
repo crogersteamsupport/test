@@ -3328,7 +3328,6 @@ AND
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Organizations";
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)newticketID, description);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Organizations, newticketID, description);
         }
 
         public void MergeUpdateTags(int oldticketID, int newticketID)

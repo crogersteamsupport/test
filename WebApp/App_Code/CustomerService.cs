@@ -4153,7 +4153,6 @@ SELECT
 
                     string description = "Merged '" + lossingContactNameForHistoryEntries + "' Phone Numbers.";
                     ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.UserID)winningUserID, description);
-                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.PhoneNumbers, winningUserID, description);
                 }
             }
             catch (Exception e)
@@ -4194,7 +4193,6 @@ SELECT
 
                     string description = "Merged '" + lossingContactNameForHistoryEntries + "' Addresses.";
                     ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.UserID)winningUserID, description);
-                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.PhoneNumbers, winningUserID, description);
                 }
             }
             catch (Exception e)

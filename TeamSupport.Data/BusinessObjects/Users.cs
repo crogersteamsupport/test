@@ -1737,7 +1737,6 @@ SET IDENTITY_INSERT Users Off
             }
             string description = "Merged '" + contactName + "' Actions.";
             ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.UserID)winningUserID, description);
-            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Actions, winningUserID, description);
         }
 
         public void MergeUpdateTickets(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
@@ -1757,7 +1756,6 @@ SET IDENTITY_INSERT Users Off
 
 			  string description = "Merged '" + contactName + "' tickets.";
 			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.UserID)winningUserID, description);
-			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.TicketID)winningUserID, description);
 		  }
 
 		  public void MergeUpdateNotes(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
@@ -1780,7 +1778,6 @@ SET IDENTITY_INSERT Users Off
 			  }
 			  string description = "Merged '" + contactName + "' Notes.";
 			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.UserID)winningUserID, description);
-			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Notes, winningUserID, description);
 		  }
 
 		  public void MergeUpdateFiles(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
@@ -1811,7 +1808,6 @@ SET IDENTITY_INSERT Users Off
 				  attachments.Save();
 				  string description = "Merged '" + contactName + "' Files.";
 				  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.UserID)winningUserID, description);
-				  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Attachments, winningUserID, description);
 			  }
 		  }
 
@@ -1863,7 +1859,6 @@ SET IDENTITY_INSERT Users Off
 			  }
 			  string mergeDescription = "Merged '" + contactName + "' Products.";
 			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.UserID)winningUserID, mergeDescription);
-			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Products, winningUserID, mergeDescription);
 		  }
 
 		  public void MergeUpdateAssets(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
@@ -1904,7 +1899,6 @@ SET IDENTITY_INSERT Users Off
 			  }
 			  string description = "Merged '" + contactName + "' Assets.";
 			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.UserID)winningUserID, description);
-			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, winningUserID, description);
 		  }
 
 		  public void MergeUpdateRatings(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
@@ -1928,7 +1922,6 @@ SET IDENTITY_INSERT Users Off
 			  }
 			  string description = "Merged '" + contactName + "' AgentRatings.";
 			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.UserID)winningUserID, description);
-			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.AgentRating, winningUserID, description);
 		  }
 
 		  public void MergeUpdateCustomValues(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
@@ -2033,7 +2026,6 @@ SET IDENTITY_INSERT Users Off
 
 			  string description = "Merged '" + contactName + "' CustomValues.";
 			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.UserID)winningUserID, description);
-			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.CustomValues, winningUserID, description);
 		  }
 
 		  public void DeleteRecentlyViewItems(int losingUserID)
