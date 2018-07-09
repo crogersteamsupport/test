@@ -61,17 +61,22 @@ function WatsonTicketField(ticketid) {
     window.parent.Ts.Services.WatsonTickets.Ticket(ticketid, function(result) {
         if (result != 'negative' && result != 'nothing' && result != 'hidden') {
             var data = jQuery.parseJSON(result);
-            var display = [];
-            display.push(data.TicketSentimentScore + "% - ");
-            // display.push("<strong>Emotions</strong><br>");
-            if (data.Sad) display.push("Sad<br>");
-            if (data.Frustrated) display.push("Frustrated<br>");
-            if (data.Satisfied) display.push("Satisfied<br>");
-            if (data.Excited) display.push("Excited<br>");
-            if (data.Polite) display.push("Polite<br>");
-            if (data.Impolite) display.push("Impolite<br>");
-            if (data.Sympathetic) display.push("Sympathetic<br>");
-            $('#ticket-Sentiment').append(display.join(' '));
+
+            var percentage = data.TicketSentimentScore / 1000;
+            var reverse = 1 - percentage;
+            var display = parseInt(percentage * 100);
+
+            var output = [];
+            output.push(display + "% - ");
+            // output.push("<strong>Emotions</strong><br>");
+            if (data.Sad) output.push("Sad<br>");
+            if (data.Frustrated) output.push("Frustrated<br>");
+            if (data.Satisfied) output.push("Satisfied<br>");
+            if (data.Excited) output.push("Excited<br>");
+            if (data.Polite) output.push("Polite<br>");
+            if (data.Impolite) output.push("Impolite<br>");
+            if (data.Sympathetic) output.push("Sympathetic<br>");
+            $('#ticket-Sentiment').append(output.join(' '));
         }
     });
 }
