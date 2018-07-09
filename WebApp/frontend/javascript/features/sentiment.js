@@ -67,7 +67,7 @@ function WatsonTicketField(ticketid) {
             var display = parseInt(percentage * 100);
 
             var output = [];
-            output.push(display + "% - ");
+            output.push(data.TicketSentimentScore + " - ");
             // output.push("<strong>Emotions</strong><br>");
             if (data.Sad) output.push("Sad<br>");
             if (data.Frustrated) output.push("Frustrated<br>");
