@@ -49,7 +49,7 @@ namespace TeamSupport.CDI
 
         void Insert(int i, Metrics interval)
         {
-            // note that casting metric to (int) would result in the hex values assigned in the enum
+            // note that casting metric to (int) would incorrectly result in the hex values assigned in the enum
             int m = 0;
             foreach (EMetrics metric in Enum.GetValues(typeof(EMetrics)))
                 _normalizedIntervals[m++][i] = interval.GetAsCDIPercentile(metric);
@@ -66,7 +66,7 @@ namespace TeamSupport.CDI
             for (int mask = 1; mask < MaxMask; ++mask)
             {
                 _weights = new linq.CDI_Settings();
-                _weights.Set(mask);
+                _weights.SetEqualWeights(mask);
 
                 int i = 0;
                 foreach (Client client in _clients)

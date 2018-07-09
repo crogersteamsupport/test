@@ -27,6 +27,7 @@ namespace TeamSupport.CDI
         {
             // summarize the data in IntervalTimeSpanInDays (30) day intervals
             _organizationAnalysis.GenerateIntervals();
+            //Metrics.Write(_organizationAnalysis.Intervals);
         }
 
         Metrics _default = new Metrics();

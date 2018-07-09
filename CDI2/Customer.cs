@@ -16,7 +16,6 @@ namespace TeamSupport.CDI
         OrganizationAnalysis _organizationAnalysis;
         public HashSet<Client> _clients;
         MetricPercentiles _percentiles;
-        //ICDIStrategy _iCdiStrategy;
 
         public Customer(OrganizationAnalysis organizationAnalysis)
         {
@@ -77,11 +76,9 @@ namespace TeamSupport.CDI
                 using (DataContext db = new DataContext(connection))
                 {
                     //db.Log = CDIEventLog.Instance;
-                    Table<linq.CDI_Settings> table = db.GetTable<linq.CDI_Settings>();
+                    db.ObjectTrackingEnabled = false;   // read-only
+                    Table<CDI_Settings> table = db.GetTable<CDI_Settings>();
                     _weights = table.Where(s => s.OrganizationID==organizationID).FirstOrDefault();
-                    if(_weights != null)
-                        _weights.LastCompute = DateRange.EndTimeNow;
-                    db.SubmitChanges();
                 }
             }
             catch (Exception e)
