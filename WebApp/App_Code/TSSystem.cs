@@ -102,7 +102,7 @@ namespace TSWebServices
 
             try
             {
-                ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Users, TSAuthentication.UserID, "Logged out");
+                ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, (ActionLogs.UserID)TSAuthentication.UserID, "Logged out");
                 TSEventLog.WriteEvent(TSEventLogEventType.LogoutSuccess, HttpContext.Current.Request, TSAuthentication.GetLoginUser().GetUser(), TSAuthentication.GetLoginUser().GetOrganization());
             }
             catch (Exception)
@@ -715,7 +715,7 @@ namespace TSWebServices
                     logdescription = String.Format("Added Reminder for {0}", reminderUser.FirstLastName);
 
                 ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Tickets, refID, logdescription);
-                ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Users, userID, logdescription);
+                ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, (ActionLogs.UserID)userID, logdescription);
 
 
             }

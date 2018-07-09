@@ -87,7 +87,7 @@ namespace TeamSupport.Data
         description = description + Tickets.GetTicketLink(ticket);
       }
       ActionLogs.AddActionLog(loginUser, ActionLogType.Delete, refType, refID, description);
-      ActionLogs.AddActionLog(loginUser, ActionLogType.Delete, ReferenceType.Users, userID, description);
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Delete, (ActionLogs.UserID)userID, description);
     }
 
     public static void AddSubscription(LoginUser loginUser, int userID, ReferenceType refType, int refID)
@@ -116,7 +116,7 @@ namespace TeamSupport.Data
       }
 
       ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, refType, refID, description);
-      ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, (ActionLogs.UserID)userID, description);
     }
 
 		public static List<int> GetByOrganizationId(LoginUser loginUser, int organizationId)

@@ -1288,7 +1288,7 @@ AND ts.IsClosed = 0";
                 description = "Reassigned " + GetTicketLink(ticket) + " from user '" + name1 + "' to user '" + name2 + "'";
                 ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
                 if (oldTicketView.UserID != null)
-                    ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, (int)oldTicketView.UserID, description);
+                    ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.UserID)(int)oldTicketView.UserID, description);
             }
 
             // CHECK IF TICKET CLOSED
@@ -1885,7 +1885,7 @@ AND ts.IsClosed = 0";
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, ticketID);
             string description = "Added '" + user.FirstName + " " + user.LastName + "' to the contact list for " + GetTicketLink(ticket);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticketID, description);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.UserID)userID, description);
         }
 
         public void AddContact(int userID, int ticketID, int importFileID)
@@ -1916,7 +1916,7 @@ AND ts.IsClosed = 0";
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, ticketID);
             string description = "Added '" + user.FirstName + " " + user.LastName + "' to the contact list for " + GetTicketLink(ticket);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticketID, description);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.UserID)userID, description);
         }
 
         public void SetUserAsSentToSalesForce(int userID, int ticketID)
@@ -2073,7 +2073,7 @@ AND ts.IsClosed = 0";
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, ticketID);
             string description = "Removed '" + user.FirstName + " " + user.LastName + "' from the contact list for " + GetTicketLink(ticket);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Tickets, ticketID, description);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Users, userID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, (ActionLogs.UserID)userID, description);
         }
 
         private void AddGridParameter(SqlCommand command, string name, int id)
@@ -3298,7 +3298,6 @@ AND
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Customers";
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);
         }
 
         public void MergeUpdateOrganizations(int oldticketID, int newticketID)
@@ -3347,7 +3346,6 @@ AND
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Tags";
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);
         }
 
         public void MergeUpdateCustomFields(int oldticketID, int newticketID)
@@ -3365,7 +3363,6 @@ AND
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Tags";
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);
         }
 
         public void MergeUpdateSubscribers(int oldticketID, int newticketID)
@@ -3382,7 +3379,6 @@ AND
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Subscribers";
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);
         }
 
         public void MergeUpdateQueuers(int oldticketID, int newticketID)
@@ -3399,7 +3395,6 @@ AND
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Queuers";
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);
         }
 
         public void MergeUpdateReminders(int oldticketID, int newticketID)
@@ -3432,7 +3427,6 @@ AND
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Reminders";
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);
         }
 
         public void MergeUpdateAssets(int oldticketID, int newticketID)
@@ -3449,7 +3443,6 @@ AND
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Assets";
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);
         }
 
         public void MergeUpdateActions(int oldticketID, int newticketID)
@@ -3466,7 +3459,6 @@ AND
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Actions";
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);
         }
 
         public void MergeUpdateRelationships(int oldticketID, int newticketID)
@@ -3512,7 +3504,6 @@ AND
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Relationships";
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);
         }
 
         public void MergeAttachments(int oldticketID, int newticketID)
@@ -3530,7 +3521,6 @@ AND
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Action Attachments";
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);
         }
 
         public void LoadFirstJiraSynced(int organizationID)
