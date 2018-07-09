@@ -21,7 +21,7 @@ function WatsonTicket(ticketid) {
         if (result != 'negative' && result != 'nothing' && result != 'hidden') {
             var data = jQuery.parseJSON(result);
             var percentage = data.TicketSentimentScore / 1000;
-            var reverse = 1 - percentage; 
+            var reverse = 1 - percentage;
             var display = parseInt(percentage * 100);
             var color = getColor(reverse);
             $('#health-ticket').css({ 'background-color':color }).css({ 'text-align':'left' });
@@ -58,10 +58,11 @@ function WatsonCustomer(organizationID) {
 }
 
 function WatsonTicketField(ticketid) {
-    window.parent.Ts.Services.TicketPage.WatsonTicket(ticketid, function(result) {
+    window.parent.Ts.Services.WatsonTickets.Ticket(ticketid, function(result) {
         if (result != 'negative' && result != 'nothing' && result != 'hidden') {
             var data = jQuery.parseJSON(result);
             var display = [];
+            display.push(data.TicketSentimentScore + "% - ");
             // display.push("<strong>Emotions</strong><br>");
             if (data.Sad) display.push("Sad<br>");
             if (data.Frustrated) display.push("Frustrated<br>");
@@ -70,7 +71,7 @@ function WatsonTicketField(ticketid) {
             if (data.Polite) display.push("Polite<br>");
             if (data.Impolite) display.push("Impolite<br>");
             if (data.Sympathetic) display.push("Sympathetic<br>");
-            $('#health-emotions').append(display.join(' '));
+            $('#ticket-Sentiment').append(display.join(' '));
         }
     });
 }
