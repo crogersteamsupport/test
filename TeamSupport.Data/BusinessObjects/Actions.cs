@@ -139,7 +139,7 @@ namespace TeamSupport.Data
         {
             Action action = (Action)Actions.GetAction(LoginUser, actionID);
             string description = "Deleted action '" + action.Name + "' from " + Tickets.GetTicketLink(LoginUser, action.TicketID);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Tickets, action.TicketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, (ActionLogs.TicketID)action.TicketID, description);
         }
 
         partial void BeforeRowEdit(Action action)
@@ -150,7 +150,7 @@ namespace TeamSupport.Data
             string actionNumber = GetActionNumber(action.TicketID, action.ActionID);
             string description = "Modified action #" + actionNumber + " on " + Tickets.GetTicketLink(LoginUser, action.TicketID) + (oldAction.IsVisibleOnPortal != action.IsVisibleOnPortal ? " - action changed is visible to = " + action.IsVisibleOnPortal : "");
             if (!this.isAdminClean)
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, action.TicketID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)action.TicketID, description);
         }
 
         private string GetActionNumber(int ticketID, int actionID)
@@ -178,7 +178,7 @@ namespace TeamSupport.Data
             {
                 description = _actionLogInstantMessage;
             }
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, description + action.Name + " to " + Tickets.GetTicketLink(LoginUser, action.TicketID));
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.TicketID)action.TicketID, description + action.Name + " to " + Tickets.GetTicketLink(LoginUser, action.TicketID));
             if (_updateChildTickets) AddChildActions(action);
         }
 

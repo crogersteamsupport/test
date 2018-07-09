@@ -445,7 +445,7 @@ AND ot.TicketID = @TicketID
             DeleteEmailPostsByTicketId(cloneTicketId);
 
             string actionLog = string.Format("{0} cloned ticket {1} into {2}.", loginUser.GetUserFullName(), this.TicketNumber, clone.TicketNumber);
-            ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+            ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, (ActionLogs.TicketID)cloneTicketId, actionLog);
 
             Actions clonedActions = new Actions(loginUser);
             Actions originalActions = new Actions(loginUser);
@@ -469,7 +469,7 @@ AND ot.TicketID = @TicketID
             catch (Exception ex)
             {
                 actionLog = string.Format("Failed to clone ticket {0} Actions into {1}.", this.TicketNumber, clone.TicketNumber);
-                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, (ActionLogs.TicketID)cloneTicketId, actionLog);
                 ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Actions");
             }
 
@@ -494,7 +494,7 @@ AND ot.TicketID = @TicketID
             catch (Exception ex)
             {
                 actionLog = string.Format("Failed to clone ticket {0} Relationships into {1}.", this.TicketNumber, clone.TicketNumber);
-                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, (ActionLogs.TicketID)cloneTicketId, actionLog);
                 ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Relationships");
             }
 
@@ -526,7 +526,7 @@ AND ot.TicketID = @TicketID
             catch (Exception ex)
             {
                 actionLog = string.Format("Failed to clone ticket {0} Contacts/Companies into {1}.", this.TicketNumber, clone.TicketNumber);
-                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, (ActionLogs.TicketID)cloneTicketId, actionLog);
                 ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Contacts/Companies");
             }
 
@@ -543,7 +543,7 @@ AND ot.TicketID = @TicketID
             catch (Exception ex)
             {
                 actionLog = string.Format("Failed to clone ticket {0} Community into {1}.", this.TicketNumber, clone.TicketNumber);
-                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, (ActionLogs.TicketID)cloneTicketId, actionLog);
                 ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Community");
             }
 
@@ -570,7 +570,7 @@ AND ot.TicketID = @TicketID
             catch (Exception ex)
             {
                 actionLog = string.Format("Failed to clone ticket {0} Tags into {1}.", this.TicketNumber, clone.TicketNumber);
-                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, (ActionLogs.TicketID)cloneTicketId, actionLog);
                 ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Tags");
             }
 
@@ -600,7 +600,7 @@ AND ot.TicketID = @TicketID
             catch (Exception ex)
             {
                 actionLog = string.Format("Failed to clone ticket {0} Custom Values into {1}.", this.TicketNumber, clone.TicketNumber);
-                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, (ActionLogs.TicketID)cloneTicketId, actionLog);
                 ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Custom Values");
             }
 
@@ -619,7 +619,7 @@ AND ot.TicketID = @TicketID
             catch (Exception ex)
             {
                 actionLog = string.Format("Failed to clone ticket {0} Subscribers into {1}.", this.TicketNumber, clone.TicketNumber);
-                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, (ActionLogs.TicketID)cloneTicketId, actionLog);
                 ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Subscribers");
             }
 
@@ -638,7 +638,7 @@ AND ot.TicketID = @TicketID
             catch (Exception ex)
             {
                 actionLog = string.Format("Failed to clone ticket {0} Queuers into {1}.", this.TicketNumber, clone.TicketNumber);
-                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, (ActionLogs.TicketID)cloneTicketId, actionLog);
                 ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Queuers");
             }
 
@@ -670,7 +670,7 @@ AND ot.TicketID = @TicketID
             catch (Exception ex)
             {
                 actionLog = string.Format("Failed to clone ticket {0} Reminders into {1}.", this.TicketNumber, clone.TicketNumber);
-                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, (ActionLogs.TicketID)cloneTicketId, actionLog);
                 ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Reminders");
             }
 
@@ -689,7 +689,7 @@ AND ot.TicketID = @TicketID
             catch (Exception ex)
             {
                 actionLog = string.Format("Failed to clone ticket {0} Assets into {1}.", this.TicketNumber, clone.TicketNumber);
-                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, (ActionLogs.TicketID)cloneTicketId, actionLog);
                 ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Assets");
             }
 
@@ -727,7 +727,7 @@ AND ot.TicketID = @TicketID
             //catch (Exception ex)
             //{
             //    actionLog = string.Format("Failed to clone ticket {0} Jira Link into {1}.", this.TicketNumber, clone.TicketNumber);
-            //    ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+            //    ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, (ActionLogs.TicketID)cloneTicketId, actionLog);
             //    ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - JiraLink");
             //}
 
@@ -795,7 +795,7 @@ AND ot.TicketID = @TicketID
             catch (Exception ex)
             {
                 actionLog = string.Format("Failed to clone ticket {0} Attachments into {1}.", this.TicketNumber, clone.TicketNumber);
-                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, (ActionLogs.TicketID)cloneTicketId, actionLog);
                 ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Attachments");
             }
 
@@ -822,7 +822,7 @@ AND ot.TicketID = @TicketID
             catch (Exception ex)
             {
                 actionLog = string.Format("Failed to clone ticket {0} Tasks into {1}.", this.TicketNumber, clone.TicketNumber);
-                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Tickets, cloneTicketId, actionLog);
+                ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, (ActionLogs.TicketID)cloneTicketId, actionLog);
                 ExceptionLogs.LogException(loginUser, ex, "Cloning Ticket", "Tickets.Clone - Tasks");
             }
 
@@ -1084,7 +1084,7 @@ AND ot.TicketID = @TicketID
             {
                 description = _actionLogInstantMessage;
             }
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticket.TicketID, description + ticket.TicketNumber.ToString());
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.TicketID)ticket.TicketID, description + ticket.TicketNumber.ToString());
             _actionLogInstantMessage = null;
 
             // CHECK IF TICKET CLOSED
@@ -1095,7 +1095,7 @@ AND ot.TicketID = @TicketID
                 ticket.DateClosed = DateTime.UtcNow;
 
                 description = "Closed " + GetTicketLink(ticket);
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket.TicketID, description);
             }
 
         }
@@ -1154,7 +1154,7 @@ AND ts.IsClosed = 0";
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, ticketID);
 
             string description = "Deleted Ticket Number " + ticket.TicketNumber.ToString();
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Tickets, ticket.TicketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, (ActionLogs.TicketID)ticket.TicketID, description);
 
             using (SqlCommand command = new SqlCommand())
             {
@@ -1193,7 +1193,7 @@ AND ts.IsClosed = 0";
                 if (oldTicketView.GroupID == null) { name1 = "Unassigned"; } else { name1 = oldTicketView.GroupName; }
                 if (ticket.GroupID == null) { name2 = "Unassigned"; } else { Group group = (Group)Groups.GetGroup(LoginUser, (int)ticket.GroupID); name2 = group.Name; }
                 description = "Reassigned " + GetTicketLink(ticket) + " from group '" + name1 + "' to group '" + name2 + "'";
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket.TicketID, description);
                 if (oldTicketView.GroupID != null)
                     ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Groups, (int)oldTicketView.GroupID, description);
             }
@@ -1204,7 +1204,7 @@ AND ts.IsClosed = 0";
                     description = "Added " + GetTicketLink(ticket) + " to the knowledge base.";
                 else
                     description = "Removed " + GetTicketLink(ticket) + " from the knowledge base.";
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket.TicketID, description);
             }
 
             if (oldTicketView.IsVisibleOnPortal != ticket.IsVisibleOnPortal)
@@ -1213,14 +1213,14 @@ AND ts.IsClosed = 0";
                     description = "Visible to customers set to true.";
                 else
                     description = "Visible to customers set to false.";
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket.TicketID, description);
             }
 
             ticket.Name = (ticket.Row["Name"] == DBNull.Value) ? string.Empty : ticket.Name;
             if (oldTicketView.Name != ticket.Name)
             {
                 description = "Changed ticket name from '" + oldTicketView.Name + "' to '" + ticket.Name + "' for " + GetTicketLink(ticket);
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket.TicketID, description);
             }
 
 
@@ -1229,7 +1229,7 @@ AND ts.IsClosed = 0";
                 if (oldTicketView.ProductID == null) { name1 = "Unassigned"; } else { name1 = oldTicketView.ProductName; }
                 if (ticket.ProductID == null) { name2 = "Unassigned"; } else { Product product = (Product)Products.GetProduct(LoginUser, (int)ticket.ProductID); name2 = product.Name; }
                 description = "Changed  product from '" + name1 + "' to '" + name2 + "' for " + GetTicketLink(ticket);
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket.TicketID, description);
                 if (oldTicketView.ProductID != null)
                     ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Products, (int)oldTicketView.ProductID, description);
             }
@@ -1239,7 +1239,7 @@ AND ts.IsClosed = 0";
                 if (oldTicketView.ReportedVersionID == null) { name1 = "Unassigned"; } else { name1 = oldTicketView.ReportedVersion; }
                 if (ticket.ReportedVersionID == null) { name2 = "Unassigned"; } else { ProductVersion productVersion = (ProductVersion)ProductVersions.GetProductVersion(LoginUser, (int)ticket.ReportedVersionID); name2 = productVersion.VersionNumber; }
                 description = "Changed reported version from '" + name1 + "' to '" + name2 + "' for " + GetTicketLink(ticket);
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket.TicketID, description);
                 if (oldTicketView.ReportedVersionID != null)
                     ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.ProductVersions, (int)oldTicketView.ReportedVersionID, description);
             }
@@ -1249,7 +1249,7 @@ AND ts.IsClosed = 0";
                 if (oldTicketView.SolvedVersionID == null) { name1 = "Unassigned"; } else { name1 = oldTicketView.SolvedVersion; }
                 if (ticket.SolvedVersionID == null) { name2 = "Unassigned"; } else { ProductVersion productVersion = (ProductVersion)ProductVersions.GetProductVersion(LoginUser, (int)ticket.SolvedVersionID); name2 = productVersion.VersionNumber; }
                 description = "Changed resolved version from '" + name1 + "' to '" + name2 + "' for " + GetTicketLink(ticket);
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket.TicketID, description);
                 if (oldTicketView.SolvedVersionID != null)
                     ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.ProductVersions, (int)oldTicketView.SolvedVersionID, description);
             }
@@ -1260,7 +1260,7 @@ AND ts.IsClosed = 0";
                 TicketSeverity ticketSeverity = (TicketSeverity)TicketSeverities.GetTicketSeverity(LoginUser, (int)ticket.TicketSeverityID);
                 name2 = ticketSeverity.Name;
                 description = "Changed severity from '" + name1 + "' to '" + name2 + "' for " + GetTicketLink(ticket);
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket.TicketID, description);
             }
 
             if (oldTicketView.TicketStatusID != ticket.TicketStatusID)
@@ -1269,7 +1269,7 @@ AND ts.IsClosed = 0";
                 TicketStatus ticketStatus = (TicketStatus)TicketStatuses.GetTicketStatus(LoginUser, (int)ticket.TicketStatusID);
                 name2 = ticketStatus.Name;
                 description = "Changed status from '" + name1 + "' to '" + name2 + "' for " + GetTicketLink(ticket);
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket.TicketID, description);
             }
 
             if (oldTicketView.TicketTypeID != ticket.TicketTypeID)
@@ -1278,7 +1278,7 @@ AND ts.IsClosed = 0";
                 TicketType ticketType = (TicketType)TicketTypes.GetTicketType(LoginUser, (int)ticket.TicketTypeID);
                 name2 = ticketType.Name;
                 description = "Changed ticket type from '" + name1 + "' to '" + name2 + "' for " + GetTicketLink(ticket);
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket.TicketID, description);
             }
 
             if (oldTicketView.UserID != ticket.UserID)
@@ -1286,7 +1286,7 @@ AND ts.IsClosed = 0";
                 if (oldTicketView.UserID == null) { name1 = "Unassigned"; } else { name1 = oldTicketView.UserName; }
                 if (ticket.UserID == null) { name2 = "Unassigned"; } else { User u = (User)Users.GetUser(LoginUser, (int)ticket.UserID); name2 = u.FirstName + " " + u.LastName; }
                 description = "Reassigned " + GetTicketLink(ticket) + " from user '" + name1 + "' to user '" + name2 + "'";
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket.TicketID, description);
                 if (oldTicketView.UserID != null)
                     ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.UserID)(int)oldTicketView.UserID, description);
             }
@@ -1304,7 +1304,7 @@ AND ts.IsClosed = 0";
                         description = "Closed " + GetTicketLink(ticket);
                         ticket.CloserID = LoginUser.UserID;
                         ticket.DateClosed = DateTime.UtcNow;
-                        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+                        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket.TicketID, description);
                     }
                 }
                 else
@@ -1314,7 +1314,7 @@ AND ts.IsClosed = 0";
                         description = "Reopened " + GetTicketLink(ticket);
                         ticket.CloserID = null;
                         ticket.DateClosed = null;
-                        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+                        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket.TicketID, description);
                     }
                 }
             }
@@ -1716,7 +1716,7 @@ AND ts.IsClosed = 0";
             Organization org = (Organization)Organizations.GetOrganization(LoginUser, organizationID);
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, ticketID);
             string description = "Added '" + org.Name + "' to the customer list for " + GetTicketLink(ticket);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.TicketID)ticketID, description);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Organizations, organizationID, description);
         }
 
@@ -1742,7 +1742,7 @@ AND ts.IsClosed = 0";
             Organization org = (Organization)Organizations.GetOrganization(LoginUser, organizationID);
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, ticketID);
             string description = "Added '" + org.Name + "' to the customer list for " + GetTicketLink(ticket);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.TicketID)ticketID, description);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Organizations, organizationID, description);
         }
 
@@ -1780,7 +1780,7 @@ AND ts.IsClosed = 0";
             }
 
             string description = "Added '" + asset.Name + "' to the asset list for " + GetTicketLink(ticket);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.TicketID)ticketID, description);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Assets, assetID, description);
         }
 
@@ -1804,7 +1804,7 @@ AND ts.IsClosed = 0";
             }
 
             string description = "Added '" + asset.Name + "' to the asset list for " + GetTicketLink(ticket);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.TicketID)ticketID, description);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Assets, assetID, description);
         }
 
@@ -1824,7 +1824,7 @@ AND ts.IsClosed = 0";
             }
 
             string description = "Removed '" + asset.Name + "' to the asset list for " + GetTicketLink(ticket);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Tickets, ticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, (ActionLogs.TicketID)ticketID, description);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Assets, assetID, description);
         }
 
@@ -1854,7 +1854,7 @@ AND ts.IsClosed = 0";
             Organization org = (Organization)Organizations.GetOrganization(LoginUser, organizationID);
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, ticketID);
             string description = "Removed '" + org.Name + "' from the customer list for " + GetTicketLink(ticket);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Tickets, ticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, (ActionLogs.TicketID)ticketID, description);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Organizations, organizationID, description);
         }
 
@@ -1884,7 +1884,7 @@ AND ts.IsClosed = 0";
             AddOrganization(user.OrganizationID, ticketID);
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, ticketID);
             string description = "Added '" + user.FirstName + " " + user.LastName + "' to the contact list for " + GetTicketLink(ticket);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.TicketID)ticketID, description);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.UserID)userID, description);
         }
 
@@ -1915,7 +1915,7 @@ AND ts.IsClosed = 0";
             AddOrganization(user.OrganizationID, ticketID, importFileID);
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, ticketID);
             string description = "Added '" + user.FirstName + " " + user.LastName + "' to the contact list for " + GetTicketLink(ticket);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.TicketID)ticketID, description);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.UserID)userID, description);
         }
 
@@ -2072,7 +2072,7 @@ AND ts.IsClosed = 0";
 
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, ticketID);
             string description = "Removed '" + user.FirstName + " " + user.LastName + "' from the contact list for " + GetTicketLink(ticket);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Tickets, ticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, (ActionLogs.TicketID)ticketID, description);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, (ActionLogs.UserID)userID, description);
         }
 
@@ -3225,7 +3225,7 @@ AND
         {
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, ticketID);
             string description = "Added '" + tag.Value + "' to the tag list for " + GetTicketLink(ticket);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.TicketID)ticketID, description);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tags, tag.TagID, description);
 
         }
@@ -3234,7 +3234,7 @@ AND
         {
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, ticketID);
             string description = "Removed '" + tag.Value + "' from the tag list for " + GetTicketLink(ticket);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Tickets, ticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, (ActionLogs.TicketID)ticketID, description);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Tags, tag.TagID, description);
 
         }
@@ -3297,7 +3297,7 @@ AND
 
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Customers";
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)newticketID, description);
         }
 
         public void MergeUpdateOrganizations(int oldticketID, int newticketID)
@@ -3327,7 +3327,7 @@ AND
 
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Organizations";
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)newticketID, description);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Organizations, newticketID, description);
         }
 
@@ -3345,7 +3345,7 @@ AND
 
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Tags";
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)newticketID, description);
         }
 
         public void MergeUpdateCustomFields(int oldticketID, int newticketID)
@@ -3362,7 +3362,7 @@ AND
 
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Tags";
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)newticketID, description);
         }
 
         public void MergeUpdateSubscribers(int oldticketID, int newticketID)
@@ -3378,7 +3378,7 @@ AND
 
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Subscribers";
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)newticketID, description);
         }
 
         public void MergeUpdateQueuers(int oldticketID, int newticketID)
@@ -3394,7 +3394,7 @@ AND
 
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Queuers";
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)newticketID, description);
         }
 
         public void MergeUpdateReminders(int oldticketID, int newticketID)
@@ -3426,7 +3426,7 @@ AND
 
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Reminders";
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)newticketID, description);
         }
 
         public void MergeUpdateAssets(int oldticketID, int newticketID)
@@ -3442,7 +3442,7 @@ AND
 
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Assets";
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)newticketID, description);
         }
 
         public void MergeUpdateActions(int oldticketID, int newticketID)
@@ -3458,7 +3458,7 @@ AND
 
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Actions";
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)newticketID, description);
         }
 
         public void MergeUpdateRelationships(int oldticketID, int newticketID)
@@ -3503,7 +3503,7 @@ AND
             }
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Relationships";
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)newticketID, description);
         }
 
         public void MergeAttachments(int oldticketID, int newticketID)
@@ -3520,7 +3520,7 @@ AND
 
             Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
             string description = "Merged '" + ticket.TicketNumber + "' Action Attachments";
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.TicketID)newticketID, description);
         }
 
         public void LoadFirstJiraSynced(int organizationID)

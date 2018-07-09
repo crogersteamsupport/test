@@ -647,6 +647,8 @@ namespace TSWebServices
             TSAuthentication.SlideExpiration();
 
             User user = Users.GetUser(LoginUser.Anonymous, TSAuthentication.UserID);
+            if (user == null)
+                return;
             user.LastActivity = DateTime.UtcNow;
             user.Collection.Save();
         }
@@ -714,7 +716,7 @@ namespace TSWebServices
                 else
                     logdescription = String.Format("Added Reminder for {0}", reminderUser.FirstLastName);
 
-                ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Tickets, refID, logdescription);
+                ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, (ActionLogs.TicketID)refID, logdescription);
                 ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, (ActionLogs.UserID)userID, logdescription);
 
 

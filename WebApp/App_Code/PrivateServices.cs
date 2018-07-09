@@ -465,7 +465,7 @@ namespace TeamSupport.Services
             EmailPosts.SendTicketUpdateRequest(UserSession.LoginUser, ticketID);
 
             string description = String.Format("{0} requested an update from {1} for {2}", UserSession.CurrentUser.FirstLastName, ticket.UserName, Tickets.GetTicketLink(UserSession.LoginUser, ticketID));
-            ActionLogs.AddActionLog(UserSession.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+            ActionLogs.AddActionLog(UserSession.LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket.TicketID, description);
         }
 
         [WebMethod]

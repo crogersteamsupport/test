@@ -1153,7 +1153,7 @@ namespace TSWebServices
 
 
             string description = String.Format("{0} requested an update from {1} for {2}", user.FirstLastName, ticket.UserName, Tickets.GetTicketLink(TSAuthentication.GetLoginUser(), ticketID));
-            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, (ActionLogs.TicketID)ticket.TicketID, description);
 
             return GetActionInfo(action.ActionID);
         }
@@ -1433,7 +1433,7 @@ namespace TSWebServices
             Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
             if (!CanEditTicket(ticket)) return null;
             string description = "Changed community from '" + oldCommunityName + "' to '" + newCommunityName + "'.";
-            ActionLogs.AddActionLog(ticket.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticketID, description);
+            ActionLogs.AddActionLog(ticket.Collection.LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticketID, description);
 
             if (categoryID == null || categoryID == -1)
             {
@@ -1475,7 +1475,7 @@ namespace TSWebServices
             }
 
             string description = "Changed Due Date from '" + fromValue.ToString() + "' to '" + toValue.ToString() + "'.";
-            ActionLogs.AddActionLog(ticket.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticketID, description);
+            ActionLogs.AddActionLog(ticket.Collection.LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticketID, description);
 
             ticket.Collection.Save();
             return ticket.DueDate;
@@ -3282,9 +3282,9 @@ WHERE t.TicketID = @TicketID
                 item.Collection.Save();
 
                 string description = "Ticket " + ticket2.TicketNumber + " related";
-                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket1.TicketID, description);
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket1.TicketID, description);
                 description = "Ticket " + ticket1.TicketNumber + " related";
-                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket2.TicketID, description);
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket2.TicketID, description);
             }
             else if (isTicket1Parent == true) // parent
             {
@@ -3310,9 +3310,9 @@ WHERE t.TicketID = @TicketID
                 ticket2.Collection.Save();
 
                 string description = "Ticket " + ticket2.TicketNumber + " added as child";
-                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket1.TicketID, description);
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket1.TicketID, description);
                 description = "Ticket " + ticket1.TicketNumber + " added as parent";
-                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket2.TicketID, description);
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket2.TicketID, description);
             }
             else // child
             {
@@ -3329,9 +3329,9 @@ WHERE t.TicketID = @TicketID
                 ticket1.Collection.Save();
 
                 string description = "Ticket " + ticket2.TicketNumber + " added as parent";
-                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket1.TicketID, description);
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket1.TicketID, description);
                 description = "Ticket " + ticket1.TicketNumber + " added as child";
-                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket2.TicketID, description);
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket2.TicketID, description);
             }
             return GetRelatedTickets(ticket1.TicketID);
 
@@ -3399,9 +3399,9 @@ WHERE t.TicketID = @TicketID
                 item.Collection.Save();
 
                 string description = "Ticket " + ticket2.TicketNumber + " relation removed";
-                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket1.TicketID, description);
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket1.TicketID, description);
                 description = "Ticket " + ticket1.TicketNumber + " relation removed";
-                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket2.TicketID, description);
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket2.TicketID, description);
             }
 
             if (ticket1.ParentID != null && ticket1.ParentID == (int)ticketID2)
@@ -3410,9 +3410,9 @@ WHERE t.TicketID = @TicketID
                 ticket1.Collection.Save();
 
                 string description = "Ticket " + ticket2.TicketNumber + " removed as parent";
-                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket1.TicketID, description);
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket1.TicketID, description);
                 description = "Ticket " + ticket1.TicketNumber + " removed as child";
-                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket2.TicketID, description);
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket2.TicketID, description);
             }
 
             if (ticket2.ParentID != null && ticket2.ParentID == (int)ticketID1)
@@ -3421,9 +3421,9 @@ WHERE t.TicketID = @TicketID
                 ticket2.Collection.Save();
 
                 string description = "Ticket " + ticket2.TicketNumber + " removed as child";
-                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket1.TicketID, description);
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket1.TicketID, description);
                 description = "Ticket " + ticket1.TicketNumber + " removed as parent";
-                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket2.TicketID, description);
+                ActionLogs.AddActionLog(ticket1.Collection.LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket2.TicketID, description);
             }
 
             return true;
@@ -4082,7 +4082,7 @@ WHERE t.TicketID = @TicketID
 
             Ticket oldticket = (Ticket)Tickets.GetTicket(TSAuthentication.GetLoginUser(), losingTicketID);
             string description = "Merged '" + oldticket.TicketNumber + "' Customers";
-            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, (ActionLogs.TicketID)winningTicketID, description);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, (ActionLogs.UserID)winningTicketID, description);
             return;
         }
@@ -4111,7 +4111,7 @@ WHERE t.TicketID = @TicketID
             }
             Ticket losingticket = (Ticket)Tickets.GetTicket(TSAuthentication.GetLoginUser(), losingTicketID);
             string description = "Merged '" + losingticket.TicketNumber + "' Subscribers";
-            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, (ActionLogs.TicketID)winningTicketID, description);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, (ActionLogs.UserID)winningTicketID, description);
 
         }
@@ -4129,7 +4129,7 @@ WHERE t.TicketID = @TicketID
             }
             Ticket losingticket = (Ticket)Tickets.GetTicket(TSAuthentication.GetLoginUser(), losingTicketID);
             string description = "Merged '" + ticket.TicketNumber + "' Queuers";
-            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, (ActionLogs.TicketID)winningTicketID, description);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, (ActionLogs.UserID)winningTicketID, description);
         }
 

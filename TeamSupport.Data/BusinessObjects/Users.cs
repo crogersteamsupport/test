@@ -1757,7 +1757,7 @@ SET IDENTITY_INSERT Users Off
 
 			  string description = "Merged '" + contactName + "' tickets.";
 			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.UserID)winningUserID, description);
-			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tickets, winningUserID, description);
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.TicketID)winningUserID, description);
 		  }
 
 		  public void MergeUpdateNotes(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)

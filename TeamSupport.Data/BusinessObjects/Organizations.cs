@@ -2857,7 +2857,7 @@ ORDER BY
             }
             string description = "Merged '" + companyName + "' tickets.";
             ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, winningOrganizationID, description);
-            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tickets, winningOrganizationID, description);
+            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.TicketID)winningOrganizationID, description);
         }
 
         public void MergeUpdateNotes(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)

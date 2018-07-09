@@ -32,7 +32,7 @@ namespace TeamSupport.Data
     }
     public static void AddActionLog(LoginUser loginUser, ActionLogType type, UserID refID, string description)
     {
-        AddActionLog(loginUser, type, (ActionLogs.UserID)refID._value, description);
+        AddActionLog(loginUser, type, ReferenceType.Users, refID._value, description);
     }
 
     public struct TicketID
