@@ -24,7 +24,8 @@ namespace TeamSupport.CDI
             int IntervalCount = int.Parse(ConfigurationManager.AppSettings.Get("IntervalCount"));
             CDI2Engine cdi = new CDI2Engine(TimeSpan.FromDays(IntervalTimeSpanInDays), IntervalCount);
             cdi.Run(args);
-            CDIEventLog.Instance.WriteLine(String.Format("CDI Total Execution Time {0:0.00} sec", totalTimer.ElapsedMilliseconds / 1000.0));
+            if (!args.Contains("ForceCDIUpdate"))
+                CDIEventLog.Instance.WriteLine(String.Format("CDI Total Execution Time {0:0.00} sec", totalTimer.ElapsedMilliseconds / 1000.0));
         }
 
         public static void AssignTicketSeverities()
