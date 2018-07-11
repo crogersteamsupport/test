@@ -23,7 +23,9 @@ namespace TeamSupport.Data
     [DataMember] public int? YellowUpperRange { get; set; }
     [DataMember] public DateTime? LastCompute { get; set; }
     [DataMember] public bool? NeedCompute { get; set; }
-          
+    [DataMember] public float? AverageActionCountWeight { get; set; }  
+    [DataMember] public float? AverageSentimentScoreWeight { get; set; }  
+    [DataMember] public float? AverageSeverityWeight { get; set; }  
   }
   
   public partial class CDI_Setting : BaseItem
@@ -40,10 +42,11 @@ namespace TeamSupport.Data
       result.OpenTicketsWeight = this.OpenTicketsWeight;
       result.TotalTicketsWeight = this.TotalTicketsWeight;
       result.OrganizationID = this.OrganizationID;
-       
-       
+
       result.LastCompute = this.LastComputeUtc == null ? this.LastComputeUtc : DateTime.SpecifyKind((DateTime)this.LastComputeUtc, DateTimeKind.Utc); 
-       
+      result.AverageActionCountWeight = this.AverageActionCountWeight;       
+      result.AverageSentimentScoreWeight = this.AverageSentimentScoreWeight;
+      result.AverageSeverityWeight = this.AverageSeverityWeight;       
       return result;
     }	
   }

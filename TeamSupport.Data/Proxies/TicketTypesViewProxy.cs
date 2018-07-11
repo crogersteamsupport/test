@@ -27,8 +27,10 @@ namespace TeamSupport.Data
     [DataMember] public int? ProductFamilyID { get; set; }
     [DataMember] public string ProductFamilyName { get; set; }
     [DataMember] public bool IsActive { get; set; }
-          
-  }
+    [DataMember] public bool ExcludeFromCDI { get; set; }
+        
+
+    }
   
   public partial class TicketTypesViewItem : BaseItem
   {
@@ -47,7 +49,9 @@ namespace TeamSupport.Data
       result.Description = (this.Description);
       result.Name = (this.Name);
       result.TicketTypeID = this.TicketTypeID;
-       
+      result.ExcludeFromCDI = this.ExcludeFromCDI;
+
+
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
