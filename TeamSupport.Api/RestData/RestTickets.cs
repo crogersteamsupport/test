@@ -584,7 +584,7 @@ namespace TeamSupport.Api
                                     ticketLinkToJira[0].JiraKey = jiraKey.ToLower() == "newjiraissue" ? null : jiraKey;
                                     ticketLinkToJira[0].CrmLinkID = crmLinkId;
                                     ticketLinkToJira.Save();
-                                    ActionLogs.AddActionLog(command.LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket.TicketID, string.Format("Changed JiraKey from '{0}' to '{1}'.", oldJiraKey, jiraKey));
+                                    ActionLogs.AddActionLog(command.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, string.Format("Changed JiraKey from '{0}' to '{1}'.", oldJiraKey, jiraKey));
                                 }
                                 else
                                 {
@@ -601,7 +601,7 @@ namespace TeamSupport.Api
                                     if (newJiraLink.CrmLinkID != null && newJiraLink.CrmLinkID > 0)
                                     {
                                         newJiraLink.Collection.Save();
-                                        ActionLogs.AddActionLog(command.LoginUser, ActionLogType.Update, (ActionLogs.TicketID)ticket.TicketID, string.Format("Linked to JiraKey '{0}'.", jiraKey));
+                                        ActionLogs.AddActionLog(command.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, string.Format("Linked to JiraKey '{0}'.", jiraKey));
                                     }
 
                                 }
