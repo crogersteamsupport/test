@@ -27,7 +27,7 @@ namespace TeamSupport.Data
             //Organization org = (Organization)Organizations.GetOrganization(LoginUser, organizationID);
             //Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, ticketID);
             //string description = "Removed '" + org.Name + "' from the customer list for " + GetTicketLink(ticket);
-            //ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, (ActionLogs.TicketID)ticketID, description);
+            //ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Tickets, ticketID, description);
             //ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Organizations, organizationID, description);
         }
 

@@ -277,7 +277,7 @@ namespace TeamSupport.Data
             else
                 description = "Deleted contact '" + user.FirstName + " " + user.LastName + "'";
 
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, (ActionLogs.UserID)userID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Users, userID, description);
         }
 
         partial void BeforeRowEdit(User user)
@@ -289,67 +289,67 @@ namespace TeamSupport.Data
             if (oldUser.CryptedPassword != user.CryptedPassword)
             {
                 description = "Changed '" + name + "' password";
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.UserID)user.UserID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
             }
 
             if (oldUser.Email != user.Email)
             {
                 description = "Changed '" + name + "' email from '" + oldUser.Email + "' to '" + user.Email + '"';
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.UserID)user.UserID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
             }
 
             if (oldUser.FirstName != user.FirstName)
             {
                 description = "Changed '" + name + "' first name to '" + user.FirstName + "'";
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.UserID)user.UserID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
             }
 
             if (oldUser.LastName != user.LastName)
             {
                 description = "Changed '" + name + "' last name to '" + user.LastName + "'";
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.UserID)user.UserID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
             }
 
             if (oldUser.MiddleName != user.MiddleName)
             {
                 description = "Changed '" + name + "' middle name to '" + user.MiddleName + "'";
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.UserID)user.UserID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
             }
 
             if (oldUser.InOffice != user.InOffice)
             {
                 description = "Changed '" + name + "' in office status to '" + user.InOffice.ToString() + "'";
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.UserID)user.UserID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
             }
 
             if (oldUser.InOfficeComment != user.InOfficeComment)
             {
                 description = "Changed '" + name + "' in office comment";
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.UserID)user.UserID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
             }
 
             if (oldUser.IsActive != user.IsActive)
             {
                 description = "Changed '" + name + "' active status to '" + user.IsActive.ToString() + "'";
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.UserID)user.UserID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
             }
 
             if (oldUser.IsFinanceAdmin != user.IsFinanceAdmin)
             {
                 description = "Changed '" + name + "' financial administrator access rights to '" + user.IsFinanceAdmin.ToString() + "'";
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.UserID)user.UserID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
             }
 
             if (oldUser.IsSystemAdmin != user.IsSystemAdmin)
             {
                 description = "Changed '" + name + "' system administrator access rights to '" + user.IsSystemAdmin.ToString() + "'";
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.UserID)user.UserID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
             }
 
             if (oldUser.IsPortalUser != user.IsPortalUser)
             {
                 description = "Changed '" + name + "' user portal access rights to '" + user.IsPortalUser.ToString() + "'";
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.UserID)user.UserID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
             }
 
             if (oldUser.PrimaryGroupID != user.PrimaryGroupID)
@@ -358,7 +358,7 @@ namespace TeamSupport.Data
                 string group2 = user.PrimaryGroupID == null ? "Unassigned" : ((Group)Groups.GetGroup(LoginUser, (int)user.PrimaryGroupID)).Name;
 
                 description = "Changed '" + name + "' primary group from '" + group1 + "' to '" + group2 + "'";
-                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, (ActionLogs.UserID)user.UserID, description);
+                ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, user.UserID, description);
             }
         }
 
@@ -370,7 +370,7 @@ namespace TeamSupport.Data
             else
                 description = "Created contact '" + user.FirstName + " " + user.LastName + "'";
 
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.UserID)user.UserID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, user.UserID, description);
         }
 
         public void LoadByChatID(string chatID)
@@ -871,7 +871,7 @@ namespace TeamSupport.Data
             Group group = (Group)Groups.GetGroup(LoginUser, groupID);
             string description = "Removed '" + user.FirstName + " " + user.LastName + "' from group '" + group.Name + "'";
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Groups, groupID, description);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.UserID)userID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
 
         }
 
@@ -916,7 +916,7 @@ namespace TeamSupport.Data
             Group group = (Group)Groups.GetGroup(LoginUser, groupID);
             string description = "Added '" + user.FirstName + " " + user.LastName + "' to group '" + group.Name + "'";
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Groups, groupID, description);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.UserID)userID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
 
         }
 
@@ -935,7 +935,7 @@ namespace TeamSupport.Data
             Organization organization = Organizations.GetOrganization(LoginUser, organizationID);
             string description = string.Format("Added customer '{0}' to user '{1}'.", organization.Name, user.FirstLastName);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Groups, organizationID, description);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.UserID)userID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
         }
 
         public void RemoveUserCustomer(int userID, int organizationID)
@@ -953,7 +953,7 @@ namespace TeamSupport.Data
             Organization organization = Organizations.GetOrganization(LoginUser, organizationID);
             string description = string.Format("Removed customer '{0}' from user '{1}'.", organization.Name, user.FirstLastName);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Groups, organizationID, description);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.UserID)userID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
         }
 
         public void AddUserProductFamily(int userID, int productFamilyID)
@@ -971,7 +971,7 @@ namespace TeamSupport.Data
             ProductFamily productFamily = ProductFamilies.GetProductFamily(LoginUser, productFamilyID);
             string description = string.Format("Added product family '{0}' to user '{1}'.", productFamily.Name, user.FirstLastName);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.ProductFamilies, productFamilyID, description);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.UserID)userID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
         }
 
         public void RemoveUserProductFamily(int userID, int productFamilyID)
@@ -989,7 +989,7 @@ namespace TeamSupport.Data
             ProductFamily productFamily = ProductFamilies.GetProductFamily(LoginUser, productFamilyID);
             string description = string.Format("Removed product family '{0}' from user '{1}'.", productFamily.Name, user.FirstLastName);
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.ProductFamilies, productFamilyID, description);
-            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.UserID)userID, description);
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
         }
 
         public void LoadByNotGroupID(int groupID, int organizationID)
@@ -1736,7 +1736,7 @@ SET IDENTITY_INSERT Users Off
                 ExecuteNonQuery(command, "Actions");
             }
             string description = "Merged '" + contactName + "' Actions.";
-            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.UserID)winningUserID, description);
+            ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
         }
 
         public void MergeUpdateTickets(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
@@ -1755,7 +1755,7 @@ SET IDENTITY_INSERT Users Off
 			  }
 
 			  string description = "Merged '" + contactName + "' tickets.";
-			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.UserID)winningUserID, description);
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
 		  }
 
 		  public void MergeUpdateNotes(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
@@ -1777,7 +1777,7 @@ SET IDENTITY_INSERT Users Off
 				  ExecuteNonQuery(command, "Notes");
 			  }
 			  string description = "Merged '" + contactName + "' Notes.";
-			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.UserID)winningUserID, description);
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
 		  }
 
 		  public void MergeUpdateFiles(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
@@ -1807,7 +1807,7 @@ SET IDENTITY_INSERT Users Off
 				  System.IO.Directory.Delete(pathWithoutFileName);
 				  attachments.Save();
 				  string description = "Merged '" + contactName + "' Files.";
-				  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.UserID)winningUserID, description);
+				  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
 			  }
 		  }
 
@@ -1858,7 +1858,7 @@ SET IDENTITY_INSERT Users Off
 				  }
 			  }
 			  string mergeDescription = "Merged '" + contactName + "' Products.";
-			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.UserID)winningUserID, mergeDescription);
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, mergeDescription);
 		  }
 
 		  public void MergeUpdateAssets(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
@@ -1898,7 +1898,7 @@ SET IDENTITY_INSERT Users Off
 				  ExecuteNonQuery(command, "AssetHistory");
 			  }
 			  string description = "Merged '" + contactName + "' Assets.";
-			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.UserID)winningUserID, description);
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
 		  }
 
 		  public void MergeUpdateRatings(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
@@ -1921,7 +1921,7 @@ SET IDENTITY_INSERT Users Off
 				  ExecuteNonQuery(command, "AgentRatings");
 			  }
 			  string description = "Merged '" + contactName + "' AgentRatings.";
-			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.UserID)winningUserID, description);
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
 		  }
 
 		  public void MergeUpdateCustomValues(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
@@ -2025,7 +2025,7 @@ SET IDENTITY_INSERT Users Off
 			  }
 
 			  string description = "Merged '" + contactName + "' CustomValues.";
-			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, (ActionLogs.UserID)winningUserID, description);
+			  ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
 		  }
 
 		  public void DeleteRecentlyViewItems(int losingUserID)

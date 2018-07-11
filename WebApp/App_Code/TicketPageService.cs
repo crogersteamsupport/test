@@ -337,7 +337,7 @@ namespace TSWebServices
 
 
             string description = String.Format("{0} requested an update from {1} for {2}", user.FirstLastName, ticket.UserName, Tickets.GetTicketLink(TSAuthentication.GetLoginUser(), ticketID));
-            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, (ActionLogs.TicketID)ticket.TicketID, description);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
 
             return GetActionTimelineItem(action);
         }
@@ -1836,7 +1836,7 @@ namespace TSWebServices
             action.CreatorID = TSAuthentication.UserID;
             action.Collection.Save();
 
-            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, (ActionLogs.TicketID)ticket.TicketID, actionLog);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLog);
 
             return GetActionTimelineItem(action);
         }

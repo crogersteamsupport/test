@@ -25,25 +25,25 @@ namespace TeamSupport.Data
   public partial class ActionLogs : BaseCollection, IEnumerable<ActionLog>
   {
 
-    public struct UserID
-    {
-        public int _value;
-        static public explicit operator UserID(int refID) { return new UserID() { _value = refID }; }
-    }
-    public static void AddActionLog(LoginUser loginUser, ActionLogType type, UserID refID, string description)
-    {
-        AddActionLog(loginUser, type, ReferenceType.Users, refID._value, description);
-    }
+    //public struct UserID
+    //{
+    //    public int _value;
+    //    static public explicit operator UserID(int refID) { return new UserID() { _value = refID }; }
+    //}
+    //public static void AddActionLog(LoginUser loginUser, ActionLogType type, UserID refID, string description)
+    //{
+    //    AddActionLog(loginUser, type, ReferenceType.Users, refID._value, description);
+    //}
 
-    public struct TicketID
-    {
-        public int _value;
-        static public explicit operator TicketID(int refID) { return new TicketID() { _value = refID }; }
-    }
-    public static void AddActionLog(LoginUser loginUser, ActionLogType type, TicketID refID, string description)
-    {
-        AddActionLog(loginUser, type, ReferenceType.Tickets, refID._value, description);
-    }
+    //public struct TicketID
+    //{
+    //    public int _value;
+    //    static public explicit operator TicketID(int refID) { return new TicketID() { _value = refID }; }
+    //}
+    //public static void AddActionLog(LoginUser loginUser, ActionLogType type, TicketID refID, string description)
+    //{
+    //    TicketLog.AddLog(loginUser, type, refID._value, description);
+    //}
 
     public static void AddActionLog(LoginUser loginUser, ActionLogType type, ReferenceType refType, int refID, string description)
     {

@@ -336,6 +336,7 @@
     <Compile Include="BusinessObjects\TicketLinkToJira.cs" />
     <Compile Include="BusinessObjects\TicketLinkToSnow.cs" />
     <Compile Include="BusinessObjects\TicketLinkToTFS.cs" />
+    <Compile Include="BusinessObjects\TicketLog.cs" />
     <Compile Include="BusinessObjects\TicketRelationships.cs" />
     <Compile Include="BusinessObjects\TicketSentiment.cs" />
     <Compile Include="BusinessObjects\TicketsView.cs" />
@@ -346,6 +347,7 @@
     <Compile Include="BusinessObjects\TokStorage.cs" />
     <Compile Include="BusinessObjects\Translate.cs" />
     <Compile Include="BusinessObjects\UserDevices.cs" />
+    <Compile Include="BusinessObjects\UserLog.cs" />
     <Compile Include="BusinessObjects\UserNoteSettings.cs" />
     <Compile Include="BusinessObjects\UserProducts.cs" />
     <Compile Include="BusinessObjects\UserProductsView.cs" />

@@ -1334,7 +1334,7 @@ namespace TSWebServices
         public void LogAdminUserAction(string description)
         {
             User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
-            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, (ActionLogs.UserID)TSAuthentication.UserID, String.Format("{0} performed admin action: {1}", user.FirstLastName, description));
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, TSAuthentication.UserID, String.Format("{0} performed admin action: {1}", user.FirstLastName, description));
         }
 
         [WebMethod]

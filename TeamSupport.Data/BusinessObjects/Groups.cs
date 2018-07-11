@@ -205,7 +205,7 @@ namespace TeamSupport.Data
       Group group = (Group)Groups.GetGroup(LoginUser, groupID);
       string description = "Added '" + user.FirstName + " " + user.LastName + "' to group '" + group.Name + "'";
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Groups, groupID, description);
-      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.UserID)userID, description);
+      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
 
 
     }
@@ -224,7 +224,7 @@ namespace TeamSupport.Data
       Group group = (Group)Groups.GetGroup(LoginUser, groupID);
       string description = "Removed '" + user.FirstName + " " + user.LastName + "' from group '" + group.Name + "'";
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Groups, groupID, description);
-      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, (ActionLogs.UserID)userID, description);
+      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
     }
 
     public void LoadByGroupName(int parentID, string name, int maxRows)
