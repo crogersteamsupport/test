@@ -1084,23 +1084,49 @@ $(document).ready(function () {
 
 		_mainFrame.Ts.Services.Customers.HasChildren(organizationID, function (result) {
 			hasChildren = result === true;
-			var inactiveChildren = false;
 
 			if (hasChildren && !isActive) {
-				if (confirm('This customer has children. Do you want all of them to be set to inactive too?')) {
-					inactiveChildren = true;
+				var confirmInactiveChildren = $('<div>').prop('title', 'Confirm Inactivate Children').append('This customer has children. Do you want all of them to be set to inactive too?').appendTo(document.body);
+				confirmInactiveChildren.dialog({
+					resizable: false,
+					width: 'auto',
+					height: 'auto',
+					create: function () {
+						$(this).css('maxWidth', '800px');
+					},
+					modal: true,
+					buttons: {
+						"Yes": function () {
+							SetCompanyAndChildrenInactive(organizationID, hasChildren, isActive, true);
+							$(this).dialog('close');
+						},
+						"No": function () {
+							SetCompanyActive(organizationID, isActive);
+							$(this).dialog('close');
 				}
+					},
+					close: function (event, ui) {
 			}
+				});
+			} else {
+				SetCompanyActive(organizationID, isActive);
+			}
+		});
+	});
 
+	function SetCompanyAndChildrenInactive(organizationID, hasChildren, isActive, inactiveChildren) {
 			if (hasChildren && !isActive && inactiveChildren) {
 				_mainFrame.Ts.Services.Customers.SetCompanyAndChildrenInactive(organizationID, function () {
 					_mainFrame.Ts.System.logAction('Customer Detail - Toggle Active State And Set Children Inactive');
 					$('#fieldActive').text('false');
 				},
 					function (error) {
-						alert('There was an error saving the customer active.');
+					alert('There was an error saving the customer active and children.');
 					});
-			} else {
+		}
+	}
+
+	function SetCompanyActive(organizationID, isActive) {
 				_mainFrame.Ts.Services.Customers.SetCompanyActive(organizationID, isActive, function (result) {
             _mainFrame.Ts.System.logAction('Customer Detail - Toggle Active State');
             $('#fieldActive').text((result === true ? 'true' : 'false'));
@@ -1110,8 +1136,6 @@ $(document).ready(function () {
             alert('There was an error saving the customer active.');
         });
 			}
-		});
-    });
 
     $('#fieldAPIEnabled').click(function (e) {
         if (!$(this).hasClass('editable'))
