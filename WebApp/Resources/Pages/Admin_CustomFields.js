@@ -201,7 +201,7 @@ AdminCustomFields = function () {
           .addClass('caption')
           .appendTo(header);
 
-    if (window.parent.parent.Ts.System.Organization.UseProductFamilies && $('.admin-cf-type').val() == 9) {
+    if (window.parent.parent.Ts.System.Organization.UseProductFamilies && ($('.admin-cf-type').val() == 9 || $('.admin-cf-type').val() == 32)) {
         var catProductFamilyName = '';
         if (category && category.ProductFamilyID) {
             catProductFamilyName = ' (' + category.ProductFamilyName + ')';
@@ -367,7 +367,7 @@ AdminCustomFields = function () {
       .appendTo(catNameDiv)
       .val(header.find('.caption').text());
 
-    if (window.parent.parent.Ts.System.Organization.UseProductFamilies && $('.admin-cf-type').val() == 9) {
+    if (window.parent.parent.Ts.System.Organization.UseProductFamilies && ($('.admin-cf-type').val() == 9 || $('.admin-cf-type').val() == 32)) {
         var catProductFamilyDiv = $('<div>')
             .addClass('label-block')
             .appendTo(div);
@@ -411,7 +411,7 @@ AdminCustomFields = function () {
       var productFamilyID = -1;
       var productFamilyName = '';
 
-      if (window.parent.parent.Ts.System.Organization.UseProductFamilies && $('.admin-cf-type').val() == 9) {
+      if (window.parent.parent.Ts.System.Organization.UseProductFamilies && ($('.admin-cf-type').val() == 9 || $('.admin-cf-type').val() == 32)) {
           catName = $(this).prev().prev().find('.text').val();
           productFamilyID = $(this).prev().find('.admin-cf-cat-productfamily').val();
           productFamilyName = ' (' + $(this).prev().find('.admin-cf-cat-productfamily option:selected').text() + ')';

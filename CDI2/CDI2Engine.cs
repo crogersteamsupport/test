@@ -50,13 +50,18 @@ namespace TeamSupport.CDI
                 _verboseLog = true;
 
             // Load the tickets
-            CDIEventLog.Instance.WriteEntry("CDI Update started...");
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             if (args.Contains("ForceCDIUpdate"))
                 _ticketReader.LoadNeedComputeOrganizationTickets();
             else
+            {
+                CDIEventLog.Instance.WriteEntry("CDI Update started...");
                 _ticketReader.LoadAllTickets();
+            }
+
+            if ((_ticketReader.AllTickets == null) || (_ticketReader.AllTickets.Length == 0))
+                return;
             VerboseLog(String.Format("{0} Tickets loaded {1} in {2:0.00} sec",
                  _ticketReader.AllTickets.Length, _dateRange, stopwatch.ElapsedMilliseconds / 1000.0));
 

@@ -26,11 +26,15 @@ namespace TeamSupport.Data.BusinessObjects
         double OrganizationSentimentScore;
 #pragma warning restore CS0649
 
-        public static double? GetOrganizationSentiment(int organizationID)
+        public static double? GetOrganizationSentiment(int organizationID, int parentId)
         {
             double? result = null;
             try
             {
+				Organization parentOrganization = Organizations.GetOrganization(LoginUser.Anonymous, parentId);
+
+				if (parentOrganization != null && parentOrganization.UseWatson)
+				{
                 using (SqlConnection connection = new SqlConnection(LoginUser.GetConnectionString(-1)))
                 using (DataContext db = new DataContext(connection))
                 {
@@ -41,6 +45,7 @@ namespace TeamSupport.Data.BusinessObjects
                     if (rows.Length > 0)
                         result = rows[0];
                 }
+				}
             }
             catch (Exception e)
             {

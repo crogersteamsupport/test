@@ -865,7 +865,7 @@ namespace TSWebServices
         public CustomFieldCategoryProxy[] GetCustomFieldContactCategories()
         {
             CustomFieldCategories cats = new CustomFieldCategories(TSAuthentication.GetLoginUser());
-            cats.LoadByRefType(ReferenceType.Contacts, -1);
+            cats.LoadByRefTypeWithUserRights(ReferenceType.Contacts, -1);
             return cats.GetCustomFieldCategoryProxies();
         }
 
@@ -3524,7 +3524,7 @@ SELECT
         [WebMethod]
         public string GetOrganizationSentiment(int organizationID)
         {
-            double? result = TeamSupport.Data.BusinessObjects.OrganizationSentiment.GetOrganizationSentiment(organizationID);
+            double? result = TeamSupport.Data.BusinessObjects.OrganizationSentiment.GetOrganizationSentiment(organizationID, TSAuthentication.OrganizationID);
             return result.HasValue ? ((int)Math.Round(result.Value)).ToString() : string.Empty;
         }
 
