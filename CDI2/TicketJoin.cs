@@ -20,7 +20,7 @@ namespace TeamSupport.CDI
         public int OrganizationID;
         public DateTime? DateClosed;
         public DateTime DateCreated;
-        public int ActionsCount;
+        public int? ActionsCount;
         public bool IsClosed;
         public double? AverageActionSentiment;
         public int? ParentID;

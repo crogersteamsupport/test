@@ -15,7 +15,15 @@ namespace WatsonToneAnalyzer
 
         static void Main(string[] args)
         {
-            //TicketSentiment.RecreateTableFromActionSentiments(); // we can recreate TicketSentiments from ActionSentiments
+            if (args.Contains("RebuildTicketSentimentsTable"))
+            {
+                WatsonEventLog.WriteEntry("RebuildTicketSentimentsTable started...");
+                RebuildTicketSentimentsTable ticketSentiments = new RebuildTicketSentimentsTable(); // we can recreate TicketSentiments from ActionSentiments
+                ticketSentiments.DoRebuild();
+                //ticketSentiments.InsertMissingTicketSentiments();
+                WatsonEventLog.WriteEntry("RebuildTicketSentimentsTable completed.");
+                return;
+            }
 
             using (var service = new WatsonToneAnalyzerService())
             {

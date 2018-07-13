@@ -39,6 +39,8 @@ namespace TeamSupport.Data.BusinessObjects
         public string ActionDescription;
 #pragma warning restore CS0649
 
+        static int MaxActionTextLength = Int32.Parse(System.Configuration.ConfigurationManager.AppSettings.Get("MaxActionTextLength"));
+
         /// <summary>
         /// Watson utterance only allows 500 char 
         /// (don't throw sql exception on truncate of dbo.ActionToAnalyze.ActionDescription)
@@ -47,15 +49,19 @@ namespace TeamSupport.Data.BusinessObjects
         /// <returns>500 characters to send to Watson</returns>
         public static string CleanString(string RawHtml)
         {
-            String text = Regex.Replace(RawHtml, @"<[^>]*>", String.Empty); //remove html tags
+            // remove email addresses first (even if contains spaces)
+            string text = Regex.Replace(RawHtml, @"\s+@", "@");
+            Regex ItemRegex = new Regex(@"[\w\d._%+-]+@[ \w\d.-]+\.[\w]{2,3}");
+
+            text = Regex.Replace(text, @"<[^>]*>", String.Empty); //remove html tags
             text = Regex.Replace(text, "&nbsp;", " "); //remove HTML space
-            text = Regex.Replace(text, @"[\d-]", " "); //removes all digits [0-9]
-            text = Regex.Replace(text, @"[\w\d]+\@[\w\d]+\.com", " "); //removes email adresses
+            text = Regex.Replace(text, @"[\d-]", String.Empty); //removes all digits [0-9]
             text = Regex.Replace(text, @"\s+", " ");   // remove whitespace
-            if (text.Length > 500)
-                text = text.Substring(0, 499);
+            if (text.Length > MaxActionTextLength)
+                text = text.Substring(0, MaxActionTextLength);
             return text;
         }
+
 
         /// <summary> 
         /// The watson service uses Stored Procedure dbo.ActionsGetForWatson to find records for watson ActionToAnalyze

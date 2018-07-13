@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using System.Data.Linq.Mapping;
 using System.Data.SqlClient;
 using System.Data.Linq;
-using System.Configuration;
-using System.Diagnostics;
 using System.Threading;
 
 namespace WatsonToneAnalyzer
@@ -90,6 +88,9 @@ namespace WatsonToneAnalyzer
         /// <param name="transaction">data associated with the watson transaction</param>
         public static void TicketSentimentStrategy(DataContext db, ActionToAnalyze actionToAnalyze, ActionSentimentScore maxScore)
         {
+            if (actionToAnalyze.IsAgent)
+                return;
+
             try
             {
                 // we need the multipliers from ToneSentiment (frustrated = -1, satisfied = +1...)
@@ -139,7 +140,7 @@ namespace WatsonToneAnalyzer
         static bool CreateTicketSentiment(DataContext db, ActionToAnalyze actionToAnalyze, double actionScore, out TicketSentiment score)
         {
             Table<TicketSentiment> table = db.GetTable<TicketSentiment>();
-            score = table.Where(t => t.TicketID == actionToAnalyze.TicketID).FirstOrDefault();
+            score = table.Where(t => (t.TicketID == actionToAnalyze.TicketID) && (t.IsAgent == actionToAnalyze.IsAgent)).FirstOrDefault();
             if (score == null)
             {
                 score = new TicketSentiment()
@@ -165,110 +166,45 @@ namespace WatsonToneAnalyzer
             return false;
         }
 
+        int ToInt(bool value) { return value ? 1 : 0; }
+
         /// <summary>
-        /// Record used in rolling up the sentiment scores for the ticket
+        /// Performance optimization - linq is slow because
+        /// 1. defaults to thread safe (full where clause of original state).
+        /// 2. Uses parameterization which checks each parameter for sql injection attacks
+        /// 3. Caches execution plan
+        /// 
+        /// Note that (1.) can be turned off by table column attribute: [Column(UpdateCheck=UpdateCheck.Never)]
+        /// Also, if read-only or using these hard coded versions. turn off object tracking:
+        ///     db.ObjectTrackingEnabled = false;
         /// </summary>
-        class MaxActionSentiment
+        /// <param name="db"></param>
+        public void Update(DataContext db)
         {
-#pragma warning disable CS0649  // Field is never assigned to, and will always have its default value null
-            public int TicketID;
-            public int OrganizationID;
-            public int ActionID;
-            public int SentimentID;
-            public decimal MaxSentimentScore;
-            public bool IsAgent;
-            public DateTime DateCreated;
-#pragma warning restore CS0649
+            // very efficient way to update the ticket
+            db.ExecuteCommand(String.Format(@"UPDATE [TicketSentiments]
+                SET [TicketSentimentScore] = {0}, 
+                [Sad] = {1}, [Frustrated] = {2}, [Satisfied] = {3}, [Excited] = {4}, [Polite] = {5}, [Impolite] = {6}, [Sympathetic] = {7}, 
+                [AverageActionSentiment] = {8}, [ActionSentimentCount] = {9}
+                WHERE [TicketSentimentID] = {10}",
+                TicketSentimentScore,
+                ToInt(Sad), ToInt(Frustrated), ToInt(Satisfied), ToInt(Excited), ToInt(Polite), ToInt(Impolite), ToInt(Sympathetic),
+                AverageActionSentiment, ActionSentimentCount,
+                TicketSentimentID
+                ));
         }
 
-        /// <summary>
-        /// If needed we can recreate the TicketSentiments table from ActionSentiments
-        /// 
-        /// WARNING - Must first call TRUNCATE TABLE [dbo].[TicketSentiments]
-        /// </summary>
-        public static void RecreateTableFromActionSentiments()
+        public void Insert(DataContext db)
         {
-            try
-            {
-                string connectionString = ConfigurationManager.AppSettings.Get("ConnectionString");
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                using (DataContext db = new DataContext(connection))
-                {
-                    // we need the multipliers from ToneSentiment (frustrated = -1, satisfied = +1...)
-                    if (_toneSentiment == null)
-                    {
-                        Table<ToneSentiment> tones = db.GetTable<ToneSentiment>();
-                        _toneSentiment = (from tone in tones select tone).ToArray();
-                    }
+            //db.ExecuteCommand(String.Format(@"INSERT INTO TicketSentiments (TicketID, OrganizationID, IsAgent, TicketSentimentScore, Sad, Frustrated, Satisfied, Excited, Polite, Impolite, Sympathetic, AverageActionSentiment, ActionSentimentCount, TicketDateCreated)
+            //    VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13})",
 
-                    // load the most likely sentiment for each action
-                    string query = @"SELECT m.TicketID, m.OrganizationID, m.ActionID, s.SentimentID, m.MaxSentimentScore, m.IsAgent, t.DateCreated
-                        FROM (
-	                        SELECT a.TicketID, a.OrganizationID, a.ActionID, a.IsAgent, a.ActionSentimentID, MAX(s.SentimentScore) AS MaxSentimentScore
-	                        FROM ActionSentiments as a
-	                        INNER JOIN ActionSentimentScores s ON a.ActionSentimentID=s.ActionSentimentID
-	                        GROUP BY a.TicketID, a.OrganizationID, a.ActionID, a.IsAgent, a.ActionSentimentID
-                        ) AS m
-                        INNER JOIN ActionSentimentScores AS s ON m.ActionSentimentID=s.ActionSentimentID AND m.MaxSentimentScore=s.SentimentScore
-                        JOIN Tickets AS t ON m.TicketID=t.TicketID
-                        GROUP BY m.TicketID, m.OrganizationID, m.ActionID, s.SentimentID, m.MaxSentimentScore, m.IsAgent, t.DateCreated";
-                    MaxActionSentiment[] maxActionSentiments = db.ExecuteQuery<MaxActionSentiment>(query).ToArray();
-
-                    // load the ticket sentimentts
-                    Table<TicketSentiment> table = db.GetTable<TicketSentiment>();
-                    TicketSentiment[] ticketSentiments = table.ToArray();
-                    Dictionary<int, TicketSentiment> avgTicketSentiments = new Dictionary<int, TicketSentiment>();
-                    foreach (TicketSentiment ticketSentiment in ticketSentiments)
-                        avgTicketSentiments[ticketSentiment.TicketID] = ticketSentiment;
-
-                    foreach (MaxActionSentiment maxActionSentiment in maxActionSentiments)
-                    {
-                        // normalize to [0, 1000]
-                        double ticketSentimentScore = Convert.ToDouble(_toneSentiment[maxActionSentiment.SentimentID].SentimentMultiplier.Value) * Convert.ToDouble(maxActionSentiment.MaxSentimentScore);
-                        ticketSentimentScore = 500 * ticketSentimentScore + 500;
-
-                        TicketSentiment sentiment;
-                        if (avgTicketSentiments.ContainsKey(maxActionSentiment.TicketID))
-                        {
-                            sentiment = avgTicketSentiments[maxActionSentiment.TicketID];
-                            int count = sentiment.ActionSentimentCount;
-                            sentiment.AverageActionSentiment = (count * sentiment.AverageActionSentiment + ticketSentimentScore) / (count + 1);
-                            sentiment.ActionSentimentCount = count + 1;
-                            sentiment.SetSentimentID(maxActionSentiment.SentimentID);
-                            sentiment.TicketSentimentScore = (int)Math.Round(sentiment.AverageActionSentiment);
-                        }
-                        else
-                        {
-                            sentiment = new TicketSentiment()
-                            {
-                                TicketID = maxActionSentiment.TicketID,
-                                OrganizationID = maxActionSentiment.OrganizationID,
-                                IsAgent = maxActionSentiment.IsAgent,
-                                TicketSentimentScore = (int)Math.Round(ticketSentimentScore),
-                                Sad = false,
-                                Frustrated = false,
-                                Satisfied = false,
-                                Excited = false,
-                                Polite = false,
-                                Impolite = false,
-                                Sympathetic = false,
-                                AverageActionSentiment = ticketSentimentScore,
-                                ActionSentimentCount = 1,
-                                TicketDateCreated = maxActionSentiment.DateCreated
-                            };
-                            avgTicketSentiments[sentiment.TicketID] = sentiment;
-                            sentiment.SetSentimentID(maxActionSentiment.SentimentID);
-                            table.InsertOnSubmit(sentiment);
-                        }
-                    }
-                    db.SubmitChanges();
-                }
-            }
-            catch (Exception e)
-            {
-                WatsonEventLog.WriteEntry("Exception while creating ticket sentiments table:", e);
-                Console.WriteLine(e.ToString());
-            }
+            string insertCmd = String.Format(@"INSERT INTO TicketSentiments
+                VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, CAST(N'{13}' AS DateTime))",
+                TicketID, OrganizationID, ToInt(IsAgent), TicketSentimentScore,
+                ToInt(Sad), ToInt(Frustrated), ToInt(Satisfied), ToInt(Excited), ToInt(Polite), ToInt(Impolite), ToInt(Sympathetic),
+                AverageActionSentiment, ActionSentimentCount, TicketDateCreated);
+            db.ExecuteCommand(insertCmd);
         }
     }
 }
