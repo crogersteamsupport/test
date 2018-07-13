@@ -777,8 +777,9 @@ Ts.Pages.Main.prototype = {
 				request_channel = pusherChatRequests.subscribe('chat-requests-' + chatGUID);
 
                 request_channel.bind('new-chat-request', function (data) {
+					var isGroupValidated = mainFrame.Ts.MainPage.ValidateChatForGroup(data.chatRequest.GroupName);
 
-                    if (data.userIdInvited === undefined || data.userIdInvited == top.Ts.System.User.UserID) {
+					if ((data.userIdInvited === undefined || data.userIdInvited == top.Ts.System.User.UserID) && isGroupValidated) {
                         var menuID = self.MainMenu.getSelected().getId();
                         var isMain = mainTabs.find(0, Ts.Ui.Tabs.Tab.Type.Main).getIsSelected();
                         if (!isMain || menuID != 'mniChat') self.MainMenu.find('mniChat', 'chat').setIsHighlighted(true);
@@ -1546,6 +1547,20 @@ Ts.Pages.Main.prototype = {
 
 
     }, // end init
+
+	ValidateChatForGroup: function (groupRequested) {
+		if (groupRequested != null) {
+			groupRequested = groupRequested.toUpperCase();
+		} else {
+			groupRequested = '';
+		}
+
+		var userGroupFound = top.Ts.System.UserGroups.find(function (group) {
+			return group.toUpperCase() == groupRequested;
+		});
+
+		return (userGroupFound != undefined || groupRequested == '');
+	},
 
     recordScreen: function (params, onComplete, onCancel) {
         if (!params) {
