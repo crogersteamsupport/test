@@ -2333,7 +2333,7 @@ var AddCustomFieldBool = function (field, parentContainer) {
     var inputContainer = $('<div>').addClass('flex2').appendTo(groupContainer);
     var inputDiv = $('<div>').addClass('checkbox ticket-checkbox').appendTo(inputContainer);
     var input = $('<input type="checkbox">').appendTo(inputDiv);
-    var value = (field.Value === null || $.trim(field.Value) === '' || field.Value === 'False' ? false : true);
+    var value = (field.Value === null || $.trim(field.Value) === '' || field.Value.toLowerCase() === 'false' || field.Value.toLowerCase() === '0' ? false : true);
     input.attr("checked", value);
 };
 
