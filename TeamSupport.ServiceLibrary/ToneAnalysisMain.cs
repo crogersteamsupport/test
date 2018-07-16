@@ -20,7 +20,6 @@ namespace WatsonToneAnalyzer
                 WatsonEventLog.WriteEntry("RebuildTicketSentimentsTable started...");
                 RebuildTicketSentimentsTable ticketSentiments = new RebuildTicketSentimentsTable(); // we can recreate TicketSentiments from ActionSentiments
                 ticketSentiments.DoRebuild();
-                //ticketSentiments.InsertMissingTicketSentiments();
                 WatsonEventLog.WriteEntry("RebuildTicketSentimentsTable completed.");
                 return;
             }
