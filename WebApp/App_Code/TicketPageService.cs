@@ -837,23 +837,32 @@ namespace TSWebServices
 
         }
 
-        void NewAction(ActionProxy actionProxy)
+        TeamSupport.Data.Action NewAction(ActionProxy actionProxy)
         {
+            TeamSupport.Data.Action dataAction;
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             using (Model model = new Model(loginUser.ConnectionString))
             {
                 ActionModel action = model.Organization(loginUser.OrganizationID).User(loginUser.UserID).Ticket(actionProxy.TicketID).InsertAction(loginUser, actionProxy);
-                action.InsertAttachment();
+                //action.InsertAttachment();
+                dataAction = action.DataAction;
             }
+            return dataAction;
         }
 
         [WebMethod]
         public TimeLineItem UpdateAction(ActionProxy proxy)
         {
+            // new action
+            TeamSupport.Data.Action action;
             if (proxy.ActionID == -1)
-                NewAction(proxy);
+            {
+                action = NewAction(proxy);
+                return GetActionTimelineItem(action);
+            }
 
-            TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), proxy.ActionID);
+            // existing action
+            action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), proxy.ActionID);
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
 
             if (action == null)

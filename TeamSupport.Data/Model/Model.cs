@@ -18,6 +18,7 @@ namespace TeamSupport.Data.Model
             _connection = new SqlConnection(connectionString);  // using
             _connection.Open(); // connection must be open to begin transaction
             _db = new DataContext(_connection);
+            _db.ObjectTrackingEnabled = false;  // use linq read-only
         }
 
         public OrganizationModel Organization(int organizationID)

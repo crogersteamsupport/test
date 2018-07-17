@@ -27,14 +27,23 @@ namespace TeamSupport.Data.Model
                 throw new Exception(String.Format($"{query} not found"));
         }
 
+        /// <summary> Existing Action </summary>
         public ActionModel Action(int actionID)
         {
             return new ActionModel(this, actionID);
         }
 
+        /// <summary> Create new Action on an existing ticket </summary>
         public ActionModel InsertAction(LoginUser loginUser, ActionProxy proxy)
         {
             return new ActionModel(this, loginUser, proxy);
         }
+
+        /// <summary> Create new Action on new ticket </summary>
+        public ActionModel InsertAction(ActionProxy info, Ticket ticketData, User user)
+        {
+            return new ActionModel(this, info, ticketData, user);
+        }
+
     }
 }

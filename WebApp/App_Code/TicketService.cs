@@ -27,6 +27,7 @@ using System.Diagnostics;
 using OpenTokSDK;
 using Jira = TeamSupport.JIRA;
 using NR = NewRelic.Api;
+using TeamSupport.Data.Model;
 
 namespace TSWebServices
 {
@@ -3637,14 +3638,20 @@ WHERE t.TicketID = @TicketID
 
             if (info.CategoryID != null && info.CategoryID > -1) ticket.AddCommunityTicket((int)info.CategoryID);
 
-            // pack NewTicketSaveInfo into an ActionProxy for the ActionModel
-            ActionProxy proxy = new ActionProxy()
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            using (Model model = new Model(loginUser.ConnectionString))
             {
-                Description = info.Description,
-                IsVisibleOnPortal = info.IsVisibleOnPortal,
-                TimeSpent = info.TimeSpent,
-                DateStarted = info.DateStarted
-            };
+                // pack NewTicketSaveInfo into an ActionProxy for the ActionModel
+                ActionProxy proxy = new ActionProxy()
+                {
+                    Description = info.Description,
+                    IsVisibleOnPortal = info.IsVisibleOnPortal,
+                    TimeSpent = info.TimeSpent,
+                    DateStarted = info.DateStarted
+                };
+
+                ActionModel x = model.Organization(loginUser.OrganizationID).User(loginUser.UserID).Ticket(ticket.TicketID).InsertAction(proxy, ticket, user);
+            }
 
             TeamSupport.Data.Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();
             action.ActionTypeID = null;

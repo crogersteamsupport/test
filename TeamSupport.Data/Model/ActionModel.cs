@@ -13,6 +13,7 @@ namespace TeamSupport.Data.Model
         public TicketModel Ticket { get; private set; }
         public int ActionID { get; private set; }
         public DataContext _db { get; private set; }
+        public Action DataAction { get; private set; }
 
         public ActionModel(TicketModel ticket, int actionID)
         {
@@ -27,13 +28,19 @@ namespace TeamSupport.Data.Model
                 throw new Exception(String.Format($"{query} not found"));
         }
 
-        /// <summary>Add action to existing ticket</summary>
+        /// <summary> New Action </summary>
+        public ActionModel(TicketModel ticket, Action action) : this(ticket, action.ActionID)
+        {
+            DataAction = action;
+        }
+
+        /// <summary> Add to existing ticket </summary>
         public ActionModel(TicketModel ticket, LoginUser loginUser, ActionProxy proxy) : 
             this(ticket, AddAction(loginUser, proxy, ticket._db))
         {
         }
 
-        /// <summary>Create new action on new ticket</summary>
+        /// <summary> Add to new ticket</summary>
         public ActionModel(TicketModel ticket, ActionProxy info, Ticket ticketData, User user) :
             this(ticket, AddActionOnNewTicket(ticketData, info, user))
         {
@@ -42,7 +49,7 @@ namespace TeamSupport.Data.Model
         /// <summary>
         /// OLD DATA LAYER - extracted from ts-app\WebApp\App_Code\TicketPageService.cs UpdateAction(ActionProxy proxy)
         /// </summary>
-        static int AddAction(LoginUser loginUser, ActionProxy proxy, DataContext db)
+        static Action AddAction(LoginUser loginUser, ActionProxy proxy, DataContext db)
         {
             Action action = (new Actions(loginUser)).AddNewAction();
             action.TicketID = proxy.TicketID;
@@ -63,13 +70,13 @@ namespace TeamSupport.Data.Model
             action.IsKnowledgeBase = proxy.IsKnowledgeBase;
             action.IsVisibleOnPortal = proxy.IsVisibleOnPortal;
             action.Collection.Save();
-            return action.ActionID;
+            return action;
         }
 
         /// <summary>
         /// OLD DATA LAYER - extracted from ts-app\webapp\app_code\ticketservice.cs
         /// </summary>
-        static int AddActionOnNewTicket(Ticket ticket, ActionProxy info, User user)
+        static Action AddActionOnNewTicket(Ticket ticket, ActionProxy info, User user)
         {
             TeamSupport.Data.Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();
             action.ActionTypeID = null;
@@ -90,7 +97,7 @@ namespace TeamSupport.Data.Model
             action.TimeSpent = info.TimeSpent;
             action.DateStarted = info.DateStarted;
             action.Collection.Save();
-            return action.ActionID;
+            return action;
         }
 
         //public AttachmentModel[] Attachments()
