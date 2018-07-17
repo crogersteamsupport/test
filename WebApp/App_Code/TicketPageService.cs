@@ -23,6 +23,7 @@ using System.Net;
 using System.IO;
 using System.Dynamic;
 using System.Text.RegularExpressions;
+using TeamSupport.Data.Model;
 
 namespace TSWebServices
 {
@@ -836,9 +837,22 @@ namespace TSWebServices
 
         }
 
+        void NewAction(ActionProxy actionProxy)
+        {
+            LoginUser loginUser = TSAuthentication.GetLoginUser();
+            using (Model model = new Model(loginUser.ConnectionString))
+            {
+                ActionModel action = model.Organization(loginUser.OrganizationID).User(loginUser.UserID).Ticket(actionProxy.TicketID).InsertAction(loginUser, actionProxy);
+                action.InsertAttachment();
+            }
+        }
+
         [WebMethod]
         public TimeLineItem UpdateAction(ActionProxy proxy)
         {
+            if (proxy.ActionID == -1)
+                NewAction(proxy);
+
             TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), proxy.ActionID);
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
 
@@ -847,46 +861,24 @@ namespace TSWebServices
                 action = (new Actions(TSAuthentication.GetLoginUser())).AddNewAction();
                 action.TicketID = proxy.TicketID;
                 action.CreatorID = TSAuthentication.UserID;
-                if (!string.IsNullOrWhiteSpace(user.Signature) && proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase && proxy.ActionID == -1)
+                action.Description = proxy.Description;
+
+                // add signature
+                if (!string.IsNullOrWhiteSpace(user.Signature) && proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase && proxy.ActionID == -1 &&
+                    (!proxy.Description.Contains(user.Signature)))
                 {
-                    if (!proxy.Description.Contains(user.Signature))
-                    {
-                        action.Description = proxy.Description + "<br/><br/>" + user.Signature;
-                    }
-                    else
-                    {
-                        action.Description = proxy.Description;
-                    }
-                }
-                else
-                {
-                    action.Description = proxy.Description;
+                    action.Description += "<br/><br/>" + user.Signature;
                 }
             }
             else
             {
-                if (proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase && proxy.ActionID == -1)
-                {
-                    if (!string.IsNullOrWhiteSpace(user.Signature))
-                    {
-                        if (!action.Description.Contains(user.Signature.Replace(" />", ">")))
-                        {
-                            action.Description = proxy.Description + "<br/><br/>" + user.Signature;
-                        }
-                        else
-                        {
-                            action.Description = proxy.Description;
-                        }
-                    }
-                    else
-                    {
-                        action.Description = proxy.Description;
-                    }
-                }
-                else
-                {
-                    action.Description = proxy.Description;
-                }
+                action.Description = proxy.Description;
+
+                // add signature
+                if (proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase && proxy.ActionID == -1 &&
+                    (!string.IsNullOrWhiteSpace(user.Signature)) &&
+                        (!action.Description.Contains(user.Signature.Replace(" />", ">"))))
+                            action.Description += "<br/><br/>" + user.Signature;
             }
 
             if (!CanEditAction(action)) return null;

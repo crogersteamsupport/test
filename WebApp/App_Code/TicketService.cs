@@ -3637,6 +3637,15 @@ WHERE t.TicketID = @TicketID
 
             if (info.CategoryID != null && info.CategoryID > -1) ticket.AddCommunityTicket((int)info.CategoryID);
 
+            // pack NewTicketSaveInfo into an ActionProxy for the ActionModel
+            ActionProxy proxy = new ActionProxy()
+            {
+                Description = info.Description,
+                IsVisibleOnPortal = info.IsVisibleOnPortal,
+                TimeSpent = info.TimeSpent,
+                DateStarted = info.DateStarted
+            };
+
             TeamSupport.Data.Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();
             action.ActionTypeID = null;
             action.Name = "Description";
