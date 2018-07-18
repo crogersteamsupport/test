@@ -210,9 +210,6 @@ AdminPortal = function () {
 
           if (cdi != null)
           {
-              var isDefaultSetting = cdi.TotalTicketsWeight == '0.2' && cdi.Last30Weight == '0.2' && cdi.OpenTicketsWeight == '0.2'
-                  && cdi.AvgDaysOpenWeight == '0.2' && cdi.AvgDaysToCloseWeight == '0.2';
-
               var ttwvalue = cdi.TotalTicketsWeight == null ? '1.0' : cdi.TotalTicketsWeight * 10;
               $('#ttw-slider').slider('value', ttwvalue);
               $('#ttw-slider').next().text("Overall Weight: " + (ttwvalue * 10) + "%");
@@ -233,15 +230,15 @@ AdminPortal = function () {
               $('#avgclose-weight').slider('value', avgcloseweight);
               $('#avgclose-weight').next().text("Overall Weight: " + (avgcloseweight * 10) + "%");
 
-              var ticketSentimentweight = isDefaultSetting ? '0' : cdi.AverageSentimentScoreWeight * 10;
+              var ticketSentimentweight = cdi.AverageSentimentScoreWeight == null ? '0' : cdi.AverageSentimentScoreWeight * 10;
               $('#ticketSentiment-weight').slider('value', ticketSentimentweight);
               $('#ticketSentiment-weight').next().text("Overall Weight: " + (ticketSentimentweight * 10) + "%");
 
-              var actionCountweight = isDefaultSetting ? '0' : cdi.AverageActionCountWeight * 10;
+              var actionCountweight = cdi.AverageActionCountWeight == null ? '0' : cdi.AverageActionCountWeight * 10;
               $('#actionCount-weight').slider('value', actionCountweight);
               $('#actionCount-weight').next().text("Overall Weight: " + (actionCountweight * 10) + "%");
 
-              var ticketSeverityweight = isDefaultSetting ? '0' : cdi.AverageSeverityWeight * 10;
+              var ticketSeverityweight = cdi.AverageSeverityWeight == null ? '0' : cdi.AverageSeverityWeight * 10;
               $('#ticketSeverity-weight').slider('value', ticketSeverityweight);
               $('#ticketSeverity-weight').next().text("Overall Weight: " + (ticketSeverityweight * 10) + "%");
 
