@@ -209,12 +209,15 @@ AdminPortal = function () {
       parent.parent.Ts.Services.Organizations.LoadCDISettings(parent.parent.Ts.System.Organization.OrganizationID, function (cdi) {
 
           if (cdi != null)
-            {
-              var ttwvalue = cdi.TotalTicketsWeight == null ? '2.0' : cdi.TotalTicketsWeight * 10;
+          {
+              var isDefaultSetting = cdi.TotalTicketsWeight == '0.2' && cdi.Last30Weight == '0.2' && cdi.OpenTicketsWeight == '0.2'
+                  && cdi.AvgDaysOpenWeight == '0.2' && cdi.AvgDaysToCloseWeight == '0.2';
+
+              var ttwvalue = cdi.TotalTicketsWeight == null ? '1.0' : cdi.TotalTicketsWeight * 10;
               $('#ttw-slider').slider('value', ttwvalue);
               $('#ttw-slider').next().text("Overall Weight: " + (ttwvalue * 10) + "%");
 
-              var last30slider = cdi.Last30Weight == null ? '2.0' : cdi.Last30Weight * 10;
+              var last30slider = cdi.Last30Weight == null ? '1.0' : cdi.Last30Weight * 10;
               $('#last30-slider').slider('value', last30slider);
               $('#last30-slider').next().text("Overall Weight: " + (last30slider * 10) + "%");
 
@@ -222,23 +225,23 @@ AdminPortal = function () {
               $('#otw-slider').slider('value', otwslider);
               $('#otw-slider').next().text("Overall Weight: " + (otwslider * 10) + "%");
 
-              var avgopenweight = cdi.AvgDaysOpenWeight == null ? '2.0' : cdi.AvgDaysOpenWeight * 10;
+              var avgopenweight = cdi.AvgDaysOpenWeight == null ? '1.0' : cdi.AvgDaysOpenWeight * 10;
               $('#avgopen-weight').slider('value', avgopenweight);
               $('#avgopen-weight').next().text("Overall Weight: " + (avgopenweight * 10) + "%");
 
-              var avgcloseweight = cdi.AvgDaysToCloseWeight == null ? '2.0' : cdi.AvgDaysToCloseWeight * 10;
+              var avgcloseweight = cdi.AvgDaysToCloseWeight == null ? '1.0' : cdi.AvgDaysToCloseWeight * 10;
               $('#avgclose-weight').slider('value', avgcloseweight);
               $('#avgclose-weight').next().text("Overall Weight: " + (avgcloseweight * 10) + "%");
 
-              var ticketSentimentweight = cdi.AverageSentimentScoreWeight == null ? '0' : cdi.AverageSentimentScoreWeight * 10;
+              var ticketSentimentweight = isDefaultSetting ? '0' : cdi.AverageSentimentScoreWeight * 10;
               $('#ticketSentiment-weight').slider('value', ticketSentimentweight);
               $('#ticketSentiment-weight').next().text("Overall Weight: " + (ticketSentimentweight * 10) + "%");
 
-              var actionCountweight = cdi.AverageActionCountWeight == null ? '0' : cdi.AverageActionCountWeight * 10;
+              var actionCountweight = isDefaultSetting ? '0' : cdi.AverageActionCountWeight * 10;
               $('#actionCount-weight').slider('value', actionCountweight);
               $('#actionCount-weight').next().text("Overall Weight: " + (actionCountweight * 10) + "%");
 
-              var ticketSeverityweight = cdi.AverageSeverityWeight == null ? '0' : cdi.AverageSeverityWeight * 10;
+              var ticketSeverityweight = isDefaultSetting ? '0' : cdi.AverageSeverityWeight * 10;
               $('#ticketSeverity-weight').slider('value', ticketSeverityweight);
               $('#ticketSeverity-weight').next().text("Overall Weight: " + (ticketSeverityweight * 10) + "%");
 
