@@ -8,23 +8,26 @@ using System.Data.Linq.Mapping;
 
 namespace TeamSupport.Data.Model
 {
+    /// <summary>
+    /// Wrapper for valid TicketID
+    /// </summary>
     public class TicketModel
     {
-        public UserModel User { get; private set; }
+        public UserSession User { get; private set; }
         public int TicketID { get; private set; }
         public DataContext _db { get; private set; }
 
-        public TicketModel(UserModel user, int ticketID)
+        public TicketModel(UserSession user, int ticketID)
         {
             User = user;
             _db = User._db;
             TicketID = ticketID;
 
-            // exists?
-            string query = $"SELECT TicketID FROM Tickets  WITH (NOLOCK) WHERE TicketID={ticketID} AND OrganizationID={User.Organization.OrganizationID}";
-            IEnumerable<int> x = _db.ExecuteQuery<int>(query);
-            if (!x.Any())
-                throw new Exception(String.Format($"{query} not found"));
+            //// exists?
+            //string query = $"SELECT TicketID FROM Tickets  WITH (NOLOCK) WHERE TicketID={ticketID} AND OrganizationID={User.Organization.OrganizationID}";
+            //IEnumerable<int> x = _db.ExecuteQuery<int>(query);
+            //if (!x.Any())
+            //    throw new Exception(String.Format($"{query} not found"));
         }
 
         /// <summary> Existing Action </summary>
@@ -45,5 +48,23 @@ namespace TeamSupport.Data.Model
             return new ActionModel(this, info, ticketData, user);
         }
 
+        public void Merge(TicketModel source)
+        {
+
+        }
+
+        /// <summary>
+        /// equivalent to ts-app\TeamSupport.Data\BusinessObjects\Tickets.cs MergeAttachments(int oldticketID, int newticketID)
+        /// </summary>
+        public void MergeAttachments(int oldticketID)
+        {
+            // take attachments
+            string query = $"UPDATE attachments SET RefID={TicketID} WHERE (RefID = {oldticketID} AND RefType = {ReferenceType.Actions}";
+            _db.ExecuteCommand(query);
+
+            // log old ticket number
+            query = $"SELECT TicketNumber FROM Tickets WHERE TicketID={oldticketID}";
+            int ticketNumber = _db.ExecuteQuery<int>(query).FirstOrDefault();
+            User.AddActionLog(ActionLogType.Update, ReferenceType.Tickets, TicketID, $"Merged '{ticketNumber}' Action Attachments");        }
     }
 }

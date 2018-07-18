@@ -5,33 +5,39 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
+using System.IO;
 
 namespace TeamSupport.Data.Model
 {
+    /// <summary>
+    /// Wrapper for Valid ActionID
+    /// </summary>
     public class ActionModel
     {
         public TicketModel Ticket { get; private set; }
         public int ActionID { get; private set; }
         public DataContext _db { get; private set; }
-        public Action DataAction { get; private set; }
+        public ActionAttachmentModel[] Attachments { get; private set; }
+        public Action DataAction { get; private set; }  // used by TicketPageService
 
+        /// <summary> Root constructor </summary>
         public ActionModel(TicketModel ticket, int actionID)
         {
             Ticket = ticket;
             ActionID = actionID;
             _db = ticket._db;
 
-            // Actions do not have OrganizationID so we assume
-            string query = $"SELECT ActionID from Actions WHERE ActionID={ActionID} AND TicketID={Ticket.TicketID}";
-            IEnumerable<int> x = _db.ExecuteQuery<int>(query);
-            if (!x.Any())
-                throw new Exception(String.Format($"{query} not found"));
+            //// Actions do not have OrganizationID so we assume
+            //string query = $"SELECT ActionID FROM Actions WITH (NOLOCK) WHERE ActionID={ActionID} AND TicketID={Ticket.TicketID}";
+            //IEnumerable<int> x = _db.ExecuteQuery<int>(query);
+            //if (!x.Any())
+            //    throw new Exception(String.Format($"{query} not found"));
         }
 
         /// <summary> New Action </summary>
         public ActionModel(TicketModel ticket, Action action) : this(ticket, action.ActionID)
         {
-            DataAction = action;
+            DataAction = action;  // Keep the Action?
         }
 
         /// <summary> Add to existing ticket </summary>
@@ -45,6 +51,29 @@ namespace TeamSupport.Data.Model
             this(ticket, AddActionOnNewTicket(ticketData, info, user))
         {
         }
+
+        public string GetPath()
+        {
+            string path = Ticket.User.Organization.GetPath();
+            path = Path.Combine(path, "Actions");   // see AttachmentPath.GetFolderName(AttachmentPath.Folder.Actions);
+            path = Path.Combine(path, ActionID.ToString());
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            return path;
+        }
+
+        //C:\Users\sprichard\source\repos\ts-app\TeamSupport.Handlers\UploadUtils.cs
+        //public static void SaveFiles(HttpContext context, AttachmentPath.Folder folder, int organizationID, int? itemID)
+
+        //public bool IsAuthenticated(bool isKnowledgeBase)
+        //{
+        //    string query = $"SELECT a.ActionID FROM Actions a WITH (NOLOCK) JOIN Tickets t on a.TicketID=t.TicketID WHERE ActionID = {ActionID} AND a.IsVisibleOnPortal = 1 AND t.IsVisibleOnPortal = 1";
+        //    if(isKnowledgeBase)
+        //        query += " AND a.IsKnowledgeBase = 1 AND t.IsKnowledgeBase = 1";
+
+        //    int actionID = _db.ExecuteQuery<int>(query).FirstOrDefault();   // does a record exist satisfying all the conditions?
+        //    return actionID == ActionID;
+        //}
 
         /// <summary>
         /// OLD DATA LAYER - extracted from ts-app\WebApp\App_Code\TicketPageService.cs UpdateAction(ActionProxy proxy)
@@ -100,29 +129,17 @@ namespace TeamSupport.Data.Model
             return action;
         }
 
-        //public AttachmentModel[] Attachments()
-        //{
-        //    //return _db.ExecuteQuery<AttachmentProxy>($"SELECT a.*, (u.FirstName + ' ' + u.LastName) AS CreatorName FROM Attachments a LEFT JOIN Users u ON u.UserID = a.CreatorID WHERE(RefID = @RefID) AND(RefType = 0)").ToArray();
-        //    //Attachments attachments = new Attachments(loginUser);
-        //    //attachments.LoadByActionID(ActionID);
-        //    //item.Attachments = GetActionAttachments(action.ActionID, loginUser);
-        //}
-
-        public AttachmentProxy[] GetActionAttachments()
+        public void LoadAttachments()
         {
-            AttachmentProxy[] attachments = null;
             try
             {
-                const ReferenceType actionType = ReferenceType.Actions;
-                string query = $"SELECT a.*, (u.FirstName + ' ' + u.LastName) AS CreatorName FROM Attachments a WITH (NOLOCK) LEFT JOIN Users u ON u.UserID = a.CreatorID WHERE (RefID = {ActionID}) AND(RefType = {(int)actionType})";
-                attachments = _db.ExecuteQuery<AttachmentProxy>(query).ToArray();
-                return attachments;
+                string query = $"SELECT a.*, (u.FirstName + ' ' + u.LastName) AS CreatorName FROM Attachments a WITH (NOLOCK) LEFT JOIN Users u ON u.UserID = a.CreatorID WHERE (RefID = {ActionID}) AND(RefType = {(int)ReferenceType.Actions})";
+                Attachments = _db.ExecuteQuery<ActionAttachmentModel>(query).ToArray();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debugger.Break();
             }
-            return null;
         }
     }
 }

@@ -839,13 +839,20 @@ namespace TSWebServices
 
         TeamSupport.Data.Action NewAction(ActionProxy actionProxy)
         {
-            TeamSupport.Data.Action dataAction;
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            using (Model model = new Model(loginUser.ConnectionString))
+            TeamSupport.Data.Action dataAction = null;
+            try
             {
-                ActionModel action = model.Organization(loginUser.OrganizationID).User(loginUser.UserID).Ticket(actionProxy.TicketID).InsertAction(loginUser, actionProxy);
-                //action.InsertAttachment();
-                dataAction = action.DataAction;
+                using (ConnectionModel model = new ConnectionModel(loginUser.ConnectionString))
+                {
+                    ActionModel action = model.Organization(loginUser.OrganizationID).UserSession(loginUser.UserID).Ticket(actionProxy.TicketID).InsertAction(loginUser, actionProxy);
+                    //action.InsertAttachment();
+                    dataAction = action.DataAction;
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogs.LogException(loginUser, ex, "NewAction", "TicketPageService.NewAction");
             }
             return dataAction;
         }
@@ -854,15 +861,13 @@ namespace TSWebServices
         public TimeLineItem UpdateAction(ActionProxy proxy)
         {
             // new action
-            TeamSupport.Data.Action action;
             if (proxy.ActionID == -1)
             {
-                action = NewAction(proxy);
-                return GetActionTimelineItem(action);
+                TeamSupport.Data.Action newAction = NewAction(proxy);
+                return GetActionTimelineItem(newAction);
             }
 
-            // existing action
-            action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), proxy.ActionID);
+            TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), proxy.ActionID);
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
 
             if (action == null)
@@ -870,24 +875,46 @@ namespace TSWebServices
                 action = (new Actions(TSAuthentication.GetLoginUser())).AddNewAction();
                 action.TicketID = proxy.TicketID;
                 action.CreatorID = TSAuthentication.UserID;
-                action.Description = proxy.Description;
-
-                // add signature
-                if (!string.IsNullOrWhiteSpace(user.Signature) && proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase && proxy.ActionID == -1 &&
-                    (!proxy.Description.Contains(user.Signature)))
+                if (!string.IsNullOrWhiteSpace(user.Signature) && proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase && proxy.ActionID == -1)
                 {
-                    action.Description += "<br/><br/>" + user.Signature;
+                    if (!proxy.Description.Contains(user.Signature))
+                    {
+                        action.Description = proxy.Description + "<br/><br/>" + user.Signature;
+                    }
+                    else
+                    {
+                        action.Description = proxy.Description;
+                    }
+                }
+                else
+                {
+                    action.Description = proxy.Description;
                 }
             }
             else
             {
-                action.Description = proxy.Description;
-
-                // add signature
-                if (proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase && proxy.ActionID == -1 &&
-                    (!string.IsNullOrWhiteSpace(user.Signature)) &&
-                        (!action.Description.Contains(user.Signature.Replace(" />", ">"))))
-                            action.Description += "<br/><br/>" + user.Signature;
+                if (proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase && proxy.ActionID == -1)
+                {
+                    if (!string.IsNullOrWhiteSpace(user.Signature))
+                    {
+                        if (!action.Description.Contains(user.Signature.Replace(" />", ">")))
+                        {
+                            action.Description = proxy.Description + "<br/><br/>" + user.Signature;
+                        }
+                        else
+                        {
+                            action.Description = proxy.Description;
+                        }
+                    }
+                    else
+                    {
+                        action.Description = proxy.Description;
+                    }
+                }
+                else
+                {
+                    action.Description = proxy.Description;
+                }
             }
 
             if (!CanEditAction(action)) return null;
@@ -902,7 +929,6 @@ namespace TSWebServices
 
             return GetActionTimelineItem(action);
         }
-
         [WebMethod]
         public TimeLineItem UpdateActionCopyingAttachment(ActionProxy proxy, int insertedKBTicketID)
         {
