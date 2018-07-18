@@ -49,6 +49,12 @@ namespace TSWebServices
             return TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).GetProxy();
         }
 
+		[WebMethod]
+		public List<string> GetCurrentUserGroups()
+		{
+			return TSAuthentication.GetUserGroups();
+		}
+
         [WebMethod]
         public string GetDomains()
         {
