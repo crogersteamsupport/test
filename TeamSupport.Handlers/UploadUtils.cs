@@ -13,6 +13,8 @@ using TeamSupport.Data;
 using System.IO;
 using TeamSupport.WebUtils;
 using System.Runtime.Serialization;
+using TeamSupport.Data.Model;
+using System.Diagnostics;
 
 namespace TeamSupport.Handlers
 {
@@ -31,8 +33,35 @@ namespace TeamSupport.Handlers
             return segments;
         }
 
+        static void SaveAttachments(HttpContext context, int organizationID, int? actionID)
+        {
+            if (!actionID.HasValue)
+                return;
+
+            try
+            {
+                LoginUser user = TSAuthentication.GetLoginUser();
+                using (ConnectionModel model = new ConnectionModel(LoginUser.GetConnectionString()))
+                {
+                    int ticketID = ActionModel.GetTicketID(model._db, actionID.Value);
+                    ActionModel action = model.Organization(organizationID).UserSession(user.UserID).Ticket(ticketID).Action(actionID.Value);
+                    List<ActionAttachmentModel> attachments = action.InsertActionAttachments(user, context.Request);
+                }
+            }
+            catch(Exception ex)
+            {
+                Debugger.Break();
+            }
+        }
+
         public static void SaveFiles(HttpContext context, AttachmentPath.Folder folder, int organizationID, int? itemID)
         {
+            if (folder == AttachmentPath.Folder.Actions)
+            {
+                SaveAttachments(context, organizationID, itemID);
+                //return;
+            }
+
             ReferenceType refType = AttachmentPath.GetFolderReferenceType(folder);
             List<UploadResult> result = new List<UploadResult>();
 

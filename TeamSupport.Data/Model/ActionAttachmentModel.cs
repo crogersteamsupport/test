@@ -6,140 +6,126 @@ using System.Threading.Tasks;
 using System.Data.Linq;
 using System.IO;
 using System.Web;
+using System.Diagnostics;
 
 namespace TeamSupport.Data.Model
 {
-    public class UploadResult
-    {
-        public string name;
-        public long size;
-        public string type;
-        public int id;
-
-        public UploadResult(string name, string type, long size, int id = 0)
-        {
-            this.name = name;
-            this.size = size;
-            this.type = type;
-            this.id = id;
-        }
-    }
-
     /// <summary>
     /// see 
     /// </summary>
-    public class ActionAttachmentModel : AttachmentProxy
+    public class ActionAttachmentModel
     {
         public ActionModel Action { get; private set; }
+        public int ActionAttachmentID { get; private set; }
         public DataContext _db { get; private set; }
-        public AttachmentPath.Folder Folder { get; private set; }
-        string _filePath;
 
-        public ActionAttachmentModel(ActionModel action)
+        public string AttachmentPath { get; private set; }
+
+        public ActionAttachmentModel(ActionModel action, LoginUser user, HttpPostedFile postedFile, HttpRequest request)
         {
             Action = action;
+            _db = Action._db;
+
+            // save file
+            AttachmentPath = ValidateFileName(postedFile.FileName);
+            string filePath = Path.Combine(Action.AttachmentPath, AttachmentPath);
+            postedFile.SaveAs(filePath);
+
+            Attachment attachment = AddAttachment(user, postedFile, request, AttachmentPath, filePath);
+            ActionAttachmentID = attachment.AttachmentID;
+            Validate();
         }
 
-        //GetAttachmentPath(int filePathID)
-        //{
-        //    string root = _db.ExecuteQuery<string>($"SELECT Value FROM FilePaths WHERE ID={filePathID}").FirstOrDefault();
-        //    return System.IO.Path.Combine(System.IO.Path.Combine(root, "Actions"), Action.ActionID.ToString()) + "\\";
-        //}
-
-        public void CreateAttachment(string fileName, string description)
+        /// <summary>
+        /// OLD DATA LAYER - extracted from ts-app\TeamSupport.Handlers\UploadUtils.cs SaveFiles()
+        /// </summary>
+        private Attachment AddAttachment(LoginUser user, HttpPostedFile postedFile, HttpRequest request, string fileName, string filePath)
         {
-            //string directory = TSUtils.GetAttachmentPath(folderName, _refID, 3);
-            //string fileName = file.GetName();
-            //fileName = Path.GetFileName(fileName);
-            //fileName = DataUtils.VerifyUniqueFileName(directory, fileName);
-            //Directory.CreateDirectory(directory);
-            //file.SaveAs(attachment.Path, true);
-
-            AttachmentProxy attachment = new AttachmentProxy()
-            {
-                //AttachmentID =
-                OrganizationID = Action.Ticket.User.Organization.OrganizationID,
-                FileName = fileName,
-                //FileType =
-                //FileSize =
-                //Path =
-                Description = description,
-                DateCreated = DateTime.UtcNow,
-                //DateModified =
-                CreatorID = Action.Ticket.User.UserID,
-                //ModifierID =
-                RefType = ReferenceType.Actions,
-                RefID = Action.ActionID,
-                CreatorName = Action.Ticket.User.CreatorName,
-                //SentToJira =
-                //ProductFamilyID =
-                //ProductFamily =
-                //SentToTFS =
-                //SentToSnow =
-                //FilePathID =
-            };
+            // insert ActionAttachment record
+            Attachment attachment = new Attachments(user).AddNewAttachment();
+            attachment.RefType = ReferenceType.Actions;
+            attachment.RefID = Action.ActionID;
+            attachment.OrganizationID = Action.Ticket.User.Organization.OrganizationID;
+            attachment.FileName = fileName;
+            attachment.Path = filePath;
+            attachment.FileType = postedFile.ContentType;
+            attachment.FileSize = postedFile.ContentLength;
+            attachment.FilePathID = 3;
+            if (request.Form["description"] != null)
+                attachment.Description = request.Form["description"].Replace("\n", "<br />");
+            if (request.Form["productFamilyID"] != null && request.Form["productFamilyID"] != "-1")
+                attachment.ProductFamilyID = Int32.Parse(request.Form["productFamilyID"]);
+            attachment.Collection.Save();
+            return attachment;
         }
 
-        //public static void SaveFiles(HttpContext context, AttachmentPath.Folder folder, int organizationID, int? itemID)
+        [Conditional("DEBUG")]
+        void Validate()
+        {
+            string query = $"SELECT AttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE AttachmentID={ActionAttachmentID} AND ActionID={Action.ActionID} AND OrganizationID={Action.Ticket.User.Organization.OrganizationID}";
+            //string query = $"SELECT AttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE AttachmentID={ActionAttachmentID} AND ActionID={Action.ActionID} AND TicketID={Action.Ticket.TicketID} AND OrganizationID={Action.Ticket.User.Organization.OrganizationID}";
+            IEnumerable<int> x = _db.ExecuteQuery<int>(query);
+            if (!x.Any())
+                throw new Exception(String.Format($"{query} not found"));
+        }
+
+        string ValidateFileName(string text)
+        {
+            string fileName = Path.GetFileName(text);
+            fileName = DataUtils.VerifyUniqueUrlFileName(Action.AttachmentPath, fileName);
+            return RemoveSpecialCharacters(fileName);
+        }
+
+        static string RemoveSpecialCharacters(string text)
+        {
+            return Path.GetInvalidFileNameChars().Aggregate(text, (current, c) => current.Replace(c.ToString(), "_"));
+        }
+
+        static string VerifyUniqueUrlFileName(string directory, string fileName)
+        {
+            string path = Path.Combine(directory, fileName);
+            string result = fileName;
+            int i = 0;
+            while (File.Exists(path))
+            {
+                i++;
+                if (i > 20) break;
+                string name = Path.GetFileNameWithoutExtension(fileName);
+                string ext = Path.GetExtension(fileName);
+                result = name + "_" + i.ToString() + ext;
+                path = Path.Combine(directory, result);
+            }
+
+            return result;
+        }
+
+        //public ActionAttachmentModel(string fileName, string description)
         //{
-        //    ReferenceType refType = AttachmentPath.GetFolderReferenceType(folder);
-        //    List<UploadResult> result = new List<UploadResult>();
-
-        //    string path = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, folder, 3);
-        //    if (itemID != null) path = Path.Combine(path, itemID.ToString());
-        //    if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-        //    HttpFileCollection files = context.Request.Files;
-
-        //    for (int i = 0; i < files.Count; i++)
+        //    _proxy = new AttachmentProxy()
         //    {
-        //        if (files[i].ContentLength > 0)
-        //        {
-        //            string fileName = RemoveSpecialCharacters(DataUtils.VerifyUniqueUrlFileName(path, Path.GetFileName(files[i].FileName)));
-
-        //            files[i].SaveAs(Path.Combine(path, fileName));
-        //            if (refType != ReferenceType.None && itemID != null)
-        //            {
-        //                Attachment attachment = (new Attachments(TSAuthentication.GetLoginUser())).AddNewAttachment();
-        //                attachment.RefType = refType;
-        //                attachment.RefID = (int)itemID;
-        //                attachment.OrganizationID = organizationID;
-        //                attachment.FileName = fileName;
-        //                attachment.Path = Path.Combine(path, fileName);
-        //                attachment.FileType = files[i].ContentType;
-        //                attachment.FileSize = files[i].ContentLength;
-        //                attachment.FilePathID = 3;
-        //                if (context.Request.Form["description"] != null)
-        //                    attachment.Description = context.Request.Form["description"].Replace("\n", "<br />");
-        //                if (context.Request.Form["productFamilyID"] != null && context.Request.Form["productFamilyID"] != "-1")
-        //                    attachment.ProductFamilyID = Int32.Parse(context.Request.Form["productFamilyID"]);
-
-        //                attachment.Collection.Save();
-        //                result.Add(new UploadResult(fileName, attachment.FileType, attachment.FileSize, attachment.AttachmentID));
-        //            }
-        //            else
-        //            {
-        //                switch (refType)
-        //                {
-        //                    case ReferenceType.Imports:
-        //                        //Not saving import till user click on import button saving both imports and mappings
-        //                        //Import import = (new Imports(TSAuthentication.GetLoginUser())).AddNewImport();
-        //                        //import.RefType = (ReferenceType)Convert.ToInt32(context.Request.Form["refType"]);
-        //                        //import.FileName = fileName;
-        //                        //import.OrganizationID = TSAuthentication.OrganizationID;
-        //                        //import.Collection.Save();
-        //                        result.Add(new UploadResult(fileName, files[i].ContentType, files[i].ContentLength));
-        //                        break;
-        //                    default:
-        //                        break;
-        //                }
-        //            }
-        //        }
-        //    }
-        //    context.Response.Clear();
-        //    context.Response.ContentType = "text/plain";
-        //    context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
+        //        //AttachmentID =
+        //        OrganizationID = Action.Ticket.User.Organization.OrganizationID,
+        //        FileName = fileName,
+        //        //FileType =
+        //        //FileSize =
+        //        //Path =
+        //        Description = description,
+        //        DateCreated = DateTime.UtcNow,
+        //        //DateModified =
+        //        CreatorID = Action.Ticket.User.UserID,
+        //        //ModifierID =
+        //        RefType = ReferenceType.Actions,
+        //        RefID = Action.ActionID,
+        //        //CreatorName = Action.Ticket.User.CreatorName,
+        //        //SentToJira =
+        //        //ProductFamilyID =
+        //        //ProductFamily =
+        //        //SentToTFS =
+        //        //SentToSnow =
+        //        //FilePathID =
+        //    };
         //}
-
 
     }
 }
+

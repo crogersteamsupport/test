@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
+using System.Diagnostics;
 
 namespace TeamSupport.Data.Model
 {
@@ -22,12 +23,16 @@ namespace TeamSupport.Data.Model
             User = user;
             _db = User._db;
             TicketID = ticketID;
+            Validate();
+        }
 
-            //// exists?
-            //string query = $"SELECT TicketID FROM Tickets  WITH (NOLOCK) WHERE TicketID={ticketID} AND OrganizationID={User.Organization.OrganizationID}";
-            //IEnumerable<int> x = _db.ExecuteQuery<int>(query);
-            //if (!x.Any())
-            //    throw new Exception(String.Format($"{query} not found"));
+        [Conditional("DEBUG")]
+        void Validate()
+        {
+            string query = $"SELECT TicketID FROM Tickets  WITH (NOLOCK) WHERE TicketID={TicketID} AND OrganizationID={User.Organization.OrganizationID}";
+            IEnumerable<int> x = _db.ExecuteQuery<int>(query);
+            if (!x.Any())
+                throw new Exception(String.Format($"{query} not found"));
         }
 
         /// <summary> Existing Action </summary>
@@ -65,6 +70,7 @@ namespace TeamSupport.Data.Model
             // log old ticket number
             query = $"SELECT TicketNumber FROM Tickets WHERE TicketID={oldticketID}";
             int ticketNumber = _db.ExecuteQuery<int>(query).FirstOrDefault();
-            User.AddActionLog(ActionLogType.Update, ReferenceType.Tickets, TicketID, $"Merged '{ticketNumber}' Action Attachments");        }
+            User.AddActionLog(ActionLogType.Update, ReferenceType.Tickets, TicketID, $"Merged '{ticketNumber}' Action Attachments");
+        }
     }
 }

@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.IO;
+using System.Diagnostics;
 
 namespace TeamSupport.Data.Model
 {
@@ -15,22 +16,26 @@ namespace TeamSupport.Data.Model
     /// </summary>
     public class OrganizationModel
     {
-        public ConnectionModel Model { get; private set; }
+        public ConnectionModel ConnectionModel { get; private set; }
         public int OrganizationID { get; private set; }
         public DataContext _db { get; private set; }
         //TicketTypeModel[] _ticketTypes; // contains TicketStatusModel[]
 
         public OrganizationModel(ConnectionModel user, int organizationID)
         {
-            Model = user;
+            ConnectionModel = user;
             OrganizationID = organizationID;
             _db = user._db;
+            Validate();
+        }
 
-            //// exists?
-            //string query = $"SELECT OrganizationID FROM Organizations  WITH (NOLOCK) WHERE OrganizationID={OrganizationID}";
-            //IEnumerable<int> x = _db.ExecuteQuery<int>(query);
-            //if (!x.Any())
-            //    throw new Exception(String.Format($"{query} not found"));
+        [Conditional("DEBUG")]
+        void Validate()
+        {
+            string query = $"SELECT OrganizationID FROM Organizations  WITH (NOLOCK) WHERE OrganizationID={OrganizationID}";
+            IEnumerable<int> x = _db.ExecuteQuery<int>(query);
+            if (!x.Any())
+                throw new Exception(String.Format($"{query} not found"));
         }
 
         public UserSession UserSession(int userID)
@@ -38,11 +43,11 @@ namespace TeamSupport.Data.Model
             return new UserSession(this, userID);
         }
 
-        public string GetPath()
+        public string AttachmentPath(int it)
         {
-            string path = Model.GetPath();
+            string path = ConnectionModel.AttachmentPath(id);
             path = Path.Combine(Path.Combine(path, "Organizations"), OrganizationID.ToString());
-            if(!Directory.Exists(path))
+            if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             return path;
         }

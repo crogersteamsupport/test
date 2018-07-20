@@ -830,7 +830,7 @@
     <Compile Include="Model\ActionAttachmentModel.cs" />
     <Compile Include="Model\ActionModel.cs" />
     <Compile Include="Model\FilePathModel.cs" />
-    <Compile Include="Model\DBConnection.cs" />
+    <Compile Include="Model\ConnectionModel.cs" />
     <Compile Include="Model\OrganizationModel.cs" />
     <Compile Include="Model\TicketModel.cs" />
     <Compile Include="Model\UserSession.cs" />
@@ -1047,6 +1047,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="bin\x86\Debug\TeamSupport.Data.dll.config" />
+    <None Include="Model\Model.cd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

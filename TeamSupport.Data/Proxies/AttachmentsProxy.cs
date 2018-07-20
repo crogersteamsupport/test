@@ -36,10 +36,34 @@ namespace TeamSupport.Data
     [DataMember] [Column] public bool SentToTFS { get; set; }
     [DataMember] [Column] public bool SentToSnow { get; set; }
     [DataMember] [Column] public int? FilePathID { get; set; }
-          
-  }
-  
-  public partial class Attachment : BaseItem
+
+    public AttachmentProxy(Attachment attachment)
+    {
+        FilePathID = attachment.FilePathID;
+        SentToSnow = attachment.SentToSnow;
+        SentToTFS = attachment.SentToTFS;
+        ProductFamilyID = attachment.ProductFamilyID;
+        SentToJira = attachment.SentToJira;
+        RefID = attachment.RefID;
+        RefType = attachment.RefType;
+        ModifierID = attachment.ModifierID;
+        CreatorID = attachment.CreatorID;
+        Description = attachment.Description;
+        Path = attachment.Path;
+        FileSize = attachment.FileSize;
+        FileType = attachment.FileType;
+        FileName = attachment.FileName;
+        OrganizationID = attachment.OrganizationID;
+        AttachmentID = attachment.AttachmentID;
+        CreatorName = attachment.CreatorName;
+
+        DateCreated = DateTime.SpecifyKind(attachment.DateCreatedUtc, DateTimeKind.Utc);
+        DateModified = DateTime.SpecifyKind(attachment.DateModifiedUtc, DateTimeKind.Utc);
+    }
+
+    }
+
+    public partial class Attachment : BaseItem
   {
     public AttachmentProxy GetProxy()
     {
