@@ -20,7 +20,7 @@ namespace TeamSupport.Data.Model
         public int ActionID { get; private set; }
         public DataContext _db { get; private set; }
         //public List<ActionAttachmentModel> Attachments { get; private set; }
-        public Action HackDataAction { get; private set; }  // used by TicketPageService
+        public Action DataLayerAction { get; private set; }  // used by TicketPageService
 
         /// <summary> Root constructor </summary>
         public ActionModel(TicketModel ticket, int actionID)
@@ -31,19 +31,19 @@ namespace TeamSupport.Data.Model
             Validate();
         }
 
-        /// <summary> New Action </summary>
+        /// <summary> load action </summary>
         public ActionModel(TicketModel ticket, Action action) : this(ticket, action.ActionID)
         {
-            HackDataAction = action;  // Keep the Action?
+            DataLayerAction = action;  // Keep the Action?
         }
 
-        /// <summary> Add to existing ticket </summary>
+        /// <summary> new action on existing ticket </summary>
         public ActionModel(TicketModel ticket, LoginUser loginUser, ActionProxy proxy) :
             this(ticket, AddAction(loginUser, proxy, ticket._db))
         {
         }
 
-        /// <summary> Add to new ticket</summary>
+        /// <summary> new action on new ticket </summary>
         public ActionModel(TicketModel ticket, ActionProxy info, Ticket ticketData, User user) :
             this(ticket, AddActionOnNewTicket(ticketData, info, user))
         {

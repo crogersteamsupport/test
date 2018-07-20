@@ -848,7 +848,7 @@ namespace TSWebServices
                     ActionModel action = model.Organization(loginUser.OrganizationID).UserSession(loginUser.UserID).Ticket(actionProxy.TicketID).InsertAction(loginUser, actionProxy);
                     //action.LoadAttachments();
                     //action.InsertAttachment();
-                    dataAction = action.HackDataAction;
+                    dataAction = action.DataLayerAction;
                 }
             }
             catch (Exception ex)

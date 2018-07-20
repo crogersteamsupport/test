@@ -33,37 +33,45 @@ namespace TeamSupport.Handlers
             return segments;
         }
 
-        static void SaveAttachments(HttpContext context, int organizationID, int? actionID)
+        static List<UploadResult> SaveActionAttachments(HttpContext context, int organizationID, int actionID, List<UploadResult> result)
         {
-            if (!actionID.HasValue)
-                return;
-
             try
             {
                 LoginUser user = TSAuthentication.GetLoginUser();
-                using (ConnectionModel model = new ConnectionModel(LoginUser.GetConnectionString()))
+                using (ConnectionModel connection = new ConnectionModel(LoginUser.GetConnectionString()))
                 {
-                    int ticketID = ActionModel.GetTicketID(model._db, actionID.Value);
-                    ActionModel action = model.Organization(organizationID).UserSession(user.UserID).Ticket(ticketID).Action(actionID.Value);
+                    // get the ticketID from the actionID
+                    int ticketID = ActionModel.GetTicketID(connection._db, actionID);
+
+                    // add the attachments to the action
+                    ActionModel action = connection.Organization(organizationID).UserSession(user.UserID).Ticket(ticketID).Action(actionID);
                     List<ActionAttachmentModel> attachments = action.InsertActionAttachments(user, context.Request);
+                    foreach(ActionAttachmentModel attachment in attachments)
+                        result.Add(new UploadResult(attachment.FileName, attachment.ContentType, attachment.ContentLength));
                 }
             }
             catch(Exception ex)
             {
                 Debugger.Break();
             }
+            return result;
         }
 
         public static void SaveFiles(HttpContext context, AttachmentPath.Folder folder, int organizationID, int? itemID)
         {
+            List<UploadResult> result = new List<UploadResult>();
             if (folder == AttachmentPath.Folder.Actions)
             {
-                SaveAttachments(context, organizationID, itemID);
-                //return;
+                if(itemID.HasValue)
+                    result = SaveActionAttachments(context, organizationID, itemID.Value, result);
+
+                context.Response.Clear();
+                context.Response.ContentType = "text/plain";
+                context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
+                return;
             }
 
             ReferenceType refType = AttachmentPath.GetFolderReferenceType(folder);
-            List<UploadResult> result = new List<UploadResult>();
 
             string path = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, folder, 3);
             if (itemID != null) path = Path.Combine(path, itemID.ToString());

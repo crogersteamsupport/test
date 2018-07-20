@@ -43,7 +43,7 @@ namespace TeamSupport.Data.Model
             return new UserSession(this, userID);
         }
 
-        public string AttachmentPath(int it)
+        public string AttachmentPath(int id)
         {
             string path = ConnectionModel.AttachmentPath(id);
             path = Path.Combine(Path.Combine(path, "Organizations"), OrganizationID.ToString());

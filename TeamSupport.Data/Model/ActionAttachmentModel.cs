@@ -19,16 +19,21 @@ namespace TeamSupport.Data.Model
         public int ActionAttachmentID { get; private set; }
         public DataContext _db { get; private set; }
 
+        public string FileName { get; private set; }
         public string AttachmentPath { get; private set; }
+        public string ContentType { get; private set; }
+        public int ContentLength { get; private set; }
 
         public ActionAttachmentModel(ActionModel action, LoginUser user, HttpPostedFile postedFile, HttpRequest request)
         {
             Action = action;
             _db = Action._db;
+            ContentType = postedFile.ContentType;
+            ContentLength = postedFile.ContentLength;
 
             // save file
-            AttachmentPath = ValidateFileName(postedFile.FileName);
-            string filePath = Path.Combine(Action.AttachmentPath, AttachmentPath);
+            FileName = ValidateFileName(postedFile.FileName);
+            string filePath = Path.Combine(Action.AttachmentPath, FileName);
             postedFile.SaveAs(filePath);
 
             Attachment attachment = AddAttachment(user, postedFile, request, AttachmentPath, filePath);

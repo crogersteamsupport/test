@@ -1,13 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="TeamSupport.Data.Model.ActionAttachmentModel">
-    <Position X="12.5" Y="1.75" Width="2" />
+    <Position X="12.75" Y="1.25" Width="2" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
-      <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAgABAAACAAAAAAAAQEAAAAgAAAAAAAAAAAAAAAAQ=</HashCode>
+      <HashCode>ACAAgABAAACAAAAAAAAQEAAAAgAAABAAAAAQAABAAAQ=</HashCode>
       <FileName>Model\ActionAttachmentModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -15,12 +14,9 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Data.Model.ActionModel">
-    <Position X="10.25" Y="1.75" Width="1.5" />
-    <Compartments>
-      <Compartment Name="Methods" Collapsed="true" />
-    </Compartments>
+    <Position X="10" Y="1.25" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>ACAAgAAAAAKgAAACEAAAAAAAAAAAAAAQAAAAAAAgAAg=</HashCode>
+      <HashCode>ACAAgAAAAAKgBAACEAAAAAAAAAAAAAAQAAAAAAAgAAA=</HashCode>
       <FileName>Model\ActionModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -28,11 +24,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Data.Model.ConnectionModel" BaseTypeListCollapsed="true">
-    <Position X="0.5" Y="1.75" Width="2" />
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-      <Compartment Name="Methods" Collapsed="true" />
-    </Compartments>
+    <Position X="0.5" Y="1.25" Width="2" />
     <TypeIdentifier>
       <HashCode>ACAAgAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJAA=</HashCode>
       <FileName>Model\ConnectionModel.cs</FileName>
@@ -40,17 +32,14 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="TeamSupport.Data.Model.FilePathModel" Collapsed="true">
-    <Position X="7" Y="6" Width="1.5" />
+    <Position X="7" Y="5.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAhAAAAAAAAAAAAAAAAAAAAAAgAAQEAgA=</HashCode>
       <FileName>Model\FilePathModel.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TeamSupport.Data.Model.OrganizationModel">
-    <Position X="3.25" Y="1.75" Width="1.75" />
-    <Compartments>
-      <Compartment Name="Methods" Collapsed="true" />
-    </Compartments>
+    <Position X="3" Y="1.25" Width="1.75" />
     <TypeIdentifier>
       <HashCode>ACAAgAAAAACAAAAQAAAAAAAAAAAABAAAAAABAAAAAAA=</HashCode>
       <FileName>Model\OrganizationModel.cs</FileName>
@@ -60,10 +49,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Data.Model.TicketModel">
-    <Position X="8" Y="1.75" Width="1.5" />
-    <Compartments>
-      <Compartment Name="Methods" Collapsed="true" />
-    </Compartments>
+    <Position X="7.25" Y="1.25" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAABgAIAAACAAAAAAAAAAAAAAAAAAQAAAAAAAAAUAAQ=</HashCode>
       <FileName>Model\TicketModel.cs</FileName>
@@ -73,10 +59,9 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Data.Model.UserSession">
-    <Position X="5.75" Y="1.75" Width="1.5" />
+    <Position X="5.25" Y="1.25" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
-      <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
       <HashCode>AAAAgAAAQACAAAACAAAAAAgAAAAAAAAAAAAAAAAAIAA=</HashCode>
