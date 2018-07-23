@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Data;
+using System.Data.SqlClient;
 using System.Web;
 using System.Web.Security;
 using TeamSupport.Data;
@@ -190,6 +190,32 @@ namespace TeamSupport.WebUtils
     public static User GetUser(LoginUser loginUser)
     {
       return Users.GetUser(loginUser, UserID);
+    }
+
+	public static List<string> GetUserGroups()
+    {
+		List<string> groups = new List<string>();
+
+		using (SqlConnection connection = new SqlConnection(LoginUser.Anonymous.ConnectionString))
+		{
+			connection.Open();
+			SqlCommand command = new SqlCommand();
+			command.Connection = connection;
+			command.CommandText = "SELECT Name FROM GroupUsers JOIN Groups ON GroupUsers.GroupID = Groups.GroupID WHERE UserID = @UserID";
+			command.Parameters.AddWithValue("UserID", TSAuthentication.UserID);
+			SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+			DataTable groupUsersTable = new DataTable();
+			groupUsersTable.Load(reader);
+
+			for (int i = 0; i < groupUsersTable.Rows.Count; i++)
+            {
+				groups.Add(groupUsersTable.Rows[i]["Name"].ToString());
+            }
+
+			reader.Close();
+		}
+
+			return groups;
     }
 
     public static Organization GetOrganization(LoginUser loginUser)

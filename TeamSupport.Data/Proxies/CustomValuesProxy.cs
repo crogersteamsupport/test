@@ -75,7 +75,7 @@ namespace TeamSupport.Data
       result.Mask = this.Mask;
       result.CustomFieldCategoryID = this.CustomFieldCategoryID;
 
-      if (this.FieldType == CustomFieldType.DateTime || this.FieldType == CustomFieldType.Date || this.FieldType == CustomFieldType.Time)
+      if (this.FieldType == CustomFieldType.DateTime || this.FieldType == CustomFieldType.Time)
       {
         result.Value = null;
         if (Row["CustomValue"] != DBNull.Value)

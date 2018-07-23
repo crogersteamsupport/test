@@ -1,4 +1,5 @@
 ﻿var chatOffline = false;
+var _groupName = null;
 
 $(document).ready(function () {
     var chatID = Ts.Utils.getQueryValue("uid", window);
@@ -6,9 +7,10 @@ $(document).ready(function () {
     var lname = Ts.Utils.getQueryValue("lname", window);
     var email = Ts.Utils.getQueryValue("email", window);
     var msg = Ts.Utils.getQueryValue("msg", window);
+	_groupName = Ts.Utils.getQueryValue("Group", window);
     var chatGuid = { chatGuid: chatID };
 
-    IssueAjaxRequest("CheckChatStatus", { chatGuid: chatID },
+	IssueAjaxRequest("CheckChatStatus", { chatGuid: chatID, groupName: _groupName },
     function (result) {
         chatOffline = !result;
 
@@ -30,7 +32,7 @@ $(document).ready(function () {
     $("#newChatForm").submit(function (e) {
         e.preventDefault();
         $(this).prop("disabled", true);
-        var contactInfo = { chatGuid: chatID, fName: $('#userFirstName').val(), lName: $('#userLastName').val(), email: $('#userEmail').val(), description: $('#userIssue').val() };
+		var contactInfo = { chatGuid: chatID, fName: $('#userFirstName').val(), lName: $('#userLastName').val(), email: $('#userEmail').val(), description: $('#userIssue').val(), groupName: _groupName };
 
         if (chatOffline) {
             IssueAjaxRequest("OfflineChat", contactInfo,
