@@ -235,11 +235,11 @@ AdminPortal = function () {
               }
               else {
                   // use what is configured
-                  ttwvalue = cdi.TotalTicketsWeight == cdi.TotalTicketsWeight * 10;
-                  last30slider = cdi.Last30Weight == cdi.Last30Weight * 10;
-                  otwslider = cdi.OpenTicketsWeight == cdi.OpenTicketsWeight * 10;
-                  avgopenweight = cdi.AvgDaysOpenWeight == cdi.AvgDaysOpenWeight * 10;
-                  avgcloseweight = cdi.AvgDaysToCloseWeight == cdi.AvgDaysToCloseWeight * 10;
+                  ttwvalue = cdi.TotalTicketsWeight == null ? '0' : cdi.TotalTicketsWeight * 10;
+                  last30slider = cdi.Last30Weight == null ? '0' : cdi.Last30Weight * 10;
+                  otwslider = cdi.OpenTicketsWeight == null ? '0' : cdi.OpenTicketsWeight * 10;
+                  avgopenweight = cdi.AvgDaysOpenWeight == null ? '0' : cdi.AvgDaysOpenWeight * 10;
+                  avgcloseweight = cdi.AvgDaysToCloseWeight == null ? '0' : cdi.AvgDaysToCloseWeight * 10;
                   ticketSentimentweight = cdi.AverageSentimentScoreWeight == null ? '0' : cdi.AverageSentimentScoreWeight * 10;
                   actionCountweight = cdi.AverageActionCountWeight == null ? '0' : cdi.AverageActionCountWeight * 10;
                   ticketSeverityweight = cdi.AverageSeverityWeight == null ? '0' : cdi.AverageSeverityWeight * 10;
@@ -289,6 +289,7 @@ AdminPortal = function () {
               }
               
               $('#cdiStatus').html("The CDI runs once per day, and the last time your account processed was: <strong>" + cdistatus + "</strong> To force an update now, please click the force update button below.");
+          }
       });
 
   }
