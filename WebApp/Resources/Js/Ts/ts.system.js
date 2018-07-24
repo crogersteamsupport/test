@@ -395,6 +395,8 @@ var _startDate = new Date();
   Ts.ReferenceTypes.KnowledgeBaseCategories = 42;
   Ts.ReferenceTypes.ProductFamilies = 44;
   Ts.ReferenceTypes.UserProducts = 46;
+  Ts.ReferenceTypes.CompanyActivity = 63;
+  Ts.ReferenceTypes.ContactActivity = 64;
 
   Ts.SystemActionTypes = {}
   Ts.SystemActionTypes.Custom = 0;

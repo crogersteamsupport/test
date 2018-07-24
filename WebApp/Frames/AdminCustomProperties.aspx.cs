@@ -602,7 +602,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
         case SelectedType.ActivityTypes:
             if (ActivityTypes.GetActivityType(UserSession.LoginUser, oldID).OrganizationID != UserSession.LoginUser.OrganizationID) return "";
             if (ActivityTypes.GetActivityType(UserSession.LoginUser, newID).OrganizationID != UserSession.LoginUser.OrganizationID) return "";
-            (new PhoneNumbers(UserSession.LoginUser)).ReplacePhoneType(oldID, newID);
+            (new Notes(UserSession.LoginUser)).ReplaceActivityType(oldID, newID);
             ActivityTypes activityTypes = new ActivityTypes(UserSession.LoginUser);
             activityTypes.DeleteFromDB(oldID);
             activityTypes.ValidatePositions(UserSession.LoginUser.OrganizationID);

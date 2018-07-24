@@ -374,6 +374,25 @@ namespace TSWebServices
                 AddAssociation(newTask.TaskID, UserID, ReferenceType.Users);
             }
 
+            foreach (int ActivityID in info.Activities)
+            {
+                Notes notes = new Notes(TSAuthentication.GetLoginUser());
+                notes.LoadByNoteID(ActivityID);
+
+                if(notes.Count > 0)
+                {
+                    var note = notes[0];
+                    if(note.RefType == ReferenceType.Organizations)
+                    {
+                        AddAssociation(newTask.TaskID, ActivityID, ReferenceType.CompanyActivity);
+                    }
+                    else if (note.RefType == ReferenceType.Users)
+                    {
+                        AddAssociation(newTask.TaskID, ActivityID, ReferenceType.ContactActivity);
+                    }
+                }
+            }
+
             string description = String.Format("{0} created task.", TSAuthentication.GetUser(loginUser).FirstLastName);
             TaskLogs.AddTaskLog(loginUser, newTask.TaskID, description);
 
@@ -856,6 +875,8 @@ namespace TSWebServices
         public List<int> Contacts { get; set; }
         [DataMember]
         public List<int> User { get; set; }
+        [DataMember]
+        public List<int> Activities { get; set; }
         [DataMember]
         public int? ParentID { get; set; }
     }

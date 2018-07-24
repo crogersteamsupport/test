@@ -102,7 +102,7 @@ function LoadAdvancedOptions() {
 
 function LoadStandardFilters() {
     if (parent.Ts.System.Organization.ProductType > 0) {
-        $('#search-standard-filters').append($('<p style="margin-bottom:5px;"><input id="include-notes" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()" style="margin-right:5px;"> Customer Notes</p>'));
+        $('#search-standard-filters').append($('<p style="margin-bottom:5px;"><input id="include-notes" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()" style="margin-right:5px;"> Customer Activities</p>'));
 
         if (parent.Ts.System.Organization.ProductType > 1) {
             $('#search-standard-filters').append($('<p style="margin-bottom:5px;"><input id="include-product-versions" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()" style="margin-right:5px;"> Product Versions</p>'));

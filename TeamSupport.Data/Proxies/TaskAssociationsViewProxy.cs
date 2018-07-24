@@ -23,6 +23,9 @@ namespace TeamSupport.Data
     [DataMember] public string Group { get; set; }
     [DataMember] public string Product { get; set; }
     [DataMember] public string Contact { get; set; }
+    [DataMember] public string Activity { get; set; }
+    [DataMember] public int ActivityID { get; set; }
+    [DataMember] public int ActivityRefID { get; set; }
           
   }
   
@@ -41,8 +44,22 @@ namespace TeamSupport.Data
       result.RefType = this.RefType;
       result.RefID = this.RefID;
       result.TaskID = this.TaskID;
-       
-       
+
+      if(result.RefType == (int)ReferenceType.CompanyActivity || result.RefType == (int)ReferenceType.ContactActivity)       
+      {
+            Notes notes = new Notes(BaseCollection.LoginUser);
+            notes.LoadByNoteID(result.RefID);
+            //check if note even exist
+            if (notes.Count > 0)
+            {
+                var notesProxy = notes[0].GetProxy();
+                result.Activity = notesProxy.Title;
+                result.ActivityID = notesProxy.NoteID;
+                result.ActivityRefID = notesProxy.RefID;
+            }
+            else
+                return null;
+      } 
        
       return result;
     }	

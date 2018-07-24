@@ -28,7 +28,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
             cache_suffix: "?v=1513012903",
             branding: false,
             plugins: "paste link code textcolor image imagetools moxiemanager table lists codesample " + resizePluginCode,
-            toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox insertUser recordVideo recordScreenTok | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
+            toolbar1: "insertPasteImage insertKb insertTicket insertActivity image insertimage insertDropBox insertUser recordVideo recordScreenTok | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
             toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect styleselect | bold italic underline strikethrough blockquote codesample | code | table",
             statusbar: true,
             gecko_spellcheck: true,
@@ -140,6 +140,33 @@ var initEditor = function (element, shouldResize, init, postinit) {
                     }
                 });
 
+                ed.addButton('insertActivity', {
+                    title: 'Insert Activity',
+                    //image: '../images/nav/16/tickets.png',
+                    icon: 'awesome fa fa-sticky-note',
+                    onclick: function () {
+                        _mainFrame.Ts.System.logAction('Activity Inserted');
+
+                        _mainFrame.Ts.MainPage.selectActivity(null, function (activity) {
+                            var html = '';
+                            if (activity.RefType == 9) //org
+                            {
+                                html = '<a href="#" target="_blank" onclick="top.Ts.MainPage.openNewCustomerNote(';
+                            }
+                            else if (activity.RefType == 22) //user
+                            {
+                                html = '<a href="#" target="_blank" onclick="top.Ts.MainPage.openNewContactNote(';
+                            }
+                             html = html + activity.RefID +',' +  activity.NoteID + '); return false;">' + activity.Title + '</a>';
+                                ed.selection.setContent(html);
+                                ed.execCommand('mceAutoResize');
+                                ed.focus();
+                            }, function () {
+                                alert('There was a problem inserting the activity link.');
+                            });
+                    }
+                });
+
                 ed.addButton('insertPasteImage', {
                     title: 'Insert Image from Clipboard',
                     //image: '../images/nav/16/imagepaste.png',
@@ -225,6 +252,7 @@ var initEditor = function (element, shouldResize, init, postinit) {
                                 _mainFrame.Ts.Services.Tickets.GetSessionInfo(function (resultID) {
                                     sessionId = resultID[0];
                                     token = resultID[1];
+                                    apiKey = resultID[2];
                                     session = OT.initSession(apiKey, sessionId);
                                     session.connect(token, function (error) {
                                         publisher = OT.initPublisher(dynamicPub.attr('id'), {
@@ -561,7 +589,7 @@ var initScheduledReportEditor = function (element, init, postinit) {
 
     var editorOptions = {
         plugins: "paste link code textcolor image imagetools moxiemanager table lists codesample autoresize",
-        toolbar1: "insertPasteImage insertTicket image insertDropBox insertUser | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
+        toolbar1: "insertPasteImage insertTicket insertActivity image insertDropBox insertUser | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
         toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect | bold italic underline strikethrough blockquote codesample | code | table",
         branding: false,
         statusbar: false,
@@ -654,6 +682,33 @@ var initScheduledReportEditor = function (element, init, postinit) {
                         }, function () {
                             alert('There was a problem inserting the ticket link.');
                         });
+                    });
+                }
+            });
+
+            ed.addButton('insertActivity', {
+                title: 'Insert Activity',
+                //image: '../images/nav/16/tickets.png',
+                icon: 'awesome fa fa-sticky-note',
+                onclick: function () {
+                    _mainFrame.Ts.System.logAction('Activity Inserted');
+
+                    _mainFrame.Ts.MainPage.selectActivity(null, function (activity) {
+                        var html = '';
+                        if (activity.RefType == 9) //org
+                        {
+                            html = '<a href="#" target="_blank" onclick="top.Ts.MainPage.openNewCustomerNote(';
+                        }
+                        else if (activity.RefType == 22) //user
+                        {
+                            html = '<a href="#" target="_blank" onclick="top.Ts.MainPage.openNewContactNote(';
+                        }
+                        html = html + activity.RefID + ',' + activity.NoteID + '); return false;">' + activity.Title + '</a>';
+                        ed.selection.setContent(html);
+                        ed.execCommand('mceAutoResize');
+                        ed.focus();
+                    }, function () {
+                        alert('There was a problem inserting the activity link.');
                     });
                 }
             });
