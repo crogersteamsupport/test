@@ -1557,7 +1557,7 @@ WHERE ot.OrganizationID = @OrganizationID {0}";
                         break;
                     case ProductFamiliesRightType.SomeFamilies:
                         rightsClause = @" AND 
-                        Ticketid IN (
+                        (Ticketid IN (
                                         Select tv.ticketid
                                         FROM userrightsproductfamilies urpf
 		                                JOIN Products p on p.ProductFamilyID = urpf.ProductFamilyID and urpf.UserID = {0}
@@ -1569,6 +1569,7 @@ WHERE ot.OrganizationID = @OrganizationID {0}";
 	                                    AND gu.userid = {0}
 	                                    AND (tv.ProductID = p.ProductID OR tv.ProductID is NULL)
 	                                    GROUP BY tv.TicketID)
+                                    OR tv.UserID = {0} )
                                     ";
                         //      rightsClause = @" AND (
                         //  TicketID IN 
