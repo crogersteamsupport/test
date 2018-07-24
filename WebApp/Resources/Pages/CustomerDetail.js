@@ -1992,6 +1992,12 @@ $(document).ready(function () {
         var activityType = $('#ddlNoteActivityType').val();
         var DateOccurred = convertToValidDate($('#activityDate').val());
 
+        if (DateOccurred == null)
+        {
+            alert("Invalid date news to be in the format of " + _dateFormat);
+            return;
+        }
+
         if ((title.length || description.length) < 1) {
             alert("Please fill in all the required information");
             return;
@@ -4159,7 +4165,12 @@ function convertToValidDate(val) {
     if (val == "")
         return value;
 
-    return moment(val, _dateFormat).format('MM/DD/YYYY');
+    var date = moment(val, _dateFormat);
+
+    if (date.year > 2000)
+        return date.format('MM/DD/YYYY');
+    else
+        return null;
 }
 
 function convertToValidDateTime(val) {
