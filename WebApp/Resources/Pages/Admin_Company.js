@@ -210,35 +210,61 @@ AdminPortal = function () {
 
           if (cdi != null)
           {
-              var ttwvalue = cdi.TotalTicketsWeight == null ? '2.0' : cdi.TotalTicketsWeight * 10;
+              var ttwvalue;
+              var last30slider;
+              var otwslider;
+              var avgopenweight;
+              var avgcloseweight;
+              var ticketSentimentweight;
+              var actionCountweight;
+              var ticketSeverityweight;
+
+              // if original five contain a NULL - use defaults
+              var useDefaults = (cdi.TotalTicketsWeight == null) || (cdi.Last30Weight == null) ||
+                  (cdi.OpenTicketsWeight == null) || (cdi.AvgDaysOpenWeight == null) || (cdi.AvgDaysToCloseWeight == null);
+              if (useDefaults) {
+                  ttwvalue = '2.0';
+                  last30slider = '2.0';
+                  otwslider = '2.0';
+                  avgopenweight = '2.0';
+                  avgcloseweight = '2.0';
+                  ticketSentimentweight = '0';
+                  actionCountweight = '0';
+                  ticketSeverityweight = '0';
+              }
+              else {
+                  // use what is configured
+                  ttwvalue = cdi.TotalTicketsWeight == cdi.TotalTicketsWeight * 10;
+                  last30slider = cdi.Last30Weight == cdi.Last30Weight * 10;
+                  otwslider = cdi.OpenTicketsWeight == cdi.OpenTicketsWeight * 10;
+                  avgopenweight = cdi.AvgDaysOpenWeight == cdi.AvgDaysOpenWeight * 10;
+                  avgcloseweight = cdi.AvgDaysToCloseWeight == cdi.AvgDaysToCloseWeight * 10;
+                  ticketSentimentweight = cdi.AverageSentimentScoreWeight == null ? '0' : cdi.AverageSentimentScoreWeight * 10;
+                  actionCountweight = cdi.AverageActionCountWeight == null ? '0' : cdi.AverageActionCountWeight * 10;
+                  ticketSeverityweight = cdi.AverageSeverityWeight == null ? '0' : cdi.AverageSeverityWeight * 10;
+              }
+
               $('#ttw-slider').slider('value', ttwvalue);
               $('#ttw-slider').next().text("Overall Weight: " + (ttwvalue * 10) + "%");
 
-              var last30slider = cdi.Last30Weight == null ? '2.0' : cdi.Last30Weight * 10;
               $('#last30-slider').slider('value', last30slider);
               $('#last30-slider').next().text("Overall Weight: " + (last30slider * 10) + "%");
 
-              var otwslider = cdi.OpenTicketsWeight == null ? '2.0' : cdi.OpenTicketsWeight * 10;
               $('#otw-slider').slider('value', otwslider);
               $('#otw-slider').next().text("Overall Weight: " + (otwslider * 10) + "%");
 
-              var avgopenweight = cdi.AvgDaysOpenWeight == null ? '2.0' : cdi.AvgDaysOpenWeight * 10;
               $('#avgopen-weight').slider('value', avgopenweight);
               $('#avgopen-weight').next().text("Overall Weight: " + (avgopenweight * 10) + "%");
 
-              var avgcloseweight = cdi.AvgDaysToCloseWeight == null ? '2.0' : cdi.AvgDaysToCloseWeight * 10;
               $('#avgclose-weight').slider('value', avgcloseweight);
               $('#avgclose-weight').next().text("Overall Weight: " + (avgcloseweight * 10) + "%");
 
-              var ticketSentimentweight = cdi.AverageSentimentScoreWeight == null ? '0' : cdi.AverageSentimentScoreWeight * 10;
               $('#ticketSentiment-weight').slider('value', ticketSentimentweight);
               $('#ticketSentiment-weight').next().text("Overall Weight: " + (ticketSentimentweight * 10) + "%");
 
-              var actionCountweight = cdi.AverageActionCountWeight == null ? '0' : cdi.AverageActionCountWeight * 10;
               $('#actionCount-weight').slider('value', actionCountweight);
               $('#actionCount-weight').next().text("Overall Weight: " + (actionCountweight * 10) + "%");
 
-              var ticketSeverityweight = cdi.AverageSeverityWeight == null ? '0' : cdi.AverageSeverityWeight * 10;
               $('#ticketSeverity-weight').slider('value', ticketSeverityweight);
               $('#ticketSeverity-weight').next().text("Overall Weight: " + (ticketSeverityweight * 10) + "%");
 
