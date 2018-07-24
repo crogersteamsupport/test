@@ -289,7 +289,6 @@ AdminPortal = function () {
               }
               
               $('#cdiStatus').html("The CDI runs once per day, and the last time your account processed was: <strong>" + cdistatus + "</strong> To force an update now, please click the force update button below.");
-          }
       });
 
   }
