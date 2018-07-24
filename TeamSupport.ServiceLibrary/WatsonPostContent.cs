@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace WatsonToneAnalyzer
@@ -12,35 +8,15 @@ namespace WatsonToneAnalyzer
     /// </summary>
     class WatsonPostContent
     {
-        public class Utterance
-        {
-            public string user;
-            public string text;
-        }
-
-        public List<Utterance> utterances;
+        public List<Utterance> utterances;  // do not rename - must match IBM spec "utterances"
 
         /// <summary>default constructor</summary>
-        public WatsonPostContent()
-        {
-            utterances = new List<Utterance>();
-        }
+        public WatsonPostContent() { utterances = new List<Utterance>(); }
 
-        /// <summary>insert an utterance</summary>
-        public void Add(string userID, string inputText)
-        {
-            utterances.Add(new WatsonPostContent.Utterance()
-            {
-                user = userID,
-                text = inputText
-            });
-        }
+        /// <summary>serialize to JSON - escapes \b, \f, \n, \r, \t, ", and \
+        public string ToJSON() { return JsonConvert.SerializeObject(this); }
 
-        /// <summary>serialize to JSON</summary>
-        public override string ToString()
-        {
-            // escapes \b, \f, \n, \r, \t, ", and \
-            return JsonConvert.SerializeObject(this);
-        }
+        public void Add(Utterance addition) { utterances.Add(addition); }
+        public void Add(List<Utterance> additions) { utterances.AddRange(additions); }
     }
 }

@@ -84,8 +84,6 @@
     <Compile Include="linq\ActionSentimentScore.cs" />
     <Compile Include="ActionsToAnalyzer.cs" />
     <Compile Include="linq\ActionToAnalyze.cs" />
-    <Compile Include="MQChannel.cs" />
-    <Compile Include="MQConnection.cs" />
     <Compile Include="linq\OrganizationSentiment.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
@@ -98,8 +96,10 @@
     <Compile Include="RebuildTicketSentimentsTable.cs" />
     <Compile Include="ToneAnalysisMain.cs" />
     <Compile Include="linq\ToneSentiment.cs" />
+    <Compile Include="Utterance.cs" />
     <Compile Include="WatsonEventLog.cs" />
     <Compile Include="WatsonAnalyzer.cs" />
+    <Compile Include="WatsonMessage.cs" />
     <Compile Include="WatsonPostContent.cs" />
     <Compile Include="WatsonToneAnalyzerService.cs">
       <SubType>Component</SubType>

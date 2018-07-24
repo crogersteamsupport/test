@@ -647,6 +647,8 @@ namespace TSWebServices
             TSAuthentication.SlideExpiration();
 
             User user = Users.GetUser(LoginUser.Anonymous, TSAuthentication.UserID);
+            if (user == null)
+                return;
             user.LastActivity = DateTime.UtcNow;
             user.Collection.Save();
         }

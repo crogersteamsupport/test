@@ -1079,7 +1079,56 @@ $(document).ready(function () {
     $('#fieldActive').click(function (e) {
         if (!$(this).hasClass('editable'))
             return false;
-        _mainFrame.Ts.Services.Customers.SetCompanyActive(organizationID, ($(this).text() !== 'true'), function (result) {
+
+		var isActive = $(this).text() !== 'true';
+		var hasChildren = false;
+
+		_mainFrame.Ts.Services.Customers.HasChildren(organizationID, function (result) {
+			hasChildren = result === true;
+
+			if (hasChildren && !isActive) {
+				var confirmInactiveChildren = $('<div>').prop('title', 'Confirm Inactivate Children').append('This customer has children. Do you want all of them to be set to inactive too?').appendTo(document.body);
+				confirmInactiveChildren.dialog({
+					resizable: false,
+					width: 'auto',
+					height: 'auto',
+					create: function () {
+						$(this).css('maxWidth', '800px');
+					},
+					modal: true,
+					buttons: {
+						"Yes": function () {
+							SetCompanyAndChildrenInactive(organizationID, hasChildren, isActive, true);
+							$(this).dialog('close');
+						},
+						"No": function () {
+							SetCompanyActive(organizationID, isActive);
+							$(this).dialog('close');
+				}
+					},
+					close: function (event, ui) {
+			}
+				});
+			} else {
+				SetCompanyActive(organizationID, isActive);
+			}
+		});
+	});
+
+	function SetCompanyAndChildrenInactive(organizationID, hasChildren, isActive, inactiveChildren) {
+			if (hasChildren && !isActive && inactiveChildren) {
+				_mainFrame.Ts.Services.Customers.SetCompanyAndChildrenInactive(organizationID, function () {
+					_mainFrame.Ts.System.logAction('Customer Detail - Toggle Active State And Set Children Inactive');
+					$('#fieldActive').text('false');
+				},
+					function (error) {
+					alert('There was an error saving the customer active and children.');
+					});
+		}
+	}
+
+	function SetCompanyActive(organizationID, isActive) {
+				_mainFrame.Ts.Services.Customers.SetCompanyActive(organizationID, isActive, function (result) {
             _mainFrame.Ts.System.logAction('Customer Detail - Toggle Active State');
             $('#fieldActive').text((result === true ? 'true' : 'false'));
         },
@@ -1087,7 +1136,7 @@ $(document).ready(function () {
             header.show();
             alert('There was an error saving the customer active.');
         });
-    });
+			}
 
     $('#fieldAPIEnabled').click(function (e) {
         if (!$(this).hasClass('editable'))
@@ -1890,7 +1939,8 @@ $(document).ready(function () {
     });
 
     $('.noteDesc').on('click', '.activity-file', function (e) {
-        e.preventDefault();        _mainFrame.Ts.MainPage.openNewAttachment($(this).attr('id'));
+        e.preventDefault();
+        _mainFrame.Ts.MainPage.openNewAttachment($(this).attr('id'));
     });
 
     $('#tblFiles').on('click', '.viewFile', function (e) {
@@ -1951,7 +2001,10 @@ $(document).ready(function () {
         _mainFrame.Ts.Services.Customers.SaveNote(title, description, noteID, organizationID, _mainFrame.Ts.ReferenceTypes.Organizations, activityType, DateOccurred, isAlert, productFamilyID, function (note) {
             if ($('.upload-queue-activity li').length > 0) {
                 $('.upload-queue-activity li').each(function (i, o) {
-                    var data = $(o).data('data');                    data.url = '../../../Upload/CustomerActivityAttachments/' + note;                    data.jqXHR = data.submit();                    $(o).data('data', data);
+                    var data = $(o).data('data');
+                    data.url = '../../../Upload/CustomerActivityAttachments/' + note;
+                    data.jqXHR = data.submit();
+                    $(o).data('data', data);
                 });
             }
             else
@@ -2080,26 +2133,67 @@ $(document).ready(function () {
     });
 
     $('.file-upload-activity').fileupload({
-        namespace: 'custom_attachment',        dropZone: $('.file-upload-activity'),        add: function (e, data) {
+        namespace: 'custom_attachment',
+        dropZone: $('.file-upload-activity'),
+        add: function (e, data) {
             for (var i = 0; i < data.files.length; i++) {
-                var item = $('<li>')                  .appendTo($('.upload-queue-activity'));                data.context = item;                item.data('data', data);                var bg = $('<div>')                  .addClass('ts-color-bg-accent')                  .appendTo(item);                $('<div>')                  .text(data.files[i].name + '  (' + _mainFrame.Ts.Utils.getSizeString(data.files[i].size) + ')')                  .addClass('filename')                  .appendTo(bg);                $('<span>')                  .addClass('icon-remove')                  .click(function (e) {
-                      e.preventDefault();                      $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
-                  })                  .appendTo(bg);                $('<span>')                  .addClass('icon-remove')                  .hide()                  .click(function (e) {
-                      e.preventDefault();                      var data = $(this).closest('li').data('data');                      data.jqXHR.abort();
-                  })                  .appendTo(bg);                var progress = $('<div>')                  .addClass('progress progress-striped active')                  .hide();                $('<div>')                    .addClass('progress-bar')                    .attr('role', 'progressbar')                    .appendTo(progress);                progress.appendTo(bg);
+                var item = $('<li>')
+                  .appendTo($('.upload-queue-activity'));
+                data.context = item;
+                item.data('data', data);
+                var bg = $('<div>')
+                  .addClass('ts-color-bg-accent')
+                  .appendTo(item);
+                $('<div>')
+                  .text(data.files[i].name + '  (' + _mainFrame.Ts.Utils.getSizeString(data.files[i].size) + ')')
+                  .addClass('filename')
+                  .appendTo(bg);
+                $('<span>')
+                  .addClass('icon-remove')
+                  .click(function (e) {
+                      e.preventDefault();
+                      $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
+                  })
+                  .appendTo(bg);
+                $('<span>')
+                  .addClass('icon-remove')
+                  .hide()
+                  .click(function (e) {
+                      e.preventDefault();
+                      var data = $(this).closest('li').data('data');
+                      data.jqXHR.abort();
+                  })
+                  .appendTo(bg);
+                var progress = $('<div>')
+                  .addClass('progress progress-striped active')
+                  .hide();
+                $('<div>')
+                    .addClass('progress-bar')
+                    .attr('role', 'progressbar')
+                    .appendTo(progress);
+                progress.appendTo(bg);
             }
-        },        send: function (e, data) {
+        },
+        send: function (e, data) {
             if (data.context && data.dataType && data.dataType.substr(0, 6) === 'iframe') {
                 data.context.find('.progress-bar').css('width', '50%');
             }
-        },        fail: function (e, data) {
-            if (data.errorThrown === 'abort') return;            alert('There was an error uploading "' + data.files[0].name + '".');
-        },        progress: function (e, data) {
+        },
+        fail: function (e, data) {
+            if (data.errorThrown === 'abort') return;
+            alert('There was an error uploading "' + data.files[0].name + '".');
+        },
+        progress: function (e, data) {
             data.context.find('.progress-bar').css('width', parseInt(data.loaded / data.total * 100, 10) + '%');
-        },        start: function (e, data) {
-            $('.progress').show();            $('.upload-queue-activity .ui-icon-close').hide();            $('.upload-queue-activity .ui-icon-cancel').show();
-        },        stop: function (e, data) {
-            $('.upload-queue-activity').empty();            LoadNotes();
+        },
+        start: function (e, data) {
+            $('.progress').show();
+            $('.upload-queue-activity .ui-icon-close').hide();
+            $('.upload-queue-activity .ui-icon-cancel').show();
+        },
+        stop: function (e, data) {
+            $('.upload-queue-activity').empty();
+            LoadNotes();
         }
     });
 
@@ -2433,12 +2527,6 @@ $(document).ready(function () {
     }
 
     var ellipseString = function (text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
-
-    _mainFrame.Ts.Services.Customers.GetOrganizationSentiment(organizationID, function (e) {
-        if (e.length > 0) {
-            $('#organizationSentiment').show().find('.box-content').text("Score: " + e);
-        }
-    });
 
     _mainFrame.Ts.Services.Customers.GetOrganizationTickets2(organizationID, 0, _isParentView, function (e) {
         $('#openTicketCount').text("Open Tickets: " + e);
@@ -3303,6 +3391,10 @@ $(document).ready(function () {
             });
         }
     });
+
+
+    WatsonCustomer(organizationID);
+
 });
 
 //var initEditor = function (element, init) {
@@ -4663,6 +4755,10 @@ function LoadNoteActivities(){
 
 function BuildFileDescription(attachments) {
     for (var i = 0; i < attachments.length; i++) {
-        var files = $('<div>')        .addClass('activity-file')        .attr('id', attachments[i].AttachmentID)        .html(attachments[i].FileName)        .appendTo('.noteDesc');
+        var files = $('<div>')
+        .addClass('activity-file')
+        .attr('id', attachments[i].AttachmentID)
+        .html(attachments[i].FileName)
+        .appendTo('.noteDesc');
     }
 }
