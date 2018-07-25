@@ -3709,18 +3709,29 @@ WHERE t.TicketID = @TicketID
                 }
                 else
                 {
-                    if (customValue.FieldType == CustomFieldType.DateTime || customValue.FieldType == CustomFieldType.Date || customValue.FieldType == CustomFieldType.Time)
+					switch (customValue.FieldType)
                     {
-                        //customValue.Value = ((DateTime)field.Value).ToString();
+						case CustomFieldType.DateTime:
+						case CustomFieldType.Time:
                         DateTime dt;
                         if (DateTime.TryParse(((string)field.Value).Replace("UTC", "GMT"), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
                         {
                             customValue.Value = dt.ToUniversalTime().ToString();
                         }
-                    }
-                    else
-                    {
+							break;
+						case CustomFieldType.Date:
+							DateTime customDate;
+							string fieldValue = (string)field.Value;
+
+							if (DateTime.TryParse(fieldValue, out customDate))
+							{
+								customValue.Value = customDate.ToShortDateString();
+							}
+							
+							break;
+						default:
                         customValue.Value = field.Value.ToString();
+							break;
                     }
 
                 }
