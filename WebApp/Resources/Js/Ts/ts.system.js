@@ -191,24 +191,27 @@ var _startDate = new Date();
       var self = this;
       Ts.Services.System.GetCurrentUser(function (result) {
         self.User = result;
-        Ts.Services.System.GetCurrentOrganization(function (result) {
-          self.Organization = result;
-          Ts.debug = result.OrganizationID == 13679 || result.OrganizationID == 1078 || result.OrganizationID == 1088;
-          Ts.Services.System.GetCulture(function(result){
-            self.Culture = result;
-            Ts.Services.System.GetCurrentUserChatSettings(function (result) {
-              self.ChatUserSettings = result;
-              Ts.Services.System.GetDomains(function (result) {
-                  var domains = JSON.parse(result);
-                  self.AppDomain = domains.AppUrl;
-                  self.PortalDomain = domains.PortalUrl;
-                  self.Domain = domains.DomainName;
-                  self.EmailDomain = domains.EmailDomain;
-                  if (callback) { callback(self.User); }
-              });
-            });
-          });
-        });
+		Ts.Services.System.GetCurrentUserGroups(function (result) {
+			self.UserGroups = result;
+			Ts.Services.System.GetCurrentOrganization(function (result) {
+			  self.Organization = result;
+			  Ts.debug = result.OrganizationID == 13679 || result.OrganizationID == 1078 || result.OrganizationID == 1088;
+			  Ts.Services.System.GetCulture(function(result){
+				self.Culture = result;
+				Ts.Services.System.GetCurrentUserChatSettings(function (result) {
+				  self.ChatUserSettings = result;
+				  Ts.Services.System.GetDomains(function (result) {
+					  var domains = JSON.parse(result);
+					  self.AppDomain = domains.AppUrl;
+					  self.PortalDomain = domains.PortalUrl;
+					  self.Domain = domains.DomainName;
+					  self.EmailDomain = domains.EmailDomain;
+					  if (callback) { callback(self.User); }
+				  });
+				});
+			  });
+			});
+		  });
       });
     },
 
