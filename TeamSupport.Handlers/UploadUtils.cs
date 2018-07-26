@@ -37,15 +37,15 @@ namespace TeamSupport.Handlers
             try
             {
                 LoginUser user = TSAuthentication.GetLoginUser();
-                using (TeamSupport.Model.ConnectionModel connection = new Model.ConnectionModel(LoginUser.GetConnectionString()))
+                using (Model.ConnectionModel connection = new Model.ConnectionModel(LoginUser.GetConnectionString()))
                 {
                     // get the ticketID from the actionID
-                    int ticketID = TeamSupport.Model.ActionModel.GetTicketID(connection._db, actionID);
+                    int ticketID = Model.ActionModel.GetTicketID(connection._db, actionID);
 
                     // add the attachments to the action
-                    TeamSupport.Model.ActionModel action = connection.Customer(organizationID).UserSession(user.UserID).Ticket(ticketID).Action(actionID);
-                    List<TeamSupport.Model.ActionAttachmentModel> attachments = action.InsertActionAttachments(user, context.Request);
-                    foreach (TeamSupport.Model.ActionAttachmentModel attachment in attachments)
+                    Model.ActionModel action = connection.Customer(organizationID).UserSession(user.UserID).Ticket(ticketID).Action(actionID);
+                    List<Model.ActionAttachmentModel> attachments = action.InsertActionAttachments(user, context.Request);
+                    foreach (Model.ActionAttachmentModel attachment in attachments)
                         result.Add(new UploadResult(attachment.FileName, attachment.ContentType, attachment.ContentLength));
                 }
             }

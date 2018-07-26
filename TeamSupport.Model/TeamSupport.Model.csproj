@@ -45,7 +45,9 @@
   <ItemGroup>
     <Compile Include="ActionAttachmentModel.cs" />
     <Compile Include="ActionModel.cs" />
+    <Compile Include="Client.cs" />
     <Compile Include="ConnectionModel.cs" />
+    <Compile Include="Customer.cs" />
     <Compile Include="OrganizationModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TicketModel.cs" />
