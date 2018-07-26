@@ -380,6 +380,47 @@ namespace TeamSupport.Data
                 Fill(command);
             }
         }
+
+        public void SearchNotes(string searchString, string organizationID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"select top 20 n.* from notes n
+                    join organizations o on  n.refid = o.OrganizationID and reftype = 9
+                    where 
+                    n.Title like '%' + @searchString + '%'
+                    and  
+                    o.parentid = @parentid
+
+                    union
+
+                    select top 20 n.* from notes n
+                    join users u on  n.refid = u.userid and reftype = 22
+                    join organizations o on o.OrganizationID = u.OrganizationID 
+                    where 
+                    n.Title like '%' + @searchString + '%'
+                    and o.ParentID=@parentid";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@searchString", searchString);
+                command.Parameters.AddWithValue("@parentid", organizationID);
+                Fill(command);
+            }
+        }
+
+        public void ReplaceActivityType(int oldID, int newID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = "UPDATE Notes SET ActivityType = @newID WHERE (ActivityType = @oldID)";
+                command.CommandType = CommandType.Text;
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@oldID", oldID);
+                command.Parameters.AddWithValue("@newID", newID);
+                ExecuteNonQuery(command, "Notes");
+            }
+        }
+
+
     }
 
 

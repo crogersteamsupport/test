@@ -202,6 +202,9 @@ namespace TSWebServices
                 WatercoolerAttachments wcuseratt = new WatercoolerAttachments(loginUser);
                 wcuseratt.LoadByType(messageID, WaterCoolerAttachmentType.User);
 
+                WatercoolerAttachments wcactivitiesatt = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+                wcactivitiesatt.LoadByType(messageID, WaterCoolerAttachmentType.Activities);
+
                 thread.Message = wcv.GetWaterCoolerViewItemProxies()[0];
                 thread.Replies = replies.GetWaterCoolerViewItemProxies();
                 thread.Groups = wcgroups.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Group);
@@ -209,6 +212,7 @@ namespace TSWebServices
                 thread.Products = wcprods.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Product);
                 thread.Company = wccompany.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Company);
                 thread.User = wcuseratt.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.User);
+                thread.Activities = wcactivitiesatt.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Activities);
 
                 //If this is a new thread
                 if (thread.Message.MessageParent == -1)
@@ -242,12 +246,16 @@ namespace TSWebServices
                     WatercoolerAttachments parentThreadwcuseratt = new WatercoolerAttachments(loginUser);
                     parentThreadwcuseratt.LoadByType(parentThreadID, WaterCoolerAttachmentType.User);
 
+                    WatercoolerAttachments parentThreadactivitiesatt = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+                    parentThreadactivitiesatt.LoadByType(messageID, WaterCoolerAttachmentType.Activities);
+
                     parentThread.Message = parentThreadwcv.GetWaterCoolerViewItemProxies()[0];
                     parentThread.Groups = parentThreadwcgroups.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Group);
                     parentThread.Tickets = parentThreadwctickets.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Ticket);
                     parentThread.Products = parentThreadwcprods.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Product);
                     parentThread.Company = parentThreadwccompany.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Company);
                     parentThread.User = parentThreadwcuseratt.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.User);
+                    parentThread.Activities = parentThreadactivitiesatt.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Activities);
 
                     result = pusher.Trigger("ticket-dispatch-" + organizationID, "updateattachments", parentThread);
                     //Clients.Group(organizationID).updateattachments(parentThread);

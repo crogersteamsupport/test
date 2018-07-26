@@ -372,6 +372,11 @@
             <input type="text" class="text ui-corner-all ui-widget-content" style="width:90%;" />
         </div>
 
+        <div class="dialog-select-activity ui-helper-hidden" title="Select an Activity">
+	        <p>Enter an activity name:</p>
+        <input type="text" class="text ui-corner-all ui-widget-content" style="width:90%;"/>
+        </div>
+
         <div class="dialog-select-wiki ui-helper-hidden" title="Select a Wiki Article">
             <p>Enter a wiki title:</p>
             <input type="text" class="text ui-corner-all ui-widget-content" style="width:90%;" />
