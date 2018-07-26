@@ -827,13 +827,6 @@
     <Compile Include="Generated\GeneratedWikiArticles.cs" />
     <Compile Include="Generated\GeneratedWikiArticlesView.cs" />
     <Compile Include="Generated\GeneratedWikiHistoryCollection.cs" />
-    <Compile Include="Model\ActionAttachmentModel.cs" />
-    <Compile Include="Model\ActionModel.cs" />
-    <Compile Include="Model\FilePathModel.cs" />
-    <Compile Include="Model\ConnectionModel.cs" />
-    <Compile Include="Model\OrganizationModel.cs" />
-    <Compile Include="Model\TicketModel.cs" />
-    <Compile Include="Model\UserSession.cs" />
     <Compile Include="Proxies\ActionLinkToSnowProxy.cs" />
     <Compile Include="Proxies\ActionLinkToTFSProxy.cs" />
     <Compile Include="Proxies\ActivityTypesProxy.cs" />
@@ -1047,7 +1040,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="bin\x86\Debug\TeamSupport.Data.dll.config" />
-    <None Include="Model\Model.cd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

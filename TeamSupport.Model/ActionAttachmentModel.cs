@@ -8,7 +8,7 @@ using System.IO;
 using System.Web;
 using System.Diagnostics;
 
-namespace TeamSupport.Data.Model
+namespace TeamSupport.Model
 {
     /// <summary>
     /// see 
@@ -24,7 +24,7 @@ namespace TeamSupport.Data.Model
         public string ContentType { get; private set; }
         public int ContentLength { get; private set; }
 
-        public ActionAttachmentModel(ActionModel action, LoginUser user, HttpPostedFile postedFile, HttpRequest request)
+        public ActionAttachmentModel(ActionModel action, Data.LoginUser user, HttpPostedFile postedFile, HttpRequest request)
         {
             Action = action;
             _db = Action._db;
@@ -36,19 +36,19 @@ namespace TeamSupport.Data.Model
             string filePath = Path.Combine(Action.AttachmentPath, FileName);
             postedFile.SaveAs(filePath);
 
-            Attachment attachment = AddAttachment(user, postedFile, request, AttachmentPath, filePath);
+            Data.Attachment attachment = AddAttachment(user, postedFile, request, AttachmentPath, filePath);
             ActionAttachmentID = attachment.AttachmentID;
-            Validate();
+            Verify();
         }
 
         /// <summary>
         /// OLD DATA LAYER - extracted from ts-app\TeamSupport.Handlers\UploadUtils.cs SaveFiles()
         /// </summary>
-        private Attachment AddAttachment(LoginUser user, HttpPostedFile postedFile, HttpRequest request, string fileName, string filePath)
+        private Data.Attachment AddAttachment(Data.LoginUser user, HttpPostedFile postedFile, HttpRequest request, string fileName, string filePath)
         {
             // insert ActionAttachment record
-            Attachment attachment = new Attachments(user).AddNewAttachment();
-            attachment.RefType = ReferenceType.Actions;
+            Data.Attachment attachment = new Data.Attachments(user).AddNewAttachment();
+            attachment.RefType = Data.ReferenceType.Actions;
             attachment.RefID = Action.ActionID;
             attachment.OrganizationID = Action.Ticket.User.Organization.OrganizationID;
             attachment.FileName = fileName;
@@ -65,10 +65,10 @@ namespace TeamSupport.Data.Model
         }
 
         [Conditional("DEBUG")]
-        void Validate()
+        void Verify()
         {
             string query = $"SELECT AttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE AttachmentID={ActionAttachmentID} AND ActionID={Action.ActionID} AND OrganizationID={Action.Ticket.User.Organization.OrganizationID}";
-            //string query = $"SELECT AttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE AttachmentID={ActionAttachmentID} AND ActionID={Action.ActionID} AND TicketID={Action.Ticket.TicketID} AND OrganizationID={Action.Ticket.User.Organization.OrganizationID}";
+            //string query = $"SELECT AttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE AttachmentID={ActionAttachmentID} AND ActionID={Data.Action.ActionID} AND TicketID={Data.Action.Ticket.TicketID} AND OrganizationID={Data.Action.Ticket.User.Organization.OrganizationID}";
             IEnumerable<int> x = _db.ExecuteQuery<int>(query);
             if (!x.Any())
                 throw new Exception(String.Format($"{query} not found"));
@@ -77,7 +77,7 @@ namespace TeamSupport.Data.Model
         string ValidateFileName(string text)
         {
             string fileName = Path.GetFileName(text);
-            fileName = DataUtils.VerifyUniqueUrlFileName(Action.AttachmentPath, fileName);
+            fileName = Data.DataUtils.VerifyUniqueUrlFileName(Action.AttachmentPath, fileName);
             return RemoveSpecialCharacters(fileName);
         }
 
@@ -109,7 +109,7 @@ namespace TeamSupport.Data.Model
         //    _proxy = new AttachmentProxy()
         //    {
         //        //AttachmentID =
-        //        OrganizationID = Action.Ticket.User.Organization.OrganizationID,
+        //        OrganizationID = Data.Action.Ticket.User.Organization.OrganizationID,
         //        FileName = fileName,
         //        //FileType =
         //        //FileSize =
@@ -117,11 +117,11 @@ namespace TeamSupport.Data.Model
         //        Description = description,
         //        DateCreated = DateTime.UtcNow,
         //        //DateModified =
-        //        CreatorID = Action.Ticket.User.UserID,
+        //        CreatorID = Data.Action.Ticket.User.UserID,
         //        //ModifierID =
-        //        RefType = ReferenceType.Actions,
-        //        RefID = Action.ActionID,
-        //        //CreatorName = Action.Ticket.User.CreatorName,
+        //        RefType = Data.ReferenceType.Actions,
+        //        RefID = Data.Action.ActionID,
+        //        //CreatorName = Data.Action.Ticket.User.CreatorName,
         //        //SentToJira =
         //        //ProductFamilyID =
         //        //ProductFamily =

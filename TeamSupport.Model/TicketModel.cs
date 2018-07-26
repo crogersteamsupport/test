@@ -7,7 +7,7 @@ using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Diagnostics;
 
-namespace TeamSupport.Data.Model
+namespace TeamSupport.Model
 {
     /// <summary>
     /// Wrapper for valid TicketID
@@ -15,6 +15,7 @@ namespace TeamSupport.Data.Model
     public class TicketModel
     {
         public UserSession User { get; private set; }
+        //public Client User { get; private set; }
         public int TicketID { get; private set; }
         public DataContext _db { get; private set; }
 
@@ -23,11 +24,11 @@ namespace TeamSupport.Data.Model
             User = user;
             _db = User._db;
             TicketID = ticketID;
-            Validate();
+            Verify();
         }
 
         [Conditional("DEBUG")]
-        void Validate()
+        void Verify()
         {
             string query = $"SELECT TicketID FROM Tickets  WITH (NOLOCK) WHERE TicketID={TicketID} AND OrganizationID={User.Organization.OrganizationID}";
             IEnumerable<int> x = _db.ExecuteQuery<int>(query);
@@ -35,20 +36,20 @@ namespace TeamSupport.Data.Model
                 throw new Exception(String.Format($"{query} not found"));
         }
 
-        /// <summary> Existing Action </summary>
+        /// <summary> Existing Data.Action </summary>
         public ActionModel Action(int actionID)
         {
             return new ActionModel(this, actionID);
         }
 
-        /// <summary> Create new Action on an existing ticket </summary>
-        public ActionModel InsertAction(LoginUser loginUser, ActionProxy proxy)
+        /// <summary> Create new Data.Action on an existing ticket </summary>
+        public ActionModel InsertAction(Data.LoginUser loginUser, Data.ActionProxy proxy)
         {
             return new ActionModel(this, loginUser, proxy);
         }
 
-        /// <summary> Create new Action on new ticket </summary>
-        public ActionModel InsertAction(ActionProxy info, Ticket ticketData, User user)
+        /// <summary> Create new Data.Action on new ticket </summary>
+        public ActionModel InsertAction(Data.ActionProxy info, Data.Ticket ticketData, Data.User user)
         {
             return new ActionModel(this, info, ticketData, user);
         }
@@ -64,13 +65,13 @@ namespace TeamSupport.Data.Model
         public void MergeAttachments(int oldticketID)
         {
             // take attachments
-            string query = $"UPDATE attachments SET RefID={TicketID} WHERE (RefID = {oldticketID} AND RefType = {ReferenceType.Actions}";
+            string query = $"UPDATE attachments SET RefID={TicketID} WHERE (RefID = {oldticketID} AND RefType = {Data.ReferenceType.Actions}";
             _db.ExecuteCommand(query);
 
             // log old ticket number
             query = $"SELECT TicketNumber FROM Tickets WHERE TicketID={oldticketID}";
             int ticketNumber = _db.ExecuteQuery<int>(query).FirstOrDefault();
-            User.AddActionLog(ActionLogType.Update, ReferenceType.Tickets, TicketID, $"Merged '{ticketNumber}' Action Attachments");
+            User.AddActionLog(Data.ActionLogType.Update, Data.ReferenceType.Tickets, TicketID, $"Merged '{ticketNumber}' Data.Action Attachments");
         }
     }
 }

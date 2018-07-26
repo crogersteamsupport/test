@@ -9,7 +9,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Web;
 
-namespace TeamSupport.Data.Model
+namespace TeamSupport.Model
 {
     /// <summary>
     /// Wrapper for Valid ActionID
@@ -20,7 +20,7 @@ namespace TeamSupport.Data.Model
         public int ActionID { get; private set; }
         public DataContext _db { get; private set; }
         //public List<ActionAttachmentModel> Attachments { get; private set; }
-        public Action DataLayerAction { get; private set; }  // used by TicketPageService
+        public Data.Action DataLayerAction { get; private set; }  // used by TicketPageService
 
         /// <summary> Root constructor </summary>
         public ActionModel(TicketModel ticket, int actionID)
@@ -28,29 +28,29 @@ namespace TeamSupport.Data.Model
             Ticket = ticket;
             ActionID = actionID;
             _db = ticket._db;
-            Validate();
+            Verify();
         }
 
         /// <summary> load action </summary>
-        public ActionModel(TicketModel ticket, Action action) : this(ticket, action.ActionID)
+        public ActionModel(TicketModel ticket, Data.Action action) : this(ticket, action.ActionID)
         {
-            DataLayerAction = action;  // Keep the Action?
+            DataLayerAction = action;  // Keep the Data.Action?
         }
 
         /// <summary> new action on existing ticket </summary>
-        public ActionModel(TicketModel ticket, LoginUser loginUser, ActionProxy proxy) :
+        public ActionModel(TicketModel ticket, Data.LoginUser loginUser, Data.ActionProxy proxy) :
             this(ticket, AddAction(loginUser, proxy, ticket._db))
         {
         }
 
         /// <summary> new action on new ticket </summary>
-        public ActionModel(TicketModel ticket, ActionProxy info, Ticket ticketData, User user) :
+        public ActionModel(TicketModel ticket, Data.ActionProxy info, Data.Ticket ticketData, Data.User user) :
             this(ticket, AddActionOnNewTicket(ticketData, info, user))
         {
         }
 
         [Conditional("DEBUG")]
-        void Validate()
+        void Verify()
         {
             string query = $"SELECT ActionID FROM Actions WITH (NOLOCK) WHERE ActionID={ActionID} AND TicketID={Ticket.TicketID}";
             IEnumerable<int> x = _db.ExecuteQuery<int>(query);
@@ -87,9 +87,9 @@ namespace TeamSupport.Data.Model
         /// <summary>
         /// OLD DATA LAYER - extracted from ts-app\WebApp\App_Code\TicketPageService.cs UpdateAction(ActionProxy proxy)
         /// </summary>
-        static Action AddAction(LoginUser loginUser, ActionProxy proxy, DataContext db)
+        static Data.Action AddAction(Data.LoginUser loginUser, Data.ActionProxy proxy, DataContext db)
         {
-            Action action = (new Actions(loginUser)).AddNewAction();
+            Data.Action action = (new Data.Actions(loginUser)).AddNewAction();
             action.TicketID = proxy.TicketID;
             action.CreatorID = loginUser.UserID;
             action.Description = proxy.Description;
@@ -114,12 +114,12 @@ namespace TeamSupport.Data.Model
         /// <summary>
         /// OLD DATA LAYER - extracted from ts-app\webapp\app_code\ticketservice.cs
         /// </summary>
-        static Action AddActionOnNewTicket(Ticket ticket, ActionProxy info, User user)
+        static Data.Action AddActionOnNewTicket(Data.Ticket ticket, Data.ActionProxy info, Data.User user)
         {
-            TeamSupport.Data.Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();
+            TeamSupport.Data.Action action = (new Data.Actions(ticket.Collection.LoginUser)).AddNewAction();
             action.ActionTypeID = null;
             action.Name = "Description";
-            action.SystemActionTypeID = SystemActionType.Description;
+            action.SystemActionTypeID = Data.SystemActionType.Description;
             action.ActionSource = ticket.TicketSource;
             action.Description = info.Description;
 
@@ -142,7 +142,7 @@ namespace TeamSupport.Data.Model
         //{
         //    try
         //    {
-        //        string query = $"SELECT a.*, (u.FirstName + ' ' + u.LastName) AS CreatorName FROM Attachments a WITH (NOLOCK) LEFT JOIN Users u ON u.UserID = a.CreatorID WHERE (RefID = {ActionID}) AND(RefType = {(int)ReferenceType.Actions})";
+        //        string query = $"SELECT a.*, (u.FirstName + ' ' + u.LastName) AS CreatorName FROM Attachments a WITH (NOLOCK) LEFT JOIN Users u ON u.UserID = a.CreatorID WHERE (RefID = {ActionID}) AND(RefType = {(int)Data.ReferenceType.Actions})";
         //        AttachmentProxy[] proxies = _db.ExecuteQuery<AttachmentProxy>(query).ToArray();
         //        Attachments = new List<ActionAttachmentModel>();
         //        foreach (AttachmentProxy proxy in proxies)
@@ -154,7 +154,7 @@ namespace TeamSupport.Data.Model
         //    }
         //}
 
-        public List<ActionAttachmentModel> InsertActionAttachments(LoginUser user, HttpRequest request)
+        public List<ActionAttachmentModel> InsertActionAttachments(Data.LoginUser user, HttpRequest request)
         {
             List<ActionAttachmentModel> results = new List<ActionAttachmentModel>();
             HttpFileCollection files = request.Files;

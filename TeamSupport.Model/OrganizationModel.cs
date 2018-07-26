@@ -9,7 +9,7 @@ using System.Data.Linq.Mapping;
 using System.IO;
 using System.Diagnostics;
 
-namespace TeamSupport.Data.Model
+namespace TeamSupport.Model
 {
     /// <summary>
     /// Wrapper for valid OrganizationID
@@ -26,11 +26,11 @@ namespace TeamSupport.Data.Model
             ConnectionModel = user;
             OrganizationID = organizationID;
             _db = user._db;
-            Validate();
+            Verify();
         }
 
         [Conditional("DEBUG")]
-        void Validate()
+        void Verify()
         {
             string query = $"SELECT OrganizationID FROM Organizations  WITH (NOLOCK) WHERE OrganizationID={OrganizationID}";
             IEnumerable<int> x = _db.ExecuteQuery<int>(query);

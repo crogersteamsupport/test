@@ -153,6 +153,9 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="TeamSupport.Model">
+      <HintPath>..\TeamSupport.Model\bin\Debug\TeamSupport.Model.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChartHandler.cs" />
@@ -182,7 +185,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TeamSupport.Data\TeamSupport.Data.csproj">
-      <Project>{1943AC11-1F2D-4B85-9F0F-4D67284814BE}</Project>
+      <Project>{1943ac11-1f2d-4b85-9f0f-4d67284814be}</Project>
       <Name>TeamSupport.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\TeamSupport.WebUtils\TeamSupport.WebUtils.csproj">

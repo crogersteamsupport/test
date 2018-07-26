@@ -7,7 +7,7 @@ using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Diagnostics;
 
-namespace TeamSupport.Data.Model
+namespace TeamSupport.Model
 {
     /// <summary>
     /// Wrapper for valid UserID
@@ -23,11 +23,11 @@ namespace TeamSupport.Data.Model
             Organization = organization;
             UserID = userID;
             _db = organization._db;
-            Validate();
+            Verify();
         }
 
         [Conditional("DEBUG")]
-        void Validate()
+        void Verify()
         {
             string query = $"SELECT UserID FROM Users  WITH (NOLOCK) WHERE UserID={UserID} AND OrganizationID={Organization.OrganizationID}";
             IEnumerable<int> x = _db.ExecuteQuery<int>(query);
@@ -65,18 +65,18 @@ namespace TeamSupport.Data.Model
 
 
         /// <summary> Log that this user did something... </summary>
-        public void AddActionLog(ActionLogType actionLogType, ReferenceType refType, int refID, string description)
+        public void AddActionLog(Data.ActionLogType actionLogType, Data.ReferenceType refType, int refID, string description)
         {
             string query = String.Empty;
             switch (actionLogType)
             {
-                case ActionLogType.Insert:
-                    query = "INSERT INTO ActionLogs(OrganizationID, RefType, RefID, ActionLogType, [Description], DateCreated, CreatorID)" +
+                case Data.ActionLogType.Insert:
+                    query = "INSERT INTO ActionLogs(OrganizationID, RefType, RefID, Data.ActionLogType, [Description], DateCreated, CreatorID)" +
                         $"VALUES ({Organization.OrganizationID}, {refType}, {refID}, {(int)actionLogType}, {0}, {DateTime.UtcNow}, {UserID})";
                     break;
-                case ActionLogType.Update:
-                case ActionLogType.Delete:
-                    query = "INSERT INTO ActionLogs(OrganizationID, RefType, RefID, ActionLogType, [Description], DateModified, ModifierID)" +
+                case Data.ActionLogType.Update:
+                case Data.ActionLogType.Delete:
+                    query = "INSERT INTO ActionLogs(OrganizationID, RefType, RefID, Data.ActionLogType, [Description], DateModified, ModifierID)" +
                         $"VALUES ({Organization.OrganizationID}, {refType}, {refID}, {(int)actionLogType}, {0}, {DateTime.UtcNow}, {UserID})";
                     break;
             }

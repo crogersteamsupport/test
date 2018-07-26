@@ -23,7 +23,6 @@ using System.Net;
 using System.IO;
 using System.Dynamic;
 using System.Text.RegularExpressions;
-using TeamSupport.Data.Model;
 
 namespace TSWebServices
 {
@@ -837,17 +836,15 @@ namespace TSWebServices
 
         }
 
-        TeamSupport.Data.Action NewAction(ActionProxy actionProxy)
+        TeamSupport.Data.Action InsertAction(ActionProxy actionProxy)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             TeamSupport.Data.Action dataAction = null;
             try
             {
-                using (ConnectionModel model = new ConnectionModel(loginUser.ConnectionString))
+                using (TeamSupport.Model.ConnectionModel model = new TeamSupport.Model.ConnectionModel(loginUser.ConnectionString))
                 {
-                    ActionModel action = model.Organization(loginUser.OrganizationID).UserSession(loginUser.UserID).Ticket(actionProxy.TicketID).InsertAction(loginUser, actionProxy);
-                    //action.LoadAttachments();
-                    //action.InsertAttachment();
+                    TeamSupport.Model.ActionModel action = model.Customer(loginUser.OrganizationID).UserSession(loginUser.UserID).Ticket(actionProxy.TicketID).InsertAction(loginUser, actionProxy);
                     dataAction = action.DataLayerAction;
                 }
             }
@@ -864,7 +861,7 @@ namespace TSWebServices
             // new action
             if (proxy.ActionID == -1)
             {
-                TeamSupport.Data.Action newAction = NewAction(proxy);
+                TeamSupport.Data.Action newAction = InsertAction(proxy);
                 return GetActionTimelineItem(newAction);
             }
 
@@ -930,6 +927,7 @@ namespace TSWebServices
 
             return GetActionTimelineItem(action);
         }
+
         [WebMethod]
         public TimeLineItem UpdateActionCopyingAttachment(ActionProxy proxy, int insertedKBTicketID)
         {

@@ -13,7 +13,6 @@ using TeamSupport.Data;
 using System.IO;
 using TeamSupport.WebUtils;
 using System.Runtime.Serialization;
-using TeamSupport.Data.Model;
 using System.Diagnostics;
 
 namespace TeamSupport.Handlers
@@ -38,15 +37,15 @@ namespace TeamSupport.Handlers
             try
             {
                 LoginUser user = TSAuthentication.GetLoginUser();
-                using (ConnectionModel connection = new ConnectionModel(LoginUser.GetConnectionString()))
+                using (TeamSupport.Model.ConnectionModel connection = new Model.ConnectionModel(LoginUser.GetConnectionString()))
                 {
                     // get the ticketID from the actionID
-                    int ticketID = ActionModel.GetTicketID(connection._db, actionID);
+                    int ticketID = TeamSupport.Model.ActionModel.GetTicketID(connection._db, actionID);
 
                     // add the attachments to the action
-                    ActionModel action = connection.Organization(organizationID).UserSession(user.UserID).Ticket(ticketID).Action(actionID);
-                    List<ActionAttachmentModel> attachments = action.InsertActionAttachments(user, context.Request);
-                    foreach(ActionAttachmentModel attachment in attachments)
+                    TeamSupport.Model.ActionModel action = connection.Customer(organizationID).UserSession(user.UserID).Ticket(ticketID).Action(actionID);
+                    List<TeamSupport.Model.ActionAttachmentModel> attachments = action.InsertActionAttachments(user, context.Request);
+                    foreach (TeamSupport.Model.ActionAttachmentModel attachment in attachments)
                         result.Add(new UploadResult(attachment.FileName, attachment.ContentType, attachment.ContentLength));
                 }
             }

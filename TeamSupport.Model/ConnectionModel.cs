@@ -7,7 +7,7 @@ using System.Data.SqlClient;
 using System.Data.Linq;
 using System.IO;
 
-namespace TeamSupport.Data.Model
+namespace TeamSupport.Model
 {
     /// <summary>
     /// Model for validating OrganizationID, UserID, TicketID, etc
@@ -26,7 +26,7 @@ namespace TeamSupport.Data.Model
             _db.ObjectTrackingEnabled = false;  // use linq read-only
         }
 
-        public OrganizationModel Organization(int organizationID)
+        public OrganizationModel Customer(int organizationID)
         {
             return new OrganizationModel(this, organizationID);
         }
