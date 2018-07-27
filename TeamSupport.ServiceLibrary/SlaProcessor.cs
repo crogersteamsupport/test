@@ -104,7 +104,7 @@ namespace TeamSupport.ServiceLibrary
                                 TimeSpan pausedTimeSpan = SlaTickets.CalculatePausedTime(ticket.TicketID, organization, businessHours, slaTrigger, daysToPause, holidays, LoginUser, businessPausedTimes, Logs);
                                 Logs.WriteEventFormat("Total Paused Time: {0}", pausedTimeSpan.ToString());
 
-                                UpdateBusinessPausedTimes(LoginUser, businessPausedTimes); //vv
+                                UpdateBusinessPausedTimes(LoginUser, businessPausedTimes);
 
                                 newSlaViolationTimeClosed = SlaTickets.CalculateSLA(ticket.DateCreatedUtc, businessHours, slaTrigger, slaTrigger.TimeToClose, pausedTimeSpan, daysToPause, holidays);
 
@@ -355,8 +355,6 @@ namespace TeamSupport.ServiceLibrary
     {
       try
       {
-        try
-        {
           if (DateTime.Now.Subtract(_lastDLSAdjustment).TotalMinutes > 60 && DateTime.Now.Minute > 2 && DateTime.Now.Minute < 30)
           {
             Logs.WriteEvent("Update business hours for DSL");
@@ -368,17 +366,28 @@ namespace TeamSupport.ServiceLibrary
         {
         }
 
-        Tickets tickets = new Tickets(LoginUser);
-        tickets.LoadAllUnnotifiedAndExpiredSla();
-        Logs.WriteEventFormat("Unnotified and expired slas: {0}", tickets.Count);
+		try
+		{
+			Tickets tickets = new Tickets(LoginUser);
+			tickets.LoadAllUnnotifiedAndExpiredSla();
+			Logs.WriteEventFormat("Unnotified and expired slas: {0}", tickets.Count);
 
-        foreach (Ticket ticket in tickets)
-        {
-          if (IsStopped) break;
-          Logs.WriteEventFormat("Attempting to process: {0}", ticket.TicketID);
-          ProcessTicket(ticket);
-          System.Threading.Thread.Sleep(0);
-        }
+			foreach (Ticket ticket in tickets)
+			{
+				if (IsStopped) break;
+				Logs.WriteEventFormat("Attempting to process: {0}", ticket.TicketID);
+				
+				try
+				{
+					ProcessTicket(ticket);
+				}
+				catch (Exception ex)
+				{
+					Logs.WriteEventFormat("Exception processing the ticket: {0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace);
+				}
+			  
+				System.Threading.Thread.Sleep(0);
+			}
       }
       catch (Exception ex)
       {
@@ -390,8 +399,9 @@ namespace TeamSupport.ServiceLibrary
         {
             UpdateHealth();
 
-            bool isPaused = false;
-            bool isPending = false;
+			bool isPaused = false;
+			bool isPending = false;
+			int? slaTriggerId = null;
             Logs.WriteEvent("Getting SlaTicket record");
             SlaTicket slaTicket = SlaTickets.GetSlaTicket(LoginUser, ticket.TicketID);
             
@@ -399,6 +409,7 @@ namespace TeamSupport.ServiceLibrary
             {
                 isPaused = ticket.IsSlaPaused(slaTicket.SlaTriggerId, ticket.OrganizationID);
                 isPending = slaTicket.IsPending;
+				slaTriggerId = slaTicket.SlaTriggerId;
             }
 
             Logs.WriteEventFormat("IsPaused: {0}; IsPending: {1}", isPaused.ToString(), isPending.ToString());
@@ -406,7 +417,7 @@ namespace TeamSupport.ServiceLibrary
             if (!isPaused && !isPending)
             {
                 SlaTriggersView triggers = new SlaTriggersView(LoginUser);
-                triggers.LoadByTicketId(ticket.TicketID); //vv
+                triggers.LoadByTicketId(ticket.TicketID);
                 bool warnGroup = false;
                 bool warnUser = false;
                 bool vioGroup = false;
@@ -436,7 +447,7 @@ namespace TeamSupport.ServiceLibrary
                     {
                         if (notification.InitialResponseViolationDate == null || Math.Abs(((DateTime)notification.InitialResponseViolationDateUtc - notifyTime).TotalMinutes) > 5)
                         {
-                            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.InitialResponse, notification, slaTicket.SlaTriggerId);
+                            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.InitialResponse, notification, slaTriggerId);
                             notification.InitialResponseViolationDate = notifyTime;
                         }
                     }
@@ -449,7 +460,7 @@ namespace TeamSupport.ServiceLibrary
                     {
                         if (notification.InitialResponseWarningDate == null || Math.Abs(((DateTime)notification.InitialResponseWarningDateUtc - notifyTime).TotalMinutes) > 5)
                         {
-                            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.InitialResponse, notification, slaTicket.SlaTriggerId);
+                            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.InitialResponse, notification, slaTriggerId);
                             notification.InitialResponseWarningDate = notifyTime;
                         }
                     }
@@ -464,7 +475,7 @@ namespace TeamSupport.ServiceLibrary
                     {
                         if (notification.LastActionViolationDate == null || Math.Abs(((DateTime)notification.LastActionViolationDateUtc - notifyTime).TotalMinutes) > 5)
                         {
-                            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.LastAction, notification, slaTicket.SlaTriggerId);
+                            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.LastAction, notification, slaTriggerId);
                             notification.LastActionViolationDate = notifyTime;
                         }
                     }
@@ -477,7 +488,7 @@ namespace TeamSupport.ServiceLibrary
                     {
                         if (notification.LastActionWarningDate == null || Math.Abs(((DateTime)notification.LastActionWarningDateUtc - notifyTime).TotalMinutes) > 5)
                         {
-                            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.LastAction, notification, slaTicket.SlaTriggerId);
+                            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.LastAction, notification, slaTriggerId);
                             notification.LastActionWarningDate = notifyTime;
                         }
                     }
@@ -492,7 +503,7 @@ namespace TeamSupport.ServiceLibrary
                     {
                         if (notification.TimeClosedViolationDate == null || Math.Abs(((DateTime)notification.TimeClosedViolationDateUtc - notifyTime).TotalMinutes) > 5)
                         {
-                            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.TimeClosed, notification, slaTicket.SlaTriggerId);
+                            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.TimeClosed, notification, slaTriggerId);
                             notification.TimeClosedViolationDate = notifyTime;
                         }
                     }
@@ -505,7 +516,7 @@ namespace TeamSupport.ServiceLibrary
                     {
                         if (notification.TimeClosedWarningDate == null || Math.Abs(((DateTime)notification.TimeClosedWarningDateUtc - notifyTime).TotalMinutes) > 5)
                         {
-                            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.TimeClosed, notification, slaTicket.SlaTriggerId);
+                            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.TimeClosed, notification, slaTriggerId);
                             notification.TimeClosedWarningDate = notifyTime;
                         }
                     }
@@ -520,7 +531,7 @@ namespace TeamSupport.ServiceLibrary
       return (DateTime.UtcNow - notifyTime).TotalDays >= 1;
     }
 
-    private void NotifyViolation(int ticketID, bool useUser, bool useGroup, bool isWarning, SlaViolationType slaViolationType, SlaNotification notification, int triggerId)
+    private void NotifyViolation(int ticketID, bool useUser, bool useGroup, bool isWarning, SlaViolationType slaViolationType, SlaNotification notification, int? triggerId)
     {
       Users users = new Users(LoginUser);
       User user = null;
