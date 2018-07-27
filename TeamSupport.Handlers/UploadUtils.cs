@@ -38,6 +38,7 @@ namespace TeamSupport.Handlers
             {
                 if(!actionID.HasValue)
                     return new List<Model.ActionAttachment>();
+
                 using (Model.DBConnection connection = new Model.DBConnection(LoginUser.GetConnectionString()))
                 {
                     if(!ticketID.HasValue)
