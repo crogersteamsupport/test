@@ -16,11 +16,11 @@ namespace TeamSupport.Model
     /// </summary>
     public class OrganizationModel
     {
-        public ConnectionModel ConnectionModel { get; private set; }
+        public DBConnection ConnectionModel { get; private set; }
         public int OrganizationID { get; private set; }
         public DataContext _db { get; private set; }
 
-        public OrganizationModel(ConnectionModel user, int organizationID)
+        public OrganizationModel(DBConnection user, int organizationID)
         {
             ConnectionModel = user;
             OrganizationID = organizationID;

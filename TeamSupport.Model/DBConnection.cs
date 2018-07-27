@@ -15,12 +15,12 @@ namespace TeamSupport.Model
     /// Model for validating OrganizationID, UserID, TicketID, etc
     /// Centralizes queries for Attachments
     /// </summary>
-    public class ConnectionModel : IDisposable
+    public class DBConnection : IDisposable
     {
         SqlConnection _connection;
         public DataContext _db { get; private set; }
 
-        public ConnectionModel(string connectionString)
+        public DBConnection(string connectionString)
         {
             _connection = new SqlConnection(connectionString);  // using
             _connection.Open(); // connection must be open to begin transaction

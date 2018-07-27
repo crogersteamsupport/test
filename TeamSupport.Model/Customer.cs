@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TeamSupport.Model
 {
-    class Customer : UserSession
+    public class Customer : UserSession
     {
         public Customer(OrganizationModel organization, int userID) : base(organization, userID)
         {

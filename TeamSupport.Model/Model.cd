@@ -1,41 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="TeamSupport.Model.ActionAttachmentModel">
-    <Position X="12.75" Y="1.25" Width="2" />
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-    </Compartments>
-    <TypeIdentifier>
-      <HashCode>ACAAgABAAACAAAAAAAAQEAAAAgAAABAAAAAQAABAAAQ=</HashCode>
-      <FileName>Model\ActionAttachmentModel.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Data.Action" />
-    </ShowAsAssociation>
-  </Class>
   <Class Name="TeamSupport.Model.ActionModel">
     <Position X="10" Y="1.25" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>ACAAgAAAAAKgBAACEAAAAAAAAAAAAAAQAAAAAAAgAAA=</HashCode>
-      <FileName>Model\ActionModel.cs</FileName>
+      <HashCode>ACAAgAAAAAIgBQECEAAAAAAAAAAAAAAQAAAAAAAgAAA=</HashCode>
+      <FileName>ActionModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="Ticket" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="TeamSupport.Model.ConnectionModel" BaseTypeListCollapsed="true">
+  <Class Name="TeamSupport.Model.DBConnection" BaseTypeListCollapsed="true">
     <Position X="0.5" Y="1.25" Width="2" />
     <TypeIdentifier>
-      <HashCode>ACEAgAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAA=</HashCode>
-      <FileName>Model\ConnectionModel.cs</FileName>
+      <HashCode>ACAAgQAAACAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAJAA=</HashCode>
+      <FileName>DBConnection.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="TeamSupport.Model.OrganizationModel">
     <Position X="3" Y="1.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>ACAAgAAAAACAAAAQAAAAAAAAAAAABAAAAAABAAAAAAA=</HashCode>
-      <FileName>Model\OrganizationModel.cs</FileName>
+      <HashCode>ACABgAAAAAAAAQAQAAAAAAAAAAAAAAAAAAABAAAAAAA=</HashCode>
+      <FileName>OrganizationModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="ConnectionModel" />
@@ -43,12 +30,18 @@
   </Class>
   <Class Name="TeamSupport.Model.TicketModel">
     <Position X="7.25" Y="1.25" Width="2.25" />
+    <AssociationLine Name="Customer" Type="TeamSupport.Model.Customer">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.932" Y="0.112" />
+      </MemberNameLabel>
+    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAABgAIAAACAAAAAAAAAAAAAAAAAAQAAAAAAAAAUAAQ=</HashCode>
-      <FileName>Model\TicketModel.cs</FileName>
+      <HashCode>AAEBgAIAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAQAAQ=</HashCode>
+      <FileName>TicketModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="User" />
+      <Property Name="Customer" />
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Model.UserSession">
@@ -57,25 +50,49 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAgAAAQACAAAACAAAAAAgAAAAAAAAAAAAAAAAAIAA=</HashCode>
-      <FileName>Model\UserSession.cs</FileName>
+      <HashCode>AAAAgAAAQAAAAQACAAAAAAgAAAAAAAAAAAAAAAAAIAA=</HashCode>
+      <FileName>UserSession.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="Organization" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="TeamSupport.Model.Client" Collapsed="true">
-    <Position X="6.25" Y="4.75" Width="1.5" />
+  <Class Name="TeamSupport.Model.Client">
+    <Position X="4.25" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Model\Client.cs</FileName>
+      <HashCode>AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Client.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Customer" />
+    </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Model.Customer" Collapsed="true">
-    <Position X="4" Y="4.75" Width="1.5" />
+    <Position X="6.5" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Model\Customer.cs</FileName>
+      <FileName>Customer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TeamSupport.Model.ActionAttachment">
+    <Position X="13" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgABAAAAAAQAAAAAAEAAAAAAEAAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>ActionAttachment.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Action" />
+      <Property Name="File" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="TeamSupport.Model.AttachmentFile">
+    <Position X="15.25" Y="1.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAACIAAAAAAAAAAAAAABABAABwAABAAAA=</HashCode>
+      <FileName>AttachmentFile.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

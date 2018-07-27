@@ -11,7 +11,7 @@ using System.Diagnostics;
 namespace TeamSupport.Model
 {
     /// <summary> Action Attachments </summary>
-    public class ActionAttachmentModel
+    public class ActionAttachment
     {
         public ActionModel Action { get; private set; }
         public int ActionAttachmentID { get; private set; }
@@ -19,7 +19,7 @@ namespace TeamSupport.Model
         public AttachmentFile File { get; private set; }
 
         /// <summary> Load existing action attachment /// </summary>
-        public ActionAttachmentModel(ActionModel action, int actionAttachmentID)
+        public ActionAttachment(ActionModel action, int actionAttachmentID)
         {
             Action = action;
             ActionAttachmentID = actionAttachmentID;
@@ -28,7 +28,7 @@ namespace TeamSupport.Model
         }
 
         /// <summary> New action attachment with data from front end /// </summary>
-        public ActionAttachmentModel(ActionModel action, Data.LoginUser user, HttpPostedFile postedFile, HttpRequest request)
+        public ActionAttachment(ActionModel action, Data.LoginUser user, HttpPostedFile postedFile, HttpRequest request)
         {
             Action = action;
             _db = Action._db;

@@ -17,6 +17,7 @@ namespace TeamSupport.Model
         public UserSession User { get; private set; }
         public int TicketID { get; private set; }
         public DataContext _db { get; private set; }
+        public Customer Customer { get; private set; }
 
         public TicketModel(UserSession user, int ticketID)
         {

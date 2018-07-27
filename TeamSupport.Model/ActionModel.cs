@@ -121,16 +121,16 @@ namespace TeamSupport.Model
         }
 
         // this is very slow...
-        public ActionAttachmentModel[] Attachments()
+        public ActionAttachment[] Attachments()
         {
             string query = $"SELECT AttachmentID FROM ActionAttachments WHERE OrganizationID={Ticket.User.Organization.OrganizationID} AND ActionID={ActionID}";
             int[] actionAttachmentIDs = _db.ExecuteQuery<int>(query).ToArray();
-            return actionAttachmentIDs.Select(id => new ActionAttachmentModel(this, id)).ToArray();
+            return actionAttachmentIDs.Select(id => new ActionAttachment(this, id)).ToArray();
         }
 
-        public List<ActionAttachmentModel> InsertActionAttachments(Data.LoginUser user, HttpRequest request)
+        public List<ActionAttachment> InsertActionAttachments(Data.LoginUser user, HttpRequest request)
         {
-            List<ActionAttachmentModel> results = new List<ActionAttachmentModel>();
+            List<ActionAttachment> results = new List<ActionAttachment>();
             HttpFileCollection files = request.Files;
             for (int i = 0; i < files.Count; i++)   // foreach returns strings?
             {
@@ -141,7 +141,7 @@ namespace TeamSupport.Model
                 if (postedFile.ContentLength == 0)
                     continue;
 
-                results.Add(new ActionAttachmentModel(this, user, postedFile, request));
+                results.Add(new ActionAttachment(this, user, postedFile, request));
             }
 
             return results;

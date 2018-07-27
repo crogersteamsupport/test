@@ -32,13 +32,13 @@ namespace TeamSupport.Handlers
             return segments;
         }
 
-        static List<Model.ActionAttachmentModel> SaveActionAttachments(HttpContext context, int organizationID, int? ticketID, int? actionID)
+        static List<Model.ActionAttachment> SaveActionAttachments(HttpContext context, int organizationID, int? ticketID, int? actionID)
         {
            try
             {
                 if(!actionID.HasValue)
-                    return new List<Model.ActionAttachmentModel>();
-                using (Model.ConnectionModel connection = new Model.ConnectionModel(LoginUser.GetConnectionString()))
+                    return new List<Model.ActionAttachment>();
+                using (Model.DBConnection connection = new Model.DBConnection(LoginUser.GetConnectionString()))
                 {
                     if(!ticketID.HasValue)
                         ticketID = Model.ActionModel.GetTicketID(connection._db, actionID.Value);
@@ -51,8 +51,8 @@ namespace TeamSupport.Handlers
             }
             catch(Exception ex)
             {
-                Model.ConnectionModel.LogMessage(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Attachments, ticketID, "Unable to save attachments", ex);
-                return new List<Model.ActionAttachmentModel>();
+                Model.DBConnection.LogMessage(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Attachments, ticketID, "Unable to save attachments", ex);
+                return new List<Model.ActionAttachment>();
             }
         }
 
@@ -61,8 +61,8 @@ namespace TeamSupport.Handlers
             List<UploadResult> result = new List<UploadResult>();
             if (folder == AttachmentPath.Folder.Actions)
             {
-                List<Model.ActionAttachmentModel> attachments = SaveActionAttachments(context, organizationID, null, itemID.Value); // front end does not provide TicketID
-                foreach (Model.ActionAttachmentModel attachment in attachments)
+                List<Model.ActionAttachment> attachments = SaveActionAttachments(context, organizationID, null, itemID.Value); // front end does not provide TicketID
+                foreach (Model.ActionAttachment attachment in attachments)
                 {
                     Model.AttachmentFile file = attachment.File;
                     result.Add(new UploadResult(file.FileName, file.ContentType, file.ContentLength));

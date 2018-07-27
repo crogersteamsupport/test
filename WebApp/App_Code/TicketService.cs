@@ -3638,7 +3638,7 @@ WHERE t.TicketID = @TicketID
             if (info.CategoryID != null && info.CategoryID > -1) ticket.AddCommunityTicket((int)info.CategoryID);
 
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            using (TeamSupport.Model.ConnectionModel model = new TeamSupport.Model.ConnectionModel(loginUser.ConnectionString))
+            using (TeamSupport.Model.DBConnection model = new TeamSupport.Model.DBConnection(loginUser.ConnectionString))
             {
                 // pack NewTicketSaveInfo into an ActionProxy for the ActionModel
                 ActionProxy proxy = new ActionProxy()

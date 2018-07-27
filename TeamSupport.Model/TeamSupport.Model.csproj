@@ -43,11 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActionAttachmentModel.cs" />
+    <Compile Include="ActionAttachment.cs" />
     <Compile Include="ActionModel.cs" />
     <Compile Include="AttachmentFile.cs" />
     <Compile Include="Client.cs" />
-    <Compile Include="ConnectionModel.cs" />
+    <Compile Include="DBConnection.cs" />
     <Compile Include="Customer.cs" />
     <Compile Include="OrganizationModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
