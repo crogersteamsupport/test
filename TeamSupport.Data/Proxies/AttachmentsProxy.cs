@@ -33,9 +33,10 @@ namespace TeamSupport.Data
     [DataMember] public bool SentToTFS { get; set; }
     [DataMember] public bool SentToSnow { get; set; }
     [DataMember] public int? FilePathID { get; set; }
-    }
-
-    public partial class Attachment : BaseItem
+          
+  }
+  
+  public partial class Attachment : BaseItem
   {
     public AttachmentProxy GetProxy()
     {
