@@ -17,6 +17,9 @@ namespace TeamSupport.Model
     /// </summary>
     public class ConnectionContext : IDisposable
     {
+
+        public const bool Enabled = false;
+
         SqlConnection _connection;
         public DataContext _db { get; private set; }
 

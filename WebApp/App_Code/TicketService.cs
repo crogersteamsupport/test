@@ -3637,20 +3637,8 @@ WHERE t.TicketID = @TicketID
 
             if (info.CategoryID != null && info.CategoryID > -1) ticket.AddCommunityTicket((int)info.CategoryID);
 
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-            using (TeamSupport.Model.ConnectionContext connection = new TeamSupport.Model.ConnectionContext(loginUser.ConnectionString))
-            {
-                // pack NewTicketSaveInfo into an ActionProxy for the ActionModel
-                ActionProxy proxy = new ActionProxy()
-                {
-                    Description = info.Description,
-                    IsVisibleOnPortal = info.IsVisibleOnPortal,
-                    TimeSpent = info.TimeSpent,
-                    DateStarted = info.DateStarted
-                };
-
-                TeamSupport.Model.ActionModel x = connection.Organization(loginUser.OrganizationID).User(loginUser.UserID).Ticket(ticket.TicketID).InsertAction(proxy, ticket, user);
-            }
+            if(TeamSupport.Model.ConnectionContext.Enabled)
+                InsertAction(info, ticket, user);  // scot
 
             TeamSupport.Data.Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();
             action.ActionTypeID = null;
@@ -3786,6 +3774,33 @@ WHERE t.TicketID = @TicketID
 
 
             return result.ToArray();
+        }
+
+        /// <summary> Insert Action </summary>
+        private static TeamSupport.Model.ActionModel InsertAction(NewTicketSaveInfo info, Ticket ticket, User user)
+        {
+            try
+            {
+                LoginUser loginUser = TSAuthentication.GetLoginUser();
+                using (TeamSupport.Model.ConnectionContext connection = new TeamSupport.Model.ConnectionContext(loginUser.ConnectionString))
+                {
+                    // pack NewTicketSaveInfo into an ActionProxy for the ActionModel
+                    ActionProxy proxy = new ActionProxy()
+                    {
+                        Description = info.Description,
+                        IsVisibleOnPortal = info.IsVisibleOnPortal,
+                        TimeSpent = info.TimeSpent,
+                        DateStarted = info.DateStarted
+                    };
+
+                    return connection.Organization(loginUser.OrganizationID).User(loginUser.UserID).Ticket(ticket.TicketID).InsertAction(proxy, ticket, user);
+                }
+            }
+            catch (Exception ex)
+            {
+                TeamSupport.Model.ConnectionContext.LogMessage(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Attachments, ticket.TicketID, "Unable to insert action", ex);
+                return null;
+            }
         }
 
         [WebMethod]

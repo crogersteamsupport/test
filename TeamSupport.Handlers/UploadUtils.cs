@@ -32,6 +32,7 @@ namespace TeamSupport.Handlers
             return segments;
         }
 
+        /// <summary> SaveActionAttachments </summary>
         static List<Model.ActionAttachment> SaveActionAttachments(HttpContext context, int organizationID, int? ticketID, int? actionID)
         {
            try
@@ -46,8 +47,7 @@ namespace TeamSupport.Handlers
 
                     // add the attachments to the action
                     LoginUser user = TSAuthentication.GetLoginUser();
-                    Model.ActionModel action = connection.Organization(organizationID).User(user.UserID).Ticket(ticketID.Value).Action(actionID.Value);
-                    return action.InsertActionAttachments(user, context.Request);
+                    return connection.Organization(organizationID).User(user.UserID).Ticket(ticketID.Value).Action(actionID.Value).InsertActionAttachments(user, context.Request);
                 }
             }
             catch(Exception ex)
@@ -60,7 +60,9 @@ namespace TeamSupport.Handlers
         public static void SaveFiles(HttpContext context, AttachmentPath.Folder folder, int organizationID, int? itemID)
         {
             List<UploadResult> result = new List<UploadResult>();
-            if (folder == AttachmentPath.Folder.Actions)
+
+            // Action Attachments
+            if (Model.ConnectionContext.Enabled && (folder == AttachmentPath.Folder.Actions))
             {
                 List<Model.ActionAttachment> attachments = SaveActionAttachments(context, organizationID, null, itemID.Value); // front end does not provide TicketID
                 foreach (Model.ActionAttachment attachment in attachments)

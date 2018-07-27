@@ -19,7 +19,7 @@ namespace TeamSupport.Model
         public TicketModel Ticket { get; private set; }
         public int ActionID { get; private set; }
         public DataContext _db { get; private set; }
-        public Data.Action DataLayerAction { get; private set; }  // used by TicketPageService
+        public Data.Action DataLayerAction { get; private set; }  // back door used by TicketPageService
 
         /// <summary> Root constructor </summary>
         public ActionModel(TicketModel ticket, int actionID)
