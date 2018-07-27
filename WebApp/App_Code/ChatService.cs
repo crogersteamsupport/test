@@ -48,10 +48,10 @@ namespace TSWebServices
 		#region ClientServices
 
 		[WebMethod]
-        public bool CheckChatStatus(string chatGuid)
+        public bool CheckChatStatus(string chatGuid, string groupName = null)
         {
             Organization org = GetOrganization(chatGuid);
-            bool areOperatorsAvailable = ChatRequests.AreOperatorsAvailable(LoginUser.Anonymous, org.OrganizationID);
+            bool areOperatorsAvailable = ChatRequests.AreOperatorsAvailable(LoginUser.Anonymous, org.OrganizationID, groupName);
 
             if (areOperatorsAvailable)
             {
@@ -136,11 +136,17 @@ namespace TSWebServices
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public string RequestChat(string chatGuid, string fName, string lName, string email, string description)
+        public string RequestChat(string chatGuid, string fName, string lName, string email, string description, string groupName = null)
         {
             Organization org = GetOrganization(chatGuid);
-            ChatRequest request = ChatRequests.RequestChat(LoginUser.Anonymous, org.OrganizationID, fName, lName, email, description, Context.Request.UserHostAddress);
-            pusher.Trigger("chat-requests-" + org.ChatID, "new-chat-request", new { message = string.Format("{0} {1} is requesting a chat!", fName, lName), title = "Chat Request", theme = "ui-state-error", chatRequest = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID, request.ChatID), GetChatMessages(request.ChatID)) });
+            ChatRequest request = ChatRequests.RequestChat(LoginUser.Anonymous, org.OrganizationID, fName, lName, email, description, Context.Request.UserHostAddress, groupName);
+            pusher.Trigger("chat-requests-" + org.ChatID, "new-chat-request",
+				new {
+					message = string.Format("{0} {1} is requesting a chat!", fName, lName),
+					title = "Chat Request",
+					theme = "ui-state-error",
+					chatRequest = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID, request.ChatID), GetChatMessages(request.ChatID), groupName)
+				});
             return JsonConvert.SerializeObject(request.GetProxy());
         }
 
@@ -1053,6 +1059,7 @@ namespace TSWebServices
             public string InitiatorEmail { get; set; }
             public string InitiatorInitials { get; set; }
             public string Description { get; set; }
+			public string GroupName { get; set; }
             public List<ChatViewMessage> Messages { get; set; }
 
             public ChatViewObject()
@@ -1060,7 +1067,7 @@ namespace TSWebServices
 
             }
 
-            public ChatViewObject(ChatRequestProxy request, ParticipantInfoView initiator, ChatMessageProxy[] messages)
+            public ChatViewObject(ChatRequestProxy request, ParticipantInfoView initiator, ChatMessageProxy[] messages, string groupName = null)
             {
                 ChatID = request.ChatID;
                 ChatRequestID = request.ChatRequestID;
@@ -1084,6 +1091,8 @@ namespace TSWebServices
                         Messages.Add(new ChatViewMessage(message, GetLinkedUserInfo(message.PosterID, message.PosterType)));
                     }
                 }
+
+				GroupName = groupName;
             }
         }
 

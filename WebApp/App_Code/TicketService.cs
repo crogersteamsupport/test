@@ -3709,18 +3709,29 @@ WHERE t.TicketID = @TicketID
                 }
                 else
                 {
-                    if (customValue.FieldType == CustomFieldType.DateTime || customValue.FieldType == CustomFieldType.Date || customValue.FieldType == CustomFieldType.Time)
+					switch (customValue.FieldType)
                     {
-                        //customValue.Value = ((DateTime)field.Value).ToString();
+						case CustomFieldType.DateTime:
+						case CustomFieldType.Time:
                         DateTime dt;
                         if (DateTime.TryParse(((string)field.Value).Replace("UTC", "GMT"), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
                         {
                             customValue.Value = dt.ToUniversalTime().ToString();
                         }
-                    }
-                    else
-                    {
+							break;
+						case CustomFieldType.Date:
+							DateTime customDate;
+							string fieldValue = (string)field.Value;
+
+							if (DateTime.TryParse(fieldValue, out customDate))
+							{
+								customValue.Value = customDate.ToShortDateString();
+							}
+							
+							break;
+						default:
                         customValue.Value = field.Value.ToString();
+							break;
                     }
 
                 }
@@ -4083,7 +4094,6 @@ WHERE t.TicketID = @TicketID
             Ticket oldticket = (Ticket)Tickets.GetTicket(TSAuthentication.GetLoginUser(), losingTicketID);
             string description = "Merged '" + oldticket.TicketNumber + "' Customers";
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
-            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, winningTicketID, description);
             return;
         }
 
@@ -4112,7 +4122,6 @@ WHERE t.TicketID = @TicketID
             Ticket losingticket = (Ticket)Tickets.GetTicket(TSAuthentication.GetLoginUser(), losingTicketID);
             string description = "Merged '" + losingticket.TicketNumber + "' Subscribers";
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
-            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, winningTicketID, description);
 
         }
 
@@ -4130,7 +4139,6 @@ WHERE t.TicketID = @TicketID
             Ticket losingticket = (Ticket)Tickets.GetTicket(TSAuthentication.GetLoginUser(), losingTicketID);
             string description = "Merged '" + ticket.TicketNumber + "' Queuers";
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
-            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, winningTicketID, description);
         }
 
         private TicketLinkToJiraItemProxy GetLinkToJira(int ticketID)

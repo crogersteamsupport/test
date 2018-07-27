@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.Linq.Mapping;
+using System.Data.Linq;
 
 namespace WatsonToneAnalyzer
 {
@@ -20,5 +21,13 @@ namespace WatsonToneAnalyzer
         [Column]
         public decimal? SentimentMultiplier;
 #pragma warning restore CS0649
+
+        public static ToneSentiment[] ToneSentiments { get; private set; }
+        public static void Initialize(DataContext db)
+        {
+            Table<ToneSentiment> tones = db.GetTable<ToneSentiment>();
+            ToneSentiments = (from tone in tones select tone).ToArray();
+        }
+
     }
 }

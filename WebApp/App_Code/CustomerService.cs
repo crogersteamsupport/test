@@ -133,6 +133,29 @@ namespace TSWebServices
             return value;
         }
         [WebMethod]
+		public void SetCompanyAndChildrenInactive(int organizationId)
+		{
+			SetCompanyActive(organizationId, false);
+			string[] children = LoadChildren(organizationId);
+
+			if (children.Length > 0)
+			{
+				LoginUser loginUser = TSAuthentication.GetLoginUser();
+				string description = String.Format("{0} set company's children active to False", TSAuthentication.GetUser(loginUser).FirstLastName);
+				ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, organizationId, description);
+			}
+
+			foreach (string childOrgJson in children)
+			{
+				OrganizationProxy childOrg = JsonConvert.DeserializeObject<OrganizationProxy>(childOrgJson);
+				
+				if (childOrg.OrganizationID > 0)
+				{
+					SetCompanyActive(childOrg.OrganizationID, false);
+				}
+			}
+		}
+		[WebMethod]
         public bool SetCompanyPortalAccess(int orgID, bool value)
         {
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
@@ -2314,6 +2337,19 @@ SELECT
             return results.ToArray();
         }
 
+		[WebMethod]
+		public bool HasChildren(int organizationId)
+		{
+			LoginUser loginUser = TSAuthentication.GetLoginUser();
+			SqlCommand command = new SqlCommand();
+			command.CommandType = CommandType.Text;
+			command.CommandText = @"SELECT COUNT(1) FROM CustomerRelationships WITH(NOLOCK) WHERE RelatedCustomerID = @organizationId";
+			command.Parameters.AddWithValue("@OrganizationId", organizationId);
+			int childrenCount = SqlExecutor.ExecuteInt(loginUser, command);
+
+			return childrenCount > 0;
+		}
+
         [WebMethod]
         public string LoadContacts(int organizationID, bool isActive)
         {
@@ -4153,7 +4189,6 @@ SELECT
 
                     string description = "Merged '" + lossingContactNameForHistoryEntries + "' Phone Numbers.";
                     ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
-                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.PhoneNumbers, winningUserID, description);
                 }
             }
             catch (Exception e)
@@ -4194,7 +4229,6 @@ SELECT
 
                     string description = "Merged '" + lossingContactNameForHistoryEntries + "' Addresses.";
                     ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Users, winningUserID, description);
-                    ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.PhoneNumbers, winningUserID, description);
                 }
             }
             catch (Exception e)

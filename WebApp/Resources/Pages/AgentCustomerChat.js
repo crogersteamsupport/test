@@ -50,7 +50,9 @@ $(document).ready(function () {
                 pusherKey = key;
                 SetupChatRequests();
                 subscribeToNewChatRequest(pusherKey, function (request) {
-                    if (request.userIdInvited === undefined || request.userIdInvited == top.Ts.System.User.UserID) {
+					var isGroupValidated = parent.Ts.MainPage.ValidateChatForGroup(request.chatRequest.GroupName);
+
+					if ((request.userIdInvited === undefined || request.userIdInvited == top.Ts.System.User.UserID) && isGroupValidated) {
                         SetupPendingRequest(request.chatRequest, true);
                     }
                 });
@@ -120,7 +122,6 @@ $(document).ready(function () {
 
     function SetupChatRequests() {
         parent.Ts.Services.Chat.GetChatRequests(function (data) {
-            //console.log(data);
             for (i = 0; i < data.length; i++) {
                 SetupPendingRequest(data[i], (i == 0));
             }
@@ -128,7 +129,6 @@ $(document).ready(function () {
         });
 
         parent.Ts.Services.Chat.GetActiveChats(function (data) {
-            //console.log(data);
             for (a = 0; a < data.length; a++) {
                 SetupActiveRequest(data[a], (a == 0));
             }
