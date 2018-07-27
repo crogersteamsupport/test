@@ -527,7 +527,6 @@ function GetCustomValues() {
                 var value = parent.Ts.Utils.getMsDate("1/1/1900 " + text);
                 field.Value = text == null ? null : value.toUTCString();
                 break;
-            case parent.Ts.CustomFieldType.Date:
             case parent.Ts.CustomFieldType.DateTime:
                 var text = $(this).find('a').text();
                 var value = parent.Ts.Utils.getMsDate(text);

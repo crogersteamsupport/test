@@ -58,7 +58,7 @@ AdminPortal = function () {
                   
               if (total > 10)
               {
-                  result = "is greater than 100%, please reconfigure your weights";
+                  result = (total * 10) + "% is greater than 100%, please reconfigure your weights";
                   $('#cdi-total').addClass('red');
                   $('#recalculate-cdi').attr("disabled", "disabled");
                   $('.portal-save-panel').hide();
@@ -66,7 +66,7 @@ AdminPortal = function () {
                   
               if (total < 10)
               {
-                  result = "is less than 100%, please reconfigure your weights";
+                  result = (total * 10) + "% is less than 100%, please reconfigure your weights";
                   $('#cdi-total').addClass('red');
                   $('#recalculate-cdi').attr("disabled", "disabled");
                   $('.portal-save-panel').hide();
@@ -151,6 +151,9 @@ AdminPortal = function () {
     _cdiOption.Last30Weight = $('#last30-slider').slider('value') * .1;
     _cdiOption.AvgDaysOpenWeight = $('#avgopen-weight').slider('value') * .1;
     _cdiOption.AvgDaysToCloseWeight = $('#avgclose-weight').slider('value') * .1;
+    _cdiOption.AverageActionCountWeight = $('#actionCount-weight').slider('value') * .1;
+    _cdiOption.AverageSentimentScoreWeight = $('#ticketSentiment-weight').slider('value') * .1;
+    _cdiOption.AverageSeverityWeight = $('#ticketSeverity-weight').slider('value') * .1;
     _cdiOption.GreenUpperRange = $("#cdi-green").slider('value');
     _cdiOption.YellowUpperRange = $("#cdi-yellow").slider('value');
 
@@ -201,31 +204,68 @@ AdminPortal = function () {
   }
 
   loadCDISettings();
-  function loadCDISettings()
-  {
+  function loadCDISettings() {
       parent.parent.Ts.Services.Organizations.LoadCDISettings(parent.parent.Ts.System.Organization.OrganizationID, function (cdi) {
 
           if (cdi != null)
             {
-              var ttwvalue = cdi.TotalTicketsWeight == null ? '2' : cdi.TotalTicketsWeight * 10;
+              var ttwvalue;
+              var last30slider;
+              var otwslider;
+              var avgopenweight;
+              var avgcloseweight;
+              var ticketSentimentweight;
+              var actionCountweight;
+              var ticketSeverityweight;
+
+              // if original five contain a NULL - use defaults
+              var useDefaults = (cdi.TotalTicketsWeight == null) || (cdi.Last30Weight == null) ||
+                  (cdi.OpenTicketsWeight == null) || (cdi.AvgDaysOpenWeight == null) || (cdi.AvgDaysToCloseWeight == null);
+              if (useDefaults) {
+                  ttwvalue = '2.0';
+                  last30slider = '2.0';
+                  otwslider = '2.0';
+                  avgopenweight = '2.0';
+                  avgcloseweight = '2.0';
+                  ticketSentimentweight = '0';
+                  actionCountweight = '0';
+                  ticketSeverityweight = '0';
+              }
+              else {
+                  // use what is configured
+                  ttwvalue = cdi.TotalTicketsWeight == null ? '0' : cdi.TotalTicketsWeight * 10;
+                  last30slider = cdi.Last30Weight == null ? '0' : cdi.Last30Weight * 10;
+                  otwslider = cdi.OpenTicketsWeight == null ? '0' : cdi.OpenTicketsWeight * 10;
+                  avgopenweight = cdi.AvgDaysOpenWeight == null ? '0' : cdi.AvgDaysOpenWeight * 10;
+                  avgcloseweight = cdi.AvgDaysToCloseWeight == null ? '0' : cdi.AvgDaysToCloseWeight * 10;
+                  ticketSentimentweight = cdi.AverageSentimentScoreWeight == null ? '0' : cdi.AverageSentimentScoreWeight * 10;
+                  actionCountweight = cdi.AverageActionCountWeight == null ? '0' : cdi.AverageActionCountWeight * 10;
+                  ticketSeverityweight = cdi.AverageSeverityWeight == null ? '0' : cdi.AverageSeverityWeight * 10;
+              }
+
               $('#ttw-slider').slider('value', ttwvalue);
               $('#ttw-slider').next().text("Overall Weight: " + (ttwvalue * 10) + "%");
 
-              var last30slider = cdi.Last30Weight == null ? '2' : cdi.Last30Weight * 10;
               $('#last30-slider').slider('value', last30slider);
               $('#last30-slider').next().text("Overall Weight: " + (last30slider * 10) + "%");
 
-              var otwslider = cdi.OpenTicketsWeight == null ? '2' : cdi.OpenTicketsWeight * 10;
               $('#otw-slider').slider('value', otwslider);
               $('#otw-slider').next().text("Overall Weight: " + (otwslider * 10) + "%");
 
-              var avgopenweight = cdi.AvgDaysOpenWeight == null ? '2' : cdi.AvgDaysOpenWeight * 10;
               $('#avgopen-weight').slider('value', avgopenweight);
               $('#avgopen-weight').next().text("Overall Weight: " + (avgopenweight * 10) + "%");
 
-              var avgcloseweight = cdi.AvgDaysToCloseWeight == null ? '2' : cdi.AvgDaysToCloseWeight * 10;
               $('#avgclose-weight').slider('value', avgcloseweight);
               $('#avgclose-weight').next().text("Overall Weight: " + (avgcloseweight * 10) + "%");
+
+              $('#ticketSentiment-weight').slider('value', ticketSentimentweight);
+              $('#ticketSentiment-weight').next().text("Overall Weight: " + (ticketSentimentweight * 10) + "%");
+
+              $('#actionCount-weight').slider('value', actionCountweight);
+              $('#actionCount-weight').next().text("Overall Weight: " + (actionCountweight * 10) + "%");
+
+              $('#ticketSeverity-weight').slider('value', ticketSeverityweight);
+              $('#ticketSeverity-weight').next().text("Overall Weight: " + (ticketSeverityweight * 10) + "%");
 
               var greenlimit = cdi.GreenUpperRange == null ? '70' : cdi.GreenUpperRange;
               $('#cdi-green').slider('value', greenlimit);
@@ -237,15 +277,13 @@ AdminPortal = function () {
 
               var lastCompute = cdi.LastCompute == null ? 'Never' : parent.parent.Ts.Utils.getMsDate(cdi.LastCompute);
 
-              if (lastCompute == 'Never')
-              {
+              if (lastCompute == 'Never') {
                   var cdistatus = 'Never';
               }
-                  else
-              {
+              else {
                   var cdistatus = lastCompute.localeFormat(parent.parent.Ts.Utils.getDateTimePattern())
               }
-              
+
               $('#cdiStatus').html("The CDI runs once per day, and the last time your account processed was: <strong>" + cdistatus + "</strong> To force an update now, please click the force update button below.");
           }
       });

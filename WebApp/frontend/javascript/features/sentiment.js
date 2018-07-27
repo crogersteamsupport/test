@@ -43,7 +43,8 @@ function WatsonTicket(ticketid) {
 }
 
 function WatsonCustomer(organizationID) {
-    _mainFrame.Ts.Services.Customers.GetOrganizationSentiment(organizationID, function(e) {
+	if (_mainFrame.Ts.System.Organization.UseWatson) {
+		window.parent.Ts.Services.Customers.GetOrganizationSentiment(organizationID, function (e) {
         if (e.length > 0) {
             $('#organizationSentiment').show();
             var percentage = e / 1000;
@@ -55,10 +56,14 @@ function WatsonCustomer(organizationID) {
             $('#health-message').removeClass('disabled').addClass('enabled').text(display + '%');
         }
     });
+	} else {
+		$("#health-properties").addClass("hide");
+	}
 }
 
 function WatsonTicketField(ticketid) {
-    window.parent.Ts.Services.WatsonTickets.Ticket(ticketid, function(result) {
+	if (_mainFrame.Ts.System.Organization.UseWatson) {
+		window.parent.Ts.Services.WatsonTickets.Ticket(ticketid, function (result) {
         if (result != 'negative' && result != 'nothing' && result != 'hidden') {
             var data = jQuery.parseJSON(result);
 
@@ -79,4 +84,7 @@ function WatsonTicketField(ticketid) {
             $('#ticket-Sentiment').append(output.join(' '));
         }
     });
+	} else {
+		$("#health-properties").addClass("hide");
+	}
 }

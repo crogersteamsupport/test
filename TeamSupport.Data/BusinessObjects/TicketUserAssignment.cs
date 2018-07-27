@@ -38,7 +38,7 @@ namespace TeamSupport.Data
 			using (SqlCommand command = new SqlCommand())
 			{
 				SqlParameterCollection filterParameters = command.Parameters;
-                string whereClause = " WHERE Tickets.OrganizationID = @organizationId ";
+                string whereClause = " WHERE Tickets.OrganizationID = @organizationId AND UserAssignmentHistory.UserID IS NOT NULL ";
 				whereClause += (byId ? " AND UserAssignmentHistory.TicketID IN (" + tickets + ")" : " AND Tickets.TicketNumber IN (" + tickets + ")");
 
 				sql = @"SELECT

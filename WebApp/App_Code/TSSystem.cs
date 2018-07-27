@@ -49,6 +49,12 @@ namespace TSWebServices
             return TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).GetProxy();
         }
 
+		[WebMethod]
+		public List<string> GetCurrentUserGroups()
+		{
+			return TSAuthentication.GetUserGroups();
+		}
+
         [WebMethod]
         public string GetDomains()
         {
@@ -849,13 +855,17 @@ namespace TSWebServices
                 return null;
             }
 
-            if (customValue.FieldType == CustomFieldType.DateTime)
+			switch (customValue.FieldType)
             {
+				case CustomFieldType.DateTime:
                 customValue.Value = ((DateTime)value).ToString();
-            }
-            else
-            {
+					break;
+				case CustomFieldType.Date:
+					customValue.Value = ((DateTime)value).ToShortDateString();
+					break;
+				default:
                 customValue.Value = DataUtils.CleanValueScript(value.ToString());
+					break;
             }
 
             customValue.Collection.Save();
