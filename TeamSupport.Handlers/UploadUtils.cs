@@ -87,7 +87,7 @@ namespace TeamSupport.Handlers
             {
                 if (files[i].ContentLength > 0)
                 {
-                    string fileName = RemoveSpecialCharacters(DataUtils.VerifyFileNameUniqueness(path, Path.GetFileName(files[i].FileName)));
+                    string fileName = RemoveSpecialCharacters(DataUtils.VerifyUniqueUrlFileName(path, Path.GetFileName(files[i].FileName)));
 
                     files[i].SaveAs(Path.Combine(path, fileName));
                     if (refType != ReferenceType.None && itemID != null)

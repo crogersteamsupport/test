@@ -82,7 +82,7 @@ namespace TeamSupport.Handlers
             {
                 if (files[i].ContentLength > 0)
                 {
-                    string fileName =  UploadUtils.RemoveSpecialCharacters(DataUtils.VerifyFileNameUniqueness(path, Path.GetFileName(files[i].FileName)));
+                    string fileName =  UploadUtils.RemoveSpecialCharacters(DataUtils.VerifyUniqueUrlFileName(path, Path.GetFileName(files[i].FileName)));
                     if (builder.Length > 0) builder.Append(",");
                     builder.Append(fileName);
 
