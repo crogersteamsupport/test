@@ -12,55 +12,30 @@ namespace TeamSupport.Data
 {
   [DataContract(Namespace="http://teamsupport.com/")]
   [KnownType(typeof(AttachmentProxy))]
-  [Table(Name = "Attachments")]
+  [Table(Name = "Attachments")] // linq to sql
   public class AttachmentProxy
   {
     public AttachmentProxy() {}
-    [DataMember] [Column] public int AttachmentID { get; set; }
-    [DataMember] [Column] public int OrganizationID { get; set; }
-    [DataMember] [Column] public string FileName { get; set; }
-    [DataMember] [Column] public string FileType { get; set; }
-    [DataMember] [Column] public long FileSize { get; set; }
-    [DataMember] [Column] public string Path { get; set; }
-    [DataMember] [Column] public string Description { get; set; }
-    [DataMember] [Column] public DateTime DateCreated { get; set; }
-    [DataMember] [Column] public DateTime DateModified { get; set; }
-    [DataMember] [Column] public int CreatorID { get; set; }
-    [DataMember] [Column] public int ModifierID { get; set; }
-    [DataMember] [Column] public ReferenceType RefType { get; set; }
-    [DataMember] [Column] public int RefID { get; set; }
-    [DataMember] [Column] public string CreatorName { get; set; }          
-    [DataMember] [Column] public bool SentToJira { get; set; }
-    [DataMember] [Column] public int? ProductFamilyID { get; set; }
-    [DataMember] [Column] public string ProductFamily { get; set; }
-    [DataMember] [Column] public bool SentToTFS { get; set; }
-    [DataMember] [Column] public bool SentToSnow { get; set; }
-    [DataMember] [Column] public int? FilePathID { get; set; }
-
-    public AttachmentProxy(Attachment attachment)
-    {
-        FilePathID = attachment.FilePathID;
-        SentToSnow = attachment.SentToSnow;
-        SentToTFS = attachment.SentToTFS;
-        ProductFamilyID = attachment.ProductFamilyID;
-        SentToJira = attachment.SentToJira;
-        RefID = attachment.RefID;
-        RefType = attachment.RefType;
-        ModifierID = attachment.ModifierID;
-        CreatorID = attachment.CreatorID;
-        Description = attachment.Description;
-        Path = attachment.Path;
-        FileSize = attachment.FileSize;
-        FileType = attachment.FileType;
-        FileName = attachment.FileName;
-        OrganizationID = attachment.OrganizationID;
-        AttachmentID = attachment.AttachmentID;
-        CreatorName = attachment.CreatorName;
-
-        DateCreated = DateTime.SpecifyKind(attachment.DateCreatedUtc, DateTimeKind.Utc);
-        DateModified = DateTime.SpecifyKind(attachment.DateModifiedUtc, DateTimeKind.Utc);
-    }
-
+    [Column, DataMember] public int AttachmentID { get; set; }
+    [Column, DataMember] public int OrganizationID { get; set; }
+    [Column, DataMember] public string FileName { get; set; }
+    [Column, DataMember] public string FileType { get; set; }
+    [Column, DataMember] public long FileSize { get; set; }
+    [Column, DataMember] public string Path { get; set; }
+    [Column, DataMember] public string Description { get; set; }
+    [Column, DataMember] public DateTime DateCreated { get; set; }
+    [Column, DataMember] public DateTime DateModified { get; set; }
+    [Column, DataMember] public int CreatorID { get; set; }
+    [Column, DataMember] public int ModifierID { get; set; }
+    [Column, DataMember] public ReferenceType RefType { get; set; }
+    [Column, DataMember] public int RefID { get; set; }
+    [Column, DataMember] public string CreatorName { get; set; }          
+    [Column, DataMember] public bool SentToJira { get; set; }
+    [Column, DataMember] public int? ProductFamilyID { get; set; }
+    [Column, DataMember] public string ProductFamily { get; set; }
+    [Column, DataMember] public bool SentToTFS { get; set; }
+    [Column, DataMember] public bool SentToSnow { get; set; }
+    [Column, DataMember] public int? FilePathID { get; set; }
     }
 
     public partial class Attachment : BaseItem

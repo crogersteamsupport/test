@@ -3649,7 +3649,7 @@ WHERE t.TicketID = @TicketID
                     DateStarted = info.DateStarted
                 };
 
-                TeamSupport.Model.ActionModel x = model.Customer(loginUser.OrganizationID).UserSession(loginUser.UserID).Ticket(ticket.TicketID).InsertAction(proxy, ticket, user);
+                TeamSupport.Model.ActionModel x = model.Organization(loginUser.OrganizationID).User(loginUser.UserID).Ticket(ticket.TicketID).InsertAction(proxy, ticket, user);
             }
 
             TeamSupport.Data.Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();

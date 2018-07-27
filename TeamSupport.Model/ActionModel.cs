@@ -19,7 +19,6 @@ namespace TeamSupport.Model
         public TicketModel Ticket { get; private set; }
         public int ActionID { get; private set; }
         public DataContext _db { get; private set; }
-        //public List<ActionAttachmentModel> Attachments { get; private set; }
         public Data.Action DataLayerAction { get; private set; }  // used by TicketPageService
 
         /// <summary> Root constructor </summary>
@@ -71,22 +70,7 @@ namespace TeamSupport.Model
             }
         }
 
-        //C:\Users\sprichard\source\repos\ts-app\TeamSupport.Handlers\UploadUtils.cs
-        //public static void SaveFiles(HttpContext context, AttachmentPath.Folder folder, int organizationID, int? itemID)
-
-        //public bool IsAuthenticated(bool isKnowledgeBase)
-        //{
-        //    string query = $"SELECT a.ActionID FROM Actions a WITH (NOLOCK) JOIN Tickets t on a.TicketID=t.TicketID WHERE ActionID = {ActionID} AND a.IsVisibleOnPortal = 1 AND t.IsVisibleOnPortal = 1";
-        //    if(isKnowledgeBase)
-        //        query += " AND a.IsKnowledgeBase = 1 AND t.IsKnowledgeBase = 1";
-
-        //    int actionID = _db.ExecuteQuery<int>(query).FirstOrDefault();   // does a record exist satisfying all the conditions?
-        //    return actionID == ActionID;
-        //}
-
-        /// <summary>
-        /// OLD DATA LAYER - extracted from ts-app\WebApp\App_Code\TicketPageService.cs UpdateAction(ActionProxy proxy)
-        /// </summary>
+        /// <summary> extracted from ts-app\WebApp\App_Code\TicketPageService.cs UpdateAction(ActionProxy proxy) </summary>
         static Data.Action AddAction(Data.LoginUser loginUser, Data.ActionProxy proxy, DataContext db)
         {
             Data.Action action = (new Data.Actions(loginUser)).AddNewAction();
@@ -111,9 +95,7 @@ namespace TeamSupport.Model
             return action;
         }
 
-        /// <summary>
-        /// OLD DATA LAYER - extracted from ts-app\webapp\app_code\ticketservice.cs
-        /// </summary>
+        /// <summary> extracted from ts-app\webapp\app_code\ticketservice.cs </summary>
         static Data.Action AddActionOnNewTicket(Data.Ticket ticket, Data.ActionProxy info, Data.User user)
         {
             TeamSupport.Data.Action action = (new Data.Actions(ticket.Collection.LoginUser)).AddNewAction();
@@ -138,21 +120,13 @@ namespace TeamSupport.Model
             return action;
         }
 
-        //public void LoadAttachments()
-        //{
-        //    try
-        //    {
-        //        string query = $"SELECT a.*, (u.FirstName + ' ' + u.LastName) AS CreatorName FROM Attachments a WITH (NOLOCK) LEFT JOIN Users u ON u.UserID = a.CreatorID WHERE (RefID = {ActionID}) AND(RefType = {(int)Data.ReferenceType.Actions})";
-        //        AttachmentProxy[] proxies = _db.ExecuteQuery<AttachmentProxy>(query).ToArray();
-        //        Attachments = new List<ActionAttachmentModel>();
-        //        foreach (AttachmentProxy proxy in proxies)
-        //            Attachments.Add(new ActionAttachmentModel(this, proxy));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        System.Diagnostics.Debugger.Break();
-        //    }
-        //}
+        // this is very slow...
+        public ActionAttachmentModel[] Attachments()
+        {
+            string query = $"SELECT AttachmentID FROM ActionAttachments WHERE OrganizationID={Ticket.User.Organization.OrganizationID} AND ActionID={ActionID}";
+            int[] actionAttachmentIDs = _db.ExecuteQuery<int>(query).ToArray();
+            return actionAttachmentIDs.Select(id => new ActionAttachmentModel(this, id)).ToArray();
+        }
 
         public List<ActionAttachmentModel> InsertActionAttachments(Data.LoginUser user, HttpRequest request)
         {

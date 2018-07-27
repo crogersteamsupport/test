@@ -1794,7 +1794,7 @@ SET IDENTITY_INSERT Users Off
 				  foreach (Attachment attachment in attachments)
 				  {
 					  if (!Directory.Exists(newPath)) Directory.CreateDirectory(newPath);
-					  string newFileName = DataUtils.VerifyUniqueUrlFileName(newPath, attachment.FileName);
+					  string newFileName = DataUtils.VerifyFileNameUniqueness(newPath, attachment.FileName);
 					  string newFullPath = Path.Combine(newPath, newFileName);
 					  System.IO.File.Copy(attachment.Path, newFullPath, true);
 					  System.IO.File.Delete(attachment.Path);

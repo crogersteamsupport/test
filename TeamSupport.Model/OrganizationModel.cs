@@ -19,7 +19,6 @@ namespace TeamSupport.Model
         public ConnectionModel ConnectionModel { get; private set; }
         public int OrganizationID { get; private set; }
         public DataContext _db { get; private set; }
-        //TicketTypeModel[] _ticketTypes; // contains TicketStatusModel[]
 
         public OrganizationModel(ConnectionModel user, int organizationID)
         {
@@ -38,7 +37,7 @@ namespace TeamSupport.Model
                 throw new Exception(String.Format($"{query} not found"));
         }
 
-        public UserSession UserSession(int userID)
+        public UserSession User(int userID)
         {
             return new UserSession(this, userID);
         }

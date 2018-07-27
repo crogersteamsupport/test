@@ -15,7 +15,6 @@ namespace TeamSupport.Model
     public class TicketModel
     {
         public UserSession User { get; private set; }
-        //public Client User { get; private set; }
         public int TicketID { get; private set; }
         public DataContext _db { get; private set; }
 
@@ -52,11 +51,6 @@ namespace TeamSupport.Model
         public ActionModel InsertAction(Data.ActionProxy info, Data.Ticket ticketData, Data.User user)
         {
             return new ActionModel(this, info, ticketData, user);
-        }
-
-        public void Merge(TicketModel source)
-        {
-
         }
 
         /// <summary>

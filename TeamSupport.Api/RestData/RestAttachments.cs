@@ -63,7 +63,7 @@ namespace TeamSupport.Api
       {
         if (files[0].ContentLength > 0)
         {
-          string fileName = RemoveSpecialCharacters(DataUtils.VerifyUniqueUrlFileName(path, Path.GetFileName(files[0].FileName)));
+          string fileName = RemoveSpecialCharacters(DataUtils.VerifyFileNameUniqueness(path, Path.GetFileName(files[0].FileName)));
 
           files[0].SaveAs(Path.Combine(path, fileName));
 
@@ -124,7 +124,7 @@ namespace TeamSupport.Api
       {
         if (files[0].ContentLength > 0)
         {
-          string fileName = RemoveSpecialCharacters(DataUtils.VerifyUniqueUrlFileName(path, Path.GetFileName(files[0].FileName)));
+          string fileName = RemoveSpecialCharacters(DataUtils.VerifyFileNameUniqueness(path, Path.GetFileName(files[0].FileName)));
 
           files[0].SaveAs(Path.Combine(path, fileName));
 

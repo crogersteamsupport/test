@@ -712,7 +712,7 @@ namespace TeamSupport.Data
             return result;
         }
 
-        public static string VerifyUniqueUrlFileName(string directory, string fileName)
+        public static string VerifyFileNameUniqueness(string directory, string fileName)
         {
             string path = Path.Combine(directory, fileName);
             string result = fileName;

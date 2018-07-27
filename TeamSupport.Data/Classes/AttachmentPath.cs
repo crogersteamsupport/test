@@ -155,9 +155,9 @@ namespace TeamSupport.Data
         case Folder.ChatImages: result = "Images\\Chat"; break;
         case Folder.ChatStyles: result = "Styles\\Chat"; break;
         case Folder.TicketTypeImages: result = "Images\\TicketTypes"; break;
+        case Folder.Organizations: result = "Organizations"; break;
         case Folder.Products: result = "Products"; break;
         case Folder.Actions: result = "Actions"; break;
-        case Folder.Organizations: result = "Organizations"; break;
         case Folder.ProfileImages: result = "Images\\Avatars"; break;
         case Folder.WaterCooler: result = "WaterCooler"; break;
         case Folder.OrganizationAttachments: result = "OrganizationAttachments"; break;
@@ -165,9 +165,9 @@ namespace TeamSupport.Data
         case Folder.AgentRating: result = "AgentRating"; break;
         case Folder.AssetAttachments: result = "AssetAttachments"; break;
         case Folder.Imports: result = "Imports"; break;
+        case Folder.ImportLogs: result = "Imports\\Logs"; break;
         case Folder.OrganizationsLogo: result = "Images\\CompanyLogo"; break;
         case Folder.ContactImages: result = "Images\\Avatars\\Contacts"; break;
-        case Folder.ImportLogs: result = "Imports\\Logs"; break;
         case Folder.TempImages: result = "Images\\Temp"; break;
 		case Folder.CustomerHubLogo: result = "Images\\HubLogo"; break;
         case Folder.ScheduledReports: result = "ScheduledReports"; break;

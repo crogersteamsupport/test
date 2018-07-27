@@ -844,7 +844,7 @@ namespace TSWebServices
             {
                 using (TeamSupport.Model.ConnectionModel model = new TeamSupport.Model.ConnectionModel(loginUser.ConnectionString))
                 {
-                    TeamSupport.Model.ActionModel action = model.Customer(loginUser.OrganizationID).UserSession(loginUser.UserID).Ticket(actionProxy.TicketID).InsertAction(loginUser, actionProxy);
+                    TeamSupport.Model.ActionModel action = model.Organization(loginUser.OrganizationID).User(loginUser.UserID).Ticket(actionProxy.TicketID).InsertAction(loginUser, actionProxy);
                     dataAction = action.DataLayerAction;
                 }
             }

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Data.Linq;
 using System.IO;
+using System.Diagnostics;
+
 
 namespace TeamSupport.Model
 {
@@ -26,7 +28,7 @@ namespace TeamSupport.Model
             _db.ObjectTrackingEnabled = false;  // use linq read-only
         }
 
-        public OrganizationModel Customer(int organizationID)
+        public OrganizationModel Organization(int organizationID)
         {
             return new OrganizationModel(this, organizationID);
         }
@@ -57,6 +59,24 @@ namespace TeamSupport.Model
                 _connection.Dispose();
         }
 
+        static bool _IsDebuggerAttached = Debugger.IsAttached;
+
+        public static void LogMessage(Data.LoginUser user, Data.ActionLogType logType, Data.ReferenceType refType, int? ticketID, string message, EventLogEntryType type = EventLogEntryType.Information)
+        {
+            if (_IsDebuggerAttached)
+            {
+                Debug.WriteLine(message);   // debug output window (very fast)
+                if (type == EventLogEntryType.Error)
+                    Debugger.Break();   // something is wrong - fix the code!
+            }
+
+            Data.ActionLogs.AddActionLog(user, logType, refType, ticketID.HasValue ? ticketID.Value : 0, message);  // 0 if no TicketID?
+        }
+
+        public static void LogMessage(Data.LoginUser user, Data.ActionLogType logType, Data.ReferenceType refType, int? ticketID, string message, Exception e)
+        {
+            LogMessage(user, logType, refType, ticketID, message + e.ToString() + " ----- STACK: " + e.StackTrace.ToString(), EventLogEntryType.Error);
+        }
 
     }
 }

@@ -32,28 +32,28 @@ namespace TeamSupport.Handlers
             return segments;
         }
 
-        static List<UploadResult> SaveActionAttachments(HttpContext context, int organizationID, int actionID, List<UploadResult> result)
+        static List<Model.ActionAttachmentModel> SaveActionAttachments(HttpContext context, int organizationID, int? ticketID, int? actionID)
         {
-            try
+           try
             {
-                LoginUser user = TSAuthentication.GetLoginUser();
+                if(!actionID.HasValue)
+                    return new List<Model.ActionAttachmentModel>();
                 using (Model.ConnectionModel connection = new Model.ConnectionModel(LoginUser.GetConnectionString()))
                 {
-                    // get the ticketID from the actionID
-                    int ticketID = Model.ActionModel.GetTicketID(connection._db, actionID);
+                    if(!ticketID.HasValue)
+                        ticketID = Model.ActionModel.GetTicketID(connection._db, actionID.Value);
 
                     // add the attachments to the action
-                    Model.ActionModel action = connection.Customer(organizationID).UserSession(user.UserID).Ticket(ticketID).Action(actionID);
-                    List<Model.ActionAttachmentModel> attachments = action.InsertActionAttachments(user, context.Request);
-                    foreach (Model.ActionAttachmentModel attachment in attachments)
-                        result.Add(new UploadResult(attachment.FileName, attachment.ContentType, attachment.ContentLength));
+                    LoginUser user = TSAuthentication.GetLoginUser();
+                    Model.ActionModel action = connection.Organization(organizationID).User(user.UserID).Ticket(ticketID.Value).Action(actionID.Value);
+                    return action.InsertActionAttachments(user, context.Request);
                 }
             }
             catch(Exception ex)
             {
-                Debugger.Break();
+                Model.ConnectionModel.LogMessage(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Attachments, ticketID, "Unable to save attachments", ex);
+                return new List<Model.ActionAttachmentModel>();
             }
-            return result;
         }
 
         public static void SaveFiles(HttpContext context, AttachmentPath.Folder folder, int organizationID, int? itemID)
@@ -61,9 +61,12 @@ namespace TeamSupport.Handlers
             List<UploadResult> result = new List<UploadResult>();
             if (folder == AttachmentPath.Folder.Actions)
             {
-                if(itemID.HasValue)
-                    result = SaveActionAttachments(context, organizationID, itemID.Value, result);
-
+                List<Model.ActionAttachmentModel> attachments = SaveActionAttachments(context, organizationID, null, itemID.Value); // front end does not provide TicketID
+                foreach (Model.ActionAttachmentModel attachment in attachments)
+                {
+                    Model.AttachmentFile file = attachment.File;
+                    result.Add(new UploadResult(file.FileName, file.ContentType, file.ContentLength));
+                }
                 context.Response.Clear();
                 context.Response.ContentType = "text/plain";
                 context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
@@ -81,7 +84,7 @@ namespace TeamSupport.Handlers
             {
                 if (files[i].ContentLength > 0)
                 {
-                    string fileName = RemoveSpecialCharacters(DataUtils.VerifyUniqueUrlFileName(path, Path.GetFileName(files[i].FileName)));
+                    string fileName = RemoveSpecialCharacters(DataUtils.VerifyFileNameUniqueness(path, Path.GetFileName(files[i].FileName)));
 
                     files[i].SaveAs(Path.Combine(path, fileName));
                     if (refType != ReferenceType.None && itemID != null)

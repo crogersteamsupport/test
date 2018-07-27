@@ -67,19 +67,8 @@ namespace TeamSupport.Model
         /// <summary> Log that this user did something... </summary>
         public void AddActionLog(Data.ActionLogType actionLogType, Data.ReferenceType refType, int refID, string description)
         {
-            string query = String.Empty;
-            switch (actionLogType)
-            {
-                case Data.ActionLogType.Insert:
-                    query = "INSERT INTO ActionLogs(OrganizationID, RefType, RefID, Data.ActionLogType, [Description], DateCreated, CreatorID)" +
+            string query = query = "INSERT INTO ActionLogs(OrganizationID, RefType, RefID, Data.ActionLogType, [Description], DateCreated, CreatorID)" +
                         $"VALUES ({Organization.OrganizationID}, {refType}, {refID}, {(int)actionLogType}, {0}, {DateTime.UtcNow}, {UserID})";
-                    break;
-                case Data.ActionLogType.Update:
-                case Data.ActionLogType.Delete:
-                    query = "INSERT INTO ActionLogs(OrganizationID, RefType, RefID, Data.ActionLogType, [Description], DateModified, ModifierID)" +
-                        $"VALUES ({Organization.OrganizationID}, {refType}, {refID}, {(int)actionLogType}, {0}, {DateTime.UtcNow}, {UserID})";
-                    break;
-            }
             _db.ExecuteCommand(query, description); // sql injection checking of description
         }
     }
