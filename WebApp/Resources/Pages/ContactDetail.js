@@ -1009,6 +1009,29 @@ $(document).ready(function () {
             $('#noteContactAlert').prop('checked', note.IsAlert);
             $('#btnNotesSave').text("Save");
             $('#btnNotesCancel').show();
+            $('#noteAttachmentsRow').show();
+            note.Attachments.forEach(element => {
+                var div = $('<div>');
+
+                var name = $('<span>')
+                    .addClass('noteAttachmentName')
+                    .text(element.FileName)
+                    .appendTo(div);
+
+                $('<i>')
+                    .addClass('fa fa-trash-o')
+                    .appendTo(div)
+                    .click(function (e) {
+                        if (confirm("Are you sure you want to delete this file attachment")) {
+                            _mainFrame.Ts.System.logAction('Contact Detail - Delete Note File Attachment');
+                            parent.privateServices.DeleteAttachment(element.AttachmentID, function (e) {
+                                div.remove();
+                            });
+                        }
+                    });
+
+                div.appendTo($('#noteAttachments'));
+            });
             $('#noteForm').show();
             initEditor($('#fieldNoteDesc'), function (ed) {
                 $('#fieldNoteDesc').tinymce().setContent(desc);
@@ -1028,14 +1051,21 @@ $(document).ready(function () {
     $('#tblNotes').on('click', '.deleteNote', function (e) {
         e.preventDefault();
         e.stopPropagation();
-        if (confirm('Are you sure you would like to remove this note?')) {
+        if (confirm('Are you sure you would like to DELETE this activity?')) {
             _mainFrame.Ts.System.logAction('Contact Detail - Delete Note');
             parent.privateServices.DeleteNote($(this).parent().parent().attr('id'), function () {
                 ;
                 LoadNotes();
-                $('.noteDesc').toggle(false);
+                $('#noteDescBox').toggle(false);
             });
         }
+    });
+
+    $('#tblNotes, #tblNotesAdditional').on('click', '.addTask', function (e) {
+        e.preventDefault();
+        _mainFrame.Ts.System.logAction('Customer Detail - Add Note Task');
+        var id = $(this).parent().parent().attr('id');
+        _mainFrame.Ts.MainPage.newTask(undefined, null, id);
     });
 
     $('#tblNotes').on('click', '.viewNote', function (e) {
@@ -1044,8 +1074,8 @@ $(document).ready(function () {
         $('#tblNotes tbody tr').removeClass("active");
 
         $(this).addClass("active");
-        $('.noteDesc').toggle();
-        if ($('.noteDesc').is(':visible')) {
+        $('#noteDescBox').toggle();
+        if ($('#noteDescBox').is(':visible')) {
             $('.noteDesc').html("<h4>Description</h4> <p>" + desc + "</p>");
             BuildFileDescription($(this).data('attachments'));
         }
@@ -1058,8 +1088,8 @@ $(document).ready(function () {
         $('#tblNotesAdditional tbody tr').removeClass("active");
 
         $(this).addClass("active");
-        $('.noteDesc').toggle();
-        if ($('.noteDesc').is(':visible')) {
+        $('#noteDescBox').toggle();
+        if ($('#noteDescBox').is(':visible')) {
         $('.noteDesc').html("<h4>Description</h4> <p>" + desc + "</p>");
         BuildFileDescription($(this).data('attachments'));        }
         _mainFrame.Ts.System.logAction('Contact Detail - View Note');
@@ -1074,6 +1104,8 @@ $(document).ready(function () {
         $('#fieldNoteDesc').val('');
         $('#fieldNoteID').val('-1');
         $('#noteContactAlert').prop('checked', false);
+        $('#noteAttachments').html('');
+        $('#noteAttachmentsRow').hide();
         $('#btnNotesSave').text("Save");
         for (var i = tinymce.editors.length - 1 ; i > -1 ; i--) {
             var ed_id = tinymce.editors[i].id;
@@ -1092,6 +1124,11 @@ $(document).ready(function () {
         var isAlert = $('#noteContactAlert').prop('checked');
         var activityType = $('#ddlNoteActivityType').val();
         var DateOccurred = convertToValidDate($('#activityDate').val());
+
+        if (DateOccurred == null) {
+            alert("Invalid date news to be in the format of " + _dateFormat);
+            return;
+        }
 
         if ((title.length || description.length) < 1) {
             alert("Please fill in all the required information");
@@ -1304,10 +1341,12 @@ $(document).ready(function () {
                 $('#a-notes').text('Activities (' + count + ')');
                 var html;
                 for (var i = 0; i < note.length; i++) {
+                    var attachmentString = note[i].Attachments.length > 0 ? "   <i class='fa fa-paperclip'></i>" : "";
+
                     if (_isAdmin || note[i].CreatorID == _mainFrame.Ts.System.User.UserID || _mainFrame.Ts.System.User.CanEditContact) {
-                        html = '<td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td scope="row">' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+                        html = '<td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td scope="row">' + note[i].Title + attachmentString + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
                     } else {
-                        html = '<td></td><td></td><td scope="row">' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+                        html = '<td></td><td></td><td scope="row">' + note[i].Title + attachmentString + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
                     }
                     if (note[i].ProductFamilyID != null) {
                         html += '<td>' + note[i].ProductFamily + '</td>';
@@ -1323,6 +1362,8 @@ $(document).ready(function () {
                         html += '<td></td>';
                     }
 
+                    html += "<td><i class='fa fa-plus addTask' title='Add Task'></i></td>";
+
                     $('<tr>').addClass("viewNote")
                         .attr("id", note[i].NoteID)
                         .html(html)
@@ -1333,7 +1374,7 @@ $(document).ready(function () {
                     if (noteID != null && noteID == note[i].NoteID) {
                         $('.noteDesc').html("<h4>Description</h4> <p>" + note[i].Description + "</p>");
                         BuildFileDescription(note[i].Attachments);
-                        $('.noteDesc').show();
+                        $('#noteDescBox').show();
                     }
                 }
             });
@@ -1343,11 +1384,12 @@ $(document).ready(function () {
                 $('#tblNotes tbody').empty();
                 var html;
                 for (var i = 0; i < note.length; i++) {
+                    var attachmentString = note[i].Attachments.length > 0 ? "   <i class='fa fa-paperclip'></i>" : "";
 
                     if (_isAdmin || note[i].CreatorID == _mainFrame.Ts.System.User.UserID || _mainFrame.Ts.System.User.CanEditContact)
-                        html = '<td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td scope="row">' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+                        html = '<td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td scope="row">' + note[i].Title + attachmentString + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
                     else
-                        html = '<td></td><td></td><td scope="row">' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+                        html = '<td></td><td></td><td scope="row">' + note[i].Title + attachmentString + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
 
                     html += '<td>' + note[i].ActivityTypeString + '</td>';
                     if (note[i].DateOccurred != null) {
@@ -1356,6 +1398,8 @@ $(document).ready(function () {
                     else {
                         html += '<td></td>';
                     }
+
+                    html += "<td><i class='fa fa-plus addTask' title='Add Task'></i></td>";
 
                     $('<tr>').addClass("viewNote")
                         .attr("id", note[i].NoteID)
@@ -1367,7 +1411,7 @@ $(document).ready(function () {
                     if (noteID != null && noteID == note[i].NoteID) {
                         $('.noteDesc').html("<h4>Description</h4> <p>" + note[i].Description + "</p>");
                         BuildFileDescription(note[i].Attachments);
-                        $('.noteDesc').show();
+                        $('#noteDescBox').show();
                     }
                 }
             });
@@ -1382,7 +1426,9 @@ $(document).ready(function () {
                 $('#tblNotesAdditional tbody').empty();
                 var html;
                 for (var i = 0; i < note.length; i++) {
-                    html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+                    var attachmentString = note[i].Attachments.length > 0 ? "   <i class='fa fa-paperclip'></i>" : "";
+
+                    html = '<td></td><td></td><td>' + note[i].Title + attachmentString + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
                     if (note[i].ProductFamilyID != null) {
                         html += '<td>' + note[i].ProductFamily + '</td>';
                     }
@@ -1398,6 +1444,8 @@ $(document).ready(function () {
                         html += '<td></td>';
                     }
 
+                    html += "<td><i class='fa fa-plus addTask' title='Add Task'></i></td>";
+
                     $('<tr>').addClass("viewNote")
                     .attr("id", note[i].NoteID)
                     .data("attachments", note[i].Attachments)
@@ -1408,7 +1456,7 @@ $(document).ready(function () {
 
                     if (noteID != null && noteID == note[i].NoteID) {
                         $('.noteDesc').html("<h4>Description</h4> <p>" + note[i].Description + "</p>");
-                        $('.noteDesc').show();
+                        $('#noteDescBox').show();
                     }
                 }
             });
@@ -1418,7 +1466,9 @@ $(document).ready(function () {
                 $('#tblNotesAdditional tbody').empty();
                 var html;
                 for (var i = 0; i < note.length; i++) {
-                    html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+                    var attachmentString = note[i].Attachments.length > 0 ? "   <i class='fa fa-paperclip'></i>" : "";
+
+                    html = '<td></td><td></td><td>' + note[i].Title + attachmentString + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
                     html += '<td>' + note[i].ActivityTypeString + '</td>';
                     if (note[i].DateOccurred != null) {
                         html += '<td>' + note[i].DateOccurred.toDateString() + '</td>';
@@ -1426,6 +1476,8 @@ $(document).ready(function () {
                     else {
                         html += '<td></td>';
                     }
+
+                    html += "<td><i class='fa fa-plus addTask' title='Add Task'></i></td>";
 
                     $('<tr>').addClass("viewNote")
                     .attr("id", note[i].NoteID)
@@ -1437,7 +1489,7 @@ $(document).ready(function () {
                     //$('#tblNotes > tbody:last').append('<tr id=' + note[i].NoteID + ' class="viewNote"><td><i class="glyphicon glyphicon-edit editNote"></i></td><td><i class="glyphicon glyphicon-trash deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td></tr>').data('description',note[i].Description);
 
                     if (noteID != null && noteID == note[i].NoteID) {
-                        $('.noteDesc').show();
+                        $('#noteDescBox').show();
                         $('.noteDesc').html("<h4>Description</h4> <p>" + note[i].Description + "</p>");
                     }
                 }
@@ -3191,9 +3243,10 @@ function openNote(noteID) {
     _mainFrame.Ts.Services.Customers.LoadNote(noteID, function (note) {
         var desc = note.Description;
         desc = desc.replace(/<br\s?\/?>/g, "\n");
-        $('.noteDesc').show();
+        $('#noteDescBox').show();
         $('.noteDesc').html("<h4>Description</h4> <p>" + desc + "</p>");
         $('#contactTabs a[href="#contact-notes"]').tab('show');
+        BuildFileDescription(note.Attachments);
     });
 }
 
@@ -3287,7 +3340,12 @@ function convertToValidDate(val) {
     if (val == "")
         return value;
 
-    return moment(val, _dateFormat).format('MM/DD/YYYY');
+    var date = moment(val, _dateFormat);
+
+    if (date.year > 2000)
+        return date.format('MM/DD/YYYY');
+    else
+        return null;
 }
 
 function LoadProductFamilies() {

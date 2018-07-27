@@ -304,7 +304,8 @@ namespace TeamSupport.Data
         Product,
         Company,
         User,
-        Group
+        Group,
+        Activities
     }
 
     public enum CalendarAttachmentType

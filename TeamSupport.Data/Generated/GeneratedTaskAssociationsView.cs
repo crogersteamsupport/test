@@ -154,7 +154,9 @@ namespace TeamSupport.Data
 
       foreach (TaskAssociationsViewItem item in this)
       {
-        list.Add(item.GetProxy()); 
+        var proxy = item.GetProxy();
+        if(proxy != null)
+            list.Add(proxy); 
       }
 
       return list.ToArray();

@@ -16,102 +16,6 @@ using System.Runtime.Serialization;
 
 namespace TSWebServices
 {
-    //public class Chat1 : Hub
-    //{
-    //    public void Send(string message)
-    //    {
-    //        // Call the addMessage method on all clients
-    //        Clients.addMessage(message);
-    //    }
-
-    //    public void NewThread(int messageID)
-    //    {
-    //        WaterCoolerThread thread = new WaterCoolerThread();
-
-    //        WaterCoolerView wcv = new WaterCoolerView(TSAuthentication.GetLoginUser());
-    //        wcv.LoadByMessageID(messageID);
-
-    //        WaterCoolerView replies = new WaterCoolerView(TSAuthentication.GetLoginUser());
-    //        replies.LoadReplies(messageID);
-
-    //        WatercoolerAttachments wcgroups = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
-    //        wcgroups.LoadByType(messageID, WaterCoolerAttachmentType.Group);
-
-    //        WatercoolerAttachments wctickets = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
-    //        wctickets.LoadByType(messageID, WaterCoolerAttachmentType.Ticket);
-
-    //        WatercoolerAttachments wcprods = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
-    //        wcprods.LoadByType(messageID, WaterCoolerAttachmentType.Product);
-
-    //        WatercoolerAttachments wccompany = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
-    //        wccompany.LoadByType(messageID, WaterCoolerAttachmentType.Company);
-
-    //        WatercoolerAttachments wcuseratt = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
-    //        wcuseratt.LoadByType(messageID, WaterCoolerAttachmentType.User);
-
-    //        thread.Message = wcv.GetWaterCoolerViewItemProxies()[0];
-    //        thread.Replies = replies.GetWaterCoolerViewItemProxies();
-    //        thread.Groups = wcgroups.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Group);
-    //        thread.Tickets = wctickets.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Ticket);
-    //        thread.Products = wcprods.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Product);
-    //        thread.Company = wccompany.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Company);
-    //        thread.User = wcuseratt.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.User);
-
-    //        //If this is a new thread
-    //        if (thread.Message.MessageParent == -1)
-    //        {
-    //            Clients.addThread(thread);
-    //        }
-    //        else
-    //        {
-    //            Clients.addComment(thread);
-    //            int parentThreadID = (int)thread.Message.MessageParent;
-
-    //            WaterCoolerThread parentThread = new WaterCoolerThread();
-    //            WaterCoolerView parentThreadwcv = new WaterCoolerView(TSAuthentication.GetLoginUser());
-    //            parentThreadwcv.LoadByMessageID(parentThreadID);
-
-    //            WatercoolerAttachments parentThreadwcgroups = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
-    //            parentThreadwcgroups.LoadByType(parentThreadID, WaterCoolerAttachmentType.Group);
-
-    //            WatercoolerAttachments parentThreadwctickets = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
-    //            parentThreadwctickets.LoadByType(parentThreadID, WaterCoolerAttachmentType.Ticket);
-
-    //            WatercoolerAttachments parentThreadwcprods = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
-    //            parentThreadwcprods.LoadByType(parentThreadID, WaterCoolerAttachmentType.Product);
-
-    //            WatercoolerAttachments parentThreadwccompany = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
-    //            parentThreadwccompany.LoadByType(parentThreadID, WaterCoolerAttachmentType.Company);
-
-    //            WatercoolerAttachments parentThreadwcuseratt = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
-    //            parentThreadwcuseratt.LoadByType(parentThreadID, WaterCoolerAttachmentType.User);
-
-    //            parentThread.Message = parentThreadwcv.GetWaterCoolerViewItemProxies()[0];
-    //            parentThread.Groups = parentThreadwcgroups.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Group);
-    //            parentThread.Tickets = parentThreadwctickets.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Ticket);
-    //            parentThread.Products = parentThreadwcprods.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Product);
-    //            parentThread.Company = parentThreadwccompany.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Company);
-    //            parentThread.User = parentThreadwcuseratt.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.User);
-
-    //            Clients.updateattachments(parentThread);
-    //        }
-    //    }
-
-    //    public void Del(int messageID)
-    //    {
-    //        WaterCoolerView wcv = new WaterCoolerView(TSAuthentication.GetLoginUser());
-    //        wcv.LoadByMessageID(messageID);
-
-    //        Clients.deleteMessage(messageID, wcv[0].MessageParent);
-    //    }
-
-    //    public void AddLike(WatercoolerLikProxy[] likes, int messageID, int messageParentID)
-    //    {
-    //        Clients.updateLikes(likes, messageID, messageParentID);
-    //    }
-
-    //}
-
   [ScriptService]
   [WebService(Namespace = "http://teamsupport.com/")]
   [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
@@ -167,6 +71,7 @@ namespace TSWebServices
             thread.Products = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Product);
             thread.Company = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Company);
             thread.User = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.User);
+            thread.Activities = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Activities);
             result.Add(thread);
         }
 
@@ -199,6 +104,9 @@ namespace TSWebServices
         WatercoolerAttachments wcuseratt = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
         wcuseratt.LoadByType(messageID, WaterCoolerAttachmentType.User);
 
+        WatercoolerAttachments wcactivitiesatt = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+        wcactivitiesatt.LoadByType(messageID, WaterCoolerAttachmentType.Activities);
+
         thread.Message = wcv.GetWaterCoolerViewItemProxies()[0];
         thread.Replies = replies.GetWaterCoolerViewItemProxies();
         thread.Groups = wcgroups.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Group);
@@ -206,6 +114,7 @@ namespace TSWebServices
         thread.Products = wcprods.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Product);
         thread.Company = wccompany.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Company);
         thread.User = wcuseratt.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.User);
+        thread.Activities = wcactivitiesatt.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Activities);
 
         return thread;
     }
@@ -281,7 +190,14 @@ namespace TSWebServices
                 AddAttachment((int)wc.MessageParent, UserID, WaterCoolerAttachmentType.User);
         }
 
-        return wc.GetProxy();
+        foreach (int activityID in info.Activities)
+        {
+            AddAttachment(wc.MessageID, activityID, WaterCoolerAttachmentType.Activities);
+            if (wc.MessageParent != -1)
+                AddAttachment((int)wc.MessageParent, activityID, WaterCoolerAttachmentType.Activities);
+        }
+
+            return wc.GetProxy();
     }
 
     [WebMethod]
@@ -352,6 +268,9 @@ namespace TSWebServices
             WatercoolerAttachments wcuseratt = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
             wcuseratt.LoadByType(item.MessageID, WaterCoolerAttachmentType.User);
 
+            WatercoolerAttachments wcactivitiesatt = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+            wcactivitiesatt.LoadByType(item.MessageID, WaterCoolerAttachmentType.Activities);
+
             thread.Message = item.GetProxy();
             thread.Replies = replies.GetWaterCoolerViewItemProxies();
             thread.Groups = wcgroups.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Group);
@@ -359,6 +278,7 @@ namespace TSWebServices
             thread.Products = wcprods.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Product);
             thread.Company = wccompany.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Company);
             thread.User = wcuseratt.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.User);
+            thread.Activities = wcactivitiesatt.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Activities);
 
             result.Add(thread);
         }
@@ -564,6 +484,7 @@ namespace TSWebServices
         public WatercoolerAttachmentProxy[] Company { get; set; }
         [DataMember]
         public WatercoolerAttachmentProxy[] User { get; set; }
+        public WatercoolerAttachmentProxy[] Activities { get; set; }
     }
 
     [DataContract(Namespace = "http://teamsupport.com/")]
@@ -588,6 +509,9 @@ namespace TSWebServices
         public int PageType { get; set; }
         [DataMember]
         public int PageID { get; set; }
+        [DataMember]
+        public List<int> Activities { get; set; }
+
     }
 
 
