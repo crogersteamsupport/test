@@ -842,9 +842,9 @@ namespace TSWebServices
             TeamSupport.Data.Action dataAction = null;
             try
             {
-                using (TeamSupport.Model.DBConnection model = new TeamSupport.Model.DBConnection(loginUser.ConnectionString))
+                using (TeamSupport.Model.ConnectionContext connection = new TeamSupport.Model.ConnectionContext(loginUser.ConnectionString))
                 {
-                    TeamSupport.Model.ActionModel action = model.Organization(loginUser.OrganizationID).User(loginUser.UserID).Ticket(actionProxy.TicketID).InsertAction(loginUser, actionProxy);
+                    TeamSupport.Model.ActionModel action = connection.Organization(loginUser.OrganizationID).User(loginUser.UserID).Ticket(actionProxy.TicketID).InsertAction(loginUser, actionProxy);
                     dataAction = action.DataLayerAction;
                 }
             }

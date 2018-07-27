@@ -3638,7 +3638,7 @@ WHERE t.TicketID = @TicketID
             if (info.CategoryID != null && info.CategoryID > -1) ticket.AddCommunityTicket((int)info.CategoryID);
 
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            using (TeamSupport.Model.ConnectionContext model = new TeamSupport.Model.ConnectionContext(loginUser.ConnectionString))
+            using (TeamSupport.Model.ConnectionContext connection = new TeamSupport.Model.ConnectionContext(loginUser.ConnectionString))
             {
                 // pack NewTicketSaveInfo into an ActionProxy for the ActionModel
                 ActionProxy proxy = new ActionProxy()
@@ -3649,7 +3649,7 @@ WHERE t.TicketID = @TicketID
                     DateStarted = info.DateStarted
                 };
 
-                TeamSupport.Model.ActionModel x = model.Organization(loginUser.OrganizationID).User(loginUser.UserID).Ticket(ticket.TicketID).InsertAction(proxy, ticket, user);
+                TeamSupport.Model.ActionModel x = connection.Organization(loginUser.OrganizationID).User(loginUser.UserID).Ticket(ticket.TicketID).InsertAction(proxy, ticket, user);
             }
 
             TeamSupport.Data.Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();

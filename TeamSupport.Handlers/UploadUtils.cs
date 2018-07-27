@@ -39,7 +39,7 @@ namespace TeamSupport.Handlers
                 if(!actionID.HasValue)
                     return new List<Model.ActionAttachment>();
 
-                using (Model.DBConnection connection = new Model.DBConnection(LoginUser.GetConnectionString()))
+                using (Model.ConnectionContext connection = new Model.ConnectionContext(LoginUser.GetConnectionString()))
                 {
                     if(!ticketID.HasValue)
                         ticketID = Model.ActionModel.GetTicketID(connection._db, actionID.Value);
@@ -52,7 +52,7 @@ namespace TeamSupport.Handlers
             }
             catch(Exception ex)
             {
-                Model.DBConnection.LogMessage(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Attachments, ticketID, "Unable to save attachments", ex);
+                Model.ConnectionContext.LogMessage(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Attachments, ticketID, "Unable to save attachments", ex);
                 return new List<Model.ActionAttachment>();
             }
         }
