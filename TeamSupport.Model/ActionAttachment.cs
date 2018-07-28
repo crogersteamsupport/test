@@ -69,6 +69,11 @@ namespace TeamSupport.Model
             return attachment.AttachmentID;
         }
 
+        public void Delete()
+        {
+            _db.ExecuteCommand($"SET NOCOUNT OFF; DELETE FROM Attachments WHERE AttachmentID = {ActionAttachmentID}");
+
+        }
     }
 }
 

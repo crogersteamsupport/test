@@ -123,7 +123,7 @@ namespace TeamSupport.Model
         // this is very slow...
         public ActionAttachment[] Attachments()
         {
-            string query = $"SELECT AttachmentID FROM ActionAttachments WHERE OrganizationID={Ticket.User.Organization.OrganizationID} AND ActionID={ActionID}";
+            string query = $"SELECT AttachmentID FROM ActionAttachments WHERE ActionID={ActionID} AND OrganizationID={Ticket.User.Organization.OrganizationID}";
             int[] actionAttachmentIDs = _db.ExecuteQuery<int>(query).ToArray();
             return actionAttachmentIDs.Select(id => new ActionAttachment(this, id)).ToArray();
         }

@@ -244,7 +244,6 @@ namespace TeamSupport.Data
 						actionLogProxy.RefType = ReferenceType.Tickets;
 						break;
 				}
-				//actionLogProxy.RefType = crmLinkError.ObjectType == "ticket" ? ReferenceType.Tickets : crmLinkError.ObjectType == "action" ? ReferenceType.Actions : crmLinkError.ObjectType == "attachment" ? ReferenceType.Attachments : ReferenceType.Tickets;
 				actionLogProxy.OrganizationID = crmLinkError.OrganizationID;
 				actionLogProxy.ActionLogID = crmLinkError.CRMLinkErrorID;
 				actionLogProxy.CreatorName = crmLinkError.CRMType + " Integration";

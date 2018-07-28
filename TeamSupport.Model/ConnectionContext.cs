@@ -22,16 +22,23 @@ namespace TeamSupport.Model
 
         public Data.LoginUser _loginUser { get; private set; }
         SqlConnection _connection;
+        SqlTransaction _transaction;
         public DataContext _db { get; private set; }
         public OrganizationModel Organization { get; private set; }
         public UserSession User { get; private set; }
 
-        private ConnectionContext(string connectionString)
+        private ConnectionContext(string connectionString, bool useTransaction = false)
         {
             _connection = new SqlConnection(connectionString);  // using
             _connection.Open(); // connection must be open to begin transaction
+
             _db = new DataContext(_connection);
             _db.ObjectTrackingEnabled = false;  // use linq read-only
+            if (!useTransaction)
+                return;
+
+            _transaction = _connection.BeginTransaction();
+            _db.Transaction = _transaction;
         }
 
         public ConnectionContext(Data.LoginUser user) : this(user.ConnectionString)
@@ -39,6 +46,9 @@ namespace TeamSupport.Model
             Organization = new OrganizationModel(this, user.OrganizationID);
             User = new UserSession(Organization, user.UserID);
         }
+
+        public void Commit() { _db.Transaction.Commit(); }
+        public void Rollback() { _db.Transaction.Rollback(); }
 
         //public OrganizationModel Organization(int organizationID)
         //{
@@ -71,6 +81,9 @@ namespace TeamSupport.Model
 
             if (_db != null)
                 _db.Dispose();
+
+            if (_transaction != null)
+                _transaction.Dispose();
 
             if (_connection != null)
                 _connection.Dispose();
