@@ -20,10 +20,13 @@ namespace TeamSupport.Model
 
         public const bool Enabled = false;
 
+        public Data.LoginUser _loginUser { get; private set; }
         SqlConnection _connection;
         public DataContext _db { get; private set; }
+        public OrganizationModel Organization { get; private set; }
+        public UserSession User { get; private set; }
 
-        public ConnectionContext(string connectionString)
+        private ConnectionContext(string connectionString)
         {
             _connection = new SqlConnection(connectionString);  // using
             _connection.Open(); // connection must be open to begin transaction
@@ -31,9 +34,20 @@ namespace TeamSupport.Model
             _db.ObjectTrackingEnabled = false;  // use linq read-only
         }
 
-        public OrganizationModel Organization(int organizationID)
+        public ConnectionContext(Data.LoginUser user) : this(user.ConnectionString)
         {
-            return new OrganizationModel(this, organizationID);
+            Organization = new OrganizationModel(this, user.OrganizationID);
+            User = new UserSession(Organization, user.UserID);
+        }
+
+        //public OrganizationModel Organization(int organizationID)
+        //{
+        //    return new OrganizationModel(this, organizationID);
+        //}
+
+        public TicketModel Ticket(int ticketID)
+        {
+            return User.Ticket(ticketID);
         }
 
         public string AttachmentPath(int id)

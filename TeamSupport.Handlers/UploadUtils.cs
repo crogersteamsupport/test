@@ -32,31 +32,6 @@ namespace TeamSupport.Handlers
             return segments;
         }
 
-        /// <summary> SaveActionAttachments </summary>
-        static List<Model.ActionAttachment> SaveActionAttachments(HttpContext context, int organizationID, int? ticketID, int? actionID)
-        {
-           try
-            {
-                if(!actionID.HasValue)
-                    return new List<Model.ActionAttachment>();
-
-                using (Model.ConnectionContext connection = new Model.ConnectionContext(LoginUser.GetConnectionString()))
-                {
-                    if(!ticketID.HasValue)
-                        ticketID = Model.ActionModel.GetTicketID(connection._db, actionID.Value);
-
-                    // add the attachments to the action
-                    LoginUser user = TSAuthentication.GetLoginUser();
-                    return connection.Organization(organizationID).User(user.UserID).Ticket(ticketID.Value).Action(actionID.Value).InsertActionAttachments(user, context.Request);
-                }
-            }
-            catch(Exception ex)
-            {
-                Model.ConnectionContext.LogMessage(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Attachments, ticketID, "Unable to save attachments", ex);
-                return new List<Model.ActionAttachment>();
-            }
-        }
-
         public static void SaveFiles(HttpContext context, AttachmentPath.Folder folder, int organizationID, int? itemID)
         {
             List<UploadResult> result = new List<UploadResult>();
@@ -64,7 +39,8 @@ namespace TeamSupport.Handlers
             // Action Attachments
             if (Model.ConnectionContext.Enabled && (folder == AttachmentPath.Folder.Actions))
             {
-                List<Model.ActionAttachment> attachments = SaveActionAttachments(context, organizationID, null, itemID.Value); // front end does not provide TicketID
+                // front end does not provide TicketID
+                List<Model.ActionAttachment> attachments = Model.API.SaveActionAttachments(TSAuthentication.GetLoginUser(), context, null, itemID.Value);
                 foreach (Model.ActionAttachment attachment in attachments)
                 {
                     Model.AttachmentFile file = attachment.File;

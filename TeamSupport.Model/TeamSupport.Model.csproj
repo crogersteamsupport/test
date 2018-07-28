@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="ActionAttachment.cs" />
     <Compile Include="ActionModel.cs" />
+    <Compile Include="API.cs" />
     <Compile Include="AttachmentFile.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="ConnectionContext.cs" />

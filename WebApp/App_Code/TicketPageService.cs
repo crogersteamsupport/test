@@ -836,34 +836,13 @@ namespace TSWebServices
 
         }
 
-        /// <summary> Insert Action </summary>
-        TeamSupport.Data.Action InsertAction(ActionProxy actionProxy)
-        {
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-            TeamSupport.Data.Action dataAction = null;
-            try
-            {
-                using (TeamSupport.Model.ConnectionContext connection = new TeamSupport.Model.ConnectionContext(loginUser.ConnectionString))
-                {
-                    TeamSupport.Model.ActionModel action = connection.Organization(loginUser.OrganizationID).User(loginUser.UserID).Ticket(actionProxy.TicketID).InsertAction(loginUser, actionProxy);
-                    dataAction = action.DataLayerAction;
-                }
-            }
-            catch (Exception ex)
-            {
-                TeamSupport.Model.ConnectionContext.LogMessage(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Actions, actionProxy.TicketID, "Unable to insert action", ex);
-                ExceptionLogs.LogException(loginUser, ex, "NewAction", "TicketPageService.NewAction");
-            }
-            return dataAction;
-        }
-
         [WebMethod]
         public TimeLineItem UpdateAction(ActionProxy proxy)
         {
             // new action
             if (TeamSupport.Model.ConnectionContext.Enabled && (proxy.ActionID == -1))
-            {   // scot
-                TeamSupport.Data.Action newAction = InsertAction(proxy);
+            { 
+                TeamSupport.Data.Action newAction = TeamSupport.Model.API.InsertAction(TSAuthentication.GetLoginUser(), proxy);
                 return GetActionTimelineItem(newAction);
             }
 
