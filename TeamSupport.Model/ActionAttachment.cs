@@ -14,7 +14,7 @@ namespace TeamSupport.Model
     public class ActionAttachment
     {
         public ActionModel Action { get; private set; }
-        public int ActionAttachmentID { get; private set; }
+        public int? ActionAttachmentID { get; private set; }
         public DataContext _db { get; private set; }
         public AttachmentFile File { get; private set; }
 
@@ -71,8 +71,23 @@ namespace TeamSupport.Model
 
         public void Delete()
         {
-            _db.ExecuteCommand($"SET NOCOUNT OFF; DELETE FROM Attachments WHERE AttachmentID = {ActionAttachmentID}");
+            _db.ExecuteCommand($"SET NOCOUNT OFF; DELETE FROM Attachments WHERE AttachmentID = {ActionAttachmentID.Value}");
+            ActionAttachmentID = null;
+        }
 
+        void Update()
+        {
+            // use all the string parameters...
+            _db.ExecuteCommand($"SET NOCOUNT OFF; UPDATE Attachments SET OrganizationID = @OrganizationID, FileName = @FileName,  " +
+                $"FileType = @FileType, FileSize = @FileSize, Path = @Path, [Description] = @Description, DateModified = @DateModified, ModifierID = @ModifierID, " +
+                $"ActionID = @ActionID, SentToJira = @SentToJira, AttachmentGUID = @AttachmentGUID, ProductFamilyID = @ProductFamilyID, " +
+                $"SentToTFS = @SentToTFS, SentToSnow = @SentToSnow, FilePathID] = @FilePathID  WHERE AttachmentID = {ActionAttachmentID.Value}");
+        }
+
+        void Insert()
+        {
+            // use all the string parameters...
+ _db.ExecuteCommand($"SET NOCOUNT OFF; INSERT INTO [dbo].[Attachments] ( [OrganizationID], [FileName], [FileType], [FileSize], [Path], [Description], [DateCreated], [DateModified], [CreatorID], [ModifierID], [RefType], [RefID], [SentToJira], [AttachmentGUID], [ProductFamilyID], [SentToTFS], [SentToSnow], [FilePathID]) VALUES ( @OrganizationID, @FileName, @FileType, @FileSize, @Path, @Description, @DateCreated, @DateModified, @CreatorID, @ModifierID, @RefType, @RefID, @SentToJira, @AttachmentGUID, @ProductFamilyID, @SentToTFS, @SentToSnow, @FilePathID); SET @Identity = SCOPE_IDENTITY()");
         }
     }
 }
