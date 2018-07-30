@@ -36,6 +36,12 @@ namespace TeamSupport.Data
         public string CompanyName { get; set; }
         [DataMember]
         public string UserName { get; set; }
+        [DataMember]
+        public ReferenceType ActivityRefType { get; set; }
+        [DataMember]
+        public string ActivityTitle { get; set; }
+        [DataMember]
+        public int ActivityRefID { get; set; }
     }
 
     public partial class WatercoolerAttachment : BaseItem
@@ -54,40 +60,58 @@ namespace TeamSupport.Data
 
             if (this.RefType == WaterCoolerAttachmentType.Group)
             {
-                if (Groups.GetGroup(BaseCollection.LoginUser, this.AttachmentID) != null)
-                    result.GroupName = Groups.GetGroup(BaseCollection.LoginUser, this.AttachmentID).Name;
+                var group = Groups.GetGroup(BaseCollection.LoginUser, this.AttachmentID);
+                if (group != null)
+                    result.GroupName = group.Name;
                 else
                     return null;
             }
 
             if (this.RefType == WaterCoolerAttachmentType.Ticket)
             {
-                if (Tickets.GetTicketByNumber(BaseCollection.LoginUser, this.AttachmentID) != null)
-                    result.TicketName = Tickets.GetTicketByNumber(BaseCollection.LoginUser, this.AttachmentID).Name;
+                var ticket = Tickets.GetTicketByNumber(BaseCollection.LoginUser, this.AttachmentID);
+                if (ticket != null)
+                    result.TicketName = ticket.Name;
                 else
                     return null;
             }
 
             if (this.RefType == WaterCoolerAttachmentType.Product)
             {
-                if (Products.GetProduct(BaseCollection.LoginUser, this.AttachmentID) != null)
-                    result.ProductName = Products.GetProduct(BaseCollection.LoginUser, this.AttachmentID).Name;
+                var product = Products.GetProduct(BaseCollection.LoginUser, this.AttachmentID);
+                if (product != null)
+                    result.ProductName = product.Name;
                 else
                     return null;
             }
 
             if (this.RefType == WaterCoolerAttachmentType.Company)
             {
-                if (Organizations.GetOrganization(BaseCollection.LoginUser, this.AttachmentID) != null)
-                    result.CompanyName = Organizations.GetOrganization(BaseCollection.LoginUser, this.AttachmentID).Name;
+                var organization = Organizations.GetOrganization(BaseCollection.LoginUser, this.AttachmentID);
+                if (organization != null)
+                    result.CompanyName = organization.Name;
                 else
                     return null;
             }
 
             if (this.RefType == WaterCoolerAttachmentType.User)
             {
-                if (Users.GetUserFullName(BaseCollection.LoginUser, this.AttachmentID) != null)
-                    result.UserName = Users.GetUserFullName(BaseCollection.LoginUser, this.AttachmentID);
+                var user = Users.GetUserFullName(BaseCollection.LoginUser, this.AttachmentID);
+                if (user != null)
+                    result.UserName = user;
+                else
+                    return null;
+            }
+
+            if (this.RefType == WaterCoolerAttachmentType.Activities)
+            {
+                var activity = Notes.GetNote(BaseCollection.LoginUser, this.AttachmentID);
+                if (activity != null)
+                {
+                    result.ActivityRefType = activity.RefType;
+                    result.ActivityTitle = activity.Title;
+                    result.ActivityRefID = activity.RefID;
+                }
                 else
                     return null;
             }

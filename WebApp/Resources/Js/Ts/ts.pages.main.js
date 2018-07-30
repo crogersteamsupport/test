@@ -352,6 +352,21 @@ Ts.Pages.Main.prototype = {
             }
         });
 
+        $(".dialog-select-activity").dialog({
+            height: 150,
+            width: 300,
+            autoOpen: false,
+            modal: true,
+            buttons: {
+                OK: function () {
+                    $(this).dialog("close");
+                },
+                Cancel: function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
         $(".dialog-select-wiki").dialog({
             height: 150,
             width: 300,
@@ -383,6 +398,30 @@ Ts.Pages.Main.prototype = {
             },
             open: function () {
                 cleardialog();
+            }
+        });
+
+        var execSelectNote = null;
+
+        function selectNote(request, response) {
+            if (execSelectNote) {
+                execSelectNote._executor.abort();
+            }
+            execSelectNote = mainFrame.Ts.Services.Customers.SearchNotes(request.term, function (result) {
+                response(result);
+            });
+        }
+
+        $(".dialog-select-activity input").autocomplete({
+            minLength: 2,
+            source: selectNote,
+            select: function (event, ui) {
+                $(this).data('item', ui.item).removeClass('ui-autocomplete-loading')
+            },
+            position: {
+                my: "right top",
+                at: "right bottom",
+                collision: "fit flip"
             }
         });
 
@@ -1896,6 +1935,16 @@ function () { }, function (e) { console.log(e) });
         }
         $('.dialog-select-ticket').dialog('option', 'buttons', buttons).dialog('open').find('input').focus();
     },
+    selectActivity: function (filter, callback) {
+        $('.dialog-select-activity').find('input').data('filter', filter).val('');
+        var buttons = $('.dialog-select-activity').dialog('option', 'buttons');
+
+        buttons.OK = function () {
+            $(this).dialog("close");
+            callback($(this).find('input').data('item').data);
+        }
+        $('.dialog-select-activity').dialog('option', 'buttons', buttons).dialog('open').find('input').focus();
+    },
     selectWiki: function (callback) {
         $('.dialog-select-wiki').find('input').val('');
         var buttons = $('.dialog-select-wiki').dialog('option', 'buttons');
@@ -2278,10 +2327,13 @@ function () { }, function (e) { console.log(e) });
         }
     },
 
-    newTask: function (taskParentID, parentTaskName) {
+    newTask: function (taskParentID, parentTaskName, noteID) {
         var query;
         if (taskParentID != undefined)
             query = "?taskparentid=" + taskParentID + "&parenttaskname=" + encodeURI(parentTaskName);
+        if (noteID != undefined)
+            query = "?noteid=" + noteID;
+
         this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewTask, 'newTask', 'Add Task', true, true, true, null, null, query, null);
     },
     newTaskFromSource: function (refType, refID, ticketName, ticketNumber)
