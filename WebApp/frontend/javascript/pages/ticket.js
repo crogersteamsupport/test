@@ -5142,16 +5142,95 @@ function CreateTicketToolbarDomEvents() {
         window.open(window.parent.Ts.System.AppDomain + '/TicketPrint.aspx?ticketid=' + _ticketID, 'TSPrint' + _ticketID);
     });
 
+    $('#EmailModal').on('show.bs.modal', function (e) {
+        var element = $('.email-ticket-upload');
+        $('#action-file-upload').fileupload({
+            namespace: 'new_action',
+            dropZone: element,
+            add: function (e, data) {
+                for (var i = 0; i < data.files.length; i++) {
+                    var item = $('<li>').appendTo(element.find('.upload-queue'));
+                    data.context = item;
+                    item.data('data', data);
+                    var bg = $('<div>').appendTo(item);
+                    $('<div>').text(data.files[i].name + '  (' + window.parent.Ts.Utils.getSizeString(data.files[i].size) + ')').addClass('filename').appendTo(bg);
+                    $('<div>').addClass('progress').hide().appendTo(bg);
+                    $('<span>').addClass('ui-icon ui-icon-close').click(function (e) {
+                        e.preventDefault();
+                        $(this).closest('li').fadeOut(500, function () {
+                            $(this).remove();
+                        });
+                    }).appendTo(bg);
+                    $('<span>').addClass('ui-icon ui-icon-cancel').hide().click(function (e) {
+                        e.preventDefault();
+                        var data = $(this).closest('li').data('data');
+                        data.jqXHR.abort();
+                    }).appendTo(bg);
+                    if ((data.files[i].size / 1000000) > 25) {
+                        alert("Warning " + data.files[i].name + " is over 25MB");
+                    }
+                }
+
+            },
+            send: function (e, data) {
+                if (data.context && data.dataType && data.dataType.substr(0, 6) === 'iframe') {
+                    data.context.find('.progress').progressbar('value', 50);
+                }
+            },
+            fail: function (e, data) {
+                if (data.errorThrown === 'abort') return;
+                alert('There was an error uploading "' + data.files[0].name + '".');
+                callback(null);
+            },
+            progress: function (e, data) {
+                data.context.find('.progress').progressbar('value', parseInt(data.loaded / data.total * 100, 10));
+            },
+            start: function (e, data) {
+                element.find('.progress').progressbar().show();
+                element.find('.upload-queue .ui-icon-close').hide();
+                element.find('.upload-queue .ui-icon-cancel').show();
+            },
+            stop: function (e, data) {
+                window.parent.Ts.Services.TicketPage.GetActionAttachments(_newAction.item.RefID, function (attachments) {
+                    debugger;
+                    window.parent.Ts.Services.TicketPage.EmailTicket(_ticketID, $("#ticket-email-input").val(), $("#ticket-intro-input").val(), _newAction.item.RefID)
+                    _newAction.Attachments = attachments;
+                    resetEmailModal();
+                    if (_oldActionID === -1) {
+                        _actionTotal = _actionTotal + 1;
+                        var actionElement = CreateActionElement(_newAction, false);
+                        actionElement.find('.ticket-action-number').text(_actionTotal);
+                    } else {
+                        UpdateActionElement(_newAction, false);
+                    }
+                    _newAction = null;
+                });
+            }
+        });
+    });
+
+    function resetEmailModal() {
+        $('#EmailModal').modal('hide');
+        $('#ticket-intro-input').val('');
+        $('#ticket-email-input').val('');
+        $('.upload-queue').empty();
+    }
+
     $('#Ticket-Email').click(function(e) {
         e.preventDefault();
         e.stopPropagation();
         window.parent.Ts.System.logAction('Ticket - Emailed');
-        window.parent.Ts.Services.TicketPage.EmailTicket(_ticketID, $("#ticket-email-input").val(), $("#ticket-intro-input").val(), function(actionInfo) {
-            $('#email-success').show();
-            _actionTotal = _actionTotal + 1;
+        window.parent.Ts.Services.TicketPage.CreateEmailTicketAction(_ticketID, $("#ticket-email-input").val(), $("#ticket-intro-input").val(), function(actionInfo) {
+            _newAction = actionInfo;
+
+            if ($('.upload-queue li').length > 0) {
+                UploadAttachments(_newAction)
+            }
+            else {
+                resetEmailModal();
+            }
             var actionElement = CreateActionElement(actionInfo, false);
             actionElement.find('.ticket-action-number').text(_actionTotal);
-            $('#EmailModal').modal('hide');
         }, function() {
             $('#email-error').show();
         });
