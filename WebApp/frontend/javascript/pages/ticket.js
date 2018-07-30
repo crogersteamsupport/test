@@ -5192,7 +5192,6 @@ function CreateTicketToolbarDomEvents() {
             },
             stop: function (e, data) {
                 window.parent.Ts.Services.TicketPage.GetActionAttachments(_newAction.item.RefID, function (attachments) {
-                    debugger;
                     window.parent.Ts.Services.TicketPage.EmailTicket(_ticketID, $("#ticket-email-input").val(), $("#ticket-intro-input").val(), _newAction.item.RefID)
                     _newAction.Attachments = attachments;
                     resetEmailModal();
