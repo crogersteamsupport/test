@@ -221,7 +221,7 @@ namespace TeamSupport.ServiceLibrary
 					ProcessTicketUpdateRequest(GetIntParam(emailPost.Param1), GetIntParam(emailPost.Param2));
 					break;
 				case EmailPostType.TicketSendEmail:
-					ProcessTicketSendEmail(GetIntParam(emailPost.Param1), GetIntParam(emailPost.Param2), emailPost.Param3, emailPost.Text1);
+					ProcessTicketSendEmail(GetIntParam(emailPost.Param1), GetIntParam(emailPost.Param2), emailPost.Param3, emailPost.Text1, GetIntParam(emailPost.Param4));
 					break;
 				case EmailPostType.WelcomeNewSignup:
 					ProcessWelcomeNewSignup(GetIntParam(emailPost.Param1), emailPost.Param2);
@@ -1077,7 +1077,7 @@ namespace TeamSupport.ServiceLibrary
 			}
 		}
 
-		private void ProcessTicketSendEmail(int userID, int ticketID, string addresses, string introduction)
+		private void ProcessTicketSendEmail(int userID, int ticketID, string addresses, string introduction, int actionID)
 		{
 			Ticket ticket = Tickets.GetTicket(LoginUser, ticketID);
 			User sender = Users.GetUser(LoginUser, userID);
@@ -1090,7 +1090,17 @@ namespace TeamSupport.ServiceLibrary
 
 			List<string> fileNames = new List<string>();
 
-			Organizations organization = new Organizations(LoginUser);
+            Attachments attachmentsHelper = new Attachments(LoginUser);
+            attachmentsHelper.LoadByActionID(actionID);
+
+            //specific logic for including attachments a user has added via the send email lightbox
+            foreach (Data.Attachment attachment in attachmentsHelper)
+            {
+                fileNames.Add(attachment.Path);
+                Logs.WriteEventFormat("Adding Attachment   AttachmentID:{0}, ActionID:{1}, Path:{2}", attachment.AttachmentID.ToString(), actions[0].ActionID.ToString(), attachment.Path);
+            }
+
+            Organizations organization = new Organizations(LoginUser);
 			organization.LoadByOrganizationID(ticket.OrganizationID);
 			bool includeAttachments = true;
 
