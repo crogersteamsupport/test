@@ -139,9 +139,6 @@ namespace TeamSupport.Model
                 if (postedFile.ContentLength == 0)
                     continue;
 
-                if (postedFile.ContentLength == 0)
-                    continue;
-
                 results.Add(new ActionAttachment(this, user, postedFile, request));
             }
 
