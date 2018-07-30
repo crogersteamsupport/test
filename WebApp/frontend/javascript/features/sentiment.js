@@ -88,3 +88,263 @@ function WatsonTicketField(ticketid) {
 		$("#health-properties").addClass("hide");
 	}
 }
+
+
+
+
+$(document).on('click', '#ticket-Sentiment', function(e) {
+    teamsupport.modals.overlay.show();
+    $('#modal').html(Handlebars.templates['chart']).css({ 'width':'740px' });
+    teamsupport.modals.modal.show('#modal');
+
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+
+    // CENTER LINES.
+
+    ctx.beginPath();
+    ctx.moveTo(200, 200);
+    ctx.lineTo(350, 200);
+    ctx.lineWidth=5;
+    ctx.strokeStyle = "#7ad714";
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(350, 200);
+    ctx.lineTo(500, 200);
+    ctx.lineWidth=5;
+    ctx.strokeStyle = "#7ad714";
+    ctx.stroke();
+
+   // BRANCHES LINES, START @ TOP LEFT.
+
+    ctx.beginPath();
+    ctx.moveTo(100, 100);
+    ctx.lineTo(200, 200);
+    ctx.lineWidth=5;
+    ctx.strokeStyle = "#7ad714";
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(500, 200);
+    ctx.lineTo(600, 100);
+    ctx.lineWidth=5;
+    ctx.strokeStyle = "#ec663c";
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(500, 200);
+    ctx.lineTo(600, 300);
+    ctx.lineWidth=5;
+    ctx.strokeStyle = "#ec663c";
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(100, 300);
+    ctx.lineTo(200, 200);
+    ctx.lineWidth=5;
+    ctx.strokeStyle = "#7ad714";
+    ctx.stroke();
+
+    // CENTER CIRCLE.
+
+    ctx.beginPath();
+    ctx.arc(350, 200, 50, 0, 2 * Math.PI);
+    ctx.strokeStyle = "rgba(122,215,20,0.5)";
+    ctx.lineWidth=20;
+    ctx.stroke();
+    ctx.fillStyle = "#7ad714";
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.font = "20px Verdana";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(0,0,0,0.8)";
+    ctx.fillText("Satisfied",350,290);
+
+    ctx.beginPath();
+    ctx.font = "16px Verdana";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#7ad714";
+    ctx.fillText("78 / 100",350,315);
+
+    // LEFT CIRCLE.
+
+    ctx.beginPath();
+    ctx.arc(200, 200, 20, 0, 2 * Math.PI);
+    ctx.strokeStyle = "rgba(122,215,20,0.5)";
+    ctx.lineWidth=10;
+    ctx.stroke();
+    ctx.fillStyle = "#7ad714";
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.font = "20px Verdana";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "rgba(255,255,255,0.8)";
+    ctx.fillText("+",200,199);
+
+    ctx.beginPath();
+    ctx.font = "14px Verdana";
+    ctx.textAlign = "left";
+    ctx.fillStyle = "rgba(0,0,0,0.8)";
+    ctx.fillText("Polite",180,250);
+
+    ctx.beginPath();
+    ctx.font = "12px Verdana";
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#7ad714";
+    ctx.fillText("78 / 100",180,270);
+
+    // RIGHT CIRCLE.
+
+    ctx.beginPath();
+    ctx.arc(500, 200, 20, 0, 2 * Math.PI);
+    ctx.strokeStyle = "rgba(229,99,66,0.5)";
+    ctx.lineWidth=10;
+    ctx.stroke();
+    ctx.fillStyle = "#ec663c";
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.font = "20px Verdana";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "rgba(255,255,255,0.8)";
+    ctx.fillText("-",500,199);
+
+    ctx.beginPath();
+    ctx.font = "14px Verdana";
+    ctx.textAlign = "right";
+    ctx.fillStyle = "rgba(0,0,0,0.8)";
+    ctx.fillText("Frustrated",520,250);
+
+    ctx.beginPath();
+    ctx.font = "12px Verdana";
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#ec663c";
+    ctx.fillText("78 / 100",520,270);
+
+
+
+    // BRANCH CIRCLES, START @ TOP LEFT.
+
+
+    // BRANCH CIRCLE, TOP LEFT.
+
+    ctx.beginPath();
+    ctx.arc(100, 100, 20, 0, 2 * Math.PI);
+    ctx.strokeStyle = "rgba(122,215,20,0.5)";
+    ctx.lineWidth=10;
+    ctx.stroke();
+    ctx.fillStyle = "#7ad714";
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.font = "14px Verdana";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(0,0,0,0.8)";
+    ctx.fillText("Giddy",100,150);
+
+    ctx.beginPath();
+    ctx.font = "12px Verdana";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#7ad714";
+    ctx.fillText("78 / 100",100,170);
+
+    ctx.beginPath();
+    ctx.font = "20px Verdana";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "rgba(255,255,255,0.8)";
+    ctx.fillText("+",100,99);
+
+    // BRANCH CIRCLE, TOP RIGHT.
+
+    ctx.beginPath();
+    ctx.arc(600, 100, 20, 0, 2 * Math.PI);
+    ctx.strokeStyle = "rgba(229,99,66,0.5)";
+    ctx.lineWidth=10;
+    ctx.stroke();
+    ctx.fillStyle = "#ec663c";
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.font = "14px Verdana";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(0,0,0,0.8)";
+    ctx.fillText("Pissed",600,150);
+
+    ctx.beginPath();
+    ctx.font = "12px Verdana";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#ec663c";
+    ctx.fillText("78 / 100",600,170);
+
+    ctx.beginPath();
+    ctx.font = "20px Verdana";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "rgba(255,255,255,0.8)";
+    ctx.fillText("-",600,99);
+
+    // BRANCH CIRCLE, BOTTOM RIGHT.
+
+    ctx.beginPath();
+    ctx.arc(600, 300, 20, 0, 2 * Math.PI);
+    ctx.strokeStyle = "rgba(229,99,66,0.5)";
+    ctx.lineWidth = 10;
+    ctx.stroke();
+    ctx.fillStyle = "#ec663c";
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.font = "14px Verdana";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(0,0,0,0.8)";
+    ctx.fillText("Angry",600,350);
+
+    ctx.beginPath();
+    ctx.font = "12px Verdana";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#ec663c";
+    ctx.fillText("78 / 100",600,370);
+
+    ctx.beginPath();
+    ctx.font = "20px Verdana";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "rgba(255,255,255,0.8)";
+    ctx.fillText("-",600,299);
+
+    // BRANCH CIRCLE, BOTTOM LEFT.
+
+    ctx.beginPath();
+    ctx.arc(100, 300, 20, 0, 2 * Math.PI);
+    ctx.strokeStyle = "rgba(122,215,20,0.5)";
+    ctx.lineWidth=10;
+    ctx.stroke();
+    ctx.fillStyle = "#7ad714";
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.font = "14px Verdana";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(0,0,0,0.8)";
+    ctx.fillText("Happy",100,350);
+
+    ctx.beginPath();
+    ctx.font = "12px Verdana";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#7ad714";
+    ctx.fillText("78 / 100",100,370);
+
+    ctx.beginPath();
+    ctx.font = "20px Verdana";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "rgba(255,255,255,0.8)";
+    ctx.fillText("+",100,299);
+
+});
