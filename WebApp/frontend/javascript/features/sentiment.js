@@ -112,6 +112,7 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
 
+
     // BRANCHES, START @ TOP LEFT.
 
     // BRANCH, TOP LEFT.
@@ -120,15 +121,15 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     ctx.moveTo(100, 100);
     ctx.lineTo(200, 200);
     ctx.lineWidth = 5;
-    ctx.strokeStyle = "#7ad714";
+    ctx.strokeStyle = "rgba(229,99,66,0.7)";
     ctx.stroke();
 
     ctx.beginPath();
     ctx.arc(100, 100, 20, 0, 2 * Math.PI);
-    ctx.strokeStyle = "rgba(122,215,20,0.5)";
+    ctx.strokeStyle = "rgba(229,99,66,0.5)";
     ctx.lineWidth = 10;
     ctx.stroke();
-    ctx.fillStyle = "#7ad714";
+    ctx.fillStyle = "rgba(229,99,66,1)";
     ctx.fill();
 
     ctx.beginPath();
@@ -142,7 +143,7 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     ctx.font = "12px Verdana";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillStyle = "#7ad714";
+    ctx.fillStyle = "rgba(229,99,66,1)";
     ctx.fillText("+10", 100, 170);
 
     ctx.beginPath();
@@ -150,23 +151,23 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "rgba(255,255,255,0.8)";
-    ctx.fillText("+", 100, 99);
+    ctx.fillText("-", 100, 99);
 
-    // BRANCH CIRCLE, TOP LEFT-CENTER.
+    // BRANCH, TOP LEFT-CENTER.
 
     ctx.beginPath();
     ctx.moveTo(250, 100);
     ctx.lineTo(350, 200);
     ctx.lineWidth = 5;
-    ctx.strokeStyle = "#7ad714";
+    ctx.strokeStyle = "rgba(237,167,42,0.7)";
     ctx.stroke();
 
     ctx.beginPath();
     ctx.arc(250, 100, 20, 0, 2 * Math.PI);
-    ctx.strokeStyle = "rgba(122,215,20,0.5)";
+    ctx.strokeStyle = "rgba(237,167,42,0.5)";
     ctx.lineWidth = 10;
     ctx.stroke();
-    ctx.fillStyle = "#7ad714";
+    ctx.fillStyle = "rgba(237,167,42,1)";
     ctx.fill();
 
     ctx.beginPath();
@@ -180,15 +181,15 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     ctx.font = "12px Verdana";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillStyle = "#7ad714";
-    ctx.fillText("+10", 250, 170);
+    ctx.fillStyle = "rgba(237,167,42,1)";
+    ctx.fillText("-10", 250, 170);
 
     ctx.beginPath();
     ctx.font = "20px Verdana";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "rgba(255,255,255,0.8)";
-    ctx.fillText("+", 250, 99);
+    ctx.fillText("-", 250, 99);
 
     // BRANCH, TOP RIGHT-CENTER.
 
@@ -196,15 +197,15 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     ctx.moveTo(450, 100);
     ctx.lineTo(350, 200);
     ctx.lineWidth = 5;
-    ctx.strokeStyle = "#7ad714";
+    ctx.strokeStyle = "rgba(237,167,42,0.7)";
     ctx.stroke();
 
     ctx.beginPath();
     ctx.arc(450, 100, 20, 0, 2 * Math.PI);
-    ctx.strokeStyle = "rgba(122,215,20,0.5)";
+    ctx.strokeStyle = "rgba(237,167,42,0.5)";
     ctx.lineWidth = 10;
     ctx.stroke();
-    ctx.fillStyle = "#7ad714";
+    ctx.fillStyle = "rgba(237,167,42,1)";
     ctx.fill();
 
     ctx.beginPath();
@@ -218,7 +219,7 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     ctx.font = "12px Verdana";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillStyle = "#7ad714";
+    ctx.fillStyle = "rgba(237,167,42,1)";
     ctx.fillText("+10", 450, 170);
 
     ctx.beginPath();
@@ -234,15 +235,15 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     ctx.moveTo(500, 200);
     ctx.lineTo(600, 100);
     ctx.lineWidth = 5;
-    ctx.strokeStyle = "#ec663c";
+    ctx.strokeStyle = "rgba(122,215,20,0.7)";
     ctx.stroke();
 
     ctx.beginPath();
     ctx.arc(600, 100, 20, 0, 2 * Math.PI);
-    ctx.strokeStyle = "rgba(229,99,66,0.5)";
+    ctx.strokeStyle = "rgba(122,215,20,0.5)";
     ctx.lineWidth = 10;
     ctx.stroke();
-    ctx.fillStyle = "#ec663c";
+    ctx.fillStyle = "rgba(122,215,20,1)";
     ctx.fill();
 
     ctx.beginPath();
@@ -256,7 +257,7 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     ctx.font = "12px Verdana";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillStyle = "#ec663c";
+    ctx.fillStyle = "rgba(122,215,20,1)";
     ctx.fillText("+10", 600, 170);
 
     ctx.beginPath();
@@ -264,7 +265,7 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "rgba(255,255,255,0.8)";
-    ctx.fillText("-", 600, 99);
+    ctx.fillText("+", 600, 99);
 
     // BRANCH CIRCLE, BOTTOM RIGHT.
 
@@ -272,15 +273,15 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     ctx.moveTo(500, 200);
     ctx.lineTo(600, 300);
     ctx.lineWidth = 5;
-    ctx.strokeStyle = "#ec663c";
+    ctx.strokeStyle = "rgba(122,215,20,0.7)";
     ctx.stroke();
 
     ctx.beginPath();
     ctx.arc(600, 300, 20, 0, 2 * Math.PI);
-    ctx.strokeStyle = "rgba(229,99,66,0.5)";
+    ctx.strokeStyle = "rgba(122,215,20,0.5)";
     ctx.lineWidth = 10;
     ctx.stroke();
-    ctx.fillStyle = "#ec663c";
+    ctx.fillStyle = "rgba(122,215,20,1)";
     ctx.fill();
 
     ctx.beginPath();
@@ -294,7 +295,7 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     ctx.font = "12px Verdana";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillStyle = "#ec663c";
+    ctx.fillStyle = "rgba(122,215,20,1)";
     ctx.fillText("+10", 600, 370);
 
     ctx.beginPath();
@@ -302,7 +303,46 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "rgba(255,255,255,0.8)";
-    ctx.fillText("-", 600, 299);
+    ctx.fillText("+", 600, 299);
+
+    // BRANCH CIRCLE, BOTTOM LEFT-CENTER.
+
+    ctx.beginPath();
+    ctx.moveTo(250, 300);
+    ctx.lineTo(350, 200);
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "rgba(237,167,42,0.7)";
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(250, 300, 20, 0, 2 * Math.PI);
+    ctx.strokeStyle = "rgba(237,167,42,0.5)";
+    ctx.lineWidth = 10;
+    ctx.stroke();
+    ctx.fillStyle = "rgba(237,167,42,1)";
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.font = "13px Verdana";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "rgba(0,0,0,0.8)";
+    ctx.fillText("Sympathetic", 250, 350);
+
+    ctx.beginPath();
+    ctx.font = "12px Verdana";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "rgba(237,167,42,1)";
+    ctx.fillText("-10", 250, 370);
+
+    ctx.beginPath();
+    ctx.font = "20px Verdana";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "rgba(255,255,255,0.8)";
+    ctx.fillText("-", 250, 299);
+
 
     // BRANCH, BOTTOM LEFT.
 
@@ -310,15 +350,15 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     ctx.moveTo(100, 300);
     ctx.lineTo(200, 200);
     ctx.lineWidth = 5;
-    ctx.strokeStyle = "#7ad714";
+    ctx.strokeStyle = "rgba(229,99,66,0.7)";
     ctx.stroke();
 
     ctx.beginPath();
     ctx.arc(100, 300, 20, 0, 2 * Math.PI);
-    ctx.strokeStyle = "rgba(122,215,20,0.5)";
+    ctx.strokeStyle = "rgba(229,99,66,0.5)";
     ctx.lineWidth = 10;
     ctx.stroke();
-    ctx.fillStyle = "#7ad714";
+    ctx.fillStyle = "rgba(229,99,66,1)";
     ctx.fill();
 
     ctx.beginPath();
@@ -332,15 +372,15 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     ctx.font = "12px Verdana";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillStyle = "#7ad714";
-    ctx.fillText("+10", 100, 370);
+    ctx.fillStyle = "rgba(229,99,66,1)";
+    ctx.fillText("-10", 100, 370);
 
     ctx.beginPath();
     ctx.font = "20px Verdana";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "rgba(255,255,255,0.8)";
-    ctx.fillText("+", 100, 299);
+    ctx.fillText("-", 100, 299);
 
     // LEFT CIRCLE.
 
@@ -348,15 +388,15 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     ctx.moveTo(200, 200);
     ctx.lineTo(350, 200);
     ctx.lineWidth = 5;
-    ctx.strokeStyle = "#7ad714";
+    ctx.strokeStyle = "rgba(229,99,66,0.7)";
     ctx.stroke();
 
     ctx.beginPath();
     ctx.arc(200, 200, 20, 0, 2 * Math.PI);
-    ctx.strokeStyle = "rgba(122,215,20,0.5)";
+    ctx.strokeStyle = "rgba(229,99,66,0.5)";
     ctx.lineWidth = 10;
     ctx.stroke();
-    ctx.fillStyle = "#7ad714";
+    ctx.fillStyle = "rgba(229,99,66,1)";
     ctx.fill();
 
     ctx.beginPath();
@@ -364,7 +404,7 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "rgba(255,255,255,0.8)";
-    ctx.fillText("+", 200, 199);
+    ctx.fillText("-", 200, 199);
 
     // RIGHT CIRCLE.
 
@@ -372,15 +412,15 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     ctx.moveTo(350, 200);
     ctx.lineTo(500, 200);
     ctx.lineWidth = 5;
-    ctx.strokeStyle = "#7ad714";
+    ctx.strokeStyle = "rgba(122,215,20,1)";
     ctx.stroke();
 
     ctx.beginPath();
     ctx.arc(500, 200, 20, 0, 2 * Math.PI);
-    ctx.strokeStyle = "rgba(229,99,66,0.5)";
+    ctx.strokeStyle = "rgba(122,215,20,0.5)";
     ctx.lineWidth = 10;
     ctx.stroke();
-    ctx.fillStyle = "#ec663c";
+    ctx.fillStyle = "rgba(122,215,20,1)";
     ctx.fill();
 
     ctx.beginPath();
@@ -388,7 +428,7 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "rgba(255,255,255,0.8)";
-    ctx.fillText("-", 500, 199);
+    ctx.fillText("+", 500, 199);
 
     // CENTER CIRCLE.
 
@@ -413,5 +453,6 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#7ad714";
     ctx.fillText("78 / 100", 350, 315);
+
 
 });
