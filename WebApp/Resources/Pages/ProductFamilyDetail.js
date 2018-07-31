@@ -1405,7 +1405,7 @@ var appendCustomEditDate = function (field, element) {
             var fieldValue = parent.closest('.form-group').data('field').Value;
             var input = $('<input type="text">')
                 .addClass('col-xs-10 form-control')
-                .val(fieldValue === null ? '' : fieldValue.localeFormat(window.parent.parent.Ts.Utils.getDatePattern()))
+				.val(fieldValue === null ? '' : moment(fieldValue).format(window.parent.parent.Ts.Utils.getDatePattern().toUpperCase()))
                 .datetimepicker({ pickTime: false })
                 .appendTo(container1)
                 .focus();
