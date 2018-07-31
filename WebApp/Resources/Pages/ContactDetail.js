@@ -1091,7 +1091,8 @@ $(document).ready(function () {
         $('#noteDescBox').toggle();
         if ($('#noteDescBox').is(':visible')) {
         $('.noteDesc').html("<h4>Description</h4> <p>" + desc + "</p>");
-        BuildFileDescription($(this).data('attachments'));        }
+        BuildFileDescription($(this).data('attachments'));
+        }
         _mainFrame.Ts.System.logAction('Contact Detail - View Note');
     });
 
@@ -1140,7 +1141,10 @@ $(document).ready(function () {
         _mainFrame.Ts.Services.Customers.SaveNote(title, description, noteID, userID, _mainFrame.Ts.ReferenceTypes.Users, activityType, DateOccurred, isAlert, productFamilyID, function (note) {
             if ($('.upload-queue-activity li').length > 0) {
                 $('.upload-queue-activity li').each(function (i, o) {
-                    var data = $(o).data('data');                    data.url = '../../../Upload/ContactActivityAttachments/' + note;                    data.jqXHR = data.submit();                    $(o).data('data', data);
+                    var data = $(o).data('data');
+                    data.url = '../../../Upload/ContactActivityAttachments/' + note;
+                    data.jqXHR = data.submit();
+                    $(o).data('data', data);
                 });
             }
             else
@@ -1163,7 +1167,8 @@ $(document).ready(function () {
     });
 
     $('.noteDesc').on('click', '.activity-file', function (e) {
-        e.preventDefault();        _mainFrame.Ts.MainPage.openNewAttachment($(this).attr('id'));
+        e.preventDefault();
+        _mainFrame.Ts.MainPage.openNewAttachment($(this).attr('id'));
     });
 
     $("#btnFilesCancel").click(function (e) {
@@ -1272,26 +1277,67 @@ $(document).ready(function () {
     });
 
     $('.file-upload-activity').fileupload({
-        namespace: 'custom_attachment',        dropZone: $('.file-upload-activity'),        add: function (e, data) {
+        namespace: 'custom_attachment',
+        dropZone: $('.file-upload-activity'),
+        add: function (e, data) {
             for (var i = 0; i < data.files.length; i++) {
-                var item = $('<li>')                  .appendTo($('.upload-queue-activity'));                data.context = item;                item.data('data', data);                var bg = $('<div>')                  .addClass('ts-color-bg-accent')                  .appendTo(item);                $('<div>')                  .text(data.files[i].name + '  (' + _mainFrame.Ts.Utils.getSizeString(data.files[i].size) + ')')                  .addClass('filename')                  .appendTo(bg);                $('<span>')                  .addClass('icon-remove')                  .click(function (e) {
-                      e.preventDefault();                      $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
-                  })                  .appendTo(bg);                $('<span>')                  .addClass('icon-remove')                  .hide()                  .click(function (e) {
-                      e.preventDefault();                      var data = $(this).closest('li').data('data');                      data.jqXHR.abort();
-                  })                  .appendTo(bg);                var progress = $('<div>')                  .addClass('progress progress-striped active')                  .hide();                $('<div>')                    .addClass('progress-bar')                    .attr('role', 'progressbar')                    .appendTo(progress);                progress.appendTo(bg);
+                var item = $('<li>')
+                  .appendTo($('.upload-queue-activity'));
+                data.context = item;
+                item.data('data', data);
+                var bg = $('<div>')
+                  .addClass('ts-color-bg-accent')
+                  .appendTo(item);
+                $('<div>')
+                  .text(data.files[i].name + '  (' + _mainFrame.Ts.Utils.getSizeString(data.files[i].size) + ')')
+                  .addClass('filename')
+                  .appendTo(bg);
+                $('<span>')
+                  .addClass('icon-remove')
+                  .click(function (e) {
+                      e.preventDefault();
+                      $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
+                  })
+                  .appendTo(bg);
+                $('<span>')
+                  .addClass('icon-remove')
+                  .hide()
+                  .click(function (e) {
+                      e.preventDefault();
+                      var data = $(this).closest('li').data('data');
+                      data.jqXHR.abort();
+                  })
+                  .appendTo(bg);
+                var progress = $('<div>')
+                  .addClass('progress progress-striped active')
+                  .hide();
+                $('<div>')
+                    .addClass('progress-bar')
+                    .attr('role', 'progressbar')
+                    .appendTo(progress);
+                progress.appendTo(bg);
             }
-        },        send: function (e, data) {
+        },
+        send: function (e, data) {
             if (data.context && data.dataType && data.dataType.substr(0, 6) === 'iframe') {
                 data.context.find('.progress-bar').css('width', '50%');
             }
-        },        fail: function (e, data) {
-            if (data.errorThrown === 'abort') return;            alert('There was an error uploading "' + data.files[0].name + '".');
-        },        progress: function (e, data) {
+        },
+        fail: function (e, data) {
+            if (data.errorThrown === 'abort') return;
+            alert('There was an error uploading "' + data.files[0].name + '".');
+        },
+        progress: function (e, data) {
             data.context.find('.progress-bar').css('width', parseInt(data.loaded / data.total * 100, 10) + '%');
-        },        start: function (e, data) {
-            $('.progress').show();            $('.upload-queue-activity .ui-icon-close').hide();            $('.upload-queue-activity .ui-icon-cancel').show();
-        },        stop: function (e, data) {
-            $('.upload-queue-activity').empty();            LoadNotes();
+        },
+        start: function (e, data) {
+            $('.progress').show();
+            $('.upload-queue-activity .ui-icon-close').hide();
+            $('.upload-queue-activity .ui-icon-cancel').show();
+        },
+        stop: function (e, data) {
+            $('.upload-queue-activity').empty();
+            LoadNotes();
         }
     });
 
@@ -3045,7 +3091,7 @@ var appendCustomEditDate = function (field, element) {
             var fieldValue = parent.closest('.form-group').data('field').Value;
             var input = $('<input type="text">')
                 .addClass('col-xs-10 form-control')
-                .val(fieldValue === null ? '' : fieldValue.localeFormat(_mainFrame.Ts.Utils.getDatePattern()))
+				.val(fieldValue === null ? '' : moment(fieldValue).format(_mainFrame.Ts.Utils.getDatePattern().toUpperCase()))
                 .datetimepicker({ pickTime: false })
                 .appendTo(container1)
                 .focus();
@@ -3369,4 +3415,12 @@ function LoadNoteActivities() {
     });
 }
 
-function BuildFileDescription(attachments) {    for (var i = 0; i < attachments.length; i++) {        var files = $('<div>')        .addClass('activity-file')        .attr('id', attachments[i].AttachmentID)        .html(attachments[i].FileName)        .appendTo('.noteDesc');    }}
+function BuildFileDescription(attachments) {
+    for (var i = 0; i < attachments.length; i++) {
+        var files = $('<div>')
+        .addClass('activity-file')
+        .attr('id', attachments[i].AttachmentID)
+        .html(attachments[i].FileName)
+        .appendTo('.noteDesc');
+    }
+}
