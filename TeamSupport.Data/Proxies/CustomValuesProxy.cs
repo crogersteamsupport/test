@@ -75,8 +75,10 @@ namespace TeamSupport.Data
       result.Mask = this.Mask;
       result.CustomFieldCategoryID = this.CustomFieldCategoryID;
 
-      if (this.FieldType == CustomFieldType.DateTime || this.FieldType == CustomFieldType.Time)
+	  switch (this.FieldType)
       {
+				case CustomFieldType.DateTime:
+				case CustomFieldType.Time:
         result.Value = null;
         if (Row["CustomValue"] != DBNull.Value)
         {
@@ -87,10 +89,21 @@ namespace TeamSupport.Data
             result.Value = date;
           }
         }
+					break;
+				case CustomFieldType.Date:
+					result.Value = null;
+					if (Row["CustomValue"] != DBNull.Value)
+					{
+						DateTime date;
+						if (DateTime.TryParse(this.Value, out date))
+						{
+							result.Value = this.Value;
       }
-      else
-      {
+					}
+					break;
+				default:
         result.Value = Row["CustomValue"] == DBNull.Value ? "" : this.Value;
+					break;
       }
 
       return result;
