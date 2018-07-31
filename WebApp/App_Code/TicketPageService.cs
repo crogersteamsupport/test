@@ -23,6 +23,7 @@ using System.Net;
 using System.IO;
 using System.Dynamic;
 using System.Text.RegularExpressions;
+using TeamSupport.Model;
 
 namespace TSWebServices
 {
@@ -840,9 +841,9 @@ namespace TSWebServices
         public TimeLineItem UpdateAction(ActionProxy proxy)
         {
             // new action
-            if (TeamSupport.Model.ConnectionContext.Enabled && (proxy.ActionID == -1))
-            { 
-                TeamSupport.Data.Action newAction = TeamSupport.Model.API.InsertAction(TSAuthentication.GetLoginUser(), proxy);
+            if (ConnectionContext.Enabled && (proxy.ActionID == -1))
+            {
+                TeamSupport.Data.Action newAction = API.InsertAction(TSAuthentication.Ticket, proxy);
                 return GetActionTimelineItem(newAction);
             }
 

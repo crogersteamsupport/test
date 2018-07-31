@@ -43,30 +43,16 @@ namespace TeamSupport.Model
         }
 
         /// <summary> Create new Data.Action on an existing ticket </summary>
-        public ActionModel InsertAction(Data.LoginUser loginUser, Data.ActionProxy proxy)
+        public ActionModel InsertAction(Data.ActionProxy proxy)
         {
-            return new ActionModel(this, loginUser, proxy);
+            return new ActionModel(this, proxy);
         }
 
         /// <summary> Create new Data.Action on new ticket </summary>
-        public ActionModel InsertAction(Data.ActionProxy info, Data.Ticket ticketData, Data.User user)
+        public ActionModel InsertAction(Data.ActionProxy proxy, Data.Ticket ticketData, Data.User user)
         {
-            return new ActionModel(this, info, ticketData, user);
+            return new ActionModel(this, proxy, ticketData, user);
         }
 
-        /// <summary>
-        /// equivalent to ts-app\TeamSupport.Data\BusinessObjects\Tickets.cs MergeAttachments(int oldticketID, int newticketID)
-        /// </summary>
-        public void MergeAttachments(int oldticketID)
-        {
-            // take attachments
-            string query = $"UPDATE attachments SET RefID={TicketID} WHERE (RefID = {oldticketID} AND RefType = {Data.ReferenceType.Actions}";
-            _db.ExecuteCommand(query);
-
-            // log old ticket number
-            query = $"SELECT TicketNumber FROM Tickets WHERE TicketID={oldticketID}";
-            int ticketNumber = _db.ExecuteQuery<int>(query).FirstOrDefault();
-            User.AddActionLog(Data.ActionLogType.Update, Data.ReferenceType.Tickets, TicketID, $"Merged '{ticketNumber}' Data.Action Attachments");
-        }
     }
 }

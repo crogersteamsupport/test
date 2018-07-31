@@ -27,6 +27,7 @@ using System.Diagnostics;
 using OpenTokSDK;
 using Jira = TeamSupport.JIRA;
 using NR = NewRelic.Api;
+using TeamSupport.Model;
 
 namespace TSWebServices
 {
@@ -3584,6 +3585,14 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public void DeleteAttachment(int attachmentID)
         {
+            if (ConnectionContext.Enabled)
+            {
+                // ticketID?  actionID?
+                API.DeleteActionAttachment(TSAuthentication.Ticket, null, null, attachmentID);
+                return;
+            }
+
+            // This method assumes action attachment
             Attachment attachment = Attachments.GetAttachment(TSAuthentication.GetLoginUser(), attachmentID);
             if (attachment == null || attachment.RefType != ReferenceType.Actions) return;
             TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
@@ -3637,7 +3646,7 @@ WHERE t.TicketID = @TicketID
 
             if (info.CategoryID != null && info.CategoryID > -1) ticket.AddCommunityTicket((int)info.CategoryID);
 
-            if(TeamSupport.Model.ConnectionContext.Enabled)
+            if(ConnectionContext.Enabled)
             {
                 ActionProxy proxy = new ActionProxy()
                 {
@@ -3649,7 +3658,7 @@ WHERE t.TicketID = @TicketID
 
                 LoginUser loginUser = TSAuthentication.GetLoginUser();
                 User userData = Users.GetUser(loginUser, TSAuthentication.UserID);
-                TeamSupport.Model.API.InsertAction(loginUser, proxy, ticket, userData);
+                API.InsertAction(TSAuthentication.Ticket, proxy, ticket, userData);
             }
 
             TeamSupport.Data.Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();

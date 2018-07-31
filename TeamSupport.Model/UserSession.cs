@@ -15,13 +15,15 @@ namespace TeamSupport.Model
     public class UserSession
     {
         public OrganizationModel Organization { get; private set; }
-        public int UserID { get; private set; }
         public DataContext _db { get; private set; }
 
-        public UserSession(OrganizationModel organization, int userID)
+        public AuthenticationModel Authentication { get { return Organization.Connection.Authentication; } }
+        public int UserID { get { return Authentication.UserID; } }
+
+        /// <summary> OrganizationID and UserID come from ConnectionContext.Authentication </summary>
+        public UserSession(OrganizationModel organization)
         {
             Organization = organization;
-            UserID = userID;
             _db = organization._db;
             Verify();
         }
@@ -44,6 +46,9 @@ namespace TeamSupport.Model
             return new TicketModel(this, ticketID);
         }
 
+        public bool AllowUserToEditAnyAction() { return _db.ExecuteQuery<bool>($"SELECT AllowUserToEditAnyAction FROM Users WITH (NOLOCK) WHERE UserID={UserID}").First(); }
+        public bool CanEdit() { return Authentication.IsSystemAdmin || AllowUserToEditAnyAction(); }
+
         //FullName _fullName;
         //class FullName
         //{
@@ -63,13 +68,5 @@ namespace TeamSupport.Model
         //    }
         //}
 
-
-        /// <summary> Log that this user did something... </summary>
-        public void AddActionLog(Data.ActionLogType actionLogType, Data.ReferenceType refType, int refID, string description)
-        {
-            string query = query = "INSERT INTO ActionLogs(OrganizationID, RefType, RefID, Data.ActionLogType, [Description], DateCreated, CreatorID)" +
-                        $"VALUES ({Organization.OrganizationID}, {refType}, {refID}, {(int)actionLogType}, {0}, {DateTime.UtcNow}, {UserID})";
-            _db.ExecuteCommand(query, description); // sql injection checking of description
-        }
     }
 }

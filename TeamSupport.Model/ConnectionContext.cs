@@ -7,7 +7,7 @@ using System.Data.SqlClient;
 using System.Data.Linq;
 using System.IO;
 using System.Diagnostics;
-
+using System.Web.Security;
 
 namespace TeamSupport.Model
 {
@@ -18,42 +18,38 @@ namespace TeamSupport.Model
     public class ConnectionContext : IDisposable
     {
 
-        public const bool Enabled = false;
+        public const bool Enabled = true;
 
-        public Data.LoginUser _loginUser { get; private set; }
+        public AuthenticationModel Authentication { get; private set; }
         SqlConnection _connection;
         SqlTransaction _transaction;
         public DataContext _db { get; private set; }
         public OrganizationModel Organization { get; private set; }
         public UserSession User { get; private set; }
 
-        private ConnectionContext(string connectionString, bool useTransaction = false)
+        public ConnectionContext(FormsAuthenticationTicket authentication, bool useTransaction = false)
         {
-            _connection = new SqlConnection(connectionString);  // using
+            // SqlConnection
+            Authentication = new AuthenticationModel(authentication);
+            _connection = new SqlConnection(Authentication.ConnectionString);  // using
             _connection.Open(); // connection must be open to begin transaction
 
+            // DataContext
             _db = new DataContext(_connection);
             _db.ObjectTrackingEnabled = false;  // use linq read-only
-            if (!useTransaction)
-                return;
+            if (useTransaction)
+            {
+                _transaction = _connection.BeginTransaction();
+                _db.Transaction = _transaction;
+            }
 
-            _transaction = _connection.BeginTransaction();
-            _db.Transaction = _transaction;
-        }
-
-        public ConnectionContext(Data.LoginUser user) : this(user.ConnectionString)
-        {
-            Organization = new OrganizationModel(this, user.OrganizationID);
-            User = new UserSession(Organization, user.UserID);
+            // Create Logical Model! - note that OrganizationID and UserID come from Authentication
+            Organization = new OrganizationModel(this);
+            User = new UserSession(Organization);
         }
 
         public void Commit() { _db.Transaction.Commit(); }
         public void Rollback() { _db.Transaction.Rollback(); }
-
-        //public OrganizationModel Organization(int organizationID)
-        //{
-        //    return new OrganizationModel(this, organizationID);
-        //}
 
         public TicketModel Ticket(int ticketID)
         {
@@ -91,7 +87,7 @@ namespace TeamSupport.Model
 
         static bool _IsDebuggerAttached = Debugger.IsAttached;
 
-        public static void LogMessage(Data.LoginUser user, Data.ActionLogType logType, Data.ReferenceType refType, int? ticketID, string message, EventLogEntryType type = EventLogEntryType.Information)
+        public static void LogMessage(FormsAuthenticationTicket authentication, Data.ActionLogType logType, Data.ReferenceType refType, int? refID, string message, EventLogEntryType type = EventLogEntryType.Information)
         {
             if (_IsDebuggerAttached)
             {
@@ -100,12 +96,12 @@ namespace TeamSupport.Model
                     Debugger.Break();   // something is wrong - fix the code!
             }
 
-            Data.ActionLogs.AddActionLog(user, logType, refType, ticketID.HasValue ? ticketID.Value : 0, message);  // 0 if no TicketID?
+            Data.ActionLogs.AddActionLog(AuthenticationModel.GetLoginUser(authentication), logType, refType, refID.HasValue ? refID.Value : 0, message);  // 0 if no TicketID?
         }
 
-        public static void LogMessage(Data.LoginUser user, Data.ActionLogType logType, Data.ReferenceType refType, int? ticketID, string message, Exception e)
+        public static void LogMessage(FormsAuthenticationTicket authentication, Data.ActionLogType logType, Data.ReferenceType refType, int? refID, string message, Exception e)
         {
-            LogMessage(user, logType, refType, ticketID, message + e.ToString() + " ----- STACK: " + e.StackTrace.ToString(), EventLogEntryType.Error);
+            LogMessage(authentication, logType, refType, refID, message + e.ToString() + " ----- STACK: " + e.StackTrace.ToString(), EventLogEntryType.Error);
         }
 
     }

@@ -71,7 +71,13 @@ namespace TeamSupport.Model
 
         public void Delete()
         {
-            _db.ExecuteCommand($"SET NOCOUNT OFF; DELETE FROM Attachments WHERE AttachmentID = {ActionAttachmentID.Value}");
+            if (!Action.CanEdit())
+                return;
+
+            Data.Attachment attachment = Data.Attachments.GetAttachment(Action.Ticket.User.Authentication.LoginUser, ActionAttachmentID.Value);
+            attachment.DeleteFile();
+            attachment.Delete();
+            attachment.Collection.Save();
             ActionAttachmentID = null;
         }
 
@@ -84,11 +90,6 @@ namespace TeamSupport.Model
                 $"SentToTFS = @SentToTFS, SentToSnow = @SentToSnow, FilePathID] = @FilePathID  WHERE AttachmentID = {ActionAttachmentID.Value}");
         }
 
-        void Insert()
-        {
-            // use all the string parameters...
- _db.ExecuteCommand($"SET NOCOUNT OFF; INSERT INTO [dbo].[Attachments] ( [OrganizationID], [FileName], [FileType], [FileSize], [Path], [Description], [DateCreated], [DateModified], [CreatorID], [ModifierID], [RefType], [RefID], [SentToJira], [AttachmentGUID], [ProductFamilyID], [SentToTFS], [SentToSnow], [FilePathID]) VALUES ( @OrganizationID, @FileName, @FileType, @FileSize, @Path, @Description, @DateCreated, @DateModified, @CreatorID, @ModifierID, @RefType, @RefID, @SentToJira, @AttachmentGUID, @ProductFamilyID, @SentToTFS, @SentToSnow, @FilePathID); SET @Identity = SCOPE_IDENTITY()");
-        }
     }
 }
 

@@ -32,6 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Linq" />
     <Reference Include="System.Web" />
@@ -47,6 +48,7 @@
     <Compile Include="ActionModel.cs" />
     <Compile Include="API.cs" />
     <Compile Include="AttachmentFile.cs" />
+    <Compile Include="AuthenticationModel.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="ConnectionContext.cs" />
     <Compile Include="Customer.cs" />

@@ -8,7 +8,8 @@ namespace TeamSupport.Model
 {
     public class Customer : UserSession
     {
-        public Customer(OrganizationModel organization, int userID) : base(organization, userID)
+        /// <summary> OrganizationID and UserID come from ConnectionContext.Authentication </summary>
+        public Customer(OrganizationModel organization) : base(organization)
         {
         }
     }

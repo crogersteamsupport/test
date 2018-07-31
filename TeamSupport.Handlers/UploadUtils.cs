@@ -40,7 +40,7 @@ namespace TeamSupport.Handlers
             if (Model.ConnectionContext.Enabled && (folder == AttachmentPath.Folder.Actions))
             {
                 // front end does not provide TicketID
-                List<Model.ActionAttachment> attachments = Model.API.SaveActionAttachments(TSAuthentication.GetLoginUser(), context, null, itemID.Value);
+                List<Model.ActionAttachment> attachments = Model.API.SaveActionAttachments(TSAuthentication.Ticket, context, null, itemID.Value);
                 foreach (Model.ActionAttachment attachment in attachments)
                 {
                     Model.AttachmentFile file = attachment.File;

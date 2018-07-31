@@ -37,16 +37,18 @@ namespace TeamSupport.Model
         }
 
         /// <summary> new action on existing ticket </summary>
-        public ActionModel(TicketModel ticket, Data.LoginUser loginUser, Data.ActionProxy proxy) :
-            this(ticket, AddAction(loginUser, proxy, ticket._db))
+        public ActionModel(TicketModel ticket, Data.ActionProxy proxy) :
+            this(ticket, AddAction(ticket.User.Authentication.LoginUser, proxy, ticket._db))
         {
         }
 
         /// <summary> new action on new ticket </summary>
-        public ActionModel(TicketModel ticket, Data.ActionProxy info, Data.Ticket ticketData, Data.User user) :
-            this(ticket, AddActionOnNewTicket(ticketData, info, user))
+        public ActionModel(TicketModel ticket, Data.ActionProxy proxy, Data.Ticket ticketData, Data.User user) :
+            this(ticket, AddActionOnNewTicket(ticketData, proxy, user))
         {
         }
+
+        public int CreatorID {  get { return _db.ExecuteQuery<int>($"SELECT CreatorID FROM Actions WITH (NOLOCK) WHERE ActionID={ActionID}").Min(); } }
 
         [Conditional("DEBUG")]
         void Verify()
@@ -55,6 +57,11 @@ namespace TeamSupport.Model
             IEnumerable<int> x = _db.ExecuteQuery<int>(query);
             if (!x.Any())
                 throw new Exception(String.Format($"{query} not found"));
+        }
+
+        public ActionAttachment Attachment(int actionAttachmentID)
+        {
+            return new ActionAttachment(this, actionAttachmentID);
         }
 
         public string AttachmentPath
@@ -96,17 +103,17 @@ namespace TeamSupport.Model
         }
 
         /// <summary> extracted from ts-app\webapp\app_code\ticketservice.cs </summary>
-        static Data.Action AddActionOnNewTicket(Data.Ticket ticket, Data.ActionProxy info, Data.User user)
+        static Data.Action AddActionOnNewTicket(Data.Ticket ticket, Data.ActionProxy proxy, Data.User user)
         {
-            TeamSupport.Data.Action action = (new Data.Actions(ticket.Collection.LoginUser)).AddNewAction();
+            Data.Action action = (new Data.Actions(ticket.Collection.LoginUser)).AddNewAction();
             action.ActionTypeID = null;
             action.Name = "Description";
             action.SystemActionTypeID = Data.SystemActionType.Description;
             action.ActionSource = ticket.TicketSource;
-            action.Description = info.Description;
+            action.Description = proxy.Description;
 
 
-            if (!string.IsNullOrWhiteSpace(user.Signature) && info.IsVisibleOnPortal)
+            if (!string.IsNullOrWhiteSpace(user.Signature) && proxy.IsVisibleOnPortal)
             {
                 action.Description = action.Description + "<br/><br/>" + user.Signature;
             }
@@ -114,8 +121,8 @@ namespace TeamSupport.Model
             action.IsVisibleOnPortal = ticket.IsVisibleOnPortal;
             action.IsKnowledgeBase = ticket.IsKnowledgeBase;
             action.TicketID = ticket.TicketID;
-            action.TimeSpent = info.TimeSpent;
-            action.DateStarted = info.DateStarted;
+            action.TimeSpent = proxy.TimeSpent;
+            action.DateStarted = proxy.DateStarted;
             action.Collection.Save();
             return action;
         }
@@ -130,7 +137,7 @@ namespace TeamSupport.Model
 
         public List<ActionAttachment> InsertActionAttachments(HttpRequest request)
         {
-            Data.LoginUser user = Ticket.User.Organization.ConnectionModel._loginUser;
+            Data.LoginUser user = Ticket.User.Authentication.LoginUser;
             List<ActionAttachment> results = new List<ActionAttachment>();
             HttpFileCollection files = request.Files;
             for (int i = 0; i < files.Count; i++)   // foreach returns strings?
@@ -147,7 +154,12 @@ namespace TeamSupport.Model
 
         public static int GetTicketID(DataContext db, int actionID)
         {
-            return db.ExecuteQuery<int>($"SELECT TicketID FROM Actions WHERE ActionID = {actionID}").First();
+            return db.ExecuteQuery<int>($"SELECT TicketID FROM Actions WHERE ActionID = {actionID}").Min();
+        }
+
+        public bool CanEdit()
+        {
+            return (Ticket.User.UserID == CreatorID) || Ticket.User.CanEdit();
         }
 
     }

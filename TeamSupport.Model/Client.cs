@@ -9,7 +9,9 @@ namespace TeamSupport.Model
     public class Client : UserSession
     {
         public Customer Customer { get; private set; }
-        public Client(OrganizationModel organization, int userID) : base(organization, userID)
+
+        /// <summary> OrganizationID and UserID come from ConnectionContext.Authentication </summary>
+        public Client(OrganizationModel organization) : base(organization)
         {
         }
     }

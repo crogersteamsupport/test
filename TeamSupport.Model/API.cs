@@ -4,71 +4,92 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Security;
 
 namespace TeamSupport.Model
 {
+    /// <summary>
+    /// The logical model (TeamSupport.Model) assumes correctness and throws exceptions when it is not.
+    /// </summary>
     public static class API
     {
         /// <summary> Insert Action </summary>
-        public static Data.Action InsertAction(Data.LoginUser loginUser, Data.ActionProxy actionProxy)
+        public static Data.Action InsertAction(FormsAuthenticationTicket authentication, Data.ActionProxy actionProxy)
         {
-            Data.Action dataAction = null;
             try
             {
-                using (ConnectionContext connection = new ConnectionContext(loginUser))
+                using (ConnectionContext connection = new ConnectionContext(authentication))
                 {
-                    ActionModel action = connection.Ticket(actionProxy.TicketID).InsertAction(loginUser, actionProxy);
-                    dataAction = action.DataLayerAction;
+                    ActionModel action = connection.Ticket(actionProxy.TicketID).InsertAction(actionProxy);
+                    ConnectionContext.LogMessage(authentication, Data.ActionLogType.Insert, Data.ReferenceType.Actions, action.ActionID, "InsertAction successful");
+                    return action.DataLayerAction;
                 }
             }
             catch (Exception ex)
             {
-                ConnectionContext.LogMessage(loginUser, Data.ActionLogType.Insert, Data.ReferenceType.Actions, actionProxy.TicketID, "Unable to insert action", ex);
-                Data.ExceptionLogs.LogException(loginUser, ex, "NewAction", "TicketPageService.NewAction");
-            }
-            return dataAction;
-        }
-
-        /// <summary> Insert Action </summary>
-        public static ActionModel InsertAction(Data.LoginUser loginUser, Data.ActionProxy proxy, Data.Ticket ticket, Data.User user)
-        {
-            try
-            {
-                using (ConnectionContext connection = new ConnectionContext(loginUser))
-                {
-                    return connection.Ticket(ticket.TicketID).InsertAction(proxy, ticket, user);
-                }
-            }
-            catch (Exception ex)
-            {
-                ConnectionContext.LogMessage(loginUser, Data.ActionLogType.Insert, Data.ReferenceType.Actions, ticket.TicketID, "Unable to insert action", ex);
+                ConnectionContext.LogMessage(authentication, Data.ActionLogType.Insert, Data.ReferenceType.Actions, actionProxy.ActionID, "Unable to insert action", ex);
                 return null;
             }
         }
 
-        /// <summary> 
-        /// SaveActionAttachments - Save the uploaded files and insert an action attachment record
-        /// </summary>
-        public static List<ActionAttachment> SaveActionAttachments(Data.LoginUser loginUser, HttpContext context, int? ticketID, int? actionID)
+        /// <summary> Insert Action on new Ticket </summary>
+        public static ActionModel InsertAction(FormsAuthenticationTicket authentication, Data.ActionProxy proxy, Data.Ticket ticket, Data.User user)
         {
             try
             {
-                if (!actionID.HasValue)
-                    return new List<ActionAttachment>();
-
-                using (ConnectionContext connection = new ConnectionContext(loginUser))
+                using (ConnectionContext connection = new ConnectionContext(authentication))
                 {
-                    if (!ticketID.HasValue)
-                        ticketID = ActionModel.GetTicketID(connection._db, actionID.Value);
-
-                    // add the attachments to the action
-                    return connection.Ticket(ticketID.Value).Action(actionID.Value).InsertActionAttachments(context.Request);
+                    ActionModel action = connection.Ticket(ticket.TicketID).InsertAction(proxy, ticket, user);
+                    ConnectionContext.LogMessage(authentication, Data.ActionLogType.Insert, Data.ReferenceType.Actions, action.ActionID, "InsertAction successful");
+                    return action;
                 }
             }
             catch (Exception ex)
             {
-                ConnectionContext.LogMessage(loginUser, Data.ActionLogType.Insert, Data.ReferenceType.Attachments, ticketID, "Unable to save attachments", ex);
-                return new List<ActionAttachment>();
+                ConnectionContext.LogMessage(authentication, Data.ActionLogType.Insert, Data.ReferenceType.Actions, ticket.TicketID, "Unable to insert action", ex);
+                return null;
+            }
+        }
+
+        /// <summary> Save Action Attachments - Save the uploaded files and insert an action attachment record </summary>
+        public static List<ActionAttachment> SaveActionAttachments(FormsAuthenticationTicket authentication, HttpContext context, int? ticketID, int? actionID)
+        {
+            try
+            {
+                using (ConnectionContext connection = new ConnectionContext(authentication))
+                {
+                    if (!ticketID.HasValue)
+                        ticketID = ActionModel.GetTicketID(connection._db, actionID.Value);
+                    List<ActionAttachment> attachments = connection.Ticket(ticketID.Value).Action(actionID.Value).InsertActionAttachments(context.Request);
+                    ConnectionContext.LogMessage(authentication, Data.ActionLogType.Insert, Data.ReferenceType.Attachments, ticketID, "Attachments Saved");
+                    return attachments;
+                }
+            }
+            catch (Exception ex)
+            {
+                ConnectionContext.LogMessage(authentication, Data.ActionLogType.Insert, Data.ReferenceType.Attachments, ticketID, "Unable to save attachments", ex);
+                return null;
+            }
+        }
+
+        /// <summary> Delete Action Attachment /// </summary>
+        public static void DeleteActionAttachment(FormsAuthenticationTicket authentication, int? ticketID, int? actionID, int attachmentID)
+        {
+            try
+            {
+                using (ConnectionContext connection = new ConnectionContext(authentication))
+                {
+                    if (!actionID.HasValue)
+                        actionID = Data.Attachments.GetAttachment(connection.Authentication.LoginUser, attachmentID).RefID;
+                    if(!ticketID.HasValue)
+                        ticketID = ActionModel.GetTicketID(connection._db, actionID.Value);
+                    connection.Ticket(ticketID.Value).Action(actionID.Value).Attachment(attachmentID).Delete();
+                    ConnectionContext.LogMessage(authentication, Data.ActionLogType.Delete, Data.ReferenceType.Attachments, attachmentID, "Attachment deleted");
+                }
+            }
+            catch (Exception ex)
+            {
+                ConnectionContext.LogMessage(authentication, Data.ActionLogType.Delete, Data.ReferenceType.Attachments, attachmentID, "Unable to delete attachments", ex);
             }
         }
 

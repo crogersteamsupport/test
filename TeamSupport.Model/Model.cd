@@ -3,29 +3,21 @@
   <Class Name="TeamSupport.Model.ActionModel">
     <Position X="10" Y="1.25" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>ACAAgAAAAAIgBQECEAAAAAAAAAAAAAAQAAAAAAAgAAA=</HashCode>
+      <HashCode>ACACgAAAAAIgBQECEAAAAAAAAAAAAAAQAACAAAAgAAA=</HashCode>
       <FileName>ActionModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="Ticket" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="TeamSupport.Model.DBConnection" BaseTypeListCollapsed="true">
-    <Position X="0.5" Y="1.25" Width="2" />
-    <TypeIdentifier>
-      <HashCode>ACAAgQAAACAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAJAA=</HashCode>
-      <FileName>DBConnection.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
   <Class Name="TeamSupport.Model.OrganizationModel">
     <Position X="3" Y="1.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>ACABgAAAAAAAAQAQAAAAAAAAAAAAAAAAAAABAAAAAAA=</HashCode>
+      <HashCode>ACABgAAAAAAAAQEAAAAAAAAAAAAAAAAAAAABAAAAAAA=</HashCode>
       <FileName>OrganizationModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Property Name="ConnectionModel" />
+      <Property Name="Connection" />
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Model.TicketModel">
@@ -36,7 +28,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAEBgAIAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAQAAQ=</HashCode>
+      <HashCode>AAEBgAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAUAAQ=</HashCode>
       <FileName>TicketModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -50,15 +42,16 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAgAAAQAAAAQACAAAAAAgAAAAAAAAAAAAAAAAAIAA=</HashCode>
+      <HashCode>EAAAgAAAAAAAAQACAAAAAAgAAAAAEAAAAACAAAAAIAA=</HashCode>
       <FileName>UserSession.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="Organization" />
+      <Property Name="Authentication" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="TeamSupport.Model.Client">
-    <Position X="4.25" Y="4.75" Width="1.5" />
+  <Class Name="TeamSupport.Model.Client" Collapsed="true">
+    <Position X="5.25" Y="5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Client.cs</FileName>
@@ -68,7 +61,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Model.Customer" Collapsed="true">
-    <Position X="6.5" Y="4.75" Width="1.5" />
+    <Position X="7.25" Y="5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Customer.cs</FileName>
@@ -77,7 +70,7 @@
   <Class Name="TeamSupport.Model.ActionAttachment">
     <Position X="13" Y="1.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAgABAAAAAAQAAAAAAEAAAAAAEAAAAAAAAAAAAAAQ=</HashCode>
+      <HashCode>AAQAgABAAAAAAQAAAAAAEAAAAAEEAAAAAAAAAAAAAAQ=</HashCode>
       <FileName>ActionAttachment.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -93,6 +86,32 @@
     <TypeIdentifier>
       <HashCode>AAAAAIAAAAAAACIAAAAAAAAAAAAAABABAABwAABAAAA=</HashCode>
       <FileName>AttachmentFile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TeamSupport.Model.ConnectionContext">
+    <Position X="0.5" Y="1.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>ACABgUAAACAAAIQCAAAAIAAAAAAAEAAAAAAAAAAAJAA=</HashCode>
+      <FileName>ConnectionContext.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Authentication" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TeamSupport.Model.AuthenticationModel">
+    <Position X="1.75" Y="4.5" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAAAAAAgIAAAAAAAACCEBAAAAAAE=</HashCode>
+      <FileName>AuthenticationModel.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />
