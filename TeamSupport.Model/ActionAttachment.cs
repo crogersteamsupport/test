@@ -42,7 +42,6 @@ namespace TeamSupport.Model
         void Verify()
         {
             string query = $"SELECT AttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE AttachmentID={ActionAttachmentID} AND ActionID={Action.ActionID} AND OrganizationID={Action.Ticket.User.Organization.OrganizationID}";
-            //string query = $"SELECT AttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE AttachmentID={ActionAttachmentID} AND ActionID={Data.Action.ActionID} AND TicketID={Data.Action.Ticket.TicketID} AND OrganizationID={Data.Action.Ticket.User.Organization.OrganizationID}";
             IEnumerable<int> x = _db.ExecuteQuery<int>(query);
             if (!x.Any())
                 throw new Exception(String.Format($"{query} not found"));
@@ -74,20 +73,12 @@ namespace TeamSupport.Model
             if (!Action.CanEdit())
                 return;
 
+            // set WITH (ROWLOCK) 
             Data.Attachment attachment = Data.Attachments.GetAttachment(Action.Ticket.User.Authentication.LoginUser, ActionAttachmentID.Value);
             attachment.DeleteFile();
             attachment.Delete();
             attachment.Collection.Save();
             ActionAttachmentID = null;
-        }
-
-        void Update()
-        {
-            // use all the string parameters...
-            _db.ExecuteCommand($"SET NOCOUNT OFF; UPDATE Attachments SET OrganizationID = @OrganizationID, FileName = @FileName,  " +
-                $"FileType = @FileType, FileSize = @FileSize, Path = @Path, [Description] = @Description, DateModified = @DateModified, ModifierID = @ModifierID, " +
-                $"ActionID = @ActionID, SentToJira = @SentToJira, AttachmentGUID = @AttachmentGUID, ProductFamilyID = @ProductFamilyID, " +
-                $"SentToTFS = @SentToTFS, SentToSnow = @SentToSnow, FilePathID] = @FilePathID  WHERE AttachmentID = {ActionAttachmentID.Value}");
         }
 
     }

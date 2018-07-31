@@ -30,7 +30,7 @@ namespace TeamSupport.Model
         [Conditional("DEBUG")]
         void Verify()
         {
-            string query = $"SELECT TicketID FROM Tickets  WITH (NOLOCK) WHERE TicketID={TicketID} AND OrganizationID={User.Organization.OrganizationID}";
+            string query = $"SELECT TicketID FROM Tickets WITH (NOLOCK) WHERE TicketID={TicketID} AND OrganizationID={User.Organization.OrganizationID}";
             IEnumerable<int> x = _db.ExecuteQuery<int>(query);
             if (!x.Any())
                 throw new Exception(String.Format($"{query} not found"));

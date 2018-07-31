@@ -1,7 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="TeamSupport.Model.ActionModel">
-    <Position X="10" Y="1.25" Width="2.25" />
+    <Position X="9.75" Y="0.5" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
       <HashCode>ACACgAAAAAIgBQECEAAAAAAAAAAAAAAQAACAAAAgAAA=</HashCode>
       <FileName>ActionModel.cs</FileName>
@@ -11,7 +14,10 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Model.OrganizationModel">
-    <Position X="3" Y="1.25" Width="1.75" />
+    <Position X="2.75" Y="0.5" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
       <HashCode>ACABgAAAAAAAAQEAAAAAAAAAAAAAAAAAAAABAAAAAAA=</HashCode>
       <FileName>OrganizationModel.cs</FileName>
@@ -21,7 +27,10 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Model.TicketModel">
-    <Position X="7.25" Y="1.25" Width="2.25" />
+    <Position X="7" Y="0.5" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <AssociationLine Name="Customer" Type="TeamSupport.Model.Customer">
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="-0.932" Y="0.112" />
@@ -37,21 +46,21 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Model.UserSession">
-    <Position X="5.25" Y="1.25" Width="1.5" />
+    <Position X="5" Y="0.5" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>EAAAgAAAAAAAAQACAAAAAAgAAAAAEAAAAACAAAAAIAA=</HashCode>
+      <HashCode>EAAAgAAAAAAAAQACAAAAAAgAAAAAAAAAAACAAAAAIAA=</HashCode>
       <FileName>UserSession.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="Organization" />
-      <Property Name="Authentication" />
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Model.Client" Collapsed="true">
-    <Position X="5.25" Y="5" Width="1.5" />
+    <Position X="5" Y="4.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Client.cs</FileName>
@@ -61,14 +70,17 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Model.Customer" Collapsed="true">
-    <Position X="7.25" Y="5" Width="1.5" />
+    <Position X="7" Y="4.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Customer.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TeamSupport.Model.ActionAttachment">
-    <Position X="13" Y="1.25" Width="1.5" />
+    <Position X="12.5" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
       <HashCode>AAQAgABAAAAAAQAAAAAAEAAAAAEEAAAAAAAAAAAAAAQ=</HashCode>
       <FileName>ActionAttachment.cs</FileName>
@@ -79,9 +91,10 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Model.AttachmentFile">
-    <Position X="15.25" Y="1.25" Width="1.5" />
+    <Position X="12.5" Y="3.5" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
       <HashCode>AAAAAIAAAAAAACIAAAAAAAAAAAAAABABAABwAABAAAA=</HashCode>
@@ -89,7 +102,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="TeamSupport.Model.ConnectionContext">
-    <Position X="0.5" Y="1.25" Width="1.5" />
+    <Position X="0.5" Y="0.5" Width="1.75" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
       <Compartment Name="Fields" Collapsed="true" />
@@ -104,7 +117,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="TeamSupport.Model.AuthenticationModel">
-    <Position X="1.75" Y="4.5" Width="1.75" />
+    <Position X="0.5" Y="3.25" Width="1.75" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />

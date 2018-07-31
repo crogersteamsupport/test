@@ -86,7 +86,7 @@ namespace TeamSupport.Model
             action.Description = proxy.Description;
 
             // add signature?
-            string signature = db.ExecuteQuery<string>($"SELECT [Signature] FROM Users  WITH (NOLOCK) WHERE UserID={action.CreatorID}").FirstOrDefault();    // 175915
+            string signature = db.ExecuteQuery<string>($"SELECT [Signature] FROM Users WITH (NOLOCK) WHERE UserID={loginUser.UserID} AND OrganizationID={loginUser.OrganizationID}").FirstOrDefault();    // 175915
             if (!string.IsNullOrWhiteSpace(signature) && proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase && proxy.ActionID == -1 &&
                 (!proxy.Description.Contains(signature)))
             {
@@ -130,7 +130,7 @@ namespace TeamSupport.Model
         // this is very slow...
         public ActionAttachment[] Attachments()
         {
-            string query = $"SELECT AttachmentID FROM ActionAttachments WHERE ActionID={ActionID} AND OrganizationID={Ticket.User.Organization.OrganizationID}";
+            string query = $"SELECT AttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE ActionID={ActionID} AND OrganizationID={Ticket.User.Organization.OrganizationID}";
             int[] actionAttachmentIDs = _db.ExecuteQuery<int>(query).ToArray();
             return actionAttachmentIDs.Select(id => new ActionAttachment(this, id)).ToArray();
         }
@@ -154,7 +154,7 @@ namespace TeamSupport.Model
 
         public static int GetTicketID(DataContext db, int actionID)
         {
-            return db.ExecuteQuery<int>($"SELECT TicketID FROM Actions WHERE ActionID = {actionID}").Min();
+            return db.ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {actionID}").Min();
         }
 
         public bool CanEdit()
