@@ -250,7 +250,7 @@ AdminPortal = function () {
               $('#cdi-yellow').slider('value', yellowlimit);
               $('#cdi-yellow').next().text("Upper Limit: " + yellowlimit);
 
-              var lastCompute = cdi.LastCompute == null ? 'Never' : parent.parent.Ts.Utils.getMsDate(cdi.LastCompute);
+              var lastCompute = cdi.CDIDate == null ? 'Never' : parent.parent.Ts.Utils.getMsDate(cdi.CDIDate);
 
               if (lastCompute == 'Never')
               {
