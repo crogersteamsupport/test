@@ -206,6 +206,8 @@ public partial class Frames_AdminCompany : BaseFramePage
 		table.Rows.Add(new string[] { "Warn if contact has no email address:", organization.AlertContactNoEmail.ToString() });
 		table.Rows.Add(new string[] { "Allow TeamSupport to log into your account for technical support:", (!organization.DisableSupportLogin).ToString() });
 		table.Rows.Add(new string[] { "Use Watson:", organization.UseWatson.ToString() });
+		table.Rows.Add(new string[] { "Require Two Factor:", organization.RequireTwoFactor.ToString() });
+		table.Rows.Add(new string[] { "Force Two-Factor Authenticated:", organization.RequireTwoFactor.ToString() });
 
 		rptProperties.DataSource = table;
 		rptProperties.DataBind();

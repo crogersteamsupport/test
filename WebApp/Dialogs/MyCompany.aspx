@@ -91,7 +91,7 @@
           <td class="labelColTD" colspan="2">
             <asp:CheckBox ID="cbAdminReports" runat="server" Text="Only Admin Can View Reports"/>
           </td>
-        
+
         </tr>
         <tr>
           <td class="labelColTD" colspan="2">
@@ -156,6 +156,7 @@
 		<tr>
             <td class="labelColTD" colspan="2"><asp:CheckBox ID="cbNoAttachmentsInOutboundEmail" runat="server" Text="Do not include attachments on outbound emails"/></td>
 			<td class="labelColTD" colspan="2"><asp:CheckBox ID="cbUseWatson" runat="server" Text="Use Watson"/></td>
+			<td class="labelColTD" colspan="2"><asp:CheckBox ID="cbRequireTwoFactor" runat="server" Text="Require Two Factor Authentication"/></td>            
         </tr>
 		<tr id="trProductLines">
 			<td class="labelColTD" colspan="4">
@@ -172,9 +173,9 @@
 		<tr>
             <td class="labelColTD" colspan="4"><asp:CheckBox ID="cbDisableSupport" runat="server" Text="Allow TeamSupport to log into your account for technical support"/></td>
         </tr>
-          
 
-          
+
+
         <tr>
           <td>Business Day Start:</td>
           <td>
@@ -201,7 +202,7 @@
         </tr>
         <tr>
           <td colspan="2">
-            <asp:Button ID="btnResetEmail" runat="server" Text="Reset System Email" 
+            <asp:Button ID="btnResetEmail" runat="server" Text="Reset System Email"
               Visible="false" onclick="btnResetEmail_Click"/>
           </td>
         </tr>
