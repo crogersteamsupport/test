@@ -269,7 +269,7 @@ namespace TSWebServices
                     TimeLineItem timeLineItem  = new TimeLineItem();
                     timeLineItem.item          = viewItem.GetProxy();
                     timeLineItem.item.Message  = SanitizeMessage(timeLineItem.item.Message, loginUser);
-                    timeLineItem.Attachments = GetActionAttachments(viewItem.RefID, loginUser);
+                    timeLineItem.Attachments = GetActionAttachmentProxies(viewItem.RefID, loginUser);
                     timeLineItems.Add(timeLineItem);
                 } else {
                     TimeLineItem wcItem = new TimeLineItem();
@@ -1132,7 +1132,7 @@ namespace TSWebServices
         [WebMethod]
         public AttachmentProxy[] GetActionAttachments(int ActionID)
         {
-            return GetActionAttachments(ActionID, TSAuthentication.GetLoginUser());
+            return GetActionAttachmentProxies(ActionID, TSAuthentication.GetLoginUser());
         }
 
         [WebMethod]
@@ -1746,7 +1746,7 @@ namespace TSWebServices
                 }
             }
 
-            item.Attachments = GetActionAttachments(action.ActionID, loginUser);
+            item.Attachments = GetActionAttachmentProxies(action.ActionID, loginUser);
 
             return item;
         }
@@ -1777,7 +1777,7 @@ namespace TSWebServices
             return wcItem;
         }
 
-        private AttachmentProxy[] GetActionAttachments(int actionID, LoginUser loginUser)
+        private AttachmentProxy[] GetActionAttachmentProxies(int actionID, LoginUser loginUser)
         {
             AttachmentProxy[] model = API.SelectActionAttachments(TSAuthentication.Ticket, null, actionID);   // ticketID?
 

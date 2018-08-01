@@ -58,7 +58,7 @@
     <Compile Include="UserSession.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Model.cd" />
+    <None Include="LogicalModel.cd" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TeamSupport.Data\TeamSupport.Data.csproj">

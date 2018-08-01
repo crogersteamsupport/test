@@ -35,7 +35,7 @@ namespace TeamSupport.Model
 
             File = new AttachmentFile(Action.AttachmentPath, postedFile);
             File.Save();
-            ActionAttachmentID = AddAttachment(user, postedFile, request, Action.AttachmentPath, File.FilePath); // add ActionAttachment record
+            ActionAttachmentID = InsertActionAttachment(user, postedFile, request, File.FileName, File.FilePath); // add ActionAttachment record
         }
 
         [Conditional("DEBUG")]
@@ -48,24 +48,46 @@ namespace TeamSupport.Model
         }
 
         /// <summary> extracted from ts-app\TeamSupport.Handlers\UploadUtils.cs SaveFiles() </summary>
-        private int AddAttachment(Data.LoginUser user, HttpPostedFile postedFile, HttpRequest request, string fileName, string filePath)
+        private int InsertActionAttachment(Data.LoginUser user, HttpPostedFile postedFile, HttpRequest request, string fileName, string filePath)
         {
-            // insert ActionAttachment record
-            Data.Attachment attachment = new Data.Attachments(user).AddNewAttachment();
-            attachment.RefType = Data.ReferenceType.Actions;
-            attachment.RefID = Action.ActionID;
-            attachment.OrganizationID = Action.Ticket.User.Organization.OrganizationID;
-            attachment.FileName = fileName;
-            attachment.Path = filePath;
-            attachment.FileType = postedFile.ContentType;
-            attachment.FileSize = postedFile.ContentLength;
-            attachment.FilePathID = 3;
-            if (request.Form["description"] != null)
-                attachment.Description = request.Form["description"].Replace("\n", "<br />");
-            if (request.Form["productFamilyID"] != null && request.Form["productFamilyID"] != "-1")
-                attachment.ProductFamilyID = Int32.Parse(request.Form["productFamilyID"]);
-            attachment.Collection.Save();
-            return attachment.AttachmentID;
+            string description = request.Form["description"];
+            if(description != null)
+                description = description.Replace("\n", "<br />");
+
+            int? productFamilyID = null;
+            string tmp = request.Form["productFamilyID"];
+            if ((tmp != null) && !tmp.Equals("-1"))
+                productFamilyID = Int32.Parse(tmp);
+
+            DateTime now = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
+            Data.AttachmentProxy proxy = new Data.AttachmentProxy()
+            {
+                FilePathID = 3,
+                //SentToSnow = ,
+                //SentToTFS = ,
+                ProductFamilyID = productFamilyID,
+                //SentToJira = ,
+                RefID = Action.ActionID,
+                RefType = Data.ReferenceType.Actions,
+                ModifierID = user.UserID,
+                CreatorID = user.UserID,
+                Description = description,
+                Path = filePath,
+                FileSize = postedFile.ContentLength,
+                FileType = postedFile.ContentType,
+                FileName = fileName,
+                OrganizationID = Action.Ticket.User.Organization.OrganizationID,
+                //AttachmentID = this.AttachmentID,
+                //CreatorName = Action.Ticket.User.CreatorName(),
+                DateCreated = now,
+                DateModified = now
+            };
+
+            // hard code all the numbers, parameterize all the strings so they are SQL-Injection checked
+            string query = "INSERT INTO ActionAttachments(OrganizationID, FileName, FileType, FileSize, Path, DateCreated, DateModified, CreatorID, ModifierID, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID) " +
+                $"VALUES({proxy.OrganizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{proxy.DateCreated}', '{proxy.DateModified}', {proxy.CreatorID}, {proxy.ModifierID}, {proxy.RefID}, {(proxy.SentToJira?1:0)}, {(proxy.SentToTFS?1:0)}, {(proxy.SentToSnow?1:0)}, {proxy.FilePathID})" +
+                "SELECT SCOPE_IDENTITY()";
+            return _db.ExecuteQuery<int>(query, proxy.FileName, proxy.FileType, proxy.Path).Min();
         }
 
         public void Delete()

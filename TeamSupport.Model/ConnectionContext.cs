@@ -86,23 +86,19 @@ namespace TeamSupport.Model
                 _connection.Dispose();
         }
 
-        static bool _IsDebuggerAttached = Debugger.IsAttached;
-
         public static void LogMessage(FormsAuthenticationTicket authentication, Data.ActionLogType logType, Data.ReferenceType refType, int? refID, string message, EventLogEntryType type = EventLogEntryType.Information)
         {
-            if (_IsDebuggerAttached)
-            {
-                Debug.WriteLine(message);   // debug output window (very fast)
-                if (type == EventLogEntryType.Error)
-                    Debugger.Break();   // something is wrong - fix the code!
-            }
-
             Data.ActionLogs.AddActionLog(AuthenticationModel.GetLoginUser(authentication), logType, refType, refID.HasValue ? refID.Value : 0, message);  // 0 if no TicketID?
         }
 
-        public static void LogMessage(FormsAuthenticationTicket authentication, Data.ActionLogType logType, Data.ReferenceType refType, int? refID, string message, Exception e)
+        public static void LogMessage(FormsAuthenticationTicket authentication, Data.ActionLogType logType, Data.ReferenceType refType, int? refID, string message, Exception ex)
         {
-            LogMessage(authentication, logType, refType, refID, message + e.ToString() + " ----- STACK: " + e.StackTrace.ToString(), EventLogEntryType.Error);
+            if (Debugger.IsAttached)
+            {
+                Debug.WriteLine(message);   // debug output window (very fast)
+                Debugger.Break();   // something is wrong - fix the code!
+            }
+            LogMessage(authentication, logType, refType, refID, message + ex.ToString() + " ----- STACK: " + ex.StackTrace.ToString(), EventLogEntryType.Error);
         }
 
     }

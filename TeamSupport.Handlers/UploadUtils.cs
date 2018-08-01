@@ -49,7 +49,7 @@ namespace TeamSupport.Handlers
                 context.Response.Clear();
                 context.Response.ContentType = "text/plain";
                 context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
-                return;
+                //return;
             }
 
             ReferenceType refType = AttachmentPath.GetFolderReferenceType(folder);

@@ -78,13 +78,6 @@ namespace TeamSupport.Data
       LoadByReference(ReferenceType.Actions, actionID, orderBy);
     }
 
-    private AttachmentProxy[] GetAttachmentProxies(int actionID, string orderBy = "")
-    {
-      LoadByReference(ReferenceType.Actions, actionID, orderBy);
-      return GetAttachmentProxies();
-    }
-
-
     public void LoadByWatercoolerID(int WaterCoolerID)
     {
         LoadByReference(ReferenceType.WaterCooler, WaterCoolerID);

@@ -19,7 +19,7 @@ namespace TeamSupport.Model
 
         public AttachmentFile(string attachmentPath, HttpPostedFile postedFile)
         {
-            FileName = VerifyFileName(attachmentPath, postedFile.FileName);
+            FileName = "test_" + VerifyFileName(attachmentPath, postedFile.FileName);
             FilePath = Path.Combine(attachmentPath, FileName);
             ContentType = postedFile.ContentType;
             ContentLength = postedFile.ContentLength;
