@@ -87,7 +87,8 @@ namespace TeamSupport.Model
             string query = "INSERT INTO ActionAttachments(OrganizationID, FileName, FileType, FileSize, Path, DateCreated, DateModified, CreatorID, ModifierID, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID) " +
                 $"VALUES({proxy.OrganizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{proxy.DateCreated}', '{proxy.DateModified}', {proxy.CreatorID}, {proxy.ModifierID}, {proxy.RefID}, {(proxy.SentToJira?1:0)}, {(proxy.SentToTFS?1:0)}, {(proxy.SentToSnow?1:0)}, {proxy.FilePathID})" +
                 "SELECT SCOPE_IDENTITY()";
-            return _db.ExecuteQuery<int>(query, proxy.FileName, proxy.FileType, proxy.Path).Min();
+            decimal value = _db.ExecuteQuery<decimal>(query, proxy.FileName, proxy.FileType, proxy.Path).Min();
+            return Decimal.ToInt32(value);
         }
 
         public void Delete()
