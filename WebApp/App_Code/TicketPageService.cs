@@ -839,6 +839,13 @@ namespace TSWebServices
         [WebMethod]
         public TimeLineItem UpdateAction(ActionProxy proxy)
         {
+            // new action
+            if (TeamSupport.Model.ConnectionContext.Enabled && (proxy.ActionID == -1))
+            { 
+                TeamSupport.Data.Action newAction = TeamSupport.Model.API.InsertAction(TSAuthentication.GetLoginUser(), proxy);
+                return GetActionTimelineItem(newAction);
+            }
+
             TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), proxy.ActionID);
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
 
