@@ -93,5 +93,22 @@ namespace TeamSupport.Model
             }
         }
 
+        public static Data.AttachmentProxy[] SelectActionAttachments(FormsAuthenticationTicket authentication, int? ticketID, int actionID)
+        {
+            try
+            {
+                using (ConnectionContext connection = new ConnectionContext(authentication))
+                {
+                    if(!ticketID.HasValue)
+                        ticketID = ActionModel.GetTicketID(connection._db, actionID);
+                    return connection.Ticket(ticketID.Value).Action(actionID).SelectAttachments();
+                }
+            }
+            catch (Exception ex)
+            {
+                ConnectionContext.LogMessage(authentication, Data.ActionLogType.Delete, Data.ReferenceType.Attachments, actionID, "failed to read attachments", ex);
+                return null;
+            }
+        }
     }
 }

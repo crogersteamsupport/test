@@ -14,12 +14,12 @@ namespace TeamSupport.Data
 {
     public partial class Action
     {
-        public Attachments GetAttachments()
-        {
-            Attachments attachments = new Attachments(BaseCollection.LoginUser);
-            attachments.LoadByActionID(ActionID);
-            return attachments;
-        }
+        //public Attachments GetAttachments()
+        //{
+        //    Attachments attachments = new Attachments(BaseCollection.LoginUser);
+        //    attachments.LoadByActionID(ActionID);
+        //    return attachments;
+        //}
 
         public ActionsViewItem GetActionView()
         {

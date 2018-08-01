@@ -3156,7 +3156,10 @@ WHERE t.TicketID = @TicketID
 
             UsersViewItem creator = UsersView.GetUsersViewItem(loginUser, action.CreatorID);
             if (creator != null) actionInfo.Creator = new UserInfo(creator);
-            actionInfo.Attachments = action.GetAttachments().GetAttachmentProxies();
+            AttachmentProxy[] model = API.SelectActionAttachments(TSAuthentication.Ticket, null, action.ActionID);
+            actionInfo.Attachments = Attachments.ActionAttachments(loginUser, action.ActionID).GetAttachmentProxies();
+            if (model.Equals(actionInfo.Attachments))
+                Debugger.Break();
             return actionInfo;
         }
 
@@ -3585,7 +3588,7 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public void DeleteAttachment(int attachmentID)
         {
-            if (ConnectionContext.Enabled)
+            if (ConnectionContext.IsEnabled)
             {
                 // ticketID?  actionID?
                 API.DeleteActionAttachment(TSAuthentication.Ticket, null, null, attachmentID);
@@ -3646,7 +3649,7 @@ WHERE t.TicketID = @TicketID
 
             if (info.CategoryID != null && info.CategoryID > -1) ticket.AddCommunityTicket((int)info.CategoryID);
 
-            if(ConnectionContext.Enabled)
+            if(ConnectionContext.IsEnabled)
             {
                 ActionProxy proxy = new ActionProxy()
                 {

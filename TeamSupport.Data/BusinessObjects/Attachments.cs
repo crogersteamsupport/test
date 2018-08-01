@@ -56,6 +56,12 @@ namespace TeamSupport.Data
       }
 
     }
+        public static Attachments ActionAttachments(LoginUser loginUser, int actionID, string orderBy = "")
+        {
+            Attachments attachments = new Attachments(loginUser);
+            attachments.LoadByActionID(actionID, orderBy);
+            return attachments;
+        }
 
     public static Attachment GetAttachment(LoginUser loginUser, Guid attachmentGUID)
     {
@@ -67,10 +73,17 @@ namespace TeamSupport.Data
         return attachments[0];
     }
 
-    public void LoadByActionID(int actionID, string orderBy = "")
+    private void LoadByActionID(int actionID, string orderBy = "")
     {
       LoadByReference(ReferenceType.Actions, actionID, orderBy);
     }
+
+    private AttachmentProxy[] GetAttachmentProxies(int actionID, string orderBy = "")
+    {
+      LoadByReference(ReferenceType.Actions, actionID, orderBy);
+      return GetAttachmentProxies();
+    }
+
 
     public void LoadByWatercoolerID(int WaterCoolerID)
     {

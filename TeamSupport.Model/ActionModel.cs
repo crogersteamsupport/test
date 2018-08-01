@@ -127,13 +127,13 @@ namespace TeamSupport.Model
             return action;
         }
 
-        // this is very slow...
-        public ActionAttachment[] Attachments()
-        {
-            string query = $"SELECT AttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE ActionID={ActionID} AND OrganizationID={Ticket.User.Organization.OrganizationID}";
-            int[] actionAttachmentIDs = _db.ExecuteQuery<int>(query).ToArray();
-            return actionAttachmentIDs.Select(id => new ActionAttachment(this, id)).ToArray();
-        }
+        //// this is very slow...
+        //public ActionAttachment[] Attachments()
+        //{
+        //    string query = $"SELECT AttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE ActionID={ActionID} AND OrganizationID={Ticket.User.Organization.OrganizationID}";
+        //    int[] actionAttachmentIDs = _db.ExecuteQuery<int>(query).ToArray();
+        //    return actionAttachmentIDs.Select(id => new ActionAttachment(this, id)).ToArray();
+        //}
 
         public List<ActionAttachment> InsertActionAttachments(HttpRequest request)
         {
@@ -160,6 +160,12 @@ namespace TeamSupport.Model
         public bool CanEdit()
         {
             return (Ticket.User.UserID == CreatorID) || Ticket.User.CanEdit();
+        }
+
+        public Data.AttachmentProxy[] SelectAttachments()
+        {
+            string query = $"SELECT a.*, (u.FirstName + ' ' + u.LastName) AS CreatorName FROM Attachments a WITH (NOLOCK) LEFT JOIN Users u ON u.UserID = a.CreatorID WHERE (RefID = {ActionID}) AND (RefType = 0)";
+            return _db.ExecuteQuery<Data.AttachmentProxy>(query).ToArray();
         }
 
     }
