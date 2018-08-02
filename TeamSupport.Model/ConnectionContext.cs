@@ -52,18 +52,9 @@ namespace TeamSupport.Model
         public void Commit() { _db.Transaction.Commit(); }
         public void Rollback() { _db.Transaction.Rollback(); }
 
-        public TicketModel Ticket(int ticketID)
-        {
-            return User.Ticket(ticketID);
-        }
+        public TicketModel Ticket(int ticketID) { return User.Ticket(ticketID); }
 
-        public string AttachmentPath(int id)
-        {
-            string path = _db.ExecuteQuery<string>($"SELECT[Value] FROM FilePaths WITH(NOLOCK) WHERE ID = {id}").FirstOrDefault();
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            return path;
-        }
+        public string AttachmentPath(int id) { return Data.DataAPI.AttachmentPath(_db, id); }
 
         public void Dispose()
         {

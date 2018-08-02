@@ -14,7 +14,7 @@ namespace TeamSupport.Model
     public static class ModelAPI
     {
         /// <summary> Insert Action </summary>
-        public static void InsertAction(FormsAuthenticationTicket authentication, Data.ActionProxy actionProxy)
+        public static ActionModel InsertAction(FormsAuthenticationTicket authentication, Data.ActionProxy actionProxy)
         {
             try
             {
@@ -22,13 +22,13 @@ namespace TeamSupport.Model
                 {
                     ActionModel action = connection.Ticket(actionProxy.TicketID).InsertAction(actionProxy);
                     ConnectionContext.LogMessage(authentication, Data.ActionLogType.Insert, Data.ReferenceType.Actions, action.ActionID, "InsertAction successful");
-                    //return action.DataLayerAction;
+                    return action;
                 }
             }
             catch (Exception ex)
             {
                 ConnectionContext.LogMessage(authentication, Data.ActionLogType.Insert, Data.ReferenceType.Actions, actionProxy.ActionID, "Unable to insert action", ex);
-                //return null;
+                return null;
             }
         }
 
@@ -59,7 +59,7 @@ namespace TeamSupport.Model
                 using (ConnectionContext connection = new ConnectionContext(authentication))
                 {
                     if (!ticketID.HasValue)
-                        ticketID = ActionModel.GetTicketID(connection._db, actionID.Value);
+                        ticketID = Data.DataAPI.ActionGetTicketID(connection._db, actionID.Value);
                     List<ActionAttachment> attachments = connection.Ticket(ticketID.Value).Action(actionID.Value).InsertActionAttachments(context.Request);
                     ConnectionContext.LogMessage(authentication, Data.ActionLogType.Insert, Data.ReferenceType.Attachments, ticketID, "Attachments Saved");
                     return attachments;
@@ -82,7 +82,7 @@ namespace TeamSupport.Model
                     if (!actionID.HasValue)
                         actionID = Data.Attachments.GetAttachment(connection.Authentication.LoginUser, attachmentID).RefID;
                     if(!ticketID.HasValue)
-                        ticketID = ActionModel.GetTicketID(connection._db, actionID.Value);
+                        ticketID = Data.DataAPI.ActionGetTicketID(connection._db, actionID.Value);
                     connection.Ticket(ticketID.Value).Action(actionID.Value).Attachment(attachmentID).Delete();
                     ConnectionContext.LogMessage(authentication, Data.ActionLogType.Delete, Data.ReferenceType.Attachments, attachmentID, "Attachment deleted");
                 }
@@ -100,7 +100,7 @@ namespace TeamSupport.Model
                 using (ConnectionContext connection = new ConnectionContext(authentication))
                 {
                     if(!ticketID.HasValue)
-                        ticketID = ActionModel.GetTicketID(connection._db, actionID);
+                        ticketID = Data.DataAPI.ActionGetTicketID(connection._db, actionID);
                     return connection.Ticket(ticketID.Value).Action(actionID).SelectAttachments();
                 }
             }

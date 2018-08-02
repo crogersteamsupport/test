@@ -17,7 +17,6 @@ namespace TeamSupport.Model
         public UserSession User { get; private set; }
         public int TicketID { get; private set; }
         public DataContext _db { get; private set; }
-        public Customer Customer { get; private set; }
 
         public TicketModel(UserSession user, int ticketID)
         {
@@ -47,7 +46,7 @@ namespace TeamSupport.Model
 
         public ActionModel[] SelectActions()
         {
-            int[] actionIDs = Data.DataAPI.SelectActionIDs(_db, User.Organization.OrganizationID, TicketID);
+            int[] actionIDs = Data.DataAPI.TicketSelectActionIDs(_db, User.Organization.OrganizationID, TicketID);
             ActionModel[] actions = new ActionModel[actionIDs.Length];
             for (int i = 0; i < actionIDs.Length; ++i)
                 actions[i] = new ActionModel(this, actionIDs[i]);

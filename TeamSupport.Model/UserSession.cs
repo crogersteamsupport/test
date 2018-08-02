@@ -39,17 +39,17 @@ namespace TeamSupport.Model
         public bool AllowUserToEditAnyAction() { return _db.ExecuteQuery<bool>($"SELECT AllowUserToEditAnyAction FROM Users WITH (NOLOCK) WHERE UserID={UserID}").First(); }
         public bool CanEdit() { return Authentication.IsSystemAdmin || AllowUserToEditAnyAction(); }
 
-        class FullName
-        {
-            public string FirstName;
-            public string LastName;
-        }
-        public string CreatorName()
-        {
-            string query = $"SELECT FirstName + ' ' + LastName FROM Users  WITH (NOLOCK) WHERE UserID={UserID} AND OrganizationID={Organization.OrganizationID}";
-            FullName fullName = _db.ExecuteQuery<FullName>(query).First();  // throws if it fails
-            return $"{fullName.FirstName} {fullName.LastName}";
-        }
+        //class FullName
+        //{
+        //    public string FirstName;
+        //    public string LastName;
+        //}
+        //public string CreatorName()
+        //{
+        //    string query = $"SELECT FirstName + ' ' + LastName FROM Users  WITH (NOLOCK) WHERE UserID={UserID} AND OrganizationID={Organization.OrganizationID}";
+        //    FullName fullName = _db.ExecuteQuery<FullName>(query).First();  // throws if it fails
+        //    return $"{fullName.FirstName} {fullName.LastName}";
+        //}
 
     }
 }

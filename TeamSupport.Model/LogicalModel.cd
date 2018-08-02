@@ -6,7 +6,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>ACACgAAAAAIgBAACEAAAAAAAAAAAABAQAACAAAAgAAA=</HashCode>
+      <HashCode>ACACgAAAAAAgAAACEAAAAAAAAAAAABAAAACAAAAAAAA=</HashCode>
       <FileName>ActionModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -31,18 +31,12 @@
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
-    <AssociationLine Name="Customer" Type="TeamSupport.Model.Customer">
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-0.932" Y="0.112" />
-      </MemberNameLabel>
-    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAEBgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAQ=</HashCode>
+      <HashCode>AAABgAAAAAAAAAAAAAAAAAAAAAAAAQAAACAAAAAUAAQ=</HashCode>
       <FileName>TicketModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="User" />
-      <Property Name="Customer" />
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Model.UserSession">
@@ -51,37 +45,13 @@
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
-    <NestedTypes>
-      <Class Name="TeamSupport.Model.UserSession.FullName" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>UserSession.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Class>
-    </NestedTypes>
     <TypeIdentifier>
-      <HashCode>EAAAgAAAAAAAAAACAAAAAAgAAAAAEAAAAACAAAEAIAA=</HashCode>
+      <HashCode>EAAAgAAAAAAAAAACAAAAAAgAAAAAEAAAAACAAAAAIAA=</HashCode>
       <FileName>UserSession.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="Organization" />
     </ShowAsAssociation>
-  </Class>
-  <Class Name="TeamSupport.Model.Client" Collapsed="true">
-    <Position X="5" Y="4.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Client.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Customer" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="TeamSupport.Model.Customer" Collapsed="true">
-    <Position X="7" Y="4.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Customer.cs</FileName>
-    </TypeIdentifier>
   </Class>
   <Class Name="TeamSupport.Model.ActionAttachment">
     <Position X="12.5" Y="0.5" Width="1.5" />
@@ -135,11 +105,15 @@
     </TypeIdentifier>
   </Class>
   <Class Name="TeamSupport.Model.ModelAPI">
-    <Position X="3" Y="5.25" Width="2.25" />
+    <Position X="3.5" Y="3.25" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>EAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAEAAI=</HashCode>
+      <HashCode>EAAAAAAAACAAAQAAAAAAAAAAAAAAAAAAAAAAAAAEAAI=</HashCode>
       <FileName>ModelAPI.cs</FileName>
     </TypeIdentifier>
+  </Class>
+  <Class Name="TeamSupport.Data.DataAPI">
+    <Position X="6.75" Y="3" Width="2.25" />
+    <TypeIdentifier />
   </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

@@ -47,7 +47,7 @@ namespace TeamSupport.Model
             _db = ticket._db;
         }
 
-        public int CreatorID {  get { return _db.ExecuteQuery<int>($"SELECT CreatorID FROM Actions WITH (NOLOCK) WHERE ActionID={ActionID}").Min(); } }
+        public int CreatorID() { return Data.DataAPI.ActionCreatorID(_db, ActionID); }
 
         public ActionAttachment Attachment(int actionAttachmentID)
         {
@@ -92,21 +92,9 @@ namespace TeamSupport.Model
             return results;
         }
 
-        public static int GetTicketID(DataContext db, int actionID)
-        {
-            return db.ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {actionID}").Min();
-        }
+        public bool CanEdit() { return Ticket.User.CanEdit() || (Ticket.User.UserID == CreatorID()); }
 
-        public bool CanEdit()
-        {
-            return (Ticket.User.UserID == CreatorID) || Ticket.User.CanEdit();
-        }
-
-        public Data.AttachmentProxy[] SelectAttachments()
-        {
-            string query = $"SELECT a.*, (u.FirstName + ' ' + u.LastName) AS CreatorName FROM Attachments a WITH (NOLOCK) LEFT JOIN Users u ON u.UserID = a.CreatorID WHERE (RefID = {ActionID}) AND (RefType = 0)";
-            return _db.ExecuteQuery<Data.AttachmentProxy>(query).ToArray();
-        }
+        public Data.AttachmentProxy[] SelectAttachments() { return Data.DataAPI.SelectAttachments(_db, ActionID); }
 
     }
 }
