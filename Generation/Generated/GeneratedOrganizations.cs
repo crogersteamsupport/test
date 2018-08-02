@@ -244,7 +244,7 @@ namespace TeamSupport.Data
       set { Row["UseWatson"] = CheckValue("UseWatson", value); }
     }
 
-    public bool? RequireTwoFactor
+    public bool RequireTwoFactor
     {
       get { return Row["RequireTwoFactor"] != DBNull.Value ? (bool?)Row["RequireTwoFactor"] : null; }
       set { Row["RequireTwoFactor"] = CheckValue("RequireTwoFactor", value); }
