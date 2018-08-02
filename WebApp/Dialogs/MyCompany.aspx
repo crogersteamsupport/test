@@ -155,8 +155,7 @@
         </tr>
 		<tr>
             <td class="labelColTD" colspan="2"><asp:CheckBox ID="cbNoAttachmentsInOutboundEmail" runat="server" Text="Do not include attachments on outbound emails"/></td>
-			<td class="labelColTD" colspan="2"><asp:CheckBox ID="cbUseWatson" runat="server" Text="Use Watson"/></td>
-			<td class="labelColTD" colspan="2"><asp:CheckBox ID="cbRequireTwoFactor" runat="server" Text="Require Two Factor Authentication"/></td>            
+			<td class="labelColTD" colspan="2"><asp:CheckBox ID="cbRequireTwoFactor" runat="server" Text="Require Two Factor Authentication"/></td>
         </tr>
 		<tr id="trProductLines">
 			<td class="labelColTD" colspan="4">
@@ -165,7 +164,8 @@
 			</td>
 		</tr>
 		<tr>
-            <td class="labelColTD" colspan="4"><asp:CheckBox ID="cbRequireGroupAssignmentOnTickets" runat="server" Text="Require a group assignment when creating or saving a ticket"/></td>
+            <td class="labelColTD" colspan="2"><asp:CheckBox ID="cbRequireGroupAssignmentOnTickets" runat="server" Text="Require a group assignment when creating or saving a ticket"/></td>
+			<td class="labelColTD" colspan="2"><asp:CheckBox ID="cbUseWatson" runat="server" Text="Use Watson"/></td>
         </tr>
 		<tr>
             <td class="labelColTD" colspan="4"><asp:CheckBox ID="cbAlertContactNoEmail" runat="server" Text="Warn if contact has no email address"/></td>
