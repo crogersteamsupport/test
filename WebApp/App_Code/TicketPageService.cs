@@ -838,12 +838,13 @@ namespace TSWebServices
         [WebMethod]
         public TimeLineItem UpdateAction(ActionProxy proxy)
         {
-            // new action
-            if (ConnectionContext.IsEnabled && (proxy.ActionID == -1))
-            {
-                TeamSupport.Data.Action newAction = API.InsertAction(TSAuthentication.Ticket, proxy);
-                return GetActionTimelineItem(newAction);
-            }
+            // new action - future
+            //if (ConnectionContext.IsEnabled && (proxy.ActionID == -1))
+            //{
+            //    ModelAPI.InsertAction(TSAuthentication.Ticket, proxy);
+            //    // Front end should NOT be using Data.Action!!
+            //    return GetActionTimelineItem(newAction);
+            //}
 
             TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), proxy.ActionID);
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
@@ -1779,7 +1780,7 @@ namespace TSWebServices
 
         private AttachmentProxy[] GetActionAttachmentProxies(int actionID, LoginUser loginUser)
         {
-            AttachmentProxy[] model = API.SelectActionAttachments(TSAuthentication.Ticket, null, actionID);   // ticketID?
+            AttachmentProxy[] model = ModelAPI.SelectActionAttachments(TSAuthentication.Ticket, null, actionID);   // ticketID?
 
             Attachments attachments = Attachments.ActionAttachments(loginUser, actionID);
             AttachmentProxy[] result = attachments.GetAttachmentProxies();

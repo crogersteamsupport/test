@@ -3156,7 +3156,7 @@ WHERE t.TicketID = @TicketID
 
             UsersViewItem creator = UsersView.GetUsersViewItem(loginUser, action.CreatorID);
             if (creator != null) actionInfo.Creator = new UserInfo(creator);
-            AttachmentProxy[] model = API.SelectActionAttachments(TSAuthentication.Ticket, null, action.ActionID);
+            AttachmentProxy[] model = ModelAPI.SelectActionAttachments(TSAuthentication.Ticket, null, action.ActionID);
             actionInfo.Attachments = Attachments.ActionAttachments(loginUser, action.ActionID).GetAttachmentProxies();
             if (model.Equals(actionInfo.Attachments))
                 Debugger.Break();
@@ -3590,9 +3590,7 @@ WHERE t.TicketID = @TicketID
         {
             if (ConnectionContext.IsEnabled)
             {
-                // ticketID?  actionID?
-                API.DeleteActionAttachment(TSAuthentication.Ticket, null, null, attachmentID);
-                return;
+                ModelAPI.DeleteActionAttachment(TSAuthentication.Ticket, null, null, attachmentID);
             }
 
             // This method assumes action attachment
@@ -3649,20 +3647,21 @@ WHERE t.TicketID = @TicketID
 
             if (info.CategoryID != null && info.CategoryID > -1) ticket.AddCommunityTicket((int)info.CategoryID);
 
-            if(ConnectionContext.IsEnabled)
-            {
-                ActionProxy proxy = new ActionProxy()
-                {
-                    Description = info.Description,
-                    IsVisibleOnPortal = info.IsVisibleOnPortal,
-                    TimeSpent = info.TimeSpent,
-                    DateStarted = info.DateStarted
-                };
+            // new action - future
+            //if(ConnectionContext.IsEnabled)
+            //{
+            //    ActionProxy proxy = new ActionProxy()
+            //    {
+            //        Description = info.Description,
+            //        IsVisibleOnPortal = info.IsVisibleOnPortal,
+            //        TimeSpent = info.TimeSpent,
+            //        DateStarted = info.DateStarted
+            //    };
 
-                LoginUser loginUser = TSAuthentication.GetLoginUser();
-                User userData = Users.GetUser(loginUser, TSAuthentication.UserID);
-                API.InsertAction(TSAuthentication.Ticket, proxy, ticket, userData);
-            }
+            //    LoginUser loginUser = TSAuthentication.GetLoginUser();
+            //    User userData = Users.GetUser(loginUser, TSAuthentication.UserID);
+            //    API.InsertAction(TSAuthentication.Ticket, proxy, ticket, userData);
+            //}
 
             TeamSupport.Data.Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();
             action.ActionTypeID = null;
@@ -3903,6 +3902,8 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public string MergeTickets(int winningTicketID, int losingTicketID)
         {
+            ModelAPI.MergeTickets(TSAuthentication.Ticket, winningTicketID, losingTicketID);
+
             Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), winningTicketID);
             String errLocation = "";
 

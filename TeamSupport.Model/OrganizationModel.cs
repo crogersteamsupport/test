@@ -26,16 +26,7 @@ namespace TeamSupport.Model
         {
             Connection = connection;
             _db = connection._db;
-            Verify();
-        }
-
-        [Conditional("DEBUG")]
-        void Verify()
-        {
-            string query = $"SELECT OrganizationID FROM Organizations WITH (NOLOCK) WHERE OrganizationID={OrganizationID}";
-            IEnumerable<int> x = _db.ExecuteQuery<int>(query);
-            if (!x.Any())
-                throw new Exception(String.Format($"{query} not found"));
+            Data.DataAPI.VerifyOrganization(_db, OrganizationID);
         }
 
         /// <summary> UserID comes from ConnectionContext.Authentication </summary>

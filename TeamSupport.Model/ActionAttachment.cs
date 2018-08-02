@@ -24,7 +24,10 @@ namespace TeamSupport.Model
             Action = action;
             ActionAttachmentID = actionAttachmentID;
             _db = action._db;
-            Verify();
+
+            TicketModel ticket = Action.Ticket;
+            OrganizationModel organization = ticket.User.Organization;
+            Data.DataAPI.VerifyActionAttachment(_db, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
         }
 
         /// <summary> New action attachment with data from front end /// </summary>
@@ -35,23 +38,15 @@ namespace TeamSupport.Model
 
             File = new AttachmentFile(Action.AttachmentPath, postedFile);
             File.Save();
-            ActionAttachmentID = InsertActionAttachment(user, postedFile, request, File.FileName, File.FilePath); // add ActionAttachment record
-        }
-
-        [Conditional("DEBUG")]
-        void Verify()
-        {
-            string query = $"SELECT AttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE AttachmentID={ActionAttachmentID} AND ActionID={Action.ActionID} AND OrganizationID={Action.Ticket.User.Organization.OrganizationID}";
-            IEnumerable<int> x = _db.ExecuteQuery<int>(query);
-            if (!x.Any())
-                throw new Exception(String.Format($"{query} not found"));
+            Data.AttachmentProxy proxy = InsertActionAttachment(user, postedFile, request, File.FileName, File.FilePath); // add ActionAttachment record
+            ActionAttachmentID = proxy.AttachmentID;
         }
 
         /// <summary> extracted from ts-app\TeamSupport.Handlers\UploadUtils.cs SaveFiles() </summary>
-        private int InsertActionAttachment(Data.LoginUser user, HttpPostedFile postedFile, HttpRequest request, string fileName, string filePath)
+        private Data.AttachmentProxy InsertActionAttachment(Data.LoginUser user, HttpPostedFile postedFile, HttpRequest request, string fileName, string filePath)
         {
             string description = request.Form["description"];
-            if(description != null)
+            if (description != null)
                 description = description.Replace("\n", "<br />");
 
             int? productFamilyID = null;
@@ -68,7 +63,7 @@ namespace TeamSupport.Model
                 ProductFamilyID = productFamilyID,
                 //SentToJira = ,
                 RefID = Action.ActionID,
-                RefType = Data.ReferenceType.Actions,
+                //RefType = Data.ReferenceType.Actions,
                 ModifierID = user.UserID,
                 CreatorID = user.UserID,
                 Description = description,
@@ -83,12 +78,9 @@ namespace TeamSupport.Model
                 DateModified = now
             };
 
-            // hard code all the numbers, parameterize all the strings so they are SQL-Injection checked
-            string query = "INSERT INTO ActionAttachments(OrganizationID, FileName, FileType, FileSize, Path, DateCreated, DateModified, CreatorID, ModifierID, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID) " +
-                $"VALUES({proxy.OrganizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{proxy.DateCreated}', '{proxy.DateModified}', {proxy.CreatorID}, {proxy.ModifierID}, {proxy.RefID}, {(proxy.SentToJira?1:0)}, {(proxy.SentToTFS?1:0)}, {(proxy.SentToSnow?1:0)}, {proxy.FilePathID})" +
-                "SELECT SCOPE_IDENTITY()";
-            decimal value = _db.ExecuteQuery<decimal>(query, proxy.FileName, proxy.FileType, proxy.Path).Min();
-            return Decimal.ToInt32(value);
+            // insert into DB and get back ActionAttachmentID
+            Data.DataAPI.InsertActionAttachment(_db, Action.Ticket.TicketID, ref proxy);
+            return proxy;
         }
 
         public void Delete()
@@ -96,11 +88,10 @@ namespace TeamSupport.Model
             if (!Action.CanEdit())
                 return;
 
-            // set WITH (ROWLOCK) 
-            Data.Attachment attachment = Data.Attachments.GetAttachment(Action.Ticket.User.Authentication.LoginUser, ActionAttachmentID.Value);
-            attachment.DeleteFile();
-            attachment.Delete();
-            attachment.Collection.Save();
+            TicketModel ticket = Action.Ticket;
+            UserSession user = ticket.User;
+            OrganizationModel organization = user.Organization;
+            Data.DataAPI.DeleteActionAttachment(user.Authentication.LoginUser, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
             ActionAttachmentID = null;
         }
 

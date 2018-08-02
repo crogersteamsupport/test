@@ -11,10 +11,10 @@ namespace TeamSupport.Model
     /// <summary>
     /// The logical model (TeamSupport.Model) assumes correctness and throws exceptions when it is not.
     /// </summary>
-    public static class API
+    public static class ModelAPI
     {
         /// <summary> Insert Action </summary>
-        public static Data.Action InsertAction(FormsAuthenticationTicket authentication, Data.ActionProxy actionProxy)
+        public static void InsertAction(FormsAuthenticationTicket authentication, Data.ActionProxy actionProxy)
         {
             try
             {
@@ -22,13 +22,13 @@ namespace TeamSupport.Model
                 {
                     ActionModel action = connection.Ticket(actionProxy.TicketID).InsertAction(actionProxy);
                     ConnectionContext.LogMessage(authentication, Data.ActionLogType.Insert, Data.ReferenceType.Actions, action.ActionID, "InsertAction successful");
-                    return action.DataLayerAction;
+                    //return action.DataLayerAction;
                 }
             }
             catch (Exception ex)
             {
                 ConnectionContext.LogMessage(authentication, Data.ActionLogType.Insert, Data.ReferenceType.Actions, actionProxy.ActionID, "Unable to insert action", ex);
-                return null;
+                //return null;
             }
         }
 
@@ -110,5 +110,21 @@ namespace TeamSupport.Model
                 return null;
             }
         }
+
+        public static void MergeTickets(FormsAuthenticationTicket authentication, int destinationTicketID, int sourceTicketID)
+        {
+            try
+            {
+                using (ConnectionContext connection = new ConnectionContext(authentication))
+                {
+                    connection.Ticket(destinationTicketID).Merge(connection.Ticket(sourceTicketID));
+                }
+            }
+            catch (Exception ex)
+            {
+                ConnectionContext.LogMessage(authentication, Data.ActionLogType.Update, Data.ReferenceType.Attachments, destinationTicketID, $"failed to merge {destinationTicketID} <= {sourceTicketID}", ex);
+            }
+        }
+
     }
 }

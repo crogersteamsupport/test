@@ -209,6 +209,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataAPI.cs" />
     <Compile Include="BusinessObjects\ActionLinkToJira.cs" />
     <Compile Include="BusinessObjects\ActionLinkToSnow.cs" />
     <Compile Include="BusinessObjects\ActionLinkToTFS.cs" />

@@ -1580,7 +1580,8 @@ $(document).ready(function () {
             return;
         }
 
-        if ($('#dialog-companymerge-confirm').prop("checked")) {
+        debugger;
+        //if ($('#dialog-companymerge-confirm').prop("checked")) {
             var winningID = $('#Company-Merge-search').data('organizationid');
             //var winningCompanyName = $('#Company-Merge-search').data('organizationname');
             var JSTop = top;
@@ -1603,11 +1604,11 @@ $(document).ready(function () {
             //  function () {
             //  $('#merge-error').show();
             //});
-        }
-        else {
-            alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
-            $('#company-merge-complete').removeAttr('disabled');
-        }
+        //}
+        //else {
+        //    alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
+        //    $('#company-merge-complete').removeAttr('disabled');
+        //}
     });
 
     $('#customerDelete').click(function (e) {

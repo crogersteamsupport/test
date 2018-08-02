@@ -665,7 +665,8 @@ TicketGrid = function(options) {
             return;
         }
 
-        if ($('#dialog-ticketmerge-confirm').prop("checked")) {
+        debugger;
+        //if ($('#dialog-ticketmerge-confirm').prop("checked")) {
             var winningID = $('#Ticket-Merge-search').data('ticketid');
             var ids = getSelectedIDs();
             var data = JSON.stringify(ids);
@@ -681,9 +682,9 @@ TicketGrid = function(options) {
 
                 //JSmainFrame.Ts.MainPage.openTicket(winningID, true);
             });
-        } else {
-            alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
-        }
+        //} else {
+        //    alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
+        //}
     });
 
     function addDialogColumn(column, isChecked) {

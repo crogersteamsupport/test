@@ -6,7 +6,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>ACACgAAAAAIgBQECEAAAAAAAAAAAAAAQAACAAAAgAAA=</HashCode>
+      <HashCode>ACACgAAAAAIgBAACEAAAAAAAAAAAABAQAACAAAAgAAA=</HashCode>
       <FileName>ActionModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -19,7 +19,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>ACABgAAAAAAAAQEAAAAAAAAAAAAAAAAAAAABAAAAAAA=</HashCode>
+      <HashCode>ACABgAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAA=</HashCode>
       <FileName>OrganizationModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -37,7 +37,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAEBgAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAUAAQ=</HashCode>
+      <HashCode>AAEBgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAQ=</HashCode>
       <FileName>TicketModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -51,8 +51,15 @@
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
+    <NestedTypes>
+      <Class Name="TeamSupport.Model.UserSession.FullName" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>UserSession.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
     <TypeIdentifier>
-      <HashCode>EAAAgAAAAAAAAQACAAAAAAgAAAAAAAAAAACAAAAAIAA=</HashCode>
+      <HashCode>EAAAgAAAAAAAAAACAAAAAAgAAAAAEAAAAACAAAEAIAA=</HashCode>
       <FileName>UserSession.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -82,7 +89,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAQAgABAAAAAAQAAAAAAEAAAAAEEAAAAAAAAAAAAAAQ=</HashCode>
+      <HashCode>AAAAgABAAAAAAAAAAAAAAAAAAAEEAAAAAAAAAAAAAAw=</HashCode>
       <FileName>ActionAttachment.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -108,7 +115,7 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>ACABgUAAACAAAIQCAAAAIAAAAAAAEAAAAAAAAAAAJAA=</HashCode>
+      <HashCode>ACABgUAAACAAAAQCAAEAAAAAAAAAEAAAAAAAgAAAJAA=</HashCode>
       <FileName>ConnectionContext.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -125,6 +132,13 @@
     <TypeIdentifier>
       <HashCode>AAAAAAAgAAAAAAAAAAAAAAgIAAAAAAAACCEBAAAAAAE=</HashCode>
       <FileName>AuthenticationModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TeamSupport.Model.ModelAPI">
+    <Position X="3" Y="5.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAEAAI=</HashCode>
+      <FileName>ModelAPI.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

@@ -19,45 +19,35 @@ namespace TeamSupport.Model
         public TicketModel Ticket { get; private set; }
         public int ActionID { get; private set; }
         public DataContext _db { get; private set; }
-        public Data.Action DataLayerAction { get; private set; }  // back door used by TicketPageService
 
-        /// <summary> Root constructor </summary>
+        /// <summary> existing action </summary>
         public ActionModel(TicketModel ticket, int actionID)
         {
             Ticket = ticket;
             ActionID = actionID;
             _db = ticket._db;
-            Verify();
-        }
-
-        /// <summary> load action </summary>
-        public ActionModel(TicketModel ticket, Data.Action action) : this(ticket, action.ActionID)
-        {
-            DataLayerAction = action;  // Keep the Data.Action?
+            Data.DataAPI.VerifyAction(_db, ticket.User.Organization.OrganizationID, Ticket.TicketID, ActionID);
         }
 
         /// <summary> new action on existing ticket </summary>
-        public ActionModel(TicketModel ticket, Data.ActionProxy proxy) :
-            this(ticket, AddAction(ticket.User.Authentication.LoginUser, proxy, ticket._db))
+        public ActionModel(TicketModel ticket, Data.ActionProxy proxy)
         {
+            Data.ActionProxy result = Data.DataAPI.InsertAction(ticket.User.Authentication.LoginUser, proxy, ticket._db);
+            Ticket = ticket;
+            ActionID = result.ActionID;
+            _db = ticket._db;
         }
 
         /// <summary> new action on new ticket </summary>
-        public ActionModel(TicketModel ticket, Data.ActionProxy proxy, Data.Ticket ticketData, Data.User user) :
-            this(ticket, AddActionOnNewTicket(ticketData, proxy, user))
+        public ActionModel(TicketModel ticket, Data.ActionProxy proxy, Data.Ticket ticketData, Data.User user)
         {
+            Data.ActionProxy result = Data.DataAPI.InsertAction(ticketData, proxy, user);
+            Ticket = ticket;
+            ActionID = result.ActionID;
+            _db = ticket._db;
         }
 
         public int CreatorID {  get { return _db.ExecuteQuery<int>($"SELECT CreatorID FROM Actions WITH (NOLOCK) WHERE ActionID={ActionID}").Min(); } }
-
-        [Conditional("DEBUG")]
-        void Verify()
-        {
-            string query = $"SELECT ActionID FROM Actions WITH (NOLOCK) WHERE ActionID={ActionID} AND TicketID={Ticket.TicketID}";
-            IEnumerable<int> x = _db.ExecuteQuery<int>(query);
-            if (!x.Any())
-                throw new Exception(String.Format($"{query} not found"));
-        }
 
         public ActionAttachment Attachment(int actionAttachmentID)
         {
@@ -75,56 +65,6 @@ namespace TeamSupport.Model
                     Directory.CreateDirectory(path);
                 return path;
             }
-        }
-
-        /// <summary> extracted from ts-app\WebApp\App_Code\TicketPageService.cs UpdateAction(ActionProxy proxy) </summary>
-        static Data.Action AddAction(Data.LoginUser loginUser, Data.ActionProxy proxy, DataContext db)
-        {
-            Data.Action action = (new Data.Actions(loginUser)).AddNewAction();
-            action.TicketID = proxy.TicketID;
-            action.CreatorID = loginUser.UserID;
-            action.Description = proxy.Description;
-
-            // add signature?
-            string signature = db.ExecuteQuery<string>($"SELECT [Signature] FROM Users WITH (NOLOCK) WHERE UserID={loginUser.UserID} AND OrganizationID={loginUser.OrganizationID}").FirstOrDefault();    // 175915
-            if (!string.IsNullOrWhiteSpace(signature) && proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase && proxy.ActionID == -1 &&
-                (!proxy.Description.Contains(signature)))
-            {
-                action.Description += "<br/><br/>" + signature;
-            }
-
-            action.ActionTypeID = proxy.ActionTypeID;
-            action.DateStarted = proxy.DateStarted;
-            action.TimeSpent = proxy.TimeSpent;
-            action.IsKnowledgeBase = proxy.IsKnowledgeBase;
-            action.IsVisibleOnPortal = proxy.IsVisibleOnPortal;
-            action.Collection.Save();
-            return action;
-        }
-
-        /// <summary> extracted from ts-app\webapp\app_code\ticketservice.cs </summary>
-        static Data.Action AddActionOnNewTicket(Data.Ticket ticket, Data.ActionProxy proxy, Data.User user)
-        {
-            Data.Action action = (new Data.Actions(ticket.Collection.LoginUser)).AddNewAction();
-            action.ActionTypeID = null;
-            action.Name = "Description";
-            action.SystemActionTypeID = Data.SystemActionType.Description;
-            action.ActionSource = ticket.TicketSource;
-            action.Description = proxy.Description;
-
-
-            if (!string.IsNullOrWhiteSpace(user.Signature) && proxy.IsVisibleOnPortal)
-            {
-                action.Description = action.Description + "<br/><br/>" + user.Signature;
-            }
-
-            action.IsVisibleOnPortal = ticket.IsVisibleOnPortal;
-            action.IsKnowledgeBase = ticket.IsKnowledgeBase;
-            action.TicketID = ticket.TicketID;
-            action.TimeSpent = proxy.TimeSpent;
-            action.DateStarted = proxy.DateStarted;
-            action.Collection.Save();
-            return action;
         }
 
         //// this is very slow...
