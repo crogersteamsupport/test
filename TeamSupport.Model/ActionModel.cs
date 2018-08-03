@@ -94,7 +94,6 @@ namespace TeamSupport.Model
 
         public bool CanEdit() { return Ticket.User.CanEdit() || (Ticket.User.UserID == CreatorID()); }
 
-        public Data.AttachmentProxy[] SelectAttachments() { return Data.DataAPI.SelectAttachments(_db, ActionID); }
-
+        public Data.AttachmentProxy[] SelectAttachments() { return Data.DataAPI.GetActionAttachmentProxies(_db, ActionID); }
     }
 }

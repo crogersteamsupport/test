@@ -64,6 +64,7 @@ namespace TeamSupport.Model
 
         void Merge(ActionModel from)
         {
+            int[] attachmentIDs = Data.DataAPI.ActionAttachmentIDs(_db, User.Organization.OrganizationID, TicketID, from.ActionID);
 
         }
     }

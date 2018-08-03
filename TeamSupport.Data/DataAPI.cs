@@ -75,6 +75,7 @@ namespace TeamSupport.Data
         #endregion
 
         #region ActionAttachments
+
         public static void InsertActionAttachment(DataContext db, int ticketID, ref AttachmentProxy proxy)
         {
             int organizationID = proxy.OrganizationID;
@@ -97,26 +98,47 @@ namespace TeamSupport.Data
             attachment.Collection.Save();
         }
 
-        public static AttachmentProxy[] SelectAttachments(DataContext db, int actionID)
-        {
-            string query = $"SELECT a.*, (u.FirstName + ' ' + u.LastName) AS CreatorName FROM Attachments a WITH (NOLOCK) LEFT JOIN Users u ON u.UserID = a.CreatorID WHERE (RefID = {actionID}) AND (RefType = 0)";
-            return db.ExecuteQuery<Data.AttachmentProxy>(query).ToArray();
-        }
-
         public static string AttachmentPath(DataContext db, int id)
         {
-            string path = db.ExecuteQuery<string>($"SELECT[Value] FROM FilePaths WITH(NOLOCK) WHERE ID = {id}").FirstOrDefault();
+            string path = db.ExecuteQuery<string>($"SELECT Value FROM FilePaths WITH(NOLOCK) WHERE ID = {id}").FirstOrDefault();
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             return path;
         }
+
+        public static int ActionAttachmentActionID(DataContext db, int attachmentID)
+        {
+            return db.ExecuteQuery<int>($"SELECT ActionID FROM ActionAttachments WITH(NOLOCK) WHERE AttachmentID = {attachmentID}").Min();
+        }
+
+        public static AttachmentProxy[] GetActionAttachmentProxies(DataContext db, int attachmentID)
+        {
+            return db.ExecuteQuery<AttachmentProxy>($"SELECT AttachmentID, OrganizationID, FileName, FileType, FileSize, Path, Description, DateCreated, DateModified, CreatorID, ModifierID, 0, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID " +
+                $"FROM dbo.ActionAttachments WHERE AttachmentID = {attachmentID}").ToArray();
+        }
+
+        public static int[] ActionAttachmentIDs(DataContext db, int organizationID, int ticketID, int actionID) { return db.ExecuteQuery<int>($"SELECT AttachmentID FROM ActionAttachments WHERE ActionID={actionID}").ToArray(); }
+
         #endregion
 
-        #region User
+        #region Users
         public static bool UserAllowUserToEditAnyAction(DataContext db, int userID) { return db.ExecuteQuery<bool>($"SELECT AllowUserToEditAnyAction FROM Users WITH (NOLOCK) WHERE UserID={userID}").First(); }
+
+        //class FullName
+        //{
+        //    public string FirstName;
+        //    public string LastName;
+        //}
+        //public static string UserFullName(DataContext db, int organizationID, int userID)
+        //{
+        //    string query = $"SELECT FirstName + ' ' + LastName FROM Users  WITH (NOLOCK) WHERE UserID={userID} AND OrganizationID={organizationID}";
+        //    FullName fullName = db.ExecuteQuery<FullName>(query).First();  // throws if it fails
+        //    return $"{fullName.FirstName} {fullName.LastName}";
+        //}
+
         #endregion
 
-        #region Ticket
+        #region Tickets
         public static int[] TicketSelectActionIDs(DataContext db, int organizationID, int ticketID) { return db.ExecuteQuery<int>($"SELECT ActionID FROM Actions a WHERE a.TicketID={ticketID}").ToArray(); }
         #endregion
     }

@@ -80,7 +80,7 @@ namespace TeamSupport.Model
                 using (ConnectionContext connection = new ConnectionContext(authentication))
                 {
                     if (!actionID.HasValue)
-                        actionID = Data.Attachments.GetAttachment(connection.Authentication.LoginUser, attachmentID).RefID;
+                        actionID = Data.DataAPI.ActionAttachmentActionID(connection._db, attachmentID);
                     if(!ticketID.HasValue)
                         ticketID = Data.DataAPI.ActionGetTicketID(connection._db, actionID.Value);
                     connection.Ticket(ticketID.Value).Action(actionID.Value).Attachment(attachmentID).Delete();
