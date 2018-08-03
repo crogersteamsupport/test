@@ -28,7 +28,7 @@
     <script src="/frontend/library/jquery.data-selector.js" type="text/javascript"></script>
     <script src="/frontend/library/jquery.timeago.js" type="text/javascript"></script>
     <script src="/frontend/library/jquery.jplayer.min.js" type="text/javascript"></script>
-    <script src="WaterCooler.js?1506975009" type="text/javascript"></script>
+    <script src="WaterCooler.js?1506975004" type="text/javascript"></script>
     <script src="/frontend/javascript/vendors/growthscore.js?1515087127" type="text/javascript"></script>
     <title></title>
 </head>
@@ -57,7 +57,13 @@
                                     <textarea rows="5" class="boxsizingBorder" id="messagecontents" placeholder="Share to Watercooler"></textarea>
                                 </span>
                                 <div class="attachrow add-associations">
-                                    <i class="addatt fa fa-paperclip" title="" data-original-title="Add Attachments"></i><i class="addticket fa fa-ticket" title="" data-original-title="Associate Ticket"></i><i class="adduser fa fa-user" title="" data-original-title="Associate User"></i><i class="addcustomer fa fa-building" title="" data-original-title="Associate Company"></i><i class="addgroup fa fa-users" title="" data-original-title="Associate Group"></i><i class="addproduct fa fa-truck" title="" data-original-title="Associate Product"></i>
+                                    <i class="addatt fa fa-paperclip" title="" data-original-title="Add Attachments"></i>
+                                    <i class="addticket fa fa-ticket" title="" data-original-title="Associate Ticket"></i>
+                                    <i class="adduser fa fa-user" title="" data-original-title="Associate User"></i>
+                                    <i class="addcustomer fa fa-building" title="" data-original-title="Associate Company"></i>
+                                    <i class="addgroup fa fa-users" title="" data-original-title="Associate Group"></i>
+                                    <i class="addproduct fa fa-truck" title="" data-original-title="Associate Product"></i>
+                                    <i class="addactivity fa fa-sticky-note" title="" data-original-title="Associate Activity"></i>
                                     <button id="newcomment" class="btn btn-primary" title="Post Comment">post</button>
                                     <div class="arrow-up"></div>
                                 </div>
@@ -68,6 +74,7 @@
                                     <div class="group-queue"></div>
                                     <div class="customer-queue"></div>
                                     <div class="product-queue"></div>
+                                    <div class="activity-queue"></div>
 
                                     <span class="ur">
                                         <form id="attachmentinput" class="file-upload" action="Upload/Actions/555" method="POST" enctype="multipart/form-data" title="You can drag and drop your attachments here.">
@@ -80,6 +87,7 @@
                                         <input id="customerinput" class="company-search" type="text" />
                                         <input id="groupinput" class="group-search" type="text" />
                                         <input id="productinput" class="product-search" type="text" />
+                                        <input id="activityinput" class="activity-search" type="text" />
                                     </span>
                                 </div>
                             </div>

@@ -13,6 +13,7 @@ using TeamSupport.Data;
 using System.IO;
 using TeamSupport.WebUtils;
 using System.Runtime.Serialization;
+using System.Diagnostics;
 
 namespace TeamSupport.Handlers
 {
@@ -33,8 +34,25 @@ namespace TeamSupport.Handlers
 
         public static void SaveFiles(HttpContext context, AttachmentPath.Folder folder, int organizationID, int? itemID)
         {
-            ReferenceType refType = AttachmentPath.GetFolderReferenceType(folder);
             List<UploadResult> result = new List<UploadResult>();
+
+            // Action Attachments
+            if (Model.ConnectionContext.Enabled && (folder == AttachmentPath.Folder.Actions))
+            {
+                // front end does not provide TicketID
+                List<Model.ActionAttachment> attachments = Model.API.SaveActionAttachments(TSAuthentication.GetLoginUser(), context, null, itemID.Value);
+                foreach (Model.ActionAttachment attachment in attachments)
+                {
+                    Model.AttachmentFile file = attachment.File;
+                    result.Add(new UploadResult(file.FileName, file.ContentType, file.ContentLength));
+                }
+                context.Response.Clear();
+                context.Response.ContentType = "text/plain";
+                context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
+                return;
+            }
+
+            ReferenceType refType = AttachmentPath.GetFolderReferenceType(folder);
 
             string path = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, folder, 3);
             if (itemID != null) path = Path.Combine(path, itemID.ToString());

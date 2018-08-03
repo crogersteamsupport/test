@@ -377,11 +377,11 @@ namespace TSWebServices
                             switch ((ReferenceType)row["NoteRefType"])
                             {
                                 case ReferenceType.Organizations:
-                                    resultItem.DisplayName = string.Format("{0}'s note: {1}", row["OrganizationName"].ToString(), row["Title"].ToString());
+                                    resultItem.DisplayName = string.Format("{0}'s activity: {1}", row["OrganizationName"].ToString(), row["Title"].ToString());
                                     resultItem.TypeID = 4;
                                     break;
                                 case ReferenceType.Users:
-                                    resultItem.DisplayName = string.Format("{0}'s note: {1}", row["ContactName"].ToString(), row["Title"].ToString());
+                                    resultItem.DisplayName = string.Format("{0}'s activity: {1}", row["ContactName"].ToString(), row["Title"].ToString());
                                     resultItem.TypeID = 7;
                                     break;
                             }
