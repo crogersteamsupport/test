@@ -3388,7 +3388,7 @@ function convertToValidDate(val) {
 
     var date = moment(val, _dateFormat);
 
-    if (date.year > 2000)
+    if (date.year() > 2000)
         return date.format('MM/DD/YYYY');
     else
         return null;
