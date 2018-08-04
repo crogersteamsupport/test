@@ -8,13 +8,14 @@ using System.Data.Linq.Mapping;
 using System.IO;
 using System.Diagnostics;
 using System.Web;
+using TeamSupport.Proxy;
 
 namespace TeamSupport.Model
 {
     /// <summary>
     /// Wrapper for Valid ActionID
     /// </summary>
-    public class ActionModel
+    class ActionModel
     {
         public TicketModel Ticket { get; private set; }
         public int ActionID { get; private set; }
@@ -26,28 +27,28 @@ namespace TeamSupport.Model
             Ticket = ticket;
             ActionID = actionID;
             _db = ticket._db;
-            Data.DataAPI.VerifyAction(_db, ticket.User.Organization.OrganizationID, Ticket.TicketID, ActionID);
+            DataAPI.DataAPI.VerifyAction(_db, ticket.User.Organization.OrganizationID, Ticket.TicketID, ActionID);
         }
 
         /// <summary> new action on existing ticket </summary>
-        public ActionModel(TicketModel ticket, Data.ActionProxy proxy)
+        public ActionModel(TicketModel ticket, ActionProxy proxy)
         {
-            Data.ActionProxy result = Data.DataAPI.InsertAction(ticket.User.Authentication.LoginUser, proxy, ticket._db);
+            ActionProxy result = DataAPI.DataAPI.InsertAction(ticket.User.Authentication.OrganizationUser, proxy, ticket._db);
             Ticket = ticket;
             ActionID = result.ActionID;
             _db = ticket._db;
         }
 
-        /// <summary> new action on new ticket </summary>
-        public ActionModel(TicketModel ticket, Data.ActionProxy proxy, Data.Ticket ticketData, Data.User user)
-        {
-            Data.ActionProxy result = Data.DataAPI.InsertAction(ticketData, proxy, user);
-            Ticket = ticket;
-            ActionID = result.ActionID;
-            _db = ticket._db;
-        }
+        ///// <summary> new action on new ticket </summary>
+        //public ActionModel(TicketModel ticket, ActionProxy proxy, Data.Ticket ticketData, Data.User user)
+        //{
+        //    ActionProxy result = DataAPI.DataAPI.InsertAction(ticketData, proxy, user);
+        //    Ticket = ticket;
+        //    ActionID = result.ActionID;
+        //    _db = ticket._db;
+        //}
 
-        public int CreatorID() { return Data.DataAPI.ActionCreatorID(_db, ActionID); }
+        public int CreatorID() { return DataAPI.DataAPI.ActionCreatorID(_db, ActionID); }
 
         public ActionAttachment Attachment(int actionAttachmentID)
         {
@@ -67,17 +68,17 @@ namespace TeamSupport.Model
             }
         }
 
-        //// this is very slow...
-        //public ActionAttachment[] Attachments()
-        //{
-        //    string query = $"SELECT AttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE ActionID={ActionID} AND OrganizationID={Ticket.User.Organization.OrganizationID}";
-        //    int[] actionAttachmentIDs = _db.ExecuteQuery<int>(query).ToArray();
-        //    return actionAttachmentIDs.Select(id => new ActionAttachment(this, id)).ToArray();
-        //}
+        // this is very slow...
+        public ActionAttachment[] Attachments()
+        {
+            string query = $"SELECT AttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE ActionID={ActionID} AND OrganizationID={Ticket.User.Organization.OrganizationID}";
+            int[] actionAttachmentIDs = _db.ExecuteQuery<int>(query).ToArray();
+            return actionAttachmentIDs.Select(id => new ActionAttachment(this, id)).ToArray();
+        }
 
         public List<ActionAttachment> InsertActionAttachments(HttpRequest request)
         {
-            Data.LoginUser user = Ticket.User.Authentication.LoginUser;
+            Data.OrganizationUser user = Ticket.User.Authentication.OrganizationUser;
             List<ActionAttachment> results = new List<ActionAttachment>();
             HttpFileCollection files = request.Files;
             for (int i = 0; i < files.Count; i++)   // foreach returns strings?
@@ -94,6 +95,6 @@ namespace TeamSupport.Model
 
         public bool CanEdit() { return Ticket.User.CanEdit() || (Ticket.User.UserID == CreatorID()); }
 
-        public Data.AttachmentProxy[] SelectAttachments() { return Data.DataAPI.GetActionAttachmentProxies(_db, ActionID); }
+        public AttachmentProxy[] SelectAttachments() { return DataAPI.DataAPI.GetActionAttachmentProxies(_db, ActionID); }
     }
 }

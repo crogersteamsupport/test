@@ -5,8 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Linq;
 using System.IO;
+using TeamSupport.Proxy;
+using System.Web.Security;
+using System.Diagnostics;
 
-namespace TeamSupport.Data
+namespace TeamSupport.DataAPI
 {
     public static class DataAPI
     {
@@ -24,9 +27,9 @@ namespace TeamSupport.Data
 
         #region Actions
         /// <summary> extracted from ts-app\WebApp\App_Code\TicketPageService.cs UpdateAction(ActionProxy proxy) </summary>
-        public static ActionProxy InsertAction(LoginUser loginUser, ActionProxy proxy, DataContext db)
+        public static ActionProxy InsertAction(OrganizationUser loginUser, ActionProxy proxy, DataContext db)
         {
-            Action action = (new Actions(loginUser)).AddNewAction();
+            Data.Action action = (new Data.Actions(WebUtils.TSAuthentication.GetLoginUser())).AddNewAction();
             action.TicketID = proxy.TicketID;
             action.CreatorID = loginUser.UserID;
             action.Description = proxy.Description;
@@ -49,9 +52,9 @@ namespace TeamSupport.Data
         }
 
         /// <summary> extracted from ts-app\webapp\app_code\ticketservice.cs </summary>
-        public static ActionProxy InsertAction(Ticket ticket, ActionProxy proxy, User user)
+        public static ActionProxy InsertAction(Data.Ticket ticket, ActionProxy proxy, Data.User user)
         {
-            Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();
+            Data.Action action = (new Data.Actions(ticket.Collection.LoginUser)).AddNewAction();
             action.ActionTypeID = null;
             action.Name = "Description";
             action.SystemActionTypeID = SystemActionType.Description;
@@ -89,7 +92,7 @@ namespace TeamSupport.Data
             proxy.AttachmentID = Decimal.ToInt32(value);
         }
 
-        public static void DeleteActionAttachment(LoginUser loginUser, int organizationID, int ticketID, int actionID, int attachmentID)
+        public static void DeleteActionAttachment(OrganizationUser loginUser, int organizationID, int ticketID, int actionID, int attachmentID)
         {
             // set WITH (ROWLOCK) 
             Attachment attachment = Attachments.GetAttachment(loginUser, attachmentID);
@@ -141,5 +144,22 @@ namespace TeamSupport.Data
         #region Tickets
         public static int[] TicketSelectActionIDs(DataContext db, int organizationID, int ticketID) { return db.ExecuteQuery<int>($"SELECT ActionID FROM Actions a WHERE a.TicketID={ticketID}").ToArray(); }
         #endregion
+
+        public static void LogMessage(FormsAuthenticationTicket authentication, Data.ActionLogType logType, Data.ReferenceType refType, int? refID, string message, EventLogEntryType type = EventLogEntryType.Information)
+        {
+            Data.LoginUser user = WebUtils.TSAuthentication.GetLoginUser();
+            Data.ActionLogs.AddActionLog(user, logType, refType, refID.HasValue ? refID.Value : 0, message);  // 0 if no TicketID?
+        }
+
+        public static void LogMessage(FormsAuthenticationTicket authentication, Data.ActionLogType logType, Data.ReferenceType refType, int? refID, string message, Exception ex)
+        {
+            if (Debugger.IsAttached)
+            {
+                Debug.WriteLine(message);   // debug output window (very fast)
+                Debugger.Break();   // something is wrong - fix the code!
+            }
+            LogMessage(authentication, logType, refType, refID, message + ex.ToString() + " ----- STACK: " + ex.StackTrace.ToString(), EventLogEntryType.Error);
+        }
+
     }
 }

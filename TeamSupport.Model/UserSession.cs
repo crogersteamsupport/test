@@ -12,7 +12,7 @@ namespace TeamSupport.Model
     /// <summary>
     /// Wrapper for valid UserID
     /// </summary>
-    public class UserSession
+    class UserSession
     {
         public OrganizationModel Organization { get; private set; }
         public DataContext _db { get; private set; }
@@ -25,7 +25,7 @@ namespace TeamSupport.Model
         {
             Organization = organization;
             _db = organization._db;
-            Data.DataAPI.VerifyUser(_db, Organization.OrganizationID, UserID);
+            DataAPI.DataAPI.VerifyUser(_db, Organization.OrganizationID, UserID);
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace TeamSupport.Model
             return new TicketModel(this, ticketID);
         }
 
-        public bool AllowUserToEditAnyAction() { return Data.DataAPI.UserAllowUserToEditAnyAction(_db, UserID); }
+        public bool AllowUserToEditAnyAction() { return DataAPI.DataAPI.UserAllowUserToEditAnyAction(_db, UserID); }
         public bool CanEdit() { return Authentication.IsSystemAdmin || AllowUserToEditAnyAction(); }
 
     }

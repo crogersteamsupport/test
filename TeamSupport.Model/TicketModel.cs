@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Diagnostics;
+using TeamSupport.Proxy;
 
 namespace TeamSupport.Model
 {
     /// <summary>
     /// Wrapper for valid TicketID
     /// </summary>
-    public class TicketModel
+    class TicketModel
     {
         public UserSession User { get; private set; }
         public int TicketID { get; private set; }
@@ -23,7 +24,7 @@ namespace TeamSupport.Model
             User = user;
             _db = User._db;
             TicketID = ticketID;
-            Data.DataAPI.VerifyTicket(_db, User.Organization.OrganizationID, TicketID);
+            DataAPI.DataAPI.VerifyTicket(_db, User.Organization.OrganizationID, TicketID);
         }
 
         /// <summary> Existing Data.Action </summary>
@@ -33,20 +34,20 @@ namespace TeamSupport.Model
         }
 
         /// <summary> Create new Data.Action on an existing ticket </summary>
-        public ActionModel InsertAction(Data.ActionProxy proxy)
+        public ActionModel InsertAction(ActionProxy proxy)
         {
             return new ActionModel(this, proxy);
         }
 
-        /// <summary> Create new Data.Action on new ticket </summary>
-        public ActionModel InsertAction(Data.ActionProxy proxy, Data.Ticket ticketData, Data.User user)
-        {
-            return new ActionModel(this, proxy, ticketData, user);
-        }
+        ///// <summary> Create new Data.Action on new ticket </summary>
+        //public ActionModel InsertAction(ActionProxy proxy, Data.Ticket ticketData, Data.User user)
+        //{
+        //    return new ActionModel(this, proxy, ticketData, user);
+        //}
 
         public ActionModel[] SelectActions()
         {
-            int[] actionIDs = Data.DataAPI.TicketSelectActionIDs(_db, User.Organization.OrganizationID, TicketID);
+            int[] actionIDs = DataAPI.DataAPI.TicketSelectActionIDs(_db, User.Organization.OrganizationID, TicketID);
             ActionModel[] actions = new ActionModel[actionIDs.Length];
             for (int i = 0; i < actionIDs.Length; ++i)
                 actions[i] = new ActionModel(this, actionIDs[i]);
@@ -64,7 +65,7 @@ namespace TeamSupport.Model
 
         void Merge(ActionModel from)
         {
-            int[] attachmentIDs = Data.DataAPI.ActionAttachmentIDs(_db, User.Organization.OrganizationID, TicketID, from.ActionID);
+            int[] attachmentIDs = DataAPI.DataAPI.ActionAttachmentIDs(_db, User.Organization.OrganizationID, TicketID, from.ActionID);
 
         }
     }

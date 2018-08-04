@@ -7,11 +7,13 @@ using System.Data.Linq;
 using System.IO;
 using System.Web;
 using System.Diagnostics;
+using TeamSupport.Proxy;
+using TeamSupport.DataAPI;
 
 namespace TeamSupport.Model
 {
     /// <summary> Action Attachments </summary>
-    public class ActionAttachment
+    class ActionAttachment
     {
         public ActionModel Action { get; private set; }
         public int? ActionAttachmentID { get; private set; }
@@ -27,23 +29,23 @@ namespace TeamSupport.Model
 
             TicketModel ticket = Action.Ticket;
             OrganizationModel organization = ticket.User.Organization;
-            Data.DataAPI.VerifyActionAttachment(_db, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
+            DataAPI.DataAPI.VerifyActionAttachment(_db, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
         }
 
-        /// <summary> New action attachment with data from front end /// </summary>
-        public ActionAttachment(ActionModel action, Data.LoginUser user, HttpPostedFile postedFile, HttpRequest request)
-        {
-            Action = action;
-            _db = Action._db;
+        ///// <summary> New action attachment with data from front end /// </summary>
+        //public ActionAttachment(ActionModel action, Data.OrganizationUser user, HttpPostedFile postedFile, HttpRequest request)
+        //{
+        //    Action = action;
+        //    _db = Action._db;
 
-            File = new AttachmentFile(Action.AttachmentPath, postedFile);
-            File.Save();
-            Data.AttachmentProxy proxy = InsertActionAttachment(user, postedFile, request, File.FileName, File.FilePath); // add ActionAttachment record
-            ActionAttachmentID = proxy.AttachmentID;
-        }
+        //    File = new AttachmentFile(Action.AttachmentPath, postedFile);
+        //    File.Save();
+        //    AttachmentProxy proxy = InsertActionAttachment(user, postedFile, request, File.FileName, File.FilePath); // add ActionAttachment record
+        //    ActionAttachmentID = proxy.AttachmentID;
+        //}
 
         /// <summary> extracted from ts-app\TeamSupport.Handlers\UploadUtils.cs SaveFiles() </summary>
-        private Data.AttachmentProxy InsertActionAttachment(Data.LoginUser user, HttpPostedFile postedFile, HttpRequest request, string fileName, string filePath)
+        private AttachmentProxy InsertActionAttachment(OrganizationUser user, HttpPostedFile postedFile, HttpRequest request, string fileName, string filePath)
         {
             string description = request.Form["description"];
             if (description != null)
@@ -55,7 +57,7 @@ namespace TeamSupport.Model
                 productFamilyID = Int32.Parse(tmp);
 
             DateTime now = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
-            Data.AttachmentProxy proxy = new Data.AttachmentProxy()
+            AttachmentProxy proxy = new AttachmentProxy()
             {
                 FilePathID = 3,
                 //SentToSnow = ,
@@ -79,7 +81,7 @@ namespace TeamSupport.Model
             };
 
             // insert into DB and get back ActionAttachmentID
-            Data.DataAPI.InsertActionAttachment(_db, Action.Ticket.TicketID, ref proxy);
+            DataAPI.DataAPI.InsertActionAttachment(_db, Action.Ticket.TicketID, ref proxy);
             return proxy;
         }
 
@@ -91,7 +93,7 @@ namespace TeamSupport.Model
             TicketModel ticket = Action.Ticket;
             UserSession user = ticket.User;
             OrganizationModel organization = user.Organization;
-            Data.DataAPI.DeleteActionAttachment(user.Authentication.LoginUser, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
+            DataAPI.DataAPI.DeleteActionAttachment(user.Authentication.OrganizationUser, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
             ActionAttachmentID = null;
         }
 

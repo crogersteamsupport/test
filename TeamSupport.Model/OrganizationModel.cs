@@ -14,7 +14,7 @@ namespace TeamSupport.Model
     /// <summary>
     /// Wrapper for valid OrganizationID
     /// </summary>
-    public class OrganizationModel
+    class OrganizationModel
     {
         public ConnectionContext Connection { get; private set; }
         public DataContext _db { get; private set; }
@@ -26,7 +26,7 @@ namespace TeamSupport.Model
         {
             Connection = connection;
             _db = connection._db;
-            Data.DataAPI.VerifyOrganization(_db, OrganizationID);
+            DataAPI.DataAPI.VerifyOrganization(_db, OrganizationID);
         }
 
         /// <summary> UserID comes from ConnectionContext.Authentication </summary>

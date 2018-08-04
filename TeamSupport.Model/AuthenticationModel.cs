@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using System.Web.Security;
 using System.Configuration;
 using System.Web.Configuration;
+using TeamSupport.Proxy;
 
 namespace TeamSupport.Model
 {
-    public class AuthenticationModel
+    class AuthenticationModel
     {
         public int UserID { get; private set; }
         public int OrganizationID { get; private set; }
@@ -17,7 +18,7 @@ namespace TeamSupport.Model
         public bool IsSystemAdmin { get; private set; }
         public string SessionID { get; private set; }
         public string ConnectionString { get; private set; }
-        public Data.LoginUser LoginUser { get; private set; }
+        public OrganizationUser OrganizationUser { get; private set; }
 
         public AuthenticationModel(FormsAuthenticationTicket authentication)
         {
@@ -28,17 +29,17 @@ namespace TeamSupport.Model
             IsSystemAdmin = data[4] == "1";
             SessionID = (data.Length < 4) ? "" : data[3];
 
-            LoginUser = new Data.LoginUser(UserID, OrganizationID);
+            OrganizationUser = new OrganizationUser(UserID, OrganizationID);
 
             ConnectionStringSettings cStrings = WebConfigurationManager.ConnectionStrings["MainConnection"];
             ConnectionString = (cStrings != null) ? cStrings.ConnectionString : ConfigurationManager.AppSettings["ConnectionString"];
         }
 
         /// <summary> static helper for logging </summary>
-        public static Data.LoginUser GetLoginUser(FormsAuthenticationTicket authentication)
+        public static OrganizationUser GetLoginUser(FormsAuthenticationTicket authentication)
         {
             string[] data = authentication.UserData.Split('|');
-            return new Data.LoginUser(int.Parse(data[0]), int.Parse(data[1]));
+            return new OrganizationUser(int.Parse(data[0]), int.Parse(data[1]));
         }
     }
 }

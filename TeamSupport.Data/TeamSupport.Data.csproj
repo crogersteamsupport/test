@@ -209,7 +209,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataAPI.cs" />
     <Compile Include="BusinessObjects\ActionLinkToJira.cs" />
     <Compile Include="BusinessObjects\ActionLinkToSnow.cs" />
     <Compile Include="BusinessObjects\ActionLinkToTFS.cs" />
@@ -571,7 +570,6 @@
     <Compile Include="Classes\BaseCollection.cs" />
     <Compile Include="Classes\DataUtils.cs" />
     <Compile Include="Classes\EmailHtml.cs" />
-    <Compile Include="Classes\Enums.cs" />
     <Compile Include="Classes\IDataCache.cs" />
     <Compile Include="Classes\LoginUser.cs" />
     <Compile Include="Classes\FieldMap.cs" />
@@ -1066,6 +1064,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\Debug\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TeamSupport.Proxy\TeamSupport.Proxy.csproj">
+      <Project>{8f3f388c-10f5-45d4-9f4c-471236dc14c0}</Project>
+      <Name>TeamSupport.Proxy</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

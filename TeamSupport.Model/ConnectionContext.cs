@@ -8,6 +8,7 @@ using System.Data.Linq;
 using System.IO;
 using System.Diagnostics;
 using System.Web.Security;
+using TeamSupport.Proxy;
 
 namespace TeamSupport.Model
 {
@@ -15,7 +16,7 @@ namespace TeamSupport.Model
     /// Model for validating OrganizationID, UserID, TicketID, etc
     /// Centralizes queries for Attachments
     /// </summary>
-    public class ConnectionContext : IDisposable
+    class ConnectionContext : IDisposable
     {
 
         static bool _IsEnabled = true;
@@ -54,7 +55,7 @@ namespace TeamSupport.Model
 
         public TicketModel Ticket(int ticketID) { return User.Ticket(ticketID); }
 
-        public string AttachmentPath(int id) { return Data.DataAPI.AttachmentPath(_db, id); }
+        public string AttachmentPath(int id) { return DataAPI.DataAPI.AttachmentPath(_db, id); }
 
         public void Dispose()
         {
@@ -75,21 +76,6 @@ namespace TeamSupport.Model
 
             if (_connection != null)
                 _connection.Dispose();
-        }
-
-        public static void LogMessage(FormsAuthenticationTicket authentication, Data.ActionLogType logType, Data.ReferenceType refType, int? refID, string message, EventLogEntryType type = EventLogEntryType.Information)
-        {
-            Data.ActionLogs.AddActionLog(AuthenticationModel.GetLoginUser(authentication), logType, refType, refID.HasValue ? refID.Value : 0, message);  // 0 if no TicketID?
-        }
-
-        public static void LogMessage(FormsAuthenticationTicket authentication, Data.ActionLogType logType, Data.ReferenceType refType, int? refID, string message, Exception ex)
-        {
-            if (Debugger.IsAttached)
-            {
-                Debug.WriteLine(message);   // debug output window (very fast)
-                Debugger.Break();   // something is wrong - fix the code!
-            }
-            LogMessage(authentication, logType, refType, refID, message + ex.ToString() + " ----- STACK: " + ex.StackTrace.ToString(), EventLogEntryType.Error);
         }
 
     }
