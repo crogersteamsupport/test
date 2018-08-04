@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Diagnostics;
-using TeamSupport.Proxy;
+using TeamSupport.Data;
 
 namespace TeamSupport.Model
 {

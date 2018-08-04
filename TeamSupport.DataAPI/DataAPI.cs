@@ -8,6 +8,7 @@ using System.IO;
 using TeamSupport.Proxy;
 using System.Web.Security;
 using System.Diagnostics;
+using TeamSupport.Data;
 
 namespace TeamSupport.DataAPI
 {
@@ -52,25 +53,25 @@ namespace TeamSupport.DataAPI
         }
 
         /// <summary> extracted from ts-app\webapp\app_code\ticketservice.cs </summary>
-        public static ActionProxy InsertAction(Data.Ticket ticket, ActionProxy proxy, Data.User user)
-        {
-            Data.Action action = (new Data.Actions(ticket.Collection.LoginUser)).AddNewAction();
-            action.ActionTypeID = null;
-            action.Name = "Description";
-            action.SystemActionTypeID = SystemActionType.Description;
-            action.ActionSource = ticket.TicketSource;
-            action.Description = proxy.Description;
-            if (!string.IsNullOrWhiteSpace(user.Signature) && proxy.IsVisibleOnPortal)
-                action.Description = action.Description + "<br/><br/>" + user.Signature;
+        //public static ActionProxy InsertAction(Data.Ticket ticket, ActionProxy proxy, Data.User user)
+        //{
+        //    Data.Action action = (new Data.Actions(ticket.Collection.LoginUser)).AddNewAction();
+        //    action.ActionTypeID = null;
+        //    action.Name = "Description";
+        //    action.SystemActionTypeID = SystemActionType.Description;
+        //    action.ActionSource = ticket.TicketSource;
+        //    action.Description = proxy.Description;
+        //    if (!string.IsNullOrWhiteSpace(user.Signature) && proxy.IsVisibleOnPortal)
+        //        action.Description = action.Description + "<br/><br/>" + user.Signature;
 
-            action.IsVisibleOnPortal = ticket.IsVisibleOnPortal;
-            action.IsKnowledgeBase = ticket.IsKnowledgeBase;
-            action.TicketID = ticket.TicketID;
-            action.TimeSpent = proxy.TimeSpent;
-            action.DateStarted = proxy.DateStarted;
-            action.Collection.Save();
-            return action.GetProxy();
-        }
+        //    action.IsVisibleOnPortal = ticket.IsVisibleOnPortal;
+        //    action.IsKnowledgeBase = ticket.IsKnowledgeBase;
+        //    action.TicketID = ticket.TicketID;
+        //    action.TimeSpent = proxy.TimeSpent;
+        //    action.DateStarted = proxy.DateStarted;
+        //    action.Collection.Save();
+        //    return action.GetProxy();
+        //}
 
         public static int ActionGetTicketID(DataContext db, int actionID) { return db.ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {actionID}").Min(); }
 
@@ -92,9 +93,10 @@ namespace TeamSupport.DataAPI
             proxy.AttachmentID = Decimal.ToInt32(value);
         }
 
-        public static void DeleteActionAttachment(OrganizationUser loginUser, int organizationID, int ticketID, int actionID, int attachmentID)
+        public static void DeleteActionAttachment(OrganizationUser user, int organizationID, int ticketID, int actionID, int attachmentID)
         {
             // set WITH (ROWLOCK) 
+            Data.LoginUser loginUser = WebUtils.TSAuthentication.GetLoginUser();
             Attachment attachment = Attachments.GetAttachment(loginUser, attachmentID);
             attachment.DeleteFile();
             attachment.Delete();

@@ -153,10 +153,6 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="TeamSupport.Model, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\TeamSupport.Model\bin\Debug\TeamSupport.Model.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChartHandler.cs" />
@@ -185,6 +181,18 @@
     <Compile Include="WebHookHandler.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TeamSupport.Data\TeamSupport.Data.csproj">
+      <Project>{1943ac11-1f2d-4b85-9f0f-4d67284814be}</Project>
+      <Name>TeamSupport.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TeamSupport.ModelAPI\TeamSupport.ModelAPI.csproj">
+      <Project>{7e2b2e07-518a-47a4-a39a-502654e8c8ed}</Project>
+      <Name>TeamSupport.ModelAPI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TeamSupport.Proxy\TeamSupport.Proxy.csproj">
+      <Project>{8f3f388c-10f5-45d4-9f4c-471236dc14c0}</Project>
+      <Name>TeamSupport.Proxy</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TeamSupport.WebUtils\TeamSupport.WebUtils.csproj">
       <Project>{7BEB5C4F-414E-4660-904C-6407A3BC3ACF}</Project>
       <Name>TeamSupport.WebUtils</Name>

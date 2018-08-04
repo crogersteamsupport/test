@@ -8,7 +8,7 @@ using System.Data.Linq.Mapping;
 using System.IO;
 using System.Diagnostics;
 using System.Web;
-using TeamSupport.Proxy;
+using TeamSupport.Data;
 
 namespace TeamSupport.Model
 {
@@ -78,17 +78,17 @@ namespace TeamSupport.Model
 
         public List<ActionAttachment> InsertActionAttachments(HttpRequest request)
         {
-            Data.OrganizationUser user = Ticket.User.Authentication.OrganizationUser;
             List<ActionAttachment> results = new List<ActionAttachment>();
-            HttpFileCollection files = request.Files;
-            for (int i = 0; i < files.Count; i++)   // foreach returns strings?
-            {
-                HttpPostedFile postedFile = files[i];
-                if (postedFile.ContentLength == 0)
-                    continue;
+            //Data.OrganizationUser user = Ticket.User.Authentication.OrganizationUser;
+            //HttpFileCollection files = request.Files;
+            //for (int i = 0; i < files.Count; i++)   // foreach returns strings?
+            //{
+            //    HttpPostedFile postedFile = files[i];
+            //    if (postedFile.ContentLength == 0)
+            //        continue;
 
-                results.Add(new ActionAttachment(this, user, postedFile, request));
-            }
+            //    results.Add(new ActionAttachment(this, user, postedFile, request));
+            //}
 
             return results;
         }

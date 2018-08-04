@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Security;
-using TeamSupport.Proxy;
+using TeamSupport.Data;
 
 namespace TeamSupport.Model
 {
@@ -30,7 +30,7 @@ namespace TeamSupport.Model
             }
             catch (Exception ex)
             {
-                ConnectionContext.LogMessage(authentication, Data.ActionLogType.Insert, Data.ReferenceType.Attachments, ticketID, "Unable to save attachments", ex);
+                DataAPI.DataAPI.LogMessage(authentication, Data.ActionLogType.Insert, Data.ReferenceType.Attachments, ticketID, "Unable to save attachments", ex);
                 //return null;
             }
         }
@@ -47,12 +47,12 @@ namespace TeamSupport.Model
                     if(!ticketID.HasValue)
                         ticketID = DataAPI.DataAPI.ActionGetTicketID(connection._db, actionID.Value);
                     connection.Ticket(ticketID.Value).Action(actionID.Value).Attachment(attachmentID).Delete();
-                    ConnectionContext.LogMessage(authentication, Data.ActionLogType.Delete, Data.ReferenceType.Attachments, attachmentID, "Attachment deleted");
+                    DataAPI.DataAPI.LogMessage(authentication, Data.ActionLogType.Delete, Data.ReferenceType.Attachments, attachmentID, "Attachment deleted");
                 }
             }
             catch (Exception ex)
             {
-                ConnectionContext.LogMessage(authentication, Data.ActionLogType.Delete, Data.ReferenceType.Attachments, attachmentID, "Unable to delete attachments", ex);
+                DataAPI.DataAPI.LogMessage(authentication, Data.ActionLogType.Delete, Data.ReferenceType.Attachments, attachmentID, "Unable to delete attachments", ex);
             }
         }
 
@@ -69,7 +69,7 @@ namespace TeamSupport.Model
             }
             catch (Exception ex)
             {
-                ConnectionContext.LogMessage(authentication, Data.ActionLogType.Delete, Data.ReferenceType.Attachments, actionID, "failed to read attachments", ex);
+                DataAPI.DataAPI.LogMessage(authentication, Data.ActionLogType.Delete, Data.ReferenceType.Attachments, actionID, "failed to read attachments", ex);
                 return null;
             }
         }
@@ -85,7 +85,7 @@ namespace TeamSupport.Model
             }
             catch (Exception ex)
             {
-                ConnectionContext.LogMessage(authentication, Data.ActionLogType.Update, Data.ReferenceType.Attachments, destinationTicketID, $"failed to merge {destinationTicketID} <= {sourceTicketID}", ex);
+                DataAPI.DataAPI.LogMessage(authentication, Data.ActionLogType.Update, Data.ReferenceType.Attachments, destinationTicketID, $"failed to merge {destinationTicketID} <= {sourceTicketID}", ex);
             }
         }
 

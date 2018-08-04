@@ -828,6 +828,7 @@
     <Compile Include="Generated\GeneratedWikiHistoryCollection.cs" />
     <Compile Include="Proxies\ActionLinkToSnowProxy.cs" />
     <Compile Include="Proxies\ActionLinkToTFSProxy.cs" />
+    <Compile Include="Proxies\ActionsProxy.cs" />
     <Compile Include="Proxies\ActivityTypesProxy.cs" />
     <Compile Include="Proxies\BackdoorLoginsProxy.cs" />
     <Compile Include="Proxies\CalendarEventsProxy.cs" />
@@ -886,7 +887,6 @@
     <Compile Include="Proxies\ActionLinkToJiraProxy.cs" />
     <Compile Include="Proxies\ActionLogsProxy.cs" />
     <Compile Include="Proxies\ActionLogsViewProxy.cs" />
-    <Compile Include="Proxies\ActionsProxy.cs" />
     <Compile Include="Proxies\ActionsViewProxy.cs" />
     <Compile Include="Proxies\ActionTypesProxy.cs" />
     <Compile Include="Proxies\AddressesProxy.cs" />
