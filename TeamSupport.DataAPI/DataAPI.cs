@@ -28,7 +28,7 @@ namespace TeamSupport.DataAPI
 
         #region Actions
         /// <summary> extracted from ts-app\WebApp\App_Code\TicketPageService.cs UpdateAction(ActionProxy proxy) </summary>
-        public static ActionProxy InsertAction(OrganizationUser loginUser, ActionProxy proxy, DataContext db)
+        public static ActionProxy InsertAction(TeamSupport.Proxy.AuthenticationModel loginUser, ActionProxy proxy, DataContext db)
         {
             Data.Action action = (new Data.Actions(WebUtils.TSAuthentication.GetLoginUser())).AddNewAction();
             action.TicketID = proxy.TicketID;
@@ -93,7 +93,7 @@ namespace TeamSupport.DataAPI
             proxy.AttachmentID = Decimal.ToInt32(value);
         }
 
-        public static void DeleteActionAttachment(OrganizationUser user, int organizationID, int ticketID, int actionID, int attachmentID)
+        public static void DeleteActionAttachment(AuthenticationModel user, int organizationID, int ticketID, int actionID, int attachmentID)
         {
             // set WITH (ROWLOCK) 
             Data.LoginUser loginUser = WebUtils.TSAuthentication.GetLoginUser();

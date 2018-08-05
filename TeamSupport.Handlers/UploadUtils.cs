@@ -37,19 +37,19 @@ namespace TeamSupport.Handlers
             List<UploadResult> result = new List<UploadResult>();
 
             // Action Attachments
-            if (Model.ConnectionContext.IsEnabled && (folder == AttachmentPath.Folder.Actions))
-            {
-                // front end does not provide TicketID
-                List<Model.ActionAttachment> attachments = Model.ModelAPI.SaveActionAttachments(TSAuthentication.Ticket, context, null, itemID.Value);
-                foreach (Model.ActionAttachment attachment in attachments)
-                {
-                    Model.AttachmentFile file = attachment.File;
-                    result.Add(new UploadResult(file.FileName, file.ContentType, file.ContentLength));
-                }
-                context.Response.Clear();
-                context.Response.ContentType = "text/plain";
-                context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
-            }
+            //if (Model.ConnectionContext.IsEnabled && (folder == AttachmentPath.Folder.Actions))
+            //{
+            //    // front end does not provide TicketID
+            //    List<Model.ActionAttachment> attachments = ModelAPI.SaveActionAttachments(TSAuthentication.Ticket, context, null, itemID.Value);
+            //    foreach (Model.ActionAttachment attachment in attachments)
+            //    {
+            //        Model.AttachmentFile file = attachment.File;
+            //        result.Add(new UploadResult(file.FileName, file.ContentType, file.ContentLength));
+            //    }
+            //    context.Response.Clear();
+            //    context.Response.ContentType = "text/plain";
+            //    context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
+            //}
 
             ReferenceType refType = AttachmentPath.GetFolderReferenceType(folder);
 

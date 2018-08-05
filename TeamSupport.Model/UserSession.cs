@@ -17,7 +17,7 @@ namespace TeamSupport.Model
         public OrganizationModel Organization { get; private set; }
         public DataContext _db { get; private set; }
 
-        public AuthenticationModel Authentication { get { return Organization.Connection.Authentication; } }
+        public Proxy.AuthenticationModel Authentication { get { return Organization.Connection.Authentication; } }
         public int UserID { get { return Authentication.UserID; } }
 
         /// <summary> OrganizationID and UserID come from ConnectionContext.Authentication </summary>

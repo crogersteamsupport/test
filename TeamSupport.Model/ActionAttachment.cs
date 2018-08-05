@@ -33,7 +33,7 @@ namespace TeamSupport.Model
         }
 
         ///// <summary> New action attachment with data from front end /// </summary>
-        //public ActionAttachment(ActionModel action, Data.OrganizationUser user, HttpPostedFile postedFile, HttpRequest request)
+        //public ActionAttachment(ActionModel action, FormsAuthenticationTicket authentication, HttpPostedFile postedFile, HttpRequest request)
         //{
         //    Action = action;
         //    _db = Action._db;
@@ -45,7 +45,7 @@ namespace TeamSupport.Model
         //}
 
         /// <summary> extracted from ts-app\TeamSupport.Handlers\UploadUtils.cs SaveFiles() </summary>
-        private AttachmentProxy InsertActionAttachment(OrganizationUser user, HttpPostedFile postedFile, HttpRequest request, string fileName, string filePath)
+        private AttachmentProxy InsertActionAttachment(AuthenticationModel authentication, HttpPostedFile postedFile, HttpRequest request, string fileName, string filePath)
         {
             string description = request.Form["description"];
             if (description != null)
@@ -66,8 +66,8 @@ namespace TeamSupport.Model
                 //SentToJira = ,
                 RefID = Action.ActionID,
                 //RefType = Data.ReferenceType.Actions,
-                ModifierID = user.UserID,
-                CreatorID = user.UserID,
+                ModifierID = authentication.UserID,
+                CreatorID = authentication.UserID,
                 Description = description,
                 Path = filePath,
                 FileSize = postedFile.ContentLength,
@@ -93,7 +93,7 @@ namespace TeamSupport.Model
             TicketModel ticket = Action.Ticket;
             UserSession user = ticket.User;
             OrganizationModel organization = user.Organization;
-            DataAPI.DataAPI.DeleteActionAttachment(user.Authentication.OrganizationUser, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
+            DataAPI.DataAPI.DeleteActionAttachment(user.Authentication, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
             ActionAttachmentID = null;
         }
 

@@ -33,7 +33,7 @@ namespace TeamSupport.Model
         /// <summary> new action on existing ticket </summary>
         public ActionModel(TicketModel ticket, ActionProxy proxy)
         {
-            ActionProxy result = DataAPI.DataAPI.InsertAction(ticket.User.Authentication.OrganizationUser, proxy, ticket._db);
+            ActionProxy result = DataAPI.DataAPI.InsertAction(ticket.User.Authentication, proxy, ticket._db);
             Ticket = ticket;
             ActionID = result.ActionID;
             _db = ticket._db;

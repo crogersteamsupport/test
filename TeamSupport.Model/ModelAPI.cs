@@ -38,6 +38,9 @@ namespace TeamSupport.Model
         /// <summary> Delete Action Attachment /// </summary>
         public static void DeleteActionAttachment(FormsAuthenticationTicket authentication, int? ticketID, int? actionID, int attachmentID)
         {
+            if (!ConnectionContext.IsEnabled)
+                return;
+
             try
             {
                 using (ConnectionContext connection = new ConnectionContext(authentication))

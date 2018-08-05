@@ -48,7 +48,6 @@
     <Compile Include="ActionModel.cs" />
     <Compile Include="ModelAPI.cs" />
     <Compile Include="AttachmentFile.cs" />
-    <Compile Include="AuthenticationModel.cs" />
     <Compile Include="ConnectionContext.cs" />
     <Compile Include="OrganizationModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

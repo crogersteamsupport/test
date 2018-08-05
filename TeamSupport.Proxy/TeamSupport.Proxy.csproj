@@ -32,8 +32,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -44,8 +46,8 @@
   <ItemGroup>
     <Compile Include="ActionsProxy.cs" />
     <Compile Include="AttachmentsProxy.cs" />
+    <Compile Include="AuthenticationModel.cs" />
     <Compile Include="Enums.cs" />
-    <Compile Include="OrganizationUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
