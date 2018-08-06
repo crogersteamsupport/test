@@ -194,6 +194,18 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
       case SelectedType.ActivityTypes:
         ActivityTypes activityTypes = new ActivityTypes(UserSession.LoginUser);
         activityTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+        //Load base items
+        //Get default activity types
+        foreach (ActivityTypeEnum activity in Enum.GetValues(typeof(ActivityTypeEnum)))
+        {
+            var value = Enum.Parse(typeof(ActivityTypeEnum), activity.ToString());
+            //results.Add(new ActivityTypesDropDown() { Name = activity.ToString(), Value = (int)value });
+            RadComboBoxItemData itemData = new RadComboBoxItemData();
+            itemData.Text = activity.ToString();
+            itemData.Value = ((int)value).ToString();
+            list.Add(itemData);
+        }
+
         collection = activityTypes;
         idColName = "ActivityTypeID";
         break;
@@ -603,7 +615,9 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
         break;
         case SelectedType.ActivityTypes:
             if (ActivityTypes.GetActivityType(UserSession.LoginUser, oldID).OrganizationID != UserSession.LoginUser.OrganizationID) return "";
-            if (ActivityTypes.GetActivityType(UserSession.LoginUser, newID).OrganizationID != UserSession.LoginUser.OrganizationID) return "";
+            var types = Enum.GetValues(typeof(ActivityTypeEnum));
+            if(newID > types.Length)
+                if (ActivityTypes.GetActivityType(UserSession.LoginUser, newID).OrganizationID != UserSession.LoginUser.OrganizationID) return "";
             (new Notes(UserSession.LoginUser)).ReplaceActivityType(oldID, newID);
             ActivityTypes activityTypes = new ActivityTypes(UserSession.LoginUser);
             activityTypes.DeleteFromDB(oldID);
