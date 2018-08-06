@@ -13,7 +13,7 @@ using TeamSupport.Data;
 namespace TeamSupport.Model
 {
     /// <summary> Action Attachments </summary>
-    class ActionAttachment
+    public class ActionAttachment
     {
         public ActionModel Action { get; private set; }
         public int? ActionAttachmentID { get; private set; }
@@ -29,7 +29,7 @@ namespace TeamSupport.Model
 
             TicketModel ticket = Action.Ticket;
             OrganizationModel organization = ticket.User.Organization;
-            DataAPI.DataAPI.VerifyActionAttachment(_db, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
+            DBReader.VerifyActionAttachment(_db, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
         }
 
         ///// <summary> New action attachment with data from front end /// </summary>
@@ -81,7 +81,7 @@ namespace TeamSupport.Model
             };
 
             // insert into DB and get back ActionAttachmentID
-            DataAPI.DataAPI.InsertActionAttachment(_db, Action.Ticket.TicketID, ref proxy);
+            //DataAPI.DataAPI.InsertActionAttachment(_db, Action.Ticket.TicketID, ref proxy);
             return proxy;
         }
 
@@ -93,7 +93,7 @@ namespace TeamSupport.Model
             TicketModel ticket = Action.Ticket;
             UserSession user = ticket.User;
             OrganizationModel organization = user.Organization;
-            DataAPI.DataAPI.DeleteActionAttachment(user.Authentication, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
+            //DataAPI.DataAPI.DeleteActionAttachment(user.Authentication, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
             ActionAttachmentID = null;
         }
 

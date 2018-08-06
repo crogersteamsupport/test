@@ -15,7 +15,7 @@ namespace TeamSupport.Model
     /// <summary>
     /// Wrapper for Valid ActionID
     /// </summary>
-    class ActionModel
+    public class ActionModel
     {
         public TicketModel Ticket { get; private set; }
         public int ActionID { get; private set; }
@@ -27,16 +27,16 @@ namespace TeamSupport.Model
             Ticket = ticket;
             ActionID = actionID;
             _db = ticket._db;
-            DataAPI.DataAPI.VerifyAction(_db, ticket.User.Organization.OrganizationID, Ticket.TicketID, ActionID);
+            DBReader.VerifyAction(_db, ticket.User.Organization.OrganizationID, Ticket.TicketID, ActionID);
         }
 
         /// <summary> new action on existing ticket </summary>
         public ActionModel(TicketModel ticket, ActionProxy proxy)
         {
-            ActionProxy result = DataAPI.DataAPI.InsertAction(ticket.User.Authentication, proxy, ticket._db);
-            Ticket = ticket;
-            ActionID = result.ActionID;
-            _db = ticket._db;
+            //ActionProxy result = DataAPI.DataAPI.InsertAction(ticket.User.Authentication, proxy, ticket._db);
+            //Ticket = ticket;
+            //ActionID = result.ActionID;
+            //_db = ticket._db;
         }
 
         ///// <summary> new action on new ticket </summary>
@@ -48,7 +48,7 @@ namespace TeamSupport.Model
         //    _db = ticket._db;
         //}
 
-        public int CreatorID() { return DataAPI.DataAPI.ActionCreatorID(_db, ActionID); }
+        public int CreatorID() { return 0; /*DataAPI.DataAPI.ActionCreatorID(_db, ActionID);*/ }
 
         public ActionAttachment Attachment(int actionAttachmentID)
         {
@@ -95,6 +95,6 @@ namespace TeamSupport.Model
 
         public bool CanEdit() { return Ticket.User.CanEdit() || (Ticket.User.UserID == CreatorID()); }
 
-        public AttachmentProxy[] SelectAttachments() { return DataAPI.DataAPI.GetActionAttachmentProxies(_db, ActionID); }
+        //public AttachmentProxy[] SelectAttachments() { return DBReader.GetActionAttachmentProxies(_db, ActionID); }
     }
 }

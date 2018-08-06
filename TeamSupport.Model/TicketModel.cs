@@ -13,7 +13,7 @@ namespace TeamSupport.Model
     /// <summary>
     /// Wrapper for valid TicketID
     /// </summary>
-    class TicketModel
+    public class TicketModel
     {
         public UserSession User { get; private set; }
         public int TicketID { get; private set; }
@@ -24,7 +24,7 @@ namespace TeamSupport.Model
             User = user;
             _db = User._db;
             TicketID = ticketID;
-            DataAPI.DataAPI.VerifyTicket(_db, User.Organization.OrganizationID, TicketID);
+            DBReader.VerifyTicket(_db, User.Organization.OrganizationID, TicketID);
         }
 
         /// <summary> Existing Data.Action </summary>
@@ -47,11 +47,12 @@ namespace TeamSupport.Model
 
         public ActionModel[] SelectActions()
         {
-            int[] actionIDs = DataAPI.DataAPI.TicketSelectActionIDs(_db, User.Organization.OrganizationID, TicketID);
-            ActionModel[] actions = new ActionModel[actionIDs.Length];
-            for (int i = 0; i < actionIDs.Length; ++i)
-                actions[i] = new ActionModel(this, actionIDs[i]);
-            return actions;
+            //int[] actionIDs = DataAPI.DataAPI.TicketSelectActionIDs(_db, User.Organization.OrganizationID, TicketID);
+            //ActionModel[] actions = new ActionModel[actionIDs.Length];
+            //for (int i = 0; i < actionIDs.Length; ++i)
+            //    actions[i] = new ActionModel(this, actionIDs[i]);
+            //return actions;
+            return null;
         }
 
         public void Merge(TicketModel from)
@@ -65,7 +66,7 @@ namespace TeamSupport.Model
 
         void Merge(ActionModel from)
         {
-            int[] attachmentIDs = DataAPI.DataAPI.ActionAttachmentIDs(_db, User.Organization.OrganizationID, TicketID, from.ActionID);
+            //int[] attachmentIDs = DataAPI.DataAPI.ActionAttachmentIDs(_db, User.Organization.OrganizationID, TicketID, from.ActionID);
 
         }
     }

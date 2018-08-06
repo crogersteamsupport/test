@@ -14,17 +14,6 @@ namespace TeamSupport.DataAPI
 {
     public static class DataAPI
     {
-        // Verify correctness as we traverse the layers of the logical model
-        public static void VerifyOrganization(DataContext db, int organizationID) { Verify(db, $"SELECT OrganizationID FROM Organizations WITH (NOLOCK) WHERE OrganizationID={organizationID}"); }
-        public static void VerifyUser(DataContext db, int organizationID, int userID) { Verify(db, $"SELECT UserID FROM Users WITH (NOLOCK) WHERE UserID={userID} AND OrganizationID={organizationID}"); }
-        public static void VerifyTicket(DataContext db, int organizationID, int ticketID) { Verify(db, $"SELECT TicketID FROM Tickets WITH (NOLOCK) WHERE TicketID={ticketID} AND OrganizationID={organizationID}"); }
-        public static void VerifyAction(DataContext db, int organizationID, int ticketID, int actionID) { Verify(db, $"SELECT ActionID FROM Actions WITH (NOLOCK) WHERE ActionID={actionID} AND TicketID={ticketID}"); }
-        public static void VerifyActionAttachment(DataContext db, int organizationID, int ticketID, int actionID, int actionAttachmentID) { Verify(db, $"SELECT AttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE AttachmentID={actionAttachmentID} AND ActionID={actionID} AND OrganizationID={organizationID}"); }
-        private static void Verify(DataContext db, string query)
-        {
-            if (!db.ExecuteQuery<int>(query).Any()) // valid ID found?
-                throw new Exception(String.Format($"{query} not found"));
-        }
 
         #region Actions
         /// <summary> extracted from ts-app\WebApp\App_Code\TicketPageService.cs UpdateAction(ActionProxy proxy) </summary>
@@ -116,18 +105,17 @@ namespace TeamSupport.DataAPI
             return db.ExecuteQuery<int>($"SELECT ActionID FROM ActionAttachments WITH(NOLOCK) WHERE AttachmentID = {attachmentID}").Min();
         }
 
-        public static AttachmentProxy[] GetActionAttachmentProxies(DataContext db, int attachmentID)
-        {
-            return db.ExecuteQuery<AttachmentProxy>($"SELECT AttachmentID, OrganizationID, FileName, FileType, FileSize, Path, Description, DateCreated, DateModified, CreatorID, ModifierID, 0, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID " +
-                $"FROM dbo.ActionAttachments WHERE AttachmentID = {attachmentID}").ToArray();
-        }
+        //public static AttachmentProxy[] GetActionAttachmentProxies(DataContext db, int attachmentID)
+        //{
+        //    return db.ExecuteQuery<AttachmentProxy>($"SELECT AttachmentID, OrganizationID, FileName, FileType, FileSize, Path, Description, DateCreated, DateModified, CreatorID, ModifierID, 0, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID " +
+        //        $"FROM dbo.ActionAttachments WHERE AttachmentID = {attachmentID}").ToArray();
+        //}
 
         public static int[] ActionAttachmentIDs(DataContext db, int organizationID, int ticketID, int actionID) { return db.ExecuteQuery<int>($"SELECT AttachmentID FROM ActionAttachments WHERE ActionID={actionID}").ToArray(); }
 
         #endregion
 
         #region Users
-        public static bool UserAllowUserToEditAnyAction(DataContext db, int userID) { return db.ExecuteQuery<bool>($"SELECT AllowUserToEditAnyAction FROM Users WITH (NOLOCK) WHERE UserID={userID}").First(); }
 
         //class FullName
         //{

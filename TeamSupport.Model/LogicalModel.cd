@@ -6,7 +6,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>ACACgAAAAAAgAAACEAAAAAAAAAAAABAAAACAAAAAAAA=</HashCode>
+      <HashCode>ACACgAAAAAAgAAECEAAAAAAAAAAAABAAAACAAAAAAAA=</HashCode>
       <FileName>ActionModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -85,34 +85,21 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>ACABgUAAACAAAAQCAAEAAAAAAAAAEAAAAAAAgAAAJAA=</HashCode>
+      <HashCode>ACABgEAAACAAAAQCAAEAAAAAAAAAEAAAAAAAgAAAJAA=</HashCode>
       <FileName>ConnectionContext.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Authentication" />
-    </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="TeamSupport.Model.AuthenticationModel">
-    <Position X="0.5" Y="3.25" Width="1.75" />
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-      <Compartment Name="Methods" Collapsed="true" />
-    </Compartments>
-    <TypeIdentifier>
-      <HashCode>AAAAAAAgAAAAAAAAAAAAAAgIAAAAAAAACCEBAAAAAAE=</HashCode>
-      <FileName>AuthenticationModel.cs</FileName>
-    </TypeIdentifier>
+  <Class Name="TeamSupport.Data.ActionProxy" Collapsed="true">
+    <Position X="1.75" Y="3" Width="1.5" />
+    <TypeIdentifier />
   </Class>
-  <Class Name="TeamSupport.Model.ModelAPI">
-    <Position X="3.5" Y="3.25" Width="2.25" />
-    <TypeIdentifier>
-      <HashCode>EAAAAAAAACAAAQAAAAAAAAAAAAAAAAAAAAAAAAAEAAI=</HashCode>
-      <FileName>ModelAPI.cs</FileName>
-    </TypeIdentifier>
+  <Class Name="TeamSupport.Data.AttachmentProxy" Collapsed="true">
+    <Position X="1.75" Y="4" Width="1.5" />
+    <TypeIdentifier />
   </Class>
-  <Class Name="TeamSupport.DataAPI">
-    <Position X="6.75" Y="3" Width="2.25" />
+  <Class Name="TeamSupport.Proxy.AuthenticationModel" Collapsed="true">
+    <Position X="1.75" Y="5" Width="1.75" />
     <TypeIdentifier />
   </Class>
   <Font Name="Segoe UI" Size="9" />

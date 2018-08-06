@@ -16,7 +16,7 @@ namespace TeamSupport.Model
     /// Model for validating OrganizationID, UserID, TicketID, etc
     /// Centralizes queries for Attachments
     /// </summary>
-    class ConnectionContext : IDisposable
+    public class ConnectionContext : IDisposable
     {
 
         static bool _IsEnabled = true;
@@ -55,7 +55,7 @@ namespace TeamSupport.Model
 
         public TicketModel Ticket(int ticketID) { return User.Ticket(ticketID); }
 
-        public string AttachmentPath(int id) { return DataAPI.DataAPI.AttachmentPath(_db, id); }
+        public string AttachmentPath(int id) { return String.Empty; /*DataAPI.DataAPI.AttachmentPath(_db, id);*/ }
 
         public void Dispose()
         {

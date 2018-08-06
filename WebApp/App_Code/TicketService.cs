@@ -27,7 +27,7 @@ using System.Diagnostics;
 using OpenTokSDK;
 using Jira = TeamSupport.JIRA;
 using NR = NewRelic.Api;
-using TeamSupport.Model;
+using TeamSupport.ModelAPI;
 
 namespace TSWebServices
 {
@@ -3156,7 +3156,7 @@ WHERE t.TicketID = @TicketID
 
             UsersViewItem creator = UsersView.GetUsersViewItem(loginUser, action.CreatorID);
             if (creator != null) actionInfo.Creator = new UserInfo(creator);
-            AttachmentProxy[] model = ModelAPI.SelectActionAttachments(TSAuthentication.Ticket, null, action.ActionID);
+            AttachmentProxy[] model = null;// ModelAPI.SelectActionAttachments(TSAuthentication.Ticket, null, action.ActionID);
             actionInfo.Attachments = Attachments.ActionAttachments(loginUser, action.ActionID).GetAttachmentProxies();
             if (model.Equals(actionInfo.Attachments))
                 Debugger.Break();

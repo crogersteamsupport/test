@@ -8,7 +8,7 @@ using System.Web;
 
 namespace TeamSupport.Model
 {
-    class AttachmentFile
+    public class AttachmentFile
     {
         public string FileName { get; private set; }
         public string FilePath { get; private set; }

@@ -32,6 +32,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,9 +42,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ModelAPI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TeamSupport.DataAPI\TeamSupport.DataAPI.csproj">
+      <Project>{5c253014-d40c-4927-92f6-a91c2efb49c5}</Project>
+      <Name>TeamSupport.DataAPI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TeamSupport.Model\TeamSupport.Model.csproj">
       <Project>{11c7d899-bcaa-408f-8b85-35593ab7e617}</Project>
       <Name>TeamSupport.Model</Name>
@@ -55,6 +62,9 @@
       <Project>{7beb5c4f-414e-4660-904c-6407a3bc3acf}</Project>
       <Name>TeamSupport.WebUtils</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ModelAPI.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
