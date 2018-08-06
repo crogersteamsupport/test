@@ -652,7 +652,6 @@ UserPage = function() {
             e.preventDefault();
             var item = $(this);
             item.next().show();
-            var value = (item.text() === 'Yes')
             window.parent.parent.Ts.Services.Users.SetAutoSubscribe(_user.UserID, (item.text() != 'Yes'), function(result) {
                     window.parent.parent.Ts.System.logAction('User Info - User Auto Subscribe Changed');
                     item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
