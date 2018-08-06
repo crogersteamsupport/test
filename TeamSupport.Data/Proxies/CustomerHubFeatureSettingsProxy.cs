@@ -43,6 +43,7 @@ namespace TeamSupport.Data
     [DataMember] public bool EnableCustomerSpecificKB { get; set; }
     [DataMember] public bool EnableCustomFieldModification { get; set; }
     [DataMember] public bool EnableProductFamilyFiltering { get; set; }
+    [DataMember] public int ChatGroupID { get; set; }
           
   }
   
@@ -51,6 +52,7 @@ namespace TeamSupport.Data
     public CustomerHubFeatureSettingProxy GetProxy()
     {
       CustomerHubFeatureSettingProxy result = new CustomerHubFeatureSettingProxy();
+      result.ChatGroupID = this.ChatGroupID;
       result.EnableProductFamilyFiltering = this.EnableProductFamilyFiltering;
       result.EnableCustomFieldModification = this.EnableCustomFieldModification;
       result.EnableCustomerSpecificKB = this.EnableCustomerSpecificKB;
