@@ -1564,10 +1564,15 @@ namespace TSWebServices
         [WebMethod]
         public CDI_SettingProxy LoadCDISettings(int organizationID)
         {
+            
             CDI_Settings cdi = new CDI_Settings(TSAuthentication.GetLoginUser());
             cdi.LoadByOrganizationID(organizationID);
             if (cdi.Count > 0)
-                return cdi[0].GetProxy();
+            {
+                var proxy = cdi[0].GetProxy();
+                proxy.CDIDate = GetCDIDate(organizationID);
+                return proxy;
+            }
             else
                 return null;
         }
@@ -1854,6 +1859,17 @@ namespace TSWebServices
             }
 
             return results;
+        }
+
+        private DateTime GetCDIDate(int organizationID)
+        {
+            SqlCommand command = new SqlCommand();
+            command.CommandType = CommandType.Text;
+            command.CommandText = @"SELECT CDIDate FROM CustDistHistory WHERE OrganizationID = @OrganizationID  ORDER BY CDIDate Desc";
+            command.Parameters.AddWithValue("@OrganizationId", organizationID);
+            var result = SqlExecutor.ExecuteScalar(TSAuthentication.GetLoginUser(), command);
+
+            return (DateTime)result;
         }
 
 
