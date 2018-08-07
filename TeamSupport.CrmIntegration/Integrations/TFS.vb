@@ -1787,12 +1787,18 @@ Namespace TeamSupport
 			End Function
 			Private Function GetIsNewComment(ByVal comment As WorkItemComment, ByVal ticketActionsLinked As ActionLinkToTFS) As Boolean
 				Dim result As Boolean = False
+				Dim crmLinkHostName As String = CRMLinkRow.HostName
+				Dim commentUrl As String = comment.Url
+				crmLinkHostName = ExtractSubAndMainDomainFromURL(crmLinkHostName)
+				commentUrl = ExtractSubAndMainDomainFromURL(commentUrl)
 
-				If (comment.Text.Length < 19 OrElse comment.Text.Substring(0, 20) <> "TeamSupport ticket #") Then
+				If (comment.Text.Length < 19 OrElse comment.Text.Substring(0, 20) <> "TeamSupport ticket #" AndAlso crmLinkHostName = commentUrl) Then
 					Dim pulledComment As ActionLinkToTFSItem = ticketActionsLinked.FindByTFSID(CType(comment.Revision.ToString(), Integer?))
 					If pulledComment Is Nothing Then
 						result = True
 					End If
+				ElseIf (crmLinkHostName <> commentUrl) Then
+					AddLog("The url of the comment pulled from TFS does not match the hostname of the CRMLinkTable record, skipping. CRMLinkRow: id=" + CRMLinkRow.CRMLinkID.ToString() + " OrgId=" + CRMLinkRow.OrganizationID.ToString() + " HostName=" + CRMLinkRow.HostName.ToString() + ". Comment url=" + comment.Url.ToString())
 				End If
 
 				Return result
@@ -1868,6 +1874,19 @@ Namespace TeamSupport
 				Dim host2 As Uri = New Uri(hostName2)
 
 				Return host1.Host = host2.Host
+			End Function
+
+			Private Function ExtractSubAndMainDomainFromURL(URL As String) As String
+				' cut-off any url encoded data
+				URL = URL.Split("?"c)(0)
+				'return array of segments between slashes
+				Dim URLparts() As String = URL.Split("/"c)
+				'find first segment with periods/full-stops
+				Dim Domain As String = Array.Find(URLparts, Function(x) (x.Contains(".")))
+				'check if nothing returned - if necessary
+				If IsNothing(Domain) Then Domain = String.Empty
+
+				Return Domain
 			End Function
 		End Class
 	End Namespace
