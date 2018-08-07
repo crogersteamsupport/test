@@ -9,6 +9,7 @@ using System.Web;
 using System.Diagnostics;
 using TeamSupport.Proxy;
 using TeamSupport.Data;
+using System.Web.Security;
 
 namespace TeamSupport.Model
 {
@@ -32,17 +33,17 @@ namespace TeamSupport.Model
             DBReader.VerifyActionAttachment(_db, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
         }
 
-        ///// <summary> New action attachment with data from front end /// </summary>
-        //public ActionAttachment(ActionModel action, FormsAuthenticationTicket authentication, HttpPostedFile postedFile, HttpRequest request)
-        //{
-        //    Action = action;
-        //    _db = Action._db;
+        /// <summary> New action attachment with data from front end /// </summary>
+        public ActionAttachment(ActionModel action, AuthenticationModel authentication, HttpPostedFile postedFile, HttpRequest request)
+        {
+            Action = action;
+            _db = Action._db;
 
-        //    File = new AttachmentFile(Action.AttachmentPath, postedFile);
-        //    File.Save();
-        //    AttachmentProxy proxy = InsertActionAttachment(user, postedFile, request, File.FileName, File.FilePath); // add ActionAttachment record
-        //    ActionAttachmentID = proxy.AttachmentID;
-        //}
+            File = new AttachmentFile(Action.AttachmentPath, postedFile);
+            File.Save();
+            AttachmentProxy proxy = InsertActionAttachment(authentication, postedFile, request, File.FileName, File.FilePath); // add ActionAttachment record
+            ActionAttachmentID = proxy.AttachmentID;
+        }
 
         /// <summary> extracted from ts-app\TeamSupport.Handlers\UploadUtils.cs SaveFiles() </summary>
         private AttachmentProxy InsertActionAttachment(AuthenticationModel authentication, HttpPostedFile postedFile, HttpRequest request, string fileName, string filePath)

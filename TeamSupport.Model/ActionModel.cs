@@ -76,9 +76,9 @@ namespace TeamSupport.Model
             return actionAttachmentIDs.Select(id => new ActionAttachment(this, id)).ToArray();
         }
 
-        public List<ActionAttachment> InsertActionAttachments(HttpRequest request)
+        public List<ActionProxy> SaveAttachments(HttpRequest request)
         {
-            List<ActionAttachment> results = new List<ActionAttachment>();
+            List<ActionProxy> results = new List<ActionProxy>();
             //Data.OrganizationUser user = Ticket.User.Authentication.OrganizationUser;
             //HttpFileCollection files = request.Files;
             //for (int i = 0; i < files.Count; i++)   // foreach returns strings?

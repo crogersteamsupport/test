@@ -6,7 +6,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>ACACgAAAAAAgAAECEAAAAAAAAAAAABAAAACAAAAAAAA=</HashCode>
+      <HashCode>ACACgAAAAAAgAAECAAAAAAAAAAAAQAAAAACAAAAAAAA=</HashCode>
       <FileName>ActionModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -89,18 +89,6 @@
       <FileName>ConnectionContext.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="TeamSupport.Data.ActionProxy" Collapsed="true">
-    <Position X="1.75" Y="3" Width="1.5" />
-    <TypeIdentifier />
-  </Class>
-  <Class Name="TeamSupport.Data.AttachmentProxy" Collapsed="true">
-    <Position X="1.75" Y="4" Width="1.5" />
-    <TypeIdentifier />
-  </Class>
-  <Class Name="TeamSupport.Proxy.AuthenticationModel" Collapsed="true">
-    <Position X="1.75" Y="5" Width="1.75" />
-    <TypeIdentifier />
   </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

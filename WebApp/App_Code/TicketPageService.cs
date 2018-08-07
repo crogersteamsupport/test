@@ -1780,12 +1780,12 @@ namespace TSWebServices
 
         private AttachmentProxy[] GetActionAttachmentProxies(int actionID, LoginUser loginUser)
         {
-            AttachmentProxy[] model = null;// ModelAPI.SelectActionAttachments(TSAuthentication.Ticket, null, actionID);   // ticketID?
-
             Attachments attachments = Attachments.ActionAttachments(loginUser, actionID);
             AttachmentProxy[] result = attachments.GetAttachmentProxies();
-            if (model.Equals(result))
-                Debugger.Break();
+
+            //AttachmentProxy[] model = ModelAPI.SelectActionAttachments(TSAuthentication.Ticket, null, actionID);   // ticketID?
+            //if (model.Equals(result))
+            //    Debugger.Break();
             return result;
         }
 

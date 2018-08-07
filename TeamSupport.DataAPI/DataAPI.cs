@@ -9,42 +9,187 @@ using TeamSupport.Proxy;
 using System.Web.Security;
 using System.Diagnostics;
 using TeamSupport.Data;
+using System.Web;
+using TeamSupport.Model;
 
 namespace TeamSupport.DataAPI
 {
+    /// <summary>
+    /// CRUD Interface (Create, Read, Update, Delete) on verified connection context
+    /// </summary>
     public static class DataAPI
     {
+        // Tickets --------------------------
+        public static void Create(ConnectionContext connection, TicketProxy ticketProxy)
+        {
+            // TODO - create ticket
+            LogMessage(connection.Authentication, ActionLogType.Insert, ReferenceType.Tickets, ticketProxy.TicketID, "Created Ticket");
+        }
+
+        public static TicketProxy Read(ConnectionContext connection, TicketModel ticketModel)
+        {
+            Table<TicketProxy> table = connection._db.GetTable<TicketProxy>();
+            return table.Where(t => t.TicketID == ticketModel.TicketID).First();
+        }
+
+        public static void Update(ConnectionContext connection, TicketModel ticketModel, TicketProxy ticketProxy)
+        {
+            // TODO - update ticket
+            LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, ticketModel.TicketID, "Updated Ticket");
+        }
+
+        public static void Delete(ConnectionContext connection, TicketModel ticketModel)
+        {
+            // TODO - delete ticket
+            LogMessage(connection.Authentication, ActionLogType.Delete, ReferenceType.Tickets, ticketModel.TicketID, "Deleted Ticket");
+        }
+
+
+        // Actions --------------------------
+        public static void Create(ConnectionContext connection, TicketModel ticketModel, ActionProxy actionProxy)
+        {
+            // TODO - create action
+            LogMessage(connection.Authentication, ActionLogType.Insert, ReferenceType.Actions, actionProxy.ActionID, "Created Action");
+        }
+
+        public static ActionProxy Read(ConnectionContext connection, ActionModel actionModel)
+        {
+            Table<ActionProxy> table = connection._db.GetTable<ActionProxy>();
+            return table.Where(t => t.ActionID == actionModel.ActionID).First();
+        }
+
+        public static void Read(ConnectionContext connection, TicketModel ticketModel, out ActionProxy[] actionProxies)
+        {
+            Table<ActionProxy> table = connection._db.GetTable<ActionProxy>();
+            actionProxies = table.Where(t => t.TicketID == ticketModel.TicketID).ToArray();
+        }
+
+        public static void Update(ConnectionContext connection, ActionModel actionModel, ActionProxy actionProxy)
+        {
+            // TODO - update action
+            LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Actions, actionModel.ActionID, "Updated Action");
+        }
+
+        public static void Delete(ConnectionContext connection, ActionModel actionModel)
+        {
+            // TODO - delete action
+            LogMessage(connection.Authentication, ActionLogType.Delete, ReferenceType.Actions, actionModel.ActionID, "Deleted Action");
+        }
+
+
+        // Action Attachments --------------------------
+        public static void Create(ConnectionContext connection, ActionModel action, AttachmentProxy attachmentProxy)
+        {
+            // TODO - create action attachment
+            LogMessage(connection.Authentication, ActionLogType.Insert, ReferenceType.Attachments, attachmentProxy.AttachmentID, "Created Ticket");
+        }
+
+        public static AttachmentProxy Read(ConnectionContext connection, ActionAttachment actionAttachment)
+        {
+            Table<AttachmentProxy> table = connection._db.GetTable<AttachmentProxy>();
+            return table.Where(t => t.AttachmentID == actionAttachment.ActionAttachmentID).First();
+        }
+
+        public static void Read(ConnectionContext connection, ActionModel actionModel, out AttachmentProxy[] attachments)
+        {
+            Table<AttachmentProxy> table = connection._db.GetTable<AttachmentProxy>();
+            attachments = table.Where(t => (t.RefID == actionModel.ActionID) && (t.RefType == ReferenceType.Actions)).ToArray();
+        }
+
+        public static void Update(ConnectionContext connection, ActionAttachment actionAttachmentModel, AttachmentProxy attachment)
+        {
+            // TODO - update action attachment
+            LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Attachments, actionAttachmentModel.ActionAttachmentID, "Updated Action Attachment");
+        }
+
+        public static void Delete(ConnectionContext connection, ActionAttachment actionAttachmentModel)
+        {
+            // TODO - delete action attachment
+            LogMessage(connection.Authentication, ActionLogType.Delete, ReferenceType.Actions, actionAttachmentModel.ActionAttachmentID, "Deleted Action Attachment");
+        }
+
+
+        // Log --------------------------
+        public static void LogMessage(AuthenticationModel authentication, ActionLogType logType, ReferenceType refType, int? refID, string message)
+        {
+            LoginUser user = new LoginUser(authentication.UserID, authentication.OrganizationID);
+            ActionLogs.AddActionLog(user, logType, refType, refID.HasValue ? refID.Value : 0, message);  // 0 if no ID?
+        }
+
+        public static void LogMessage(AuthenticationModel authentication, ActionLogType logType, ReferenceType refType, int? refID, string message, Exception ex)
+        {
+            string fullMessage = message + ex.ToString() + " ----- STACK: " + ex.StackTrace.ToString();
+            if (Debugger.IsAttached)
+            {
+                Debug.WriteLine(fullMessage);   // debug output window (very fast)
+                Debugger.Break();   // something is wrong - fix the code!
+            }
+
+            LogMessage(authentication, logType, refType, refID, fullMessage);
+        }
+
+        //public static void LogMessage(FormsAuthenticationTicket authentication, ActionLogType logType, ReferenceType refType, int? refID, string message, EventLogEntryType type = EventLogEntryType.Information)
+        //{
+        //    LoginUser user = WebUtils.TSAuthentication.GetLoginUser();
+        //    ActionLogs.AddActionLog(user, logType, refType, refID.HasValue ? refID.Value : 0, message);  // 0 if no TicketID?
+        //}
+
+        //public static void LogMessage(AuthenticationModel authentication, ActionLogType logType, ReferenceType refType, int? refID, string message, EventLogEntryType type = EventLogEntryType.Information)
+        //{
+        //    LogMessage(authentication.AuthenticationTicket, logType, refType, refID, message, type);
+        //}
+
+        //public static void LogMessage(FormsAuthenticationTicket authentication, ActionLogType logType, ReferenceType refType, int? refID, string message, Exception ex)
+        //{
+        //    if (Debugger.IsAttached)
+        //    {
+        //        Debug.WriteLine(message);   // debug output window (very fast)
+        //        Debugger.Break();   // something is wrong - fix the code!
+        //    }
+        //    LogMessage(authentication, logType, refType, refID, message + ex.ToString() + " ----- STACK: " + ex.StackTrace.ToString(), EventLogEntryType.Error);
+        //}
+
+
+        // verified connection and action
+        public static void Create(ConnectionContext connection, ActionModel action, List<ActionAttachment> attachments)
+        {
+            if (attachments.Count == 0)
+                return;
+
+            LogMessage(connection.Authentication, ActionLogType.Insert, ReferenceType.Attachments, attachments[0].Action.ActionID, "Attachments Saved");
+        }
 
         #region Actions
         /// <summary> extracted from ts-app\WebApp\App_Code\TicketPageService.cs UpdateAction(ActionProxy proxy) </summary>
-        public static ActionProxy InsertAction(TeamSupport.Proxy.AuthenticationModel loginUser, ActionProxy proxy, DataContext db)
+        public static ActionProxy InsertAction(AuthenticationModel loginUser, ActionProxy proxy, DataContext db)
         {
-            Data.Action action = (new Data.Actions(WebUtils.TSAuthentication.GetLoginUser())).AddNewAction();
-            action.TicketID = proxy.TicketID;
-            action.CreatorID = loginUser.UserID;
-            action.Description = proxy.Description;
+            return null;
+            //Action action = (new Actions(WebUtils.TSAuthentication.GetLoginUser())).AddNewAction();
+            //action.TicketID = proxy.TicketID;
+            //action.CreatorID = loginUser.UserID;
+            //action.Description = proxy.Description;
 
-            // add signature?
-            string signature = db.ExecuteQuery<string>($"SELECT [Signature] FROM Users WITH (NOLOCK) WHERE UserID={loginUser.UserID} AND OrganizationID={loginUser.OrganizationID}").FirstOrDefault();    // 175915
-            if (!string.IsNullOrWhiteSpace(signature) && proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase && proxy.ActionID == -1 &&
-                (!proxy.Description.Contains(signature)))
-            {
-                action.Description += "<br/><br/>" + signature;
-            }
+            //// add signature?
+            //string signature = db.ExecuteQuery<string>($"SELECT [Signature] FROM Users WITH (NOLOCK) WHERE UserID={loginUser.UserID} AND OrganizationID={loginUser.OrganizationID}").FirstOrDefault();    // 175915
+            //if (!string.IsNullOrWhiteSpace(signature) && proxy.IsVisibleOnPortal && !proxy.IsKnowledgeBase && proxy.ActionID == -1 &&
+            //    (!proxy.Description.Contains(signature)))
+            //{
+            //    action.Description += "<br/><br/>" + signature;
+            //}
 
-            action.ActionTypeID = proxy.ActionTypeID;
-            action.DateStarted = proxy.DateStarted;
-            action.TimeSpent = proxy.TimeSpent;
-            action.IsKnowledgeBase = proxy.IsKnowledgeBase;
-            action.IsVisibleOnPortal = proxy.IsVisibleOnPortal;
-            action.Collection.Save();
-            return action.GetProxy();
+            //action.ActionTypeID = proxy.ActionTypeID;
+            //action.DateStarted = proxy.DateStarted;
+            //action.TimeSpent = proxy.TimeSpent;
+            //action.IsKnowledgeBase = proxy.IsKnowledgeBase;
+            //action.IsVisibleOnPortal = proxy.IsVisibleOnPortal;
+            //action.Collection.Save();
+            //return action.GetProxy();
         }
 
         /// <summary> extracted from ts-app\webapp\app_code\ticketservice.cs </summary>
-        //public static ActionProxy InsertAction(Data.Ticket ticket, ActionProxy proxy, Data.User user)
+        //public static ActionProxy InsertAction(Ticket ticket, ActionProxy proxy, User user)
         //{
-        //    Data.Action action = (new Data.Actions(ticket.Collection.LoginUser)).AddNewAction();
+        //    Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();
         //    action.ActionTypeID = null;
         //    action.Name = "Description";
         //    action.SystemActionTypeID = SystemActionType.Description;
@@ -85,7 +230,7 @@ namespace TeamSupport.DataAPI
         public static void DeleteActionAttachment(AuthenticationModel user, int organizationID, int ticketID, int actionID, int attachmentID)
         {
             // set WITH (ROWLOCK) 
-            Data.LoginUser loginUser = WebUtils.TSAuthentication.GetLoginUser();
+            LoginUser loginUser = WebUtils.TSAuthentication.GetLoginUser();
             Attachment attachment = Attachments.GetAttachment(loginUser, attachmentID);
             attachment.DeleteFile();
             attachment.Delete();
@@ -135,21 +280,6 @@ namespace TeamSupport.DataAPI
         public static int[] TicketSelectActionIDs(DataContext db, int organizationID, int ticketID) { return db.ExecuteQuery<int>($"SELECT ActionID FROM Actions a WHERE a.TicketID={ticketID}").ToArray(); }
         #endregion
 
-        public static void LogMessage(FormsAuthenticationTicket authentication, Data.ActionLogType logType, Data.ReferenceType refType, int? refID, string message, EventLogEntryType type = EventLogEntryType.Information)
-        {
-            Data.LoginUser user = WebUtils.TSAuthentication.GetLoginUser();
-            Data.ActionLogs.AddActionLog(user, logType, refType, refID.HasValue ? refID.Value : 0, message);  // 0 if no TicketID?
-        }
-
-        public static void LogMessage(FormsAuthenticationTicket authentication, Data.ActionLogType logType, Data.ReferenceType refType, int? refID, string message, Exception ex)
-        {
-            if (Debugger.IsAttached)
-            {
-                Debug.WriteLine(message);   // debug output window (very fast)
-                Debugger.Break();   // something is wrong - fix the code!
-            }
-            LogMessage(authentication, logType, refType, refID, message + ex.ToString() + " ----- STACK: " + ex.StackTrace.ToString(), EventLogEntryType.Error);
-        }
 
     }
 }
