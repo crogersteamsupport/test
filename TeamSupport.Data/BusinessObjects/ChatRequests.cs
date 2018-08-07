@@ -46,26 +46,31 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
 			return AreOperatorsAvailable(loginUser, organizationID);
         }
 
-        public static bool AreOperatorsAvailable(LoginUser loginUser, int organizationID, string groupName = null)
+        public static bool AreOperatorsAvailable(LoginUser loginUser, int organizationID, string groupName = null, int groupID = 0)
         {
             ChatRequests requests = new ChatRequests(loginUser);
 			string sql = @"SELECT COUNT(*) FROM ChatUserSettings cus 
-LEFT JOIN Users u ON u.UserID = cus.UserID
-{0}
-WHERE cus.IsAvailable = 1
-AND u.IsChatUser = 1
-AND u.OrganizationID = @OrganizationID
-{1}";
+                            LEFT JOIN Users u ON u.UserID = cus.UserID
+                            {0}
+                            WHERE cus.IsAvailable = 1
+                            AND u.IsChatUser = 1
+                            AND u.OrganizationID = @OrganizationID
+                            {1}";
 
 			string groupJoinClause = "";
 			string groupWhereClause = "";
 
-			if (!string.IsNullOrEmpty(groupName))
-			{
-				groupJoinClause = @" JOIN GroupUsers ON u.UserID = GroupUsers.UserID
-JOIN Groups ON GroupUsers.GroupID = Groups.GroupID";
-				groupWhereClause = @" AND Groups.Name = @GroupName";
-        }
+            if (groupID > 0)
+            {
+                groupJoinClause = @"JOIN GroupUsers ON u.UserID = GroupUsers.UserID
+                                        JOIN Groups ON GroupUsers.GroupID = Groups.GroupID";
+                groupWhereClause = @"AND Groups.GroupID = @GroupID";
+            }
+            else if (!string.IsNullOrEmpty(groupName)) {
+                groupJoinClause = @"JOIN GroupUsers ON u.UserID = GroupUsers.UserID
+                                        JOIN Groups ON GroupUsers.GroupID = Groups.GroupID";
+                groupWhereClause = @"AND Groups.Name = @GroupName";
+            }
 
 			sql = string.Format(sql, groupJoinClause, groupWhereClause);
 
@@ -74,6 +79,7 @@ JOIN Groups ON GroupUsers.GroupID = Groups.GroupID";
                 command.CommandText = sql;
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                command.Parameters.AddWithValue("@GroupID", groupID);
 
 				if (!string.IsNullOrEmpty(groupName))
 				{
@@ -335,7 +341,24 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
 
         }
 
-        public static ChatRequest RequestChat(LoginUser loginUser, int organizationID, string firstName, string lastName, string email, string message, string ipAddress, string groupName = null)
+        public static int? CalculateChatGroupID(LoginUser loginUser, int organizationID, int groupID = 0, string groupName = null) {
+            int? result = null;
+
+            if (groupID > 0)
+            {
+                result = groupID;
+            }
+            else if (!string.IsNullOrEmpty(groupName)) {
+                Groups groups = new Groups(loginUser);
+                groups.LoadByGroupName(organizationID, groupName);
+
+                result = groups.Any() ? (int?)groups[0].GroupID : null;
+            }
+
+            return result;
+        }
+
+        public static ChatRequest RequestChat(LoginUser loginUser, int organizationID, string firstName, string lastName, string email, string message, string ipAddress, string groupName = null, int groupID = 0)
         {
             ChatClients clients = new ChatClients(loginUser);
 			Groups groups = new Groups(loginUser);
@@ -400,7 +423,7 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
             request.Message = message;
             request.IsAccepted = false;
             request.RequestType = ChatRequestType.External;
-            request.GroupID = (groups != null && groups.IsEmpty) ? null : (int?)groups[0].GroupID;
+            request.GroupID = CalculateChatGroupID(loginUser, organizationID, groupID, groupName);
             request.Collection.Save();
 
             return request;

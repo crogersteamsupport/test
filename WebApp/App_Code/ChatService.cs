@@ -48,10 +48,11 @@ namespace TSWebServices
 		#region ClientServices
 
 		[WebMethod]
-        public bool CheckChatStatus(string chatGuid, string groupName = null)
+        public bool CheckChatStatus(string chatGuid, string groupName = null, string groupID = null)
         {
             Organization org = GetOrganization(chatGuid);
-            bool areOperatorsAvailable = ChatRequests.AreOperatorsAvailable(LoginUser.Anonymous, org.OrganizationID, groupName);
+            int groupParseResult;
+            bool areOperatorsAvailable = ChatRequests.AreOperatorsAvailable(LoginUser.Anonymous, org.OrganizationID, groupName, Int32.TryParse(groupID, out groupParseResult) ? (int)groupParseResult : 0);
 
             if (areOperatorsAvailable)
             {
@@ -136,27 +137,30 @@ namespace TSWebServices
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public string RequestChat(string chatGuid, string fName, string lName, string email, string description, string groupName = null)
+        public string RequestChat(string chatGuid, string fName, string lName, string email, string description, string groupName = null, string groupID = null)
         {
             Organization org = GetOrganization(chatGuid);
-            ChatRequest request = ChatRequests.RequestChat(LoginUser.Anonymous, org.OrganizationID, fName, lName, email, description, Context.Request.UserHostAddress, groupName);
+            int groupParseResult;
+            ChatRequest request = ChatRequests.RequestChat(LoginUser.Anonymous, org.OrganizationID, fName, lName, email, description, Context.Request.UserHostAddress, groupName, Int32.TryParse(groupID, out groupParseResult) ? (int)groupParseResult : 0);
             pusher.Trigger("chat-requests-" + org.ChatID, "new-chat-request",
 				new {
 					message = string.Format("{0} {1} is requesting a chat!", fName, lName),
 					title = "Chat Request",
 					theme = "ui-state-error",
-					chatRequest = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID, request.ChatID), GetChatMessages(request.ChatID), groupName)
+					chatRequest = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID, request.ChatID), GetChatMessages(request.ChatID), groupName, groupParseResult)
 				});
             return JsonConvert.SerializeObject(request.GetProxy());
         }
 
         [WebMethod]
-        public void OfflineChat(string chatGuid, string fName, string lName, string email, string description)
+        public void OfflineChat(string chatGuid, string fName, string lName, string email, string description, string groupID = null)
         {
+            int groupParseResult;
+
             Organization _organization = GetOrganization(chatGuid);
             Ticket ticket = (new Tickets(LoginUser.Anonymous)).AddNewTicket();
             ticket.OrganizationID = _organization.OrganizationID;
-            ticket.GroupID = _organization.DefaultPortalGroupID;
+            ticket.GroupID = Int32.TryParse(groupID, out groupParseResult) ? (int)groupParseResult : _organization.DefaultPortalGroupID;
             ticket.IsKnowledgeBase = false;
             ticket.IsVisibleOnPortal = true;
             ticket.Name = "Offline Chat Question";
@@ -1060,6 +1064,7 @@ namespace TSWebServices
             public string InitiatorInitials { get; set; }
             public string Description { get; set; }
 			public string GroupName { get; set; }
+            public int GroupID { get; set; }
             public List<ChatViewMessage> Messages { get; set; }
 
             public ChatViewObject()
@@ -1067,7 +1072,7 @@ namespace TSWebServices
 
             }
 
-            public ChatViewObject(ChatRequestProxy request, ParticipantInfoView initiator, ChatMessageProxy[] messages, string groupName = null)
+            public ChatViewObject(ChatRequestProxy request, ParticipantInfoView initiator, ChatMessageProxy[] messages, string groupName = null, int groupID = 0)
             {
                 ChatID = request.ChatID;
                 ChatRequestID = request.ChatRequestID;
@@ -1093,6 +1098,7 @@ namespace TSWebServices
                 }
 
 				GroupName = groupName;
+                GroupID = groupID;
             }
         }
 
