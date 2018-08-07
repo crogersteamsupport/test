@@ -734,6 +734,7 @@ Namespace TeamSupport
 				For Each tfsField As TFSLibrary.WorkItemField In workItemFields
 					Dim customValues As New CustomValues(User)
 					Dim cRMLinkField As CRMLinkField = customMappingFields.FindByCRMFieldName(tfsField.referenceName)
+					fieldValue = workItemFields.Where(Function(w) w.name = tfsField.name).FirstOrDefault
 
 					If cRMLinkField IsNot Nothing AndAlso cRMLinkField.CustomFieldID IsNot Nothing Then
 						customValues.LoadByFieldID(cRMLinkField.CustomFieldID, ticket.TicketID)
