@@ -103,6 +103,10 @@ function WatsonTicketField(ticketid) {
 
 
 $(document).on('click', '#ticket-Sentiment', function(e) {
+    if (window.parent.Ts.System.User.OrganizationID != 1078) {
+        return;
+    }
+
     teamsupport.modals.overlay.show();
     $('#modal').html(Handlebars.templates['chart']).css({
         'width': '740px'
@@ -111,7 +115,6 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
 
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
-
 
     // BRANCHES, START @ TOP LEFT.
 
@@ -446,6 +449,42 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
         ctx.fillText("+", 500, 199);
     }
 
+    // PROGRESS BAR.
+
+    ctx.beginPath();
+    ctx.moveTo(100, 400);
+    ctx.lineTo(600, 400);
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "rgba(0,0,0,0.2)";
+    ctx.stroke();
+
+    if (sentimentData.TicketSentimentScore > 50) {
+        var distance = (sentimentData.TicketSentimentScore - 50) * 5 + 350;
+        var primaryColor = "rgba(122,215,20,0.9)";
+        ctx.beginPath();
+        ctx.moveTo(350, 400);
+        ctx.lineTo(distance, 400);
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = primaryColor;
+        ctx.stroke();
+    } else if (sentimentData.TicketSentimentScore < 50) {
+        var distance = 350 - (50 - sentimentData.TicketSentimentScore) * 5;
+        var primaryColor = "rgba(229,99,66,0.9)";
+        ctx.beginPath();
+        ctx.moveTo(350, 400);
+        ctx.lineTo(distance, 400);
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = primaryColor;
+        ctx.stroke();
+    }
+
+    ctx.beginPath();
+    ctx.moveTo(348, 400);
+    ctx.lineTo(352, 400);
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "rgba(0,0,0,0.6)";
+    ctx.stroke();
+
     // CENTER CIRCLE.
 
     ctx.beginPath();
@@ -467,41 +506,7 @@ $(document).on('click', '#ticket-Sentiment', function(e) {
     ctx.font = "16px Verdana";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillStyle = "#7ad714";
-    ctx.fillText("78 / 100", 350, 315);
-
-    // PROGRESS BAR.
-
-    ctx.beginPath();
-    ctx.moveTo(100, 400);
-    ctx.lineTo(600, 400);
-    ctx.lineWidth = 5;
-    ctx.strokeStyle = "rgba(0,0,0,0.2)";
-    ctx.stroke();
-
-    if (sentimentData.TicketSentimentScore > 50) {
-        var distance = (sentimentData.TicketSentimentScore - 50) * 5 + 350;
-        ctx.beginPath();
-        ctx.moveTo(350, 400);
-        ctx.lineTo(distance, 400);
-        ctx.lineWidth = 5;
-        ctx.strokeStyle = "rgba(122,215,20,0.9)";
-        ctx.stroke();
-    } else if (sentimentData.TicketSentimentScore < 50) {
-        var distance = 350 - (50 - sentimentData.TicketSentimentScore) * 5;
-        ctx.beginPath();
-        ctx.moveTo(350, 400);
-        ctx.lineTo(distance, 400);
-        ctx.lineWidth = 5;
-        ctx.strokeStyle = "rgba(229,99,66,0.9)";
-        ctx.stroke();
-    }
-
-    ctx.beginPath();
-    ctx.moveTo(348, 400);
-    ctx.lineTo(352, 400);
-    ctx.lineWidth = 5;
-    ctx.strokeStyle = "rgba(0,0,0,0.6)";
-    ctx.stroke();
+    ctx.fillStyle = primaryColor;
+    ctx.fillText(sentimentData.TicketSentimentScore + " / 100", 350, 315);
 
 });
