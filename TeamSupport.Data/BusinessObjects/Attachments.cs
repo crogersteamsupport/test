@@ -40,7 +40,23 @@ namespace TeamSupport.Data
       catch (Exception) { }
     
     }
-  }
+
+        public static void CreateActionAttachment(AttachmentProxy attachmentProxy)
+        {
+            Attachment attachment = (new Attachments(new LoginUser(attachmentProxy.CreatorID, attachmentProxy.OrganizationID))).AddNewAttachment();
+            attachment.RefType = ReferenceType.Actions;
+            attachment.RefID = attachmentProxy.RefID;
+            attachment.OrganizationID = attachmentProxy.OrganizationID;
+            attachment.FileName = attachmentProxy.FileName;
+            attachment.Path = System.IO.Path.Combine(attachmentProxy.Path, attachmentProxy.FileName);
+            //attachment.FileType = files[i].ContentType;
+            attachment.FileSize = attachmentProxy.FileSize;
+            attachment.FilePathID = 3;  // ActionModel.ActionPathIndex
+            attachment.Description = attachmentProxy.Description;
+            attachment.ProductFamilyID = attachmentProxy.ProductFamilyID;
+            attachment.Collection.Save();
+        }
+    }
 
   public partial class Attachments
   {

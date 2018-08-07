@@ -10,14 +10,13 @@ using TeamSupport.Model;
 
 namespace TeamSupport.ModelAPI
 {
-    /// <summary>
-    /// The logical model (TeamSupport.Model) assumes correctness and throws exceptions when it is not.
-    /// </summary>
     public static class ModelAPI
     {
-        // Actions --------------------------
         public static void Create(FormsAuthenticationTicket authentication, ActionProxy actionProxy)
         {
+            if (!ConnectionContext.IsEnabled)
+                return;
+
             try
             {
                 using (ConnectionContext connection = new ConnectionContext(authentication))
@@ -31,11 +30,12 @@ namespace TeamSupport.ModelAPI
                 DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authentication), ActionLogType.Insert, ReferenceType.Actions, actionProxy.ActionID, "Unable to insert action", ex);
             }
         }
-
-
-        /// <summary> Save Action Attachments - Save the uploaded files and insert an action attachment record </summary>
+        
         public static void CreateActionAttachments(FormsAuthenticationTicket authenticationTicket, HttpContext context, int? ticketID, int? actionID)
         {
+            if (!ConnectionContext.IsEnabled)
+                return;
+
             try
             {
                 using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
@@ -49,7 +49,7 @@ namespace TeamSupport.ModelAPI
                         AttachmentFile attachmentFile = action.SaveAttachmentFile(files[i]);
                         if (attachmentFile == null)
                             continue;
-                        AttachmentProxy attachmentProxy = attachmentFile.Get(context.Request, connection.Authentication, action.ActionID);
+                        AttachmentProxy attachmentProxy = attachmentFile.GetAttachmentProxy(context.Request, action);
                         DataAPI.DataAPI.Create(connection, action, attachmentProxy);
                     }
                 }

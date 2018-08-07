@@ -16,13 +16,18 @@ namespace TeamSupport.Model
         public static void VerifyAction(DataContext db, int organizationID, int ticketID, int actionID) { Verify(db, $"SELECT ActionID FROM Actions WITH (NOLOCK) WHERE ActionID={actionID} AND TicketID={ticketID}"); }
         public static void VerifyActionAttachment(DataContext db, int organizationID, int ticketID, int actionID, int actionAttachmentID) { Verify(db, $"SELECT AttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE AttachmentID={actionAttachmentID} AND ActionID={actionID} AND OrganizationID={organizationID}"); }
 
-        private static void Verify(DataContext db, string query)
+        static void Verify(DataContext db, string query)
         {
             if (!db.ExecuteQuery<int>(query).Any()) // valid ID found?
                 throw new Exception(String.Format($"{query} not found"));
         }
 
         public static bool UserAllowUserToEditAnyAction(DataContext db, int userID) { return db.ExecuteQuery<bool>($"SELECT AllowUserToEditAnyAction FROM Users WITH (NOLOCK) WHERE UserID={userID}").First(); }
+
+        public static string AttachmentPath(DataContext db, int id)
+        {
+            return db.ExecuteQuery<string>($"SELECT[Value] FROM FilePaths WITH(NOLOCK) WHERE ID = {id}").FirstOrDefault();
+        }
 
     }
 }

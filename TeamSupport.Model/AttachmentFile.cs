@@ -31,7 +31,7 @@ namespace TeamSupport.Model
             _postedFile.SaveAs(FilePath);    // write file to disk
         }
 
-        public Data.AttachmentProxy Get(HttpRequest request, Proxy.AuthenticationModel authentication, int actionID)
+        public Data.AttachmentProxy GetAttachmentProxy(HttpRequest request, ActionModel actionModel)
         {
             string description = request.Form["description"];
             if (description != null)
@@ -43,30 +43,30 @@ namespace TeamSupport.Model
                 productFamilyID = Int32.Parse(tmp);
 
             DateTime now = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
+            UserSession user = actionModel.Ticket.User;
             Data.AttachmentProxy proxy = new Data.AttachmentProxy()
             {
-                FilePathID = 3,
+                FilePathID = ActionModel.ActionPathIndex,
                 //SentToSnow = ,
                 //SentToTFS = ,
                 ProductFamilyID = productFamilyID,
                 //SentToJira = ,
-                RefID = actionID,
+                RefID = actionModel.ActionID,
                 RefType = Data.ReferenceType.Actions,
-                ModifierID = authentication.UserID,
-                CreatorID = authentication.UserID,
+                ModifierID = user.UserID,
+                CreatorID = user.UserID,
                 Description = description,
                 Path = FilePath,
                 FileSize = ContentLength,
                 FileType = ContentType,
                 FileName = FileName,
-                OrganizationID = authentication.OrganizationID,
+                OrganizationID = user.Organization.OrganizationID,
                 //AttachmentID = this.AttachmentID,
                 //CreatorName = Action.Ticket.User.CreatorName(),
                 DateCreated = now,
                 DateModified = now
             };
             return proxy;
-
         }
 
         static string VerifyFileName(string directory, string text)

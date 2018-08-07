@@ -40,18 +40,18 @@ namespace TeamSupport.Handlers
             if (folder == AttachmentPath.Folder.Actions)
                 ModelAPI.ModelAPI.CreateActionAttachments(TSAuthentication.Ticket, context, null, itemID.Value);
 
-            if (/*Model.ConnectionContext.IsEnabled &&*/ (folder == AttachmentPath.Folder.Actions))
-            {
-                //List<Model.ActionAttachment> attachments = TeamSupport.ModelAPI.ModelAPI.CreateActionAttachments(TSAuthentication.Ticket, context, null, itemID.Value);
-                //foreach (Model.ActionAttachment attachment in attachments)
-                //{
-                //    Model.AttachmentFile file = attachment.File;
-                //    result.Add(new UploadResult(file.FileName, file.ContentType, file.ContentLength));
-                //}
-                //context.Response.Clear();
-                //context.Response.ContentType = "text/plain";
-                //context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
-            }
+            //if (Model.ConnectionContext.IsEnabled && (folder == AttachmentPath.Folder.Actions))
+            //{
+            //    List<Model.ActionAttachment> attachments = TeamSupport.ModelAPI.ModelAPI.CreateActionAttachments(TSAuthentication.Ticket, context, null, itemID.Value);
+            //    foreach (Model.ActionAttachment attachment in attachments)
+            //    {
+            //        Model.AttachmentFile file = attachment.File;
+            //        result.Add(new UploadResult(file.FileName, file.ContentType, file.ContentLength));
+            //    }
+            //    context.Response.Clear();
+            //    context.Response.ContentType = "text/plain";
+            //    context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
+            //}
 
             ReferenceType refType = AttachmentPath.GetFolderReferenceType(folder);
 

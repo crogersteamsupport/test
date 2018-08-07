@@ -55,7 +55,7 @@ namespace TeamSupport.Model
 
         public TicketModel Ticket(int ticketID) { return User.Ticket(ticketID); }
 
-        public string AttachmentPath(int id) { return String.Empty; /*DataAPI.DataAPI.AttachmentPath(_db, id);*/ }
+        public string AttachmentPath(int id) { return DBReader.AttachmentPath(_db, id); }
 
         public void Dispose()
         {

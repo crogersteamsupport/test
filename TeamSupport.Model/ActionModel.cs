@@ -35,11 +35,13 @@ namespace TeamSupport.Model
             return new ActionAttachment(this, actionAttachmentID);
         }
 
+        public const int ActionPathIndex = 3;
+
         public string AttachmentPath
         {
             get
             {
-                string path = Ticket.User.Organization.AttachmentPath(3);
+                string path = Ticket.User.Organization.AttachmentPath(ActionPathIndex);
                 path = Path.Combine(path, "Actions");   // see AttachmentPath.GetFolderName(AttachmentPath.Folder.Actions);
                 path = Path.Combine(path, ActionID.ToString());
                 if (!Directory.Exists(path))

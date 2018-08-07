@@ -93,7 +93,7 @@ namespace TeamSupport.DataAPI
         /// <summary> Create Action Attachment </summary>
         public static void Create(ConnectionContext connection, ActionModel action, AttachmentProxy attachmentProxy)
         {
-            // TODO - create action attachment
+            Attachment.CreateActionAttachment(attachmentProxy);
             LogMessage(connection.Authentication, ActionLogType.Insert, ReferenceType.Attachments, attachmentProxy.AttachmentID, "Created Ticket");
         }
 
