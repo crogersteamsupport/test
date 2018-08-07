@@ -33,6 +33,7 @@ namespace TeamSupport.Data
         [DataMember] public DateTime? DateModifiedBySalesForceSync { get; set; }
         [DataMember] public bool Pinned { get; set; }
         [DataMember] public int? ImportFileID { get; set; }
+        public string ActionSource{ get; set; }
 
     }
 

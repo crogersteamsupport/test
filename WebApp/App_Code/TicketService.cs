@@ -3588,7 +3588,7 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public void DeleteAttachment(int attachmentID)
         {
-            ModelAPI.DeleteActionAttachment(TSAuthentication.Ticket, null, null, attachmentID);
+            //ModelAPI.DeleteActionAttachment(TSAuthentication.Ticket, null, null, attachmentID);
 
             // This method assumes action attachment
             Attachment attachment = Attachments.GetAttachment(TSAuthentication.GetLoginUser(), attachmentID);
@@ -3645,20 +3645,22 @@ WHERE t.TicketID = @TicketID
             if (info.CategoryID != null && info.CategoryID > -1) ticket.AddCommunityTicket((int)info.CategoryID);
 
             // new action - future
-            //if(ConnectionContext.IsEnabled)
-            //{
-            //    ActionProxy proxy = new ActionProxy()
-            //    {
-            //        Description = info.Description,
-            //        IsVisibleOnPortal = info.IsVisibleOnPortal,
-            //        TimeSpent = info.TimeSpent,
-            //        DateStarted = info.DateStarted
-            //    };
-
-            //    LoginUser loginUser = TSAuthentication.GetLoginUser();
-            //    User userData = Users.GetUser(loginUser, TSAuthentication.UserID);
-            //    API.InsertAction(TSAuthentication.Ticket, proxy, ticket, userData);
-            //}
+            if (TeamSupport.Model.ConnectionContext.IsEnabled)
+            {
+                ActionProxy actionProxy = new ActionProxy()
+                {
+                    Name = "Description",
+                    SystemActionTypeID = SystemActionType.Description,
+                    Description = info.Description,
+                    IsVisibleOnPortal = ticket.IsVisibleOnPortal,
+                    IsKnowledgeBase = ticket.IsKnowledgeBase,
+                    TicketID = ticket.TicketID,
+                    TimeSpent = info.TimeSpent,
+                    DateStarted = info.DateStarted,
+                    ActionSource = ticket.TicketSource
+                };
+                ModelAPI.Create(TSAuthentication.Ticket, actionProxy);
+            }
 
             TeamSupport.Data.Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();
             action.ActionTypeID = null;
@@ -3899,7 +3901,7 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public string MergeTickets(int winningTicketID, int losingTicketID)
         {
-            ModelAPI.MergeTickets(TSAuthentication.Ticket, winningTicketID, losingTicketID);
+            //ModelAPI.MergeTickets(TSAuthentication.Ticket, winningTicketID, losingTicketID);
 
             Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), winningTicketID);
             String errLocation = "";

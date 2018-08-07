@@ -15,6 +15,24 @@ namespace TeamSupport.ModelAPI
     /// </summary>
     public static class ModelAPI
     {
+        // Actions --------------------------
+        public static void Create(FormsAuthenticationTicket authentication, ActionProxy actionProxy)
+        {
+            try
+            {
+                using (ConnectionContext connection = new ConnectionContext(authentication))
+                {
+                    //if (!CanEditAction(action)) return;
+                    DataAPI.DataAPI.Create(connection, connection.Ticket(actionProxy.TicketID), ref actionProxy);
+                }
+            }
+            catch (Exception ex)
+            {
+                DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authentication), ActionLogType.Insert, ReferenceType.Actions, actionProxy.ActionID, "Unable to insert action", ex);
+            }
+        }
+
+
         /// <summary> Save Action Attachments - Save the uploaded files and insert an action attachment record </summary>
         public static void CreateActionAttachments(FormsAuthenticationTicket authenticationTicket, HttpContext context, int? ticketID, int? actionID)
         {
@@ -25,26 +43,27 @@ namespace TeamSupport.ModelAPI
                     if (!ticketID.HasValue)
                         ticketID = DataAPI.DataAPI.ActionGetTicketID(connection._db, actionID.Value);
                     ActionModel action = connection.Ticket(ticketID.Value).Action(actionID.Value);
-                    //List<ActionAttachment> attachments = action.SaveAttachments(context.Request);
-                    //DataAPI.DataAPI.CreateActionAttachments(connection, action, attachments);
-
-                    //List<ActionAttachment> attachments = connection.Ticket(ticketID.Value).Action(actionID.Value).InsertActionAttachments(context.Request);
-                    //return attachments;
+                    HttpFileCollection files = context.Request.Files;
+                    for (int i = 0; i < files.Count; i++)   // foreach returns strings?
+                    {
+                        AttachmentFile attachmentFile = action.SaveAttachmentFile(files[i]);
+                        if (attachmentFile == null)
+                            continue;
+                        AttachmentProxy attachmentProxy = attachmentFile.Get(context.Request, connection.Authentication, action.ActionID);
+                        DataAPI.DataAPI.Create(connection, action, attachmentProxy);
+                    }
                 }
             }
             catch (Exception ex)
             {
-                DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), Data.ActionLogType.Insert, Data.ReferenceType.Attachments, ticketID, "Unable to save attachments", ex);
-                //return null;
+                DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), ActionLogType.Insert, ReferenceType.Attachments, ticketID, "Unable to save attachments", ex);
             }
         }
 
+        /*
         /// <summary> Delete Action Attachment /// </summary>
         public static void DeleteActionAttachment(FormsAuthenticationTicket authenticationTicket, int? ticketID, int? actionID, int attachmentID)
         {
-            if (!ConnectionContext.IsEnabled)
-                return;
-
             try
             {
                 using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
@@ -95,43 +114,6 @@ namespace TeamSupport.ModelAPI
                 DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), Data.ActionLogType.Update, Data.ReferenceType.Attachments, destinationTicketID, $"failed to merge {destinationTicketID} <= {sourceTicketID}", ex);
             }
         }
-
-        /// <summary> Insert Action </summary>
-        public static void CreateAction(FormsAuthenticationTicket authentication, ActionProxy actionProxy)
-        {
-            //    try
-            //    {
-            //        using (ConnectionContext connection = new ConnectionContext(authentication))
-            //        {
-            //            ActionModel action = connection.Ticket(actionProxy.TicketID).InsertAction(actionProxy);
-            //            return action;
-            //        }
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        ConnectionContext.LogMessage(authentication, Data.ActionLogType.Insert, Data.ReferenceType.Actions, actionProxy.ActionID, "Unable to insert action", ex);
-            //        return null;
-            //    }
-        }
-
-        ///// <summary> Insert Action on new Ticket </summary>
-        //public static ActionModel InsertAction(FormsAuthenticationTicket authentication, ActionProxy proxy, Data.Ticket ticket, Data.User user)
-        //{
-        //    try
-        //    {
-        //        using (ConnectionContext connection = new ConnectionContext(authentication))
-        //        {
-        //            ActionModel action = connection.Ticket(ticket.TicketID).InsertAction(proxy, ticket, user);
-        //            return action;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ConnectionContext.LogMessage(authentication, Data.ActionLogType.Insert, Data.ReferenceType.Actions, ticket.TicketID, "Unable to insert action", ex);
-        //        return null;
-        //    }
-        //}
-
-
+*/
     }
 }

@@ -33,18 +33,6 @@ namespace TeamSupport.Model
             return new ActionModel(this, actionID);
         }
 
-        /// <summary> Create new Data.Action on an existing ticket </summary>
-        public ActionModel InsertAction(ActionProxy proxy)
-        {
-            return new ActionModel(this, proxy);
-        }
-
-        ///// <summary> Create new Data.Action on new ticket </summary>
-        //public ActionModel InsertAction(ActionProxy proxy, Data.Ticket ticketData, Data.User user)
-        //{
-        //    return new ActionModel(this, proxy, ticketData, user);
-        //}
-
         public ActionModel[] SelectActions()
         {
             //int[] actionIDs = DataAPI.DataAPI.TicketSelectActionIDs(_db, User.Organization.OrganizationID, TicketID);

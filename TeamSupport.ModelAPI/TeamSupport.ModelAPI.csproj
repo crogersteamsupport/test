@@ -64,8 +64,5 @@
       <Name>TeamSupport.WebUtils</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="ModelAPI.cd" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -30,26 +30,6 @@ namespace TeamSupport.Model
             DBReader.VerifyAction(_db, ticket.User.Organization.OrganizationID, Ticket.TicketID, ActionID);
         }
 
-        /// <summary> new action on existing ticket </summary>
-        public ActionModel(TicketModel ticket, ActionProxy proxy)
-        {
-            //ActionProxy result = DataAPI.DataAPI.InsertAction(ticket.User.Authentication, proxy, ticket._db);
-            //Ticket = ticket;
-            //ActionID = result.ActionID;
-            //_db = ticket._db;
-        }
-
-        ///// <summary> new action on new ticket </summary>
-        //public ActionModel(TicketModel ticket, ActionProxy proxy, Data.Ticket ticketData, Data.User user)
-        //{
-        //    ActionProxy result = DataAPI.DataAPI.InsertAction(ticketData, proxy, user);
-        //    Ticket = ticket;
-        //    ActionID = result.ActionID;
-        //    _db = ticket._db;
-        //}
-
-        public int CreatorID() { return 0; /*DataAPI.DataAPI.ActionCreatorID(_db, ActionID);*/ }
-
         public ActionAttachment Attachment(int actionAttachmentID)
         {
             return new ActionAttachment(this, actionAttachmentID);
@@ -68,31 +48,27 @@ namespace TeamSupport.Model
             }
         }
 
-        // this is very slow...
-        public ActionAttachment[] Attachments()
+
+
+        //// this is very slow...
+        //public ActionAttachment[] Attachments()
+        //{
+        //    string query = $"SELECT AttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE ActionID={ActionID} AND OrganizationID={Ticket.User.Organization.OrganizationID}";
+        //    int[] actionAttachmentIDs = _db.ExecuteQuery<int>(query).ToArray();
+        //    return actionAttachmentIDs.Select(id => new ActionAttachment(this, id)).ToArray();
+        //}
+
+        public AttachmentFile SaveAttachmentFile(HttpPostedFile postedFile)
         {
-            string query = $"SELECT AttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE ActionID={ActionID} AND OrganizationID={Ticket.User.Organization.OrganizationID}";
-            int[] actionAttachmentIDs = _db.ExecuteQuery<int>(query).ToArray();
-            return actionAttachmentIDs.Select(id => new ActionAttachment(this, id)).ToArray();
+            if (postedFile.ContentLength == 0)
+                return null;
+
+            AttachmentFile file = new AttachmentFile(AttachmentPath, postedFile);
+            file.Save();
+            return file;
         }
 
-        public List<ActionProxy> SaveAttachments(HttpRequest request)
-        {
-            List<ActionProxy> results = new List<ActionProxy>();
-            //Data.OrganizationUser user = Ticket.User.Authentication.OrganizationUser;
-            //HttpFileCollection files = request.Files;
-            //for (int i = 0; i < files.Count; i++)   // foreach returns strings?
-            //{
-            //    HttpPostedFile postedFile = files[i];
-            //    if (postedFile.ContentLength == 0)
-            //        continue;
-
-            //    results.Add(new ActionAttachment(this, user, postedFile, request));
-            //}
-
-            return results;
-        }
-
+        public int CreatorID() { return 0; /*DataAPI.DataAPI.ActionCreatorID(_db, ActionID);*/ }
         public bool CanEdit() { return Ticket.User.CanEdit() || (Ticket.User.UserID == CreatorID()); }
 
         //public AttachmentProxy[] SelectAttachments() { return DBReader.GetActionAttachmentProxies(_db, ActionID); }

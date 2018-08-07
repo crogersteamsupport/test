@@ -839,12 +839,11 @@ namespace TSWebServices
         public TimeLineItem UpdateAction(ActionProxy proxy)
         {
             // new action - future
-            //if (ConnectionContext.IsEnabled && (proxy.ActionID == -1))
-            //{
-            //    ModelAPI.InsertAction(TSAuthentication.Ticket, proxy);
-            //    // Front end should NOT be using Data.Action!!
-            //    return GetActionTimelineItem(newAction);
-            //}
+            if (ConnectionContext.IsEnabled && (proxy.ActionID == -1))
+            {
+                proxy.CreatorID = TSAuthentication.UserID;
+                TeamSupport.ModelAPI.ModelAPI.Create(TSAuthentication.Ticket, proxy);
+            }
 
             TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), proxy.ActionID);
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
