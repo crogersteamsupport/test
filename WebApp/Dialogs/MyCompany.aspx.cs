@@ -209,6 +209,7 @@ public partial class Dialogs_Organization : BaseDialogPage
 		}
 
 		cbUseWatson.Checked = organization.UseWatson;
+		cbRequireTwoFactor.Checked = organization.RequireTwoFactor;
 		cbRequireGroupAssignmentOnTickets.Checked = organization.RequireGroupAssignmentOnTickets;
 		cbAlertContactNoEmail.Checked = organization.AlertContactNoEmail;
 		cbDisableSupport.Checked = !organization.DisableSupportLogin;
@@ -330,6 +331,7 @@ public partial class Dialogs_Organization : BaseDialogPage
 		}
 
 		organization.UseWatson = cbUseWatson.Checked;
+		organization.RequireTwoFactor = cbRequireTwoFactor.Checked;
 		organization.RequireGroupAssignmentOnTickets = cbRequireGroupAssignmentOnTickets.Checked;
 		organization.AlertContactNoEmail = cbAlertContactNoEmail.Checked;
 		if (organization.DisableSupportLogin != !cbDisableSupport.Checked)

@@ -42,7 +42,7 @@ namespace TeamSupport.Data.BusinessObjects
         static int MaxActionTextLength = Int32.Parse(System.Configuration.ConfigurationManager.AppSettings.Get("MaxActionTextLength"));
 
         /// <summary>
-        /// Watson utterance only allows 500 char 
+        /// Watson utterance only allows 500 char
         /// (don't throw sql exception on truncate of dbo.ActionToAnalyze.ActionDescription)
         /// </summary>
         /// <param name="RawHtml">verbose ActionDescription nvarchar(max)</param>
@@ -63,7 +63,7 @@ namespace TeamSupport.Data.BusinessObjects
         }
 
 
-        /// <summary> 
+        /// <summary>
         /// The watson service uses Stored Procedure dbo.ActionsGetForWatson to find records for watson ActionToAnalyze
         /// This routine performs the equivalent checks
         /// </summary>
@@ -89,10 +89,9 @@ namespace TeamSupport.Data.BusinessObjects
                 //AND t.[isvisibleonportal] = 1
                 //AND account.producttype = 2
                 // AND NOT EXISTS (SELECT NULL FROM ActionSentiments ast WHERE a.actionid = ast.actionid);
-                if (!(account.UseWatson &&
-                    action.IsVisibleOnPortal && t.IsVisibleOnPortal &&
-                    (account.ProductType == ProductType.Enterprise)))
+                if (!(account.UseWatson && action.IsVisibleOnPortal && t.IsVisibleOnPortal && (account.ProductType == ProductType.Enterprise))) {
                     return;
+                }
 
                 //CASE
                 //    WHEN creatorCompany.organizationid = account.organizationid THEN 1
