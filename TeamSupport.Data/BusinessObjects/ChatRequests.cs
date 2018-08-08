@@ -343,15 +343,15 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
 
         public static int? CalculateChatGroupID(LoginUser loginUser, int organizationID, int groupID = 0, string groupName = null) {
             int? result = null;
+            Groups groups = new Groups(loginUser);
 
             if (groupID > 0)
             {
-                result = groupID;
+                groups.LoadByGroupID(groupID);
+                result = groups.Any() ? groupID : 0;
             }
             else if (!string.IsNullOrEmpty(groupName)) {
-                Groups groups = new Groups(loginUser);
                 groups.LoadByGroupName(organizationID, groupName);
-
                 result = groups.Any() ? (int?)groups[0].GroupID : null;
             }
 
