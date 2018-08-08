@@ -8,7 +8,7 @@ $(document).ready(function () {
     var email = Ts.Utils.getQueryValue("email", window);
     var msg = Ts.Utils.getQueryValue("msg", window);
     _groupName = Ts.Utils.getQueryValue("Group", window);
-    _groupID = Ts.Utils.getQueryValue("GroupID", window)
+    _groupID = Ts.Utils.getQueryValue("GroupID", window);
     var chatGuid = { chatGuid: chatID };
 
 	IssueAjaxRequest("CheckChatStatus", { chatGuid: chatID, groupName: _groupName, groupID: _groupID },
