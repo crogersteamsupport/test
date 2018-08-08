@@ -629,15 +629,16 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public bool DeleteFolder(int folderID)
-        {
+        public bool DeleteFolder(int folderID) {
             ReportFolder folder = ReportFolders.GetReportFolder(TSAuthentication.GetLoginUser(), (int)folderID);
-            if (!TSAuthentication.IsSystemAdmin && folder.CreatorID != TSAuthentication.UserID) return false;
-
-            Reports.UnassignFolder(TSAuthentication.GetLoginUser(), folderID);
-            folder.Delete();
-            folder.Collection.Save();
-            return true;
+            if (TSAuthentication.IsSystemAdmin || folder.CreatorID == TSAuthentication.UserID) {
+                Reports.UnassignFolder(TSAuthentication.GetLoginUser(), folderID);
+                folder.Delete();
+                folder.Collection.Save();
+                return true;
+            } else {
+                return false;
+            }
         }
 
         [WebMethod]
