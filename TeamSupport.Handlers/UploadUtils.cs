@@ -38,7 +38,7 @@ namespace TeamSupport.Handlers
 
             // Action Attachments
             if (folder == AttachmentPath.Folder.Actions)
-                ModelAPI.ModelAPI.CreateActionAttachments(TSAuthentication.Ticket, context, null, itemID.Value);
+                ModelAPI.ModelAPI.CreateActionAttachments(TSAuthentication.Ticket, null, itemID.Value, context);    // ticketID, actionID, actionAttachments
 
             //if (Model.ConnectionContext.IsEnabled && (folder == AttachmentPath.Folder.Actions))
             //{

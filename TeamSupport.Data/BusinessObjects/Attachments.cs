@@ -48,8 +48,8 @@ namespace TeamSupport.Data
             attachment.RefID = attachmentProxy.RefID;
             attachment.OrganizationID = attachmentProxy.OrganizationID;
             attachment.FileName = attachmentProxy.FileName;
-            attachment.Path = System.IO.Path.Combine(attachmentProxy.Path, attachmentProxy.FileName);
-            //attachment.FileType = files[i].ContentType;
+            attachment.Path = attachmentProxy.Path;
+            attachment.FileType = attachmentProxy.FileType;
             attachment.FileSize = attachmentProxy.FileSize;
             attachment.FilePathID = 3;  // ActionModel.ActionPathIndex
             attachment.Description = attachmentProxy.Description;

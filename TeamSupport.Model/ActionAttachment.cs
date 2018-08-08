@@ -20,6 +20,7 @@ namespace TeamSupport.Model
         public int? ActionAttachmentID { get; private set; }
         public DataContext _db { get; private set; }
 
+
         /// <summary> Load existing action attachment /// </summary>
         public ActionAttachment(ActionModel action, int actionAttachmentID)
         {
@@ -40,7 +41,7 @@ namespace TeamSupport.Model
             TicketModel ticket = Action.Ticket;
             UserSession user = ticket.User;
             OrganizationModel organization = user.Organization;
-            //DataAPI.DataAPI.DeleteActionAttachment(user.Authentication, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
+            TeamSupport.DataAPI.DataAPI.DeleteActionAttachment(user.Authentication, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
             ActionAttachmentID = null;
         }
 

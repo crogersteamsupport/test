@@ -15,7 +15,9 @@ using TeamSupport.Model;
 namespace TeamSupport.DataAPI
 {
     /// <summary>
-    /// CRUD Interface (Create, Read, Update, Delete) on verified connection context
+    /// CRUD Interface (Create, Read, Update, Delete) on verified connection context and verified model objects
+    /// 
+    /// Log all changes to DB here!!  Thanks :)
     /// </summary>
     public static class DataAPI
     {
@@ -91,10 +93,23 @@ namespace TeamSupport.DataAPI
 
         #region ActionAttachments
         /// <summary> Create Action Attachment </summary>
-        public static void Create(ConnectionContext connection, ActionModel action, AttachmentProxy attachmentProxy)
+        public static void Create(ConnectionContext connection, ActionModel action, AttachmentProxy proxy)
         {
-            Attachment.CreateActionAttachment(attachmentProxy);
-            LogMessage(connection.Authentication, ActionLogType.Insert, ReferenceType.Attachments, attachmentProxy.AttachmentID, "Created Ticket");
+            // hard code all the numbers, parameterize all the strings so they are SQL-Injection checked
+            //string query = "INSERT INTO ActionAttachments(OrganizationID, FileName, FileType, FileSize, Path, DateCreated, DateModified, CreatorID, ModifierID, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID) " +
+            //    $"VALUES({connection.Organization.OrganizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{proxy.DateCreated}', '{proxy.DateModified}', {proxy.CreatorID}, {proxy.ModifierID}, {action.ActionID}, {(proxy.SentToJira ? 1 : 0)}, {(proxy.SentToTFS ? 1 : 0)}, {(proxy.SentToSnow ? 1 : 0)}, {proxy.FilePathID})" +
+            //    "SELECT SCOPE_IDENTITY()";
+            //decimal value = connection._db.ExecuteQuery<decimal>(query, proxy.FileName, proxy.FileType, proxy.Path).Min();
+            //proxy.AttachmentID = Decimal.ToInt32(value);
+
+            Attachment.CreateActionAttachment(proxy);   // data layer
+
+            // LINQ - hard code all the numbers, parameterize all the strings so they are SQL-Injection checked
+            //string query = "INSERT INTO ActionAttachments(OrganizationID, FileName, FileType, FileSize, Path, DateCreated, DateModified, CreatorID, ModifierID, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID) " +
+            //    $"VALUES({connection.Organization.OrganizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{proxy.DateCreated}', '{proxy.DateModified}', {proxy.CreatorID}, {proxy.ModifierID}, {action.ActionID}, {(proxy.SentToJira ? 1 : 0)}, {(proxy.SentToTFS ? 1 : 0)}, {(proxy.SentToSnow ? 1 : 0)}, {proxy.FilePathID})" +
+            //    "SELECT SCOPE_IDENTITY()";
+            //decimal value = connection._db.ExecuteQuery<decimal>(query, proxy.FileName, proxy.FileType, proxy.Path).Min();
+            //proxy.AttachmentID = Decimal.ToInt32(value);
         }
 
         /// <summary> Read Action Attachment </summary>

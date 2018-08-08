@@ -3588,7 +3588,7 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public void DeleteAttachment(int attachmentID)
         {
-            //ModelAPI.DeleteActionAttachment(TSAuthentication.Ticket, null, null, attachmentID);
+            ModelAPI.DeleteActionAttachment(TSAuthentication.Ticket, null, null, attachmentID);
 
             // This method assumes action attachment
             Attachment attachment = Attachments.GetAttachment(TSAuthentication.GetLoginUser(), attachmentID);
