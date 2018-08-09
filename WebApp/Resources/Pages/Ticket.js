@@ -129,8 +129,7 @@ $(document).ready(function () {
           return;
         }
 
-        debugger;
-        //if ($('#dialog-ticketmerge-confirm').prop("checked")) {
+        if ($('#dialog-ticketmerge-confirm').prop("checked")) {
           $(e.target).closest('.ui-dialog-buttonpane').addClass('saving');
           var winningID = $('#dialog-ticketmerge-search').data('ticketid');
           var winningTicketNumber = $('#dialog-ticketmerge-search').data('ticketnumber');
@@ -148,10 +147,10 @@ $(document).ready(function () {
           top.Ts.MainPage.openTicket(winningTicketNumber, true);
           window.location = window.location;
           window.top.ticketSocket.server.ticketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
-        //}
-        //else {
-        //  alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
-        //}
+        }
+        else {
+          alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
+        }
       },
       Cancel: function () { $(this).dialog("close"); clearDialog(); }
     }
