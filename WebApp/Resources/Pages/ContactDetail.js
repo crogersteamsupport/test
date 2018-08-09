@@ -1004,7 +1004,7 @@ $(document).ready(function () {
             $('#fieldNoteTitle').val(note.Title);
             var desc = note.Description;
             desc = desc.replace(/<br\s?\/?>/g, "\n");
-            //$('#fieldNoteDesc').val(desc);
+            $('#fieldNoteDesc').val(desc);
             $('#fieldNoteID').val(note.NoteID);
             $('#noteContactAlert').prop('checked', note.IsAlert);
             $('#btnNotesSave').text("Save");
