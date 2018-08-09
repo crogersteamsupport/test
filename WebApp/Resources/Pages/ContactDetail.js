@@ -217,7 +217,8 @@ $(document).ready(function () {
             return;
         }
 
-        if ($('#dialog-contactmerge-confirm').prop("checked")) {
+        debugger;
+        //if ($('#dialog-contactmerge-confirm').prop("checked")) {
             var winningID = $('#Contact-Merge-search').data('userid');
             //var winningContactName = $('#Contact-Merge-search').data('username');
             var JSTop = top;
@@ -240,11 +241,11 @@ $(document).ready(function () {
             //  function () {
             //  $('#merge-error').show();
             //});
-        }
-        else {
-            alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
-            $('#contact-merge-complete').removeAttr('disabled');
-        }
+        //}
+        //else {
+        //    alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
+        //    $('#contact-merge-complete').removeAttr('disabled');
+        //}
     });
 
     $('#historyToggle').on('click', function () {

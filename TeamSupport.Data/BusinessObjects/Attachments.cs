@@ -40,7 +40,23 @@ namespace TeamSupport.Data
       catch (Exception) { }
     
     }
-  }
+
+        public static void CreateActionAttachment(AttachmentProxy attachmentProxy)
+        {
+            Attachment attachment = (new Attachments(new LoginUser(attachmentProxy.CreatorID, attachmentProxy.OrganizationID))).AddNewAttachment();
+            attachment.RefType = ReferenceType.Actions;
+            attachment.RefID = attachmentProxy.RefID;
+            attachment.OrganizationID = attachmentProxy.OrganizationID;
+            attachment.FileName = attachmentProxy.FileName;
+            attachment.Path = attachmentProxy.Path;
+            attachment.FileType = attachmentProxy.FileType;
+            attachment.FileSize = attachmentProxy.FileSize;
+            attachment.FilePathID = 3;  // ActionModel.ActionPathIndex
+            attachment.Description = attachmentProxy.Description;
+            attachment.ProductFamilyID = attachmentProxy.ProductFamilyID;
+            attachment.Collection.Save();
+        }
+    }
 
   public partial class Attachments
   {
@@ -56,6 +72,12 @@ namespace TeamSupport.Data
       }
 
     }
+        public static Attachments ActionAttachments(LoginUser loginUser, int actionID, string orderBy = "")
+        {
+            Attachments attachments = new Attachments(loginUser);
+            attachments.LoadByActionID(actionID, orderBy);
+            return attachments;
+        }
 
     public static Attachment GetAttachment(LoginUser loginUser, Guid attachmentGUID)
     {
@@ -67,7 +89,7 @@ namespace TeamSupport.Data
         return attachments[0];
     }
 
-    public void LoadByActionID(int actionID, string orderBy = "")
+    private void LoadByActionID(int actionID, string orderBy = "")
     {
       LoadByReference(ReferenceType.Actions, actionID, orderBy);
     }

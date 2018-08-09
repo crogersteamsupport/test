@@ -37,20 +37,21 @@ namespace TeamSupport.Handlers
             List<UploadResult> result = new List<UploadResult>();
 
             // Action Attachments
-            if (Model.ConnectionContext.Enabled && (folder == AttachmentPath.Folder.Actions))
-            {
-                // front end does not provide TicketID
-                List<Model.ActionAttachment> attachments = Model.API.SaveActionAttachments(TSAuthentication.GetLoginUser(), context, null, itemID.Value);
-                foreach (Model.ActionAttachment attachment in attachments)
-                {
-                    Model.AttachmentFile file = attachment.File;
-                    result.Add(new UploadResult(file.FileName, file.ContentType, file.ContentLength));
-                }
-                context.Response.Clear();
-                context.Response.ContentType = "text/plain";
-                context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
-                return;
-            }
+            if (folder == AttachmentPath.Folder.Actions)
+                ModelAPI.ModelAPI.CreateActionAttachments(TSAuthentication.Ticket, null, itemID.Value, context);    // ticketID, actionID, actionAttachments
+
+            //if (Model.ConnectionContext.IsEnabled && (folder == AttachmentPath.Folder.Actions))
+            //{
+            //    List<Model.ActionAttachment> attachments = TeamSupport.ModelAPI.ModelAPI.CreateActionAttachments(TSAuthentication.Ticket, context, null, itemID.Value);
+            //    foreach (Model.ActionAttachment attachment in attachments)
+            //    {
+            //        Model.AttachmentFile file = attachment.File;
+            //        result.Add(new UploadResult(file.FileName, file.ContentType, file.ContentLength));
+            //    }
+            //    context.Response.Clear();
+            //    context.Response.ContentType = "text/plain";
+            //    context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
+            //}
 
             ReferenceType refType = AttachmentPath.GetFolderReferenceType(folder);
 

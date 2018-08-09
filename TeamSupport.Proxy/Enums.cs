@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -209,8 +209,8 @@ namespace TeamSupport.Data
         Oracle = 9,
         HubSpot = 10,
         TFS = 11,
-		ServiceNow = 12
-	}
+        ServiceNow = 12
+    }
 
     public enum IntegrationObject : byte
     {
@@ -223,19 +223,19 @@ namespace TeamSupport.Data
         Credentials = 5
     }
 
-	public enum IntegrationOrientation : byte
-	{
-		[Description("in")]
-		IntoTeamSupport = 1,
-		[Description("out")]
-		OutToJira = 2,
-		[Description("out")]
-		OutToTFS = 3,
-		[Description("out")]
-		OutToServiceNow = 4
-	}
+    public enum IntegrationOrientation : byte
+    {
+        [Description("in")]
+        IntoTeamSupport = 1,
+        [Description("out")]
+        OutToJira = 2,
+        [Description("out")]
+        OutToTFS = 3,
+        [Description("out")]
+        OutToServiceNow = 4
+    }
 
-	public enum ReportType
+    public enum ReportType
     {
         Table = 0,
         Chart = 1,
@@ -388,11 +388,11 @@ namespace TeamSupport.Data
         Alphabetical
     }
 
-	public enum WebHookType : byte
-	{
-		Unknown = 0,
-		Integration = 1
-	}
+    public enum WebHookType : byte
+    {
+        Unknown = 0,
+        Integration = 1
+    }
 
     public enum ActivityTypeEnum
     {

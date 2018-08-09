@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="TeamSupport.Data.ActionProxy">
+    <Position X="1" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>hAAAGAECAAAgCAACAAAAAEQQAAAABAAAQAAEAQAQACA=</HashCode>
+      <FileName>ActionsProxy.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TeamSupport.Data.AttachmentProxy">
+    <Position X="3" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAkAAAAAgAANCAAAAIEQAAAAgRAQAAAAFAQFAAAA=</HashCode>
+      <FileName>AttachmentProxy.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TeamSupport.Proxy.AuthenticationModel">
+    <Position X="5" Y="1" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACgAAAAAAAAAAAAAAgIAAAAAAAACCABAAAAAAA=</HashCode>
+      <FileName>AuthenticationModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="TeamSupport.Data.ReferenceType">
+    <Position X="7.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ZhRsCWMBIEICACFAAEBEQIAAhAoAlVggQAYsUrcAAgQ=</HashCode>
+      <FileName>Enums.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="TeamSupport.Data.ActionLogType">
+    <Position X="9.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAEAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Enums.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

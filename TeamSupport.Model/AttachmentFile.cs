@@ -19,7 +19,7 @@ namespace TeamSupport.Model
 
         public AttachmentFile(string attachmentPath, HttpPostedFile postedFile)
         {
-            FileName = VerifyFileName(attachmentPath, postedFile.FileName);
+            FileName = "test_" + VerifyFileName(attachmentPath, postedFile.FileName);
             FilePath = Path.Combine(attachmentPath, FileName);
             ContentType = postedFile.ContentType;
             ContentLength = postedFile.ContentLength;
@@ -29,6 +29,44 @@ namespace TeamSupport.Model
         public void Save()
         {
             _postedFile.SaveAs(FilePath);    // write file to disk
+        }
+
+        public Data.AttachmentProxy GetAttachmentProxy(HttpRequest request, ActionModel actionModel)
+        {
+            string description = request.Form["description"];
+            if (description != null)
+                description = description.Replace("\n", "<br />");
+
+            int? productFamilyID = null;
+            string tmp = request.Form["productFamilyID"];
+            if ((tmp != null) && !tmp.Equals("-1"))
+                productFamilyID = Int32.Parse(tmp);
+
+            DateTime now = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
+            UserSession user = actionModel.Ticket.User;
+            Data.AttachmentProxy proxy = new Data.AttachmentProxy()
+            {
+                FilePathID = ActionModel.ActionPathIndex,
+                //SentToSnow = ,
+                //SentToTFS = ,
+                ProductFamilyID = productFamilyID,
+                //SentToJira = ,
+                RefID = actionModel.ActionID,
+                RefType = Data.ReferenceType.Actions,
+                ModifierID = user.UserID,
+                CreatorID = user.UserID,
+                Description = description,
+                Path = FilePath,
+                FileSize = ContentLength,
+                FileType = ContentType,
+                FileName = FileName,
+                OrganizationID = user.Organization.OrganizationID,
+                //AttachmentID = this.AttachmentID,
+                //CreatorName = Action.Ticket.User.CreatorName(),
+                DateCreated = now,
+                DateModified = now
+            };
+            return proxy;
         }
 
         static string VerifyFileName(string directory, string text)
