@@ -1842,7 +1842,7 @@ $(document).ready(function () {
             $('#fieldNoteTitle').val(note.Title);
             var desc = note.Description;
             desc = desc.replace(/<br\s?\/?>/g, "\n");
-            //$('#fieldNoteDesc').val(desc);
+            $('#fieldNoteDesc').val(desc);
             $('#fieldNoteID').val(note.NoteID);
             $('#noteCustomerAlert').prop('checked', note.IsAlert);
             $('#btnNotesSave').text("Save");
@@ -1874,7 +1874,7 @@ $(document).ready(function () {
             $('#noteForm').show();
             initEditor($('#fieldNoteDesc'), function (ed) {
                 $('#fieldNoteDesc').tinymce().setContent(desc);
-                //$('#fieldNoteDesc').tinymce().focus();
+                $('#fieldNoteDesc').tinymce().focus();
             });
 
             if (note.ProductFamilyID) {
