@@ -3452,7 +3452,7 @@ AND
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "UPDATE Actions SET TicketID=@newticketID WHERE (TicketID = @oldticketID)";
+                command.CommandText = "UPDATE Actions WITH (ROWLOCK) SET TicketID=@newticketID WHERE (TicketID = @oldticketID)";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@newticketID", newticketID);
                 command.Parameters.AddWithValue("@oldticketID", oldticketID);
@@ -3484,7 +3484,7 @@ AND
             }
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "UPDATE Tickets SET ParentID=@newticketID WHERE (ParentID = @oldticketID)";
+                command.CommandText = "UPDATE Tickets WITH (ROWLOCK) SET ParentID=@newticketID WHERE (ParentID = @oldticketID)";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@newticketID", newticketID);
                 command.Parameters.AddWithValue("@oldticketID", oldticketID);
@@ -3492,10 +3492,10 @@ AND
             }
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "UPDATE Tickets SET ParentID=null WHERE (ParentID = ticketID)";
+                command.CommandText = "UPDATE Tickets WITH (ROWLOCK) SET ParentID=null WHERE (ParentID = ticketID) and (ParentID = @newticketID)";
                 command.CommandType = CommandType.Text;
-                ExecuteNonQuery(command, "Tickets");
-            }
+                command.Parameters.AddWithValue("@newticketID", newticketID);
+                ExecuteNonQuery(command, "Tickets");           }
 
             using (SqlCommand command = new SqlCommand())
             {
@@ -3525,6 +3525,7 @@ AND
             string description = "Merged '" + ticket.TicketNumber + "' Action Attachments";
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
         }
+
 
         public void LoadFirstJiraSynced(int organizationID)
         {

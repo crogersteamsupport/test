@@ -4113,22 +4113,24 @@ WHERE t.TicketID = @TicketID
             
 
             ///////--------------------------------------------------
-            //Get looser ticket dependencies            
+            //Get looser ticket dependencies  
+            //----- Consider changing queries to load only what does not exist on the new ticket?
+            //----- Maybe compare with code before inserting. I don't think we are handling duplicates as of now and therefore the errors on some tables.
             //load contacts
             ContactsView looserContacts = new ContactsView(loginUser);
-            looserContacts.LoadByTicketID(losingTicketID);
+            looserContacts.LoadContactsOfTicket(losingTicketID);
             //load Orgs
             Organizations looserCustomers = new Organizations(loginUser);
-            looserCustomers.LoadByNotContactTicketID(losingTicketID);
+            looserCustomers.LoadCustomersOfTicket(losingTicketID);
             //load tags
             Tags looserTags = new Tags(loginUser);
             looserTags.LoadByReference(ReferenceType.Tickets, losingTicketID);
             //load subscriptions
             UsersView usersSubscribed = new UsersView(loginUser);
-            usersSubscribed.LoadBySubscription(losingTicketID, ReferenceType.Tickets);
+            usersSubscribed.LoadSubscriptionsOfTicket(losingTicketID);
             //load queuers
             UsersView usersQueued = new UsersView(loginUser);
-            usersQueued.LoadByTicketQueue(losingTicketID);
+            usersQueued.LoadQueuedOfTicket(losingTicketID);
             ////---------------------------------------------------       
 
             try
@@ -4147,8 +4149,10 @@ WHERE t.TicketID = @TicketID
                 winnerTicket.Collection.MergeUpdateReminders(losingTicketID, winningTicketID);
                 winnerTicket.Collection.MergeUpdateAssets(losingTicketID, winningTicketID);
                 winnerTicket.Collection.MergeUpdateActions(losingTicketID, winningTicketID);
-                winnerTicket.Collection.MergeAttachments(losingTicketID, winningTicketID);
                 winnerTicket.Collection.MergeUpdateRelationships(losingTicketID, winningTicketID);
+                //Not necesarry -attachments are linked to actions, actions were moved.
+                //winnerTicket.Collection.MergeAttachments(losingTicketID, winningTicketID);
+                
 
                 //Delete looser ticket
                 looserTicket.Collection.DeleteFromDB(losingTicketID);
