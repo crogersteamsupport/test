@@ -2625,6 +2625,11 @@ function setInitialValue() {
             }
         });
     }
+
+	var groupID = parent.Ts.Utils.getQueryValue('groupid', window)
+	if (groupID && groupID != null) {
+		SetGroup(groupID);
+	}
 }
 
 var SetType = function (TypeID) {
