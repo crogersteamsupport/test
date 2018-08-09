@@ -12,26 +12,46 @@ namespace TeamSupport.Model
     {
         public string FileName { get; private set; }
         public string FilePath { get; private set; }
-        public int ContentLength { get; private set; }
+        public long ContentLength { get; private set; }
         public string ContentType { get; private set; }
 
-        HttpPostedFile _postedFile;
-
+        /// <summary> Create new attachment file </summary>
         public AttachmentFile(string attachmentPath, HttpPostedFile postedFile)
         {
-            FileName = "test_" + VerifyFileName(attachmentPath, postedFile.FileName);
+            FileName = VerifyFileName(attachmentPath, postedFile.FileName);
             FilePath = Path.Combine(attachmentPath, FileName);
             ContentType = postedFile.ContentType;
             ContentLength = postedFile.ContentLength;
-            _postedFile = postedFile;    // write file to disk
+            postedFile.SaveAs(FilePath);    // write file to disk
         }
 
-        public void Save()
+        /// <summary> Existing attachment file </summary>
+        public AttachmentFile(ActionAttachment attachment, Data.AttachmentProxy proxy)
         {
-            _postedFile.SaveAs(FilePath);    // write file to disk
+            FileInfo file = new FileInfo(proxy.Path);
+            DirectoryInfo dir = file.Directory;
+            string dirName = file.Directory.ToString();
+            if (!dirName.Equals(attachment.Action.AttachmentPath))
+                throw new Exception($"File path {file.Directory.Name} != {attachment.Action.AttachmentPath}");
+
+            FileName = proxy.FileName;
+            FilePath = proxy.Path;
+            ContentLength = proxy.FileSize;
+            ContentType = proxy.FileType;
         }
 
-        public Data.AttachmentProxy GetAttachmentProxy(HttpRequest request, ActionModel actionModel)
+        /// <summary> Delete attachment file </summary>
+        public void Delete()
+        {
+            string filePath = FilePath;
+            FileName = null;
+            FilePath = null;
+            ContentLength = 0;
+            ContentType = null;
+            File.Delete(filePath);
+        }
+
+        public Data.AttachmentProxy CreateAttachmentProxy(HttpRequest request, ActionModel actionModel)
         {
             string description = request.Form["description"];
             if (description != null)

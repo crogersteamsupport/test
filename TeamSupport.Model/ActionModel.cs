@@ -30,13 +30,13 @@ namespace TeamSupport.Model
             DBReader.VerifyAction(_db, ticket.User.Organization.OrganizationID, Ticket.TicketID, ActionID);
         }
 
+        /// <summary> existing action attachment </summary>
         public ActionAttachment Attachment(int actionAttachmentID)
         {
             return new ActionAttachment(this, actionAttachmentID);
         }
 
         public const int ActionPathIndex = 3;
-
         public string AttachmentPath
         {
             get
@@ -50,29 +50,14 @@ namespace TeamSupport.Model
             }
         }
 
-
-
-        //// this is very slow...
-        //public ActionAttachment[] Attachments()
-        //{
-        //    string query = $"SELECT AttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE ActionID={ActionID} AND OrganizationID={Ticket.User.Organization.OrganizationID}";
-        //    int[] actionAttachmentIDs = _db.ExecuteQuery<int>(query).ToArray();
-        //    return actionAttachmentIDs.Select(id => new ActionAttachment(this, id)).ToArray();
-        //}
-
-        public AttachmentFile SaveAttachmentFile(HttpPostedFile postedFile)
+        public AttachmentFile CreateAttachmentFile(HttpPostedFile postedFile)
         {
             if (postedFile.ContentLength == 0)
                 return null;
 
-            AttachmentFile file = new AttachmentFile(AttachmentPath, postedFile);
-            file.Save();
-            return file;
+            return new AttachmentFile(AttachmentPath, postedFile);
         }
 
-        public int CreatorID() { return 0; /*DataAPI.DataAPI.ActionCreatorID(_db, ActionID);*/ }
-        public bool CanEdit() { return Ticket.User.CanEdit() || (Ticket.User.UserID == CreatorID()); }
-
-        //public AttachmentProxy[] SelectAttachments() { return DBReader.GetActionAttachmentProxies(_db, ActionID); }
+        public bool CanEdit() { return Ticket.User.CanEdit() || (Ticket.User.UserID == DBReader.CreatorID(_db, ActionID)); }
     }
 }

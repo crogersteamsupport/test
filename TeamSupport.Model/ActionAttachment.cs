@@ -38,11 +38,11 @@ namespace TeamSupport.Model
             if (!Action.CanEdit())
                 return;
 
-            TicketModel ticket = Action.Ticket;
-            UserSession user = ticket.User;
-            OrganizationModel organization = user.Organization;
-            TeamSupport.DataAPI.DataAPI.DeleteActionAttachment(user.Authentication, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
-            ActionAttachmentID = null;
+            //TicketModel ticket = Action.Ticket;
+            //UserSession user = ticket.User;
+            //OrganizationModel organization = user.Organization;
+            //TeamSupport.DataAPI.DataAPI.DeleteActionAttachment(user.Authentication, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
+            //ActionAttachmentID = null;
         }
 
     }

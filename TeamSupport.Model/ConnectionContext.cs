@@ -18,10 +18,6 @@ namespace TeamSupport.Model
     /// </summary>
     public class ConnectionContext : IDisposable
     {
-
-        static bool _IsEnabled = true;
-        public static bool IsEnabled { get { return _IsEnabled; } }
-
         public AuthenticationModel Authentication { get; private set; }
         SqlConnection _connection;
         SqlTransaction _transaction;

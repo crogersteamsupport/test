@@ -21,6 +21,8 @@ namespace TeamSupport.DataAPI
     /// </summary>
     public static class DataAPI
     {
+        static string FromDateTime(DateTime dateTime) { return dateTime.ToString("yyyy-MM-dd HH:mm:ss.fff"); }
+
         #region Tickets
         /// <summary> Create Ticket </summary>
         public static void Create(ConnectionContext connection, TicketProxy ticketProxy)
@@ -96,48 +98,45 @@ namespace TeamSupport.DataAPI
         public static void Create(ConnectionContext connection, ActionModel action, AttachmentProxy proxy)
         {
             // hard code all the numbers, parameterize all the strings so they are SQL-Injection checked
-            //string query = "INSERT INTO ActionAttachments(OrganizationID, FileName, FileType, FileSize, Path, DateCreated, DateModified, CreatorID, ModifierID, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID) " +
-            //    $"VALUES({connection.Organization.OrganizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{proxy.DateCreated}', '{proxy.DateModified}', {proxy.CreatorID}, {proxy.ModifierID}, {action.ActionID}, {(proxy.SentToJira ? 1 : 0)}, {(proxy.SentToTFS ? 1 : 0)}, {(proxy.SentToSnow ? 1 : 0)}, {proxy.FilePathID})" +
-            //    "SELECT SCOPE_IDENTITY()";
-            //decimal value = connection._db.ExecuteQuery<decimal>(query, proxy.FileName, proxy.FileType, proxy.Path).Min();
-            //proxy.AttachmentID = Decimal.ToInt32(value);
-
-            Attachment.CreateActionAttachment(proxy);   // data layer
-
-            // LINQ - hard code all the numbers, parameterize all the strings so they are SQL-Injection checked
-            //string query = "INSERT INTO ActionAttachments(OrganizationID, FileName, FileType, FileSize, Path, DateCreated, DateModified, CreatorID, ModifierID, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID) " +
-            //    $"VALUES({connection.Organization.OrganizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{proxy.DateCreated}', '{proxy.DateModified}', {proxy.CreatorID}, {proxy.ModifierID}, {action.ActionID}, {(proxy.SentToJira ? 1 : 0)}, {(proxy.SentToTFS ? 1 : 0)}, {(proxy.SentToSnow ? 1 : 0)}, {proxy.FilePathID})" +
-            //    "SELECT SCOPE_IDENTITY()";
-            //decimal value = connection._db.ExecuteQuery<decimal>(query, proxy.FileName, proxy.FileType, proxy.Path).Min();
-            //proxy.AttachmentID = Decimal.ToInt32(value);
+            string query = "INSERT INTO ActionAttachments(OrganizationID, FileName, FileType, FileSize, Path, DateCreated, DateModified, CreatorID, ModifierID, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID) " +
+                $"VALUES({connection.Organization.OrganizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{FromDateTime(proxy.DateCreated)}', '{FromDateTime(proxy.DateModified)}', {proxy.CreatorID}, {proxy.ModifierID}, {action.ActionID}, {(proxy.SentToJira ? 1 : 0)}, {(proxy.SentToTFS ? 1 : 0)}, {(proxy.SentToSnow ? 1 : 0)}, {proxy.FilePathID})" +
+                "SELECT SCOPE_IDENTITY()";
+            decimal value = connection._db.ExecuteQuery<decimal>(query, proxy.FileName, proxy.FileType, proxy.Path).Min();
+            proxy.AttachmentID = Decimal.ToInt32(value);
         }
 
         /// <summary> Read Action Attachment </summary>
+        const string SelectActionAttachmentProxy = "SELECT a.*, a.ActionAttachmentID as AttachmentID, a.ActionAttachmentGUID as AttachmentGUID, (u.FirstName + ' ' + u.LastName) AS CreatorName, a.ActionID as RefID " +
+            "FROM ActionAttachments a LEFT JOIN Users u ON u.UserID = a.CreatorID ";
+
         public static AttachmentProxy Read(ConnectionContext connection, ActionAttachment actionAttachment)
         {
-            Table<AttachmentProxy> table = connection._db.GetTable<AttachmentProxy>();
-            return table.Where(t => t.AttachmentID == actionAttachment.ActionAttachmentID).First();
+            // load action attachments into attachment proxies
+            string query = SelectActionAttachmentProxy + $"WHERE ActionAttachmentID = {actionAttachment.ActionAttachmentID}";
+            return actionAttachment._db.ExecuteQuery<AttachmentProxy>(query).First();
         }
 
         /// <summary> Create Action Attachments </summary>
         public static void Read(ConnectionContext connection, ActionModel actionModel, out AttachmentProxy[] attachments)
         {
-            Table<AttachmentProxy> table = connection._db.GetTable<AttachmentProxy>();
-            attachments = table.Where(t => (t.RefID == actionModel.ActionID) && (t.RefType == ReferenceType.Actions)).ToArray();
+            // load action attachments into attachment proxies
+            string query = SelectActionAttachmentProxy + $"WHERE ActionID = {actionModel.ActionID}";
+            attachments = actionModel._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
         }
 
         /// <summary> Update Action Attachment </summary>
-        public static void Update(ConnectionContext connection, ActionAttachment actionAttachmentModel, AttachmentProxy attachment)
+        public static void Update(ConnectionContext connection, ActionAttachment actionAttachment, AttachmentProxy attachment)
         {
             // TODO - update action attachment
-            LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Attachments, actionAttachmentModel.ActionAttachmentID, "Updated Action Attachment");
+            LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Attachments, actionAttachment.ActionAttachmentID, "Updated Action Attachment");
         }
 
         /// <summary> Delete Action Attachment </summary>
-        public static void Delete(ConnectionContext connection, ActionAttachment actionAttachmentModel)
+        public static void Delete(ConnectionContext connection, ActionAttachment actionAttachment)
         {
-            // TODO - delete action attachment
-            LogMessage(connection.Authentication, ActionLogType.Delete, ReferenceType.Actions, actionAttachmentModel.ActionAttachmentID, "Deleted Action Attachment");
+            string query = $"DELETE FROM ActionAttachments WHERE ActionAttachmentID = {actionAttachment.ActionAttachmentID}";
+            actionAttachment._db.ExecuteCommand(query);
+            LogMessage(connection.Authentication, ActionLogType.Delete, ReferenceType.Actions, actionAttachment.ActionAttachmentID, "Deleted Action Attachment");
         }
         #endregion
 
@@ -178,19 +177,6 @@ namespace TeamSupport.DataAPI
 
         public static int ActionCreatorID(DataContext db, int actionID) { return db.ExecuteQuery<int>($"SELECT CreatorID FROM Actions WITH (NOLOCK) WHERE ActionID={actionID}").Min(); }
 
-        public static void InsertActionAttachment(DataContext db, int ticketID, ref AttachmentProxy proxy)
-        {
-            int organizationID = proxy.OrganizationID;
-            int actionID = proxy.RefID;
-
-            // hard code all the numbers, parameterize all the strings so they are SQL-Injection checked
-            string query = "INSERT INTO ActionAttachments(OrganizationID, FileName, FileType, FileSize, Path, DateCreated, DateModified, CreatorID, ModifierID, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID) " +
-                $"VALUES({organizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{proxy.DateCreated}', '{proxy.DateModified}', {proxy.CreatorID}, {proxy.ModifierID}, {actionID}, {(proxy.SentToJira ? 1 : 0)}, {(proxy.SentToTFS ? 1 : 0)}, {(proxy.SentToSnow ? 1 : 0)}, {proxy.FilePathID})" +
-                "SELECT SCOPE_IDENTITY()";
-            decimal value = db.ExecuteQuery<decimal>(query, proxy.FileName, proxy.FileType, proxy.Path).Min();
-            proxy.AttachmentID = Decimal.ToInt32(value);
-        }
-
         public static void DeleteActionAttachment(AuthenticationModel user, int organizationID, int ticketID, int actionID, int attachmentID)
         {
             // set WITH (ROWLOCK) 
@@ -211,7 +197,7 @@ namespace TeamSupport.DataAPI
 
         public static int ActionAttachmentActionID(DataContext db, int attachmentID)
         {
-            return db.ExecuteQuery<int>($"SELECT ActionID FROM ActionAttachments WITH(NOLOCK) WHERE AttachmentID = {attachmentID}").Min();
+            return db.ExecuteQuery<int>($"SELECT ActionID FROM ActionAttachments WITH(NOLOCK) WHERE ActionAttachmentID = {attachmentID}").Min();
         }
 
         //public static AttachmentProxy[] GetActionAttachmentProxies(DataContext db, int attachmentID)
@@ -220,7 +206,7 @@ namespace TeamSupport.DataAPI
         //        $"FROM dbo.ActionAttachments WHERE AttachmentID = {attachmentID}").ToArray();
         //}
 
-        public static int[] ActionAttachmentIDs(DataContext db, int organizationID, int ticketID, int actionID) { return db.ExecuteQuery<int>($"SELECT AttachmentID FROM ActionAttachments WHERE ActionID={actionID}").ToArray(); }
+        public static int[] ActionAttachmentIDs(DataContext db, int organizationID, int ticketID, int actionID) { return db.ExecuteQuery<int>($"SELECT ActionAttachmentID FROM ActionAttachments WHERE ActionID={actionID}").ToArray(); }
 
 
         //class FullName

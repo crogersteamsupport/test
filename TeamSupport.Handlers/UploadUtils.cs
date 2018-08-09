@@ -38,20 +38,18 @@ namespace TeamSupport.Handlers
 
             // Action Attachments
             if (folder == AttachmentPath.Folder.Actions)
-                ModelAPI.ModelAPI.CreateActionAttachments(TSAuthentication.Ticket, null, itemID.Value, context);    // ticketID, actionID, actionAttachments
+            {
+                List<AttachmentProxy> attachmentProxies = null;
+                attachmentProxies = ModelAPI.ModelAPI.CreateActionAttachments(TSAuthentication.Ticket, null, itemID.Value, context);    // ticketID, actionID, actionAttachments
 
-            //if (Model.ConnectionContext.IsEnabled && (folder == AttachmentPath.Folder.Actions))
-            //{
-            //    List<Model.ActionAttachment> attachments = TeamSupport.ModelAPI.ModelAPI.CreateActionAttachments(TSAuthentication.Ticket, context, null, itemID.Value);
-            //    foreach (Model.ActionAttachment attachment in attachments)
-            //    {
-            //        Model.AttachmentFile file = attachment.File;
-            //        result.Add(new UploadResult(file.FileName, file.ContentType, file.ContentLength));
-            //    }
-            //    context.Response.Clear();
-            //    context.Response.ContentType = "text/plain";
-            //    context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
-            //}
+                // respond to front end
+                foreach (AttachmentProxy proxy in attachmentProxies)
+                    result.Add(new UploadResult(proxy.FileName, proxy.FileType, proxy.FileSize));
+                context.Response.Clear();
+                context.Response.ContentType = "text/plain";
+                context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
+                return;
+            }
 
             ReferenceType refType = AttachmentPath.GetFolderReferenceType(folder);
 

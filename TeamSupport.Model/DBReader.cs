@@ -14,7 +14,7 @@ namespace TeamSupport.Model
         public static void VerifyUser(DataContext db, int organizationID, int userID) { Verify(db, $"SELECT UserID FROM Users WITH (NOLOCK) WHERE UserID={userID} AND OrganizationID={organizationID}"); }
         public static void VerifyTicket(DataContext db, int organizationID, int ticketID) { Verify(db, $"SELECT TicketID FROM Tickets WITH (NOLOCK) WHERE TicketID={ticketID} AND OrganizationID={organizationID}"); }
         public static void VerifyAction(DataContext db, int organizationID, int ticketID, int actionID) { Verify(db, $"SELECT ActionID FROM Actions WITH (NOLOCK) WHERE ActionID={actionID} AND TicketID={ticketID}"); }
-        public static void VerifyActionAttachment(DataContext db, int organizationID, int ticketID, int actionID, int actionAttachmentID) { Verify(db, $"SELECT AttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE AttachmentID={actionAttachmentID} AND ActionID={actionID} AND OrganizationID={organizationID}"); }
+        public static void VerifyActionAttachment(DataContext db, int organizationID, int ticketID, int actionID, int actionAttachmentID) { Verify(db, $"SELECT ActionAttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE ActionAttachmentID={actionAttachmentID} AND ActionID={actionID} AND OrganizationID={organizationID}"); }
 
         static void Verify(DataContext db, string query)
         {
@@ -29,5 +29,6 @@ namespace TeamSupport.Model
             return db.ExecuteQuery<string>($"SELECT[Value] FROM FilePaths WITH(NOLOCK) WHERE ID = {id}").FirstOrDefault();
         }
 
+        public static int CreatorID(DataContext db, int actionID) { return db.ExecuteQuery<int>($"SELECT CreatorID FROM Actions WITH (NOLOCK) WHERE ActionID={actionID}").Min(); }
     }
 }

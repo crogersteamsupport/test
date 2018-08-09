@@ -3645,22 +3645,22 @@ WHERE t.TicketID = @TicketID
             if (info.CategoryID != null && info.CategoryID > -1) ticket.AddCommunityTicket((int)info.CategoryID);
 
             // new action - future
-            if (TeamSupport.Model.ConnectionContext.IsEnabled)
-            {
-                ActionProxy actionProxy = new ActionProxy()
-                {
-                    Name = "Description",
-                    SystemActionTypeID = SystemActionType.Description,
-                    Description = info.Description,
-                    IsVisibleOnPortal = ticket.IsVisibleOnPortal,
-                    IsKnowledgeBase = ticket.IsKnowledgeBase,
-                    TicketID = ticket.TicketID,
-                    TimeSpent = info.TimeSpent,
-                    DateStarted = info.DateStarted,
-                    ActionSource = ticket.TicketSource
-                };
-                ModelAPI.Create(TSAuthentication.Ticket, actionProxy);
-            }
+            //if (TeamSupport.Model.ConnectionContext.IsEnabled)
+            //{
+            //    ActionProxy actionProxy = new ActionProxy()
+            //    {
+            //        Name = "Description",
+            //        SystemActionTypeID = SystemActionType.Description,
+            //        Description = info.Description,
+            //        IsVisibleOnPortal = ticket.IsVisibleOnPortal,
+            //        IsKnowledgeBase = ticket.IsKnowledgeBase,
+            //        TicketID = ticket.TicketID,
+            //        TimeSpent = info.TimeSpent,
+            //        DateStarted = info.DateStarted,
+            //        ActionSource = ticket.TicketSource
+            //    };
+            //    ModelAPI.Create(TSAuthentication.Ticket, actionProxy);
+            //}
 
             TeamSupport.Data.Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();
             action.ActionTypeID = null;

@@ -50,6 +50,7 @@
     <Compile Include="AuthenticationModel.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TicketsProxy.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ProxyClassDiagram.cd" />

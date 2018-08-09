@@ -843,11 +843,11 @@ namespace TSWebServices
         public TimeLineItem UpdateAction(ActionProxy proxy)
         {
             // new action - future
-            if (ConnectionContext.IsEnabled && (proxy.ActionID == -1))
-            {
-                proxy.CreatorID = TSAuthentication.UserID;
-                TeamSupport.ModelAPI.ModelAPI.Create(TSAuthentication.Ticket, proxy);
-            }
+            //if (proxy.ActionID == -1)
+            //{
+            //    proxy.CreatorID = TSAuthentication.UserID;
+            //    TeamSupport.ModelAPI.ModelAPI.Create(TSAuthentication.Ticket, proxy);
+            //}
 
             TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), proxy.ActionID);
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
@@ -1783,13 +1783,19 @@ namespace TSWebServices
 
         private AttachmentProxy[] GetActionAttachmentProxies(int actionID, LoginUser loginUser)
         {
-            Attachments attachments = Attachments.ActionAttachments(loginUser, actionID);
-            AttachmentProxy[] result = attachments.GetAttachmentProxies();
+            // Read action attachments
+            AttachmentProxy[] results;
+            TeamSupport.ModelAPI.ModelAPI.ReadActionAttachments(TSAuthentication.Ticket, null, actionID, out results);
 
-            //AttachmentProxy[] model = ModelAPI.SelectActionAttachments(TSAuthentication.Ticket, null, actionID);   // ticketID?
-            //if (model.Equals(result))
-            //    Debugger.Break();
-            return result;
+            // also read old attachments table
+            Attachments attachments = Attachments.ActionAttachments(loginUser, actionID);
+            AttachmentProxy[] oldAttachments = attachments.GetAttachmentProxies();
+
+            // return the union of both lists
+            int initialLength = results.Length;
+            Array.Resize(ref results, results.Length + oldAttachments.Length);
+            Array.Copy(oldAttachments, 0, results, initialLength, oldAttachments.Length);
+            return results;
         }
 
         private void addWCAttachment(int messageID, int attachmentID, WaterCoolerAttachmentType attachmentType)

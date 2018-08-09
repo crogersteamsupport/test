@@ -35,9 +35,6 @@ namespace TeamSupport.ModelAPI
         /// <summary> Create Action </summary>
         public static void Create(FormsAuthenticationTicket authentication, ActionProxy actionProxy)
         {
-            if (!ConnectionContext.IsEnabled)
-                return;
-
             try
             {
                 using (ConnectionContext connection = new ConnectionContext(authentication))
@@ -55,11 +52,9 @@ namespace TeamSupport.ModelAPI
 
         #region ActionAttachments
         /// <summary> Create Action Attachments </summary>
-        public static void CreateActionAttachments(FormsAuthenticationTicket authenticationTicket, int? ticketID, int? actionID, HttpContext context)
+        public static List<AttachmentProxy> CreateActionAttachments(FormsAuthenticationTicket authenticationTicket, int? ticketID, int? actionID, HttpContext context)
         {
-            if (!ConnectionContext.IsEnabled)
-                return;
-
+            List<AttachmentProxy> results = new List<AttachmentProxy>();
             try
             {
                 using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
@@ -70,11 +65,12 @@ namespace TeamSupport.ModelAPI
                     HttpFileCollection files = context.Request.Files;
                     for (int i = 0; i < files.Count; i++)   // foreach returns strings?
                     {
-                        AttachmentFile attachmentFile = actionModel.SaveAttachmentFile(files[i]);
+                        AttachmentFile attachmentFile = actionModel.CreateAttachmentFile(files[i]);
                         if (attachmentFile == null)
                             continue;
-                        AttachmentProxy attachmentProxy = attachmentFile.GetAttachmentProxy(context.Request, actionModel);
+                        AttachmentProxy attachmentProxy = attachmentFile.CreateAttachmentProxy(context.Request, actionModel);
                         DataAPI.DataAPI.Create(connection, actionModel, attachmentProxy);
+                        results.Add(attachmentProxy);
                     }
                 }
             }
@@ -82,14 +78,12 @@ namespace TeamSupport.ModelAPI
             {
                 DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), ActionLogType.Insert, ReferenceType.Attachments, ticketID, "Unable to save attachments", ex);
             }
+            return results;
         }
 
         /// <summary> Delete Action Attachment /// </summary>
         public static void DeleteActionAttachment(FormsAuthenticationTicket authenticationTicket, int? ticketID, int? actionID, int attachmentID)
         {
-            if (!ConnectionContext.IsEnabled)
-                return;
-
             try
             {
                 using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
@@ -99,17 +93,21 @@ namespace TeamSupport.ModelAPI
                     if(!ticketID.HasValue)
                         ticketID = DataAPI.DataAPI.ActionGetTicketID(connection._db, actionID.Value);
 
-                    // user have permission to delete this action?
+                    // user have permission to modify this action?
                     ActionModel actionModel = connection.Ticket(ticketID.Value).Action(actionID.Value);
                     if (!actionModel.CanEdit())
                         return;
 
-                    DataAPI.DataAPI.Delete(connection, actionModel.Attachment(attachmentID));
+                    ActionAttachment attachment = actionModel.Attachment(attachmentID);
+                    AttachmentProxy proxy = DataAPI.DataAPI.Read(connection, attachment);
+                    AttachmentFile file = new AttachmentFile(attachment, proxy);
+                    DataAPI.DataAPI.Delete(connection, attachment); // remove from database
+                    file.Delete();  // delete file
                 }
             }
             catch (Exception ex)
             {
-                DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), ActionLogType.Delete, ReferenceType.Attachments, attachmentID, "Unable to delete attachments", ex);
+                DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), ActionLogType.Delete, ReferenceType.Attachments, attachmentID, "Unable to delete attachment", ex);
             }
         }
 
