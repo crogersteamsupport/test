@@ -50,7 +50,7 @@ namespace TSWebServices
         }
 
 		[WebMethod]
-		public List<string> GetCurrentUserGroups()
+		public List<int> GetCurrentUserGroups()
 		{
 			return TSAuthentication.GetUserGroups();
 		}

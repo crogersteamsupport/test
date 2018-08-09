@@ -141,13 +141,15 @@ namespace TSWebServices
         {
             Organization org = GetOrganization(chatGuid);
             int groupParseResult;
-            ChatRequest request = ChatRequests.RequestChat(LoginUser.Anonymous, org.OrganizationID, fName, lName, email, description, Context.Request.UserHostAddress, groupName, Int32.TryParse(groupID, out groupParseResult) ? (int)groupParseResult : 0);
+			int? groupId = ChatRequests.CalculateChatGroupID(LoginUser.Anonymous, org.OrganizationID, Int32.TryParse(groupID, out groupParseResult) ? (int)groupParseResult : 0, groupName);
+			ChatRequest request = ChatRequests.RequestChat(LoginUser.Anonymous, org.OrganizationID, fName, lName, email, description, Context.Request.UserHostAddress, groupId ?? 0);
+
             pusher.Trigger("chat-requests-" + org.ChatID, "new-chat-request",
 				new {
 					message = string.Format("{0} {1} is requesting a chat!", fName, lName),
 					title = "Chat Request",
 					theme = "ui-state-error",
-					chatRequest = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID, request.ChatID), GetChatMessages(request.ChatID), groupName, groupParseResult)
+					chatRequest = new ChatViewObject(request.GetProxy(), GetParticipant(request.RequestorID, request.ChatID), GetChatMessages(request.ChatID), groupId ?? 0)
 				});
             return JsonConvert.SerializeObject(request.GetProxy());
         }
@@ -1063,7 +1065,6 @@ namespace TSWebServices
             public string InitiatorEmail { get; set; }
             public string InitiatorInitials { get; set; }
             public string Description { get; set; }
-			public string GroupName { get; set; }
             public int GroupID { get; set; }
             public List<ChatViewMessage> Messages { get; set; }
 
@@ -1072,7 +1073,7 @@ namespace TSWebServices
 
             }
 
-            public ChatViewObject(ChatRequestProxy request, ParticipantInfoView initiator, ChatMessageProxy[] messages, string groupName = null, int groupID = 0)
+            public ChatViewObject(ChatRequestProxy request, ParticipantInfoView initiator, ChatMessageProxy[] messages, int groupID = 0)
             {
                 ChatID = request.ChatID;
                 ChatRequestID = request.ChatRequestID;
@@ -1097,7 +1098,6 @@ namespace TSWebServices
                     }
                 }
 
-				GroupName = groupName;
                 GroupID = groupID;
             }
         }

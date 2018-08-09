@@ -358,16 +358,9 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
             return result;
         }
 
-        public static ChatRequest RequestChat(LoginUser loginUser, int organizationID, string firstName, string lastName, string email, string message, string ipAddress, string groupName = null, int groupID = 0)
+        public static ChatRequest RequestChat(LoginUser loginUser, int organizationID, string firstName, string lastName, string email, string message, string ipAddress, int groupID = 0)
         {
             ChatClients clients = new ChatClients(loginUser);
-			Groups groups = new Groups(loginUser);
-
-			if (!string.IsNullOrEmpty(groupName))
-			{
-				groups.LoadByGroupName(organizationID, groupName);
-			}
-
             ChatClient client = clients.IsEmpty ? (new ChatClients(loginUser)).AddNewChatClient() : clients[0];
             client.OrganizationID = organizationID;
             client.FirstName = firstName;
@@ -423,7 +416,7 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
             request.Message = message;
             request.IsAccepted = false;
             request.RequestType = ChatRequestType.External;
-            request.GroupID = CalculateChatGroupID(loginUser, organizationID, groupID, groupName);
+            request.GroupID = groupID;
             request.Collection.Save();
 
             return request;
