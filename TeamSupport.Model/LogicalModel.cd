@@ -1,12 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="TeamSupport.Model.ActionModel">
-    <Position X="9.75" Y="0.5" Width="2.25" />
+    <Position X="12.25" Y="1.75" Width="2.25" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>ACACgAAAAAAgAAECAAAAAAAAAAAAQAAAAACAAAAAAAA=</HashCode>
+      <HashCode>ACACgCAAAAAgAAACAAAAAAAAAAAAAAAAAACAAAAAAAA=</HashCode>
       <FileName>ActionModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -14,7 +15,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Model.OrganizationModel">
-    <Position X="2.75" Y="0.5" Width="1.75" />
+    <Position X="5.25" Y="1.75" Width="1.75" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
@@ -27,12 +28,12 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Model.TicketModel">
-    <Position X="7" Y="0.5" Width="2.25" />
+    <Position X="9.5" Y="1.75" Width="2.25" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAABgAAAAAAAAAAAAAAAAAAAAAAAAQAAACAAAAAUAAQ=</HashCode>
+      <HashCode>AAABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAQ=</HashCode>
       <FileName>TicketModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -40,13 +41,13 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Model.UserSession">
-    <Position X="5" Y="0.5" Width="1.5" />
+    <Position X="7.5" Y="1.75" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>EAAAgAAAAAAAAAACAAAAAAgAAAAAEAAAAACAAAAAIAA=</HashCode>
+      <HashCode>EAAAgAAAAAAAAAACAAAAAAgAAAAAAAAAAACAAQAAIAA=</HashCode>
       <FileName>UserSession.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -54,41 +55,69 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Model.ActionAttachment">
-    <Position X="12.5" Y="0.5" Width="1.5" />
+    <Position X="15" Y="1.75" Width="1.75" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAgABAAAAAAAAAAAAAAAAAAAEEAAAAAAAAAAAAAAw=</HashCode>
+      <HashCode>AAAAgABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ=</HashCode>
       <FileName>ActionAttachment.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="Action" />
-      <Property Name="File" />
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Model.AttachmentFile">
-    <Position X="12.5" Y="3.5" Width="1.5" />
+    <Position X="15" Y="4" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAIAAAAAAACIAAAAAAAAAAAAAABABAABwAABAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAACIAAAAAAAAAAAEAAhABAABQAABAAAA=</HashCode>
       <FileName>AttachmentFile.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TeamSupport.Model.ConnectionContext">
-    <Position X="0.5" Y="0.5" Width="1.75" />
+    <Position X="3" Y="1.75" Width="1.75" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>ACABgEAAACAAAAQCAAEAAAAAAAAAEAAAAAAAgAAAJAA=</HashCode>
+      <HashCode>ACABgEAAACAAAAQCAAAAAAAAAAAAEAAAAAAAAAAAJAA=</HashCode>
       <FileName>ConnectionContext.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Authentication" />
+    </ShowAsAssociation>
     <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TeamSupport.Data.ActionProxy" Collapsed="true">
+    <Position X="12.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="TeamSupport.Data.AttachmentProxy" Collapsed="true">
+    <Position X="15" Y="0.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="TeamSupport.Proxy.AuthenticationModel" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier />
+    <ShowAsAssociation>
+      <Property Name="AuthenticationTicket" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="TeamSupport.Data.TicketProxy" Collapsed="true">
+    <Position X="9.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="System.Web.Security.FormsAuthenticationTicket" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="2.25" />
+    <TypeIdentifier />
   </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

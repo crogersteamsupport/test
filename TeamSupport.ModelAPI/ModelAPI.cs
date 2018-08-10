@@ -65,9 +65,12 @@ namespace TeamSupport.ModelAPI
                     HttpFileCollection files = context.Request.Files;
                     for (int i = 0; i < files.Count; i++)   // foreach returns strings?
                     {
-                        AttachmentFile attachmentFile = actionModel.CreateAttachmentFile(files[i]);
-                        if (attachmentFile == null)
+                        // create the file
+                        if (files[i].ContentLength == 0)
                             continue;
+                        AttachmentFile attachmentFile = new AttachmentFile(actionModel, files[i]);
+
+                        // send proxy to DB
                         AttachmentProxy attachmentProxy = attachmentFile.AsAttachmentProxy(context.Request, actionModel);
                         DataAPI.DataAPI.Create(connection, actionModel, attachmentProxy);
                         results.Add(attachmentProxy);
@@ -89,7 +92,7 @@ namespace TeamSupport.ModelAPI
                 using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
                 {
                     if (!actionID.HasValue)
-                        actionID = DataAPI.DataAPI.ActionAttachmentActionID(connection._db, attachmentID);
+                        actionID = DataAPI.DataAPI.ActionAttachmentGetActionID(connection._db, attachmentID);
                     if(!ticketID.HasValue)
                         ticketID = DataAPI.DataAPI.ActionGetTicketID(connection._db, actionID.Value);
 

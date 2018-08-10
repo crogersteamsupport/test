@@ -33,29 +33,5 @@ namespace TeamSupport.Model
             return new ActionModel(this, actionID);
         }
 
-        public ActionModel[] SelectActions()
-        {
-            //int[] actionIDs = DataAPI.DataAPI.TicketSelectActionIDs(_db, User.Organization.OrganizationID, TicketID);
-            //ActionModel[] actions = new ActionModel[actionIDs.Length];
-            //for (int i = 0; i < actionIDs.Length; ++i)
-            //    actions[i] = new ActionModel(this, actionIDs[i]);
-            //return actions;
-            return null;
-        }
-
-        public void Merge(TicketModel from)
-        {
-            ActionModel[] actions = from.SelectActions();
-            foreach(ActionModel action in actions)
-            {
-                Merge(action);
-            }
-        }
-
-        void Merge(ActionModel from)
-        {
-            //int[] attachmentIDs = DataAPI.DataAPI.ActionAttachmentIDs(_db, User.Organization.OrganizationID, TicketID, from.ActionID);
-
-        }
     }
 }

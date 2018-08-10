@@ -20,7 +20,6 @@ namespace TeamSupport.Model
         public int? ActionAttachmentID { get; private set; }
         public DataContext _db { get; private set; }
 
-
         /// <summary> Load existing action attachment /// </summary>
         public ActionAttachment(ActionModel action, int actionAttachmentID)
         {
@@ -31,18 +30,6 @@ namespace TeamSupport.Model
             TicketModel ticket = Action.Ticket;
             OrganizationModel organization = ticket.User.Organization;
             DBReader.VerifyActionAttachment(_db, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
-        }
-
-        public void Delete()
-        {
-            if (!Action.CanEdit())
-                return;
-
-            //TicketModel ticket = Action.Ticket;
-            //UserSession user = ticket.User;
-            //OrganizationModel organization = user.Organization;
-            //TeamSupport.DataAPI.DataAPI.DeleteActionAttachment(user.Authentication, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
-            //ActionAttachmentID = null;
         }
 
     }

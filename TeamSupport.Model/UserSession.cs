@@ -16,15 +16,16 @@ namespace TeamSupport.Model
     {
         public OrganizationModel Organization { get; private set; }
         public DataContext _db { get; private set; }
+        Proxy.AuthenticationModel _authentication;
 
-        public Proxy.AuthenticationModel Authentication { get { return Organization.Connection.Authentication; } }
-        public int UserID { get { return Authentication.UserID; } }
+        public int UserID { get { return _authentication.UserID; } }
 
         /// <summary> OrganizationID and UserID come from ConnectionContext.Authentication </summary>
         public UserSession(OrganizationModel organization)
         {
             Organization = organization;
             _db = organization._db;
+            _authentication = Organization.Connection.Authentication;
             //DBReader.VerifyUser(_db, Organization.OrganizationID, UserID);     // connection already verified
         }
 
@@ -37,7 +38,7 @@ namespace TeamSupport.Model
         }
 
         public bool AllowUserToEditAnyAction() { return DBReader.UserAllowUserToEditAnyAction(_db, UserID); }
-        public bool CanEdit() { return Authentication.IsSystemAdmin || AllowUserToEditAnyAction(); }
+        public bool CanEdit() { return _authentication.IsSystemAdmin || AllowUserToEditAnyAction(); }
 
     }
 }

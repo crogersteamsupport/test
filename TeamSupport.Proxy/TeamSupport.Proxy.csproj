@@ -52,8 +52,5 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TicketsProxy.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="ProxyClassDiagram.cd" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

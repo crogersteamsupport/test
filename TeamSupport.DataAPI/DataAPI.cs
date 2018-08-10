@@ -21,7 +21,23 @@ namespace TeamSupport.DataAPI
     /// </summary>
     public static class DataAPI
     {
-        static string FromDateTime(DateTime dateTime) { return dateTime.ToString("yyyy-MM-dd HH:mm:ss.fff"); }
+        static string ToSql(DateTime dateTime) { return dateTime.ToString("yyyy-MM-dd HH:mm:ss.fff"); }
+        static char ToSql(bool value) { return value ? '1' : '0'; }
+
+        #region User
+        //class FullName
+        //{
+        //    public string FirstName;
+        //    public string LastName;
+        //}
+        //public static string UserFullName(DataContext db, int organizationID, int userID)
+        //{
+        //    string query = $"SELECT FirstName + ' ' + LastName FROM Users  WITH (NOLOCK) WHERE UserID={userID} AND OrganizationID={organizationID}";
+        //    FullName fullName = db.ExecuteQuery<FullName>(query).First();  // throws if it fails
+        //    return $"{fullName.FirstName} {fullName.LastName}";
+        //}
+        #endregion
+
 
         #region Tickets
         /// <summary> Create Ticket </summary>
@@ -55,6 +71,8 @@ namespace TeamSupport.DataAPI
 
 
         #region Actions
+        public static int ActionGetTicketID(DataContext db, int actionID) { return db.ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {actionID}").Min(); }
+
         /// <summary> Create Action </summary>
         public static void Create(ConnectionContext connection, TicketModel ticketModel, ref ActionProxy actionProxy)
         {
@@ -94,12 +112,18 @@ namespace TeamSupport.DataAPI
 
 
         #region ActionAttachments
+
+        public static int ActionAttachmentGetActionID(DataContext db, int attachmentID)
+        {
+            return db.ExecuteQuery<int>($"SELECT ActionID FROM ActionAttachments WITH(NOLOCK) WHERE ActionAttachmentID = {attachmentID}").Min();
+        }
+
         /// <summary> Create Action Attachment </summary>
         public static void Create(ConnectionContext connection, ActionModel action, AttachmentProxy proxy)
         {
             // hard code all the numbers, parameterize all the strings so they are SQL-Injection checked
             string query = "INSERT INTO ActionAttachments(OrganizationID, FileName, FileType, FileSize, Path, DateCreated, DateModified, CreatorID, ModifierID, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID) " +
-                $"VALUES({connection.Organization.OrganizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{FromDateTime(proxy.DateCreated)}', '{FromDateTime(proxy.DateModified)}', {proxy.CreatorID}, {proxy.ModifierID}, {action.ActionID}, {(proxy.SentToJira ? 1 : 0)}, {(proxy.SentToTFS ? 1 : 0)}, {(proxy.SentToSnow ? 1 : 0)}, {proxy.FilePathID})" +
+                $"VALUES({connection.Organization.OrganizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{ToSql(proxy.DateCreated)}', '{ToSql(proxy.DateModified)}', {proxy.CreatorID}, {proxy.ModifierID}, {action.ActionID}, {ToSql(proxy.SentToJira)}, {ToSql(proxy.SentToTFS)}, {ToSql(proxy.SentToSnow)}, {proxy.FilePathID})" +
                 "SELECT SCOPE_IDENTITY()";
             decimal value = connection._db.ExecuteQuery<decimal>(query, proxy.FileName, proxy.FileType, proxy.Path).Min();
             proxy.AttachmentID = Decimal.ToInt32(value);
@@ -128,13 +152,6 @@ namespace TeamSupport.DataAPI
         {
             string query = SelectActionAttachmentProxy + $"WHERE ActionID IN (SELECT ActionID FROM Actions WHERE TicketID = {ticketModel.TicketID})";
             attachments = ticketModel._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
-        }
-
-        /// <summary> Update Action Attachment </summary>
-        public static void Update(ConnectionContext connection, ActionAttachment actionAttachment, AttachmentProxy attachment)
-        {
-            // TODO - update action attachment
-            LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Attachments, actionAttachment.ActionAttachmentID, "Updated Action Attachment");
         }
 
         /// <summary> Delete Action Attachment </summary>
@@ -169,66 +186,6 @@ namespace TeamSupport.DataAPI
             LogMessage(authentication, logType, refType, refID, fullMessage);
         }
         #endregion
-
-        // verified connection and action
-        public static void Create(ConnectionContext connection, ActionModel action, List<ActionAttachment> attachments)
-        {
-            if (attachments.Count == 0)
-                return;
-
-            LogMessage(connection.Authentication, ActionLogType.Insert, ReferenceType.Attachments, attachments[0].Action.ActionID, "Attachments Saved");
-        }
-
-        public static int ActionGetTicketID(DataContext db, int actionID) { return db.ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {actionID}").Min(); }
-
-        public static int ActionCreatorID(DataContext db, int actionID) { return db.ExecuteQuery<int>($"SELECT CreatorID FROM Actions WITH (NOLOCK) WHERE ActionID={actionID}").Min(); }
-
-        public static void DeleteActionAttachment(AuthenticationModel user, int organizationID, int ticketID, int actionID, int attachmentID)
-        {
-            // set WITH (ROWLOCK) 
-            LoginUser loginUser = WebUtils.TSAuthentication.GetLoginUser();
-            Attachment attachment = Attachments.GetAttachment(loginUser, attachmentID);
-            attachment.DeleteFile();
-            attachment.Delete();
-            attachment.Collection.Save();
-        }
-
-        public static string AttachmentPath(DataContext db, int id)
-        {
-            string path = db.ExecuteQuery<string>($"SELECT Value FROM FilePaths WITH(NOLOCK) WHERE ID = {id}").FirstOrDefault();
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            return path;
-        }
-
-        public static int ActionAttachmentActionID(DataContext db, int attachmentID)
-        {
-            return db.ExecuteQuery<int>($"SELECT ActionID FROM ActionAttachments WITH(NOLOCK) WHERE ActionAttachmentID = {attachmentID}").Min();
-        }
-
-        //public static AttachmentProxy[] GetActionAttachmentProxies(DataContext db, int attachmentID)
-        //{
-        //    return db.ExecuteQuery<AttachmentProxy>($"SELECT AttachmentID, OrganizationID, FileName, FileType, FileSize, Path, Description, DateCreated, DateModified, CreatorID, ModifierID, 0, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID " +
-        //        $"FROM dbo.ActionAttachments WHERE AttachmentID = {attachmentID}").ToArray();
-        //}
-
-        public static int[] ActionAttachmentIDs(DataContext db, int organizationID, int ticketID, int actionID) { return db.ExecuteQuery<int>($"SELECT ActionAttachmentID FROM ActionAttachments WHERE ActionID={actionID}").ToArray(); }
-
-
-        //class FullName
-        //{
-        //    public string FirstName;
-        //    public string LastName;
-        //}
-        //public static string UserFullName(DataContext db, int organizationID, int userID)
-        //{
-        //    string query = $"SELECT FirstName + ' ' + LastName FROM Users  WITH (NOLOCK) WHERE UserID={userID} AND OrganizationID={organizationID}";
-        //    FullName fullName = db.ExecuteQuery<FullName>(query).First();  // throws if it fails
-        //    return $"{fullName.FirstName} {fullName.LastName}";
-        //}
-
-
-        public static int[] TicketSelectActionIDs(DataContext db, int organizationID, int ticketID) { return db.ExecuteQuery<int>($"SELECT ActionID FROM Actions a WHERE a.TicketID={ticketID}").ToArray(); }
 
     }
 }

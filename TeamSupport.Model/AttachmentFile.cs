@@ -18,17 +18,17 @@ namespace TeamSupport.Model
         public long ContentLength { get; private set; }
         public string ContentType { get; private set; }
 
-        /// <summary> Nnew attachment </summary>
-        public AttachmentFile(string attachmentPath, HttpPostedFile postedFile)
+        /// <summary> New file </summary>
+        public AttachmentFile(ActionModel actionModel, HttpPostedFile postedFile)
         {
-            FileName = VerifyFileName(attachmentPath, postedFile.FileName);
-            FilePath = Path.Combine(attachmentPath, FileName);
+            FileName = VerifyFileName(actionModel.AttachmentPath, postedFile.FileName);
+            FilePath = Path.Combine(actionModel.AttachmentPath, FileName);
             ContentType = postedFile.ContentType;
             ContentLength = postedFile.ContentLength;
             postedFile.SaveAs(FilePath);    // write file to disk
         }
 
-        /// <summary> Existing attachment </summary>
+        /// <summary> Existing file </summary>
         public AttachmentFile(ActionAttachment attachment, Data.AttachmentProxy proxy)
         {
             FileInfo file = new FileInfo(proxy.Path);

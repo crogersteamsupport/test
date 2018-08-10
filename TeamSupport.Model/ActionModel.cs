@@ -36,6 +36,8 @@ namespace TeamSupport.Model
             return new ActionAttachment(this, actionAttachmentID);
         }
 
+        public bool CanEdit() { return Ticket.User.CanEdit() || (Ticket.User.UserID == DBReader.CreatorID(_db, ActionID)); }
+
         public const int ActionPathIndex = 3;
         public string AttachmentPath
         {
@@ -50,14 +52,5 @@ namespace TeamSupport.Model
             }
         }
 
-        public AttachmentFile CreateAttachmentFile(HttpPostedFile postedFile)
-        {
-            if (postedFile.ContentLength == 0)
-                return null;
-
-            return new AttachmentFile(AttachmentPath, postedFile);
-        }
-
-        public bool CanEdit() { return Ticket.User.CanEdit() || (Ticket.User.UserID == DBReader.CreatorID(_db, ActionID)); }
     }
 }
