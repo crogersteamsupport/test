@@ -46,7 +46,7 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
 			return AreOperatorsAvailable(loginUser, organizationID);
         }
 
-        public static bool AreOperatorsAvailable(LoginUser loginUser, int organizationID, string groupName = null, int groupID = 0)
+        public static bool AreOperatorsAvailable(LoginUser loginUser, int organizationID, int? groupID = null)
         {
             ChatRequests requests = new ChatRequests(loginUser);
 			string sql = @"SELECT COUNT(*) FROM ChatUserSettings cus 
@@ -60,16 +60,11 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
 			string groupJoinClause = "";
 			string groupWhereClause = "";
 
-            if (groupID > 0)
+            if (groupID != null)
             {
                 groupJoinClause = @"JOIN GroupUsers ON u.UserID = GroupUsers.UserID
                                         JOIN Groups ON GroupUsers.GroupID = Groups.GroupID";
                 groupWhereClause = @"AND Groups.GroupID = @GroupID";
-            }
-            else if (!string.IsNullOrEmpty(groupName)) {
-                groupJoinClause = @"JOIN GroupUsers ON u.UserID = GroupUsers.UserID
-                                        JOIN Groups ON GroupUsers.GroupID = Groups.GroupID";
-                groupWhereClause = @"AND Groups.Name = @GroupName";
             }
 
 			sql = string.Format(sql, groupJoinClause, groupWhereClause);
@@ -79,12 +74,10 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
                 command.CommandText = sql;
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
-                command.Parameters.AddWithValue("@GroupID", groupID);
 
-				if (!string.IsNullOrEmpty(groupName))
-				{
-					command.Parameters.AddWithValue("@GroupName", groupName);
-				}
+                if (groupID != null) { 
+                    command.Parameters.AddWithValue("@GroupID", groupID);
+                }
 
                 object o = requests.ExecuteScalar(command);
                 int count = o == DBNull.Value ? 0 : (int)o;
@@ -341,13 +334,13 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
 
         }
 
-        public static int? CalculateChatGroupID(LoginUser loginUser, int organizationID, int groupID = 0, string groupName = null) {
+        public static int? CalculateChatGroupID(LoginUser loginUser, int organizationID, int? groupID, string groupName = null) {
             int? result = null;
             Groups groups = new Groups(loginUser);
 
-            if (groupID > 0)
+            if (groupID != null)
             {
-                groups.LoadByGroupID(groupID);
+                groups.LoadByGroupID((int)groupID);
                 result = groups.Any() ? groupID : 0;
             }
             else if (!string.IsNullOrEmpty(groupName)) {
