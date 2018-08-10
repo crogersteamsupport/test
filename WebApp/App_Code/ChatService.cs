@@ -52,7 +52,8 @@ namespace TSWebServices
         {
             Organization org = GetOrganization(chatGuid);
             int groupParseResult;
-            bool areOperatorsAvailable = ChatRequests.AreOperatorsAvailable(LoginUser.Anonymous, org.OrganizationID, groupName, Int32.TryParse(groupID, out groupParseResult) ? (int)groupParseResult : 0);
+            int? chatGroupID = ChatRequests.CalculateChatGroupID(LoginUser.Anonymous, org.OrganizationID, Int32.TryParse(groupID, out groupParseResult) ? (int?)groupParseResult : null, groupName);
+            bool areOperatorsAvailable = ChatRequests.AreOperatorsAvailable(LoginUser.Anonymous, org.OrganizationID, chatGroupID);
 
             if (areOperatorsAvailable)
             {
@@ -141,7 +142,7 @@ namespace TSWebServices
         {
             Organization org = GetOrganization(chatGuid);
             int groupParseResult;
-			int? groupId = ChatRequests.CalculateChatGroupID(LoginUser.Anonymous, org.OrganizationID, Int32.TryParse(groupID, out groupParseResult) ? (int)groupParseResult : 0, groupName);
+			int? groupId = ChatRequests.CalculateChatGroupID(LoginUser.Anonymous, org.OrganizationID, Int32.TryParse(groupID, out groupParseResult) ? (int?)groupParseResult : null, groupName);
 			ChatRequest request = ChatRequests.RequestChat(LoginUser.Anonymous, org.OrganizationID, fName, lName, email, description, Context.Request.UserHostAddress, groupId ?? 0);
 
             pusher.Trigger("chat-requests-" + org.ChatID, "new-chat-request",
@@ -162,7 +163,7 @@ namespace TSWebServices
             Organization _organization = GetOrganization(chatGuid);
             Ticket ticket = (new Tickets(LoginUser.Anonymous)).AddNewTicket();
             ticket.OrganizationID = _organization.OrganizationID;
-            ticket.GroupID = Int32.TryParse(groupID, out groupParseResult) ? (int)groupParseResult : _organization.DefaultPortalGroupID;
+            ticket.GroupID = Int32.TryParse(groupID, out groupParseResult) && groupParseResult > 0 ? (int)groupParseResult : _organization.DefaultPortalGroupID;
             ticket.IsKnowledgeBase = false;
             ticket.IsVisibleOnPortal = true;
             ticket.Name = "Offline Chat Question";
