@@ -3589,15 +3589,6 @@ WHERE t.TicketID = @TicketID
         public void DeleteAttachment(int attachmentID)
         {
             ModelAPI.DeleteActionAttachment(TSAuthentication.Ticket, null, null, attachmentID);
-
-            // This method assumes action attachment
-            Attachment attachment = Attachments.GetAttachment(TSAuthentication.GetLoginUser(), attachmentID);
-            if (attachment == null || attachment.RefType != ReferenceType.Actions) return;
-            TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
-            if (!CanEditAction(action)) return;
-            attachment.DeleteFile();
-            attachment.Delete();
-            attachment.Collection.Save();
         }
 
         [WebMethod]

@@ -105,23 +105,29 @@ namespace TeamSupport.DataAPI
             proxy.AttachmentID = Decimal.ToInt32(value);
         }
 
-        /// <summary> Read Action Attachment </summary>
+        // load action attachments into attachment proxy
         const string SelectActionAttachmentProxy = "SELECT a.*, a.ActionAttachmentID as AttachmentID, a.ActionAttachmentGUID as AttachmentGUID, (u.FirstName + ' ' + u.LastName) AS CreatorName, a.ActionID as RefID " +
             "FROM ActionAttachments a LEFT JOIN Users u ON u.UserID = a.CreatorID ";
 
+        /// <summary> Read Action Attachment </summary>
         public static AttachmentProxy Read(ConnectionContext connection, ActionAttachment actionAttachment)
         {
-            // load action attachments into attachment proxies
             string query = SelectActionAttachmentProxy + $"WHERE ActionAttachmentID = {actionAttachment.ActionAttachmentID}";
             return actionAttachment._db.ExecuteQuery<AttachmentProxy>(query).First();
         }
 
-        /// <summary> Create Action Attachments </summary>
+        /// <summary> Read Action Attachments </summary>
         public static void Read(ConnectionContext connection, ActionModel actionModel, out AttachmentProxy[] attachments)
         {
-            // load action attachments into attachment proxies
             string query = SelectActionAttachmentProxy + $"WHERE ActionID = {actionModel.ActionID}";
             attachments = actionModel._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
+        }
+
+        /// <summary> Read all Action Attachments for this ticket </summary>
+        public static void Read(ConnectionContext connection, TicketModel ticketModel, out AttachmentProxy[] attachments)
+        {
+            string query = SelectActionAttachmentProxy + $"WHERE ActionID IN (SELECT ActionID FROM Actions WHERE TicketID = {ticketModel.TicketID})";
+            attachments = ticketModel._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
         }
 
         /// <summary> Update Action Attachment </summary>

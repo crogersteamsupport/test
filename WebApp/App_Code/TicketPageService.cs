@@ -90,6 +90,9 @@ namespace TSWebServices
             info.Subscribers = GetSubscribers(ticket);
             info.Queuers = GetQueuers(ticket);
             info.Attachments = GetAttachments(ticket);
+            AttachmentProxy[] results;
+            TeamSupport.ModelAPI.ModelAPI.ReadActionAttachments(TSAuthentication.Ticket, ticket.TicketID, out results);
+            info.Attachments = results;
 
             TaskService taskService = new TaskService();
             info.Tasks = taskService.GetTasksByTicketID(info.Ticket.TicketID);
@@ -1788,13 +1791,12 @@ namespace TSWebServices
             TeamSupport.ModelAPI.ModelAPI.ReadActionAttachments(TSAuthentication.Ticket, null, actionID, out results);
 
             // also read old attachments table
-            Attachments attachments = Attachments.ActionAttachments(loginUser, actionID);
-            AttachmentProxy[] oldAttachments = attachments.GetAttachmentProxies();
+            //Attachments attachments = Attachments.ActionAttachments(loginUser, actionID);
+            //AttachmentProxy[] oldAttachments = attachments.GetAttachmentProxies();
+            //int initialLength = results.Length;
+            //Array.Resize(ref results, results.Length + oldAttachments.Length);
+            //Array.Copy(oldAttachments, 0, results, initialLength, oldAttachments.Length);
 
-            // return the union of both lists
-            int initialLength = results.Length;
-            Array.Resize(ref results, results.Length + oldAttachments.Length);
-            Array.Copy(oldAttachments, 0, results, initialLength, oldAttachments.Length);
             return results;
         }
 

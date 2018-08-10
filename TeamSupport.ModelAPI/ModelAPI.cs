@@ -68,7 +68,7 @@ namespace TeamSupport.ModelAPI
                         AttachmentFile attachmentFile = actionModel.CreateAttachmentFile(files[i]);
                         if (attachmentFile == null)
                             continue;
-                        AttachmentProxy attachmentProxy = attachmentFile.CreateAttachmentProxy(context.Request, actionModel);
+                        AttachmentProxy attachmentProxy = attachmentFile.AsAttachmentProxy(context.Request, actionModel);
                         DataAPI.DataAPI.Create(connection, actionModel, attachmentProxy);
                         results.Add(attachmentProxy);
                     }
@@ -130,6 +130,25 @@ namespace TeamSupport.ModelAPI
                 DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), ActionLogType.Delete, ReferenceType.Attachments, actionID, "failed to read action attachments", ex);
             }
         }
+
+        /// <summary> Create Action Attachments </summary>
+        public static void ReadActionAttachments(FormsAuthenticationTicket authenticationTicket, int ticketID, out AttachmentProxy[] attachmentProxies)
+        {
+            try
+            {
+                using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
+                {
+                    TicketModel ticketModel = connection.Ticket(ticketID);
+                    DataAPI.DataAPI.Read(connection, ticketModel, out attachmentProxies);
+                }
+            }
+            catch (Exception ex)
+            {
+                attachmentProxies = null;
+                DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), ActionLogType.Delete, ReferenceType.Attachments, ticketID, "failed to read ticket action attachments", ex);
+            }
+        }
+
         #endregion
 
     }

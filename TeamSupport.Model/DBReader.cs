@@ -7,6 +7,9 @@ using System.Data.Linq;
 
 namespace TeamSupport.Model
 {
+    /// <summary>
+    /// ultralight read-only interface to database for verifying primary keys
+    /// </summary>
     static class DBReader
     {
         // Verify correctness as we traverse the layers of the logical model

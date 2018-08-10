@@ -26,7 +26,7 @@ namespace TeamSupport.Model
         {
             Connection = connection;
             _db = connection._db;
-            DBReader.VerifyOrganization(_db, OrganizationID);
+            //DBReader.VerifyOrganization(_db, OrganizationID); // connection already verified
         }
 
         /// <summary> UserID comes from ConnectionContext.Authentication </summary>

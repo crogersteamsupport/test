@@ -25,7 +25,7 @@ namespace TeamSupport.Model
         {
             Organization = organization;
             _db = organization._db;
-            DBReader.VerifyUser(_db, Organization.OrganizationID, UserID);
+            //DBReader.VerifyUser(_db, Organization.OrganizationID, UserID);     // connection already verified
         }
 
         /// <summary>

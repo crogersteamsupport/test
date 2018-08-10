@@ -8,6 +8,9 @@ using System.Web;
 
 namespace TeamSupport.Model
 {
+    /// <summary>
+    /// The attachment file is stored at AttachmentPath
+    /// </summary>
     public class AttachmentFile
     {
         public string FileName { get; private set; }
@@ -15,7 +18,7 @@ namespace TeamSupport.Model
         public long ContentLength { get; private set; }
         public string ContentType { get; private set; }
 
-        /// <summary> Create new attachment file </summary>
+        /// <summary> Nnew attachment </summary>
         public AttachmentFile(string attachmentPath, HttpPostedFile postedFile)
         {
             FileName = VerifyFileName(attachmentPath, postedFile.FileName);
@@ -25,7 +28,7 @@ namespace TeamSupport.Model
             postedFile.SaveAs(FilePath);    // write file to disk
         }
 
-        /// <summary> Existing attachment file </summary>
+        /// <summary> Existing attachment </summary>
         public AttachmentFile(ActionAttachment attachment, Data.AttachmentProxy proxy)
         {
             FileInfo file = new FileInfo(proxy.Path);
@@ -51,7 +54,7 @@ namespace TeamSupport.Model
             File.Delete(filePath);
         }
 
-        public Data.AttachmentProxy CreateAttachmentProxy(HttpRequest request, ActionModel actionModel)
+        public Data.AttachmentProxy AsAttachmentProxy(HttpRequest request, ActionModel actionModel)
         {
             string description = request.Form["description"];
             if (description != null)
