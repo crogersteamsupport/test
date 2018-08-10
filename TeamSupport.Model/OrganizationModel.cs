@@ -44,5 +44,6 @@ namespace TeamSupport.Model
             return path;
         }
 
+        public int AttachmentStorageUsed() { return DBReader.AttachmentStorageUsed(_db, OrganizationID); }
     }
 }
