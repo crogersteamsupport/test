@@ -23,6 +23,7 @@ using System.Net;
 using System.IO;
 using System.Dynamic;
 using System.Text.RegularExpressions;
+using TeamSupport.Model;
 
 namespace TSWebServices
 {
@@ -89,6 +90,9 @@ namespace TSWebServices
             info.Subscribers = GetSubscribers(ticket);
             info.Queuers = GetQueuers(ticket);
             info.Attachments = GetAttachments(ticket);
+            AttachmentProxy[] results;
+            TeamSupport.ModelAPI.ModelAPI.ReadActionAttachments(TSAuthentication.Ticket, ticket.TicketID, out results);
+            info.Attachments = results;
 
             TaskService taskService = new TaskService();
             info.Tasks = taskService.GetTasksByTicketID(info.Ticket.TicketID);
@@ -265,12 +269,10 @@ namespace TSWebServices
 
             foreach (TicketTimeLineViewItem viewItem in TimeLineView) {
                 if (!viewItem.IsWC) {
-                    Attachments attachments = new Attachments(loginUser);
-                    attachments.LoadByActionID(viewItem.RefID);
                     TimeLineItem timeLineItem  = new TimeLineItem();
                     timeLineItem.item          = viewItem.GetProxy();
                     timeLineItem.item.Message  = SanitizeMessage(timeLineItem.item.Message, loginUser);
-                    timeLineItem.Attachments   = attachments.GetAttachmentProxies();
+                    timeLineItem.Attachments = GetActionAttachmentProxies(viewItem.RefID, loginUser);
                     timeLineItems.Add(timeLineItem);
                 } else {
                     TimeLineItem wcItem = new TimeLineItem();
@@ -343,7 +345,14 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public TimeLineItem EmailTicket(int ticketID, string addresses, string introduction)
+        public TimeLineItem CreateEmailTicketAction(int ticketID, string addresses, string introduction) {
+            string actionText = string.Format("<i>Action added via the Email Ticket button to: {0} </i> <br><br>{1}", addresses, introduction);
+            string logPost = string.Format("{0} sent a email introduction to {1}", TSAuthentication.GetLoginUser().GetUserFullName(), addresses);
+            return LogAction(ticketID, SystemActionType.Email, "Email Introduction", actionText, logPost);
+        }
+
+        [WebMethod]
+        public void EmailTicket(int ticketID, string addresses, string introduction, int actionID)
         {
             addresses = addresses.Length > 200 ? addresses.Substring(0, 200) : addresses;
             EmailPosts posts = new EmailPosts(TSAuthentication.GetLoginUser());
@@ -354,12 +363,9 @@ namespace TSWebServices
             post.Param1 = TSAuthentication.UserID.ToString();
             post.Param2 = ticketID.ToString();
             post.Param3 = addresses;
+            post.Param4 = actionID.ToString();
             post.Text1 = introduction;
             posts.Save();
-
-            string actionText = string.Format("<i>Action added via the Email Ticket button to: {0} </i> <br><br>{1}", addresses, introduction);
-            string logPost = string.Format("{0} sent a email introduction to {1}", TSAuthentication.GetLoginUser().GetUserFullName(), addresses);
-            return LogAction(ticketID, SystemActionType.Email, "Email Introduction", actionText, logPost);
         }
 
         [WebMethod]
@@ -839,12 +845,12 @@ namespace TSWebServices
         [WebMethod]
         public TimeLineItem UpdateAction(ActionProxy proxy)
         {
-            // new action
-            if (TeamSupport.Model.ConnectionContext.Enabled && (proxy.ActionID == -1))
-            { 
-                TeamSupport.Data.Action newAction = TeamSupport.Model.API.InsertAction(TSAuthentication.GetLoginUser(), proxy);
-                return GetActionTimelineItem(newAction);
-            }
+            // new action - future
+            //if (proxy.ActionID == -1)
+            //{
+            //    proxy.CreatorID = TSAuthentication.UserID;
+            //    TeamSupport.ModelAPI.ModelAPI.Create(TSAuthentication.Ticket, proxy);
+            //}
 
             TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), proxy.ActionID);
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
@@ -1133,7 +1139,7 @@ namespace TSWebServices
         [WebMethod]
         public AttachmentProxy[] GetActionAttachments(int ActionID)
         {
-            return GetActionAttachments(ActionID, TSAuthentication.GetLoginUser());
+            return GetActionAttachmentProxies(ActionID, TSAuthentication.GetLoginUser());
         }
 
         [WebMethod]
@@ -1747,9 +1753,7 @@ namespace TSWebServices
                 }
             }
 
-            Attachments attachments = new Attachments(loginUser);
-            attachments.LoadByActionID(item.item.RefID);
-            item.Attachments = GetActionAttachments(action.ActionID, loginUser);
+            item.Attachments = GetActionAttachmentProxies(action.ActionID, loginUser);
 
             return item;
         }
@@ -1780,11 +1784,20 @@ namespace TSWebServices
             return wcItem;
         }
 
-        private AttachmentProxy[] GetActionAttachments(int actionID, LoginUser loginUser)
+        private AttachmentProxy[] GetActionAttachmentProxies(int actionID, LoginUser loginUser)
         {
-            Attachments attachments = new Attachments(loginUser);
-            attachments.LoadByActionID(actionID);
-            return attachments.GetAttachmentProxies();
+            // Read action attachments
+            AttachmentProxy[] results;
+            TeamSupport.ModelAPI.ModelAPI.ReadActionAttachments(TSAuthentication.Ticket, null, actionID, out results);
+
+            // also read old attachments table
+            //Attachments attachments = Attachments.ActionAttachments(loginUser, actionID);
+            //AttachmentProxy[] oldAttachments = attachments.GetAttachmentProxies();
+            //int initialLength = results.Length;
+            //Array.Resize(ref results, results.Length + oldAttachments.Length);
+            //Array.Copy(oldAttachments, 0, results, initialLength, oldAttachments.Length);
+
+            return results;
         }
 
         private void addWCAttachment(int messageID, int attachmentID, WaterCoolerAttachmentType attachmentType)

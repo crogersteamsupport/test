@@ -13,7 +13,7 @@ namespace TeamSupport.Data.BusinessObjects
     [Table(Name = "OrganizationSentiments")]
     public class OrganizationSentiment
     {
-#pragma warning disable CS0649  // Field is never assigned to in code (assigned by linq to sql)
+        #pragma warning disable CS0649  // Field is never assigned to in code (assigned by linq to sql)
         int _organizationSentimentID;
         [Column(Storage = "_organizationSentimentID", DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true)]
         public int OrganizationSentimentID { get { return _organizationSentimentID; } }
@@ -24,7 +24,7 @@ namespace TeamSupport.Data.BusinessObjects
         public bool IsAgent;
         [Column]
         double OrganizationSentimentScore;
-#pragma warning restore CS0649
+        #pragma warning restore CS0649
 
         public static double? GetOrganizationSentiment(int organizationID, int parentId)
         {

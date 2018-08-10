@@ -121,6 +121,7 @@ namespace TeamSupport.Data
     [DataMember] public bool DisableSupportLogin { get; set; }
     [DataMember] public string NoAttachmentsInOutboundExcludeProductLine { get; set; }
     [DataMember] public bool UseWatson { get; set; }
+    [DataMember] public bool RequireTwoFactor { get; set; }
     [DataMember] public int APIRequestMinuteLimit { get; set; }
 
   }
@@ -132,6 +133,7 @@ namespace TeamSupport.Data
       OrganizationProxy result = new OrganizationProxy();
       result.APIRequestMinuteLimit = this.APIRequestMinuteLimit;
       result.UseWatson = this.UseWatson;
+      result.RequireTwoFactor = this.RequireTwoFactor;
       result.NoAttachmentsInOutboundExcludeProductLine = this.NoAttachmentsInOutboundExcludeProductLine;
       result.AlertContactNoEmail = this.AlertContactNoEmail;
       result.RequireGroupAssignmentOnTickets = this.RequireGroupAssignmentOnTickets;

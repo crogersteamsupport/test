@@ -37,15 +37,14 @@ namespace TeamSupport.Handlers
             List<UploadResult> result = new List<UploadResult>();
 
             // Action Attachments
-            if (Model.ConnectionContext.Enabled && (folder == AttachmentPath.Folder.Actions))
+            if (folder == AttachmentPath.Folder.Actions)
             {
-                // front end does not provide TicketID
-                List<Model.ActionAttachment> attachments = Model.API.SaveActionAttachments(TSAuthentication.GetLoginUser(), context, null, itemID.Value);
-                foreach (Model.ActionAttachment attachment in attachments)
-                {
-                    Model.AttachmentFile file = attachment.File;
-                    result.Add(new UploadResult(file.FileName, file.ContentType, file.ContentLength));
-                }
+                List<AttachmentProxy> attachmentProxies = null;
+                attachmentProxies = ModelAPI.ModelAPI.CreateActionAttachments(TSAuthentication.Ticket, null, itemID.Value, context);    // ticketID, actionID, actionAttachments
+
+                // respond to front end
+                foreach (AttachmentProxy proxy in attachmentProxies)
+                    result.Add(new UploadResult(proxy.FileName, proxy.FileType, proxy.FileSize));
                 context.Response.Clear();
                 context.Response.ContentType = "text/plain";
                 context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));

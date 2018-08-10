@@ -121,11 +121,12 @@ namespace TeamSupport.Data
     [DataMember] public bool DisableSupportLogin { get; set; }
     [DataMember] public string NoAttachmentsInOutboundExcludeProductLine { get; set; }
     [DataMember] public bool UseWatson { get; set; }
+    [DataMember] public bool RequireTwoFactor { get; set; }
     [DataMember] public bool? MarkSpam { get; set; }
     [DataMember] public int APIRequestMinuteLimit { get; set; }
-          
+
   }
-  
+
   public partial class Organization : BaseItem
   {
     public OrganizationProxy GetProxy()
@@ -134,6 +135,7 @@ namespace TeamSupport.Data
       result.APIRequestMinuteLimit = this.APIRequestMinuteLimit;
       result.MarkSpam = this.MarkSpam;
       result.UseWatson = this.UseWatson;
+      result.RequireTwoFactor = this.RequireTwoFactor;      
       result.NoAttachmentsInOutboundExcludeProductLine = this.NoAttachmentsInOutboundExcludeProductLine;
       result.DisableSupportLogin = this.DisableSupportLogin;
       result.AlertContactNoEmail = this.AlertContactNoEmail;
@@ -234,17 +236,17 @@ namespace TeamSupport.Data
       result.Description = this.Description;
       result.Name = this.Name;
       result.OrganizationID = this.OrganizationID;
-       
+
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
       result.BusinessDayStart = DateTime.SpecifyKind(this.BusinessDayStartUtc, DateTimeKind.Utc);
       result.BusinessDayEnd = DateTime.SpecifyKind(this.BusinessDayEndUtc, DateTimeKind.Utc);
       result.LastIndexRebuilt = DateTime.SpecifyKind(this.LastIndexRebuiltUtc, DateTimeKind.Utc);
-       
-      result.DateLastIndexed = this.DateLastIndexedUtc == null ? this.DateLastIndexedUtc : DateTime.SpecifyKind((DateTime)this.DateLastIndexedUtc, DateTimeKind.Utc); 
-      result.SAExpirationDate = this.SAExpirationDateUtc == null ? this.SAExpirationDateUtc : DateTime.SpecifyKind((DateTime)this.SAExpirationDateUtc, DateTimeKind.Utc); 
-       
+
+      result.DateLastIndexed = this.DateLastIndexedUtc == null ? this.DateLastIndexedUtc : DateTime.SpecifyKind((DateTime)this.DateLastIndexedUtc, DateTimeKind.Utc);
+      result.SAExpirationDate = this.SAExpirationDateUtc == null ? this.SAExpirationDateUtc : DateTime.SpecifyKind((DateTime)this.SAExpirationDateUtc, DateTimeKind.Utc);
+
       return result;
-    }	
+    }
   }
 }

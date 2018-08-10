@@ -27,6 +27,7 @@ using System.Diagnostics;
 using OpenTokSDK;
 using Jira = TeamSupport.JIRA;
 using NR = NewRelic.Api;
+using TeamSupport.ModelAPI;
 
 namespace TSWebServices
 {
@@ -3155,7 +3156,10 @@ WHERE t.TicketID = @TicketID
 
             UsersViewItem creator = UsersView.GetUsersViewItem(loginUser, action.CreatorID);
             if (creator != null) actionInfo.Creator = new UserInfo(creator);
-            actionInfo.Attachments = action.GetAttachments().GetAttachmentProxies();
+            AttachmentProxy[] model = null;// ModelAPI.SelectActionAttachments(TSAuthentication.Ticket, null, action.ActionID);
+            actionInfo.Attachments = Attachments.ActionAttachments(loginUser, action.ActionID).GetAttachmentProxies();
+            if (model.Equals(actionInfo.Attachments))
+                Debugger.Break();
             return actionInfo;
         }
 
@@ -3584,13 +3588,7 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public void DeleteAttachment(int attachmentID)
         {
-            Attachment attachment = Attachments.GetAttachment(TSAuthentication.GetLoginUser(), attachmentID);
-            if (attachment == null || attachment.RefType != ReferenceType.Actions) return;
-            TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
-            if (!CanEditAction(action)) return;
-            attachment.DeleteFile();
-            attachment.Delete();
-            attachment.Collection.Save();
+            ModelAPI.DeleteActionAttachment(TSAuthentication.Ticket, null, null, attachmentID);
         }
 
         [WebMethod]
@@ -3637,20 +3635,23 @@ WHERE t.TicketID = @TicketID
 
             if (info.CategoryID != null && info.CategoryID > -1) ticket.AddCommunityTicket((int)info.CategoryID);
 
-            if(TeamSupport.Model.ConnectionContext.Enabled)
-            {
-                ActionProxy proxy = new ActionProxy()
-                {
-                    Description = info.Description,
-                    IsVisibleOnPortal = info.IsVisibleOnPortal,
-                    TimeSpent = info.TimeSpent,
-                    DateStarted = info.DateStarted
-                };
-
-                LoginUser loginUser = TSAuthentication.GetLoginUser();
-                User userData = Users.GetUser(loginUser, TSAuthentication.UserID);
-                TeamSupport.Model.API.InsertAction(loginUser, proxy, ticket, userData);
-            }
+            // new action - future
+            //if (TeamSupport.Model.ConnectionContext.IsEnabled)
+            //{
+            //    ActionProxy actionProxy = new ActionProxy()
+            //    {
+            //        Name = "Description",
+            //        SystemActionTypeID = SystemActionType.Description,
+            //        Description = info.Description,
+            //        IsVisibleOnPortal = ticket.IsVisibleOnPortal,
+            //        IsKnowledgeBase = ticket.IsKnowledgeBase,
+            //        TicketID = ticket.TicketID,
+            //        TimeSpent = info.TimeSpent,
+            //        DateStarted = info.DateStarted,
+            //        ActionSource = ticket.TicketSource
+            //    };
+            //    ModelAPI.Create(TSAuthentication.Ticket, actionProxy);
+            //}
 
             TeamSupport.Data.Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();
             action.ActionTypeID = null;
@@ -3905,6 +3906,8 @@ WHERE t.TicketID = @TicketID
 
             //for testing new method
             return MergeTicketsNew( winningTicketID,  losingTicketID);
+            //ModelAPI.MergeTickets(TSAuthentication.Ticket, winningTicketID, losingTicketID);
+
             Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), winningTicketID);
             String errLocation = "";
 

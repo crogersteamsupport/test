@@ -16,35 +16,28 @@ namespace TeamSupport.Model
     /// </summary>
     public class OrganizationModel
     {
-        public ConnectionContext ConnectionModel { get; private set; }
-        public int OrganizationID { get; private set; }
+        public ConnectionContext Connection { get; private set; }
         public DataContext _db { get; private set; }
 
-        public OrganizationModel(ConnectionContext user, int organizationID)
+        public int OrganizationID { get { return Connection.Authentication.OrganizationID; } }
+
+        /// <summary> OrganizationID and UserID come from ConnectionContext.Authentication </summary>
+        public OrganizationModel(ConnectionContext connection)
         {
-            ConnectionModel = user;
-            OrganizationID = organizationID;
-            _db = user._db;
-            Verify();
+            Connection = connection;
+            _db = connection._db;
+            //DBReader.VerifyOrganization(_db, OrganizationID); // connection already verified
         }
 
-        [Conditional("DEBUG")]
-        void Verify()
+        /// <summary> UserID comes from ConnectionContext.Authentication </summary>
+        public UserSession User()
         {
-            string query = $"SELECT OrganizationID FROM Organizations  WITH (NOLOCK) WHERE OrganizationID={OrganizationID}";
-            IEnumerable<int> x = _db.ExecuteQuery<int>(query);
-            if (!x.Any())
-                throw new Exception(String.Format($"{query} not found"));
-        }
-
-        public UserSession User(int userID)
-        {
-            return new UserSession(this, userID);
+            return new UserSession(this);
         }
 
         public string AttachmentPath(int id)
         {
-            string path = ConnectionModel.AttachmentPath(id);
+            string path = Connection.AttachmentPath(id);
             path = Path.Combine(Path.Combine(path, "Organizations"), OrganizationID.ToString());
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
