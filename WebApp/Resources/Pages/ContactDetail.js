@@ -1010,12 +1010,13 @@ $(document).ready(function () {
             $('#btnNotesSave').text("Save");
             $('#btnNotesCancel').show();
             $('#noteAttachmentsRow').show();
-            note.Attachments.forEach(element => {
+            for (var i = 0; i < note.Attachments.length ; i++)
+            {
                 var div = $('<div>');
 
                 var name = $('<span>')
                     .addClass('noteAttachmentName')
-                    .text(element.FileName)
+                    .text(note.Attachments[i].FileName)
                     .appendTo(div);
 
                 $('<i>')
@@ -1024,14 +1025,14 @@ $(document).ready(function () {
                     .click(function (e) {
                         if (confirm("Are you sure you want to delete this file attachment")) {
                             _mainFrame.Ts.System.logAction('Contact Detail - Delete Note File Attachment');
-                            parent.privateServices.DeleteAttachment(element.AttachmentID, function (e) {
+                            parent.privateServices.DeleteAttachment(note.Attachments[i].AttachmentID, function (e) {
                                 div.remove();
                             });
                         }
                     });
 
                 div.appendTo($('#noteAttachments'));
-            });
+            };
             $('#noteForm').show();
             initEditor($('#fieldNoteDesc'), function (ed) {
                 $('#fieldNoteDesc').tinymce().setContent(desc);
