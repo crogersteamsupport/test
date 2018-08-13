@@ -536,11 +536,9 @@ $(document).ready(function () {
         $('#taskEdit').addClass("disabled");
     });
 
-    $('#fieldDescription').click(function (e) {
+    $('#descriptionEdit').click(function (e) {
         e.preventDefault();
-        if (!$(this).hasClass('editable'))
-            return false;
-        var header = $(this).hide();
+        var header = $('#fieldDescription').hide();
         window.parent.parent.Ts.System.logAction('Task Detail - Edit Description');
         window.parent.parent.Ts.Services.Task.GetTask(_taskID, function (task) {
             var desc = task.Description;
