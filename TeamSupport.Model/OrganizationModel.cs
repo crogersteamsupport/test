@@ -17,7 +17,6 @@ namespace TeamSupport.Model
     public class OrganizationModel
     {
         public ConnectionContext Connection { get; private set; }
-        public DataContext _db { get; private set; }
 
         public int OrganizationID { get { return Connection.Authentication.OrganizationID; } }
 
@@ -25,14 +24,7 @@ namespace TeamSupport.Model
         public OrganizationModel(ConnectionContext connection)
         {
             Connection = connection;
-            _db = connection._db;
             //DBReader.VerifyOrganization(_db, OrganizationID); // connection already verified
-        }
-
-        /// <summary> UserID comes from ConnectionContext.Authentication </summary>
-        public UserSession User()
-        {
-            return new UserSession(this);
         }
 
         public string AttachmentPath(int id)
@@ -44,6 +36,5 @@ namespace TeamSupport.Model
             return path;
         }
 
-        public int AttachmentStorageUsed() { return DBReader.AttachmentStorageUsed(_db, OrganizationID); }
     }
 }

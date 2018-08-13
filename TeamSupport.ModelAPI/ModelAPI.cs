@@ -39,7 +39,7 @@ namespace TeamSupport.ModelAPI
             {
                 using (ConnectionContext connection = new ConnectionContext(authentication))
                 {
-                    DataAPI.DataAPI.Create(connection, connection.Ticket(actionProxy.TicketID), ref actionProxy);
+                    DataAPI.DataAPI.Create(connection.Ticket(actionProxy.TicketID), ref actionProxy);
                 }
             }
             catch (Exception ex)
@@ -72,7 +72,7 @@ namespace TeamSupport.ModelAPI
 
                         // send proxy to DB
                         AttachmentProxy attachmentProxy = attachmentFile.AsAttachmentProxy(context.Request, actionModel);
-                        DataAPI.DataAPI.Create(connection, actionModel, attachmentProxy);
+                        DataAPI.DataAPI.Create(actionModel, attachmentProxy);
                         results.Add(attachmentProxy);
                     }
                 }
@@ -102,9 +102,9 @@ namespace TeamSupport.ModelAPI
                         return;
 
                     ActionAttachment attachment = actionModel.Attachment(attachmentID);
-                    AttachmentProxy proxy = DataAPI.DataAPI.Read(connection, attachment);
+                    AttachmentProxy proxy = DataAPI.DataAPI.Read(attachment);
                     AttachmentFile file = new AttachmentFile(attachment, proxy);
-                    DataAPI.DataAPI.Delete(connection, attachment); // remove from database
+                    DataAPI.DataAPI.Delete(attachment); // remove from database
                     file.Delete();  // delete file
                 }
             }
@@ -124,7 +124,7 @@ namespace TeamSupport.ModelAPI
                     if (!ticketID.HasValue)
                         ticketID = DataAPI.DataAPI.ActionGetTicketID(connection._db, actionID);
                     ActionModel actionModel = connection.Ticket(ticketID.Value).Action(actionID);
-                    DataAPI.DataAPI.Read(connection, actionModel, out attachmentProxies);
+                    DataAPI.DataAPI.Read(actionModel, out attachmentProxies);
                 }
             }
             catch (Exception ex)
@@ -142,7 +142,7 @@ namespace TeamSupport.ModelAPI
                 using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
                 {
                     TicketModel ticketModel = connection.Ticket(ticketID);
-                    DataAPI.DataAPI.Read(connection, ticketModel, out attachmentProxies);
+                    DataAPI.DataAPI.Read(ticketModel, out attachmentProxies);
                 }
             }
             catch (Exception ex)

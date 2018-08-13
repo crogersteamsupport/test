@@ -49,7 +49,7 @@ namespace TeamSupport.Model
         public void Commit() { _db.Transaction.Commit(); }
         public void Rollback() { _db.Transaction.Rollback(); }
 
-        public TicketModel Ticket(int ticketID) { return User.Ticket(ticketID); }
+        public TicketModel Ticket(int ticketID) { return new TicketModel(User, ticketID); }
 
         public string AttachmentPath(int id) { return DBReader.AttachmentPath(_db, id); }
 

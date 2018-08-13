@@ -41,31 +41,31 @@ namespace TeamSupport.DataAPI
 
         #region Tickets
         /// <summary> Create Ticket </summary>
-        public static void Create(ConnectionContext connection, TicketProxy ticketProxy)
+        public static void Create(OrganizationModel organization, TicketProxy ticketProxy)
         {
             // TODO - create ticket
-            LogMessage(connection.Authentication, ActionLogType.Insert, ReferenceType.Tickets, ticketProxy.TicketID, "Created Ticket");
+            LogMessage(organization.Connection.Authentication, ActionLogType.Insert, ReferenceType.Tickets, ticketProxy.TicketID, "Created Ticket");
         }
 
         /// <summary> Read Ticket </summary>
-        public static TicketProxy Read(ConnectionContext connection, TicketModel ticketModel)
+        public static TicketProxy Read(TicketModel ticketModel)
         {
-            Table<TicketProxy> table = connection._db.GetTable<TicketProxy>();
+            Table<TicketProxy> table = ticketModel.Connection._db.GetTable<TicketProxy>();
             return table.Where(t => t.TicketID == ticketModel.TicketID).First();
         }
 
         /// <summary> Update Ticket </summary>
-        public static void Update(ConnectionContext connection, TicketModel ticketModel, TicketProxy ticketProxy)
+        public static void Update(TicketModel ticketModel, TicketProxy ticketProxy)
         {
             // TODO - update ticket
-            LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, ticketModel.TicketID, "Updated Ticket");
+            LogMessage(ticketModel.Connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, ticketModel.TicketID, "Updated Ticket");
         }
 
         /// <summary> Delete Ticket</summary>
-        public static void Delete(ConnectionContext connection, TicketModel ticketModel)
+        public static void Delete(TicketModel ticketModel)
         {
             // TODO - delete ticket
-            LogMessage(connection.Authentication, ActionLogType.Delete, ReferenceType.Tickets, ticketModel.TicketID, "Deleted Ticket");
+            LogMessage(ticketModel.Connection.Authentication, ActionLogType.Delete, ReferenceType.Tickets, ticketModel.TicketID, "Deleted Ticket");
         }
         #endregion
 
@@ -74,39 +74,39 @@ namespace TeamSupport.DataAPI
         public static int ActionGetTicketID(DataContext db, int actionID) { return db.ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {actionID}").Min(); }
 
         /// <summary> Create Action </summary>
-        public static void Create(ConnectionContext connection, TicketModel ticketModel, ref ActionProxy actionProxy)
+        public static void Create(TicketModel ticketModel, ref ActionProxy actionProxy)
         {
-            AuthenticationModel authentication = connection.Authentication;
-            Data.Action.Create(connection._db, authentication.OrganizationID, authentication.UserID, ticketModel.TicketID, ref actionProxy);
-            LogMessage(connection.Authentication, ActionLogType.Insert, ReferenceType.Actions, actionProxy.ActionID, "Created Action");
+            AuthenticationModel authentication = ticketModel.Connection.Authentication;
+            Data.Action.Create(ticketModel.Connection._db, authentication.OrganizationID, authentication.UserID, ticketModel.TicketID, ref actionProxy);
+            LogMessage(authentication, ActionLogType.Insert, ReferenceType.Actions, actionProxy.ActionID, "Created Action");
         }
 
         /// <summary> Read Action </summary>
-        public static ActionProxy Read(ConnectionContext connection, ActionModel actionModel)
+        public static ActionProxy Read(ActionModel actionModel)
         {
-            Table<ActionProxy> table = connection._db.GetTable<ActionProxy>();
+            Table<ActionProxy> table = actionModel.Connection._db.GetTable<ActionProxy>();
             return table.Where(t => t.ActionID == actionModel.ActionID).First();
         }
 
         /// <summary> Read ticket Actions </summary>
-        public static void Read(ConnectionContext connection, TicketModel ticketModel, out ActionProxy[] actionProxies)
+        public static void Read(TicketModel ticketModel, out ActionProxy[] actionProxies)
         {
-            Table<ActionProxy> table = connection._db.GetTable<ActionProxy>();
+            Table<ActionProxy> table = ticketModel.Connection._db.GetTable<ActionProxy>();
             actionProxies = table.Where(t => t.TicketID == ticketModel.TicketID).ToArray();
         }
 
         /// <summary> Update Action </summary>
-        public static void Update(ConnectionContext connection, ActionModel actionModel, ActionProxy actionProxy)
+        public static void Update(ActionModel actionModel, ActionProxy actionProxy)
         {
             // TODO - update action
-            LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Actions, actionModel.ActionID, "Updated Action");
+            LogMessage(actionModel.Connection.Authentication, ActionLogType.Update, ReferenceType.Actions, actionModel.ActionID, "Updated Action");
         }
 
         /// <summary> Delete Action </summary>
-        public static void Delete(ConnectionContext connection, ActionModel actionModel)
+        public static void Delete(ActionModel actionModel)
         {
             // TODO - delete action
-            LogMessage(connection.Authentication, ActionLogType.Delete, ReferenceType.Actions, actionModel.ActionID, "Deleted Action");
+            LogMessage(actionModel.Connection.Authentication, ActionLogType.Delete, ReferenceType.Actions, actionModel.ActionID, "Deleted Action");
         }
         #endregion
 
@@ -119,13 +119,13 @@ namespace TeamSupport.DataAPI
         }
 
         /// <summary> Create Action Attachment </summary>
-        public static void Create(ConnectionContext connection, ActionModel action, AttachmentProxy proxy)
+        public static void Create(ActionModel actionModel, AttachmentProxy proxy)
         {
             // hard code all the numbers, parameterize all the strings so they are SQL-Injection checked
             string query = "INSERT INTO ActionAttachments(OrganizationID, FileName, FileType, FileSize, Path, DateCreated, DateModified, CreatorID, ModifierID, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID) " +
-                $"VALUES({connection.Organization.OrganizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{ToSql(proxy.DateCreated)}', '{ToSql(proxy.DateModified)}', {proxy.CreatorID}, {proxy.ModifierID}, {action.ActionID}, {ToSql(proxy.SentToJira)}, {ToSql(proxy.SentToTFS)}, {ToSql(proxy.SentToSnow)}, {proxy.FilePathID})" +
+                $"VALUES({actionModel.Connection.Organization.OrganizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{ToSql(proxy.DateCreated)}', '{ToSql(proxy.DateModified)}', {proxy.CreatorID}, {proxy.ModifierID}, {actionModel.ActionID}, {ToSql(proxy.SentToJira)}, {ToSql(proxy.SentToTFS)}, {ToSql(proxy.SentToSnow)}, {proxy.FilePathID})" +
                 "SELECT SCOPE_IDENTITY()";
-            decimal value = connection._db.ExecuteQuery<decimal>(query, proxy.FileName, proxy.FileType, proxy.Path).Min();
+            decimal value = actionModel.Connection._db.ExecuteQuery<decimal>(query, proxy.FileName, proxy.FileType, proxy.Path).Min();
             proxy.AttachmentID = Decimal.ToInt32(value);
         }
 
@@ -134,32 +134,34 @@ namespace TeamSupport.DataAPI
             "FROM ActionAttachments a LEFT JOIN Users u ON u.UserID = a.CreatorID ";
 
         /// <summary> Read Action Attachment </summary>
-        public static AttachmentProxy Read(ConnectionContext connection, ActionAttachment actionAttachment)
+        public static AttachmentProxy Read(ActionAttachment actionAttachment)
         {
             string query = SelectActionAttachmentProxy + $"WHERE ActionAttachmentID = {actionAttachment.ActionAttachmentID}";
-            return actionAttachment._db.ExecuteQuery<AttachmentProxy>(query).First();
+            return actionAttachment.Connection._db.ExecuteQuery<AttachmentProxy>(query).First();
         }
 
         /// <summary> Read Action Attachments </summary>
-        public static void Read(ConnectionContext connection, ActionModel actionModel, out AttachmentProxy[] attachments)
+        public static void Read(ActionModel actionModel, out AttachmentProxy[] attachments)
         {
             string query = SelectActionAttachmentProxy + $"WHERE ActionID = {actionModel.ActionID}";
-            attachments = actionModel._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
+            attachments = actionModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
         }
 
         /// <summary> Read all Action Attachments for this ticket </summary>
-        public static void Read(ConnectionContext connection, TicketModel ticketModel, out AttachmentProxy[] attachments)
+        public static void Read(TicketModel ticketModel, out AttachmentProxy[] attachments)
         {
             string query = SelectActionAttachmentProxy + $"WHERE ActionID IN (SELECT ActionID FROM Actions WHERE TicketID = {ticketModel.TicketID})";
-            attachments = ticketModel._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
+            attachments = ticketModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
         }
 
+        /// <summary> Update Action Attachment </summary>
+
         /// <summary> Delete Action Attachment </summary>
-        public static void Delete(ConnectionContext connection, ActionAttachment actionAttachment)
+        public static void Delete(ActionAttachment actionAttachment)
         {
             string query = $"DELETE FROM ActionAttachments WHERE ActionAttachmentID = {actionAttachment.ActionAttachmentID}";
-            actionAttachment._db.ExecuteCommand(query);
-            LogMessage(connection.Authentication, ActionLogType.Delete, ReferenceType.Actions, actionAttachment.ActionAttachmentID, "Deleted Action Attachment");
+            actionAttachment.Connection._db.ExecuteCommand(query);
+            LogMessage(actionAttachment.Connection.Authentication, ActionLogType.Delete, ReferenceType.Actions, actionAttachment.ActionAttachmentID, "Deleted Action Attachment");
         }
         #endregion
 

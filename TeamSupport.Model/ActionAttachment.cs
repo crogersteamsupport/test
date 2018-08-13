@@ -18,18 +18,18 @@ namespace TeamSupport.Model
     {
         public ActionModel Action { get; private set; }
         public int? ActionAttachmentID { get; private set; }
-        public DataContext _db { get; private set; }
+        public ConnectionContext Connection { get; private set; }
 
         /// <summary> Load existing action attachment /// </summary>
         public ActionAttachment(ActionModel action, int actionAttachmentID)
         {
             Action = action;
             ActionAttachmentID = actionAttachmentID;
-            _db = action._db;
+            Connection = action.Connection;
 
             TicketModel ticket = Action.Ticket;
             OrganizationModel organization = ticket.User.Organization;
-            DBReader.VerifyActionAttachment(_db, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
+            DBReader.VerifyActionAttachment(Connection._db, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID.Value);
         }
 
     }
