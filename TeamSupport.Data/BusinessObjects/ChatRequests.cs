@@ -351,7 +351,7 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
             return result;
         }
 
-        public static ChatRequest RequestChat(LoginUser loginUser, int organizationID, string firstName, string lastName, string email, string message, string ipAddress, int groupID = 0)
+        public static ChatRequest RequestChat(LoginUser loginUser, int organizationID, string firstName, string lastName, string email, string message, string ipAddress, int? groupID)
         {
             ChatClients clients = new ChatClients(loginUser);
             ChatClient client = clients.IsEmpty ? (new ChatClients(loginUser)).AddNewChatClient() : clients[0];
