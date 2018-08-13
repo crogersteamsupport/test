@@ -162,7 +162,7 @@ namespace TSWebServices
             Organization _organization = GetOrganization(chatGuid);
             Ticket ticket = (new Tickets(LoginUser.Anonymous)).AddNewTicket();
             ticket.OrganizationID = _organization.OrganizationID;
-            ticket.GroupID = Int32.TryParse(groupID, out groupParseResult) ? (int)groupParseResult : _organization.DefaultPortalGroupID;
+            ticket.GroupID = Int32.TryParse(groupID, out groupParseResult) && groupParseResult > 0 ? (int)groupParseResult : _organization.DefaultPortalGroupID;
             ticket.IsKnowledgeBase = false;
             ticket.IsVisibleOnPortal = true;
             ticket.Name = "Offline Chat Question";
