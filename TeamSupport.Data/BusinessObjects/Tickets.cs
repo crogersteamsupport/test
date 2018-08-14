@@ -771,7 +771,7 @@ AND ot.TicketID = @TicketID
                                                                                             && c.Description == originalAction.Description
                                                                                             && c.Name == originalAction.Name).FirstOrDefault();
 
-                        clonedAttachment.RefID = matchingClone.ActionID;    // this is wrong - assigning actionID when original was loaded by OrganizationID
+                        clonedAttachment.RefID = matchingClone.ActionID;
                         clonedAttachment.RefType = attachment.RefType;  // what if RefType != Actions ???
 
                         string clonedActionAttachmentPath = attachment.Path.Substring(0, attachment.Path.IndexOf(@"\Actions\") + @"\Actions\".Length)

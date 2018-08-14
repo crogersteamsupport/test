@@ -21,7 +21,12 @@ namespace TeamSupport.Model
         public int ActionID { get; private set; }
         public ConnectionContext Connection { get; private set; }
 
-        /// <summary> existing action </summary>
+        public static int GetTicketID(DataContext db, int actionID)
+        {
+            return db.ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {actionID}").Min();
+        }
+
+        /// <summary> top down - existing action </summary>
         public ActionModel(TicketModel ticket, int actionID)
         {
             Ticket = ticket;
@@ -30,8 +35,18 @@ namespace TeamSupport.Model
             DBReader.VerifyAction(Connection._db, ticket.User.Organization.OrganizationID, Ticket.TicketID, ActionID);
         }
 
+        /// <summary> bottom up  - existing action </summary>
+        public ActionModel(ConnectionContext connection, int actionID)
+        {
+            ActionID = actionID;
+            Connection = connection;
+            int ticketID = GetTicketID(Connection._db, actionID);
+            Ticket = new TicketModel(Connection, ticketID);
+            DBReader.VerifyAction(Connection._db, Connection.Organization.OrganizationID, Ticket.TicketID, ActionID);
+        }
+
         /// <summary> existing action attachment </summary>
-        public ActionAttachment Attachment(int actionAttachmentID)
+        public ActionAttachment ActionAttachment(int actionAttachmentID)
         {
             return new ActionAttachment(this, actionAttachmentID);
         }

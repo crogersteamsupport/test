@@ -40,14 +40,22 @@ namespace TeamSupport.Handlers
             if (folder == AttachmentPath.Folder.Actions)
             {
                 List<AttachmentProxy> attachmentProxies = null;
-                attachmentProxies = ModelAPI.ModelAPI.CreateActionAttachments(TSAuthentication.Ticket, null, itemID.Value, context);    // ticketID, actionID, actionAttachments
+                attachmentProxies = ModelAPI.ModelAPI.CreateActionAttachments(TSAuthentication.Ticket, itemID.Value, context);    // ticketID, actionID, actionAttachments
 
                 // respond to front end
-                foreach (AttachmentProxy proxy in attachmentProxies)
-                    result.Add(new UploadResult(proxy.FileName, proxy.FileType, proxy.FileSize));
                 context.Response.Clear();
-                context.Response.ContentType = "text/plain";
-                context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
+                if (attachmentProxies == null)
+                {
+                    context.Response.Write("Invalid attachment.");
+                    context.Response.ContentType = "text/html";
+                }
+                else
+                {
+                    foreach (AttachmentProxy proxy in attachmentProxies)
+                        result.Add(new UploadResult(proxy.FileName, proxy.FileType, proxy.FileSize));
+                    context.Response.ContentType = "text/plain";
+                    context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
+                }
                 return;
             }
 

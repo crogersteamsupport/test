@@ -1788,7 +1788,7 @@ namespace TSWebServices
         {
             // Read action attachments
             AttachmentProxy[] results;
-            TeamSupport.ModelAPI.ModelAPI.ReadActionAttachments(TSAuthentication.Ticket, null, actionID, out results);
+            TeamSupport.ModelAPI.ModelAPI.ReadActionAttachments(TSAuthentication.Ticket, actionID, out results);
 
             // also read old attachments table
             //Attachments attachments = Attachments.ActionAttachments(loginUser, actionID);

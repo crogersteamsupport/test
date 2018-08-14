@@ -71,7 +71,6 @@ namespace TeamSupport.DataAPI
 
 
         #region Actions
-        public static int ActionGetTicketID(DataContext db, int actionID) { return db.ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {actionID}").Min(); }
 
         /// <summary> Create Action </summary>
         public static void Create(TicketModel ticketModel, ref ActionProxy actionProxy)
@@ -113,10 +112,6 @@ namespace TeamSupport.DataAPI
 
         #region ActionAttachments
 
-        public static int ActionAttachmentGetActionID(DataContext db, int attachmentID)
-        {
-            return db.ExecuteQuery<int>($"SELECT ActionID FROM ActionAttachments WITH(NOLOCK) WHERE ActionAttachmentID = {attachmentID}").Min();
-        }
 
         /// <summary> Create Action Attachment </summary>
         public static void Create(ActionModel actionModel, AttachmentProxy proxy)

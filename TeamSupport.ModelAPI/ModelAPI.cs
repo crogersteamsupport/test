@@ -15,6 +15,7 @@ namespace TeamSupport.ModelAPI
         #region Tickets
         public static void MergeTickets(FormsAuthenticationTicket authenticationTicket, int destinationTicketID, int sourceTicketID)
         {
+            if (!ConnectionContext.IsEnabled) return;
             try
             {
                 using (ConnectionContext connection = new ConnectionContext(authenticationTicket, true))    // use transaction
@@ -35,6 +36,7 @@ namespace TeamSupport.ModelAPI
         /// <summary> Create Action </summary>
         public static void Create(FormsAuthenticationTicket authentication, ActionProxy actionProxy)
         {
+            if (!ConnectionContext.IsEnabled) return;
             try
             {
                 using (ConnectionContext connection = new ConnectionContext(authentication))
@@ -52,16 +54,15 @@ namespace TeamSupport.ModelAPI
 
         #region ActionAttachments
         /// <summary> Create Action Attachments </summary>
-        public static List<AttachmentProxy> CreateActionAttachments(FormsAuthenticationTicket authenticationTicket, int? ticketID, int? actionID, HttpContext context)
+        public static List<AttachmentProxy> CreateActionAttachments(FormsAuthenticationTicket authenticationTicket, int actionID, HttpContext context)
         {
+            if (!ConnectionContext.IsEnabled) return null;
             List<AttachmentProxy> results = new List<AttachmentProxy>();
             try
             {
                 using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
                 {
-                    if (!ticketID.HasValue)
-                        ticketID = DataAPI.DataAPI.ActionGetTicketID(connection._db, actionID.Value);
-                    ActionModel actionModel = connection.Ticket(ticketID.Value).Action(actionID.Value);
+                    ActionModel actionModel = new ActionModel(connection, actionID);
                     HttpFileCollection files = context.Request.Files;
                     for (int i = 0; i < files.Count; i++)   // foreach returns strings?
                     {
@@ -79,29 +80,24 @@ namespace TeamSupport.ModelAPI
             }
             catch (Exception ex)
             {
-                DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), ActionLogType.Insert, ReferenceType.Attachments, ticketID, "Unable to save attachments", ex);
+                DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), ActionLogType.Insert, ReferenceType.Actions, actionID, "Unable to save attachments on action", ex);
             }
             return results;
         }
 
         /// <summary> Delete Action Attachment /// </summary>
-        public static void DeleteActionAttachment(FormsAuthenticationTicket authenticationTicket, int? ticketID, int? actionID, int attachmentID)
+        public static void DeleteActionAttachment(FormsAuthenticationTicket authenticationTicket, int attachmentID)
         {
+            if (!ConnectionContext.IsEnabled) return;
             try
             {
                 using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
                 {
-                    if (!actionID.HasValue)
-                        actionID = DataAPI.DataAPI.ActionAttachmentGetActionID(connection._db, attachmentID);
-                    if(!ticketID.HasValue)
-                        ticketID = DataAPI.DataAPI.ActionGetTicketID(connection._db, actionID.Value);
-
                     // user have permission to modify this action?
-                    ActionModel actionModel = connection.Ticket(ticketID.Value).Action(actionID.Value);
-                    if (!actionModel.CanEdit())
+                    ActionAttachment attachment = new ActionAttachment(connection, attachmentID);
+                    if (!attachment.Action.CanEdit())
                         return;
 
-                    ActionAttachment attachment = actionModel.Attachment(attachmentID);
                     AttachmentProxy proxy = DataAPI.DataAPI.Read(attachment);
                     AttachmentFile file = new AttachmentFile(attachment, proxy);
                     DataAPI.DataAPI.Delete(attachment); // remove from database
@@ -115,15 +111,18 @@ namespace TeamSupport.ModelAPI
         }
 
         /// <summary> Create Action Attachments </summary>
-        public static void ReadActionAttachments(FormsAuthenticationTicket authenticationTicket, int? ticketID, int actionID, out AttachmentProxy[] attachmentProxies)
+        public static void ReadActionAttachments(FormsAuthenticationTicket authenticationTicket, int actionID, out AttachmentProxy[] attachmentProxies)
         {
+            if (!ConnectionContext.IsEnabled)
+            {
+                attachmentProxies = null;
+                return;
+            }
             try
             {
                 using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
                 {
-                    if (!ticketID.HasValue)
-                        ticketID = DataAPI.DataAPI.ActionGetTicketID(connection._db, actionID);
-                    ActionModel actionModel = connection.Ticket(ticketID.Value).Action(actionID);
+                    ActionModel actionModel = new ActionModel(connection, actionID);
                     DataAPI.DataAPI.Read(actionModel, out attachmentProxies);
                 }
             }
@@ -134,23 +133,43 @@ namespace TeamSupport.ModelAPI
             }
         }
 
+        ///// <summary> Create Action Attachments </summary>
+        //public static void ReadActionAttachments(FormsAuthenticationTicket authenticationTicket, int ticketID, out AttachmentProxy[] attachmentProxies)
+        //{
+        //    try
+        //    {
+        //        using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
+        //        {
+        //            TicketModel ticketModel = connection.Ticket(ticketID);
+        //            DataAPI.DataAPI.Read(ticketModel, out attachmentProxies);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        attachmentProxies = null;
+        //        DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), ActionLogType.Delete, ReferenceType.Attachments, ticketID, "failed to read ticket action attachments", ex);
+        //    }
+        //}
+
         /// <summary> Create Action Attachments </summary>
-        public static void ReadActionAttachments(FormsAuthenticationTicket authenticationTicket, int ticketID, out AttachmentProxy[] attachmentProxies)
+        public static AttachmentProxy ReadActionAttachment(FormsAuthenticationTicket authenticationTicket, int attachmentID)
         {
+            if (!ConnectionContext.IsEnabled) return null;
             try
             {
                 using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
                 {
-                    TicketModel ticketModel = connection.Ticket(ticketID);
-                    DataAPI.DataAPI.Read(ticketModel, out attachmentProxies);
+                    ActionAttachment attachment = new ActionAttachment(connection, attachmentID);
+                    return DataAPI.DataAPI.Read(attachment);
                 }
             }
             catch (Exception ex)
             {
-                attachmentProxies = null;
-                DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), ActionLogType.Delete, ReferenceType.Attachments, ticketID, "failed to read ticket action attachments", ex);
+                DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), ActionLogType.Delete, ReferenceType.Attachments, attachmentID, "failed to read action attachments", ex);
+                return null;
             }
         }
+
 
         #endregion
 

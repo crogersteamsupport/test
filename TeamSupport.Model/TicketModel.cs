@@ -19,12 +19,22 @@ namespace TeamSupport.Model
         public int TicketID { get; private set; }
         public ConnectionContext Connection { get; private set; }
 
+        /// <summary> top down - existing action </summary>
         public TicketModel(UserSession user, int ticketID)
         {
             User = user;
             Connection = User.Connection;
             TicketID = ticketID;
             DBReader.VerifyTicket(Connection._db, User.Organization.OrganizationID, TicketID);
+        }
+
+        /// <summary> bottom up - existing action </summary>
+        public TicketModel(ConnectionContext connection, int ticketID)
+        {
+            Connection = connection;
+            User = Connection.User;
+            TicketID = ticketID;
+            DBReader.VerifyTicket(Connection._db, Connection.Organization.OrganizationID, TicketID);
         }
 
         /// <summary> Existing Data.Action </summary>
