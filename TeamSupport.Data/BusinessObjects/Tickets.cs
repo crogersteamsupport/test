@@ -3353,7 +3353,7 @@ AND
             {
                 command.CommandText = "UPDATE CustomValues SET RefID=@newticketID, OrganizationID=@organizationID WHERE (RefID = @oldticketID)";
                 command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@newticketID", newticketID); // these are not OrgID!!!
+                command.Parameters.AddWithValue("@newticketID", newticketID);
                 command.Parameters.AddWithValue("@oldticketID", oldticketID);
 				command.Parameters.AddWithValue("@organizationID", LoginUser.OrganizationID);
 				ExecuteNonQuery(command, "CustomValues");
@@ -3511,7 +3511,7 @@ AND
             {
                 command.CommandText = "UPDATE attachments SET RefID=@newticketID WHERE (RefID = @oldticketID) AND RefType = @refType";
                 command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@newticketID", newticketID); // this is wrong, ticketID is not an ActionID
+                command.Parameters.AddWithValue("@newticketID", newticketID);
                 command.Parameters.AddWithValue("@oldticketID", oldticketID);
                 command.Parameters.AddWithValue("@refType", ReferenceType.Actions);
                 ExecuteNonQuery(command, "attachments");
