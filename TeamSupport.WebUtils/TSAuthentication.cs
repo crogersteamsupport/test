@@ -171,7 +171,7 @@ namespace TeamSupport.WebUtils
             return Ticket != null && !Ticket.Expired;
     }
 
-    public static bool IsAuthenticated(User user)
+        public static bool IsAuthenticated(User user)
     {
       int length = UserData.Split('|').Length;
       return Ticket != null && !Ticket.Expired && user.UserID == UserID && user.OrganizationID == OrganizationID && length == 5;
@@ -184,7 +184,7 @@ namespace TeamSupport.WebUtils
 
     public static LoginUser GetLoginUser()
     {
-      return new LoginUser(UserID, OrganizationID);
+      return new LoginUser(UserID, OrganizationID, null);
     }
 
     public static User GetUser(LoginUser loginUser)

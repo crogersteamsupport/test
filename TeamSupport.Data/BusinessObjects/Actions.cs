@@ -14,6 +14,13 @@ namespace TeamSupport.Data
 {
     public partial class Action
     {
+        public Attachments GetAttachments()
+        {
+            Attachments attachments = new Attachments(BaseCollection.LoginUser);
+            attachments.LoadByActionID(ActionID);
+            return attachments;
+        }
+
         public ActionsViewItem GetActionView()
         {
             return ActionsView.GetActionsViewItem(BaseCollection.LoginUser, ActionID);
@@ -125,7 +132,7 @@ namespace TeamSupport.Data
 
     }
 
-public partial class Actions
+    public partial class Actions
     {
         private bool _updateChildTickets = true;
 

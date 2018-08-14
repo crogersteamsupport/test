@@ -37,7 +37,7 @@ namespace TeamSupport.Handlers
             List<UploadResult> result = new List<UploadResult>();
 
             // Action Attachments
-            if (folder == AttachmentPath.Folder.Actions)
+            if (Model.ConnectionContext.IsEnabled && (folder == AttachmentPath.Folder.Actions))
             {
                 List<AttachmentProxy> attachmentProxies = null;
                 attachmentProxies = ModelAPI.ModelAPI.CreateActionAttachments(TSAuthentication.Ticket, itemID.Value, context);    // ticketID, actionID, actionAttachments
@@ -46,17 +46,15 @@ namespace TeamSupport.Handlers
                 context.Response.Clear();
                 if (attachmentProxies == null)
                 {
-                    context.Response.Write("Invalid attachment.");
+                    context.Response.Write("Invalid attachment.");  // error
                     context.Response.ContentType = "text/html";
+                    return;
                 }
-                else
-                {
-                    foreach (AttachmentProxy proxy in attachmentProxies)
-                        result.Add(new UploadResult(proxy.FileName, proxy.FileType, proxy.FileSize));
-                    context.Response.ContentType = "text/plain";
-                    context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
-                }
-                return;
+
+                foreach (AttachmentProxy proxy in attachmentProxies)
+                    result.Add(new UploadResult(proxy.FileName, proxy.FileType, proxy.FileSize));
+                context.Response.ContentType = "text/plain";
+                context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
             }
 
             ReferenceType refType = AttachmentPath.GetFolderReferenceType(folder);
