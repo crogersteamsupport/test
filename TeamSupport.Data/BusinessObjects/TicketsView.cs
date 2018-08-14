@@ -1556,22 +1556,31 @@ WHERE ot.OrganizationID = @OrganizationID {0}";
                     case ProductFamiliesRightType.AllFamilies:
                         break;
                     case ProductFamiliesRightType.SomeFamilies:
-                        rightsClause = @" AND 
-                        (Ticketid IN (
-                                        Select tv.ticketid
-                                        FROM userrightsproductfamilies urpf
-                                  JOIN Products p on p.ProductFamilyID = urpf.ProductFamilyID and urpf.UserID = {0}
-                                  JOIN Userticketsview tv on  tv.ViewerID = urpf.UserID
-                                  JOIN Groupusers gu ON tv.groupid = gu.groupid		
-                                     WHERE 
-                                     tv.viewerid = {0} 
-                                     AND  tv.organizationid = {1}
-                                     AND gu.userid = {0}
-                                     AND (tv.ProductID = p.ProductID OR tv.ProductID is NULL)
-                                     GROUP BY tv.TicketID)
-                                    OR tv.UserID = {0} )
-                                    ";                    
-                        builder.Append(string.Format(rightsClause, loginUser.UserID.ToString(),loginUser.OrganizationID));
+                        rightsClause = @" AND (
+                    TicketID IN 
+                    (
+                        SELECT 
+                            t.TicketID 
+                        FROM 
+                            Tickets t
+                        WHERE 
+                            t.ProductID IS NULL and t.Organizationid = {1}                         
+                        UNION
+                        SELECT 
+                            t.TicketID 
+                        FROM 
+                            Tickets t
+                            LEFT JOIN Products p
+                                ON t.ProductID = p.ProductID
+                            LEFT JOIN UserRightsProductFamilies urpf
+                                ON p.ProductFamilyID = urpf.ProductFamilyID 
+                        WHERE                             
+                          urpf.UserID = {0} and t.Organizationid = {1} 
+
+                    ) 
+                    OR tv.UserID = {0} 
+                  )";
+                    builder.Append(string.Format(rightsClause, loginUser.UserID.ToString(), loginUser.OrganizationID));
                         break;
                     default:
                         break;
