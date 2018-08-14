@@ -960,7 +960,10 @@ namespace TeamSupport.Data
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "INSERT INTO UserRightsProductFamilies (UserID, ProductFamilyID) VALUES (@UserID, @ProductFamilyID)";
+                command.CommandText = @"INSERT INTO UserRightsProductFamilies (UserID, ProductFamilyID) 
+                                        SELECT @UserID, @ProductFamilyID
+	                                    WHERE NOT EXISTS( SELECT * FROM UserRightsProductFamilies WHERE UserID = @UserID and ProductFamilyID = @ProductFamilyID)
+                                        ";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@ProductFamilyID", productFamilyID);
                 command.Parameters.AddWithValue("@UserID", userID);

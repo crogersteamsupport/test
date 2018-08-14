@@ -153,6 +153,47 @@ div[data-toggle="collapse"] .ui-icon {
 
 #modalTaskComment {top: 100px;}
 
-.noteDesc{ margin-top: 30px;}
+.activity-file{    cursor: pointer;    color: blue;}.noteAttachmentName{
+    margin-right: 10px;
+}
 
-.activity-file{    cursor: pointer;    color: blue;}
+    .mce-i-awesome.fa-paste {
+    color:#5CB85C !important;
+}
+.mce-i-awesome.fa-book {
+    color:#3276B1 !important;
+}
+.mce-i-awesome.fa-ticket {
+    color:#FEC21E !important;
+}
+.mce-i-image {
+    color:#BA55D3 !important;
+}
+.mce-i-awesome.fa-dropbox {
+    color:#3d9ae8 !important;
+}
+.mce-i-awesome.fa-circle {
+    color:#D9534F !important;
+}
+.mce-path {
+    display:none !important;
+}
+.note-btn > .fa-paste {
+    color:#5CB85C !important;
+}
+.note-btn > .fa-book {
+    color:#3276B1 !important;
+}
+.note-btn > .fa-ticket {
+    color:#FEC21E !important;
+}
+.note-btn > .fa-image {
+    color:#BA55D3 !important;
+}
+.note-btn > .fa-dropbox {
+    color:#3d9ae8 !important;
+}
+
+.fa-plus {
+    color: #2c9ecf;
+}

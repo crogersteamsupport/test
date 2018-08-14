@@ -11,6 +11,7 @@
 var _taskParentID;
 var _parentTaskName;
 var _newTaskID;
+var _noteID;
 
 $(document).ready(function () {
     _newTaskID = null;
@@ -44,6 +45,27 @@ $(document).ready(function () {
 
     function setupDescriptionEditor() {
         initScheduledReportEditor($('#Description'), function (ed) {
+            if (_noteID != null) {
+                parent.Ts.Services.Customers.LoadNote(_noteID, function (note) {
+                    var bg = $('<div>')
+                    .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+                    .appendTo($('.activity-queue')).data('Activity', note.NoteID);
+
+
+                    $('<span>')
+                    .text(note.Title)
+                    .addClass('filename')
+                    .appendTo(bg);
+
+                    $('<span>')
+                    .addClass('ui-icon ui-icon-close')
+                    .click(function (e) {
+                        e.preventDefault();
+                        $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+                    })
+                    .appendTo(bg);
+                });
+            }
         },
         function (ed) {
             $('#inputName').focus();
@@ -60,6 +82,7 @@ $(document).ready(function () {
     _refType = window.parent.parent.Ts.Utils.getQueryValue("reftype", window);
     _refID = window.parent.parent.Ts.Utils.getQueryValue("refid", window);
 
+    _noteID = window.parent.parent.Ts.Utils.getQueryValue("noteID", window);
 
     if (_taskParentID) {
         var parentName = $('<h6>')
@@ -113,6 +136,7 @@ $(document).ready(function () {
         $("#contactinput").hide();
         $("#groupinput").hide();
         $("#productinput").hide();
+        $("#activityinput").hide();
     }
 
     function resetDisplay() {
@@ -129,6 +153,7 @@ $(document).ready(function () {
         $('#commentatt').find('.contact-queue').empty();
         $('#commentatt').find('.user-queue').empty();
         $('#commentatt').find('.product-queue').empty();
+        $('#commentatt').find('.activity-queue').empty();
     }
 
     $(".maincontainer").on("keypress", "input", (function (evt) {
@@ -169,6 +194,7 @@ $(document).ready(function () {
 
     $('.addatt').click(function (e) {
         e.preventDefault();
+        $(this).parent().parent().find("#activityinput").hide();
         $(this).parent().parent().find("#ticketinput").hide();
         $(this).parent().parent().find("#groupinput").hide();
         $(this).parent().parent().find("#customerinput").hide();
@@ -182,6 +208,7 @@ $(document).ready(function () {
     }).tooltip();
     $('.addticket').click(function (e) {
         e.preventDefault();
+        $(this).parent().parent().find("#activityinput").hide();
         $(this).parent().parent().find("#ticketinput").show();
         $(this).parent().parent().find("#groupinput").hide();
         $(this).parent().parent().find("#customerinput").hide();
@@ -190,11 +217,12 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '32px');
+        $(this).parent().find(".arrow-up").css('left', '37px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
     $('.adduser').click(function (e) {
         e.preventDefault();
+        $(this).parent().parent().find("#activityinput").hide();
         $(this).parent().parent().find("#ticketinput").hide();
         $(this).parent().parent().find("#groupinput").hide();
         $(this).parent().parent().find("#customerinput").hide();
@@ -203,11 +231,12 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").show();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '64px');
+        $(this).parent().find(".arrow-up").css('left', '70px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
     $('.addcustomer').click(function (e) {
         e.preventDefault();
+        $(this).parent().parent().find("#activityinput").hide();
         $(this).parent().parent().find("#ticketinput").hide();
         $(this).parent().parent().find("#groupinput").hide();
         $(this).parent().parent().find("#customerinput").show();
@@ -216,11 +245,12 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '91px');
+        $(this).parent().find(".arrow-up").css('left', '101px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
     $('.addcontact').click(function (e) {
         e.preventDefault();
+        $(this).parent().parent().find("#activityinput").hide();
         $(this).parent().parent().find("#ticketinput").hide();
         $(this).parent().parent().find("#groupinput").hide();
         $(this).parent().parent().find("#customerinput").hide();
@@ -229,11 +259,12 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '124px');
+        $(this).parent().find(".arrow-up").css('left', '136px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
     $('.addgroup').click(function (e) {
         e.preventDefault();
+        $(this).parent().parent().find("#activityinput").hide();
         $(this).parent().parent().find("#ticketinput").hide();
         $(this).parent().parent().find("#groupinput").show();
         $(this).parent().parent().find("#customerinput").hide();
@@ -242,11 +273,12 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '158px');
+        $(this).parent().find(".arrow-up").css('left', '173px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
     $('.addproduct').click(function (e) {
         e.preventDefault();
+        $(this).parent().parent().find("#activityinput").hide();
         $(this).parent().parent().find("#ticketinput").hide();
         $(this).parent().parent().find("#groupinput").hide();
         $(this).parent().parent().find("#customerinput").hide();
@@ -255,7 +287,21 @@ $(document).ready(function () {
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
         $(this).parent().parent().find("#ticketinsert").hide();
-        $(this).parent().find(".arrow-up").css('left', '193px');
+        $(this).parent().find(".arrow-up").css('left', '210px');
+        $('#associationsBreak').removeClass('associationsBreakAdjustement');
+    }).tooltip();
+    $('.addactivity').click(function (e) {
+        e.preventDefault();
+        $(this).parent().parent().find("#activityinput").show();
+        $(this).parent().parent().find("#ticketinput").hide();
+        $(this).parent().parent().find("#groupinput").hide();
+        $(this).parent().parent().find("#customerinput").hide();
+        $(this).parent().parent().find("#contactinput").hide();
+        $(this).parent().parent().find("#productinput").hide();
+        $(this).parent().parent().find("#userinput").hide();
+        $(this).parent().parent().find("#attachmentinput").hide();
+        $(this).parent().parent().find("#ticketinsert").hide();
+        $(this).parent().find(".arrow-up").css('left', '245px');
         $('#associationsBreak').removeClass('associationsBreakAdjustement');
     }).tooltip();
 
@@ -300,6 +346,16 @@ $(document).ready(function () {
     function getProductByTerm(request, response) {
         if (execGetProducts) { execGetProducts._executor.abort(); }
         execGetProducts = window.parent.parent.Ts.Services.WaterCooler.GetProductsByTerm(request.term, function (result) { response(result); });
+    }
+
+    var execSelectNote = null;
+    function selectNote(request, response) {
+        if (execSelectNote) {
+            execSelectNote._executor.abort();
+        }
+        execSelectNote = window.parent.parent.Ts.Services.Customers.SearchNotes(request.term, function (result) {
+            response(result);
+        });
     }
 
     $('.user-search')
@@ -554,6 +610,48 @@ $(document).ready(function () {
         }
     });
 
+    $('.activity-search')
+    .focusin(function () { $(this).val('').removeClass('activity-search-blur'); })
+    .focusout(function () { $(this).val('Search for an activity...').addClass('activity-search-blur').removeClass('ui-autocomplete-loading'); })
+    .click(function () { $(this).val('').removeClass('activity-search-blur'); })
+    .val('Search for an activity...')
+    .autocomplete({
+        minLength: 3,
+        source: selectNote,
+        select: function (event, ui) {
+            if (ui.item) {
+                var isDupe;
+                $(this).parent().parent().find('.activity-queue').find('.ticket-removable-item').each(function () {
+                    if (ui.item.id == $(this).data('Activity')) {
+                        isDupe = true;
+                    }
+                });
+                if (!isDupe) {
+                    var bg = $('<div>')
+                    .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+                    .appendTo($(this).parent().parent().find('.activity-queue')).data('Activity', ui.item.id);
+
+
+                    $('<span>')
+                    .text(ui.item.value)
+                    .addClass('filename')
+                    .appendTo(bg);
+
+                    $('<span>')
+                    .addClass('ui-icon ui-icon-close')
+                    .click(function (e) {
+                        e.preventDefault();
+                        $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+                    })
+                    .appendTo(bg);
+                }
+            }
+            $(this)
+            .data('item', ui.item)
+            .removeClass('ui-autocomplete-loading');
+        }
+    });
+
     $('.file-upload').fileupload({
         namespace: 'task_attachment',
         dropZone: $('.file-upload'),
@@ -681,12 +779,18 @@ $(document).ready(function () {
             taskInfo.User[taskInfo.User.length] = $(this).data('User');
         });
 
+        taskInfo.Activities = new Array();
+        $('#commentatt:first').find('.activity-queue').find('.ticket-removable-item').each(function () {
+            taskInfo.Activities[taskInfo.Activities.length] = $(this).data('Activity');
+        });
+
         if (taskInfo.Tickets.length > 0) window.parent.parent.Ts.System.logAction('New Task - Ticket Inserted');
         if (taskInfo.Groups.length > 0) window.parent.parent.Ts.System.logAction('New Task - Group Inserted');
         if (taskInfo.Products.length > 0) window.parent.parent.Ts.System.logAction('New Task - Product Inserted');
         if (taskInfo.Company.length > 0) window.parent.parent.Ts.System.logAction('New Task - Company Inserted');
         if (taskInfo.Contacts.length > 0) window.parent.parent.Ts.System.logAction('New Task - Contact Inserted');
         if (taskInfo.User.length > 0) window.parent.parent.Ts.System.logAction('New Task - User Inserted');
+        if (taskInfo.Activities.length > 0) window.parent.parent.Ts.System.logAction('New Task - Activity Inserted');
 
         var attcontainer = $(this).parent().parent().find('#commentatt').find('.upload-queue div.ticket-removable-item');
 
