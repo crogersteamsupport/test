@@ -3355,7 +3355,7 @@ AND
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@newticketID", newticketID); // these are not OrgID!!!
                 command.Parameters.AddWithValue("@oldticketID", oldticketID);
-                command.Parameters.AddWithValue("@organizationID", LoginUser.OrganizationID);
+				command.Parameters.AddWithValue("@organizationID", LoginUser.OrganizationID);
 				ExecuteNonQuery(command, "CustomValues");
             }
 
