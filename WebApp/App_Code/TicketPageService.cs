@@ -14,6 +14,7 @@ using System.Web.Services;
 using TeamSupport.Data;
 using TeamSupport.Model;
 using TeamSupport.WebUtils;
+using TeamSupport.ModelAPI;
 
 namespace TSWebServices
 {
@@ -79,13 +80,14 @@ namespace TSWebServices
             info.CustomValues = ticketService.GetParentCustomValues(ticket.TicketID);
             info.Subscribers = GetSubscribers(ticket);
             info.Queuers = GetQueuers(ticket);
-            //info.Attachments = GetAttachments(ticket);
             if (ConnectionContext.IsEnabled)    // append action attachments to ticket info
             {
                 AttachmentProxy[] results;
-                TeamSupport.ModelAPI.ModelAPI.ReadActionAttachmentsByFilenameAndTicket(TSAuthentication.Ticket, ticket.TicketID, out results);
+                ModelAPI.ReadActionAttachmentsForTicket(TSAuthentication.Ticket, ticket.TicketID, ModelAPI.ActionAttachmentsByTicketID.ByFilename, out results);
                 info.Attachments = results;
             }
+            else
+                info.Attachments = GetAttachments(ticket);
 
             TaskService taskService = new TaskService();
             info.Tasks = taskService.GetTasksByTicketID(info.Ticket.TicketID);
@@ -1758,9 +1760,20 @@ namespace TSWebServices
                 }
             }
 
-            Attachments attachments = new Attachments(loginUser);
-            attachments.LoadByActionID(item.item.RefID);
-            item.Attachments = GetActionAttachments(action.ActionID, loginUser);
+            if (ConnectionContext.IsEnabled)
+            {
+                int actionID = item.item.RefID;
+                AttachmentProxy[] actionAttachments;
+                TeamSupport.ModelAPI.ModelAPI.Read(TSAuthentication.Ticket, actionID, out actionAttachments);
+                item.Attachments = actionAttachments;
+            }
+            else
+            {
+
+                Attachments attachments = new Attachments(loginUser);
+                attachments.LoadByActionID(item.item.RefID);
+                item.Attachments = GetActionAttachments(action.ActionID, loginUser);
+            }
 
             return item;
         }
@@ -1794,10 +1807,10 @@ namespace TSWebServices
         private AttachmentProxy[] GetActionAttachments(int actionID, LoginUser loginUser)
         {
             // Read action attachments
-            if (ConnectionContext.IsEnabled)    // ???
+            if (ConnectionContext.IsEnabled)
             {
                 AttachmentProxy[] results;
-                TeamSupport.ModelAPI.ModelAPI.Read(TSAuthentication.Ticket, actionID, out results);
+                ModelAPI.Read(TSAuthentication.Ticket, actionID, out results);
                 return results;
             }
 
@@ -1847,6 +1860,27 @@ namespace TSWebServices
 
         private void CopyInsertedKBAttachments(int actionID, int insertedKBTicketID)
         {
+            if (ConnectionContext.IsEnabled)
+            {
+                AttachmentProxy[] results;
+                ModelAPI.ReadActionAttachmentsForTicket(TSAuthentication.Ticket, insertedKBTicketID, ModelAPI.ActionAttachmentsByTicketID.KnowledgeBase, out results);
+                foreach(AttachmentProxy attachment in results)
+                {
+                    attachment.AttachmentID = 0;    // not used
+                    string originalAttachmentRefID = attachment.RefID.ToString();
+                    string clonedActionAttachmentPath = attachment.Path.Substring(0, attachment.Path.IndexOf(@"\Actions\") + @"\Actions\".Length)
+                                    + actionID.ToString()
+                                    + attachment.Path.Substring(attachment.Path.IndexOf(originalAttachmentRefID) + originalAttachmentRefID.Length);
+                    if (!Directory.Exists(Path.GetDirectoryName(clonedActionAttachmentPath)))
+                        Directory.CreateDirectory(Path.GetDirectoryName(clonedActionAttachmentPath));
+                    File.Copy(attachment.Path, clonedActionAttachmentPath);
+                    attachment.Path = clonedActionAttachmentPath;
+
+                    ModelAPI.Create(TSAuthentication.Ticket, attachment);
+                }
+                return;
+            }
+
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Attachments attachments = new Attachments(loginUser);
             attachments.LoadKBByTicketID(insertedKBTicketID);

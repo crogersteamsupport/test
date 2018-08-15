@@ -32,7 +32,7 @@ namespace TeamSupport.DataAPI
         //}
         //public static string UserFullName(DataContext db, int organizationID, int userID)
         //{
-        //    string query = $"SELECT FirstName + ' ' + LastName FROM Users  WITH (NOLOCK) WHERE UserID={userID} AND OrganizationID={organizationID}";
+        //    string query = $"SELECT FirstName, LastName FROM Users  WITH (NOLOCK) WHERE UserID={userID} AND OrganizationID={organizationID}";
         //    FullName fullName = db.ExecuteQuery<FullName>(query).First();  // throws if it fails
         //    return $"{fullName.FirstName} {fullName.LastName}";
         //}
@@ -143,7 +143,7 @@ namespace TeamSupport.DataAPI
         }
 
         /// <summary> Read most recent filenames for this ticket </summary>
-        public static void Read(TicketModel ticketModel, out AttachmentProxy[] mostRecentByFilename)
+        public static void ReadActionAttachmentsByFilenameAndTicket(TicketModel ticketModel, out AttachmentProxy[] mostRecentByFilename)
         {
             string query = SelectActionAttachmentProxy + $"WHERE ActionID IN (SELECT ActionID FROM Actions WHERE TicketID = {ticketModel.TicketID}) ORDER BY DateCreated DESC";
             AttachmentProxy[] allAttachments = ticketModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
@@ -154,6 +154,13 @@ namespace TeamSupport.DataAPI
                     tmp.Add(attachment);
             }
             mostRecentByFilename = tmp.ToArray();
+        }
+
+        /// <summary> Read most recent filenames for this ticket </summary>
+        public static void ReadKBActionAttachmentsByTicket(TicketModel ticketModel, out AttachmentProxy[] mostRecentByFilename)
+        {
+            string query = SelectActionAttachmentProxy + $"JOIN Actions ac ON a.ActionID = ac.ActionID WHERE ac.TicketID = {ticketModel.TicketID} AND ac.IsKnowledgeBase = 1";
+            mostRecentByFilename = ticketModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
         }
 
         /// <summary> Update Action Attachment </summary>

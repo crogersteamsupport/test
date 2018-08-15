@@ -58,6 +58,7 @@ namespace TeamSupport.Data
         }
     }
 
+  [Obsolete("please use DataAPI instead.", false)]
   public partial class Attachments
   {
 

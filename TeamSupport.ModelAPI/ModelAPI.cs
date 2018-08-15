@@ -91,6 +91,11 @@ namespace TeamSupport.ModelAPI
                             ActionProxy actionProxy = proxy as ActionProxy;
                             DataAPI.DataAPI.Create(connection.Ticket(actionProxy.TicketID), ref actionProxy);
                             break;
+                        case "AttachmentProxy":
+                            AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
+                            ActionModel actionModel = new ActionModel(connection, attachmentProxy.RefID);
+                            DataAPI.DataAPI.Create(actionModel, attachmentProxy);
+                            break;
                     }
                 }
             }
@@ -180,21 +185,34 @@ namespace TeamSupport.ModelAPI
                 DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), ActionLogType.Delete, ReferenceType.Attachments, attachmentID, "Unable to delete attachment", ex);
             }
         }
+        public enum ActionAttachmentsByTicketID
+        {
+            ByFilename,
+            KnowledgeBase
+        };
 
         /// <summary> Create Action Attachments </summary>
-        public static void ReadActionAttachmentsByFilenameAndTicket(FormsAuthenticationTicket authenticationTicket, int ticketID, out AttachmentProxy[] mostRecentByFilename)
+        public static void ReadActionAttachmentsForTicket(FormsAuthenticationTicket authenticationTicket, int ticketID, ActionAttachmentsByTicketID ticketActionAttachments, out AttachmentProxy[] attachments)
         {
+            attachments = null;
             try
             {
                 using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
                 {
                     TicketModel ticketModel = connection.Ticket(ticketID);
-                    DataAPI.DataAPI.Read(ticketModel, out mostRecentByFilename);
+                    switch(ticketActionAttachments)
+                    {
+                        case ActionAttachmentsByTicketID.ByFilename:
+                            DataAPI.DataAPI.ReadActionAttachmentsByFilenameAndTicket(ticketModel, out attachments);
+                            break;
+                        case ActionAttachmentsByTicketID.KnowledgeBase:
+                            DataAPI.DataAPI.ReadKBActionAttachmentsByTicket(ticketModel, out attachments);
+                            break;
+                    }
                 }
             }
             catch (Exception ex)
             {
-                mostRecentByFilename = null;
                 DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), ActionLogType.Delete, ReferenceType.Attachments, ticketID, "failed to read action attachments", ex);
             }
         }

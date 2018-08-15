@@ -923,6 +923,39 @@ namespace TeamSupport.Handlers
             return newImage;
         }
 
+        private void DoStuff(HttpContext context, System.Web.HttpBrowserCapabilities browser, int id)
+        {
+            AttachmentProxy proxy = ModelAPI.ModelAPI.Read<AttachmentProxy>(TSAuthentication.Ticket, id);
+            if (!File.Exists(proxy.Path))
+            {
+                context.Response.Write("Invalid attachment.");
+                context.Response.ContentType = "text/html";
+                return;
+            }
+
+            string openType = "inline";
+            string fileType = proxy.FileType;
+
+            if (browser.Browser == "IE")
+            {
+                if (proxy.FileType.ToLower().IndexOf("audio") > -1)
+                {
+                    openType = "attachment";
+                }
+                else if (proxy.FileType.ToLower().IndexOf("-zip") > -1 ||
+                            proxy.FileType.ToLower().IndexOf("/zip") > -1 ||
+                            proxy.FileType.ToLower().IndexOf("zip-") > -1)
+                {
+                    fileType = "application/octet-stream";
+                }
+            }
+
+            context.Response.AddHeader("Content-Disposition", openType + "; filename=\"" + proxy.FileName + "\"");
+            context.Response.AddHeader("Content-Length", proxy.FileSize.ToString());
+            context.Response.ContentType = fileType;
+            context.Response.WriteFile(proxy.Path);
+        }
+
         private void ProcessAttachment(HttpContext context, string attachmentID)
         {
             //http://127.0.0.1/tsdev/dc/attachments/7401
@@ -936,7 +969,8 @@ namespace TeamSupport.Handlers
             {
                 if (Model.ConnectionContext.IsEnabled)  // open action attachment
                 {
-                    AttachmentProxy proxy = ModelAPI.ModelAPI.Read<AttachmentProxy>(TSAuthentication.Ticket, id);
+                    DoStuff(context, browser, id);
+                    return;
                 }
 
                 TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, id);

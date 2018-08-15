@@ -3594,7 +3594,10 @@ WHERE t.TicketID = @TicketID
         public void DeleteAttachment(int attachmentID)
         {
             if (TeamSupport.Model.ConnectionContext.IsEnabled)  // delete action attachment
+            {
                 ModelAPI.DeleteActionAttachment(TSAuthentication.Ticket, attachmentID);
+                return;
+            }
 
             Attachment attachment = Attachments.GetAttachment(TSAuthentication.GetLoginUser(), attachmentID);
             if (attachment == null || attachment.RefType != ReferenceType.Actions) return;
