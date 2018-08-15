@@ -18,8 +18,11 @@ namespace TeamSupport.Model
     /// </summary>
     public class ConnectionContext : IDisposable
     {
-        const bool _isEnabled = false;
-        public static bool IsEnabled { get { return _isEnabled; } }
+        const bool _isEnabled = true;
+        public static bool IsEnabled
+        {
+            get { return _isEnabled; }
+        }
 
         public AuthenticationModel Authentication { get; private set; }
         SqlConnection _connection;

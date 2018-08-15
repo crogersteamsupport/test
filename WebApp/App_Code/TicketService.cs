@@ -3158,10 +3158,10 @@ WHERE t.TicketID = @TicketID
             if (creator != null) actionInfo.Creator = new UserInfo(creator);
             actionInfo.Attachments = action.GetAttachments().GetAttachmentProxies();
 
-            if (TeamSupport.Model.ConnectionContext.IsEnabled)
+            if (TeamSupport.Model.ConnectionContext.IsEnabled)  // ???
             {
                 AttachmentProxy[] attachments;
-                ModelAPI.ReadActionAttachments(TSAuthentication.Ticket, action.ActionID, out attachments);
+                ModelAPI.Read(TSAuthentication.Ticket, action.ActionID, out attachments);
                 if (!attachments.Equals(actionInfo.Attachments))
                     Debugger.Break();
             }
@@ -3593,7 +3593,7 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public void DeleteAttachment(int attachmentID)
         {
-            if (TeamSupport.Model.ConnectionContext.IsEnabled)
+            if (TeamSupport.Model.ConnectionContext.IsEnabled)  // delete action attachment
                 ModelAPI.DeleteActionAttachment(TSAuthentication.Ticket, attachmentID);
 
             Attachment attachment = Attachments.GetAttachment(TSAuthentication.GetLoginUser(), attachmentID);
@@ -3646,11 +3646,12 @@ WHERE t.TicketID = @TicketID
             ticket.ParentID = info.ParentTicketID;
             ticket.DueDate = info.DueDate;
             ticket.Collection.Save();
+            result.Add(ticket.TicketID);
 
             if (info.CategoryID != null && info.CategoryID > -1) ticket.AddCommunityTicket((int)info.CategoryID);
 
             // new action - future
-            if (TeamSupport.Model.ConnectionContext.IsEnabled)
+            if (false && TeamSupport.Model.ConnectionContext.IsEnabled)  // new action - new ticket
             {
                 ActionProxy actionProxy = new ActionProxy()
                 {
@@ -3665,6 +3666,7 @@ WHERE t.TicketID = @TicketID
                     ActionSource = ticket.TicketSource
                 };
                 ModelAPI.Create(TSAuthentication.Ticket, actionProxy);
+                result.Add(actionProxy.ActionID);
             }
 
             TeamSupport.Data.Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();
@@ -3687,7 +3689,6 @@ WHERE t.TicketID = @TicketID
             action.DateStarted = info.DateStarted;
             action.Collection.Save();
 
-            result.Add(ticket.TicketID);
             result.Add(action.ActionID);
 
             foreach (int ticketID in info.RelatedTickets.Distinct())

@@ -1,29 +1,19 @@
-﻿using System;
-using System.Web;
-using System.Web.Services;
-using System.Web.Services.Protocols;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.Collections;
-using System.Web.Script.Serialization;
-using System.Web.Script.Services;
 using System.Data;
 using System.Data.SqlClient;
-using System.Web.Security;
-using System.Text;
-using TeamSupport.Data;
-using TeamSupport.WebUtils;
-using System.Runtime.Serialization;
-using System.Globalization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Linq;
-using System.Diagnostics;
-using ImageResizer;
-using System.Net;
-using System.IO;
 using System.Dynamic;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Web.Script.Services;
+using System.Web.Services;
+using TeamSupport.Data;
 using TeamSupport.Model;
+using TeamSupport.WebUtils;
 
 namespace TSWebServices
 {
@@ -89,11 +79,11 @@ namespace TSWebServices
             info.CustomValues = ticketService.GetParentCustomValues(ticket.TicketID);
             info.Subscribers = GetSubscribers(ticket);
             info.Queuers = GetQueuers(ticket);
-            info.Attachments = GetAttachments(ticket);
-            if (ConnectionContext.IsEnabled)
+            //info.Attachments = GetAttachments(ticket);
+            if (ConnectionContext.IsEnabled)    // append action attachments to ticket info
             {
-                AttachmentProxy[] results;    // user clicked on attachment - open it
-                TeamSupport.ModelAPI.ModelAPI.ReadActionAttachments(TSAuthentication.Ticket, ticket.TicketID, out results);
+                AttachmentProxy[] results;
+                TeamSupport.ModelAPI.ModelAPI.ReadActionAttachmentsByFilenameAndTicket(TSAuthentication.Ticket, ticket.TicketID, out results);
                 info.Attachments = results;
             }
 
@@ -272,12 +262,22 @@ namespace TSWebServices
 
             foreach (TicketTimeLineViewItem viewItem in TimeLineView) {
                 if (!viewItem.IsWC) {
-                    Attachments attachments = new Attachments(loginUser);
-                    attachments.LoadByActionID(viewItem.RefID);
                     TimeLineItem timeLineItem  = new TimeLineItem();
                     timeLineItem.item          = viewItem.GetProxy();
                     timeLineItem.item.Message  = SanitizeMessage(timeLineItem.item.Message, loginUser);
-                    timeLineItem.Attachments   = attachments.GetAttachmentProxies();
+
+                    if(ConnectionContext.IsEnabled)
+                    {
+                        AttachmentProxy[] actionAttachments;
+                        TeamSupport.ModelAPI.ModelAPI.Read(TSAuthentication.Ticket, viewItem.RefID, out actionAttachments);
+                        timeLineItem.Attachments   = actionAttachments;
+                    }
+                    else
+                    {
+                        Attachments attachments = new Attachments(loginUser);
+                        attachments.LoadByActionID(viewItem.RefID);
+                        timeLineItem.Attachments   = attachments.GetAttachmentProxies();
+                    }
                     timeLineItems.Add(timeLineItem);
                 } else {
                     TimeLineItem wcItem = new TimeLineItem();
@@ -851,7 +851,7 @@ namespace TSWebServices
         public TimeLineItem UpdateAction(ActionProxy proxy)
         {
             // new action
-            if (ConnectionContext.IsEnabled && (proxy.ActionID == -1))
+            if (ConnectionContext.IsEnabled && (proxy.ActionID == -1))  // new action - existing ticket
             {
                 proxy.CreatorID = TSAuthentication.UserID;
                 TeamSupport.ModelAPI.ModelAPI.Create(TSAuthentication.Ticket, proxy);
@@ -1794,10 +1794,10 @@ namespace TSWebServices
         private AttachmentProxy[] GetActionAttachments(int actionID, LoginUser loginUser)
         {
             // Read action attachments
-            if (ConnectionContext.IsEnabled)
+            if (ConnectionContext.IsEnabled)    // ???
             {
                 AttachmentProxy[] results;
-                TeamSupport.ModelAPI.ModelAPI.ReadActionAttachments(TSAuthentication.Ticket, actionID, out results);
+                TeamSupport.ModelAPI.ModelAPI.Read(TSAuthentication.Ticket, actionID, out results);
                 return results;
             }
 

@@ -142,11 +142,18 @@ namespace TeamSupport.DataAPI
             attachments = actionModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
         }
 
-        /// <summary> Read all Action Attachments for this ticket </summary>
-        public static void Read(TicketModel ticketModel, out AttachmentProxy[] attachments)
+        /// <summary> Read most recent filenames for this ticket </summary>
+        public static void Read(TicketModel ticketModel, out AttachmentProxy[] mostRecentByFilename)
         {
-            string query = SelectActionAttachmentProxy + $"WHERE ActionID IN (SELECT ActionID FROM Actions WHERE TicketID = {ticketModel.TicketID})";
-            attachments = ticketModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
+            string query = SelectActionAttachmentProxy + $"WHERE ActionID IN (SELECT ActionID FROM Actions WHERE TicketID = {ticketModel.TicketID}) ORDER BY DateCreated DESC";
+            AttachmentProxy[] allAttachments = ticketModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
+            List<AttachmentProxy> tmp = new List<AttachmentProxy>();
+            foreach (AttachmentProxy attachment in allAttachments)
+            {
+                if (!tmp.Exists(a => a.FileName == attachment.FileName))
+                    tmp.Add(attachment);
+            }
+            mostRecentByFilename = tmp.ToArray();
         }
 
         /// <summary> Update Action Attachment </summary>

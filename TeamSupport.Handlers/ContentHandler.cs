@@ -934,9 +934,9 @@ namespace TeamSupport.Handlers
             int id;
             if (int.TryParse(attachmentID, out id))
             {
-                if (Model.ConnectionContext.IsEnabled)
+                if (Model.ConnectionContext.IsEnabled)  // open action attachment
                 {
-                    AttachmentProxy proxy = ModelAPI.ModelAPI.ReadActionAttachment(TSAuthentication.Ticket, id);
+                    AttachmentProxy proxy = ModelAPI.ModelAPI.Read<AttachmentProxy>(TSAuthentication.Ticket, id);
                 }
 
                 TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, id);
