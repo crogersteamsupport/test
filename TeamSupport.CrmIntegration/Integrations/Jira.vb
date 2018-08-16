@@ -52,16 +52,16 @@ Namespace TeamSupport
 
 			If CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password Is Nothing Then
 				result = False
-				AddLog("Username and or Password are missing and they are required to sync.")
-			Else
-				_encodedCredentials = DataUtils.GetEncodedCredentials(CRMLinkRow.Username, CRMLinkRow.Password)
-			End If
+                    AddLog("Username and or token are missing and they are required to sync.")
+                Else
+                    _encodedCredentials = DataUtils.GetEncodedCredentials(CRMLinkRow.Username, If(String.IsNullOrEmpty(CRMLinkRow.SecurityToken), CRMLinkRow.Password, CRMLinkRow.SecurityToken))
+                End If
 
 			'Make sure credentials are good
 			If (result) Then
 				Try
-					Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest",""), CRMLinkRow.Username, CRMLinkRow.Password)
-					Dim serverInfo As ServerInfo = jiraClient.GetServerInfo()
+                        Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest", ""), CRMLinkRow.Username, If(String.IsNullOrEmpty(CRMLinkRow.SecurityToken), CRMLinkRow.Password, CRMLinkRow.SecurityToken))
+                        Dim serverInfo As ServerInfo = jiraClient.GetServerInfo()
 					AddLog("Jira credentials ok.")
 				Catch jiraEx As JiraClientException
 					result = False
