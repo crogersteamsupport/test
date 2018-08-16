@@ -19,6 +19,7 @@ namespace TeamSupport.Model
         public static void VerifyAction(DataContext db, int organizationID, int ticketID, int actionID) { Verify(db, $"SELECT ActionID FROM Actions WITH (NOLOCK) WHERE ActionID={actionID} AND TicketID={ticketID}"); }
         public static void VerifyActionAttachment(DataContext db, int organizationID, int ticketID, int actionID, int actionAttachmentID) { Verify(db, $"SELECT ActionAttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE ActionAttachmentID={actionAttachmentID} AND ActionID={actionID} AND OrganizationID={organizationID}"); }
 
+
         static void Verify(DataContext db, string query)
         {
             if (!db.ExecuteQuery<int>(query).Any()) // valid ID found?
@@ -33,5 +34,12 @@ namespace TeamSupport.Model
         }
 
         public static int CreatorID(DataContext db, int actionID) { return db.ExecuteQuery<int>($"SELECT CreatorID FROM Actions WITH (NOLOCK) WHERE ActionID={actionID}").Min(); }
+
+        public static int TicketNumber(DataContext db, int id)
+        {
+            return db.ExecuteQuery<int>($"SELECT TicketNumber FROM Tickets WITH(NOLOCK) WHERE TicketId = {id}").First();
+        }
     }
+
+
 }

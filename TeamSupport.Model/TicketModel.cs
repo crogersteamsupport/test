@@ -19,6 +19,17 @@ namespace TeamSupport.Model
         public int TicketID { get; private set; }
         public DataContext _db { get; private set; }
 
+        int? _ticketNumber;
+        public int TicketNumber
+        {
+            get
+            {
+                if (!_ticketNumber.HasValue)
+                    _ticketNumber = DBReader.TicketNumber(_db,TicketID);
+                return _ticketNumber.Value;
+            }
+        }
+
         public TicketModel(UserSession user, int ticketID)
         {
             User = user;
