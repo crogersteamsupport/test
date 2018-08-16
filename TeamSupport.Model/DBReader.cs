@@ -45,6 +45,10 @@ namespace TeamSupport.Model
         {
             return db.ExecuteQuery<int>($"SELECT SUM(a.FileSize) FROM Attachments a WITH (NOLOCK) WHERE (a.OrganizationID = {organizationID}").Min();
         }
+        public static int TicketNumber(DataContext db, int id)
+        {
+            return db.ExecuteQuery<int>($"SELECT TicketNumber FROM Tickets WITH(NOLOCK) WHERE TicketId = {id}").First();
+        }
 
     }
 

@@ -26,7 +26,7 @@ namespace TeamSupport.Model
             get
             {
                 if (!_ticketNumber.HasValue)
-                    _ticketNumber = DBReader.TicketNumber(_db,TicketID);
+                    _ticketNumber = DBReader.TicketNumber(Connection._db,TicketID);
                 return _ticketNumber.Value;
             }
         }

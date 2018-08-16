@@ -15,7 +15,7 @@ namespace TeamSupport.ModelAPI
         #region Tickets
         public static string MergeTickets(FormsAuthenticationTicket authenticationTicket, int destinationTicketID, int sourceTicketID)
         {
-            if (!ConnectionContext.IsEnabled) return;
+            if (!ConnectionContext.IsEnabled) return String.Empty;
             try
             {
                 using (ConnectionContext connection = new ConnectionContext(authenticationTicket, true))    // use transaction
