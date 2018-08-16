@@ -201,7 +201,7 @@ namespace TeamSupport.WebUtils
 			connection.Open();
 			SqlCommand command = new SqlCommand();
 			command.Connection = connection;
-			command.CommandText = "SELECT Groups.GroupID FROM GroupUsers JOIN Groups ON GroupUsers.GroupID = Groups.GroupID WHERE UserID = @UserID";
+			command.CommandText = "SELECT GroupID FROM GroupUsers WITH(NOLOCK) WHERE UserID = @UserID";
 			command.Parameters.AddWithValue("UserID", TSAuthentication.UserID);
 			SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
 			DataTable groupUsersTable = new DataTable();
