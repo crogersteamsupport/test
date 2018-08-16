@@ -148,7 +148,6 @@
 			<h3>TeamSupport has native integration with Jira.</h3>
 			<p>TeamSupport Tickets can be synced with new or existing Jira Issues.  This integration allows your company to use best of breed solutions for issues and bug tracking as well as customer service and support!</p>
 			<p><span style="font-weight: bold;color: Red;">Important:</span>  Before you setup your link to Jira, please <a href="http://www.teamsupport.com/documentation/1/en/topic/jira" target="_blank" style="font-weight: bold;text-decoration: underline;">read this important information</a> about how TeamSupport Tickets Types and Jira Issues Types are mapped, otherwise you may experience initial sync issues.</p>
-
 			<div class="int-content-wrapper">
 			  <div>
 				<div class ="label-block jiraInstancesName">
@@ -202,51 +201,60 @@
 		  			<div>&nbsp</div>
 		  		</div>
 		  	</div>
-		  	<div class="int-content-left">
-				<label>Instance Name</label>
-				<input id="InstanceName" type="text" class="text ui-widget-content ui-corner-all int-crm-instancename" />
+            <div class="int-content-left">
+                <label>Instance Name</label>
+                <input id="InstanceName" type="text" class="text ui-widget-content ui-corner-all int-crm-instancename" />
+                <label>Jira Host Name</label>
+                <input type="text" class="text ui-widget-content ui-corner-all int-crm-host" />
+                <div class="basic-auth" style="border:solid; border-color:red; border-width: 2px; width: 250px; padding: 4px 14px 4px 14px; border-radius:10px; margin-bottom: 10px;">
+                    <p>
+                        <span style="font-weight: bold; color: red;">Jira support for basic authentication is ending December 1, 2018</span>
+                    </p>
+                    <p>In order for your Jira integration to continue working you will need to obtain a Jira API token and enter it below.  More information about the change and where to obtain your token can be found <a href="https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-basic-auth-and-cookie-based-auth/" target="_blank">here.</a></p>
+                    <label>Jira User Name</label>
+                    <input type="text" class="text ui-widget-content ui-corner-all int-crm-user" />
+                    <label>Jira API Token</label>
+                    <input type="password" class="text ui-widget-content ui-corner-all int-crm-token" />
+                    <label>Confirm Jira API Token</label>
+                    <input type="password" class="text ui-widget-content ui-corner-all int-crm-token-confirm" />
+                    <label>Jira Password</label>
+                    <input type="password" class="text ui-widget-content ui-corner-all int-crm-password" />
+                    <label>Confirm Password</label>
+                    <input type="password" class="text ui-widget-content ui-corner-all int-crm-password-confirm" />
+                </div>
+                <label>Default Project KEY</label>
+                <input type="text" class="text ui-widget-content ui-corner-all int-crm-project" />
+                <span>Actions type to push to Jira as comments</span>
+                <select class="int-actionTypeToPush"></select>
+                <div>&nbsp</div>
+                <div class="checkboxes">
+                    <input id="Checkbox1" type="checkbox" class="checkbox int-crm-update-status" />
+                    <label for="cb-jira-update-status" class="checkbox">Update TeamSupport Tickets Statuses</label>
 
-				<label>Jira Host Name</label>
-		  		<input type="text" class="text ui-widget-content ui-corner-all int-crm-host" />
-		  		<label>Jira User Name</label>
-		  		<input type="text" class="text ui-widget-content ui-corner-all int-crm-user" />
-		  		<label>Jira Password</label>
-		  		<input type="password" class="text ui-widget-content ui-corner-all int-crm-password" />
-		  		<label>Confirm Password</label>
-		  		<input type="password" class="text ui-widget-content ui-corner-all int-crm-password-confirm" />
-		  		<label>Default Project KEY</label>
-		  		<input type="text" class="text ui-widget-content ui-corner-all int-crm-project" />
-		  		<span>Actions type to push to Jira as comments</span>
-		  		<select class="int-actionTypeToPush"></select>
-		  		<div>&nbsp</div>
-		  		<div class="checkboxes">
-		  			<input id="Checkbox1" type="checkbox" class="checkbox int-crm-update-status" />
-		  			<label for="cb-jira-update-status" class="checkbox">Update TeamSupport Tickets Statuses</label>
+                    <div class="clearfix"></div>
+                    <span id="ticketStatusExceptionSpan">Exclude the following</span>
+                    <select id="exclusionTicketStatusList" class="int-crm-ticketStatusToExclude" multiple=multiple size="5"></select>
 
-			  		<div class="clearfix"></div>
-			  		<span id="ticketStatusExceptionSpan">Exclude the following</span>
-			  		<select id="exclusionTicketStatusList" class="int-crm-ticketStatusToExclude" multiple=multiple size="5"></select>
-
-					<div class="clearfix"></div>
-		  			<input id="Checkbox5" type="checkbox" class="checkbox int-crm-update-type" />
-		  			<label for="cb-jira-update-type" class="checkbox">Update TeamSupport Ticket Type</label>
-		  			<div class="clearfix"></div>
-		  			<input id="Checkbox2" type="checkbox" class="checkbox int-crm-active" />
-		  			<label for="cb-jira" class="checkbox">Synchronization Active</label>
-		  			<div class="clearfix"></div>
-		  			<input id="Checkbox3" type="checkbox" class="checkbox int-crm-always-use-default-project-key" />
-		  			<label for="cb-jira" class="checkbox">Always Use Default Project Key</label>
-		  			<div class="clearfix"></div>
-			  		<input id="Checkbox5" type="checkbox" class="checkbox int-crm-IncludeIssueNonRequired" />
-			  		<label for="cb-jira" class="checkbox">Include Non-Required Fields On Issue Creation</label>
-			  		<div class="clearfix"></div>
-		  			<input id="Checkbox4" type="checkbox" class="checkbox int-crm-ticket-types" />
-		  			<label for="cb-jira" class="checkbox">Use All Ticket Types</label>
-		  			<div class="clearfix"></div>
-		  			<select id="restrictedTicketTypesList" class="int-ticketTypeToPush" multiple=multiple size="5"></select>
-		  			<div class="clearfix"></div>
-		  		</div>
-		  	</div>
+                    <div class="clearfix"></div>
+                    <input id="Checkbox5" type="checkbox" class="checkbox int-crm-update-type" />
+                    <label for="cb-jira-update-type" class="checkbox">Update TeamSupport Ticket Type</label>
+                    <div class="clearfix"></div>
+                    <input id="Checkbox2" type="checkbox" class="checkbox int-crm-active" />
+                    <label for="cb-jira" class="checkbox">Synchronization Active</label>
+                    <div class="clearfix"></div>
+                    <input id="Checkbox3" type="checkbox" class="checkbox int-crm-always-use-default-project-key" />
+                    <label for="cb-jira" class="checkbox">Always Use Default Project Key</label>
+                    <div class="clearfix"></div>
+                    <input id="Checkbox5" type="checkbox" class="checkbox int-crm-IncludeIssueNonRequired" />
+                    <label for="cb-jira" class="checkbox">Include Non-Required Fields On Issue Creation</label>
+                    <div class="clearfix"></div>
+                    <input id="Checkbox4" type="checkbox" class="checkbox int-crm-ticket-types" />
+                    <label for="cb-jira" class="checkbox">Use All Ticket Types</label>
+                    <div class="clearfix"></div>
+                    <select id="restrictedTicketTypesList" class="int-ticketTypeToPush" multiple=multiple size="5"></select>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
 			<div style="clear:both;"></div>
 		</div>
       </li>
