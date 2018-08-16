@@ -11,6 +11,9 @@ namespace TeamSupport.Data
   
   public partial class Attachment : BaseItem
   {
+    // class AttachmentProxy moved to class library TeamSupport.Proxy
+
+
     public AttachmentProxy GetProxy()
     {
       AttachmentProxy result = new AttachmentProxy();

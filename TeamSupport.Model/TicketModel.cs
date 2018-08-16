@@ -18,7 +18,7 @@ namespace TeamSupport.Model
     {
         public UserSession User { get; private set; }
         public int TicketID { get; private set; }
-        public DataContext _db { get; private set; }
+        public ConnectionContext Connection { get; private set; }
 
         int? _ticketNumber;
         public int TicketNumber
@@ -34,9 +34,18 @@ namespace TeamSupport.Model
         public TicketModel(UserSession user, int ticketID)
         {
             User = user;
-            _db = User._db;
+            Connection = User.Connection;
             TicketID = ticketID;
-            DBReader.VerifyTicket(_db, User.Organization.OrganizationID, TicketID);
+            DBReader.VerifyTicket(Connection._db, User.Organization.OrganizationID, TicketID);
+        }
+
+        /// <summary> bottom up - existing action </summary>
+        public TicketModel(ConnectionContext connection, int ticketID)
+        {
+            Connection = connection;
+            User = Connection.User;
+            TicketID = ticketID;
+            DBReader.VerifyTicket(Connection._db, Connection.Organization.OrganizationID, TicketID);
         }
 
         /// <summary> Existing Data.Action </summary>

@@ -36,8 +36,16 @@ namespace TeamSupport.Api
 
     public static string GetAttachments(RestCommand command, int actionID, bool orderByDateCreated = false)
     {
-      string orderBy = orderByDateCreated ? "DateCreated DESC" : String.Empty;
-      Attachments attachments = Attachments.ActionAttachments(command.LoginUser, actionID, orderBy);
+      Attachments attachments = new Attachments(command.LoginUser);
+      if (orderByDateCreated)
+      {
+        attachments.LoadByActionID(actionID, "DateCreated DESC");
+      }
+      else
+      {
+        attachments.LoadByActionID(actionID);
+      }
+
       return attachments.GetXml("Attachments", "Attachment", true, command.Filters);
     }
 

@@ -15,7 +15,7 @@ namespace TeamSupport.Model
     public class UserSession
     {
         public OrganizationModel Organization { get; private set; }
-        public DataContext _db { get; private set; }
+        public ConnectionContext Connection { get; private set; }
         Proxy.AuthenticationModel _authentication;
 
         public int UserID { get { return _authentication.UserID; } }
@@ -24,7 +24,7 @@ namespace TeamSupport.Model
         public UserSession(OrganizationModel organization)
         {
             Organization = organization;
-            _db = organization._db;
+            Connection = organization.Connection;
             _authentication = Organization.Connection.Authentication;
             //DBReader.VerifyUser(_db, Organization.OrganizationID, UserID);     // connection already verified
         }
@@ -37,7 +37,7 @@ namespace TeamSupport.Model
             return new TicketModel(this, ticketID);
         }
 
-        public bool AllowUserToEditAnyAction() { return DBReader.UserAllowUserToEditAnyAction(_db, UserID); }
+        public bool AllowUserToEditAnyAction() { return DBReader.UserAllowUserToEditAnyAction(Connection._db, UserID); }
         public bool CanEdit() { return _authentication.IsSystemAdmin || AllowUserToEditAnyAction(); }
 
     }

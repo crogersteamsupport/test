@@ -39,181 +39,88 @@ namespace TeamSupport.DataAPI
         #endregion
 
 
-        //#region Tickets
-        ///// <summary> Create Ticket </summary>
-        //public static void Create(ConnectionContext connection, TicketProxy ticketProxy)
-        //{
-        //    // TODO - create ticket
-        //    LogMessage(connection.Authentication, ActionLogType.Insert, ReferenceType.Tickets, ticketProxy.TicketID, "Created Ticket");
-        //}
+        #region Tickets
+        /// <summary> Create Ticket </summary>
+        public static void Create(OrganizationModel organization, TicketProxy ticketProxy)
+        {
+            // TODO - create ticket
+            LogMessage(organization.Connection.Authentication, ActionLogType.Insert, ReferenceType.Tickets, ticketProxy.TicketID, "Created Ticket");
+        }
 
-        ///// <summary> Read Ticket </summary>
-        //public static TicketProxy Read(ConnectionContext connection, TicketModel ticketModel)
-        //{
-        //    Table<TicketProxy> table = connection._db.GetTable<TicketProxy>();
-        //    return table.Where(t => t.TicketID == ticketModel.TicketID).First();
-        //}
+        /// <summary> Read Ticket </summary>
+        public static TicketProxy Read(TicketModel ticketModel)
+        {
+            Table<TicketProxy> table = ticketModel.Connection._db.GetTable<TicketProxy>();
+            return table.Where(t => t.TicketID == ticketModel.TicketID).First();
+        }
 
-        ///// <summary> Update Ticket </summary>
-        //public static void Update(ConnectionContext connection, TicketModel ticketModel, TicketProxy ticketProxy)
-        //{
-        //    // TODO - update ticket
-        //    LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, ticketModel.TicketID, "Updated Ticket");
-        //}
+        /// <summary> Update Ticket </summary>
+        public static void Update(TicketModel ticketModel, TicketProxy ticketProxy)
+        {
+            // TODO - update ticket
+            LogMessage(ticketModel.Connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, ticketModel.TicketID, "Updated Ticket");
+        }
 
-        ///// <summary> Delete Ticket</summary>
-        //public static void Delete(ConnectionContext connection, TicketModel ticketModel)
-        //{
-        //    // TODO - delete ticket
-        //    LogMessage(connection.Authentication, ActionLogType.Delete, ReferenceType.Tickets, ticketModel.TicketID, "Deleted Ticket");
-        //}
-
-        ///// <summary> Read Ticket Contacts </summary>
-        //public static int[] ReadContacts(ConnectionContext connection, TicketModel ticket)
-        //{
-        //    string query = $"SELECT Users.userid FROM Users WITH (NOLOCK)" +
-        //        $"JOIN UserTickets WITH (NOLOCK) on UserTickets.userid = Users.UserID" +
-        //        $" WHERE UserTickets.TicketID = {ticket.TicketID} AND (Users.MarkDeleted = 0)";
-        //    return connection._db.ExecuteQuery<int>(query).ToArray();
-        //}
-
-        ///// <summary>Read Ticket Customers </summary>        
-        //public static int[] ReadCustomers(ConnectionContext connection, TicketModel ticket)
-        //{
-        //    string query = $"Select organizationid From OrganizationTickets WITH (NOLOCK) Where TicketId = {ticket.TicketID}";
-        //    return connection._db.ExecuteQuery<int>(query).ToArray();
-        //}
-
-        ///// <summary> Read Ticket Tags
-        ///// For TicketMerge we only need the tagid from taglinks
-        ///// Tags Table has the tags, Taglinks has the relationship between tags and tickets.
-        ///// </summary>      
-        //public static int[] ReadTags(ConnectionContext connection, TicketModel ticket)
-        //{
-        //    string query = $"SELECT TagID WITH(NOLOCK) FROM TagLinks WHERE Reftyp=17 and RefID = {ticket.TicketID}";
-        //    return connection._db.ExecuteQuery<int>(query).ToArray();
-        //}
-
-        ///// <summary>Read Ticket Subscriptions</summary>        
-        //public static int[] ReadSubscriptions(ConnectionContext connection, TicketModel ticket)
-        //{
-        //    string query = $"SELECT Subscriptions.userid FROM Subscriptions WITH (NOLOCK) " +
-        //        $"JOIN Users WITH (NOLOCK) on users.userid = Subscriptions.userid " +
-        //        $"WHERE Reftype = 17 and Refid = {ticket.TicketID} and MarkDeleted = 0";
-        //    return connection._db.ExecuteQuery<int>(query).ToArray();
-        //}
-
-        ///// <summary>Read quequed tickets</summary>
-        //public static int[] ReadQueue(ConnectionContext connection, TicketModel ticket)
-        //{
-        //    string query = $"SELECT Users.userid FROM TicketQueue WITH (NOLOCK)" +
-        //        $"JOIN Users WITH (NOLOCK) on Users.userid = TicketQueue.userid " +
-        //        $"WHERE ticketid ={ticket.TicketID} and MarkDeleted =0";
-        //    return connection._db.ExecuteQuery<int>(query).ToArray();
-
-        //}
-
-        ///// <summary>Read Ticket Reminders</summary>
-        //public static int[] ReadReminders(ConnectionContext connection, TicketModel ticket)
-        //{
-        //    string query = $"SELECT ReminderID FROM Reminders WITH (NOLOCK) WHERE RefID = {ticket.TicketID} AND Reftype = 17";                  
-        //    return connection._db.ExecuteQuery<int>(query).ToArray();
-        //}
-
-        ///// <summary>Read Ticket Tasks</summary>
-        //public static int[] ReadTasks(ConnectionContext connection, TicketModel ticket)
-        //{
-        //    string query = $"SELECT TaskID FROM TaskAssociations WITH (NOLOCK) WHERE Refid={ticket.TicketID} and RefyType = 17";  
-        //    return connection._db.ExecuteQuery<int>(query).ToArray();
-        //}
-
-        ///// <summary>Read Ticket Assets</summary>
-        //public static int[] ReadAssets(ConnectionContext connection, TicketModel ticket)
-        //{
-        //    string query = $"SELECT AssetID From AssetTickets WITH (NOLOCK) WHERE TicketID = {ticket.TicketID}";
-        //    return connection._db.ExecuteQuery<int>(query).ToArray();            
-        //}
-
-        ///// <summary>Read releated tickets 1 </summary>     
-        //public static int[] ReadRelationships1(ConnectionContext connection, TicketModel ticket)
-        //{
-        //    string query = $"SELECT TicketRelationshipID WITH(NOLOCK) WHERE Ticket1ID={ticket.TicketID}";
-        //    return connection._db.ExecuteQuery<int>(query).ToArray();
-        //}
-
-        ///// <summary>Read releated tickets 2 </summary>     
-        //public static int[] ReadRelationships2(ConnectionContext connection, TicketModel ticket)
-        //{
-        //    string query = $"SELECT TicketRelationshipID FROM TicketRelationships WITH(NOLOCK) WHERE Ticket2ID={ticket.TicketID}";
-        //    return connection._db.ExecuteQuery<int>(query).ToArray();
-        //}
-
-        ///// <summary>Read children of ticket</summary> 
-        //public static int[] ReadChildren(ConnectionContext connection, TicketModel ticket)
-        //{
-        //    string query = $"SELECT TicketID FROM Tickets WITH(NOLOCK) WHERE ParentID={ticket.TicketID}";
-        //    return connection._db.ExecuteQuery<int>(query).ToArray();
-        //}
-
-        //#endregion
+        /// <summary> Delete Ticket</summary>
+        public static void Delete(TicketModel ticketModel)
+        {
+            // TODO - delete ticket
+            LogMessage(ticketModel.Connection.Authentication, ActionLogType.Delete, ReferenceType.Tickets, ticketModel.TicketID, "Deleted Ticket");
+        }
+        #endregion
 
 
         #region Actions
-        public static int ActionGetTicketID(DataContext db, int actionID) { return db.ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {actionID}").Min(); }
 
         /// <summary> Create Action </summary>
-        public static void Create(ConnectionContext connection, TicketModel ticketModel, ref ActionProxy actionProxy)
+        public static void Create(TicketModel ticketModel, ref ActionProxy actionProxy)
         {
-            AuthenticationModel authentication = connection.Authentication;
-            Data.Action.Create(connection._db, authentication.OrganizationID, authentication.UserID, ticketModel.TicketID, ref actionProxy);
-            LogMessage(connection.Authentication, ActionLogType.Insert, ReferenceType.Actions, actionProxy.ActionID, "Created Action");
+            AuthenticationModel authentication = ticketModel.Connection.Authentication;
+            Data.Action.Create(ticketModel.Connection._db, authentication.OrganizationID, authentication.UserID, ticketModel.TicketID, ref actionProxy);
+            LogMessage(authentication, ActionLogType.Insert, ReferenceType.Actions, actionProxy.ActionID, "Created Action");
         }
 
         /// <summary> Read Action </summary>
-        public static ActionProxy Read(ConnectionContext connection, ActionModel actionModel)
+        public static ActionProxy Read(ActionModel actionModel)
         {
-            Table<ActionProxy> table = connection._db.GetTable<ActionProxy>();
+            Table<ActionProxy> table = actionModel.Connection._db.GetTable<ActionProxy>();
             return table.Where(t => t.ActionID == actionModel.ActionID).First();
         }
 
         /// <summary> Read ticket Actions </summary>
-        public static void Read(ConnectionContext connection, TicketModel ticketModel, out ActionProxy[] actionProxies)
+        public static void Read(TicketModel ticketModel, out ActionProxy[] actionProxies)
         {
-            Table<ActionProxy> table = connection._db.GetTable<ActionProxy>();
+            Table<ActionProxy> table = ticketModel.Connection._db.GetTable<ActionProxy>();
             actionProxies = table.Where(t => t.TicketID == ticketModel.TicketID).ToArray();
         }
 
         /// <summary> Update Action </summary>
-        public static void Update(ConnectionContext connection, ActionModel actionModel, ActionProxy actionProxy)
+        public static void Update(ActionModel actionModel, ActionProxy actionProxy)
         {
             // TODO - update action
-            LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Actions, actionModel.ActionID, "Updated Action");
+            LogMessage(actionModel.Connection.Authentication, ActionLogType.Update, ReferenceType.Actions, actionModel.ActionID, "Updated Action");
         }
 
         /// <summary> Delete Action </summary>
-        public static void Delete(ConnectionContext connection, ActionModel actionModel)
+        public static void Delete(ActionModel actionModel)
         {
             // TODO - delete action
-            LogMessage(connection.Authentication, ActionLogType.Delete, ReferenceType.Actions, actionModel.ActionID, "Deleted Action");
+            LogMessage(actionModel.Connection.Authentication, ActionLogType.Delete, ReferenceType.Actions, actionModel.ActionID, "Deleted Action");
         }
         #endregion
 
 
         #region ActionAttachments
 
-        public static int ActionAttachmentGetActionID(DataContext db, int attachmentID)
-        {
-            return db.ExecuteQuery<int>($"SELECT ActionID FROM ActionAttachments WITH(NOLOCK) WHERE ActionAttachmentID = {attachmentID}").Min();
-        }
 
         /// <summary> Create Action Attachment </summary>
-        public static void Create(ConnectionContext connection, ActionModel action, AttachmentProxy proxy)
+        public static void Create(ActionModel actionModel, AttachmentProxy proxy)
         {
             // hard code all the numbers, parameterize all the strings so they are SQL-Injection checked
             string query = "INSERT INTO ActionAttachments(OrganizationID, FileName, FileType, FileSize, Path, DateCreated, DateModified, CreatorID, ModifierID, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID) " +
-                $"VALUES({connection.Organization.OrganizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{ToSql(proxy.DateCreated)}', '{ToSql(proxy.DateModified)}', {proxy.CreatorID}, {proxy.ModifierID}, {action.ActionID}, {ToSql(proxy.SentToJira)}, {ToSql(proxy.SentToTFS)}, {ToSql(proxy.SentToSnow)}, {proxy.FilePathID})" +
+                $"VALUES({actionModel.Connection.Organization.OrganizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{ToSql(proxy.DateCreated)}', '{ToSql(proxy.DateModified)}', {proxy.CreatorID}, {proxy.ModifierID}, {actionModel.ActionID}, {ToSql(proxy.SentToJira)}, {ToSql(proxy.SentToTFS)}, {ToSql(proxy.SentToSnow)}, {proxy.FilePathID})" +
                 "SELECT SCOPE_IDENTITY()";
-            decimal value = connection._db.ExecuteQuery<decimal>(query, proxy.FileName, proxy.FileType, proxy.Path).Min();
+            decimal value = actionModel.Connection._db.ExecuteQuery<decimal>(query, proxy.FileName, proxy.FileType, proxy.Path).Min();
             proxy.AttachmentID = Decimal.ToInt32(value);
         }
 
@@ -222,32 +129,34 @@ namespace TeamSupport.DataAPI
             "FROM ActionAttachments a LEFT JOIN Users u ON u.UserID = a.CreatorID ";
 
         /// <summary> Read Action Attachment </summary>
-        public static AttachmentProxy Read(ConnectionContext connection, ActionAttachment actionAttachment)
+        public static AttachmentProxy Read(ActionAttachment actionAttachment)
         {
             string query = SelectActionAttachmentProxy + $"WHERE ActionAttachmentID = {actionAttachment.ActionAttachmentID}";
-            return actionAttachment._db.ExecuteQuery<AttachmentProxy>(query).First();
+            return actionAttachment.Connection._db.ExecuteQuery<AttachmentProxy>(query).First();
         }
 
         /// <summary> Read Action Attachments </summary>
-        public static void Read(ConnectionContext connection, ActionModel actionModel, out AttachmentProxy[] attachments)
+        public static void Read(ActionModel actionModel, out AttachmentProxy[] attachments)
         {
             string query = SelectActionAttachmentProxy + $"WHERE ActionID = {actionModel.ActionID}";
-            attachments = actionModel._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
+            attachments = actionModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
         }
 
         /// <summary> Read all Action Attachments for this ticket </summary>
-        public static void Read(ConnectionContext connection, TicketModel ticketModel, out AttachmentProxy[] attachments)
+        public static void Read(TicketModel ticketModel, out AttachmentProxy[] attachments)
         {
             string query = SelectActionAttachmentProxy + $"WHERE ActionID IN (SELECT ActionID FROM Actions WHERE TicketID = {ticketModel.TicketID})";
-            attachments = ticketModel._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
+            attachments = ticketModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
         }
 
+        /// <summary> Update Action Attachment </summary>
+
         /// <summary> Delete Action Attachment </summary>
-        public static void Delete(ConnectionContext connection, ActionAttachment actionAttachment)
+        public static void Delete(ActionAttachment actionAttachment)
         {
             string query = $"DELETE FROM ActionAttachments WHERE ActionAttachmentID = {actionAttachment.ActionAttachmentID}";
-            actionAttachment._db.ExecuteCommand(query);
-            LogMessage(connection.Authentication, ActionLogType.Delete, ReferenceType.Actions, actionAttachment.ActionAttachmentID, "Deleted Action Attachment");
+            actionAttachment.Connection._db.ExecuteCommand(query);
+            LogMessage(actionAttachment.Connection.Authentication, ActionLogType.Delete, ReferenceType.Actions, actionAttachment.ActionAttachmentID, "Deleted Action Attachment");
         }
         #endregion
 
@@ -274,8 +183,6 @@ namespace TeamSupport.DataAPI
             LogMessage(authentication, logType, refType, refID, fullMessage);
         }
         #endregion
-
-        
 
     }
 }

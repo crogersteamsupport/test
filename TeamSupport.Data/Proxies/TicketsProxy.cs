@@ -10,6 +10,8 @@ namespace TeamSupport.Data
 {
   public partial class Ticket : BaseItem
   {
+    // class TicketProxy moved to class library TeamSupport.Proxy
+
     public TicketProxy GetProxy()
     {
       TicketProxy result = new TicketProxy();

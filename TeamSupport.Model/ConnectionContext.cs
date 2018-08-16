@@ -18,6 +18,9 @@ namespace TeamSupport.Model
     /// </summary>
     public class ConnectionContext : IDisposable
     {
+        const bool _isEnabled = false;
+        public static bool IsEnabled { get { return _isEnabled; } }
+
         public AuthenticationModel Authentication { get; private set; }
         SqlConnection _connection;
         SqlTransaction _transaction;
@@ -49,7 +52,7 @@ namespace TeamSupport.Model
         public void Commit() { _db.Transaction.Commit(); }
         public void Rollback() { _db.Transaction.Rollback(); }
 
-        public TicketModel Ticket(int ticketID) { return User.Ticket(ticketID); }
+        public TicketModel Ticket(int ticketID) { return new TicketModel(User, ticketID); }
 
         public string AttachmentPath(int id) { return DBReader.AttachmentPath(_db, id); }
 

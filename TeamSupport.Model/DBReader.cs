@@ -26,19 +26,26 @@ namespace TeamSupport.Model
                 throw new Exception(String.Format($"{query} not found"));
         }
 
-        public static bool UserAllowUserToEditAnyAction(DataContext db, int userID) { return db.ExecuteQuery<bool>($"SELECT AllowUserToEditAnyAction FROM Users WITH (NOLOCK) WHERE UserID={userID}").First(); }
+        public static bool UserAllowUserToEditAnyAction(DataContext db, int userID)
+        {
+            return db.ExecuteQuery<bool>($"SELECT AllowUserToEditAnyAction FROM Users WITH (NOLOCK) WHERE UserID={userID}").First();
+        }
 
         public static string AttachmentPath(DataContext db, int id)
         {
             return db.ExecuteQuery<string>($"SELECT[Value] FROM FilePaths WITH(NOLOCK) WHERE ID = {id}").FirstOrDefault();
         }
 
-        public static int CreatorID(DataContext db, int actionID) { return db.ExecuteQuery<int>($"SELECT CreatorID FROM Actions WITH (NOLOCK) WHERE ActionID={actionID}").Min(); }
-
-        public static int TicketNumber(DataContext db, int id)
+        public static int CreatorID(DataContext db, int actionID)
         {
-            return db.ExecuteQuery<int>($"SELECT TicketNumber FROM Tickets WITH(NOLOCK) WHERE TicketId = {id}").First();
+            return db.ExecuteQuery<int>($"SELECT CreatorID FROM Actions WITH (NOLOCK) WHERE ActionID={actionID}").Min();
         }
+
+        public static int AttachmentStorageUsed(DataContext db, int organizationID)
+        {
+            return db.ExecuteQuery<int>($"SELECT SUM(a.FileSize) FROM Attachments a WITH (NOLOCK) WHERE (a.OrganizationID = {organizationID}").Min();
+        }
+
     }
 
 

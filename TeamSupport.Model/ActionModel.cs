@@ -19,24 +19,39 @@ namespace TeamSupport.Model
     {
         public TicketModel Ticket { get; private set; }
         public int ActionID { get; private set; }
-        public DataContext _db { get; private set; }
+        public ConnectionContext Connection { get; private set; }
 
-        /// <summary> existing action </summary>
+        public static int GetTicketID(DataContext db, int actionID)
+        {
+            return db.ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {actionID}").Min();
+        }
+
+        /// <summary> top down - existing action </summary>
         public ActionModel(TicketModel ticket, int actionID)
         {
             Ticket = ticket;
             ActionID = actionID;
-            _db = ticket._db;
-            DBReader.VerifyAction(_db, ticket.User.Organization.OrganizationID, Ticket.TicketID, ActionID);
+            Connection = ticket.Connection;
+            DBReader.VerifyAction(Connection._db, ticket.User.Organization.OrganizationID, Ticket.TicketID, ActionID);
+        }
+
+        /// <summary> bottom up  - existing action </summary>
+        public ActionModel(ConnectionContext connection, int actionID)
+        {
+            ActionID = actionID;
+            Connection = connection;
+            int ticketID = GetTicketID(Connection._db, actionID);
+            Ticket = new TicketModel(Connection, ticketID);
+            DBReader.VerifyAction(Connection._db, Connection.Organization.OrganizationID, Ticket.TicketID, ActionID);
         }
 
         /// <summary> existing action attachment </summary>
-        public ActionAttachment Attachment(int actionAttachmentID)
+        public ActionAttachment ActionAttachment(int actionAttachmentID)
         {
             return new ActionAttachment(this, actionAttachmentID);
         }
 
-        public bool CanEdit() { return Ticket.User.CanEdit() || (Ticket.User.UserID == DBReader.CreatorID(_db, ActionID)); }
+        public bool CanEdit() { return Ticket.User.CanEdit() || (Ticket.User.UserID == DBReader.CreatorID(Connection._db, ActionID)); }
 
         public const int ActionPathIndex = 3;
         public string AttachmentPath

@@ -585,7 +585,6 @@ AND ot.TicketID = @TicketID
                     CustomValue clonedTicketCustomValue = clonedCustomValues.AddNewCustomValue();
                     clonedTicketCustomValue.CustomFieldID = customValue.CustomFieldID;
                     clonedTicketCustomValue.RefID = cloneTicketId;
-                    //clonedTicketCustomValue.RefType = ReferenceType.Tickets;
                     clonedTicketCustomValue.Value = customValue.Value.ToString();
                     clonedTicketCustomValue.CreatorID = customValue.CreatorID;
                     clonedTicketCustomValue.ModifierID = customValue.ModifierID;
@@ -753,6 +752,7 @@ AND ot.TicketID = @TicketID
                         clonedAttachment.DateModified = attachment.DateModifiedUtc;
                         clonedAttachment.CreatorID = attachment.CreatorID;
                         clonedAttachment.ModifierID = attachment.ModifierID;
+                        clonedAttachment.RefType = attachment.RefType;
                         clonedAttachment.SentToJira = attachment.SentToJira;
                         clonedAttachment.ProductFamilyID = attachment.ProductFamilyID;
                         clonedAttachment.FileName = attachment.FileName;
@@ -771,8 +771,7 @@ AND ot.TicketID = @TicketID
                                                                                             && c.Description == originalAction.Description
                                                                                             && c.Name == originalAction.Name).FirstOrDefault();
 
-                        clonedAttachment.RefID = matchingClone.ActionID;    // this is wrong - assigning actionID when original was loaded by OrganizationID
-                        clonedAttachment.RefType = attachment.RefType;  // what if RefType != Actions ???
+                        clonedAttachment.RefID = matchingClone.ActionID;
 
                         string clonedActionAttachmentPath = attachment.Path.Substring(0, attachment.Path.IndexOf(@"\Actions\") + @"\Actions\".Length)
                                                             + matchingClone.ActionID
@@ -945,7 +944,7 @@ AND ot.TicketID = @TicketID
                         Reminder newReminder = newReminders.AddNewReminder();
                         newReminder.RefID = newTask.TaskID;
                         newReminder.OrganizationID = this.OrganizationID;
-                        newReminder.RefType = cloningReminder.RefType;  // what if RefType != Tasks ???
+                        newReminder.RefType = cloningReminder.RefType;
                         newReminder.Description = cloningReminder.Description;
                         newReminder.DueDate = cloningReminder.DueDateUtc;
                         newReminder.UserID = cloningReminder.UserID;
@@ -3358,8 +3357,8 @@ AND
             {
                 command.CommandText = "UPDATE CustomValues SET RefID=@newticketID, OrganizationID=@organizationID WHERE (RefID = @oldticketID)";
                 command.CommandType = CommandType.Text;
-                //command.Parameters.AddWithValue("@newticketID", newticketID); // these are not OrgID!!!
-                //command.Parameters.AddWithValue("@oldticketID", oldticketID);
+                command.Parameters.AddWithValue("@newticketID", newticketID);
+                command.Parameters.AddWithValue("@oldticketID", oldticketID);
 				command.Parameters.AddWithValue("@organizationID", LoginUser.OrganizationID);
 				ExecuteNonQuery(command, "CustomValues");
             }
@@ -3373,7 +3372,7 @@ AND
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "UPDATE Subscriptions SET RefID=@newticketID WHERE (RefID = @oldticketID) AND RefType=17";
+                command.CommandText = "UPDATE Subscriptions SET RefID=@newticketID WHERE (RefID = @oldticketID)";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@newticketID", newticketID);
                 command.Parameters.AddWithValue("@oldticketID", oldticketID);
@@ -3516,7 +3515,7 @@ AND
             {
                 command.CommandText = "UPDATE attachments SET RefID=@newticketID WHERE (RefID = @oldticketID) AND RefType = @refType";
                 command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@newticketID", newticketID); // this is wrong, ticketID is not an ActionID
+                command.Parameters.AddWithValue("@newticketID", newticketID);
                 command.Parameters.AddWithValue("@oldticketID", oldticketID);
                 command.Parameters.AddWithValue("@refType", ReferenceType.Actions);
                 ExecuteNonQuery(command, "attachments");

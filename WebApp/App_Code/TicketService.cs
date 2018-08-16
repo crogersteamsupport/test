@@ -3156,10 +3156,15 @@ WHERE t.TicketID = @TicketID
 
             UsersViewItem creator = UsersView.GetUsersViewItem(loginUser, action.CreatorID);
             if (creator != null) actionInfo.Creator = new UserInfo(creator);
-            AttachmentProxy[] model = null;// ModelAPI.SelectActionAttachments(TSAuthentication.Ticket, null, action.ActionID);
-            actionInfo.Attachments = Attachments.ActionAttachments(loginUser, action.ActionID).GetAttachmentProxies();
-            if (model.Equals(actionInfo.Attachments))
-                Debugger.Break();
+            actionInfo.Attachments = action.GetAttachments().GetAttachmentProxies();
+
+            if (TeamSupport.Model.ConnectionContext.IsEnabled)
+            {
+                AttachmentProxy[] attachments;
+                ModelAPI.ReadActionAttachments(TSAuthentication.Ticket, action.ActionID, out attachments);
+                if (!attachments.Equals(actionInfo.Attachments))
+                    Debugger.Break();
+            }
             return actionInfo;
         }
 
@@ -3588,7 +3593,16 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public void DeleteAttachment(int attachmentID)
         {
-            ModelAPI.DeleteActionAttachment(TSAuthentication.Ticket, null, null, attachmentID);
+            if (TeamSupport.Model.ConnectionContext.IsEnabled)
+                ModelAPI.DeleteActionAttachment(TSAuthentication.Ticket, attachmentID);
+
+            Attachment attachment = Attachments.GetAttachment(TSAuthentication.GetLoginUser(), attachmentID);
+            if (attachment == null || attachment.RefType != ReferenceType.Actions) return;
+            TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
+            if (!CanEditAction(action)) return;
+            attachment.DeleteFile();
+            attachment.Delete();
+            attachment.Collection.Save();
         }
 
         [WebMethod]
@@ -3636,22 +3650,22 @@ WHERE t.TicketID = @TicketID
             if (info.CategoryID != null && info.CategoryID > -1) ticket.AddCommunityTicket((int)info.CategoryID);
 
             // new action - future
-            //if (TeamSupport.Model.ConnectionContext.IsEnabled)
-            //{
-            //    ActionProxy actionProxy = new ActionProxy()
-            //    {
-            //        Name = "Description",
-            //        SystemActionTypeID = SystemActionType.Description,
-            //        Description = info.Description,
-            //        IsVisibleOnPortal = ticket.IsVisibleOnPortal,
-            //        IsKnowledgeBase = ticket.IsKnowledgeBase,
-            //        TicketID = ticket.TicketID,
-            //        TimeSpent = info.TimeSpent,
-            //        DateStarted = info.DateStarted,
-            //        ActionSource = ticket.TicketSource
-            //    };
-            //    ModelAPI.Create(TSAuthentication.Ticket, actionProxy);
-            //}
+            if (TeamSupport.Model.ConnectionContext.IsEnabled)
+            {
+                ActionProxy actionProxy = new ActionProxy()
+                {
+                    Name = "Description",
+                    SystemActionTypeID = SystemActionType.Description,
+                    Description = info.Description,
+                    IsVisibleOnPortal = ticket.IsVisibleOnPortal,
+                    IsKnowledgeBase = ticket.IsKnowledgeBase,
+                    TicketID = ticket.TicketID,
+                    TimeSpent = info.TimeSpent,
+                    DateStarted = info.DateStarted,
+                    ActionSource = ticket.TicketSource
+                };
+                ModelAPI.Create(TSAuthentication.Ticket, actionProxy);
+            }
 
             TeamSupport.Data.Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();
             action.ActionTypeID = null;

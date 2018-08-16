@@ -90,9 +90,12 @@ namespace TSWebServices
             info.Subscribers = GetSubscribers(ticket);
             info.Queuers = GetQueuers(ticket);
             info.Attachments = GetAttachments(ticket);
-            AttachmentProxy[] results;
-            TeamSupport.ModelAPI.ModelAPI.ReadActionAttachments(TSAuthentication.Ticket, ticket.TicketID, out results);
-            info.Attachments = results;
+            if (ConnectionContext.IsEnabled)
+            {
+                AttachmentProxy[] results;    // user clicked on attachment - open it
+                TeamSupport.ModelAPI.ModelAPI.ReadActionAttachments(TSAuthentication.Ticket, ticket.TicketID, out results);
+                info.Attachments = results;
+            }
 
             TaskService taskService = new TaskService();
             info.Tasks = taskService.GetTasksByTicketID(info.Ticket.TicketID);
@@ -269,10 +272,12 @@ namespace TSWebServices
 
             foreach (TicketTimeLineViewItem viewItem in TimeLineView) {
                 if (!viewItem.IsWC) {
+                    Attachments attachments = new Attachments(loginUser);
+                    attachments.LoadByActionID(viewItem.RefID);
                     TimeLineItem timeLineItem  = new TimeLineItem();
                     timeLineItem.item          = viewItem.GetProxy();
                     timeLineItem.item.Message  = SanitizeMessage(timeLineItem.item.Message, loginUser);
-                    timeLineItem.Attachments = GetActionAttachmentProxies(viewItem.RefID, loginUser);
+                    timeLineItem.Attachments   = attachments.GetAttachmentProxies();
                     timeLineItems.Add(timeLineItem);
                 } else {
                     TimeLineItem wcItem = new TimeLineItem();
@@ -845,12 +850,12 @@ namespace TSWebServices
         [WebMethod]
         public TimeLineItem UpdateAction(ActionProxy proxy)
         {
-            // new action - future
-            //if (proxy.ActionID == -1)
-            //{
-            //    proxy.CreatorID = TSAuthentication.UserID;
-            //    TeamSupport.ModelAPI.ModelAPI.Create(TSAuthentication.Ticket, proxy);
-            //}
+            // new action
+            if (ConnectionContext.IsEnabled && (proxy.ActionID == -1))
+            {
+                proxy.CreatorID = TSAuthentication.UserID;
+                TeamSupport.ModelAPI.ModelAPI.Create(TSAuthentication.Ticket, proxy);
+            }
 
             TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), proxy.ActionID);
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
@@ -1139,7 +1144,7 @@ namespace TSWebServices
         [WebMethod]
         public AttachmentProxy[] GetActionAttachments(int ActionID)
         {
-            return GetActionAttachmentProxies(ActionID, TSAuthentication.GetLoginUser());
+            return GetActionAttachments(ActionID, TSAuthentication.GetLoginUser());
         }
 
         [WebMethod]
@@ -1753,7 +1758,9 @@ namespace TSWebServices
                 }
             }
 
-            item.Attachments = GetActionAttachmentProxies(action.ActionID, loginUser);
+            Attachments attachments = new Attachments(loginUser);
+            attachments.LoadByActionID(item.item.RefID);
+            item.Attachments = GetActionAttachments(action.ActionID, loginUser);
 
             return item;
         }
@@ -1784,20 +1791,19 @@ namespace TSWebServices
             return wcItem;
         }
 
-        private AttachmentProxy[] GetActionAttachmentProxies(int actionID, LoginUser loginUser)
+        private AttachmentProxy[] GetActionAttachments(int actionID, LoginUser loginUser)
         {
             // Read action attachments
-            AttachmentProxy[] results;
-            TeamSupport.ModelAPI.ModelAPI.ReadActionAttachments(TSAuthentication.Ticket, null, actionID, out results);
+            if (ConnectionContext.IsEnabled)
+            {
+                AttachmentProxy[] results;
+                TeamSupport.ModelAPI.ModelAPI.ReadActionAttachments(TSAuthentication.Ticket, actionID, out results);
+                return results;
+            }
 
-            // also read old attachments table
-            //Attachments attachments = Attachments.ActionAttachments(loginUser, actionID);
-            //AttachmentProxy[] oldAttachments = attachments.GetAttachmentProxies();
-            //int initialLength = results.Length;
-            //Array.Resize(ref results, results.Length + oldAttachments.Length);
-            //Array.Copy(oldAttachments, 0, results, initialLength, oldAttachments.Length);
-
-            return results;
+            Attachments attachments = new Attachments(loginUser);
+            attachments.LoadByActionID(actionID);
+            return attachments.GetAttachmentProxies();
         }
 
         private void addWCAttachment(int messageID, int attachmentID, WaterCoolerAttachmentType attachmentType)
