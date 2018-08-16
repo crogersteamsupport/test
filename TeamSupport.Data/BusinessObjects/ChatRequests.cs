@@ -62,9 +62,8 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
 
             if (groupID != null)
             {
-                groupJoinClause = @"JOIN GroupUsers ON u.UserID = GroupUsers.UserID
-                                        JOIN Groups ON GroupUsers.GroupID = Groups.GroupID";
-                groupWhereClause = @"AND Groups.GroupID = @GroupID";
+                groupJoinClause = @"JOIN GroupUsers ON u.UserID = GroupUsers.UserID";
+                groupWhereClause = @"AND GroupUsers.GroupID = @GroupID";
             }
 
 			sql = string.Format(sql, groupJoinClause, groupWhereClause);
