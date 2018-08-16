@@ -143,25 +143,56 @@ namespace TeamSupport.DataAPI
         }
 
         /// <summary> Read most recent filenames for this ticket </summary>
-        public static void ReadActionAttachmentsByFilenameAndTicket(TicketModel ticketModel, out AttachmentProxy[] mostRecentByFilename)
+        public static void ReadActionAttachmentsForTicket(TicketModel ticketModel, ActionAttachmentsByTicketID ticketActionAttachments, out AttachmentProxy[] mostRecentByFilename)
         {
-            string query = SelectActionAttachmentProxy + $"WHERE ActionID IN (SELECT ActionID FROM Actions WHERE TicketID = {ticketModel.TicketID}) ORDER BY DateCreated DESC";
-            AttachmentProxy[] allAttachments = ticketModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
-            List<AttachmentProxy> tmp = new List<AttachmentProxy>();
-            foreach (AttachmentProxy attachment in allAttachments)
+            switch (ticketActionAttachments)
             {
-                if (!tmp.Exists(a => a.FileName == attachment.FileName))
-                    tmp.Add(attachment);
+                case ActionAttachmentsByTicketID.ByFilename:
+                    {
+                        string query = SelectActionAttachmentProxy + $"WHERE ActionID IN (SELECT ActionID FROM Actions WHERE TicketID = {ticketModel.TicketID}) ORDER BY DateCreated DESC";
+                        AttachmentProxy[] allAttachments = ticketModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
+                        List<AttachmentProxy> tmp = new List<AttachmentProxy>();
+                        foreach (AttachmentProxy attachment in allAttachments)
+                        {
+                            if (!tmp.Exists(a => a.FileName == attachment.FileName))
+                                tmp.Add(attachment);
+                        }
+                        mostRecentByFilename = tmp.ToArray();
+                    }
+                    break;
+                case ActionAttachmentsByTicketID.KnowledgeBase:
+                    {
+                        string query = SelectActionAttachmentProxy + $"JOIN Actions ac ON a.ActionID = ac.ActionID WHERE ac.TicketID = {ticketModel.TicketID} AND ac.IsKnowledgeBase = 1";
+                        mostRecentByFilename = ticketModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
+                    }
+                    break;
+                default:
+                     mostRecentByFilename = null;
+                   break;
             }
-            mostRecentByFilename = tmp.ToArray();
         }
 
-        /// <summary> Read most recent filenames for this ticket </summary>
-        public static void ReadKBActionAttachmentsByTicket(TicketModel ticketModel, out AttachmentProxy[] mostRecentByFilename)
-        {
-            string query = SelectActionAttachmentProxy + $"JOIN Actions ac ON a.ActionID = ac.ActionID WHERE ac.TicketID = {ticketModel.TicketID} AND ac.IsKnowledgeBase = 1";
-            mostRecentByFilename = ticketModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
-        }
+
+        ///// <summary> Read most recent filenames for this ticket </summary>
+        //public static void ReadActionAttachmentsByFilenameAndTicket(TicketModel ticketModel, out AttachmentProxy[] mostRecentByFilename)
+        //{
+        //    string query = SelectActionAttachmentProxy + $"WHERE ActionID IN (SELECT ActionID FROM Actions WHERE TicketID = {ticketModel.TicketID}) ORDER BY DateCreated DESC";
+        //    AttachmentProxy[] allAttachments = ticketModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
+        //    List<AttachmentProxy> tmp = new List<AttachmentProxy>();
+        //    foreach (AttachmentProxy attachment in allAttachments)
+        //    {
+        //        if (!tmp.Exists(a => a.FileName == attachment.FileName))
+        //            tmp.Add(attachment);
+        //    }
+        //    mostRecentByFilename = tmp.ToArray();
+        //}
+
+        ///// <summary> Read most recent filenames for this ticket </summary>
+        //public static void ReadKBActionAttachmentsByTicket(TicketModel ticketModel, out AttachmentProxy[] mostRecentByFilename)
+        //{
+        //    string query = SelectActionAttachmentProxy + $"JOIN Actions ac ON a.ActionID = ac.ActionID WHERE ac.TicketID = {ticketModel.TicketID} AND ac.IsKnowledgeBase = 1";
+        //    mostRecentByFilename = ticketModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
+        //}
 
         /// <summary> Update Action Attachment </summary>
 

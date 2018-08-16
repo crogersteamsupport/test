@@ -401,4 +401,11 @@ namespace TeamSupport.Data
         Visit,
         Note
     }
+
+    public enum ActionAttachmentsByTicketID
+    {
+        ByFilename,
+        KnowledgeBase
+    }
+
 }

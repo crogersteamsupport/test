@@ -8,11 +8,84 @@ using System.Web.Security;
 using TeamSupport.Data;
 using TeamSupport.Model;
 using System.Security.Authentication;
+using System.Data.SqlClient;
+using System.Data.Linq;
 
 namespace TeamSupport.ModelAPI
 {
+    public enum EModelAPI
+    {
+        Create,
+        Read,
+        Update,
+        Delete,
+        ReadAttachmentsFromTicketByFilename,
+        ReadAttachmentsFromTicketByKB,
+        AttachmentIDFromGUID,
+        MergeTickets,
+        CreateActionAttachments
+    }
+
+    /// <summary>
+    /// CRUD interface to DataAPI - Create, Read, Update, Delete proxy
+    /// </summary>
     public static class ModelAPI
     {
+
+        public static object Command(FormsAuthenticationTicket authenticationTicket, EModelAPI command, params object[] args)
+        {
+            try
+            {
+                object result = null;
+                using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
+                {
+                    TicketModel ticketModel;
+                    Guid guid;
+
+                    switch (command)
+                    {
+                        case EModelAPI.AttachmentIDFromGUID:
+                            guid = (Guid)args[0];
+                            result = connection._db.ExecuteQuery<int>($"SELECT AttachmentID FROM Attachments WHERE AttachmentGUID={guid}").Min();
+                            break;
+                        case EModelAPI.MergeTickets:
+                            //MergeTickets((int)args[0], (int)args[1]);
+                            break;
+                        case EModelAPI.CreateActionAttachments:
+                            //CreateActionAttachments((int)args[0], (HttpContext)args[1]);
+                            break;
+                        case EModelAPI.ReadAttachmentsFromTicketByFilename:
+                            ticketModel = connection.Ticket((int)args[0]);
+                            //DataAPI.DataAPI.ReadActionAttachmentsForTicket(ticketModel, ticketActionAttachments, out attachments);
+                            break;
+                        case EModelAPI.ReadAttachmentsFromTicketByKB:
+                            ticketModel = connection.Ticket((int)args[0]);
+                            //DataAPI.DataAPI.ReadActionAttachmentsForTicket(ticketModel, ticketActionAttachments, out attachments);
+                            break;
+                    }
+                }
+
+                //TODO - log success
+                return result;
+            }
+            catch (AuthenticationException ex)
+            {
+                // TODO - tell user they don't have permission
+            }
+            catch(System.Data.ConstraintException ex)
+            {
+                // TODO - data integrity failure
+                // TODO - log something
+            }
+            catch (Exception ex)
+            {
+                // TODO - tell user the request failed
+                // TODO - log something
+            }
+
+            return null;
+        }
+
         /// <summary> Read the proxy corresponding to the ID </summary>
         public static T Read<T>(FormsAuthenticationTicket authenticationTicket, int id) where T : class
         {
@@ -44,7 +117,7 @@ namespace TeamSupport.ModelAPI
             return t;
         }
 
-        /// <summary> Read the children of the parent record (ticket actions, action attachments...) </summary>
+        /// <summary> Read the proxy children of the parent record (ticket actions, action attachments...) </summary>
         public static void Read<T>(FormsAuthenticationTicket authenticationTicket, int id, out T[] proxies) where T : class
         {
             proxies = default(T[]); // null since T is a class
@@ -110,6 +183,15 @@ namespace TeamSupport.ModelAPI
             }
         }
 
+
+        /// <summary> ??? </summary>
+        public static int AttachmentIDFromGUID(FormsAuthenticationTicket authenticationTicket, Guid guid)
+        {
+            using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
+            {
+                return connection._db.ExecuteQuery<int>($"SELECT AttachmentID FROM Attachments WHERE AttachmentGUID={guid}").Min();
+            }
+        }
 
         #region Tickets
         public static void MergeTickets(FormsAuthenticationTicket authenticationTicket, int destinationTicketID, int sourceTicketID)
@@ -185,11 +267,6 @@ namespace TeamSupport.ModelAPI
                 DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), ActionLogType.Delete, ReferenceType.Attachments, attachmentID, "Unable to delete attachment", ex);
             }
         }
-        public enum ActionAttachmentsByTicketID
-        {
-            ByFilename,
-            KnowledgeBase
-        };
 
         /// <summary> Create Action Attachments </summary>
         public static void ReadActionAttachmentsForTicket(FormsAuthenticationTicket authenticationTicket, int ticketID, ActionAttachmentsByTicketID ticketActionAttachments, out AttachmentProxy[] attachments)
@@ -200,15 +277,7 @@ namespace TeamSupport.ModelAPI
                 using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
                 {
                     TicketModel ticketModel = connection.Ticket(ticketID);
-                    switch(ticketActionAttachments)
-                    {
-                        case ActionAttachmentsByTicketID.ByFilename:
-                            DataAPI.DataAPI.ReadActionAttachmentsByFilenameAndTicket(ticketModel, out attachments);
-                            break;
-                        case ActionAttachmentsByTicketID.KnowledgeBase:
-                            DataAPI.DataAPI.ReadKBActionAttachmentsByTicket(ticketModel, out attachments);
-                            break;
-                    }
+                    DataAPI.DataAPI.ReadActionAttachmentsForTicket(ticketModel, ticketActionAttachments, out attachments);
                 }
             }
             catch (Exception ex)

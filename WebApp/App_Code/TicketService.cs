@@ -3158,12 +3158,11 @@ WHERE t.TicketID = @TicketID
             if (creator != null) actionInfo.Creator = new UserInfo(creator);
             actionInfo.Attachments = action.GetAttachments().GetAttachmentProxies();
 
-            if (TeamSupport.Model.ConnectionContext.IsEnabled)  // ???
+            if (TeamSupport.Model.ConnectionContext.IsEnabled)  // Read action attachments
             {
                 AttachmentProxy[] attachments;
                 ModelAPI.Read(TSAuthentication.Ticket, action.ActionID, out attachments);
-                if (!attachments.Equals(actionInfo.Attachments))
-                    Debugger.Break();
+                actionInfo.Attachments = attachments;
             }
             return actionInfo;
         }

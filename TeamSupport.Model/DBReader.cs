@@ -22,7 +22,8 @@ namespace TeamSupport.Model
         static void Verify(DataContext db, string query)
         {
             if (!db.ExecuteQuery<int>(query).Any()) // valid ID found?
-                throw new Exception(String.Format($"{query} not found"));
+                throw new System.Data.ConstraintException(String.Format($"{query} not found")); // error - a join of the records to authentication just doesn't add up
+                //throw new Exception(String.Format($"{query} not found"));
         }
 
         public static bool UserAllowUserToEditAnyAction(DataContext db, int userID)

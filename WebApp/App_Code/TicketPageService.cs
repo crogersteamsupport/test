@@ -80,10 +80,10 @@ namespace TSWebServices
             info.CustomValues = ticketService.GetParentCustomValues(ticket.TicketID);
             info.Subscribers = GetSubscribers(ticket);
             info.Queuers = GetQueuers(ticket);
-            if (ConnectionContext.IsEnabled)    // append action attachments to ticket info
+            if (ConnectionContext.IsEnabled)    // append action attachments for ticket by filename
             {
                 AttachmentProxy[] results;
-                ModelAPI.ReadActionAttachmentsForTicket(TSAuthentication.Ticket, ticket.TicketID, ModelAPI.ActionAttachmentsByTicketID.ByFilename, out results);
+                ModelAPI.ReadActionAttachmentsForTicket(TSAuthentication.Ticket, ticket.TicketID, ActionAttachmentsByTicketID.ByFilename, out results);
                 info.Attachments = results;
             }
             else
@@ -268,10 +268,10 @@ namespace TSWebServices
                     timeLineItem.item          = viewItem.GetProxy();
                     timeLineItem.item.Message  = SanitizeMessage(timeLineItem.item.Message, loginUser);
 
-                    if(ConnectionContext.IsEnabled)
+                    if(ConnectionContext.IsEnabled) // read action attachments
                     {
                         AttachmentProxy[] actionAttachments;
-                        TeamSupport.ModelAPI.ModelAPI.Read(TSAuthentication.Ticket, viewItem.RefID, out actionAttachments);
+                        ModelAPI.Read(TSAuthentication.Ticket, viewItem.RefID, out actionAttachments);
                         timeLineItem.Attachments   = actionAttachments;
                     }
                     else
@@ -853,10 +853,10 @@ namespace TSWebServices
         public TimeLineItem UpdateAction(ActionProxy proxy)
         {
             // new action
-            if (ConnectionContext.IsEnabled && (proxy.ActionID == -1))  // new action - existing ticket
+            if (false && ConnectionContext.IsEnabled && (proxy.ActionID == -1))  // new action - existing ticket
             {
                 proxy.CreatorID = TSAuthentication.UserID;
-                TeamSupport.ModelAPI.ModelAPI.Create(TSAuthentication.Ticket, proxy);
+                ModelAPI.Create(TSAuthentication.Ticket, proxy);
             }
 
             TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), proxy.ActionID);
@@ -1760,11 +1760,11 @@ namespace TSWebServices
                 }
             }
 
-            if (ConnectionContext.IsEnabled)
+            if (ConnectionContext.IsEnabled)    // read action attachments
             {
                 int actionID = item.item.RefID;
                 AttachmentProxy[] actionAttachments;
-                TeamSupport.ModelAPI.ModelAPI.Read(TSAuthentication.Ticket, actionID, out actionAttachments);
+                ModelAPI.Read(TSAuthentication.Ticket, actionID, out actionAttachments);
                 item.Attachments = actionAttachments;
             }
             else
@@ -1807,7 +1807,7 @@ namespace TSWebServices
         private AttachmentProxy[] GetActionAttachments(int actionID, LoginUser loginUser)
         {
             // Read action attachments
-            if (ConnectionContext.IsEnabled)
+            if (ConnectionContext.IsEnabled)    // read action attachments
             {
                 AttachmentProxy[] results;
                 ModelAPI.Read(TSAuthentication.Ticket, actionID, out results);
@@ -1860,10 +1860,10 @@ namespace TSWebServices
 
         private void CopyInsertedKBAttachments(int actionID, int insertedKBTicketID)
         {
-            if (ConnectionContext.IsEnabled)
+            if (ConnectionContext.IsEnabled)    // clone Knowledge Base action attachments from entire ticket to single action
             {
                 AttachmentProxy[] results;
-                ModelAPI.ReadActionAttachmentsForTicket(TSAuthentication.Ticket, insertedKBTicketID, ModelAPI.ActionAttachmentsByTicketID.KnowledgeBase, out results);
+                ModelAPI.ReadActionAttachmentsForTicket(TSAuthentication.Ticket, insertedKBTicketID, ActionAttachmentsByTicketID.KnowledgeBase, out results);
                 foreach(AttachmentProxy attachment in results)
                 {
                     attachment.AttachmentID = 0;    // not used

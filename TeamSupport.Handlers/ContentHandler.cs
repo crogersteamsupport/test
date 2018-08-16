@@ -923,9 +923,8 @@ namespace TeamSupport.Handlers
             return newImage;
         }
 
-        private void DoStuff(HttpContext context, HttpBrowserCapabilities browser, int id)
+        private void DoStuff(HttpContext context, HttpBrowserCapabilities browser, AttachmentProxy proxy)
         {
-            AttachmentProxy proxy = ModelAPI.ModelAPI.Read<AttachmentProxy>(TSAuthentication.Ticket, id);
             if (!File.Exists(proxy.Path))
             {
                 context.Response.Write("Invalid attachment.");
@@ -961,9 +960,10 @@ namespace TeamSupport.Handlers
             int id;
             if (int.TryParse(attachmentID, out id))
             {
-                if (Model.ConnectionContext.IsEnabled)  // open action attachment
+                if (Model.ConnectionContext.IsEnabled)  // open action attachment by ID
                 {
-                    DoStuff(context, browser, id);
+                    AttachmentProxy proxy = ModelAPI.ModelAPI.Read<AttachmentProxy>(TSAuthentication.Ticket, id);
+                    DoStuff(context, browser, proxy);
                     return;
                 }
 
@@ -1053,8 +1053,16 @@ namespace TeamSupport.Handlers
 
             else
             {
+                if (Model.ConnectionContext.IsEnabled)  // open action attachment by Guid
+                {
+                    int idFromGuid = ModelAPI.ModelAPI.AttachmentIDFromGUID(TSAuthentication.Ticket, Guid.Parse(attachmentID));
+                    AttachmentProxy proxy = ModelAPI.ModelAPI.Read<AttachmentProxy>(TSAuthentication.Ticket, idFromGuid);
+                    DoStuff(context, browser, proxy);
+                    return;
+                }
+
                 SqlCommand command = new SqlCommand();
-                ??? command.CommandText = "SELECT AttachmentID FROM Attachments WHERE AttachmentGUID=@AttachmentGUID";
+                command.CommandText = "SELECT AttachmentID FROM Attachments WHERE AttachmentGUID=@AttachmentGUID";
                 command.Parameters.AddWithValue("@AttachmentGUID", Guid.Parse(attachmentID));
 
                 id = SqlExecutor.ExecuteInt(LoginUser.Anonymous, command);
