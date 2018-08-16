@@ -49,8 +49,8 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
         public static bool AreOperatorsAvailable(LoginUser loginUser, int organizationID, int? groupID = null)
         {
             ChatRequests requests = new ChatRequests(loginUser);
-			string sql = @"SELECT COUNT(*) FROM ChatUserSettings cus 
-                            LEFT JOIN Users u ON u.UserID = cus.UserID
+			string sql = @"SELECT COUNT(*) FROM ChatUserSettings cus WITH(NOLOCK)
+                            LEFT JOIN Users u WITH(NOLOCK) ON u.UserID = cus.UserID
                             {0}
                             WHERE cus.IsAvailable = 1
                             AND u.IsChatUser = 1
