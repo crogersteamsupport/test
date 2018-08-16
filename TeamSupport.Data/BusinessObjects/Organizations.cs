@@ -2249,6 +2249,21 @@ ORDER BY o.Name";
             }
         }
 
+        //Previosly used query LoadByNotContactTicketID did not bring customers that where part of usertickets orgid.
+        //Don't understand the reason behind it.
+        //For this, we are getting all the customer on OrgTickets for loosing ticket.
+        public void LoadCustomersOfTicket(int ticketID)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText ="Select organizationid From OrganizationTickets Where TicketId = @TicketId";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@TicketID", ticketID);
+                //Don't understand
+                Fill(command, "Organizations,OrganizationTickets");
+            }
+        }
+
         public void LoadByWebServiceID(Guid webServiceID)
         {
             using (SqlCommand command = new SqlCommand())
