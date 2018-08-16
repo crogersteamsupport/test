@@ -408,4 +408,20 @@ namespace TeamSupport.Data
         KnowledgeBase
     }
 
+    public enum AttachmentType
+    {
+        Organizations = ReferenceType.Organizations,
+        ProductVersions = ReferenceType.ProductVersions,
+        Users = ReferenceType.Users,
+        Contacts = ReferenceType.Contacts,
+        Assets = ReferenceType.Assets,
+        UserPhoto = ReferenceType.UserPhoto,
+        WaterCooler = ReferenceType.WaterCooler,
+        CustomerHubLogo = ReferenceType.CustomerHubLogo,
+        ChatAttachments = ReferenceType.ChatAttachments,
+        Tasks = ReferenceType.Tasks,
+        CompanyActivity = ReferenceType.CompanyActivity,
+        ContactActivity = ReferenceType.ContactActivity,
+    };
+
 }

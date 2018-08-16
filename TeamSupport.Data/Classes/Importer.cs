@@ -2198,7 +2198,7 @@ AND a.OrganizationID = @OrganizationID
                 note.DateCreated = (DateTime)GetDBDate(row["DateCreated"], false);
                 note.Description = ConvertHtmlLineBreaks(GetDBString(row["Description"], 0, false));
                 note.RefID = organization.OrganizationID;
-                note.RefType = ReferenceType.Organizations;
+                note.RefType = AttachmentType.Organizations;
                 note.Title = row["Title"].ToString().Trim();
             }
 

@@ -18,7 +18,7 @@ using Telerik.Web.UI;
 public partial class Frames_Notes : BaseFramePage
 {
   private int _refID;
-  private ReferenceType _refType;
+  private AttachmentType _refType;
 
   protected override void OnInit(EventArgs e)
   {
@@ -26,7 +26,7 @@ public partial class Frames_Notes : BaseFramePage
 
     try
     {
-      _refType = (ReferenceType)int.Parse(Request["RefType"]);
+      _refType = (AttachmentType)int.Parse(Request["RefType"]);
       _refID = int.Parse(Request["RefID"]);
     }
     catch (Exception)

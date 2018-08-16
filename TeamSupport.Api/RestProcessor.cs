@@ -121,8 +121,8 @@ namespace TeamSupport.Api
                     case "/customers/{id}/phonenumbers/{id}/": data = RestPhoneNumbers.GetPhoneNumber(_command, ReferenceType.Organizations, GetId(1), GetId(3)); break;
                     case "/customers/{id}/addresses/": data = RestAddresses.GetAddresses(_command, ReferenceType.Organizations, GetId(1)); break;
                     case "/customers/{id}/addresses/{id}/": data = RestAddresses.GetAddress(_command, ReferenceType.Organizations, GetId(1), GetId(3)); break;
-                    case "/customers/{id}/notes/": data = RestNotes.GetNotes(_command, ReferenceType.Organizations, GetId(1)); break;
-                    case "/customers/{id}/notes/{id}/": data = RestNotes.GetNote(_command, ReferenceType.Organizations, GetId(1), GetId(3)); break;
+                    case "/customers/{id}/notes/": data = RestNotes.GetNotes(_command, AttachmentType.Organizations, GetId(1)); break;
+                    case "/customers/{id}/notes/{id}/": data = RestNotes.GetNote(_command, AttachmentType.Organizations, GetId(1), GetId(3)); break;
                     case "/customers/{id}/contacts/": data = RestContacts.GetItems(_command, GetId(1)); break;
                     case "/customers/{id}/contacts/{id}/": data = RestContacts.GetItem(_command, GetId(3)); break;
                     case "/customers/{id}/contacts/{id}/addresses/": data = RestAddresses.GetAddresses(_command, ReferenceType.Users, GetId(3)); break;
@@ -185,7 +185,7 @@ namespace TeamSupport.Api
                     case "/zapier/customers/{id}/tickets/": data = RestTickets.GetTicketsByCustomerID(_command, GetId(2), true); break;
                     case "/zapier/customers/{id}/phonenumbers/": data = RestPhoneNumbers.GetPhoneNumbers(_command, ReferenceType.Organizations, GetId(2), true); break;
                     case "/zapier/customers/{id}/addresses/": data = RestAddresses.GetAddresses(_command, ReferenceType.Organizations, GetId(2), true); break;
-                    case "/zapier/customers/{id}/notes/": data = RestNotes.GetNotes(_command, ReferenceType.Organizations, GetId(2), true); break;
+                    case "/zapier/customers/{id}/notes/": data = RestNotes.GetNotes(_command, AttachmentType.Organizations, GetId(2), true); break;
                     case "/zapier/customers/{id}/contacts/": data = RestContacts.GetItems(_command, GetId(2), true); break;
                     // I did not declared a trigger for customer-contact-addresses and customer-contact-phonenumbers in zapier because can be done with contact-addresses
                     // and contact-phonenumbers respectively
@@ -316,7 +316,7 @@ namespace TeamSupport.Api
                     case "/customers/": data = RestOrganizations.CreateOrganization(_command); break;
                     case "/customers/{id}/phonenumbers/": data = RestPhoneNumbers.AddPhoneNumber(_command, ReferenceType.Organizations, GetId(1)); break;
                     case "/customers/{id}/addresses/": data = RestAddresses.AddAddress(_command, ReferenceType.Organizations, GetId(1)); break;
-                    case "/customers/{id}/notes/": data = RestNotes.AddNote(_command, ReferenceType.Organizations, GetId(1)); break;
+                    case "/customers/{id}/notes/": data = RestNotes.AddNote(_command, AttachmentType.Organizations, GetId(1)); break;
                     case "/customers/{id}/contacts/": data = RestContacts.CreateContact(_command, GetId(1)); break;
                     case "/customers/{id}/products/{id}/": data = RestOrganizationProducts.CreateOrganizationProduct(_command, GetId(1), GetId(3)); break;
                     case "/contacts/": data = RestContacts.CreateContact(_command, null); break;
@@ -417,7 +417,7 @@ namespace TeamSupport.Api
                     case "/tickets/{id}/contacts/{id}/": RestContacts.RemoveTicketContact(_command, GetId(1), GetId(3)); break;
                     case "/customers/{id}/phonenumbers/{id}/": RestPhoneNumbers.RemovePhoneNumber(_command, ReferenceType.Organizations, GetId(1), GetId(3)); break;
                     case "/customers/{id}/addresses/{id}/": RestAddresses.RemoveAddress(_command, ReferenceType.Organizations, GetId(1), GetId(3)); break;
-                    case "/customers/{id}/notes/{id}/": RestNotes.RemoveNote(_command, ReferenceType.Organizations, GetId(1), GetId(3)); break;
+                    case "/customers/{id}/notes/{id}/": RestNotes.RemoveNote(_command, AttachmentType.Organizations, GetId(1), GetId(3)); break;
                     //Commented in ticket 8867.
                     //case "/customers/{id}/products/{id}/": data = RestProducts.RemoveOrganizationProduct(_command, GetId(1), GetId(3)); break;
                     case "/customers/{id}/products/{id}/customerproduct/{id}/": data = RestOrganizationProducts.DeleteOrganizationProductItem(_command, GetId(1), GetId(3), GetId(5)); break;

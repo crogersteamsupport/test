@@ -487,7 +487,7 @@ namespace TeamSupport.Handlers
 
             //New image, check if one has been uploaded
             Attachments attachments = new Attachments(LoginUser.Anonymous);
-            attachments.LoadByReference(ReferenceType.UserPhoto, userID);
+            attachments.LoadByReference(AttachmentType.UserPhoto, userID);
             StringBuilder path = new StringBuilder();
             if (attachments.Count > 0)
             {
@@ -923,7 +923,7 @@ namespace TeamSupport.Handlers
             return newImage;
         }
 
-        private void DoStuff(HttpContext context, HttpBrowserCapabilities browser, AttachmentProxy proxy)
+        private void OpenActionAttachment(HttpContext context, HttpBrowserCapabilities browser, AttachmentProxy proxy)
         {
             if (!File.Exists(proxy.Path))
             {
@@ -963,7 +963,7 @@ namespace TeamSupport.Handlers
                 if (Model.ConnectionContext.IsEnabled)  // open action attachment by ID
                 {
                     AttachmentProxy proxy = ModelAPI.ModelAPI.Read<AttachmentProxy>(TSAuthentication.Ticket, id);
-                    DoStuff(context, browser, proxy);
+                    OpenActionAttachment(context, browser, proxy);
                     return;
                 }
 
@@ -1057,7 +1057,7 @@ namespace TeamSupport.Handlers
                 {
                     int idFromGuid = ModelAPI.ModelAPI.AttachmentIDFromGUID(TSAuthentication.Ticket, Guid.Parse(attachmentID));
                     AttachmentProxy proxy = ModelAPI.ModelAPI.Read<AttachmentProxy>(TSAuthentication.Ticket, idFromGuid);
-                    DoStuff(context, browser, proxy);
+                    OpenActionAttachment(context, browser, proxy);
                     return;
                 }
 

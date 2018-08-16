@@ -402,7 +402,7 @@ namespace TeamSupport.Data
         }
     }
 
-    public virtual void LoadByIDType(int refID, ReferenceType refType)
+    public virtual void LoadByIDType(int refID, AttachmentType refType)
     {
         using (SqlCommand command = new SqlCommand())
         {

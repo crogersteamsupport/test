@@ -159,7 +159,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
                 ////string directory = TSUtils.GetAttachmentPath("Actions", actionID);
 
                 Attachments att = new Attachments(TSAuthentication.GetLoginUser());
-                att.LoadByReference(ReferenceType.UserPhoto, _userID);
+                att.LoadByReference(AttachmentType.UserPhoto, _userID);
 
                 File.Delete(source);
 
