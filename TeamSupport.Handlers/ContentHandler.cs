@@ -923,7 +923,7 @@ namespace TeamSupport.Handlers
             return newImage;
         }
 
-        private void DoStuff(HttpContext context, System.Web.HttpBrowserCapabilities browser, int id)
+        private void DoStuff(HttpContext context, HttpBrowserCapabilities browser, int id)
         {
             AttachmentProxy proxy = ModelAPI.ModelAPI.Read<AttachmentProxy>(TSAuthentication.Ticket, id);
             if (!File.Exists(proxy.Path))
@@ -935,19 +935,13 @@ namespace TeamSupport.Handlers
 
             string openType = "inline";
             string fileType = proxy.FileType;
-
             if (browser.Browser == "IE")
             {
-                if (proxy.FileType.ToLower().IndexOf("audio") > -1)
-                {
+                string lower = fileType.ToLower();
+                if (lower.IndexOf("audio") > -1)
                     openType = "attachment";
-                }
-                else if (proxy.FileType.ToLower().IndexOf("-zip") > -1 ||
-                            proxy.FileType.ToLower().IndexOf("/zip") > -1 ||
-                            proxy.FileType.ToLower().IndexOf("zip-") > -1)
-                {
+                else if (lower.IndexOf("-zip") > -1 || lower.IndexOf("/zip") > -1 || lower.IndexOf("zip-") > -1)
                     fileType = "application/octet-stream";
-                }
             }
 
             context.Response.AddHeader("Content-Disposition", openType + "; filename=\"" + proxy.FileName + "\"");
@@ -1060,7 +1054,7 @@ namespace TeamSupport.Handlers
             else
             {
                 SqlCommand command = new SqlCommand();
-                command.CommandText = "SELECT AttachmentID FROM Attachments WHERE AttachmentGUID=@AttachmentGUID";
+                ??? command.CommandText = "SELECT AttachmentID FROM Attachments WHERE AttachmentGUID=@AttachmentGUID";
                 command.Parameters.AddWithValue("@AttachmentGUID", Guid.Parse(attachmentID));
 
                 id = SqlExecutor.ExecuteInt(LoginUser.Anonymous, command);
