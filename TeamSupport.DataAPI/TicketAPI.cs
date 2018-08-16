@@ -325,16 +325,9 @@ namespace TeamSupport.DataAPI
             }
             DataAPI.LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Actions");
         }
-
-
-
     }
-
-
-
     #endregion
-
-
+    
 
 }
 

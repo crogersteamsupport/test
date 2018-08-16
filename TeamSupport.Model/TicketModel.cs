@@ -7,6 +7,7 @@ using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Diagnostics;
 using TeamSupport.Data;
+using System.Web;
 
 namespace TeamSupport.Model
 {
@@ -43,6 +44,11 @@ namespace TeamSupport.Model
         {
             return new ActionModel(this, actionID);
         }
+
+        //public Data.TicketProxy AsTicketProxy(HttpRequest request, TicketModel ticketModel)
+        //{
+           
+        //}
 
     }
 }

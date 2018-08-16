@@ -73,28 +73,14 @@ namespace TeamSupport.ModelAPI
                 
                 //Modify Destination Ticket
 
-               Connection.Commit();
+               //Connection.Commit();
                 }
 
 
             catch
-            {
-                Connection.Rollback();
+            {               
                 throw;
             }
-            
-
-
-
-
-
-
-
-
-            
-
-
-            //DataAPI.DataAPI.Delete(Connection, Source);   // delete original ticket?
         }
     }
 
