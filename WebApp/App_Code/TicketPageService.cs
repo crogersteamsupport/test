@@ -23,6 +23,7 @@ using System.Net;
 using System.IO;
 using System.Dynamic;
 using System.Text.RegularExpressions;
+using TeamSupport.Model;
 
 namespace TSWebServices
 {
@@ -89,6 +90,12 @@ namespace TSWebServices
             info.Subscribers = GetSubscribers(ticket);
             info.Queuers = GetQueuers(ticket);
             info.Attachments = GetAttachments(ticket);
+            if (ConnectionContext.IsEnabled)
+            {
+                AttachmentProxy[] results;    // user clicked on attachment - open it
+                TeamSupport.ModelAPI.ModelAPI.ReadActionAttachments(TSAuthentication.Ticket, ticket.TicketID, out results);
+                info.Attachments = results;
+            }
 
             TaskService taskService = new TaskService();
             info.Tasks = taskService.GetTasksByTicketID(info.Ticket.TicketID);
@@ -844,10 +851,10 @@ namespace TSWebServices
         public TimeLineItem UpdateAction(ActionProxy proxy)
         {
             // new action
-            if (TeamSupport.Model.ConnectionContext.Enabled && (proxy.ActionID == -1))
-            { 
-                TeamSupport.Data.Action newAction = TeamSupport.Model.API.InsertAction(TSAuthentication.GetLoginUser(), proxy);
-                return GetActionTimelineItem(newAction);
+            if (ConnectionContext.IsEnabled && (proxy.ActionID == -1))
+            {
+                proxy.CreatorID = TSAuthentication.UserID;
+                TeamSupport.ModelAPI.ModelAPI.Create(TSAuthentication.Ticket, proxy);
             }
 
             TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), proxy.ActionID);
@@ -1786,6 +1793,14 @@ namespace TSWebServices
 
         private AttachmentProxy[] GetActionAttachments(int actionID, LoginUser loginUser)
         {
+            // Read action attachments
+            if (ConnectionContext.IsEnabled)
+            {
+                AttachmentProxy[] results;
+                TeamSupport.ModelAPI.ModelAPI.ReadActionAttachments(TSAuthentication.Ticket, actionID, out results);
+                return results;
+            }
+
             Attachments attachments = new Attachments(loginUser);
             attachments.LoadByActionID(actionID);
             return attachments.GetAttachmentProxies();
