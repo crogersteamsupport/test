@@ -150,21 +150,7 @@ namespace TeamSupport.Data
       }
     }
 
-        public void LoadContactsOfTicket(int ticketID, string orderBy = "LastName, FirstName")
-        {
-            using (SqlCommand command = new SqlCommand())
-            {
-                command.CommandText = @"SELECT Users.userid FROM Users JOIN Organizations ON Users.organizationid = Organizations.OrganizationID
-                                        JOIN UserTickets on UserTickets.userid = Users.UserID
-                                        WHERE UserTickets.TicketID = @TicketID AND (Users.MarkDeleted = 0)";                
-                command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@TicketID", ticketID);
-                Fill(command);
-            }
-        }
-
-
-        public ContactsViewItem FindBySalesForceID(string salesForceID, string organizationSalesForceID)
+         public ContactsViewItem FindBySalesForceID(string salesForceID, string organizationSalesForceID)
     {
       foreach (ContactsViewItem contactsViewItem in this)
       {

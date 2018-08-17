@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TeamSupport.Data;
 using TeamSupport.Model;
 using TeamSupport.Proxy;
+using TeamSupport.DataAPI;
 
 namespace TeamSupport.ModelAPI
 {
@@ -33,52 +34,51 @@ namespace TeamSupport.ModelAPI
             int[] values;
             try
             {
-                if(DataAPI.TicketAPI.TryReadAssets(Connection, Source, out values))                           
-                    DataAPI.TicketAPI.MergeAssets(Connection, values, Source, Destination);            
-                if (DataAPI.TicketAPI.TryReadChildren(Connection, Source, out values))            
-                    DataAPI.TicketAPI.MergeChildren(Connection, values, Source, Destination);            
-                if (DataAPI.TicketAPI.TryReadContacts(Connection, Source, out values))            
-                    DataAPI.TicketAPI.MergeContacts(Connection, values, Source, Destination);            
-                if (DataAPI.TicketAPI.TryReadCustomers(Connection, Source, out values))
-                    DataAPI.TicketAPI.MergeCustomers(Connection, values, Source, Destination);
-                if (DataAPI.TicketAPI.TryReadReminders(Connection, Source, out values))
-                    DataAPI.TicketAPI.MergeReminders(Connection, values, Source, Destination);
-                if (DataAPI.TicketAPI.TryReadTags(Connection, Source, out values))
-                    DataAPI.TicketAPI.MergeTags(Connection, values, Source, Destination);
-                if (DataAPI.TicketAPI.TryReadSubscriptions(Connection, Source, out values))
-                    DataAPI.TicketAPI.MergeSubscriptions(Connection, values, Source, Destination);
-                if (DataAPI.TicketAPI.TryReadTasks(Connection, Source, out values))
-                    DataAPI.TicketAPI.MergeTasks(Connection, values, Source, Destination);
+                if (TicketAPI.TryReadAssets(Connection, Source, out values))
+                    TicketAPI.MergeAssets(Connection, values, Source, Destination); //Assets
 
-                //Do with proxies
-                if (DataAPI.TicketAPI.TryReadQueueUsers(Connection, Source, out values))
-                {
+                if (TicketAPI.TryReadChildren(Connection, Source, out values))
+                    TicketAPI.MergeChildren(Connection, values, Source, Destination);   //Children
 
-                }
-                if (DataAPI.TicketAPI.TryReadRelationships1(Connection, Source, out values))
-                {
+                if (TicketAPI.TryReadContacts(Connection, Source, out values))
+                    TicketAPI.MergeContacts(Connection, values, Source, Destination);   //Contacts   
 
-                }
-                if (DataAPI.TicketAPI.TryReadRelationships2(Connection, Source, out values))
-                {
+                if (TicketAPI.TryReadCustomers(Connection, Source, out values))
+                    TicketAPI.MergeCustomers(Connection, values, Source, Destination);  //Customers
 
-                }
+                if (TicketAPI.TryReadReminders(Connection, Source, out values))
+                    TicketAPI.MergeReminders(Connection, values, Source, Destination);  //Reminders
 
+                if (TicketAPI.TryReadTags(Connection, Source, out values))
+                    TicketAPI.MergeTags(Connection, values, Source, Destination);   //Tags
+
+                if (TicketAPI.TryReadSubscriptions(Connection, Source, out values))
+                    TicketAPI.MergeSubscriptions(Connection, values, Source, Destination);  //Subscriptions
+
+                if (TicketAPI.TryReadTasks(Connection, Source, out values))
+                    TicketAPI.MergeTasks(Connection, values, Source, Destination);  //Tags
+
+                if (TicketAPI.TryReadRelationships1(Connection, Source, Destination, out values))
+                    TicketAPI.MergeRelationships1(Connection, values, Source, Destination); //Relationships in first column of table 
+
+                if (TicketAPI.TryReadRelationships2(Connection, Source, Destination, out values))
+                    TicketAPI.MergeRelationships2(Connection, values, Source, Destination); //Relationships in second column of table
+
+                if (TicketAPI.TryReadQueueUsers(Connection, Source, Destination, out values))
+                    TicketAPI.MergeQueuedTickets(Connection, values, Source, Destination);  //Queue              
 
                 //Actions
-                DataAPI.TicketAPI.MergeActions(Connection, Source, Destination);
+                TicketAPI.MergeActions(Connection, Source, Destination);
 
                 //Remove Source Ticket
-                DataAPI.TicketAPI.Delete(Connection, Source);
-                
+                TicketAPI.Delete(Connection, Source);
+
                 //Modify Destination Ticket
-
-               //Connection.Commit();
-                }
-
+                TicketAPI.Update(Connection, Destination);
+            }
 
             catch
-            {               
+            {
                 throw;
             }
         }
