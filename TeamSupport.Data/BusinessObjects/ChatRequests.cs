@@ -46,26 +46,25 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
 			return AreOperatorsAvailable(loginUser, organizationID);
         }
 
-        public static bool AreOperatorsAvailable(LoginUser loginUser, int organizationID, string groupName = null)
+        public static bool AreOperatorsAvailable(LoginUser loginUser, int organizationID, int? groupID = null)
         {
             ChatRequests requests = new ChatRequests(loginUser);
-			string sql = @"SELECT COUNT(*) FROM ChatUserSettings cus 
-LEFT JOIN Users u ON u.UserID = cus.UserID
-{0}
-WHERE cus.IsAvailable = 1
-AND u.IsChatUser = 1
-AND u.OrganizationID = @OrganizationID
-{1}";
+			string sql = @"SELECT COUNT(*) FROM ChatUserSettings cus WITH(NOLOCK)
+                            LEFT JOIN Users u WITH(NOLOCK) ON u.UserID = cus.UserID
+                            {0}
+                            WHERE cus.IsAvailable = 1
+                            AND u.IsChatUser = 1
+                            AND u.OrganizationID = @OrganizationID
+                            {1}";
 
 			string groupJoinClause = "";
 			string groupWhereClause = "";
 
-			if (!string.IsNullOrEmpty(groupName))
-			{
-				groupJoinClause = @" JOIN GroupUsers ON u.UserID = GroupUsers.UserID
-JOIN Groups ON GroupUsers.GroupID = Groups.GroupID";
-				groupWhereClause = @" AND Groups.Name = @GroupName";
-        }
+            if (groupID != null)
+            {
+                groupJoinClause = @"JOIN GroupUsers ON u.UserID = GroupUsers.UserID";
+                groupWhereClause = @"AND GroupUsers.GroupID = @GroupID";
+            }
 
 			sql = string.Format(sql, groupJoinClause, groupWhereClause);
 
@@ -75,10 +74,9 @@ JOIN Groups ON GroupUsers.GroupID = Groups.GroupID";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", organizationID);
 
-				if (!string.IsNullOrEmpty(groupName))
-				{
-					command.Parameters.AddWithValue("@GroupName", groupName);
-				}
+                if (groupID != null) { 
+                    command.Parameters.AddWithValue("@GroupID", groupID);
+                }
 
                 object o = requests.ExecuteScalar(command);
                 int count = o == DBNull.Value ? 0 : (int)o;
@@ -335,16 +333,26 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
 
         }
 
-        public static ChatRequest RequestChat(LoginUser loginUser, int organizationID, string firstName, string lastName, string email, string message, string ipAddress, string groupName = null)
+        public static int? CalculateChatGroupID(LoginUser loginUser, int organizationID, int? groupID, string groupName = null) {
+            int? result = null;
+            Groups groups = new Groups(loginUser);
+
+            if (groupID != null)
+            {
+                groups.LoadByGroupID((int)groupID);
+                result = groups.Any() ? groupID : 0;
+            }
+            else if (!string.IsNullOrEmpty(groupName)) {
+                groups.LoadByGroupName(organizationID, groupName);
+                result = groups.Any() ? (int?)groups[0].GroupID : null;
+            }
+
+            return result;
+        }
+
+        public static ChatRequest RequestChat(LoginUser loginUser, int organizationID, string firstName, string lastName, string email, string message, string ipAddress, int groupID = 0)
         {
             ChatClients clients = new ChatClients(loginUser);
-			Groups groups = new Groups(loginUser);
-
-			if (!string.IsNullOrEmpty(groupName))
-			{
-				groups.LoadByGroupName(organizationID, groupName);
-			}
-
             ChatClient client = clients.IsEmpty ? (new ChatClients(loginUser)).AddNewChatClient() : clients[0];
             client.OrganizationID = organizationID;
             client.FirstName = firstName;
@@ -400,7 +408,7 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
             request.Message = message;
             request.IsAccepted = false;
             request.RequestType = ChatRequestType.External;
-            request.GroupID = (groups != null && groups.IsEmpty) ? null : (int?)groups[0].GroupID;
+            request.GroupID = groupID;
             request.Collection.Save();
 
             return request;
