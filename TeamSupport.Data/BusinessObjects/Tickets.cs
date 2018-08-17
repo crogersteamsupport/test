@@ -1860,8 +1860,8 @@ AND ts.IsClosed = 0";
 
         public void AddContact(int userID, int ticketID)
         {
-            //try
-            //{
+            try
+            {
 
                 using (SqlCommand command = new SqlCommand())
                 {
@@ -1877,10 +1877,10 @@ AND ts.IsClosed = 0";
                     command.Parameters.AddWithValue("@CreatorID", LoginUser.UserID);
                     ExecuteNonQuery(command, "UserTickets");
                 }
-            //}
-            //catch (Exception)
-            //{
-            //}
+            }
+            catch (Exception)
+            {
+            }
 
 
             UsersViewItem user = UsersView.GetUsersViewItem(LoginUser, userID);

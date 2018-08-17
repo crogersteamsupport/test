@@ -266,21 +266,7 @@ ORDER BY u.FirstName, u.LastName";
         Fill(command, "Users,Tickets,Subscriptions");
       }
     }
-
-
-        public void LoadSubscriptionsOfTicket(int refID)
-        {
-            using (SqlCommand command = new SqlCommand())
-            {
-                command.CommandText =@"SELECT Subscriptions.userid FROM Subscriptions 
-                                       JOIN users on users.userid = Subscriptions.userid 
-                                       WHERE Reftype = 17 and Refid = @TicketId and MarkDeleted = 0";
-
-                command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@TicketID", refID);               
-                Fill(command, "Users,Tickets,Subscriptions");
-            }
-        }
+            
         public void LoadByTicketQueue(int ticketID)
     {
       using (SqlCommand command = new SqlCommand())
@@ -299,20 +285,7 @@ ORDER BY u.FirstName, u.LastName
         Fill(command);
       }
     }
-
-        public void LoadQueuedOfTicket(int ticketID)
-        {
-            using (SqlCommand command = new SqlCommand())
-            {
-                command.CommandText = @"SELECT Users.userid FROM TicketQueue
-                                        JOIN Users on Users.userid = TicketQueue.userid 
-                                        WHERE ticketid =@TicketID and MarkDeleted =0
-";
-                command.CommandType = CommandType.Text;
-                command.Parameters.AddWithValue("@TicketID", ticketID);
-                Fill(command);
-            }
-        }
+        
     }
 
   

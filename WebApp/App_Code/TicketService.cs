@@ -3919,6 +3919,7 @@ WHERE t.TicketID = @TicketID
         {
 
             //for testing new method
+          
            return  ModelAPI.MergeTickets(TSAuthentication.Ticket, winningTicketID, losingTicketID);
             //return MergeTicketsNew( winningTicketID,  losingTicketID);
             //ModelAPI.MergeTickets(TSAuthentication.Ticket, winningTicketID, losingTicketID);
@@ -4106,96 +4107,7 @@ WHERE t.TicketID = @TicketID
             }
             return messages;
         }
-        [WebMethod]
-        public string MergeTicketsNew(int winningTicketID, int losingTicketID)
-        {
-            String errLocation = "";
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-
-            //Get winner/looser ticket  --  from GeneratedTickets
-            Ticket winnerTicket = Tickets.GetTicket(loginUser, winningTicketID);
-            Ticket looserTicket = Tickets.GetTicket(loginUser, losingTicketID);
-
-            //Validate tickets
-            //Do not merge if not valid
-            if (winnerTicket == null)
-            {
-                errLocation = string.Format("Winner ticket not found");
-                return errLocation;
-            }
-            else if (looserTicket == null)
-            {
-                errLocation = string.Format("Looser ticket not found");
-                return errLocation;
-            }
-            
-
-            ///////--------------------------------------------------
-            //Get looser ticket dependencies  
-            //----- Consider changing queries to load only what does not exist on the new ticket?
-            //----- Maybe compare with code before inserting. I don't think we are handling duplicates as of now and therefore the errors on some tables.
-            //load contacts
-            ContactsView looserContacts = new ContactsView(loginUser);
-            looserContacts.LoadContactsOfTicket(losingTicketID);
-            //load Orgs
-            Organizations looserCustomers = new Organizations(loginUser);
-            looserCustomers.LoadCustomersOfTicket(losingTicketID);
-            //load tags
-            Tags looserTags = new Tags(loginUser);
-            looserTags.LoadByReference(ReferenceType.Tickets, losingTicketID);
-            //load subscriptions
-            UsersView usersSubscribed = new UsersView(loginUser);
-            usersSubscribed.LoadSubscriptionsOfTicket(losingTicketID);
-            //load queuers
-            UsersView usersQueued = new UsersView(loginUser);
-            usersQueued.LoadQueuedOfTicket(losingTicketID);
-            ////---------------------------------------------------       
-
-            try
-            {
-                if (looserContacts != null && looserContacts.Count > 0)
-                    MergeContactsNew(looserContacts, winnerTicket, looserTicket);
-                if (looserCustomers != null && looserCustomers.Count > 0)
-                    MergeCustomerNew(looserCustomers, winnerTicket, looserTicket);
-                if (looserTags != null && looserTags.Count > 0)
-                    MergeTagsNew(looserTags, winningTicketID, losingTicketID);
-                if(usersSubscribed != null && usersSubscribed.Count > 0)
-                    MergeSubscribersNew(usersSubscribed, winnerTicket, looserTicket);
-                if (usersQueued != null && usersQueued.Count > 0)
-                    MergeQueresNew(usersQueued, winnerTicket, looserTicket);               
-
-                winnerTicket.Collection.MergeUpdateReminders(losingTicketID, winningTicketID);
-                winnerTicket.Collection.MergeUpdateAssets(losingTicketID, winningTicketID);
-                winnerTicket.Collection.MergeUpdateActions(losingTicketID, winningTicketID);
-                winnerTicket.Collection.MergeUpdateRelationships(losingTicketID, winningTicketID);
-                //Not necesarry -attachments are linked to actions, actions were moved.
-                //winnerTicket.Collection.MergeAttachments(losingTicketID, winningTicketID);
-                
-
-                //Delete looser ticket
-                looserTicket.Collection.DeleteFromDB(losingTicketID);
-
-                //Modify winner ticket
-                winnerTicket.ModifierID = TSAuthentication.GetLoginUser().UserID;
-                winnerTicket.DateModified = DateTime.UtcNow;
-                winnerTicket.Collection.Save();
-            }
-            catch (Exception e)
-            {
-                ExceptionLog log = (new ExceptionLogs(TSAuthentication.GetLoginUser())).AddNewExceptionLog();
-                log.ExceptionName = "Merge Exception " + e.Source;
-                log.Message = e.Message.Replace(Environment.NewLine, "<br />");
-                log.StackTrace = e.StackTrace.Replace(Environment.NewLine, "<br />");
-                log.Collection.Save();
-
-                errLocation = string.Format("Error merging tickets. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-                
-            }           
-
-            return errLocation;
-        }
- 
-
+       
         public void MergeContacts(int losingTicketID, int winningTicketID, Ticket ticket)
         {
             List<TicketCustomer> customers = new List<TicketCustomer>();
