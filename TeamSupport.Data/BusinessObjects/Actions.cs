@@ -14,14 +14,6 @@ namespace TeamSupport.Data
 {
     public partial class Action
     {
-        [Obsolete("Use DataAPI instead!", true)]    // AttachmentProxy[] attachments = ModelAPI.ModelAPI.Read<AttachmentProxy[]>(actionID);
-        public Attachments GetAttachments()
-        {
-            Attachments attachments = new Attachments(BaseCollection.LoginUser);
-            attachments.LoadByActionID(ActionID);
-            return attachments;
-        }
-
         public ActionsViewItem GetActionView()
         {
             return ActionsView.GetActionsViewItem(BaseCollection.LoginUser, ActionID);

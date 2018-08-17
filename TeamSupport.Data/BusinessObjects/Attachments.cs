@@ -58,7 +58,7 @@ namespace TeamSupport.Data
         }
     }
 
-  [Obsolete("please use DataAPI instead.", false)]
+  //[Obsolete("please use DataAPI instead.", false)]
   public partial class Attachments
   {
 
@@ -84,7 +84,7 @@ namespace TeamSupport.Data
         return attachments[0];
     }
 
-    [Obsolete("Use DataAPI instead!", true)]
+    [Obsolete("Use DataAPI instead!", false)]
     public void LoadByActionID(int actionID, string orderBy = "")
     {
       LoadByReference((AttachmentType)ReferenceType.Actions, actionID, orderBy);

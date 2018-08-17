@@ -1,19 +1,29 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Web;
+using System.Web.Services;
+using System.Web.Services.Protocols;
 using System.Collections.Generic;
+using System.Collections;
+using System.Web.Script.Serialization;
+using System.Web.Script.Services;
 using System.Data;
 using System.Data.SqlClient;
-using System.Dynamic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization;
+using System.Web.Security;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Web.Script.Services;
-using System.Web.Services;
 using TeamSupport.Data;
-using TeamSupport.Model;
 using TeamSupport.WebUtils;
+using System.Runtime.Serialization;
+using System.Globalization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Linq;
+using System.Diagnostics;
+using ImageResizer;
+using System.Net;
+using System.IO;
+using System.Dynamic;
+using System.Text.RegularExpressions;
+using TeamSupport.Model;
 using TeamSupport.ModelAPI;
 
 namespace TSWebServices
@@ -272,12 +282,12 @@ namespace TSWebServices
                     {
                         timeLineItem.Attachments = ModelAPI.Read<AttachmentProxy[]>(viewItem.RefID);
                     }
-                    /*else
+                    else
                     {
                         Attachments attachments = new Attachments(loginUser);
                         attachments.LoadByActionID(viewItem.RefID);
                         timeLineItem.Attachments = attachments.GetAttachmentProxies();
-                    }*/
+                    }
                     timeLineItems.Add(timeLineItem);
                 } else {
                     TimeLineItem wcItem = new TimeLineItem();
@@ -850,12 +860,12 @@ namespace TSWebServices
         [WebMethod]
         public TimeLineItem UpdateAction(ActionProxy proxy)
         {
-            // new action
-            if (false && ConnectionContext.IsEnabled && (proxy.ActionID == -1))  // new action - existing ticket
-            {
-                proxy.CreatorID = TSAuthentication.UserID;
-                ModelAPI.Create(proxy);
-            }
+            // new action - future
+            //if (ConnectionContext.IsEnabled && (proxy.ActionID == -1))  // new action - existing ticket
+            //{
+            //    proxy.CreatorID = TSAuthentication.UserID;
+            //    ModelAPI.Create(proxy);
+            //}
 
             TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), proxy.ActionID);
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
@@ -1763,12 +1773,12 @@ namespace TSWebServices
                 int actionID = item.item.RefID;
                 item.Attachments = ModelAPI.Read<AttachmentProxy[]>(actionID);
             }
-            /*else
+            else
             {
                 Attachments attachments = new Attachments(loginUser);
                 attachments.LoadByActionID(item.item.RefID);
                 item.Attachments = GetActionAttachments(action.ActionID, loginUser);
-            }*/
+            }
 
             return item;
         }
@@ -1806,13 +1816,10 @@ namespace TSWebServices
             {
                 return ModelAPI.Read<AttachmentProxy[]>(actionID);
             }
-            /*else
-            {
-                Attachments attachments = new Attachments(loginUser);
-                attachments.LoadByActionID(actionID);
-                results = attachments.GetAttachmentProxies();
-            }*/
-            return null;
+
+            Attachments attachments = new Attachments(loginUser);
+            attachments.LoadByActionID(actionID);
+            return attachments.GetAttachmentProxies();
         }
 
         private void addWCAttachment(int messageID, int attachmentID, WaterCoolerAttachmentType attachmentType)

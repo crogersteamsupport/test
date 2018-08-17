@@ -3161,8 +3161,8 @@ WHERE t.TicketID = @TicketID
             {
                 actionInfo.Attachments = ModelAPI.Read<AttachmentProxy[]>(action.ActionID);
             }
-            //else
-            //    actionInfo.Attachments = action.GetAttachments().GetAttachmentProxies();
+            else
+                actionInfo.Attachments = action.GetAttachments().GetAttachmentProxies();
             return actionInfo;
         }
 
@@ -3651,24 +3651,24 @@ WHERE t.TicketID = @TicketID
 
             if (info.CategoryID != null && info.CategoryID > -1) ticket.AddCommunityTicket((int)info.CategoryID);
 
-            // new action - future
-            if (false && TeamSupport.Model.ConnectionContext.IsEnabled)  // new action - new ticket
-            {
-                ActionProxy actionProxy = new ActionProxy()
-                {
-                    Name = "Description",
-                    SystemActionTypeID = SystemActionType.Description,
-                    Description = info.Description,
-                    IsVisibleOnPortal = ticket.IsVisibleOnPortal,
-                    IsKnowledgeBase = ticket.IsKnowledgeBase,
-                    TicketID = ticket.TicketID,
-                    TimeSpent = info.TimeSpent,
-                    DateStarted = info.DateStarted,
-                    ActionSource = ticket.TicketSource
-                };
-                ModelAPI.Create(actionProxy);
-                result.Add(actionProxy.ActionID);
-            }
+            //// new action - future
+            //if (TeamSupport.Model.ConnectionContext.IsEnabled)  // new action - new ticket
+            //{
+            //    ActionProxy actionProxy = new ActionProxy()
+            //    {
+            //        Name = "Description",
+            //        SystemActionTypeID = SystemActionType.Description,
+            //        Description = info.Description,
+            //        IsVisibleOnPortal = ticket.IsVisibleOnPortal,
+            //        IsKnowledgeBase = ticket.IsKnowledgeBase,
+            //        TicketID = ticket.TicketID,
+            //        TimeSpent = info.TimeSpent,
+            //        DateStarted = info.DateStarted,
+            //        ActionSource = ticket.TicketSource
+            //    };
+            //    ModelAPI.Create(actionProxy);
+            //    result.Add(actionProxy.ActionID);
+            //}
 
             TeamSupport.Data.Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();
             action.ActionTypeID = null;

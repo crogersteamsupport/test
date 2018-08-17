@@ -35,23 +35,9 @@ namespace TeamSupport.Api
       return "attachment";
     }
 
-    public static FormsAuthenticationTicket TSAuthenticationTicket
-    {
-      get 
-      {
-        if (HttpContext.Current.User == null) return null;
-        if (HttpContext.Current.User.Identity is FormsIdentity)
-        {
-          return (HttpContext.Current.User.Identity as FormsIdentity).Ticket;
-        }
-        return null;
-      }
-    }
-
     public static string GetAttachments(RestCommand command, int actionID, bool orderByDateCreated = false)
     {
-      AttachmentProxy[] actionAttachments = ModelAPI.ModelAPI.Read<AttachmentProxy[]>(actionID);
-      GetXml(actionAttachments, "Attachments", "Attachment", true, command.Filters))
+      //AttachmentProxy[] actionAttachments = ModelAPI.ModelAPI.Read<AttachmentProxy[]>(actionID);
 
       Attachments attachments = new Attachments(command.LoginUser);
       if (orderByDateCreated)
