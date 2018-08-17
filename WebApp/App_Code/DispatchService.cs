@@ -202,7 +202,7 @@ namespace TSWebServices
                 WatercoolerAttachments wcuseratt = new WatercoolerAttachments(loginUser);
                 wcuseratt.LoadByType(messageID, WaterCoolerAttachmentType.User);
 
-                WatercoolerAttachments wcactivitiesatt = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+                WatercoolerAttachments wcactivitiesatt = new WatercoolerAttachments(loginUser);
                 wcactivitiesatt.LoadByType(messageID, WaterCoolerAttachmentType.Activities);
 
                 thread.Message = wcv.GetWaterCoolerViewItemProxies()[0];
@@ -247,7 +247,7 @@ namespace TSWebServices
                     parentThreadwcuseratt.LoadByType(parentThreadID, WaterCoolerAttachmentType.User);
 
                     WatercoolerAttachments parentThreadactivitiesatt = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
-                    parentThreadactivitiesatt.LoadByType(messageID, WaterCoolerAttachmentType.Activities);
+                    parentThreadactivitiesatt.LoadByType(parentThreadID, WaterCoolerAttachmentType.Activities);
 
                     parentThread.Message = parentThreadwcv.GetWaterCoolerViewItemProxies()[0];
                     parentThread.Groups = parentThreadwcgroups.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Group);
