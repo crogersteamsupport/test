@@ -5,6 +5,7 @@ var isTOKEnabledForBrowser;
 var _isChatWindowActive = true;
 var _isChatWindowPotentiallyHidden = false;
 var _eventsList;
+var _groupId;
 var isSubmittingAlready = false;
 
 $(document).ready(function () {
@@ -50,7 +51,7 @@ $(document).ready(function () {
                 pusherKey = key;
                 SetupChatRequests();
                 subscribeToNewChatRequest(pusherKey, function (request) {
-					var isGroupValidated = parent.Ts.MainPage.ValidateChatForGroup(request.chatRequest.GroupName);
+					var isGroupValidated = parent.Ts.MainPage.ValidateChatForGroup(request.chatRequest.GroupID);
 
 					if ((request.userIdInvited === undefined || request.userIdInvited == top.Ts.System.User.UserID) && isGroupValidated) {
                         SetupPendingRequest(request.chatRequest, true);
@@ -148,6 +149,7 @@ $(document).ready(function () {
 
             var acceptBtn = $('<button class="btn btn-default">Accept</button>').click(function (e) {
                 var parentEl = $(this).parent();
+				_groupId = chat.GroupID;
                 AcceptRequest(chat.ChatRequestID, innerString, parentEl);
             });
 
@@ -195,7 +197,6 @@ $(document).ready(function () {
                     .removeClass('list-group-item-info')
                     .append('<span class="fa fa-comments fa-1 activeChatIndicator"></span>');
 
-            _activeChatID = chat.ChatID;
             SetActiveChat(_activeChatID);
         });
 
@@ -572,7 +573,13 @@ $(document).ready(function () {
         //Create a ticket with the associated chat in it.
         $('#Ticket-Create').click(function (e) {
             e.preventDefault();
-            parent.Ts.MainPage.newTicket('?ChatID=' + _activeChatID);
+			var parameters = '?ChatID=' + _activeChatID;
+
+			if (_groupId !== undefined && _groupId > 0) {
+				parameters += '&groupId=' + _groupId;
+			}
+
+            parent.Ts.MainPage.newTicket(parameters);
             parent.Ts.System.logAction('Chat - Ticket Created');
         });
 
