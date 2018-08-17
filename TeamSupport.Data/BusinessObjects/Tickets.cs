@@ -3495,7 +3495,8 @@ AND
                 command.CommandText = "UPDATE Tickets WITH (ROWLOCK) SET ParentID=null WHERE (ParentID = ticketID) and (ParentID = @newticketID)";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@newticketID", newticketID);
-                ExecuteNonQuery(command, "Tickets");           }
+                ExecuteNonQuery(command, "Tickets");
+            }
 
             using (SqlCommand command = new SqlCommand())
             {

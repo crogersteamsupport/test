@@ -190,7 +190,6 @@ namespace TeamSupport.ModelAPI
         public static string MergeTickets(int destinationTicketID, int sourceTicketID)
         {
           
-            //if (!ConnectionContext.IsEnabled) return String.Empty;
             try
             {
                 using (ConnectionContext connection = new ConnectionContext(true))    // use transaction
