@@ -21,8 +21,58 @@ namespace TeamSupport.DataAPI
     /// </summary>
     public static class DataAPI
     {
+        /// <summary> default ToString() doesn't work in some cases </summary>
         static string ToSql(DateTime dateTime) { return dateTime.ToString("yyyy-MM-dd HH:mm:ss.fff"); }
         static char ToSql(bool value) { return value ? '1' : '0'; }
+
+
+        /// <summary> Read proxy given a model </summary>
+        public static TProxy Read<TProxy, TModel>(TModel tModel) where TProxy : class where TModel : class
+        {
+            TProxy tProxy = default(TProxy);
+            switch(typeof(TProxy).Name) // alphabetized list
+            {
+                case "ActionProxy": // action
+                    {
+                        ActionModel model = tModel as ActionModel;
+                        Table<ActionProxy> table = model.Connection._db.GetTable<ActionProxy>();
+                        tProxy = table.Where(t => t.ActionID == model.ActionID).First() as TProxy;
+                    }
+                    break;
+                case "ActionProxy[]":   // ticket actions
+                    {
+                        TicketModel model = tModel as TicketModel;
+                        Table<ActionProxy> table = model.Connection._db.GetTable<ActionProxy>();
+                        tProxy = table.Where(t => t.TicketID == model.TicketID).ToArray() as TProxy;
+                    }
+                    break;
+                case "AttachmentProxy": // action attachment (organization attachments?)
+                    {
+                        ActionAttachment model = tModel as ActionAttachment;
+                        string query = SelectActionAttachmentProxy + $"WHERE ActionAttachmentID = {model.ActionAttachmentID}";
+                        tProxy = model.Connection._db.ExecuteQuery<AttachmentProxy>(query).First() as TProxy;
+                    }
+                    break;
+                case "AttachmentProxy[]": // action attachments
+                    {
+                        ActionModel model = tModel as ActionModel;
+                        string query = SelectActionAttachmentProxy + $"WHERE ActionID = {model.ActionID}";
+                        tProxy = model.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray() as TProxy;
+                    }
+                    break;
+                case "TicketProxy": // ticket
+                    {
+                        TicketModel model = tModel as TicketModel;
+                        Table<TicketProxy> table = model.Connection._db.GetTable<TicketProxy>();
+                        tProxy = table.Where(t => t.TicketID == model.TicketID).First() as TProxy;
+                    }
+                    break;
+                default:
+                    throw new Exception("Bad call to DataApi.Read");
+            }
+            return tProxy;
+        }
+
 
         #region User
         //class FullName
@@ -45,13 +95,6 @@ namespace TeamSupport.DataAPI
         {
             // TODO - create ticket
             LogMessage(ActionLogType.Insert, ReferenceType.Tickets, ticketProxy.TicketID, "Created Ticket");
-        }
-
-        /// <summary> Read Ticket </summary>
-        public static TicketProxy Read(TicketModel ticketModel)
-        {
-            Table<TicketProxy> table = ticketModel.Connection._db.GetTable<TicketProxy>();
-            return table.Where(t => t.TicketID == ticketModel.TicketID).First();
         }
 
         /// <summary> Update Ticket </summary>
@@ -78,20 +121,6 @@ namespace TeamSupport.DataAPI
             AuthenticationModel authentication = ticketModel.Connection.Authentication;
             Data.Action.Create(ticketModel.Connection._db, authentication.OrganizationID, authentication.UserID, ticketModel.TicketID, ref actionProxy);
             LogMessage(ActionLogType.Insert, ReferenceType.Actions, actionProxy.ActionID, "Created Action");
-        }
-
-        /// <summary> Read Action </summary>
-        public static ActionProxy Read(ActionModel actionModel)
-        {
-            Table<ActionProxy> table = actionModel.Connection._db.GetTable<ActionProxy>();
-            return table.Where(t => t.ActionID == actionModel.ActionID).First();
-        }
-
-        /// <summary> Read ticket Actions </summary>
-        public static void Read(TicketModel ticketModel, out ActionProxy[] actionProxies)
-        {
-            Table<ActionProxy> table = ticketModel.Connection._db.GetTable<ActionProxy>();
-            actionProxies = table.Where(t => t.TicketID == ticketModel.TicketID).ToArray();
         }
 
         /// <summary> Update Action </summary>
@@ -127,20 +156,6 @@ namespace TeamSupport.DataAPI
         // load action attachments into attachment proxy
         const string SelectActionAttachmentProxy = "SELECT a.*, a.ActionAttachmentID as AttachmentID, a.ActionAttachmentGUID as AttachmentGUID, (u.FirstName + ' ' + u.LastName) AS CreatorName, a.ActionID as RefID " +
             "FROM ActionAttachments a LEFT JOIN Users u ON u.UserID = a.CreatorID ";
-
-        /// <summary> Read Action Attachment </summary>
-        public static AttachmentProxy Read(ActionAttachment actionAttachment)
-        {
-            string query = SelectActionAttachmentProxy + $"WHERE ActionAttachmentID = {actionAttachment.ActionAttachmentID}";
-            return actionAttachment.Connection._db.ExecuteQuery<AttachmentProxy>(query).First();
-        }
-
-        /// <summary> Read Action Attachments </summary>
-        public static void Read(ActionModel actionModel, out AttachmentProxy[] attachments)
-        {
-            string query = SelectActionAttachmentProxy + $"WHERE ActionID = {actionModel.ActionID}";
-            attachments = actionModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
-        }
 
         /// <summary> Read most recent filenames for this ticket </summary>
         public static void ReadActionAttachmentsForTicket(TicketModel ticketModel, ActionAttachmentsByTicketID ticketActionAttachments, out AttachmentProxy[] mostRecentByFilename)

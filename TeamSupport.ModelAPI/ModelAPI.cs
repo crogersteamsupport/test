@@ -13,79 +13,9 @@ using System.Data.Linq;
 
 namespace TeamSupport.ModelAPI
 {
-    public enum EModelAPI
-    {
-        Create,
-        Read,
-        Update,
-        Delete,
-        ReadAttachmentsFromTicketByFilename,
-        ReadAttachmentsFromTicketByKB,
-        AttachmentIDFromGUID,
-        MergeTickets,
-        CreateActionAttachments
-    }
-
-    /// <summary>
-    /// CRUD interface to DataAPI - Create, Read, Update, Delete proxy
-    /// </summary>
+    /// <summary> CRUD interface to DataAPI - Create, Read, Update, Delete proxy </summary>
     public static class ModelAPI
     {
-
-        public static object Command(EModelAPI command, params object[] args)
-        {
-            try
-            {
-                object result = null;
-                using (ConnectionContext connection = new ConnectionContext())
-                {
-                    TicketModel ticketModel;
-                    Guid guid;
-
-                    switch (command)
-                    {
-                        case EModelAPI.AttachmentIDFromGUID:
-                            guid = (Guid)args[0];
-                            result = connection._db.ExecuteQuery<int>($"SELECT AttachmentID FROM Attachments WHERE AttachmentGUID={guid}").Min();
-                            break;
-                        case EModelAPI.MergeTickets:
-                            //MergeTickets((int)args[0], (int)args[1]);
-                            break;
-                        case EModelAPI.CreateActionAttachments:
-                            //CreateActionAttachments((int)args[0], (HttpContext)args[1]);
-                            break;
-                        case EModelAPI.ReadAttachmentsFromTicketByFilename:
-                            ticketModel = connection.Ticket((int)args[0]);
-                            //DataAPI.DataAPI.ReadActionAttachmentsForTicket(ticketModel, ticketActionAttachments, out attachments);
-                            break;
-                        case EModelAPI.ReadAttachmentsFromTicketByKB:
-                            ticketModel = connection.Ticket((int)args[0]);
-                            //DataAPI.DataAPI.ReadActionAttachmentsForTicket(ticketModel, ticketActionAttachments, out attachments);
-                            break;
-                    }
-                }
-
-                //TODO - log success
-                return result;
-            }
-            catch (AuthenticationException ex)
-            {
-                // TODO - tell user they don't have permission
-            }
-            catch(System.Data.ConstraintException ex)
-            {
-                // TODO - data integrity failure
-                // TODO - log something
-            }
-            catch (Exception ex)
-            {
-                // TODO - tell user the request failed
-                // TODO - log something
-            }
-
-            return null;
-        }
-
         /// <summary> Read the proxy corresponding to the ID </summary>
         public static T Read<T>(int id) where T : class
         {
@@ -94,61 +24,44 @@ namespace TeamSupport.ModelAPI
             {
                 using (ConnectionContext connection = new ConnectionContext())
                 {
-                    switch(typeof(T).Name)
+                    switch(typeof(T).Name) // alphabetized list
                     {
-                        case "ActionProxy":
-                            t = DataAPI.DataAPI.Read(new ActionModel(connection, id)) as T;
+                        case "ActionProxy": // action
+                            t = DataAPI.DataAPI.Read<T, ActionModel>(new ActionModel(connection, id));
                             break;
-                        case "AttachmentProxy":
-                            t = DataAPI.DataAPI.Read(new ActionAttachment(connection, id)) as T;
+                        case "ActionProxy[]": // ticket actions
+                            t = DataAPI.DataAPI.Read<T, TicketModel>(new TicketModel(connection, id));
                             break;
+                        case "AttachmentProxy": // attachment
+                            t = DataAPI.DataAPI.Read<T, ActionAttachment>(new ActionAttachment(connection, id));
+                            break;
+                        case "AttachmentProxy[]": // action attachments
+                            t = DataAPI.DataAPI.Read<T, ActionModel>(new ActionModel(connection, id));
+                            break;
+                        case "TicketProxy": // ticket
+                            t = DataAPI.DataAPI.Read<T, TicketModel>(new TicketModel(connection, id));
+                            break;
+                        default:
+                            throw new Exception("bad call to ModelAPI.Read");
                     }
                 }
             }
             catch (AuthenticationException ex)
             {
                 // TODO - tell user they don't have permission
+                DataAPI.DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.None, id, "choke", ex);
+            }
+            catch (System.Data.ConstraintException ex)
+            {
+                // TODO - data integrity failure
+                DataAPI.DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.None, id, "choke", ex);
             }
             catch (Exception ex)
             {
                 // TODO - tell user we failed to read
-                // TODO - log something?
+                DataAPI.DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.None, id, "choke", ex);
             }
             return t;
-        }
-
-        /// <summary> Read the proxy children of the parent record (ticket actions, action attachments...) </summary>
-        public static void Read<T>(int id, out T[] proxies) where T : class
-        {
-            proxies = default(T[]); // null since T is a class
-            try
-            {
-                using (ConnectionContext connection = new ConnectionContext())
-                {
-                    switch(typeof(T).Name)
-                    {
-                        case "ActionProxy": // actions for TicketID
-                            ActionProxy[] actionProxies;
-                            DataAPI.DataAPI.Read(new TicketModel(connection, id), out actionProxies);
-                            proxies = actionProxies as T[];
-                            break;
-                        case "AttachmentProxy": // attachments for ActionID
-                            AttachmentProxy[] attachmentProxies;
-                            DataAPI.DataAPI.Read(new ActionModel(connection, id), out attachmentProxies);
-                            proxies = attachmentProxies as T[];
-                            break;
-                    }
-                }
-            }
-            catch (AuthenticationException ex)
-            {
-                // TODO - tell user they don't have permission
-            }
-            catch (Exception ex)
-            {
-                // TODO - tell user we failed to read
-                // TODO - log something?
-            }
         }
 
         /// <summary> Create a child </summary>
@@ -271,7 +184,7 @@ namespace TeamSupport.ModelAPI
                     if (!attachment.Action.CanEdit())
                         return;
 
-                    AttachmentProxy proxy = DataAPI.DataAPI.Read(attachment);
+                    AttachmentProxy proxy = DataAPI.DataAPI.Read<AttachmentProxy, ActionAttachment>(attachment);
                     AttachmentFile file = new AttachmentFile(attachment, proxy);
                     DataAPI.DataAPI.Delete(attachment); // remove from database
                     file.Delete();  // delete file

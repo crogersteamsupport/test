@@ -3159,9 +3159,7 @@ WHERE t.TicketID = @TicketID
 
             if (TeamSupport.Model.ConnectionContext.IsEnabled)  // Read action attachments
             {
-                AttachmentProxy[] attachments;
-                ModelAPI.Read(action.ActionID, out attachments);
-                actionInfo.Attachments = attachments;
+                actionInfo.Attachments = ModelAPI.Read<AttachmentProxy[]>(action.ActionID);
             }
             //else
             //    actionInfo.Attachments = action.GetAttachments().GetAttachmentProxies();

@@ -270,9 +270,7 @@ namespace TSWebServices
 
                     if(ConnectionContext.IsEnabled) // read action attachments
                     {
-                        AttachmentProxy[] actionAttachments;
-                        ModelAPI.Read(viewItem.RefID, out actionAttachments);
-                        timeLineItem.Attachments   = actionAttachments;
+                        timeLineItem.Attachments = ModelAPI.Read<AttachmentProxy[]>(viewItem.RefID);
                     }
                     /*else
                     {
@@ -1763,9 +1761,7 @@ namespace TSWebServices
             if (ConnectionContext.IsEnabled)    // read action attachments
             {
                 int actionID = item.item.RefID;
-                AttachmentProxy[] actionAttachments;
-                ModelAPI.Read(actionID, out actionAttachments);
-                item.Attachments = actionAttachments;
+                item.Attachments = ModelAPI.Read<AttachmentProxy[]>(actionID);
             }
             /*else
             {
@@ -1808,9 +1804,7 @@ namespace TSWebServices
             // Read action attachments
             if (ConnectionContext.IsEnabled)    // read action attachments
             {
-                AttachmentProxy[] results;
-                ModelAPI.Read(actionID, out results);
-                return results;
+                return ModelAPI.Read<AttachmentProxy[]>(actionID);
             }
             /*else
             {
