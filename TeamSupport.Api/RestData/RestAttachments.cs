@@ -8,7 +8,6 @@ using System.Data;
 using TeamSupport.Data;
 using System.Net;
 using System.Web;
-using System.Web.Security;
 
 namespace TeamSupport.Api
 {

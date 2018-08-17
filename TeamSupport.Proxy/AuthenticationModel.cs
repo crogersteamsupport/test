@@ -23,10 +23,12 @@ namespace TeamSupport.Proxy
 
         public AuthenticationModel()
         {
+            // Authentication from HttpContext
             if ((HttpContext.Current.User == null) || !(HttpContext.Current.User.Identity is FormsIdentity))
                 throw new AuthenticationException("Authentication error - No user identity");
-
             AuthenticationTicket = (HttpContext.Current.User.Identity as FormsIdentity).Ticket;
+
+            // Extract custom user data
             string[] data = AuthenticationTicket.UserData.Split('|');
             UserID = int.Parse(data[0]);
             OrganizationID = int.Parse(data[1]);
@@ -34,6 +36,7 @@ namespace TeamSupport.Proxy
             SessionID = data[3];
             IsSystemAdmin = (data[4] == "1");
 
+            // Connection string
             ConnectionStringSettings cStrings = WebConfigurationManager.ConnectionStrings["MainConnection"];
             ConnectionString = (cStrings != null) ? cStrings.ConnectionString : ConfigurationManager.AppSettings["ConnectionString"];
         }

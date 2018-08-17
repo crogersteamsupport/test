@@ -13,10 +13,8 @@ using System.Web.Security;
 
 namespace TeamSupport.Model
 {
-    public class ModelBase { }
-
     /// <summary> Action Attachments </summary>
-    public class ActionAttachment : ModelBase
+    public class ActionAttachment
     {
         public ActionModel Action { get; private set; }
         public int ActionAttachmentID { get; private set; }

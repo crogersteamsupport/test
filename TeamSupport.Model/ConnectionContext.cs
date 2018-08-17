@@ -18,11 +18,8 @@ namespace TeamSupport.Model
     /// </summary>
     public class ConnectionContext : IDisposable
     {
-        const bool _isEnabled = true;
-        public static bool IsEnabled
-        {
-            get { return _isEnabled; }
-        }
+        const bool _isEnabled = false;
+        public static bool IsEnabled { get { return _isEnabled; } }
 
         public AuthenticationModel Authentication { get; private set; }
         SqlConnection _connection;
@@ -50,8 +47,6 @@ namespace TeamSupport.Model
             // Create Logical Model! - note that OrganizationID and UserID come from Authentication
             Organization = new OrganizationModel(this);
             User = new UserSession(Organization);
-            //if (User.CanEdit())
-            //    throw new System.Security.Authentication.AuthenticationException("user lacks sufficient athentication");
         }
 
         public void Commit() { _db.Transaction.Commit(); }

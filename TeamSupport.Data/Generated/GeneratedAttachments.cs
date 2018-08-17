@@ -7,7 +7,6 @@ using System.Data.SqlClient;
 
 namespace TeamSupport.Data
 {
-    //[Obsolete("please use DataAPI instead.", false)]
     [Serializable]
     public partial class Attachment : BaseItem
   {

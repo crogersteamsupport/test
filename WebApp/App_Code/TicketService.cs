@@ -3647,7 +3647,6 @@ WHERE t.TicketID = @TicketID
             ticket.ParentID = info.ParentTicketID;
             ticket.DueDate = info.DueDate;
             ticket.Collection.Save();
-            result.Add(ticket.TicketID);
 
             if (info.CategoryID != null && info.CategoryID > -1) ticket.AddCommunityTicket((int)info.CategoryID);
 
@@ -3690,6 +3689,7 @@ WHERE t.TicketID = @TicketID
             action.DateStarted = info.DateStarted;
             action.Collection.Save();
 
+            result.Add(ticket.TicketID);
             result.Add(action.ActionID);
 
             foreach (int ticketID in info.RelatedTickets.Distinct())
