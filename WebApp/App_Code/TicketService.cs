@@ -3156,14 +3156,15 @@ WHERE t.TicketID = @TicketID
 
             UsersViewItem creator = UsersView.GetUsersViewItem(loginUser, action.CreatorID);
             if (creator != null) actionInfo.Creator = new UserInfo(creator);
-            actionInfo.Attachments = action.GetAttachments().GetAttachmentProxies();
 
             if (TeamSupport.Model.ConnectionContext.IsEnabled)  // Read action attachments
             {
                 AttachmentProxy[] attachments;
-                ModelAPI.Read(TSAuthentication.Ticket, action.ActionID, out attachments);
+                ModelAPI.Read(action.ActionID, out attachments);
                 actionInfo.Attachments = attachments;
             }
+            //else
+            //    actionInfo.Attachments = action.GetAttachments().GetAttachmentProxies();
             return actionInfo;
         }
 
@@ -3594,7 +3595,7 @@ WHERE t.TicketID = @TicketID
         {
             if (TeamSupport.Model.ConnectionContext.IsEnabled)  // delete action attachment
             {
-                ModelAPI.DeleteActionAttachment(TSAuthentication.Ticket, attachmentID);
+                ModelAPI.DeleteActionAttachment(attachmentID);
                 return;
             }
 
@@ -3667,7 +3668,7 @@ WHERE t.TicketID = @TicketID
                     DateStarted = info.DateStarted,
                     ActionSource = ticket.TicketSource
                 };
-                ModelAPI.Create(TSAuthentication.Ticket, actionProxy);
+                ModelAPI.Create(actionProxy);
                 result.Add(actionProxy.ActionID);
             }
 
@@ -3922,7 +3923,7 @@ WHERE t.TicketID = @TicketID
         {
 
             //for testing new method
-           return  ModelAPI.MergeTickets(TSAuthentication.Ticket, winningTicketID, losingTicketID);
+           return  ModelAPI.MergeTickets(winningTicketID, losingTicketID);
             //return MergeTicketsNew( winningTicketID,  losingTicketID);
             //ModelAPI.MergeTickets(TSAuthentication.Ticket, winningTicketID, losingTicketID);
 

@@ -44,7 +44,7 @@ namespace TeamSupport.DataAPI
         public static void Create(OrganizationModel organization, TicketProxy ticketProxy)
         {
             // TODO - create ticket
-            LogMessage(organization.Connection.Authentication, ActionLogType.Insert, ReferenceType.Tickets, ticketProxy.TicketID, "Created Ticket");
+            LogMessage(ActionLogType.Insert, ReferenceType.Tickets, ticketProxy.TicketID, "Created Ticket");
         }
 
         /// <summary> Read Ticket </summary>
@@ -58,14 +58,14 @@ namespace TeamSupport.DataAPI
         public static void Update(TicketModel ticketModel, TicketProxy ticketProxy)
         {
             // TODO - update ticket
-            LogMessage(ticketModel.Connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, ticketModel.TicketID, "Updated Ticket");
+            LogMessage(ActionLogType.Update, ReferenceType.Tickets, ticketModel.TicketID, "Updated Ticket");
         }
 
         /// <summary> Delete Ticket</summary>
         public static void Delete(TicketModel ticketModel)
         {
             // TODO - delete ticket
-            LogMessage(ticketModel.Connection.Authentication, ActionLogType.Delete, ReferenceType.Tickets, ticketModel.TicketID, "Deleted Ticket");
+            LogMessage(ActionLogType.Delete, ReferenceType.Tickets, ticketModel.TicketID, "Deleted Ticket");
         }
         #endregion
 
@@ -77,7 +77,7 @@ namespace TeamSupport.DataAPI
         {
             AuthenticationModel authentication = ticketModel.Connection.Authentication;
             Data.Action.Create(ticketModel.Connection._db, authentication.OrganizationID, authentication.UserID, ticketModel.TicketID, ref actionProxy);
-            LogMessage(authentication, ActionLogType.Insert, ReferenceType.Actions, actionProxy.ActionID, "Created Action");
+            LogMessage(ActionLogType.Insert, ReferenceType.Actions, actionProxy.ActionID, "Created Action");
         }
 
         /// <summary> Read Action </summary>
@@ -98,14 +98,14 @@ namespace TeamSupport.DataAPI
         public static void Update(ActionModel actionModel, ActionProxy actionProxy)
         {
             // TODO - update action
-            LogMessage(actionModel.Connection.Authentication, ActionLogType.Update, ReferenceType.Actions, actionModel.ActionID, "Updated Action");
+            LogMessage(ActionLogType.Update, ReferenceType.Actions, actionModel.ActionID, "Updated Action");
         }
 
         /// <summary> Delete Action </summary>
         public static void Delete(ActionModel actionModel)
         {
             // TODO - delete action
-            LogMessage(actionModel.Connection.Authentication, ActionLogType.Delete, ReferenceType.Actions, actionModel.ActionID, "Deleted Action");
+            LogMessage(ActionLogType.Delete, ReferenceType.Actions, actionModel.ActionID, "Deleted Action");
         }
         #endregion
 
@@ -201,31 +201,32 @@ namespace TeamSupport.DataAPI
         {
             string query = $"DELETE FROM ActionAttachments WHERE ActionAttachmentID = {actionAttachment.ActionAttachmentID}";
             actionAttachment.Connection._db.ExecuteCommand(query);
-            LogMessage(actionAttachment.Connection.Authentication, ActionLogType.Delete, ReferenceType.Actions, actionAttachment.ActionAttachmentID, "Deleted Action Attachment");
+            LogMessage(ActionLogType.Delete, ReferenceType.Actions, actionAttachment.ActionAttachmentID, "Deleted Action Attachment");
         }
         #endregion
 
 
         #region Log
         /// <summary> Log Message </summary>
-        public static void LogMessage(AuthenticationModel authentication, ActionLogType logType, ReferenceType refType, int? refID, string message)
+        public static void LogMessage(ActionLogType logType, ReferenceType refType, int? refID, string message)
         {
+            AuthenticationModel authentication = new AuthenticationModel();
             LoginUser user = new LoginUser(authentication.UserID, authentication.OrganizationID);
             ActionLogs.AddActionLog(user, logType, refType, refID.HasValue ? refID.Value : 0, message);  // 0 if no ID?
         }
 
-        public static void LogMessage(AuthenticationModel authentication, ActionLogType logType, ReferenceType refType, int? refID, string message, Exception ex)
+        public static void LogMessage(ActionLogType logType, ReferenceType refType, int? refID, string message, Exception ex)
         {
             // log to ExceptionLogs or New Relic, or windows event log?
 
             string fullMessage = message + ex.ToString() + " ----- STACK: " + ex.StackTrace.ToString();
             if (Debugger.IsAttached)
             {
-                Debug.WriteLine(fullMessage);   // debug output window (very fast)
+                Debug.WriteLine(fullMessage);   // see the error in the debug output window
                 Debugger.Break();   // something is wrong - fix the code!
             }
 
-            LogMessage(authentication, logType, refType, refID, fullMessage);
+            LogMessage(logType, refType, refID, fullMessage);
         }
         #endregion
 

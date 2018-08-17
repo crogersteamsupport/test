@@ -32,12 +32,12 @@ namespace TeamSupport.ModelAPI
     public static class ModelAPI
     {
 
-        public static object Command(FormsAuthenticationTicket authenticationTicket, EModelAPI command, params object[] args)
+        public static object Command(EModelAPI command, params object[] args)
         {
             try
             {
                 object result = null;
-                using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
+                using (ConnectionContext connection = new ConnectionContext())
                 {
                     TicketModel ticketModel;
                     Guid guid;
@@ -87,12 +87,12 @@ namespace TeamSupport.ModelAPI
         }
 
         /// <summary> Read the proxy corresponding to the ID </summary>
-        public static T Read<T>(FormsAuthenticationTicket authenticationTicket, int id) where T : class
+        public static T Read<T>(int id) where T : class
         {
             T t = default(T);   // null since T is a class
             try
             {
-                using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
+                using (ConnectionContext connection = new ConnectionContext())
                 {
                     switch(typeof(T).Name)
                     {
@@ -118,12 +118,12 @@ namespace TeamSupport.ModelAPI
         }
 
         /// <summary> Read the proxy children of the parent record (ticket actions, action attachments...) </summary>
-        public static void Read<T>(FormsAuthenticationTicket authenticationTicket, int id, out T[] proxies) where T : class
+        public static void Read<T>(int id, out T[] proxies) where T : class
         {
             proxies = default(T[]); // null since T is a class
             try
             {
-                using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
+                using (ConnectionContext connection = new ConnectionContext())
                 {
                     switch(typeof(T).Name)
                     {
@@ -152,11 +152,11 @@ namespace TeamSupport.ModelAPI
         }
 
         /// <summary> Create a child </summary>
-        public static void Create<T>(FormsAuthenticationTicket authentication, T proxy)
+        public static void Create<T>(T proxy)
         {
             try
             {
-                using (ConnectionContext connection = new ConnectionContext(authentication))
+                using (ConnectionContext connection = new ConnectionContext())
                 {
                     switch (typeof(T).Name)
                     {
@@ -185,21 +185,21 @@ namespace TeamSupport.ModelAPI
 
 
         /// <summary> ??? </summary>
-        public static int AttachmentIDFromGUID(FormsAuthenticationTicket authenticationTicket, Guid guid)
+        public static int AttachmentIDFromGUID(Guid guid)
         {
-            using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
+            using (ConnectionContext connection = new ConnectionContext())
             {
                 return connection._db.ExecuteQuery<int>($"SELECT AttachmentID FROM Attachments WHERE AttachmentGUID={guid}").Min();
             }
         }
 
         #region Tickets
-        public static string MergeTickets(FormsAuthenticationTicket authenticationTicket, int destinationTicketID, int sourceTicketID)
+        public static string MergeTickets(int destinationTicketID, int sourceTicketID)
         {
             if (!ConnectionContext.IsEnabled) return String.Empty;
             try
             {
-                using (ConnectionContext connection = new ConnectionContext(authenticationTicket, true))    // use transaction
+                using (ConnectionContext connection = new ConnectionContext(true))    // use transaction
                 {
                     try
                     {
@@ -211,7 +211,7 @@ namespace TeamSupport.ModelAPI
                     catch (Exception ex)
                     {
                         connection.Rollback();
-                        DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), ActionLogType.Update, ReferenceType.Attachments, destinationTicketID, $"failed to merge {destinationTicketID} <= {sourceTicketID}", ex);
+                        DataAPI.DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Attachments, destinationTicketID, $"failed to merge {destinationTicketID} <= {sourceTicketID}", ex);
                         //TODO : Work on the messages
                         return "Failed to merge";
                     }
@@ -219,7 +219,7 @@ namespace TeamSupport.ModelAPI
             }
             catch (Exception ex)
             {
-                DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), ActionLogType.Update, ReferenceType.Attachments, destinationTicketID, $"failed to merge {destinationTicketID} <= {sourceTicketID}", ex);
+                DataAPI.DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Attachments, destinationTicketID, $"failed to merge {destinationTicketID} <= {sourceTicketID}", ex);
                 //TODO : Work on the messages
                 return "Failed to merge";
             }
@@ -229,12 +229,12 @@ namespace TeamSupport.ModelAPI
 
         #region ActionAttachments
         /// <summary> Create Action Attachments </summary>
-        public static List<AttachmentProxy> CreateActionAttachments(FormsAuthenticationTicket authenticationTicket, int actionID, HttpContext context)
+        public static List<AttachmentProxy> CreateActionAttachments(int actionID, HttpContext context)
         {
             List<AttachmentProxy> results = new List<AttachmentProxy>();
             try
             {
-                using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
+                using (ConnectionContext connection = new ConnectionContext())
                 {
                     ActionModel actionModel = new ActionModel(connection, actionID);
                     HttpFileCollection files = context.Request.Files;
@@ -254,17 +254,17 @@ namespace TeamSupport.ModelAPI
             }
             catch (Exception ex)
             {
-                DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), ActionLogType.Insert, ReferenceType.Actions, actionID, "Unable to save attachments on action", ex);
+                DataAPI.DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.Actions, actionID, "Unable to save attachments on action", ex);
             }
             return results;
         }
 
         /// <summary> Delete Action Attachment /// </summary>
-        public static void DeleteActionAttachment(FormsAuthenticationTicket authenticationTicket, int attachmentID)
+        public static void DeleteActionAttachment(int attachmentID)
         {
             try
             {
-                using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
+                using (ConnectionContext connection = new ConnectionContext())
                 {
                     // user have permission to modify this action?
                     ActionAttachment attachment = new ActionAttachment(connection, attachmentID);
@@ -279,17 +279,17 @@ namespace TeamSupport.ModelAPI
             }
             catch (Exception ex)
             {
-                DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), ActionLogType.Delete, ReferenceType.Attachments, attachmentID, "Unable to delete attachment", ex);
+                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.Attachments, attachmentID, "Unable to delete attachment", ex);
             }
         }
 
         /// <summary> Create Action Attachments </summary>
-        public static void ReadActionAttachmentsForTicket(FormsAuthenticationTicket authenticationTicket, int ticketID, ActionAttachmentsByTicketID ticketActionAttachments, out AttachmentProxy[] attachments)
+        public static void ReadActionAttachmentsForTicket(int ticketID, ActionAttachmentsByTicketID ticketActionAttachments, out AttachmentProxy[] attachments)
         {
             attachments = null;
             try
             {
-                using (ConnectionContext connection = new ConnectionContext(authenticationTicket))
+                using (ConnectionContext connection = new ConnectionContext())
                 {
                     TicketModel ticketModel = connection.Ticket(ticketID);
                     DataAPI.DataAPI.ReadActionAttachmentsForTicket(ticketModel, ticketActionAttachments, out attachments);
@@ -297,7 +297,7 @@ namespace TeamSupport.ModelAPI
             }
             catch (Exception ex)
             {
-                DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), ActionLogType.Delete, ReferenceType.Attachments, ticketID, "failed to read action attachments", ex);
+                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.Attachments, ticketID, "failed to read action attachments", ex);
             }
         }
 

@@ -87,7 +87,7 @@ namespace TeamSupport.Data
     [Obsolete("Use DataAPI instead!", false)]
     public void LoadByActionID(int actionID, string orderBy = "")
     {
-      //LoadByReference(AttachmentType.Actions, actionID, orderBy);
+      LoadByReference((AttachmentType)ReferenceType.Actions, actionID, orderBy);
     }
 
     public void LoadByWatercoolerID(int WaterCoolerID)

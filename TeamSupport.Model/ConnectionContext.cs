@@ -31,10 +31,10 @@ namespace TeamSupport.Model
         public OrganizationModel Organization { get; private set; }
         public UserSession User { get; private set; }
 
-        public ConnectionContext(FormsAuthenticationTicket authentication, bool useTransaction = false)
+        public ConnectionContext(bool useTransaction = false)
         {
             // SqlConnection
-            Authentication = new AuthenticationModel(authentication);
+            Authentication = new AuthenticationModel();
             _connection = new SqlConnection(Authentication.ConnectionString);  // using
             _connection.Open(); // connection must be open to begin transaction
 

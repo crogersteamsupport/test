@@ -17,7 +17,7 @@ namespace TeamSupport.DataAPI
         public static void Create(ConnectionContext connection, TicketProxy ticketProxy)
         {
             // TODO - create ticket
-            DataAPI.LogMessage(connection.Authentication, ActionLogType.Insert, ReferenceType.Tickets, ticketProxy.TicketID, "Created Ticket");
+            DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.Tickets, ticketProxy.TicketID, "Created Ticket");
         }
 
         /// <summary> Read Ticket </summary>
@@ -31,7 +31,7 @@ namespace TeamSupport.DataAPI
         public static void Update(ConnectionContext connection, TicketModel ticketModel, TicketProxy ticketProxy)
         {
             // TODO - update ticket
-            DataAPI.LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, ticketModel.TicketID, "Updated Ticket");
+            DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, ticketModel.TicketID, "Updated Ticket");
         }
 
         /// <summary> Delete Ticket</summary>
@@ -40,7 +40,7 @@ namespace TeamSupport.DataAPI
             // TODO - delete ticket
             string query = $"DELETE FROM Tickets WHERE TicketId = {ticketModel.TicketID}";
             connection._db.ExecuteCommand(query);        
-            DataAPI.LogMessage(connection.Authentication, ActionLogType.Delete, ReferenceType.Tickets, ticketModel.TicketID, "Deleted Ticket");
+            DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.Tickets, ticketModel.TicketID, "Deleted Ticket");
         }
 
         #region MergeReads
@@ -157,7 +157,7 @@ namespace TeamSupport.DataAPI
             query = $"DELETE FROM AssetTickets WITH (ROWLOCK)  WHERE TicketID ={sourceTicket.TicketID} ";
             connection._db.ExecuteCommand(query);
 
-            DataAPI.LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Assets");
+            DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Assets");
         }
 
         public static void MergeChildren (ConnectionContext connection, int[] children, TicketModel sourceTicket, TicketModel destinationTicket)
@@ -168,7 +168,7 @@ namespace TeamSupport.DataAPI
                 string query = $" UPDATE Tickets WITH(ROWLOCK) SET ParentID ={destinationTicket.TicketID} WHERE(ParentID = {child})";
                 connection._db.ExecuteCommand(query);
             }
-            DataAPI.LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' children tickets");           
+            DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' children tickets");           
         }
 
         public static void MergeRelationship1(ConnectionContext connection, int[] relationships, TicketModel sourceTicket, TicketModel destinationTicket)
@@ -181,7 +181,7 @@ namespace TeamSupport.DataAPI
 
                 connection._db.ExecuteCommand(query);
             }
-            DataAPI.LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' children tickets");
+            DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' children tickets");
         }
 
 
@@ -200,7 +200,7 @@ namespace TeamSupport.DataAPI
                 connection._db.ExecuteCommand(query);
             }
            
-            DataAPI.LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Contacts");
+            DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Contacts");
         }
 
         public static void MergeCustomers(ConnectionContext connection, int[] customers, TicketModel sourceTicket, TicketModel destinationTicket)
@@ -214,7 +214,7 @@ namespace TeamSupport.DataAPI
                         $"WHERE NOT EXISTS(SELECT * FROM OrganizationTickets WHERE TicketID ={destinationTicket.TicketID} and OrganizationId ={customer})";
                 connection._db.ExecuteCommand(query);
             }
-            DataAPI.LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Customers");
+            DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Customers");
         }
 
         //TODO:Laterrrrr
@@ -243,7 +243,7 @@ namespace TeamSupport.DataAPI
         //    connection._db.ExecuteCommand(query);
 
 
-        //    DataAPI.LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Customers");
+        //    DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Customers");
         //}
         //  TicketQueueItem item = GetTicketQueueItem(loginUser, ticketID, userID);
         //if (item == null)
@@ -268,7 +268,7 @@ namespace TeamSupport.DataAPI
                 string query = $" UPDATE Reminders WITH(ROWLOCK) SET RefID ={destinationTicket.TicketID} WHERE(ReminderId = {reminder})";
                 connection._db.ExecuteCommand(query);
             }
-            DataAPI.LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Reminders");
+            DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Reminders");
         }
 
         public static void MergeTasks(ConnectionContext connection, int[] tasks, TicketModel sourceTicket, TicketModel destinationTicket)
@@ -278,7 +278,7 @@ namespace TeamSupport.DataAPI
                 string query = $" UPDATE TaskAssociations WITH(ROWLOCK) SET RefID ={destinationTicket.TicketID} WHERE(TaskId = {task})";
                 connection._db.ExecuteCommand(query);
             }
-            DataAPI.LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Tasks");
+            DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Tasks");
         }
        
 
@@ -291,7 +291,7 @@ namespace TeamSupport.DataAPI
                     $"AND NOT EXISTS (SELECT * FROM TagLinks WITH (NOLOCK) WHERE RefID={destinationTicket.TicketID} and TagID = {tag} and Refype = 17)  ";
                 connection._db.ExecuteCommand(query);
             }
-            DataAPI.LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Tags");
+            DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Tags");
             //Cleanup any tags left 
             query = $"DELETE FROM TagLinks WITH (ROWLOCK) WHERE RefID={sourceTicket.TicketID} and Refype = 17";
             connection._db.ExecuteCommand(query);
@@ -310,7 +310,7 @@ namespace TeamSupport.DataAPI
                 connection._db.ExecuteCommand(query);         
 
                 }
-            DataAPI.LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Subscriptions");
+            DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Subscriptions");
         }
 
         public static void MergeActions(ConnectionContext connection,  TicketModel sourceTicket, TicketModel destinationTicket)
@@ -323,7 +323,7 @@ namespace TeamSupport.DataAPI
                query = $" UPDATE Actions WITH(ROWLOCK) SET TicketID ={destinationTicket.TicketID} WHERE(ActionId = {action})";
                connection._db.ExecuteCommand(query);
             }
-            DataAPI.LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Actions");
+            DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Actions");
         }
     }
     #endregion

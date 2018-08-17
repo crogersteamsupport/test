@@ -962,7 +962,7 @@ namespace TeamSupport.Handlers
             {
                 if (Model.ConnectionContext.IsEnabled)  // open action attachment by ID
                 {
-                    AttachmentProxy proxy = ModelAPI.ModelAPI.Read<AttachmentProxy>(TSAuthentication.Ticket, id);
+                    AttachmentProxy proxy = ModelAPI.ModelAPI.Read<AttachmentProxy>(id);
                     OpenActionAttachment(context, browser, proxy);
                     return;
                 }
@@ -1055,8 +1055,8 @@ namespace TeamSupport.Handlers
             {
                 if (Model.ConnectionContext.IsEnabled)  // open action attachment by Guid
                 {
-                    int idFromGuid = ModelAPI.ModelAPI.AttachmentIDFromGUID(TSAuthentication.Ticket, Guid.Parse(attachmentID));
-                    AttachmentProxy proxy = ModelAPI.ModelAPI.Read<AttachmentProxy>(TSAuthentication.Ticket, idFromGuid);
+                    int idFromGuid = ModelAPI.ModelAPI.AttachmentIDFromGUID(Guid.Parse(attachmentID));
+                    AttachmentProxy proxy = ModelAPI.ModelAPI.Read<AttachmentProxy>(idFromGuid);
                     OpenActionAttachment(context, browser, proxy);
                     return;
                 }
