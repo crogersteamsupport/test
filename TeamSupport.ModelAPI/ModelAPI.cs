@@ -88,11 +88,91 @@ namespace TeamSupport.ModelAPI
             catch (AuthenticationException ex)
             {
                 // TODO - tell user they don't have permission
+                DataAPI.DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
+            }
+            catch (System.Data.ConstraintException ex)
+            {
+                // TODO - data integrity failure
+                DataAPI.DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
             }
             catch (Exception ex)
             {
-                // TODO - tell user we failed to create
-                // TODO - log something?
+                // TODO - tell user we failed to read
+                DataAPI.DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
+            }
+        }
+
+        /// <summary> Delete </summary>
+        public static void Delete<T>(T proxy)
+        {
+            try
+            {
+                using (ConnectionContext connection = new ConnectionContext())
+                {
+                    switch (typeof(T).Name)
+                    {
+                        case "ActionProxy":
+                            ActionProxy actionProxy = proxy as ActionProxy;
+                            DataAPI.DataAPI.Delete(new ActionModel(connection, actionProxy.ActionID));
+                            break;
+                        case "AttachmentProxy":
+                            AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
+                            DataAPI.DataAPI.Delete(new ActionAttachment(connection, attachmentProxy.AttachmentID));
+                            break;
+                    }
+                }
+            }
+            catch (AuthenticationException ex)
+            {
+                // TODO - tell user they don't have permission
+                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
+            }
+            catch (System.Data.ConstraintException ex)
+            {
+                // TODO - data integrity failure
+                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
+            }
+            catch (Exception ex)
+            {
+                // TODO - tell user we failed to read
+                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
+            }
+        }
+
+        /// <summary> Update </summary>
+        public static void Update<T>(T proxy)
+        {
+            try
+            {
+                using (ConnectionContext connection = new ConnectionContext())
+                {
+                    switch (typeof(T).Name)
+                    {
+                        case "ActionProxy":
+                            ActionProxy actionProxy = proxy as ActionProxy;
+                            DataAPI.DataAPI.Update(new ActionModel(connection, actionProxy.ActionID), actionProxy);
+                            break;
+                        case "AttachmentProxy":
+                            AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
+                            //DataAPI.DataAPI.Update(new ActionAttachment(connection, attachmentProxy.AttachmentID), attachmentProxy);
+                            break;
+                    }
+                }
+            }
+            catch (AuthenticationException ex)
+            {
+                // TODO - tell user they don't have permission
+                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
+            }
+            catch (System.Data.ConstraintException ex)
+            {
+                // TODO - data integrity failure
+                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
+            }
+            catch (Exception ex)
+            {
+                // TODO - tell user we failed to read
+                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
             }
         }
 
