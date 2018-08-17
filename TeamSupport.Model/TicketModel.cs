@@ -53,11 +53,5 @@ namespace TeamSupport.Model
         {
             return new ActionModel(this, actionID);
         }
-
-        //public Data.TicketProxy AsTicketProxy(HttpRequest request, TicketModel ticketModel)
-        //{
-           
-        //}
-
     }
 }
