@@ -58,13 +58,14 @@ namespace TSWebServices
                 Organization organization = null;
                 result = IsValid(loginUser, email, password, organizationId, ref user, ref organization);
 
-                if (result.Result == LoginResult.Success)
-                {
+                if (result.Result == LoginResult.Success) {
 
                     // DEVICE VERIFICATION // TRUE ALLOWS BYPASS.
                     UserDevices devices = new UserDevices(loginUser);
                     devices.LoadByUserIDAndDeviceID(user.UserID, GetDeviceID());
-                    if (devices.IsEmpty) {
+                    if (organization.RequireTwoFactor) {
+                        _skipVerification = false;
+                    } else if (devices.IsEmpty) {
                         _skipVerification = false;
                     } else if (devices[0].IsActivated) {
                         _skipVerification = true;
@@ -72,8 +73,7 @@ namespace TSWebServices
                         _skipVerification = false;
                     }
 
-                    if (organization.TwoStepVerificationEnabled && verificationRequired && !_skipVerification)
-                    {
+                    if (organization.TwoStepVerificationEnabled && verificationRequired && !_skipVerification) {
                         string userVerificationPhoneNumber = user.verificationPhoneNumber;
 
                         if (!string.IsNullOrEmpty(userVerificationPhoneNumber))

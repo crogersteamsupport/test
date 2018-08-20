@@ -1185,9 +1185,28 @@ namespace TSWebServices
             var notesArray = notes.GetNoteProxies();
 
             List<AutocompleteItem> items = new List<AutocompleteItem>();
-            foreach(NoteProxy n in notesArray)
+            foreach (NoteProxy n in notesArray)
             {
-                items.Add(new AutocompleteItem(n.Title, n.NoteID.ToString(), n));
+                var organizationName = "";
+                //org
+                switch (n.RefType)
+                {
+                    case ReferenceType.Organizations:
+                        Organizations org = new Organizations(TSAuthentication.GetLoginUser());
+                        org.LoadByOrganizationID(n.RefID);
+                        organizationName = org.FirstOrDefault().Name;
+                        break;
+                    case ReferenceType.Users:
+                        Users user = new Users(TSAuthentication.GetLoginUser());
+                        user.LoadByUserID(n.RefID);
+                        Organizations userorg = new Organizations(TSAuthentication.GetLoginUser());
+                        userorg.LoadByOrganizationID(user.FirstOrDefault().OrganizationID);
+                        organizationName = userorg.FirstOrDefault().Name;
+                        break;
+                }
+
+
+                items.Add(new AutocompleteItem(string.Format("{0} [{1}]", n.Title, organizationName), n.NoteID.ToString(), n));
             }
 
             return items.ToArray();

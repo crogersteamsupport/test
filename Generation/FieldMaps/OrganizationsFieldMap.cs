@@ -7,7 +7,7 @@ using System.Data.SqlClient;
 
 namespace TeamSupport.Data
 {
-  
+
   public partial class Organizations
   {
     protected override void BuildFieldMap()
@@ -121,10 +121,11 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DisableSupportLogin", "DisableSupportLogin", false, false, false);
       _fieldMap.AddMap("NoAttachmentsInOutboundExcludeProductLine", "NoAttachmentsInOutboundExcludeProductLine", false, false, false);
       _fieldMap.AddMap("UseWatson", "UseWatson", false, false, false);
+      _fieldMap.AddMap("RequireTwoFactor", "RequireTwoFactor", false, false, false);
       _fieldMap.AddMap("MarkSpam", "MarkSpam", false, false, false);
       _fieldMap.AddMap("APIRequestMinuteLimit", "APIRequestMinuteLimit", false, false, false);
-            
+
     }
   }
-  
+
 }

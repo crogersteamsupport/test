@@ -29,7 +29,7 @@
     <script language="javascript" type="text/javascript">
         $(document).ready(function () {
             $('.action-refresh').click(function (e) {
-                e.preventDefault(); 
+                e.preventDefault();
 
                 var org = $('.org-info').data('o');
                 showOrgInfo(org.OrganizationID);
@@ -83,7 +83,7 @@
                         appendProperty('Use Encrypted Data', '<a href="#" class="action-toggle-encrypt">' + value.toString() + '</a>');
                     });
 
-                    
+
 
 					appendProperty('Use Watson', '<a href="#" class="action-toggle-watson">' + org.UseWatson.toString() + '</a>');
 
@@ -120,7 +120,16 @@
 					org.UseWatson = !org.UseWatson;
 					item.text(org.UseWatson.toString());
 				});
+			});
 
+            $('.org-props').on('click', '.action-toggle-RequireTwoFactor', function (e) {
+				e.preventDefault();
+				var org = $('.org-info').data('o');
+				var item = $(this);
+				top.Ts.Services.Organizations.AdminSetRequireTwoFactor(org.OrganizationID, !org.RequireTwoFactor, function () {
+					org.RequireTwoFactor = !org.RequireTwoFactor;
+					item.text(org.RequireTwoFactor.toString());
+				});
 			});
 
 			$('.org-props').on('click', '.action-toggle-encrypt', function (e) {
@@ -132,7 +141,7 @@
 			    });
 
 			});
-			
+
 
             function showUsers(org) {
                 top.Ts.Services.Users.AdminGetUsers(org.OrganizationID, function (users) {
@@ -229,7 +238,7 @@
                 else {
                     if (!confirm("Are you really sure you would like to ENABLE " + org.Name + "?")) return;
                 }
-                        
+
                 top.Ts.Services.Organizations.AdminEnable(org.OrganizationID, !org.IsActive, function () {
                     showOrgInfo(org.OrganizationID);
                 });
@@ -313,7 +322,7 @@
             });
 
 
-     
+
             $('#selectProduct').change(function (e) {
                 e.preventDefault();
                 top.Ts.Services.Organizations.AdminUpdateProductType(organizationID, $('#selectProduct').val(), function () {
