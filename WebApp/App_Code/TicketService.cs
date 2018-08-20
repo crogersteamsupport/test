@@ -3922,6 +3922,7 @@ WHERE t.TicketID = @TicketID
 
             //for testing new method
           
+           return  ModelAPI.MergeTickets(TSAuthentication.Ticket, winningTicketID, losingTicketID);
             //return MergeTicketsNew( winningTicketID,  losingTicketID);
             //ModelAPI.MergeTickets(TSAuthentication.Ticket, winningTicketID, losingTicketID);
 
