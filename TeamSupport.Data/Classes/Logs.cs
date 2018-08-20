@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Data;
-using System.Data.Sql;
-using System.Data.SqlClient;
 using System.IO;
 
 namespace TeamSupport.Data
@@ -13,8 +9,11 @@ namespace TeamSupport.Data
     {
         static readonly object _syncObject = new object();
         string _category = null;
+		int? _organizationId = null;
+		IntegrationType? _integration;
         string _logPath;
         string _name;
+		bool _isIntegrationLog = false;
 
         public string Category
         {
@@ -27,6 +26,28 @@ namespace TeamSupport.Data
             }
         }
 
+		public int? OrganizationId
+		{
+			get
+			{
+				lock (_syncObject)
+				{
+					return _organizationId;
+				}
+			}
+		}
+
+		public IntegrationType? Integration
+		{
+			get
+			{
+				lock (_syncObject)
+				{
+					return _integration;
+				}
+			}
+		}
+
         public Logs()
         {
             InitializeLog();
@@ -38,6 +59,13 @@ namespace TeamSupport.Data
             InitializeLog();
         }
 
+		public Logs(IntegrationType integrationType, int orgId)
+		{
+			this._organizationId = orgId;
+			this._integration = integrationType;
+			InitializeIntegrationLog();
+		}
+
         private void InitializeLog()
         {
             _name = Path.ChangeExtension(System.AppDomain.CurrentDomain.FriendlyName, "");
@@ -45,6 +73,14 @@ namespace TeamSupport.Data
             _logPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Logs");
             if (!Directory.Exists(_logPath)) Directory.CreateDirectory(_logPath);
         }
+
+		private void InitializeIntegrationLog()
+		{
+			_isIntegrationLog = true;
+			_name = Integration.ToString() + " Debug File -";
+			_logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", OrganizationId.ToString());
+			if (!Directory.Exists(_logPath)) Directory.CreateDirectory(_logPath);
+		}
 
         public void WriteException(Exception ex, DataRow row = null)
         {
@@ -73,9 +109,8 @@ namespace TeamSupport.Data
             {
 
                 if (showDateTime) message = string.Format("[{0:hh:mm:ss tt}] {1}", DateTime.Now, message);
-                //TextWriter _writer = TextWriter.Synchronized(!File.Exists(_logPath) ? File.CreateText(_logPath) : File.AppendText(_logPath));
 
-                string path = Path.Combine(_logPath, string.Format("{0} {1:yyyy-MM-dd}.txt", _name, DateTime.Now));
+				string path = Path.Combine(_logPath, string.Format("{0} {1}.txt", _name, !_isIntegrationLog ? DateTime.Now.ToString("yyyy-MM-dd") : DateTime.Now.ToString("Mddyyyy")));
 
                 bool doesFileExist = File.Exists(path);
                 using (StreamWriter writer = !doesFileExist ? File.CreateText(path) : File.AppendText(path))
