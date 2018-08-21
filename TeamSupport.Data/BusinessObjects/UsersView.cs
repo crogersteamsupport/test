@@ -284,8 +284,7 @@ ORDER BY u.FirstName, u.LastName
         command.Parameters.AddWithValue("@TicketID", ticketID);
         Fill(command);
       }
-    }
-        
+    }        
     }
 
   
