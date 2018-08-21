@@ -15,7 +15,7 @@ namespace TeamSupport.Data
   {
     public NoteProxy() {}
     [DataMember] public int NoteID { get; set; }
-    [DataMember] public ReferenceType RefType { get; set; }
+    [DataMember] public AttachmentType RefType { get; set; }
     [DataMember] public int RefID { get; set; }
     [DataMember] public string Title { get; set; }
     [DataMember] public string Description { get; set; }

@@ -36,6 +36,8 @@ namespace TeamSupport.Api
 
     public static string GetAttachments(RestCommand command, int actionID, bool orderByDateCreated = false)
     {
+      //AttachmentProxy[] actionAttachments = ModelAPI.ModelAPI.Read<AttachmentProxy[]>(actionID);
+
       Attachments attachments = new Attachments(command.LoginUser);
       if (orderByDateCreated)
       {
@@ -100,11 +102,11 @@ namespace TeamSupport.Api
       Attachments attachments = new Attachments(command.LoginUser);
       if (orderByDateCreated)
       {
-        attachments.LoadByReference(ReferenceType.Assets, assetID, "DateCreated DESC");
+        attachments.LoadByReference(AttachmentType.Assets, assetID, "DateCreated DESC");
       }
       else
       {
-        attachments.LoadByReference(ReferenceType.Assets, assetID);
+        attachments.LoadByReference(AttachmentType.Assets, assetID);
       }
 
       return attachments.GetXml("Attachments", "Attachment", true, command.Filters);

@@ -7,7 +7,6 @@ using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Diagnostics;
 using TeamSupport.Data;
-using System.Web;
 
 namespace TeamSupport.Model
 {
@@ -31,6 +30,7 @@ namespace TeamSupport.Model
             }
         }
 
+        /// <summary> top down - existing action </summary>
         public TicketModel(UserSession user, int ticketID)
         {
             User = user;

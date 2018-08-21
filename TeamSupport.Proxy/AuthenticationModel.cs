@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Web.Security;
 using System.Configuration;
 using System.Web.Configuration;
+using System.Web;
+using System.Security.Authentication;
 
 namespace TeamSupport.Proxy
 {
@@ -19,18 +21,25 @@ namespace TeamSupport.Proxy
         public string SessionID { get; private set; }
         public string ConnectionString { get; private set; }
 
-        public AuthenticationModel(FormsAuthenticationTicket authentication)
+        public AuthenticationModel()
         {
-            AuthenticationTicket = authentication;
-            string[] data = authentication.UserData.Split('|');
+            // Authentication from HttpContext
+            if ((HttpContext.Current.User == null) || !(HttpContext.Current.User.Identity is FormsIdentity))
+                throw new AuthenticationException("Authentication error - No user identity");
+            AuthenticationTicket = (HttpContext.Current.User.Identity as FormsIdentity).Ticket;
+
+            // Extract custom user data
+            string[] data = AuthenticationTicket.UserData.Split('|');
             UserID = int.Parse(data[0]);
             OrganizationID = int.Parse(data[1]);
-            IsBackdoor = (data.Length < 3) ? false : data[2] == "1";
-            IsSystemAdmin = data[4] == "1";
-            SessionID = (data.Length < 4) ? "" : data[3];
+            IsBackdoor = (data[2] == "1");
+            SessionID = data[3];
+            IsSystemAdmin = (data[4] == "1");
 
+            // Connection string
             ConnectionStringSettings cStrings = WebConfigurationManager.ConnectionStrings["MainConnection"];
             ConnectionString = (cStrings != null) ? cStrings.ConnectionString : ConfigurationManager.AppSettings["ConnectionString"];
         }
+
     }
 }

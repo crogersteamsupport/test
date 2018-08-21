@@ -7,6 +7,26 @@ using System.Data.Linq;
 
 namespace TeamSupport.Model
 {
+    public enum TicketChild
+    {
+        Contacts,
+        Customers,
+        Tags,
+        Subscriptions,
+        Reminders,
+        Tasks,
+        Assets,
+        Children
+    }
+
+    public enum TicketAssociation
+    {
+        QueueUsers,
+        Relationships1,
+        Relationships2,
+    }
+
+
     /// <summary>
     /// ultralight read-only interface to database for verifying primary keys
     /// </summary>
@@ -18,12 +38,14 @@ namespace TeamSupport.Model
         public static void VerifyTicket(DataContext db, int organizationID, int ticketID) { Verify(db, $"SELECT TicketID FROM Tickets WITH (NOLOCK) WHERE TicketID={ticketID} AND OrganizationID={organizationID}"); }
         public static void VerifyAction(DataContext db, int organizationID, int ticketID, int actionID) { Verify(db, $"SELECT ActionID FROM Actions WITH (NOLOCK) WHERE ActionID={actionID} AND TicketID={ticketID}"); }
         public static void VerifyActionAttachment(DataContext db, int organizationID, int ticketID, int actionID, int actionAttachmentID) { Verify(db, $"SELECT ActionAttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE ActionAttachmentID={actionAttachmentID} AND ActionID={actionID} AND OrganizationID={organizationID}"); }
+        public static void VerifyAsset(DataContext db, int organizationID, int ticketID, int assetID) { Verify(db, $"SELECT AssetID FROM Assets WITH (NOLOCK) WHERE AssetID={assetID} AND TicketID={ticketID}"); }
+        public static void VerifyTagLink(DataContext db, int organizationID, int ticketID, int tagID) { Verify(db, $"SELECT TagID FROM Tags WITH (NOLOCK) WHERE TagID={tagID} AND TicketID={ticketID}"); }
 
 
         static void Verify(DataContext db, string query)
         {
             if (!db.ExecuteQuery<int>(query).Any()) // valid ID found?
-                throw new Exception(String.Format($"{query} not found"));
+                throw new System.Data.ConstraintException(String.Format($"{query} not found")); // error - a join of the records to authentication just doesn't add up
         }
 
         public static bool UserAllowUserToEditAnyAction(DataContext db, int userID)
@@ -48,6 +70,70 @@ namespace TeamSupport.Model
         public static int TicketNumber(DataContext db, int id)
         {
             return db.ExecuteQuery<int>($"SELECT TicketNumber FROM Tickets WITH(NOLOCK) WHERE TicketId = {id}").First();
+        }
+
+
+        public static int[] Read(TicketChild childID, TicketModel ticket)
+        {
+            string query = String.Empty;
+            switch (childID)
+            {
+                case TicketChild.Contacts:
+                    query = $"SELECT Users.userid FROM Users WITH (NOLOCK)" +
+                        $"JOIN UserTickets WITH (NOLOCK) on UserTickets.userid = Users.UserID" +
+                        $" WHERE UserTickets.TicketID = {ticket.TicketID} AND (Users.MarkDeleted = 0)";
+                    break;
+                case TicketChild.Customers:
+                    query = $"Select organizationid From OrganizationTickets WITH (NOLOCK) Where TicketId = {ticket.TicketID}";
+                    break;
+                case TicketChild.Tags:
+                    query = $"SELECT TagID FROM TagLinks WITH(NOLOCK) WHERE Reftype=17 and RefID = {ticket.TicketID}";  // TagLinkID?
+                    break;
+                case TicketChild.Subscriptions:
+                    query = $"SELECT Subscriptions.userid FROM Subscriptions WITH (NOLOCK) " +
+                        $"JOIN Users WITH (NOLOCK) on users.userid = Subscriptions.userid " +
+                        $"WHERE Reftype = 17 and Refid = {ticket.TicketID} and MarkDeleted = 0";
+                    break;
+                case TicketChild.Reminders:
+                    query = $"SELECT ReminderID FROM Reminders WITH (NOLOCK) WHERE RefID = {ticket.TicketID} AND Reftype = 17";
+                    break;
+                case TicketChild.Tasks:
+                    query = $"SELECT TaskID FROM TaskAssociations WITH (NOLOCK) WHERE Refid={ticket.TicketID} and RefType = 17";
+                    break;
+                case TicketChild.Assets:
+                    query = $"SELECT AssetID From AssetTickets WITH (NOLOCK) WHERE TicketID = {ticket.TicketID}";
+                    break;
+                case TicketChild.Children:
+                    query = $"SELECT TicketID FROM Tickets WITH(NOLOCK) WHERE ParentID={ticket.TicketID}";
+                    break;
+            }
+            return ticket.Connection._db.ExecuteQuery<int>(query).ToArray();
+        }
+
+        public static int[] Read(TicketAssociation childID, TicketModel destinationTicket, TicketModel sourceTicket)
+        {
+            if (destinationTicket.Connection != sourceTicket.Connection)
+                throw new Exception("tickets must come from the same connection");
+
+            string query = String.Empty;
+            switch (childID)
+            {
+                case TicketAssociation.QueueUsers:
+                    query = $"SELECT TicketQueue.UserID " +
+                        $"FROM TicketQueue WITH (NOLOCK) " +
+                        $"JOIN Users WITH (NOLOCK) on Users.userid = TicketQueue.userid " +
+                        $"LEFT JOIN TicketQueue TicketQueue2 WITH(NOLOCK) on TicketQueue2.userid = TicketQueue.userid and TicketQueue2.ticketid = {destinationTicket.TicketID} " +
+                        $"WHERE TicketQueue.ticketid ={sourceTicket.TicketID}  and TicketQueue2.TicketQueueID IS NULL and MarkDeleted =0";
+                    break;
+                case TicketAssociation.Relationships1:
+                    query = $"SELECT TicketRelationshipID FROM TicketRelationships WITH(NOLOCK) WHERE Ticket1ID={sourceTicket.TicketID} AND Ticket2ID <> {destinationTicket.TicketID}";
+                    break;
+                case TicketAssociation.Relationships2:
+                    query = $"SELECT TicketRelationshipID FROM TicketRelationships WITH(NOLOCK) WHERE Ticket2ID={sourceTicket.TicketID} and Ticket1ID={destinationTicket.TicketID}";
+                    break;
+            }
+
+            return sourceTicket.Connection._db.ExecuteQuery<int>(query).ToArray();
         }
 
     }

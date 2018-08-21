@@ -487,7 +487,7 @@ namespace TeamSupport.Handlers
 
             //New image, check if one has been uploaded
             Attachments attachments = new Attachments(LoginUser.Anonymous);
-            attachments.LoadByReference(ReferenceType.UserPhoto, userID);
+            attachments.LoadByReference(AttachmentType.UserPhoto, userID);
             StringBuilder path = new StringBuilder();
             if (attachments.Count > 0)
             {
@@ -923,6 +923,32 @@ namespace TeamSupport.Handlers
             return newImage;
         }
 
+        private void OpenActionAttachment(HttpContext context, HttpBrowserCapabilities browser, AttachmentProxy proxy)
+        {
+            if (!File.Exists(proxy.Path))
+            {
+                context.Response.Write("Invalid attachment.");
+                context.Response.ContentType = "text/html";
+                return;
+            }
+
+            string openType = "inline";
+            string fileType = proxy.FileType;
+            if (browser.Browser == "IE")
+            {
+                string lower = fileType.ToLower();
+                if (lower.IndexOf("audio") > -1)
+                    openType = "attachment";
+                else if (lower.IndexOf("-zip") > -1 || lower.IndexOf("/zip") > -1 || lower.IndexOf("zip-") > -1)
+                    fileType = "application/octet-stream";
+            }
+
+            context.Response.AddHeader("Content-Disposition", openType + "; filename=\"" + proxy.FileName + "\"");
+            context.Response.AddHeader("Content-Length", proxy.FileSize.ToString());
+            context.Response.ContentType = fileType;
+            context.Response.WriteFile(proxy.Path);
+        }
+
         private void ProcessAttachment(HttpContext context, string attachmentID)
         {
             //http://127.0.0.1/tsdev/dc/attachments/7401
@@ -934,9 +960,11 @@ namespace TeamSupport.Handlers
             int id;
             if (int.TryParse(attachmentID, out id))
             {
-                if (Model.ConnectionContext.IsEnabled)
+                if (Model.ConnectionContext.IsEnabled)  // open action attachment by ID
                 {
-                    AttachmentProxy proxy = ModelAPI.ModelAPI.ReadActionAttachment(TSAuthentication.Ticket, id);
+                    AttachmentProxy proxy = ModelAPI.ModelAPI.Read<AttachmentProxy>(id);
+                    OpenActionAttachment(context, browser, proxy);
+                    return;
                 }
 
                 TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, id);
@@ -1025,6 +1053,14 @@ namespace TeamSupport.Handlers
 
             else
             {
+                if (Model.ConnectionContext.IsEnabled)  // open action attachment by Guid
+                {
+                    int idFromGuid = ModelAPI.ModelAPI.AttachmentIDFromGUID(Guid.Parse(attachmentID));
+                    AttachmentProxy proxy = ModelAPI.ModelAPI.Read<AttachmentProxy>(idFromGuid);
+                    OpenActionAttachment(context, browser, proxy);
+                    return;
+                }
+
                 SqlCommand command = new SqlCommand();
                 command.CommandText = "SELECT AttachmentID FROM Attachments WHERE AttachmentGUID=@AttachmentGUID";
                 command.Parameters.AddWithValue("@AttachmentGUID", Guid.Parse(attachmentID));

@@ -13,18 +13,18 @@ namespace TeamSupport.Api
   public class RestNotes
   {
 
-    public static string GetNote(RestCommand command, ReferenceType refType, int refID, int noteID)
+    public static string GetNote(RestCommand command, AttachmentType refType, int refID, int noteID)
     {
       Note item = Notes.GetNote(command.LoginUser, noteID);
       if (item.RefType != refType && item.RefID != refID) throw new RestException(HttpStatusCode.Unauthorized);
-      if (!DataUtils.IsReferenceValid(command.LoginUser, refType, refID)) throw new RestException(HttpStatusCode.Unauthorized);
+      if (!DataUtils.IsReferenceValid(command.LoginUser, (ReferenceType)refType, refID)) throw new RestException(HttpStatusCode.Unauthorized);
       return item.GetXml("Note", true);
     }
 
 
-    public static string GetNotes(RestCommand command, ReferenceType refType, int refID, bool orderByDateCreated = false)
+    public static string GetNotes(RestCommand command, AttachmentType refType, int refID, bool orderByDateCreated = false)
     {
-      if (!DataUtils.IsReferenceValid(command.LoginUser, refType, refID)) throw new RestException(HttpStatusCode.Unauthorized);
+      if (!DataUtils.IsReferenceValid(command.LoginUser, (ReferenceType)refType, refID)) throw new RestException(HttpStatusCode.Unauthorized);
 
       Notes items = new Notes(command.LoginUser);
       if (orderByDateCreated)
@@ -38,9 +38,9 @@ namespace TeamSupport.Api
       return items.GetXml("Notes", "Note", true, command.Filters);
     }
 
-    public static string AddNote(RestCommand command, ReferenceType refType, int refID)
+    public static string AddNote(RestCommand command, AttachmentType refType, int refID)
     {
-      if (!DataUtils.IsReferenceValid(command.LoginUser, refType, refID)) throw new RestException(HttpStatusCode.Unauthorized);
+      if (!DataUtils.IsReferenceValid(command.LoginUser, (ReferenceType)refType, refID)) throw new RestException(HttpStatusCode.Unauthorized);
       Notes items = new Notes(command.LoginUser);
       Note item = items.AddNewNote();
       item.ReadFromXml(command.Data, true);
@@ -50,11 +50,11 @@ namespace TeamSupport.Api
       return item.GetXml("Note", true);
     }
 
-    public static string RemoveNote(RestCommand command, ReferenceType refType, int refID, int noteID)
+    public static string RemoveNote(RestCommand command, AttachmentType refType, int refID, int noteID)
     {
       Note item = Notes.GetNote(command.LoginUser, noteID);
       if (item.RefType != refType && item.RefID != refID) throw new RestException(HttpStatusCode.Unauthorized);
-      if (!DataUtils.IsReferenceValid(command.LoginUser, refType, refID)) throw new RestException(HttpStatusCode.Unauthorized);
+      if (!DataUtils.IsReferenceValid(command.LoginUser, (ReferenceType)refType, refID)) throw new RestException(HttpStatusCode.Unauthorized);
       item.Delete();
       item.Collection.Save();
       return "";

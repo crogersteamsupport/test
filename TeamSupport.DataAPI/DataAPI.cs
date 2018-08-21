@@ -21,8 +21,58 @@ namespace TeamSupport.DataAPI
     /// </summary>
     public static class DataAPI
     {
+        /// <summary> default ToString() doesn't work in some cases </summary>
         static string ToSql(DateTime dateTime) { return dateTime.ToString("yyyy-MM-dd HH:mm:ss.fff"); }
         static char ToSql(bool value) { return value ? '1' : '0'; }
+
+
+        /// <summary> Read proxy given a model </summary>
+        public static TProxy Read<TProxy, TModel>(TModel tModel) where TProxy : class where TModel : class
+        {
+            TProxy tProxy = default(TProxy);
+            switch(typeof(TProxy).Name) // alphabetized list
+            {
+                case "ActionProxy": // action
+                    {
+                        ActionModel model = tModel as ActionModel;
+                        Table<ActionProxy> table = model.Connection._db.GetTable<ActionProxy>();
+                        tProxy = table.Where(t => t.ActionID == model.ActionID).First() as TProxy;
+                    }
+                    break;
+                case "ActionProxy[]":   // ticket actions
+                    {
+                        TicketModel model = tModel as TicketModel;
+                        Table<ActionProxy> table = model.Connection._db.GetTable<ActionProxy>();
+                        tProxy = table.Where(t => t.TicketID == model.TicketID).ToArray() as TProxy;
+                    }
+                    break;
+                case "AttachmentProxy": // action attachment (organization attachments?)
+                    {
+                        ActionAttachment model = tModel as ActionAttachment;
+                        string query = SelectActionAttachmentProxy + $"WHERE ActionAttachmentID = {model.ActionAttachmentID}";
+                        tProxy = model.Connection._db.ExecuteQuery<AttachmentProxy>(query).First() as TProxy;
+                    }
+                    break;
+                case "AttachmentProxy[]": // action attachments
+                    {
+                        ActionModel model = tModel as ActionModel;
+                        string query = SelectActionAttachmentProxy + $"WHERE ActionID = {model.ActionID}";
+                        tProxy = model.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray() as TProxy;
+                    }
+                    break;
+                case "TicketProxy": // ticket
+                    {
+                        TicketModel model = tModel as TicketModel;
+                        Table<TicketProxy> table = model.Connection._db.GetTable<TicketProxy>();
+                        tProxy = table.Where(t => t.TicketID == model.TicketID).First() as TProxy;
+                    }
+                    break;
+                default:
+                    throw new Exception("Bad call to DataApi.Read");
+            }
+            return tProxy;
+        }
+
 
         #region User
         //class FullName
@@ -32,7 +82,7 @@ namespace TeamSupport.DataAPI
         //}
         //public static string UserFullName(DataContext db, int organizationID, int userID)
         //{
-        //    string query = $"SELECT FirstName + ' ' + LastName FROM Users  WITH (NOLOCK) WHERE UserID={userID} AND OrganizationID={organizationID}";
+        //    string query = $"SELECT FirstName, LastName FROM Users  WITH (NOLOCK) WHERE UserID={userID} AND OrganizationID={organizationID}";
         //    FullName fullName = db.ExecuteQuery<FullName>(query).First();  // throws if it fails
         //    return $"{fullName.FirstName} {fullName.LastName}";
         //}
@@ -44,28 +94,21 @@ namespace TeamSupport.DataAPI
         public static void Create(OrganizationModel organization, TicketProxy ticketProxy)
         {
             // TODO - create ticket
-            LogMessage(organization.Connection.Authentication, ActionLogType.Insert, ReferenceType.Tickets, ticketProxy.TicketID, "Created Ticket");
-        }
-
-        /// <summary> Read Ticket </summary>
-        public static TicketProxy Read(TicketModel ticketModel)
-        {
-            Table<TicketProxy> table = ticketModel.Connection._db.GetTable<TicketProxy>();
-            return table.Where(t => t.TicketID == ticketModel.TicketID).First();
+            LogMessage(ActionLogType.Insert, ReferenceType.Tickets, ticketProxy.TicketID, "Created Ticket");
         }
 
         /// <summary> Update Ticket </summary>
         public static void Update(TicketModel ticketModel, TicketProxy ticketProxy)
         {
             // TODO - update ticket
-            LogMessage(ticketModel.Connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, ticketModel.TicketID, "Updated Ticket");
+            LogMessage(ActionLogType.Update, ReferenceType.Tickets, ticketModel.TicketID, "Updated Ticket");
         }
 
         /// <summary> Delete Ticket</summary>
         public static void Delete(TicketModel ticketModel)
         {
             // TODO - delete ticket
-            LogMessage(ticketModel.Connection.Authentication, ActionLogType.Delete, ReferenceType.Tickets, ticketModel.TicketID, "Deleted Ticket");
+            LogMessage(ActionLogType.Delete, ReferenceType.Tickets, ticketModel.TicketID, "Deleted Ticket");
         }
         #endregion
 
@@ -77,35 +120,21 @@ namespace TeamSupport.DataAPI
         {
             AuthenticationModel authentication = ticketModel.Connection.Authentication;
             Data.Action.Create(ticketModel.Connection._db, authentication.OrganizationID, authentication.UserID, ticketModel.TicketID, ref actionProxy);
-            LogMessage(authentication, ActionLogType.Insert, ReferenceType.Actions, actionProxy.ActionID, "Created Action");
-        }
-
-        /// <summary> Read Action </summary>
-        public static ActionProxy Read(ActionModel actionModel)
-        {
-            Table<ActionProxy> table = actionModel.Connection._db.GetTable<ActionProxy>();
-            return table.Where(t => t.ActionID == actionModel.ActionID).First();
-        }
-
-        /// <summary> Read ticket Actions </summary>
-        public static void Read(TicketModel ticketModel, out ActionProxy[] actionProxies)
-        {
-            Table<ActionProxy> table = ticketModel.Connection._db.GetTable<ActionProxy>();
-            actionProxies = table.Where(t => t.TicketID == ticketModel.TicketID).ToArray();
+            LogMessage(ActionLogType.Insert, ReferenceType.Actions, actionProxy.ActionID, "Created Action");
         }
 
         /// <summary> Update Action </summary>
         public static void Update(ActionModel actionModel, ActionProxy actionProxy)
         {
             // TODO - update action
-            LogMessage(actionModel.Connection.Authentication, ActionLogType.Update, ReferenceType.Actions, actionModel.ActionID, "Updated Action");
+            LogMessage(ActionLogType.Update, ReferenceType.Actions, actionModel.ActionID, "Updated Action");
         }
 
         /// <summary> Delete Action </summary>
         public static void Delete(ActionModel actionModel)
         {
             // TODO - delete action
-            LogMessage(actionModel.Connection.Authentication, ActionLogType.Delete, ReferenceType.Actions, actionModel.ActionID, "Deleted Action");
+            LogMessage(ActionLogType.Delete, ReferenceType.Actions, actionModel.ActionID, "Deleted Action");
         }
         #endregion
 
@@ -128,26 +157,57 @@ namespace TeamSupport.DataAPI
         const string SelectActionAttachmentProxy = "SELECT a.*, a.ActionAttachmentID as AttachmentID, a.ActionAttachmentGUID as AttachmentGUID, (u.FirstName + ' ' + u.LastName) AS CreatorName, a.ActionID as RefID " +
             "FROM ActionAttachments a LEFT JOIN Users u ON u.UserID = a.CreatorID ";
 
-        /// <summary> Read Action Attachment </summary>
-        public static AttachmentProxy Read(ActionAttachment actionAttachment)
+        /// <summary> Read most recent filenames for this ticket </summary>
+        public static void ReadActionAttachmentsForTicket(TicketModel ticketModel, ActionAttachmentsByTicketID ticketActionAttachments, out AttachmentProxy[] mostRecentByFilename)
         {
-            string query = SelectActionAttachmentProxy + $"WHERE ActionAttachmentID = {actionAttachment.ActionAttachmentID}";
-            return actionAttachment.Connection._db.ExecuteQuery<AttachmentProxy>(query).First();
+            switch (ticketActionAttachments)
+            {
+                case ActionAttachmentsByTicketID.ByFilename:
+                    {
+                        string query = SelectActionAttachmentProxy + $"WHERE ActionID IN (SELECT ActionID FROM Actions WHERE TicketID = {ticketModel.TicketID}) ORDER BY DateCreated DESC";
+                        AttachmentProxy[] allAttachments = ticketModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
+                        List<AttachmentProxy> tmp = new List<AttachmentProxy>();
+                        foreach (AttachmentProxy attachment in allAttachments)
+                        {
+                            if (!tmp.Exists(a => a.FileName == attachment.FileName))
+                                tmp.Add(attachment);
+                        }
+                        mostRecentByFilename = tmp.ToArray();
+                    }
+                    break;
+                case ActionAttachmentsByTicketID.KnowledgeBase:
+                    {
+                        string query = SelectActionAttachmentProxy + $"JOIN Actions ac ON a.ActionID = ac.ActionID WHERE ac.TicketID = {ticketModel.TicketID} AND ac.IsKnowledgeBase = 1";
+                        mostRecentByFilename = ticketModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
+                    }
+                    break;
+                default:
+                     mostRecentByFilename = null;
+                   break;
+            }
         }
 
-        /// <summary> Read Action Attachments </summary>
-        public static void Read(ActionModel actionModel, out AttachmentProxy[] attachments)
-        {
-            string query = SelectActionAttachmentProxy + $"WHERE ActionID = {actionModel.ActionID}";
-            attachments = actionModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
-        }
 
-        /// <summary> Read all Action Attachments for this ticket </summary>
-        public static void Read(TicketModel ticketModel, out AttachmentProxy[] attachments)
-        {
-            string query = SelectActionAttachmentProxy + $"WHERE ActionID IN (SELECT ActionID FROM Actions WHERE TicketID = {ticketModel.TicketID})";
-            attachments = ticketModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
-        }
+        ///// <summary> Read most recent filenames for this ticket </summary>
+        //public static void ReadActionAttachmentsByFilenameAndTicket(TicketModel ticketModel, out AttachmentProxy[] mostRecentByFilename)
+        //{
+        //    string query = SelectActionAttachmentProxy + $"WHERE ActionID IN (SELECT ActionID FROM Actions WHERE TicketID = {ticketModel.TicketID}) ORDER BY DateCreated DESC";
+        //    AttachmentProxy[] allAttachments = ticketModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
+        //    List<AttachmentProxy> tmp = new List<AttachmentProxy>();
+        //    foreach (AttachmentProxy attachment in allAttachments)
+        //    {
+        //        if (!tmp.Exists(a => a.FileName == attachment.FileName))
+        //            tmp.Add(attachment);
+        //    }
+        //    mostRecentByFilename = tmp.ToArray();
+        //}
+
+        ///// <summary> Read most recent filenames for this ticket </summary>
+        //public static void ReadKBActionAttachmentsByTicket(TicketModel ticketModel, out AttachmentProxy[] mostRecentByFilename)
+        //{
+        //    string query = SelectActionAttachmentProxy + $"JOIN Actions ac ON a.ActionID = ac.ActionID WHERE ac.TicketID = {ticketModel.TicketID} AND ac.IsKnowledgeBase = 1";
+        //    mostRecentByFilename = ticketModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
+        //}
 
         /// <summary> Update Action Attachment </summary>
 
@@ -156,31 +216,32 @@ namespace TeamSupport.DataAPI
         {
             string query = $"DELETE FROM ActionAttachments WHERE ActionAttachmentID = {actionAttachment.ActionAttachmentID}";
             actionAttachment.Connection._db.ExecuteCommand(query);
-            LogMessage(actionAttachment.Connection.Authentication, ActionLogType.Delete, ReferenceType.Actions, actionAttachment.ActionAttachmentID, "Deleted Action Attachment");
+            LogMessage(ActionLogType.Delete, ReferenceType.Actions, actionAttachment.ActionAttachmentID, "Deleted Action Attachment");
         }
         #endregion
 
 
         #region Log
         /// <summary> Log Message </summary>
-        public static void LogMessage(AuthenticationModel authentication, ActionLogType logType, ReferenceType refType, int? refID, string message)
+        public static void LogMessage(ActionLogType logType, ReferenceType refType, int? refID, string message)
         {
+            AuthenticationModel authentication = new AuthenticationModel();
             LoginUser user = new LoginUser(authentication.UserID, authentication.OrganizationID);
             ActionLogs.AddActionLog(user, logType, refType, refID.HasValue ? refID.Value : 0, message);  // 0 if no ID?
         }
 
-        public static void LogMessage(AuthenticationModel authentication, ActionLogType logType, ReferenceType refType, int? refID, string message, Exception ex)
+        public static void LogMessage(ActionLogType logType, ReferenceType refType, int? refID, string message, Exception ex)
         {
             // log to ExceptionLogs or New Relic, or windows event log?
 
             string fullMessage = message + ex.ToString() + " ----- STACK: " + ex.StackTrace.ToString();
             if (Debugger.IsAttached)
             {
-                Debug.WriteLine(fullMessage);   // debug output window (very fast)
+                Debug.WriteLine(fullMessage);   // see the error in the debug output window
                 Debugger.Break();   // something is wrong - fix the code!
             }
 
-            LogMessage(authentication, logType, refType, refID, fullMessage);
+            LogMessage(logType, refType, refID, fullMessage);
         }
         #endregion
 

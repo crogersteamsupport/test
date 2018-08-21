@@ -178,7 +178,7 @@ namespace TSWebServices
         public AttachmentProxy[] GetAttachments(int versionID)
         {
             Attachments attachments = new Attachments(TSAuthentication.GetLoginUser());
-            attachments.LoadByReference(ReferenceType.ProductVersions, versionID);
+            attachments.LoadByReference(AttachmentType.ProductVersions, versionID);
             return attachments.GetAttachmentProxies();
         }
 

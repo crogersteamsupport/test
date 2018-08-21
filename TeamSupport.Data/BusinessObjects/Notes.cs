@@ -40,10 +40,10 @@ namespace TeamSupport.Data
 
         public void LoadByCustomer(int organizationID)
         {
-            LoadByReferenceType(ReferenceType.Organizations, organizationID);
+            LoadByReferenceType(AttachmentType.Organizations, organizationID);
         }
 
-        public void LoadByReferenceType(ReferenceType refType, int refID, string orderBy = "DateCreated", bool includeCompanyChildren = false)
+        public void LoadByReferenceType(AttachmentType refType, int refID, string orderBy = "DateCreated", bool includeCompanyChildren = false)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -81,7 +81,7 @@ namespace TeamSupport.Data
         }
 
         //Get all the notes for the users under the org
-        public void LoadByReferenceTypeUser(ReferenceType refType, int refID, string orderBy = "DateCreated", bool includeCompanyChildren = false)
+        public void LoadByReferenceTypeUser(AttachmentType refType, int refID, string orderBy = "DateCreated", bool includeCompanyChildren = false)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -123,7 +123,7 @@ namespace TeamSupport.Data
             }
         }
 
-        public void LoadByReferenceTypeByUserRights(ReferenceType refType, int refID, int viewerID, string orderBy = "DateCreated", bool includeCompanyChildren = false)
+        public void LoadByReferenceTypeByUserRights(AttachmentType refType, int refID, int viewerID, string orderBy = "DateCreated", bool includeCompanyChildren = false)
         {
             using (SqlCommand command = new SqlCommand())
             {
@@ -178,7 +178,7 @@ namespace TeamSupport.Data
             }
         }
 
-        public void LoadByReferenceTypeByUserRightsUsers(ReferenceType refType, int refID, int viewerID, string organizationID, string orderBy = "DateCreated", bool includeCompanyChildren = false)
+        public void LoadByReferenceTypeByUserRightsUsers(AttachmentType refType, int refID, int viewerID, string organizationID, string orderBy = "DateCreated", bool includeCompanyChildren = false)
         {
             using (SqlCommand command = new SqlCommand())
             {
