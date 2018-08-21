@@ -160,7 +160,7 @@ namespace TeamSupport.DataAPI
                 connection._db.ExecuteCommand(query);
                 query = $"INSERT INTO AssetTickets (TicketID, AssetID, DateCreated, CreatorID)" +
                         $"SELECT {destinationTicket.TicketID}, {asset}, '{DateTime.UtcNow}', {connection.Authentication.UserID} " +
-                        $"WHERE NOT EXISTS(Select AssetTickets WITH (NOLOCK) WHERE AssetId = {asset} AND TicketId = {destinationTicket.TicketID})";
+                        $"WHERE NOT EXISTS(Select * FROM AssetTickets WITH (NOLOCK) WHERE AssetId = {asset} AND TicketId = {destinationTicket.TicketID})";
 
                 connection._db.ExecuteCommand(query);
             }
@@ -265,7 +265,12 @@ namespace TeamSupport.DataAPI
         {
             foreach (int task in tasks)
             {
-                string query = $" UPDATE TaskAssociations WITH(ROWLOCK) SET RefID ={destinationTicket.TicketID} WHERE(TaskId = {task})";
+
+                string query = $"DELETE FROM TaskAssociations WITH (ROWLOCK)  WHERE RefId ={sourceTicket.TicketID} and TaskId = {task}  and RefType = 17 ";
+                connection._db.ExecuteCommand(query);
+                query = $"INSERT INTO TaskAssociations (TaskId, RefID, RefType, CreatorID, DateCreated) " +
+                    $"SELECT {task},{destinationTicket.TicketID}, 17, {connection.Authentication.UserID}, '{DateTime.UtcNow}' " +
+                    $"WHERE NOT EXISTS(Select * FROM TaskAssociations WITH (NOLOCK) WHERE TaskId = {task} AND RefId = {destinationTicket.TicketID} and RefType = 17)";
                 connection._db.ExecuteCommand(query);
             }
             DataAPI.LogMessage(connection.Authentication, ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Tasks");

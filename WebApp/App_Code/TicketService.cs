@@ -3916,10 +3916,7 @@ WHERE t.TicketID = @TicketID
 
         [WebMethod]
         public string MergeTickets(int winningTicketID, int losingTicketID)
-        {
-
-            //for testing new method
-          
+        {                     
            return  ModelAPI.MergeTickets(TSAuthentication.Ticket, winningTicketID, losingTicketID);
             //return MergeTicketsNew( winningTicketID,  losingTicketID);
             //ModelAPI.MergeTickets(TSAuthentication.Ticket, winningTicketID, losingTicketID);
@@ -4133,35 +4130,9 @@ WHERE t.TicketID = @TicketID
             string description = "Merged '" + oldticket.TicketNumber + "' Customers";
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
             return;
-        }
+        }       
 
-        private void MergeContactsNew(ContactsView contacts, Ticket winningTicket, Ticket losingTicket)
-        {
-               
-            foreach (ContactsViewItem contact in contacts)
-            {
-                winningTicket.Collection.AddContact(contact.UserID, winningTicket.TicketID);
-                winningTicket.Collection.RemoveContact(contact.UserID, losingTicket.TicketID);
-            }
-                               
-            string description = "Merged '" + losingTicket.TicketNumber + "' Contacts";
-            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicket.TicketID, description);
-            
-        }
-
-        private void MergeCustomerNew(Organizations organizations, Ticket winningTicket, Ticket losingTicket)
-        {
-           
-            foreach (Organization organization in organizations)
-            {
-                winningTicket.Collection.AddOrganization(organization.OrganizationID, winningTicket.TicketID);
-                winningTicket.Collection.RemoveOrganization(organization.OrganizationID, losingTicket.TicketID);
-            }
-            
-            string description = "Merged '" + losingTicket.TicketNumber + "' Customers";
-            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicket.TicketID, description);
-        }
-
+       
         public void MergeTags(int losingTicketID, int winningTicketID, Ticket ticket)
         {
             Tags tags = new Tags(TSAuthentication.GetLoginUser());
@@ -4173,18 +4144,7 @@ WHERE t.TicketID = @TicketID
                 AddTag(winningTicketID, tag.Value);
             }
         }
-
-
-        public void MergeTagsNew(Tags tags, int winningTicketID, int losingTicketID)
-        {
-            
-            foreach (Tag tag in tags)
-            {
-                RemoveTag(losingTicketID, tag.TagID);
-                AddTag(winningTicketID, tag.Value);
-            }
-        }
-
+              
 
         public void MergeSubscribers(int losingTicketID, int winningTicketID, Ticket ticket)
         {
@@ -4200,21 +4160,7 @@ WHERE t.TicketID = @TicketID
             string description = "Merged '" + losingticket.TicketNumber + "' Subscribers";
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
 
-        }
-
-        public void MergeSubscribersNew(UsersView users, Ticket winningTicket, Ticket losingTicket)
-        {
-            
-            foreach (UsersViewItem user in users)
-            {
-                winningTicket.Collection.AddSubscription(user.UserID, winningTicket.TicketID);
-                winningTicket.Collection.RemoveSubscription(user.UserID, losingTicket.TicketID);
-            }
-           
-            string description = "Merged '" + losingTicket.TicketNumber + "' Subscribers";
-            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicket.TicketID, description);
-
-        }
+        }        
 
         public void MergeQueres(int losingTicketID, int winningTicketID, Ticket ticket)
         {
@@ -4231,19 +4177,7 @@ WHERE t.TicketID = @TicketID
             string description = "Merged '" + ticket.TicketNumber + "' Queuers";
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
         }
-
-        public void MergeQueresNew(UsersView users, Ticket winningTicket, Ticket losingTicket)
-        {
-           
-            foreach (UsersViewItem user in users)
-            {
-                TicketQueue.Dequeue(TSAuthentication.GetLoginUser(), losingTicket.TicketID, user.UserID);
-                TicketQueue.Enqueue(TSAuthentication.GetLoginUser(), winningTicket.TicketID, user.UserID);
-            }
-            
-            string description = "Merged '" + losingTicket.TicketNumber + "' Queuers";
-            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicket.TicketID, description);
-        }
+               
 
         private TicketLinkToJiraItemProxy GetLinkToJira(int ticketID)
         {
