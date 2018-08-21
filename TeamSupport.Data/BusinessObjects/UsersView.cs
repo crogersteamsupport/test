@@ -266,8 +266,8 @@ ORDER BY u.FirstName, u.LastName";
         Fill(command, "Users,Tickets,Subscriptions");
       }
     }
-
-    public void LoadByTicketQueue(int ticketID)
+            
+        public void LoadByTicketQueue(int ticketID)
     {
       using (SqlCommand command = new SqlCommand())
       {
@@ -285,7 +285,8 @@ ORDER BY u.FirstName, u.LastName
         Fill(command);
       }
     }
-  }
+        
+    }
 
   
 }

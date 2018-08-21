@@ -1865,7 +1865,11 @@ AND ts.IsClosed = 0";
 
                 using (SqlCommand command = new SqlCommand())
                 {
-                    command.CommandText = "INSERT INTO UserTickets (TicketID, UserID, DateCreated, CreatorID) VALUES (@TicketID, @UserID, @DateCreated, @CreatorID)";
+                    //This will throw an exception if userid and ticketid combination already exist.
+                    //command.CommandText = "INSERT INTO UserTickets (TicketID, UserID, DateCreated, CreatorID) VALUES (@TicketID, @UserID, @DateCreated, @CreatorID)";
+                    command.CommandText = @"INSERT INTO UserTickets (TicketID, UserID, DateCreated, CreatorID) 
+                                            SELECT @TicketID, @UserID, @DateCreated, @CreatorID
+                                            WHERE NOT EXISTS(SELECT * FROM UserTickets WHERE TicketID = @TicketID and UserID = @UserID)";
                     command.CommandType = CommandType.Text;
                     command.Parameters.AddWithValue("@UserID", userID);
                     command.Parameters.AddWithValue("@TicketID", ticketID);
@@ -3448,7 +3452,7 @@ AND
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "UPDATE Actions SET TicketID=@newticketID WHERE (TicketID = @oldticketID)";
+                command.CommandText = "UPDATE Actions WITH (ROWLOCK) SET TicketID=@newticketID WHERE (TicketID = @oldticketID)";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@newticketID", newticketID);
                 command.Parameters.AddWithValue("@oldticketID", oldticketID);
@@ -3480,7 +3484,7 @@ AND
             }
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "UPDATE Tickets SET ParentID=@newticketID WHERE (ParentID = @oldticketID)";
+                command.CommandText = "UPDATE Tickets WITH (ROWLOCK) SET ParentID=@newticketID WHERE (ParentID = @oldticketID)";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@newticketID", newticketID);
                 command.Parameters.AddWithValue("@oldticketID", oldticketID);
@@ -3488,8 +3492,9 @@ AND
             }
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = "UPDATE Tickets SET ParentID=null WHERE (ParentID = ticketID)";
+                command.CommandText = "UPDATE Tickets WITH (ROWLOCK) SET ParentID=null WHERE (ParentID = ticketID) and (ParentID = @newticketID)";
                 command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@newticketID", newticketID);
                 ExecuteNonQuery(command, "Tickets");
             }
 
@@ -3521,6 +3526,7 @@ AND
             string description = "Merged '" + ticket.TicketNumber + "' Action Attachments";
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
         }
+
 
         public void LoadFirstJiraSynced(int organizationID)
         {
