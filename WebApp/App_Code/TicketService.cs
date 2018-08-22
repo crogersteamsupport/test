@@ -1828,7 +1828,9 @@ namespace TSWebServices
                             {
                                 try
                                 {
-                                    Jira.JiraClient jiraClient = new Jira.JiraClient(crmRow["HostName"].ToString(), crmRow["Username"].ToString(), crmRow["Password"].ToString());
+                                    string token = String.IsNullOrEmpty(crmRow["SecurityToken"].ToString()) ? crmRow["Password"].ToString() : crmRow["SecurityToken"].ToString();
+
+                                    Jira.JiraClient jiraClient = new Jira.JiraClient(crmRow["HostName"].ToString(), crmRow["Username"].ToString(), token);
                                     Jira.IssueRef issueRef = new Jira.IssueRef();
                                     issueRef.id = ticketLinktoJiraProxy.JiraID.ToString();
                                     issueRef.key = ticketLinktoJiraProxy.JiraKey;
