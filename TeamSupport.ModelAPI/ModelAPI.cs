@@ -189,7 +189,6 @@ namespace TeamSupport.ModelAPI
         #region Tickets
         public static string MergeTickets(int destinationTicketID, int sourceTicketID)
         {
-          
             try
             {
                 using (ConnectionContext connection = new ConnectionContext(true))    // use transaction
@@ -197,7 +196,7 @@ namespace TeamSupport.ModelAPI
                     try
                     {
                         TicketMerge merge = new TicketMerge(connection, connection.Ticket(destinationTicketID), connection.Ticket(sourceTicketID));
-                        merge.Merge();
+                        merge.Merge1();
                         connection.Commit();
                         return String.Empty;
                     }

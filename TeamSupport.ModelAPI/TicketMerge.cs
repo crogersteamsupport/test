@@ -25,11 +25,60 @@ namespace TeamSupport.ModelAPI
             Connection = connection;
         }
 
-        public void Merge()
+        /// <summary> Merge1 </summary>
+        public void Merge1()
         {
             if (!Connection.User.CanEdit()) // sufficient permissions?
                 return;
 
+            MergeTagLinks();
+            MergeSubscriptions();
+        }
+
+        /// <summary> TagLinks </summary>
+        void MergeTagLinks()
+        {
+            TagLinkProxy[] sourceTagLinks = DataAPI.DataAPI.Read<TagLinkProxy[], TicketModel>(Source);
+            if (sourceTagLinks.Length == 0)
+                return;
+
+            TagLinkProxy[] destinationTagLinks = DataAPI.DataAPI.Read<TagLinkProxy[], TicketModel>(Destination);
+            foreach (TagLinkProxy tagLinkProxy in sourceTagLinks)
+            {
+                if (destinationTagLinks.Where(t => t.TagID == tagLinkProxy.TagID).Any())
+                {
+                    // ticket already has this tag link
+                    DataAPI.DataAPI.Delete(new TagLinkModel(Source, tagLinkProxy.TagLinkID));
+                    continue;
+                }
+
+                // move tag link to destination ticket
+                tagLinkProxy.RefID = Destination.TicketID;
+                DataAPI.DataAPI.Update(new TagLinkModel(Source, tagLinkProxy.TagLinkID), tagLinkProxy);
+            }
+        }
+
+        /// <summary> Subscriptions </summary>
+        void MergeSubscriptions()
+        {
+            SubscriptionModel[] subscriptions = SubscriptionModel.GetSubscriptions(Source);
+            foreach(SubscriptionModel subscriptionModel in subscriptions)
+            {
+                SubscriptionProxy subscriptionProxy = new SubscriptionProxy()
+                {
+                    RefType = ReferenceType.Tickets,
+                    RefID = Destination.TicketID,
+                    UserID = subscriptionModel.UserID
+                };
+
+                DataAPI.DataAPI.Create(Destination, subscriptionProxy);
+                DataAPI.DataAPI.Delete(subscriptionModel);
+            }
+        }
+
+
+        public void Merge()
+        {
             //Get Different arrays for merge and only merge what is necessary
             int[] values;
             try

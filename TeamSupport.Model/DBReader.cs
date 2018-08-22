@@ -11,12 +11,13 @@ namespace TeamSupport.Model
     {
         Contacts,
         Customers,
-        Tags,
+        //Tags,
         Subscriptions,
         Reminders,
         Tasks,
         Assets,
-        Children
+        Children,
+        TagLinks
     }
 
     public enum TicketAssociation
@@ -39,7 +40,14 @@ namespace TeamSupport.Model
         public static void VerifyAction(DataContext db, int organizationID, int ticketID, int actionID) { Verify(db, $"SELECT ActionID FROM Actions WITH (NOLOCK) WHERE ActionID={actionID} AND TicketID={ticketID}"); }
         public static void VerifyActionAttachment(DataContext db, int organizationID, int ticketID, int actionID, int actionAttachmentID) { Verify(db, $"SELECT ActionAttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE ActionAttachmentID={actionAttachmentID} AND ActionID={actionID} AND OrganizationID={organizationID}"); }
         public static void VerifyAsset(DataContext db, int organizationID, int ticketID, int assetID) { Verify(db, $"SELECT AssetID FROM Assets WITH (NOLOCK) WHERE AssetID={assetID} AND TicketID={ticketID}"); }
-        public static void VerifyTagLink(DataContext db, int organizationID, int ticketID, int tagID) { Verify(db, $"SELECT TagID FROM Tags WITH (NOLOCK) WHERE TagID={tagID} AND TicketID={ticketID}"); }
+        public static void VerifyTagLink(DataContext db, int organizationID, int ticketID, int tagLinkID) { Verify(db, $"SELECT TagLinkID FROM TagLinks WITH (NOLOCK) WHERE TagLinkID={tagLinkID} AND TicketID={ticketID}"); }
+        public static void VerifySubscription(DataContext db, int organizationID, int ticketID, int userID)
+        {
+            string query = $"SELECT Subscriptions.userid FROM Subscriptions WITH (NOLOCK) " +
+                $"JOIN Users WITH (NOLOCK) ON users.userid = Subscriptions.userid " +
+                $"WHERE Subscriptions.userid = userID AND Reftype = 17 AND Refid = {ticketID} AND MarkDeleted = 0";
+            Verify(db, query);
+        }
 
 
         static void Verify(DataContext db, string query)
@@ -86,9 +94,9 @@ namespace TeamSupport.Model
                 case TicketChild.Customers:
                     query = $"Select organizationid From OrganizationTickets WITH (NOLOCK) Where TicketId = {ticket.TicketID}";
                     break;
-                case TicketChild.Tags:
-                    query = $"SELECT TagID FROM TagLinks WITH(NOLOCK) WHERE Reftype=17 and RefID = {ticket.TicketID}";  // TagLinkID?
-                    break;
+                //case TicketChild.Tags:
+                //    query = $"SELECT TagID FROM TagLinks WITH(NOLOCK) WHERE Reftype=17 and RefID = {ticket.TicketID}";
+                //    break;
                 case TicketChild.Subscriptions:
                     query = $"SELECT Subscriptions.userid FROM Subscriptions WITH (NOLOCK) " +
                         $"JOIN Users WITH (NOLOCK) on users.userid = Subscriptions.userid " +
@@ -105,6 +113,9 @@ namespace TeamSupport.Model
                     break;
                 case TicketChild.Children:
                     query = $"SELECT TicketID FROM Tickets WITH(NOLOCK) WHERE ParentID={ticket.TicketID}";
+                    break;
+                case TicketChild.TagLinks:
+                    query = $"SELECT TagLinkID FROM TagLinks WITH(NOLOCK) WHERE Reftype=17 and RefID = {ticket.TicketID}";
                     break;
             }
             return ticket.Connection._db.ExecuteQuery<int>(query).ToArray();

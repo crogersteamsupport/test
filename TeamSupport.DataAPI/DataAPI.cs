@@ -25,12 +25,37 @@ namespace TeamSupport.DataAPI
         static string ToSql(DateTime dateTime) { return dateTime.ToString("yyyy-MM-dd HH:mm:ss.fff"); }
         static char ToSql(bool value) { return value ? '1' : '0'; }
 
+        /// <summary>
+        /// CREATE - create proxy child for model parent
+        /// </summary>
+        public static void Create<TProxy, TModel>(TModel tModel, TProxy tProxy) where TProxy : class where TModel : class
+        {
+            string now = ToSql(DateTime.UtcNow);
+            string command = String.Empty;
+            switch (typeof(TProxy).Name) // alphabetized list
+            {
+                case "SubscriptionProxy":
+                    {
+                        TicketModel model = tModel as TicketModel;
+                        int userID = model.Connection.User.UserID;
+                        SubscriptionProxy proxy = tProxy as SubscriptionProxy;
+                        command = $"INSERT INTO Subscriptions (RefType, RefID, UserID, DateCreated, DateModified, CreatorID, ModifierID)" +
+                                $"SELECT 17, {model.TicketID}, {proxy.UserID}, '{now}','{now}', {userID}, {userID} " +
+                                $"WHERE NOT EXISTS(SELECT * FROM Subscriptions WHERE reftype = 17 AND RefID = {model.TicketID} AND UserID = {proxy.UserID})";
+                        model.Connection._db.ExecuteCommand(command);
+                    }
+                    break;
+            }
+            // TODO - log
+        }
 
-        /// <summary> Read proxy given a model </summary>
+        /// <summary> 
+        /// READ - read proxy given a model 
+        /// </summary>
         public static TProxy Read<TProxy, TModel>(TModel tModel) where TProxy : class where TModel : class
         {
             TProxy tProxy = default(TProxy);
-            switch(typeof(TProxy).Name) // alphabetized list
+            switch (typeof(TProxy).Name) // alphabetized list
             {
                 case "ActionProxy": // action
                     {
@@ -60,11 +85,27 @@ namespace TeamSupport.DataAPI
                         tProxy = model.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray() as TProxy;
                     }
                     break;
+                case "SubscriptionModel[]":
+                    {
+                        TicketModel model = tModel as TicketModel;
+                        string query = $"SELECT RefType,RefID,UserID,DateCreated,DateModified,CreatorID,ModifierID FROM Subscriptions " +
+                            $"WHERE Reftype = 17 and Refid = {model.TicketID} and MarkDeleted = 0";
+                        tProxy = model.Connection._db.ExecuteQuery<SubscriptionModel>(query).ToArray() as TProxy;
+                    }
+                    break;
                 case "TicketProxy": // ticket
                     {
                         TicketModel model = tModel as TicketModel;
                         Table<TicketProxy> table = model.Connection._db.GetTable<TicketProxy>();
                         tProxy = table.Where(t => t.TicketID == model.TicketID).First() as TProxy;
+                    }
+                    break;
+                case "TagLinkProxy[]":
+                    {
+                        //query = $"SELECT TagLinkID, TagID, RefType, RefID, DateCreated, CreatorID FROM TagLinks WHERE RefType = 17 AND RefID = {model.TicketID}";
+                        TicketModel model = tModel as TicketModel;
+                        Table<TagLinkProxy> table = model.Connection._db.GetTable<TagLinkProxy>();
+                        tProxy = table.Where(t => (t.RefType == ReferenceType.Tickets) && (t.RefID == model.TicketID)).ToArray() as TProxy;
                     }
                     break;
                 default:
@@ -73,8 +114,48 @@ namespace TeamSupport.DataAPI
             return tProxy;
         }
 
+        /// <summary> 
+        /// UPDATTE - update a model with the proxy data 
+        /// </summary>
+        public static void Update<TProxy, TModel>(TModel tModel, TProxy tProxy) where TProxy : class where TModel : class
+        {
+            string command = String.Empty;
+            switch (typeof(TProxy).Name) // alphabetized list
+            {
+                case "TagLinkProxy":    // ticket tag links
+                    TagLinkModel model = tModel as TagLinkModel;
+                    TagLinkProxy proxy = tProxy as TagLinkProxy;
+                    command = $"UPDATE TagLinks WITH(ROWLOCK) SET TagLinkID={proxy.TagLinkID}, TagID={proxy.TagID}, RefType={proxy.RefType}, RefID={proxy.RefID}  WHERE TagLinkID={model.TagLinkID}";
+                    model.Connection._db.ExecuteCommand(command);
+                    break;
+            }
+        }
 
-        #region User
+        /// <summary> 
+        /// DELETE - delete a model </summary>
+        public static void Delete<T>(T t) where T : class
+        {
+            string command = String.Empty;
+            switch (typeof(T).Name) // alphabetized list
+            {
+                case "TagLinkModel":
+                    {
+                        TagLinkModel model = t as TagLinkModel;
+                        command = $"DELETE FROM TagLinks WITH (ROWLOCK) WHERE TagLinkID={model.TagLinkID}";
+                        model.Connection._db.ExecuteCommand(command);
+                    }
+                    break;
+                case "SubscriptionModel":
+                    {
+                        SubscriptionModel model = t as SubscriptionModel;
+                        command = $"DELETE FROM Subscriptions WITH (ROWLOCK) WHERE UserID={model.UserID}";
+                        model.Connection._db.ExecuteCommand(command);
+                    }
+                    break;
+            }
+            // TODO - log
+        }
+
         //class FullName
         //{
         //    public string FirstName;
@@ -86,34 +167,6 @@ namespace TeamSupport.DataAPI
         //    FullName fullName = db.ExecuteQuery<FullName>(query).First();  // throws if it fails
         //    return $"{fullName.FirstName} {fullName.LastName}";
         //}
-        #endregion
-
-
-        #region Tickets
-        /// <summary> Create Ticket </summary>
-        public static void Create(OrganizationModel organization, TicketProxy ticketProxy)
-        {
-            // TODO - create ticket
-            LogMessage(ActionLogType.Insert, ReferenceType.Tickets, ticketProxy.TicketID, "Created Ticket");
-        }
-
-        /// <summary> Update Ticket </summary>
-        public static void Update(TicketModel ticketModel, TicketProxy ticketProxy)
-        {
-            // TODO - update ticket
-            LogMessage(ActionLogType.Update, ReferenceType.Tickets, ticketModel.TicketID, "Updated Ticket");
-        }
-
-        /// <summary> Delete Ticket</summary>
-        public static void Delete(TicketModel ticketModel)
-        {
-            // TODO - delete ticket
-            LogMessage(ActionLogType.Delete, ReferenceType.Tickets, ticketModel.TicketID, "Deleted Ticket");
-        }
-        #endregion
-
-
-        #region Actions
 
         /// <summary> Create Action </summary>
         public static void Create(TicketModel ticketModel, ref ActionProxy actionProxy)
@@ -122,21 +175,6 @@ namespace TeamSupport.DataAPI
             Data.Action.Create(ticketModel.Connection._db, authentication.OrganizationID, authentication.UserID, ticketModel.TicketID, ref actionProxy);
             LogMessage(ActionLogType.Insert, ReferenceType.Actions, actionProxy.ActionID, "Created Action");
         }
-
-        /// <summary> Update Action </summary>
-        public static void Update(ActionModel actionModel, ActionProxy actionProxy)
-        {
-            // TODO - update action
-            LogMessage(ActionLogType.Update, ReferenceType.Actions, actionModel.ActionID, "Updated Action");
-        }
-
-        /// <summary> Delete Action </summary>
-        public static void Delete(ActionModel actionModel)
-        {
-            // TODO - delete action
-            LogMessage(ActionLogType.Delete, ReferenceType.Actions, actionModel.ActionID, "Deleted Action");
-        }
-        #endregion
 
 
         #region ActionAttachments
@@ -182,8 +220,8 @@ namespace TeamSupport.DataAPI
                     }
                     break;
                 default:
-                     mostRecentByFilename = null;
-                   break;
+                    mostRecentByFilename = null;
+                    break;
             }
         }
 

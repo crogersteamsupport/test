@@ -67,11 +67,11 @@ namespace TeamSupport.Model
             if (!disposing)
                 return;
 
-            if (_db != null)
-                _db.Dispose();
-
             if (_transaction != null)
                 _transaction.Dispose();
+
+            if (_db != null)
+                _db.Dispose();
 
             if (_connection != null)
                 _connection.Dispose();
