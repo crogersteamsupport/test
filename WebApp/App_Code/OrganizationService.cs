@@ -1578,11 +1578,7 @@ namespace TSWebServices
             CDI_Settings cdi = new CDI_Settings(TSAuthentication.GetLoginUser());
             cdi.LoadByOrganizationID(organizationID);
             if (cdi.Count > 0)
-            {
-                var proxy = cdi[0].GetProxy();
-                proxy.CDIDate = GetCDIDate(organizationID);
-                return proxy;
-            }
+                return cdi[0].GetProxy();
             else
                 return null;
         }
@@ -1870,19 +1866,6 @@ namespace TSWebServices
 
             return results;
         }
-
-        private DateTime GetCDIDate(int organizationID)
-        {
-            SqlCommand command = new SqlCommand();
-            command.CommandType = CommandType.Text;
-            command.CommandText = @"SELECT CDIDate FROM CustDistHistory WHERE OrganizationID = @OrganizationID  ORDER BY CDIDate Desc";
-            command.Parameters.AddWithValue("@OrganizationId", organizationID);
-            var result = SqlExecutor.ExecuteScalar(TSAuthentication.GetLoginUser(), command);
-
-            return (DateTime)result;
-        }
-
-
 }
     public class ActivityTypesDropDown
     {
