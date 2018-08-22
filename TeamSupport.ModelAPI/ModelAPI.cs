@@ -16,7 +16,49 @@ namespace TeamSupport.ModelAPI
     /// <summary> CRUD interface to DataAPI - Create, Read, Update, Delete proxy </summary>
     public static class ModelAPI
     {
-        /// <summary> Read the proxy corresponding to the ID </summary>
+        /// <summary> 
+        /// CREATE
+        /// </summary>
+        public static void Create<T>(T proxy)
+        {
+            try
+            {
+                using (ConnectionContext connection = new ConnectionContext())
+                {
+                    switch (typeof(T).Name)
+                    {
+                        case "ActionProxy":
+                            ActionProxy actionProxy = proxy as ActionProxy;
+                            DataAPI.DataAPI.Create(connection.Ticket(actionProxy.TicketID), actionProxy);
+                            break;
+                        case "AttachmentProxy":
+                            AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
+                            ActionModel actionModel = new ActionModel(connection, attachmentProxy.RefID);
+                            DataAPI.DataAPI.Create(actionModel, attachmentProxy);
+                            break;
+                    }
+                }
+            }
+            catch (AuthenticationException ex)
+            {
+                // TODO - tell user they don't have permission
+                DataAPI.DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
+            }
+            catch (System.Data.ConstraintException ex)
+            {
+                // TODO - data integrity failure
+                DataAPI.DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
+            }
+            catch (Exception ex)
+            {
+                // TODO - tell user we failed to read
+                DataAPI.DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
+            }
+        }
+
+        /// <summary>
+        /// READ - read the proxy corresponding to the ID 
+        /// </summary>
         public static T Read<T>(int id) where T : class
         {
             T t = default(T);   // null since T is a class
@@ -64,82 +106,9 @@ namespace TeamSupport.ModelAPI
             return t;
         }
 
-        /// <summary> Create a child </summary>
-        public static void Create<T>(T proxy)
-        {
-            try
-            {
-                using (ConnectionContext connection = new ConnectionContext())
-                {
-                    switch (typeof(T).Name)
-                    {
-                        case "ActionProxy":
-                            ActionProxy actionProxy = proxy as ActionProxy;
-                            DataAPI.DataAPI.Create(connection.Ticket(actionProxy.TicketID), ref actionProxy);
-                            break;
-                        case "AttachmentProxy":
-                            AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
-                            ActionModel actionModel = new ActionModel(connection, attachmentProxy.RefID);
-                            DataAPI.DataAPI.Create(actionModel, attachmentProxy);
-                            break;
-                    }
-                }
-            }
-            catch (AuthenticationException ex)
-            {
-                // TODO - tell user they don't have permission
-                DataAPI.DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
-            }
-            catch (System.Data.ConstraintException ex)
-            {
-                // TODO - data integrity failure
-                DataAPI.DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
-            }
-            catch (Exception ex)
-            {
-                // TODO - tell user we failed to read
-                DataAPI.DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
-            }
-        }
-
-        /// <summary> Delete </summary>
-        public static void Delete<T>(T proxy)
-        {
-            try
-            {
-                using (ConnectionContext connection = new ConnectionContext())
-                {
-                    switch (typeof(T).Name)
-                    {
-                        case "ActionProxy":
-                            ActionProxy actionProxy = proxy as ActionProxy;
-                            DataAPI.DataAPI.Delete(new ActionModel(connection, actionProxy.ActionID));
-                            break;
-                        case "AttachmentProxy":
-                            AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
-                            DataAPI.DataAPI.Delete(new ActionAttachment(connection, attachmentProxy.AttachmentID));
-                            break;
-                    }
-                }
-            }
-            catch (AuthenticationException ex)
-            {
-                // TODO - tell user they don't have permission
-                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
-            }
-            catch (System.Data.ConstraintException ex)
-            {
-                // TODO - data integrity failure
-                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
-            }
-            catch (Exception ex)
-            {
-                // TODO - tell user we failed to read
-                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
-            }
-        }
-
-        /// <summary> Update </summary>
+        /// <summary>
+        /// UPDATE
+        /// </summary>
         public static void Update<T>(T proxy)
         {
             try
@@ -155,6 +124,45 @@ namespace TeamSupport.ModelAPI
                         case "AttachmentProxy":
                             AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
                             //DataAPI.DataAPI.Update(new ActionAttachment(connection, attachmentProxy.AttachmentID), attachmentProxy);
+                            break;
+                    }
+                }
+            }
+            catch (AuthenticationException ex)
+            {
+                // TODO - tell user they don't have permission
+                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
+            }
+            catch (System.Data.ConstraintException ex)
+            {
+                // TODO - data integrity failure
+                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
+            }
+            catch (Exception ex)
+            {
+                // TODO - tell user we failed to read
+                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
+            }
+        }
+
+        /// <summary> 
+        /// DELETE
+        /// </summary>
+        public static void Delete<T>(T proxy)
+        {
+            try
+            {
+                using (ConnectionContext connection = new ConnectionContext())
+                {
+                    switch (typeof(T).Name)
+                    {
+                        case "ActionProxy":
+                            ActionProxy actionProxy = proxy as ActionProxy;
+                            DataAPI.DataAPI.Delete(new ActionModel(connection, actionProxy.ActionID));
+                            break;
+                        case "AttachmentProxy":
+                            AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
+                            DataAPI.DataAPI.Delete(new ActionAttachment(connection, attachmentProxy.AttachmentID));
                             break;
                     }
                 }

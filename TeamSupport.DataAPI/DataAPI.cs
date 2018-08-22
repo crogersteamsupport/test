@@ -34,14 +34,32 @@ namespace TeamSupport.DataAPI
             string command = String.Empty;
             switch (typeof(TProxy).Name) // alphabetized list
             {
-                case "SubscriptionProxy":
+                case "ActionAttachment":
+                    {
+                        ActionModel actionModel = tModel as ActionModel;
+                        AttachmentProxy proxy = tProxy as AttachmentProxy;
+                        string query = "INSERT INTO ActionAttachments(OrganizationID, FileName, FileType, FileSize, Path, DateCreated, DateModified, CreatorID, ModifierID, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID) " +
+                            $"VALUES({actionModel.Connection.Organization.OrganizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{ToSql(proxy.DateCreated)}', '{ToSql(proxy.DateModified)}', {proxy.CreatorID}, {proxy.ModifierID}, {actionModel.ActionID}, {ToSql(proxy.SentToJira)}, {ToSql(proxy.SentToTFS)}, {ToSql(proxy.SentToSnow)}, {proxy.FilePathID})" +
+                            "SELECT SCOPE_IDENTITY()";
+                        decimal value = actionModel.Connection._db.ExecuteQuery<decimal>(query, proxy.FileName, proxy.FileType, proxy.Path).Min();
+                        proxy.AttachmentID = Decimal.ToInt32(value);
+                    }
+                    break;
+                case "ActionProxy":
+                    {
+                        TicketModel model = tModel as TicketModel;
+                        ActionProxy proxy = tProxy as ActionProxy;
+                        AuthenticationModel authentication = model.Connection.Authentication;
+                        Data.Action.Create(model.Connection._db, authentication.OrganizationID, authentication.UserID, model.TicketID, ref proxy);
+                    }
+                    break;
+                case "ContactProxy":
                     {
                         TicketModel model = tModel as TicketModel;
                         int userID = model.Connection.User.UserID;
-                        SubscriptionProxy proxy = tProxy as SubscriptionProxy;
-                        command = $"INSERT INTO Subscriptions (RefType, RefID, UserID, DateCreated, DateModified, CreatorID, ModifierID)" +
-                                $"SELECT 17, {model.TicketID}, {proxy.UserID}, '{now}','{now}', {userID}, {userID} ";
-                        model.Connection._db.ExecuteCommand(command);
+                        ContactProxy proxy = tProxy as ContactProxy;
+                        command = $"INSERT INTO UserTickets (TicketID, UserID, DateCreated, CreatorID)" +
+                            $"SELECT {model.TicketID}, {proxy.UserID}, '{now}', {userID} ";
                     }
                     break;
                 case "CustomerProxy":
@@ -54,13 +72,14 @@ namespace TeamSupport.DataAPI
                         model.Connection._db.ExecuteCommand(command);
                     }
                     break;
-                case "ContactProxy":
+                case "SubscriptionProxy":
                     {
                         TicketModel model = tModel as TicketModel;
                         int userID = model.Connection.User.UserID;
-                        ContactProxy proxy = tProxy as ContactProxy;
-                        command = $"INSERT INTO UserTickets (TicketID, UserID, DateCreated, CreatorID)" +
-                            $"SELECT {model.TicketID}, {proxy.UserID}, '{now}', {userID} ";
+                        SubscriptionProxy proxy = tProxy as SubscriptionProxy;
+                        command = $"INSERT INTO Subscriptions (RefType, RefID, UserID, DateCreated, DateModified, CreatorID, ModifierID)" +
+                                $"SELECT 17, {model.TicketID}, {proxy.UserID}, '{now}','{now}', {userID}, {userID} ";
+                        model.Connection._db.ExecuteCommand(command);
                     }
                     break;
             }
@@ -133,7 +152,7 @@ namespace TeamSupport.DataAPI
         }
 
         /// <summary> 
-        /// UPDATTE - update a model with the proxy data 
+        /// UPDATE - update a model with the proxy data 
         /// </summary>
         public static void Update<TProxy, TModel>(TModel tModel, TProxy tProxy) where TProxy : class where TModel : class
         {
@@ -156,10 +175,18 @@ namespace TeamSupport.DataAPI
             string command = String.Empty;
             switch (typeof(T).Name) // alphabetized list
             {
+                case "ActionAttachment":
+                    {
+                        ActionAttachment model = t as ActionAttachment;
+                        command = $"DELETE FROM ActionAttachments WHERE ActionAttachmentID = {model.ActionAttachmentID}";
+                        model.Connection._db.ExecuteCommand(command);
+                    }
+                    break;
                 case "Customer":
                     {
                         Customer model = t as Customer;
                         command = $"DELETE FROM OrganizationTickets Where TicketID={model.Ticket.TicketID} AND OrganizationId = {model.OrganizationID}";
+                        model.Connection._db.ExecuteCommand(command);
                     }
                     break;
                 case "TagLinkModel":
@@ -192,28 +219,9 @@ namespace TeamSupport.DataAPI
         //    return $"{fullName.FirstName} {fullName.LastName}";
         //}
 
-        /// <summary> Create Action </summary>
-        public static void Create(TicketModel ticketModel, ref ActionProxy actionProxy)
-        {
-            AuthenticationModel authentication = ticketModel.Connection.Authentication;
-            Data.Action.Create(ticketModel.Connection._db, authentication.OrganizationID, authentication.UserID, ticketModel.TicketID, ref actionProxy);
-            LogMessage(ActionLogType.Insert, ReferenceType.Actions, actionProxy.ActionID, "Created Action");
-        }
-
 
         #region ActionAttachments
 
-
-        /// <summary> Create Action Attachment </summary>
-        public static void Create(ActionModel actionModel, AttachmentProxy proxy)
-        {
-            // hard code all the numbers, parameterize all the strings so they are SQL-Injection checked
-            string query = "INSERT INTO ActionAttachments(OrganizationID, FileName, FileType, FileSize, Path, DateCreated, DateModified, CreatorID, ModifierID, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID) " +
-                $"VALUES({actionModel.Connection.Organization.OrganizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{ToSql(proxy.DateCreated)}', '{ToSql(proxy.DateModified)}', {proxy.CreatorID}, {proxy.ModifierID}, {actionModel.ActionID}, {ToSql(proxy.SentToJira)}, {ToSql(proxy.SentToTFS)}, {ToSql(proxy.SentToSnow)}, {proxy.FilePathID})" +
-                "SELECT SCOPE_IDENTITY()";
-            decimal value = actionModel.Connection._db.ExecuteQuery<decimal>(query, proxy.FileName, proxy.FileType, proxy.Path).Min();
-            proxy.AttachmentID = Decimal.ToInt32(value);
-        }
 
         // load action attachments into attachment proxy
         const string SelectActionAttachmentProxy = "SELECT a.*, a.ActionAttachmentID as AttachmentID, a.ActionAttachmentGUID as AttachmentGUID, (u.FirstName + ' ' + u.LastName) AS CreatorName, a.ActionID as RefID " +
@@ -271,15 +279,6 @@ namespace TeamSupport.DataAPI
         //    mostRecentByFilename = ticketModel.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray();
         //}
 
-        /// <summary> Update Action Attachment </summary>
-
-        /// <summary> Delete Action Attachment </summary>
-        public static void Delete(ActionAttachment actionAttachment)
-        {
-            string query = $"DELETE FROM ActionAttachments WHERE ActionAttachmentID = {actionAttachment.ActionAttachmentID}";
-            actionAttachment.Connection._db.ExecuteCommand(query);
-            LogMessage(ActionLogType.Delete, ReferenceType.Actions, actionAttachment.ActionAttachmentID, "Deleted Action Attachment");
-        }
         #endregion
 
 

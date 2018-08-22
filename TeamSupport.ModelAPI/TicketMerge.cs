@@ -33,6 +33,48 @@ namespace TeamSupport.ModelAPI
 
             MergeTagLinks();
             MergeSubscriptions();
+            MergeCustomers();
+            MergeContacts();
+        }
+
+        void MergeCustomers()
+        {
+            Customer[] customers = Customer.GetCustomers(Source);
+            if (customers.Length == 0)
+                return;
+
+            Customer[] destinationCustomers = Customer.GetCustomers(Destination);
+            foreach (Customer customer in customers)
+            {
+                // WHERE NOT EXISTS(SELECT * FROM OrganizationTickets WHERE TicketID ={model.TicketID} and OrganizationId ={proxy.OrganizationID})
+                if (!destinationCustomers.Where(c => c.OrganizationID == customer.OrganizationID).Any())
+                {
+                    CustomerProxy customerProxy = new CustomerProxy() { OrganizationID = customer.OrganizationID };
+                    DataAPI.DataAPI.Create(Destination, customerProxy);
+                }
+
+                DataAPI.DataAPI.Delete(customer);
+            }
+        }
+
+        void MergeContacts()
+        {
+            Contact[] contacts = Contact.GetContacts(Source);
+            if (contacts.Length == 0)
+                return;
+
+            Contact[] destinationContacts = Contact.GetContacts(Destination);
+            foreach(Contact contact in contacts)
+            {
+                // WHERE NOT EXISTS(SELECT * FROM UserTickets WHERE TicketID ={model.TicketID} and UserID ={proxy.UserID})
+                if (!destinationContacts.Where(c => c.UserID == contact.UserID).Any())
+                {
+                    ContactProxy contactProxy = new ContactProxy() { UserID = contact.UserID };
+                    DataAPI.DataAPI.Create(Destination, contactProxy);
+                }
+
+                DataAPI.DataAPI.Delete(contact);
+            }
         }
 
         /// <summary> TagLinks </summary>
@@ -45,9 +87,9 @@ namespace TeamSupport.ModelAPI
             TagLinkProxy[] destinationTagLinks = DataAPI.DataAPI.Read<TagLinkProxy[], TicketModel>(Destination);
             foreach (TagLinkProxy tagLinkProxy in sourceTagLinks)
             {
+                // ticket already has this tag link
                 if (destinationTagLinks.Where(t => t.TagID == tagLinkProxy.TagID).Any())
                 {
-                    // ticket already has this tag link
                     DataAPI.DataAPI.Delete(new TagLinkModel(Source, tagLinkProxy.TagLinkID));
                     continue;
                 }
@@ -62,16 +104,24 @@ namespace TeamSupport.ModelAPI
         void MergeSubscriptions()
         {
             SubscriptionModel[] subscriptions = SubscriptionModel.GetSubscriptions(Source);
-            foreach(SubscriptionModel subscriptionModel in subscriptions)
-            {
-                SubscriptionProxy subscriptionProxy = new SubscriptionProxy()
-                {
-                    RefType = ReferenceType.Tickets,
-                    RefID = Destination.TicketID,
-                    UserID = subscriptionModel.UserID
-                };
+            if (subscriptions.Length == 0)
+                return;
 
-                DataAPI.DataAPI.Create(Destination, subscriptionProxy);
+            SubscriptionModel[] destinationSubscriptions = SubscriptionModel.GetSubscriptions(Destination);
+            foreach (SubscriptionModel subscriptionModel in subscriptions)
+            {
+                // WHERE NOT EXISTS(SELECT * FROM Subscriptions WHERE reftype = 17 AND RefID = {model.TicketID} AND UserID = {proxy.UserID})
+                if (!destinationSubscriptions.Where(s => s.UserID == subscriptionModel.UserID).Any())
+                {
+                    SubscriptionProxy subscriptionProxy = new SubscriptionProxy()
+                    {
+                        RefType = ReferenceType.Tickets,
+                        RefID = Destination.TicketID,
+                        UserID = subscriptionModel.UserID
+                    };
+                    DataAPI.DataAPI.Create(Destination, subscriptionProxy);
+                }
+
                 DataAPI.DataAPI.Delete(subscriptionModel);
             }
         }
