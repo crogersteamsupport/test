@@ -40,9 +40,27 @@ namespace TeamSupport.DataAPI
                         int userID = model.Connection.User.UserID;
                         SubscriptionProxy proxy = tProxy as SubscriptionProxy;
                         command = $"INSERT INTO Subscriptions (RefType, RefID, UserID, DateCreated, DateModified, CreatorID, ModifierID)" +
-                                $"SELECT 17, {model.TicketID}, {proxy.UserID}, '{now}','{now}', {userID}, {userID} " +
-                                $"WHERE NOT EXISTS(SELECT * FROM Subscriptions WHERE reftype = 17 AND RefID = {model.TicketID} AND UserID = {proxy.UserID})";
+                                $"SELECT 17, {model.TicketID}, {proxy.UserID}, '{now}','{now}', {userID}, {userID} ";
                         model.Connection._db.ExecuteCommand(command);
+                    }
+                    break;
+                case "CustomerProxy":
+                    {
+                        TicketModel model = tModel as TicketModel;
+                        int userID = model.Connection.User.UserID;
+                        CustomerProxy proxy = tProxy as CustomerProxy;
+                        command = $"INSERT INTO OrganizationTickets (TicketID, OrganizationID, DateCreated, CreatorID, DateModified, ModifierID)" +
+                            $"SELECT {model.TicketID}, {proxy.OrganizationID}, '{now}', {userID}, '{now}', {userID}"; 
+                        model.Connection._db.ExecuteCommand(command);
+                    }
+                    break;
+                case "ContactProxy":
+                    {
+                        TicketModel model = tModel as TicketModel;
+                        int userID = model.Connection.User.UserID;
+                        ContactProxy proxy = tProxy as ContactProxy;
+                        command = $"INSERT INTO UserTickets (TicketID, UserID, DateCreated, CreatorID)" +
+                            $"SELECT {model.TicketID}, {proxy.UserID}, '{now}', {userID} ";
                     }
                     break;
             }
@@ -138,6 +156,12 @@ namespace TeamSupport.DataAPI
             string command = String.Empty;
             switch (typeof(T).Name) // alphabetized list
             {
+                case "Customer":
+                    {
+                        Customer model = t as Customer;
+                        command = $"DELETE FROM OrganizationTickets Where TicketID={model.Ticket.TicketID} AND OrganizationId = {model.OrganizationID}";
+                    }
+                    break;
                 case "TagLinkModel":
                     {
                         TagLinkModel model = t as TagLinkModel;

@@ -49,7 +49,9 @@
     <Compile Include="ActionAttachment.cs" />
     <Compile Include="ActionModel.cs" />
     <Compile Include="AttachmentFile.cs" />
+    <Compile Include="Contact.cs" />
     <Compile Include="ConnectionContext.cs" />
+    <Compile Include="Customer.cs" />
     <Compile Include="DBReader.cs" />
     <Compile Include="OrganizationModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

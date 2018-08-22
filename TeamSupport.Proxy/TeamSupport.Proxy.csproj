@@ -48,6 +48,8 @@
     <Compile Include="ActionsProxy.cs" />
     <Compile Include="AttachmentProxy.cs" />
     <Compile Include="AuthenticationModel.cs" />
+    <Compile Include="ContactProxy.cs" />
+    <Compile Include="CustomerProxy.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SubscriptionProxy.cs" />

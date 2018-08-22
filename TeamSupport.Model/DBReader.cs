@@ -11,7 +11,6 @@ namespace TeamSupport.Model
     {
         Contacts,
         Customers,
-        //Tags,
         Subscriptions,
         Reminders,
         Tasks,
@@ -94,9 +93,6 @@ namespace TeamSupport.Model
                 case TicketChild.Customers:
                     query = $"Select organizationid From OrganizationTickets WITH (NOLOCK) Where TicketId = {ticket.TicketID}";
                     break;
-                //case TicketChild.Tags:
-                //    query = $"SELECT TagID FROM TagLinks WITH(NOLOCK) WHERE Reftype=17 and RefID = {ticket.TicketID}";
-                //    break;
                 case TicketChild.Subscriptions:
                     query = $"SELECT Subscriptions.userid FROM Subscriptions WITH (NOLOCK) " +
                         $"JOIN Users WITH (NOLOCK) on users.userid = Subscriptions.userid " +
