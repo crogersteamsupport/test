@@ -14,7 +14,7 @@ using System.Web.Security;
 namespace TeamSupport.Model
 {
     /// <summary> Action Attachments </summary>
-    public class ActionAttachment
+    public class ActionAttachment : IModel
     {
         public ActionModel Action { get; private set; }
         public int ActionAttachmentID { get; private set; }

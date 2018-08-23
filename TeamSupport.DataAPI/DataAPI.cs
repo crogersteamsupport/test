@@ -28,7 +28,7 @@ namespace TeamSupport.DataAPI
         /// <summary>
         /// CREATE - create proxy child for model parent
         /// </summary>
-        public static void Create<TProxy, TModel>(TModel tModel, TProxy tProxy) where TProxy : class where TModel : class
+        public static void Create<TProxy>(IModel iModel, TProxy tProxy) where TProxy : class
         {
             string now = ToSql(DateTime.UtcNow);
             string command = String.Empty;
@@ -36,7 +36,7 @@ namespace TeamSupport.DataAPI
             {
                 case "ActionAttachment":
                     {
-                        ActionModel model = tModel as ActionModel;
+                        ActionModel model = (ActionModel)iModel;
                         AttachmentProxy proxy = tProxy as AttachmentProxy;
                         string query = "SET Context_Info 0x55555; " + 
                             "INSERT INTO ActionAttachments(OrganizationID, FileName, FileType, FileSize, Path, DateCreated, DateModified, CreatorID, ModifierID, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID) " +
@@ -48,7 +48,7 @@ namespace TeamSupport.DataAPI
                     break;
                 case "ActionProxy":
                     {
-                        TicketModel model = tModel as TicketModel;
+                        TicketModel model = (TicketModel)iModel;
                         ActionProxy proxy = tProxy as ActionProxy;
                         AuthenticationModel authentication = model.Connection.Authentication;
                         Data.Action.Create(model.Connection._db, authentication.OrganizationID, authentication.UserID, model.TicketID, ref proxy);
@@ -56,77 +56,77 @@ namespace TeamSupport.DataAPI
                     break;
                 case "ContactProxy":
                     {
-                        TicketModel model = tModel as TicketModel;
+                        TicketModel model = (TicketModel)iModel;
                         int userID = model.Connection.User.UserID;
                         ContactProxy proxy = tProxy as ContactProxy;
                         command = $"INSERT INTO UserTickets (TicketID, UserID, DateCreated, CreatorID)" +
                             $"SELECT {model.TicketID}, {proxy.UserID}, '{now}', {userID} ";
-                        model.Connection._db.ExecuteCommand(command);
                     }
                     break;
                 case "CustomerProxy":
                     {
-                        TicketModel model = tModel as TicketModel;
+                        TicketModel model = (TicketModel)iModel;
                         int userID = model.Connection.User.UserID;
                         CustomerProxy proxy = tProxy as CustomerProxy;
                         command = $"INSERT INTO OrganizationTickets (TicketID, OrganizationID, DateCreated, CreatorID, DateModified, ModifierID)" +
                             $"SELECT {model.TicketID}, {proxy.OrganizationID}, '{now}', {userID}, '{now}', {userID}"; 
-                        model.Connection._db.ExecuteCommand(command);
                     }
                     break;
                 case "SubscriptionProxy":
                     {
-                        TicketModel model = tModel as TicketModel;
+                        TicketModel model = (TicketModel)iModel;
                         int userID = model.Connection.User.UserID;
                         SubscriptionProxy proxy = tProxy as SubscriptionProxy;
                         command = $"INSERT INTO Subscriptions (RefType, RefID, UserID, DateCreated, DateModified, CreatorID, ModifierID)" +
                                 $"SELECT 17, {model.TicketID}, {proxy.UserID}, '{now}','{now}', {userID}, {userID} ";
-                        model.Connection._db.ExecuteCommand(command);
                     }
                     break;
             }
+
+            if(!String.IsNullOrEmpty(command))
+                iModel.Connection._db.ExecuteCommand(command);
             // TODO - log
         }
 
         /// <summary> 
         /// READ - read proxy given a model 
         /// </summary>
-        public static TProxy Read<TProxy, TModel>(TModel tModel) where TProxy : class where TModel : class
+        public static TProxy Read<TProxy>(IModel iModel) where TProxy : class
         {
             TProxy tProxy = default(TProxy);
             switch (typeof(TProxy).Name) // alphabetized list
             {
                 case "ActionProxy": // action
                     {
-                        ActionModel model = tModel as ActionModel;
+                        ActionModel model = (ActionModel)iModel;
                         Table<ActionProxy> table = model.Connection._db.GetTable<ActionProxy>();
                         tProxy = table.Where(t => t.ActionID == model.ActionID).First() as TProxy;
                     }
                     break;
                 case "ActionProxy[]":   // ticket actions
                     {
-                        TicketModel model = tModel as TicketModel;
+                        TicketModel model = (TicketModel)iModel;
                         Table<ActionProxy> table = model.Connection._db.GetTable<ActionProxy>();
                         tProxy = table.Where(t => t.TicketID == model.TicketID).ToArray() as TProxy;
                     }
                     break;
                 case "AttachmentProxy": // action attachment (organization attachments?)
                     {
-                        ActionAttachment model = tModel as ActionAttachment;
+                        ActionAttachment model = (ActionAttachment)iModel;
                         string query = SelectActionAttachmentProxy + $"WHERE ActionAttachmentID = {model.ActionAttachmentID}";
                         tProxy = model.Connection._db.ExecuteQuery<AttachmentProxy>(query).First() as TProxy;
                     }
                     break;
                 case "AttachmentProxy[]": // action attachments
                     {
-                        ActionModel model = tModel as ActionModel;
+                        ActionModel model = (ActionModel)iModel;
                         string query = SelectActionAttachmentProxy + $"WHERE ActionID = {model.ActionID}";
                         tProxy = model.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray() as TProxy;
                     }
                     break;
                 case "ReminderProxy":
                     {
-                        ReminderModel model = tModel as ReminderModel;
+                        ReminderModel model = (ReminderModel)iModel;
                         string query = $"SELECT ReminderID, OrganizationID, RefType, RefID, Description, DueDate, UserID, IsDismissed, HasEmailSent, CreatorID, DateCreated " +
                             $"FROM Reminders WHERE ReminderID = {model.ReminderID}";
                         tProxy = model.Connection._db.ExecuteQuery<ReminderProxy>(query).ToArray() as TProxy;
@@ -134,7 +134,7 @@ namespace TeamSupport.DataAPI
                     break;
                 case "SubscriptionModel[]":
                     {
-                        TicketModel model = tModel as TicketModel;
+                        TicketModel model = (TicketModel)iModel;
                         string query = $"SELECT RefType,RefID,UserID,DateCreated,DateModified,CreatorID,ModifierID FROM Subscriptions " +
                             $"WHERE Reftype = 17 and Refid = {model.TicketID} and MarkDeleted = 0";
                         tProxy = model.Connection._db.ExecuteQuery<SubscriptionModel>(query).ToArray() as TProxy;
@@ -142,7 +142,7 @@ namespace TeamSupport.DataAPI
                     break;
                 case "TicketProxy": // ticket
                     {
-                        TicketModel model = tModel as TicketModel;
+                        TicketModel model = (TicketModel)iModel;
                         Table<TicketProxy> table = model.Connection._db.GetTable<TicketProxy>();
                         tProxy = table.Where(t => t.TicketID == model.TicketID).First() as TProxy;
                     }
@@ -150,7 +150,7 @@ namespace TeamSupport.DataAPI
                 case "TagLinkProxy[]":
                     {
                         //query = $"SELECT TagLinkID, TagID, RefType, RefID, DateCreated, CreatorID FROM TagLinks WHERE RefType = 17 AND RefID = {model.TicketID}";
-                        TicketModel model = tModel as TicketModel;
+                        TicketModel model = (TicketModel)iModel;
                         Table<TagLinkProxy> table = model.Connection._db.GetTable<TagLinkProxy>();
                         tProxy = table.Where(t => (t.RefType == ReferenceType.Tickets) && (t.RefID == model.TicketID)).ToArray() as TProxy;
                     }
@@ -168,77 +168,72 @@ namespace TeamSupport.DataAPI
         ///     ModifierID, DateTimeModified
         ///     Logging
         /// </summary>
-        public static void Update<TProxy, TModel>(TModel tModel, TProxy tProxy) where TProxy : class where TModel : class
+        public static void Update<TProxy>(IModel iModel, TProxy tProxy) where TProxy : class
         {
             string command = String.Empty;
             switch (typeof(TProxy).Name) // alphabetized list
             {
                 case "TagLinkProxy":    // ticket tag links
                     {
-                        TagLinkModel model = tModel as TagLinkModel;
+                        TagLinkModel model = (TagLinkModel)iModel;
                         TagLinkProxy proxy = tProxy as TagLinkProxy;
-                        command = $"UPDATE TagLinks WITH(ROWLOCK) SET TagLinkID={proxy.TagLinkID}, TagID={proxy.TagID}, RefType={proxy.RefType}, RefID={proxy.RefID}  " +
-                            $"WHERE TagLinkID={model.TagLinkID}";
-                        model.Connection._db.ExecuteCommand(command);
+                        command = $"UPDATE TagLinks WITH(ROWLOCK) SET TagID={proxy.TagID}, RefType=17, RefID={proxy.RefID} WHERE TagLinkID={model.TagLinkID}";
                     }
                     break;
                 case "TaskAssociationProxy":
                     {
-                        TaskAssociationModel model = tModel as TaskAssociationModel;
+                        TaskAssociationModel model = (TaskAssociationModel)iModel;
                         TaskAssociationProxy proxy = tProxy as TaskAssociationProxy;
                         command = $"UPDATE TaskAssociations SET TaskID = {proxy.TaskID}, RefID = {proxy.RefID}, RefType = {proxy.RefType}, CreatorID = {proxy.CreatorID} " +
                             $"WHERE(TaskId = {model.TaskID})";
-                        model.Connection._db.ExecuteCommand(command);
                     }
                     break;
                 case "ReminderProxy":    // ticket reminder
                     {
-                        ReminderModel model = tModel as ReminderModel;
+                        ReminderModel model = (ReminderModel)iModel;
                         ReminderProxy proxy = tProxy as ReminderProxy;
                         command = $" UPDATE Reminders WITH(ROWLOCK) SET RefID ={proxy.RefID} " +
                             $"WHERE(ReminderId = {model.ReminderID})";
-                        model.Connection._db.ExecuteCommand(command);
                     }
                     break;
             }
+
+            iModel.Connection._db.ExecuteCommand(command);
         }
 
         /// <summary> 
         /// DELETE - delete a model </summary>
-        public static void Delete<T>(T t) where T : class
+        public static void Delete(IModel iModel)
         {
             string command = String.Empty;
-            switch (typeof(T).Name) // alphabetized list
+            switch (iModel.GetType().Name) // alphabetized list
             {
                 case "ActionAttachment":
                     {
-                        ActionAttachment model = t as ActionAttachment;
+                        ActionAttachment model = iModel as ActionAttachment;
                         command = $"DELETE FROM ActionAttachments WHERE ActionAttachmentID = {model.ActionAttachmentID}";
-                        model.Connection._db.ExecuteCommand(command);
                     }
                     break;
                 case "Customer":
                     {
-                        Customer model = t as Customer;
+                        Customer model = iModel as Customer;
                         command = $"DELETE FROM OrganizationTickets Where TicketID={model.Ticket.TicketID} AND OrganizationId = {model.OrganizationID}";
-                        model.Connection._db.ExecuteCommand(command);
                     }
                     break;
                 case "TagLinkModel":
                     {
-                        TagLinkModel model = t as TagLinkModel;
+                        TagLinkModel model = iModel as TagLinkModel;
                         command = $"DELETE FROM TagLinks WITH (ROWLOCK) WHERE TagLinkID={model.TagLinkID}";
-                        model.Connection._db.ExecuteCommand(command);
                     }
                     break;
                 case "SubscriptionModel":
                     {
-                        SubscriptionModel model = t as SubscriptionModel;
-                        command = $"DELETE FROM Subscriptions WITH (ROWLOCK) WHERE UserID={model.UserID}";
-                        model.Connection._db.ExecuteCommand(command);
+                        SubscriptionModel model = iModel as SubscriptionModel;
+                        command = $"DELETE FROM Subscriptions WITH (ROWLOCK) WHERE RefType=17 AND RefID={model.Ticket.TicketID} AND UserID={model.UserID}";
                     }
                     break;
             }
+            iModel.Connection._db.ExecuteCommand(command);
             // TODO - log
         }
 

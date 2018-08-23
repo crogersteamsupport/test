@@ -13,7 +13,7 @@ namespace TeamSupport.Model
     /// <summary>
     /// Wrapper for valid TicketID
     /// </summary>
-    public class TicketModel
+    public class TicketModel : IModel
     {
         public UserSession User { get; private set; }
         public int TicketID { get; private set; }

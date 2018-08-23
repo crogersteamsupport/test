@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TeamSupport.Model
 {
-    public class TagLinkModel
+    public class TagLinkModel : IModel
     {
         public TicketModel Ticket { get; private set; }
         public int TagLinkID { get; private set; }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TeamSupport.Model
 {
-    public class ReminderModel
+    public class ReminderModel : IModel
     {
         public TicketModel Ticket { get; private set; }
         public int ReminderID { get; private set; }

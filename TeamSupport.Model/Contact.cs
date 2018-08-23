@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TeamSupport.Model
 {
-    public class Contact
+    public class Contact : IModel
     {
         public TicketModel Ticket { get; private set; }
         public int UserID { get; private set; }

@@ -12,7 +12,7 @@ namespace TeamSupport.Model
     /// <summary>
     /// Wrapper for valid UserID
     /// </summary>
-    public class UserSession
+    public class UserSession : IModel
     {
         public OrganizationModel Organization { get; private set; }
         public ConnectionContext Connection { get; private set; }

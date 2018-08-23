@@ -82,11 +82,11 @@ namespace TeamSupport.ModelAPI
         /// <summary> TagLinks </summary>
         void MergeTagLinks()
         {
-            TagLinkProxy[] sourceTagLinks = DataAPI.DataAPI.Read<TagLinkProxy[], TicketModel>(Source);
+            TagLinkProxy[] sourceTagLinks = DataAPI.DataAPI.Read<TagLinkProxy[]>(Source);
             if (sourceTagLinks.Length == 0)
                 return;
 
-            TagLinkProxy[] destinationTagLinks = DataAPI.DataAPI.Read<TagLinkProxy[], TicketModel>(Destination);
+            TagLinkProxy[] destinationTagLinks = DataAPI.DataAPI.Read<TagLinkProxy[]>(Destination);
             foreach (TagLinkProxy tagLinkProxy in sourceTagLinks)
             {
                 // ticket already has this tag link
@@ -133,7 +133,7 @@ namespace TeamSupport.ModelAPI
             ReminderModel[] reminders = ReminderModel.GetReminders(Source);
             foreach(ReminderModel reminderModel in reminders)
             {
-                ReminderProxy reminderProxy = DataAPI.DataAPI.Read<ReminderProxy, ReminderModel>(reminderModel);
+                ReminderProxy reminderProxy = DataAPI.DataAPI.Read<ReminderProxy>(reminderModel);
                 DataAPI.DataAPI.Update(Destination, reminderProxy);
             }
         }
@@ -143,7 +143,7 @@ namespace TeamSupport.ModelAPI
             TaskAssociationModel[] tasks = TaskAssociationModel.GetTaskAssociations(Source);
             foreach (TaskAssociationModel task in tasks)
             {
-                TaskAssociationProxy taskAssociationProxy = DataAPI.DataAPI.Read<TaskAssociationProxy, TaskAssociationModel>(task);
+                TaskAssociationProxy taskAssociationProxy = DataAPI.DataAPI.Read<TaskAssociationProxy>(task);
                 DataAPI.DataAPI.Update(Destination, taskAssociationProxy);
             }
         }

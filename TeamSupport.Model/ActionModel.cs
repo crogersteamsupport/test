@@ -15,7 +15,7 @@ namespace TeamSupport.Model
     /// <summary>
     /// Wrapper for Valid ActionID
     /// </summary>
-    public class ActionModel
+    public class ActionModel : IModel
     {
         public TicketModel Ticket { get; private set; }
         public int ActionID { get; private set; }

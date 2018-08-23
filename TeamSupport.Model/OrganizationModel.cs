@@ -14,7 +14,7 @@ namespace TeamSupport.Model
     /// <summary>
     /// Wrapper for valid OrganizationID
     /// </summary>
-    public class OrganizationModel
+    public class OrganizationModel : IModel
     {
         public ConnectionContext Connection { get; private set; }
 

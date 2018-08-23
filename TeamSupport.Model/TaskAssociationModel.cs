@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TeamSupport.Model
 {
-    public class TaskAssociationModel
+    public class TaskAssociationModel : IModel
     {
         public TicketModel Ticket { get; private set; }
         public int TaskID { get; private set; }

@@ -53,7 +53,7 @@ namespace TeamSupport.Model
         public static void VerifyAction(DataContext db, int organizationID, int ticketID, int actionID) { Verify(db, $"SELECT ActionID FROM Actions WITH (NOLOCK) WHERE ActionID={actionID} AND TicketID={ticketID}"); }
         public static void VerifyActionAttachment(DataContext db, int organizationID, int ticketID, int actionID, int actionAttachmentID) { Verify(db, $"SELECT ActionAttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE ActionAttachmentID={actionAttachmentID} AND ActionID={actionID} AND OrganizationID={organizationID}"); }
         public static void VerifyAsset(DataContext db, int organizationID, int ticketID, int assetID) { Verify(db, $"SELECT AssetID FROM Assets WITH (NOLOCK) WHERE AssetID={assetID} AND TicketID={ticketID}"); }
-        public static void VerifyTagLink(DataContext db, int organizationID, int ticketID, int tagLinkID) { Verify(db, $"SELECT TagLinkID FROM TagLinks WITH (NOLOCK) WHERE TagLinkID={tagLinkID} AND TicketID={ticketID}"); }
+        public static void VerifyTagLink(DataContext db, int organizationID, int ticketID, int tagLinkID) { Verify(db, $"SELECT TagLinkID FROM TagLinks WITH (NOLOCK) WHERE TagLinkID={tagLinkID} AND RefID={ticketID} AND RefType=17"); }
         public static void VerifyReminder(DataContext db, int organizationID, int ticketID, int reminderID) { Verify(db, $"SELECT ReminderID FROM Reminders WITH (NOLOCK) WHERE ReminderID={reminderID} AND OrganizationID={organizationID}"); }
         public static void VerifySubscription(DataContext db, int organizationID, int ticketID, int userID)
         {

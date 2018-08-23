@@ -69,19 +69,19 @@ namespace TeamSupport.ModelAPI
                     switch(typeof(T).Name) // alphabetized list
                     {
                         case "ActionProxy": // action
-                            t = DataAPI.DataAPI.Read<T, ActionModel>(new ActionModel(connection, id));
+                            t = DataAPI.DataAPI.Read<T>(new ActionModel(connection, id));
                             break;
                         case "ActionProxy[]": // ticket actions
-                            t = DataAPI.DataAPI.Read<T, TicketModel>(new TicketModel(connection, id));
+                            t = DataAPI.DataAPI.Read<T>(new TicketModel(connection, id));
                             break;
                         case "AttachmentProxy": // attachment
-                            t = DataAPI.DataAPI.Read<T, ActionAttachment>(new ActionAttachment(connection, id));
+                            t = DataAPI.DataAPI.Read<T>(new ActionAttachment(connection, id));
                             break;
                         case "AttachmentProxy[]": // action attachments
-                            t = DataAPI.DataAPI.Read<T, ActionModel>(new ActionModel(connection, id));
+                            t = DataAPI.DataAPI.Read<T>(new ActionModel(connection, id));
                             break;
                         case "TicketProxy": // ticket
-                            t = DataAPI.DataAPI.Read<T, TicketModel>(new TicketModel(connection, id));
+                            t = DataAPI.DataAPI.Read<T>(new TicketModel(connection, id));
                             break;
                         default:
                             throw new Exception("bad call to ModelAPI.Read");
@@ -271,7 +271,7 @@ namespace TeamSupport.ModelAPI
                     if (!attachment.Action.CanEdit())
                         return;
 
-                    AttachmentProxy proxy = DataAPI.DataAPI.Read<AttachmentProxy, ActionAttachment>(attachment);
+                    AttachmentProxy proxy = DataAPI.DataAPI.Read<AttachmentProxy>(attachment);
                     AttachmentFile file = new AttachmentFile(attachment, proxy);
                     DataAPI.DataAPI.Delete(attachment); // remove from database
                     file.Delete();  // delete file
