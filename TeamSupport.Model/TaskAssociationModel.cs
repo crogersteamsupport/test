@@ -34,13 +34,5 @@ namespace TeamSupport.Model
             return taskAssociationModels;
         }
 
-        public static TaskAssociationModel[] GetTaskAssociationss(TicketModel ticketModel)
-        {
-            int[] taskIDs = DBReader.Read(TicketChild.TaskAssociations, ticketModel);
-            TaskAssociationModel[] taskModels = new TaskAssociationModel[taskIDs.Length];
-            for (int i = 0; i < taskIDs.Length; ++i)
-                taskModels[i] = new TaskAssociationModel(ticketModel, taskIDs[i], false);
-            return taskModels;
-        }
     }
 }

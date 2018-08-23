@@ -31,12 +31,21 @@ namespace TeamSupport.ModelAPI
             if (!Connection.User.CanEdit()) // sufficient permissions?
                 return;
 
+            //MergeAssets();
+            //MergeChildren();
+            MergeContacts();
+            MergeCustomers();
+            MergeReminders();
             MergeTagLinks();
             MergeSubscriptions();
-            MergeCustomers();
-            MergeContacts();
-            MergeReminders();
             MergeTaskAssociations();
+            //MergeRelationships()  // 1 and 2
+            //MergeQueueUsers();
+            //MergeActions();
+
+            //DataAPI.DataAPI.Delete(Source);
+            //Source = null;
+            //DataAPI.DataAPI.Update(Destination, DataAPI.DataAPI.Read<TicketProxy>(Destination));  // update Date Modified
         }
 
         void MergeCustomers()
