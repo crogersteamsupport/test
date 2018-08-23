@@ -36,12 +36,13 @@ namespace TeamSupport.DataAPI
             {
                 case "ActionAttachment":
                     {
-                        ActionModel actionModel = tModel as ActionModel;
+                        ActionModel model = tModel as ActionModel;
                         AttachmentProxy proxy = tProxy as AttachmentProxy;
-                        string query = "INSERT INTO ActionAttachments(OrganizationID, FileName, FileType, FileSize, Path, DateCreated, DateModified, CreatorID, ModifierID, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID) " +
-                            $"VALUES({actionModel.Connection.Organization.OrganizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{ToSql(proxy.DateCreated)}', '{ToSql(proxy.DateModified)}', {proxy.CreatorID}, {proxy.ModifierID}, {actionModel.ActionID}, {ToSql(proxy.SentToJira)}, {ToSql(proxy.SentToTFS)}, {ToSql(proxy.SentToSnow)}, {proxy.FilePathID})" +
+                        string query = "SET Context_Info 0x55555; " + 
+                            "INSERT INTO ActionAttachments(OrganizationID, FileName, FileType, FileSize, Path, DateCreated, DateModified, CreatorID, ModifierID, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID) " +
+                            $"VALUES({model.Connection.Organization.OrganizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{ToSql(proxy.DateCreated)}', '{ToSql(proxy.DateModified)}', {proxy.CreatorID}, {proxy.ModifierID}, {model.ActionID}, {ToSql(proxy.SentToJira)}, {ToSql(proxy.SentToTFS)}, {ToSql(proxy.SentToSnow)}, {proxy.FilePathID})" +
                             "SELECT SCOPE_IDENTITY()";
-                        decimal value = actionModel.Connection._db.ExecuteQuery<decimal>(query, proxy.FileName, proxy.FileType, proxy.Path).Min();
+                        decimal value = model.Connection._db.ExecuteQuery<decimal>(query, proxy.FileName, proxy.FileType, proxy.Path).Min();
                         proxy.AttachmentID = Decimal.ToInt32(value);
                     }
                     break;
@@ -60,6 +61,7 @@ namespace TeamSupport.DataAPI
                         ContactProxy proxy = tProxy as ContactProxy;
                         command = $"INSERT INTO UserTickets (TicketID, UserID, DateCreated, CreatorID)" +
                             $"SELECT {model.TicketID}, {proxy.UserID}, '{now}', {userID} ";
+                        model.Connection._db.ExecuteCommand(command);
                     }
                     break;
                 case "CustomerProxy":
@@ -122,6 +124,14 @@ namespace TeamSupport.DataAPI
                         tProxy = model.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray() as TProxy;
                     }
                     break;
+                case "ReminderProxy":
+                    {
+                        ReminderModel model = tModel as ReminderModel;
+                        string query = $"SELECT ReminderID, OrganizationID, RefType, RefID, Description, DueDate, UserID, IsDismissed, HasEmailSent, CreatorID, DateCreated " +
+                            $"FROM Reminders WHERE ReminderID = {model.ReminderID}";
+                        tProxy = model.Connection._db.ExecuteQuery<ReminderProxy>(query).ToArray() as TProxy;
+                    }
+                    break;
                 case "SubscriptionModel[]":
                     {
                         TicketModel model = tModel as TicketModel;
@@ -153,6 +163,10 @@ namespace TeamSupport.DataAPI
 
         /// <summary> 
         /// UPDATE - update a model with the proxy data 
+        /// 
+        /// TODO:
+        ///     ModifierID, DateTimeModified
+        ///     Logging
         /// </summary>
         public static void Update<TProxy, TModel>(TModel tModel, TProxy tProxy) where TProxy : class where TModel : class
         {
@@ -160,10 +174,31 @@ namespace TeamSupport.DataAPI
             switch (typeof(TProxy).Name) // alphabetized list
             {
                 case "TagLinkProxy":    // ticket tag links
-                    TagLinkModel model = tModel as TagLinkModel;
-                    TagLinkProxy proxy = tProxy as TagLinkProxy;
-                    command = $"UPDATE TagLinks WITH(ROWLOCK) SET TagLinkID={proxy.TagLinkID}, TagID={proxy.TagID}, RefType={proxy.RefType}, RefID={proxy.RefID}  WHERE TagLinkID={model.TagLinkID}";
-                    model.Connection._db.ExecuteCommand(command);
+                    {
+                        TagLinkModel model = tModel as TagLinkModel;
+                        TagLinkProxy proxy = tProxy as TagLinkProxy;
+                        command = $"UPDATE TagLinks WITH(ROWLOCK) SET TagLinkID={proxy.TagLinkID}, TagID={proxy.TagID}, RefType={proxy.RefType}, RefID={proxy.RefID}  " +
+                            $"WHERE TagLinkID={model.TagLinkID}";
+                        model.Connection._db.ExecuteCommand(command);
+                    }
+                    break;
+                case "TaskAssociationProxy":
+                    {
+                        TaskAssociationModel model = tModel as TaskAssociationModel;
+                        TaskAssociationProxy proxy = tProxy as TaskAssociationProxy;
+                        command = $"UPDATE TaskAssociations SET TaskID = {proxy.TaskID}, RefID = {proxy.RefID}, RefType = {proxy.RefType}, CreatorID = {proxy.CreatorID} " +
+                            $"WHERE(TaskId = {model.TaskID})";
+                        model.Connection._db.ExecuteCommand(command);
+                    }
+                    break;
+                case "ReminderProxy":    // ticket reminder
+                    {
+                        ReminderModel model = tModel as ReminderModel;
+                        ReminderProxy proxy = tProxy as ReminderProxy;
+                        command = $" UPDATE Reminders WITH(ROWLOCK) SET RefID ={proxy.RefID} " +
+                            $"WHERE(ReminderId = {model.ReminderID})";
+                        model.Connection._db.ExecuteCommand(command);
+                    }
                     break;
             }
         }

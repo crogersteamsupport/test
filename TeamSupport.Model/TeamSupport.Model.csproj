@@ -55,8 +55,10 @@
     <Compile Include="DBReader.cs" />
     <Compile Include="OrganizationModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReminderModel.cs" />
     <Compile Include="SubscriptionModel.cs" />
     <Compile Include="TagLinkModel.cs" />
+    <Compile Include="TaskAssociationModel.cs" />
     <Compile Include="TicketModel.cs" />
     <Compile Include="UserSession.cs" />
   </ItemGroup>

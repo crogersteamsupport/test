@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.Linq;
+using System.Diagnostics;
 
 namespace TeamSupport.Model
 {
@@ -13,7 +14,7 @@ namespace TeamSupport.Model
         Customers,
         Subscriptions,
         Reminders,
-        Tasks,
+        TaskAssociations,
         Assets,
         Children,
         TagLinks
@@ -32,7 +33,20 @@ namespace TeamSupport.Model
     /// </summary>
     static class DBReader
     {
-        // Verify correctness as we traverse the layers of the logical model
+        static void Verify(DataContext db, string query)
+        {
+            if (db.ExecuteQuery<int>(query).Any()) // valid ID found?
+                return;
+
+            if (Debugger.IsAttached)
+            {
+                Debug.WriteLine(query);   // see the failed query in the debug output window
+                Debugger.Break();   // ID is wrong - fix the code!
+            }
+            throw new System.Data.ConstraintException(String.Format($"{query} not found")); // error - a join of the records to authentication just doesn't add up
+        }
+
+        // Verify row correctness knowing the associated model is also internally correct
         public static void VerifyOrganization(DataContext db, int organizationID) { Verify(db, $"SELECT OrganizationID FROM Organizations WITH (NOLOCK) WHERE OrganizationID={organizationID}"); }
         public static void VerifyUser(DataContext db, int organizationID, int userID) { Verify(db, $"SELECT UserID FROM Users WITH (NOLOCK) WHERE UserID={userID} AND OrganizationID={organizationID}"); }
         public static void VerifyTicket(DataContext db, int organizationID, int ticketID) { Verify(db, $"SELECT TicketID FROM Tickets WITH (NOLOCK) WHERE TicketID={ticketID} AND OrganizationID={organizationID}"); }
@@ -40,6 +54,7 @@ namespace TeamSupport.Model
         public static void VerifyActionAttachment(DataContext db, int organizationID, int ticketID, int actionID, int actionAttachmentID) { Verify(db, $"SELECT ActionAttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE ActionAttachmentID={actionAttachmentID} AND ActionID={actionID} AND OrganizationID={organizationID}"); }
         public static void VerifyAsset(DataContext db, int organizationID, int ticketID, int assetID) { Verify(db, $"SELECT AssetID FROM Assets WITH (NOLOCK) WHERE AssetID={assetID} AND TicketID={ticketID}"); }
         public static void VerifyTagLink(DataContext db, int organizationID, int ticketID, int tagLinkID) { Verify(db, $"SELECT TagLinkID FROM TagLinks WITH (NOLOCK) WHERE TagLinkID={tagLinkID} AND TicketID={ticketID}"); }
+        public static void VerifyReminder(DataContext db, int organizationID, int ticketID, int reminderID) { Verify(db, $"SELECT ReminderID FROM Reminders WITH (NOLOCK) WHERE ReminderID={reminderID} AND OrganizationID={organizationID}"); }
         public static void VerifySubscription(DataContext db, int organizationID, int ticketID, int userID)
         {
             string query = $"SELECT Subscriptions.userid FROM Subscriptions WITH (NOLOCK) " +
@@ -47,13 +62,11 @@ namespace TeamSupport.Model
                 $"WHERE Subscriptions.userid = userID AND Reftype = 17 AND Refid = {ticketID} AND MarkDeleted = 0";
             Verify(db, query);
         }
-
-
-        static void Verify(DataContext db, string query)
+        public static void VerifyTaskAssociation(DataContext db, int organizationID, int ticketID, int taskID)
         {
-            if (!db.ExecuteQuery<int>(query).Any()) // valid ID found?
-                throw new System.Data.ConstraintException(String.Format($"{query} not found")); // error - a join of the records to authentication just doesn't add up
+            Verify(db, $"SELECT TaskID FROM TaskAssociations WITH (NOLOCK) WHERE TaskID={taskID} AND Refid={ticketID} and RefType = 17");
         }
+
 
         public static bool UserAllowUserToEditAnyAction(DataContext db, int userID)
         {
@@ -101,7 +114,7 @@ namespace TeamSupport.Model
                 case TicketChild.Reminders:
                     query = $"SELECT ReminderID FROM Reminders WITH (NOLOCK) WHERE RefID = {ticket.TicketID} AND Reftype = 17";
                     break;
-                case TicketChild.Tasks:
+                case TicketChild.TaskAssociations:
                     query = $"SELECT TaskID FROM TaskAssociations WITH (NOLOCK) WHERE Refid={ticket.TicketID} and RefType = 17";
                     break;
                 case TicketChild.Assets:

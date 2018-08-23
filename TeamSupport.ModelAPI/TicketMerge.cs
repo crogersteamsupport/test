@@ -35,6 +35,8 @@ namespace TeamSupport.ModelAPI
             MergeSubscriptions();
             MergeCustomers();
             MergeContacts();
+            MergeReminders();
+            MergeTaskAssociations();
         }
 
         void MergeCustomers()
@@ -126,6 +128,25 @@ namespace TeamSupport.ModelAPI
             }
         }
 
+        void MergeReminders()
+        {
+            ReminderModel[] reminders = ReminderModel.GetReminders(Source);
+            foreach(ReminderModel reminderModel in reminders)
+            {
+                ReminderProxy reminderProxy = DataAPI.DataAPI.Read<ReminderProxy, ReminderModel>(reminderModel);
+                DataAPI.DataAPI.Update(Destination, reminderProxy);
+            }
+        }
+
+        void MergeTaskAssociations()
+        {
+            TaskAssociationModel[] tasks = TaskAssociationModel.GetTaskAssociations(Source);
+            foreach (TaskAssociationModel task in tasks)
+            {
+                TaskAssociationProxy taskAssociationProxy = DataAPI.DataAPI.Read<TaskAssociationProxy, TaskAssociationModel>(task);
+                DataAPI.DataAPI.Update(Destination, taskAssociationProxy);
+            }
+        }
 
         public void Merge()
         {
