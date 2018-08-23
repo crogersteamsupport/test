@@ -27,7 +27,7 @@ namespace TeamSupport.Model
 
         public static Customer[] GetCustomers(TicketModel ticketModel)
         {
-            int[] customerIDs = DBReader.Read(TicketChild.Contacts, ticketModel);
+            int[] customerIDs = DBReader.Read(TicketChild.Customers, ticketModel);
             Customer[] customers = new Customer[customerIDs.Length];
             for (int i = 0; i < customerIDs.Length; ++i)
                 customers[i] = new Customer(ticketModel, customerIDs[i], false);

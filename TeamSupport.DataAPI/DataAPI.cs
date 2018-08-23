@@ -31,6 +31,8 @@ namespace TeamSupport.DataAPI
         public static void Create<TProxy>(IModel iModel, TProxy tProxy) where TProxy : class
         {
             string now = ToSql(DateTime.UtcNow);
+            int userID = iModel.Connection.User.UserID;
+
             string command = String.Empty;
             switch (typeof(TProxy).Name) // alphabetized list
             {
@@ -57,7 +59,6 @@ namespace TeamSupport.DataAPI
                 case "ContactProxy":
                     {
                         TicketModel model = (TicketModel)iModel;
-                        int userID = model.Connection.User.UserID;
                         ContactProxy proxy = tProxy as ContactProxy;
                         command = $"INSERT INTO UserTickets (TicketID, UserID, DateCreated, CreatorID)" +
                             $"SELECT {model.TicketID}, {proxy.UserID}, '{now}', {userID} ";
@@ -66,7 +67,6 @@ namespace TeamSupport.DataAPI
                 case "CustomerProxy":
                     {
                         TicketModel model = (TicketModel)iModel;
-                        int userID = model.Connection.User.UserID;
                         CustomerProxy proxy = tProxy as CustomerProxy;
                         command = $"INSERT INTO OrganizationTickets (TicketID, OrganizationID, DateCreated, CreatorID, DateModified, ModifierID)" +
                             $"SELECT {model.TicketID}, {proxy.OrganizationID}, '{now}', {userID}, '{now}', {userID}"; 
@@ -75,7 +75,6 @@ namespace TeamSupport.DataAPI
                 case "SubscriptionProxy":
                     {
                         TicketModel model = (TicketModel)iModel;
-                        int userID = model.Connection.User.UserID;
                         SubscriptionProxy proxy = tProxy as SubscriptionProxy;
                         command = $"INSERT INTO Subscriptions (RefType, RefID, UserID, DateCreated, DateModified, CreatorID, ModifierID)" +
                                 $"SELECT 17, {model.TicketID}, {proxy.UserID}, '{now}','{now}', {userID}, {userID} ";
@@ -140,11 +139,11 @@ namespace TeamSupport.DataAPI
                         tProxy = model.Connection._db.ExecuteQuery<SubscriptionModel>(query).ToArray() as TProxy;
                     }
                     break;
-                case "TicketProxy": // ticket
+                case "TaskAssociationProxy":
                     {
-                        TicketModel model = (TicketModel)iModel;
-                        Table<TicketProxy> table = model.Connection._db.GetTable<TicketProxy>();
-                        tProxy = table.Where(t => t.TicketID == model.TicketID).First() as TProxy;
+                        TaskAssociationModel model = (TaskAssociationModel)iModel;
+                        string query = $"SELECT TaskID, RefID, RefType,CreatorID, DateCreated FROM TaskAssociations WHERE TaskID = {model.TaskID} AND RefID = {model.Ticket.TicketID} AND RefType = 17";
+                        tProxy = model.Connection._db.ExecuteQuery<TaskAssociationProxy>(query).First() as TProxy;
                     }
                     break;
                 case "TagLinkProxy[]":
@@ -153,6 +152,13 @@ namespace TeamSupport.DataAPI
                         TicketModel model = (TicketModel)iModel;
                         Table<TagLinkProxy> table = model.Connection._db.GetTable<TagLinkProxy>();
                         tProxy = table.Where(t => (t.RefType == ReferenceType.Tickets) && (t.RefID == model.TicketID)).ToArray() as TProxy;
+                    }
+                    break;
+                case "TicketProxy": // ticket
+                    {
+                        TicketModel model = (TicketModel)iModel;
+                        Table<TicketProxy> table = model.Connection._db.GetTable<TicketProxy>();
+                        tProxy = table.Where(t => t.TicketID == model.TicketID).First() as TProxy;
                     }
                     break;
                 default:
@@ -182,10 +188,9 @@ namespace TeamSupport.DataAPI
                     break;
                 case "TaskAssociationProxy":
                     {
-                        TaskAssociationModel model = (TaskAssociationModel)iModel;
+                        TicketModel model = (TicketModel)iModel;
                         TaskAssociationProxy proxy = tProxy as TaskAssociationProxy;
-                        command = $"UPDATE TaskAssociations SET TaskID = {proxy.TaskID}, RefID = {proxy.RefID}, RefType = {proxy.RefType}, CreatorID = {proxy.CreatorID} " +
-                            $"WHERE(TaskId = {model.TaskID})";
+                        command = $"UPDATE TaskAssociations SET RefID = {model.TicketID} WHERE(TaskId = {proxy.TaskID})";
                     }
                     break;
                 case "ReminderProxy":    // ticket reminder
@@ -210,25 +215,31 @@ namespace TeamSupport.DataAPI
             {
                 case "ActionAttachment":
                     {
-                        ActionAttachment model = iModel as ActionAttachment;
+                        ActionAttachment model = (ActionAttachment)iModel;
                         command = $"DELETE FROM ActionAttachments WHERE ActionAttachmentID = {model.ActionAttachmentID}";
+                    }
+                    break;
+                case "Contact":
+                    {
+                        Contact model = (Contact)iModel;
+                        command = $"DELETE FROM UserTickets Where TicketID={model.Ticket.TicketID} AND UserId = {model.UserID}";
                     }
                     break;
                 case "Customer":
                     {
-                        Customer model = iModel as Customer;
-                        command = $"DELETE FROM OrganizationTickets Where TicketID={model.Ticket.TicketID} AND OrganizationId = {model.OrganizationID}";
+                        Customer model = (Customer)iModel;
+                        command = $"DELETE FROM OrganizationTickets WHERE TicketID={model.Ticket.TicketID} AND OrganizationId = {model.OrganizationID}";
                     }
                     break;
                 case "TagLinkModel":
                     {
-                        TagLinkModel model = iModel as TagLinkModel;
+                        TagLinkModel model = (TagLinkModel)iModel;
                         command = $"DELETE FROM TagLinks WITH (ROWLOCK) WHERE TagLinkID={model.TagLinkID}";
                     }
                     break;
                 case "SubscriptionModel":
                     {
-                        SubscriptionModel model = iModel as SubscriptionModel;
+                        SubscriptionModel model = (SubscriptionModel)iModel;
                         command = $"DELETE FROM Subscriptions WITH (ROWLOCK) WHERE RefType=17 AND RefID={model.Ticket.TicketID} AND UserID={model.UserID}";
                     }
                     break;
