@@ -155,7 +155,7 @@
         </tr>
 		<tr>
             <td class="labelColTD" colspan="2"><asp:CheckBox ID="cbNoAttachmentsInOutboundEmail" runat="server" Text="Do not include attachments on outbound emails"/></td>
-			<td class="labelColTD" colspan="2"><asp:CheckBox ID="cbRequireTwoFactor" runat="server" Text="Require Two Factor Authentication"/></td>
+			<td class="labelColTD" colspan="2" style="display:none;"><asp:CheckBox ID="cbRequireTwoFactor" runat="server" Text="Require Two Factor Authentication"/></td>
         </tr>
 		<tr id="trProductLines">
 			<td class="labelColTD" colspan="4">

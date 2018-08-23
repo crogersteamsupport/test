@@ -63,9 +63,9 @@ namespace TSWebServices
                     // DEVICE VERIFICATION // TRUE ALLOWS BYPASS.
                     UserDevices devices = new UserDevices(loginUser);
                     devices.LoadByUserIDAndDeviceID(user.UserID, GetDeviceID());
-                    if (organization.RequireTwoFactor) {
-                        _skipVerification = false;
-                    } else if (devices.IsEmpty) {
+                    // if (organization.RequireTwoFactor) {
+                    //    _skipVerification = false;
+                    if (devices.IsEmpty) {
                         _skipVerification = false;
                     } else if (devices[0].IsActivated) {
                         _skipVerification = true;
