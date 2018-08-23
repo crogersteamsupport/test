@@ -13,20 +13,32 @@ namespace TeamSupport.ModelAPI
     public static class ModelAPI
     {
         #region Tickets
-        public static void MergeTickets(FormsAuthenticationTicket authenticationTicket, int destinationTicketID, int sourceTicketID)
+        public static string MergeTickets(FormsAuthenticationTicket authenticationTicket, int destinationTicketID, int sourceTicketID)
         {
-            if (!ConnectionContext.IsEnabled) return;
+          
             try
             {
                 using (ConnectionContext connection = new ConnectionContext(authenticationTicket, true))    // use transaction
                 {
-                    TicketMerge merge = new TicketMerge(connection, connection.Ticket(destinationTicketID), connection.Ticket(sourceTicketID));
-                    merge.Merge();
+                    try
+                    {
+                        TicketMerge merge = new TicketMerge(connection, connection.Ticket(destinationTicketID), connection.Ticket(sourceTicketID));
+                        merge.Merge();
+                        connection.Commit();
+                        return String.Empty;
+                    }
+                    catch (Exception ex)
+                    {
+                        connection.Rollback();
+                        int logid = DataAPI.DataAPI.LogException(connection.Authentication, ex, "Ticket Merge Exception:" + ex.Source);
+                        return $"Error merging tickets. Exception #{logid}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.";
+                    }
                 }
             }
             catch (Exception ex)
             {
-                DataAPI.DataAPI.LogMessage(new Proxy.AuthenticationModel(authenticationTicket), ActionLogType.Update, ReferenceType.Attachments, destinationTicketID, $"failed to merge {destinationTicketID} <= {sourceTicketID}", ex);
+                int logid = DataAPI.DataAPI.LogException(new Proxy.AuthenticationModel(authenticationTicket), ex, "Ticket Merge Exception:" + ex.Source);
+                return $"Error merging tickets. Exception #{logid}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.";
             }
         }
         #endregion
