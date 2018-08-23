@@ -184,5 +184,27 @@ namespace TeamSupport.DataAPI
         }
         #endregion
 
+        #region ExceptionLog AsIs
+        public static int LogException(AuthenticationModel authentication, Exception ex, string exceptionName)
+        {
+            string fullMessage = exceptionName + ex.ToString() + " ----- STACK: " + ex.StackTrace.ToString();
+            if (Debugger.IsAttached)
+            {
+                Debug.WriteLine(fullMessage);   // debug output window (very fast)
+                Debugger.Break();   // something is wrong - fix the code!
+            }
+
+            LoginUser user = new LoginUser(authentication.UserID, authentication.OrganizationID);
+            ExceptionLog log = (new ExceptionLogs(user)).AddNewExceptionLog();
+            log.ExceptionName = exceptionName;
+            log.Message = ex.Message.Replace(Environment.NewLine, "<br />");
+            log.StackTrace = ex.StackTrace.Replace(Environment.NewLine, "<br />");
+            log.Collection.Save();
+
+            return log.ExceptionLogID;
+        }
+      
+        #endregion
+
     }
 }

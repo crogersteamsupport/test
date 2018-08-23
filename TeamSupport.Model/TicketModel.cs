@@ -7,6 +7,7 @@ using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Diagnostics;
 using TeamSupport.Data;
+using System.Web;
 
 namespace TeamSupport.Model
 {
@@ -19,7 +20,17 @@ namespace TeamSupport.Model
         public int TicketID { get; private set; }
         public ConnectionContext Connection { get; private set; }
 
-        /// <summary> top down - existing action </summary>
+        int? _ticketNumber;
+        public int TicketNumber
+        {
+            get
+            {
+                if (!_ticketNumber.HasValue)
+                    _ticketNumber = DBReader.TicketNumber(Connection._db,TicketID);
+                return _ticketNumber.Value;
+            }
+        }
+
         public TicketModel(UserSession user, int ticketID)
         {
             User = user;
@@ -42,6 +53,5 @@ namespace TeamSupport.Model
         {
             return new ActionModel(this, actionID);
         }
-
     }
 }
