@@ -52,7 +52,7 @@
       <Project>{5c253014-d40c-4927-92f6-a91c2efb49c5}</Project>
       <Name>TeamSupport.DataAPI</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TeamSupport.Model\TeamSupport.IDTree.csproj">
+    <ProjectReference Include="..\TeamSupport.IDTree\TeamSupport.IDTree.csproj">
       <Project>{11c7d899-bcaa-408f-8b85-35593ab7e617}</Project>
       <Name>TeamSupport.IDTree</Name>
     </ProjectReference>

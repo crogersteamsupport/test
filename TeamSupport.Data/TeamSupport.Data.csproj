@@ -1066,10 +1066,6 @@
     <Folder Include="bin\Debug\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TeamSupport.Model\TeamSupport.IDTree.csproj">
-      <Project>{11c7d899-bcaa-408f-8b85-35593ab7e617}</Project>
-      <Name>TeamSupport.IDTree</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TeamSupport.Proxy\TeamSupport.Proxy.csproj">
       <Project>{8f3f388c-10f5-45d4-9f4c-471236dc14c0}</Project>
       <Name>TeamSupport.Proxy</Name>
