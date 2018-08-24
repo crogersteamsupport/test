@@ -16,14 +16,14 @@ namespace TeamSupport.Data
 
     public AttachmentProxy GetProxy()
     {
-      AttachmentProxy result = new AttachmentProxy();
+      AttachmentProxy result = AttachmentProxy.ClassFactory((AttachmentType)this.RefType, this.RefID);
       result.FilePathID = this.FilePathID;
       result.SentToSnow = this.SentToSnow;
       result.SentToTFS = this.SentToTFS;
       result.ProductFamilyID = this.ProductFamilyID;
       result.SentToJira = this.SentToJira;
-      result.RefID = this.RefID;
-      result.RefType = this.RefType;
+      //result.RefID = this.RefID;
+      //result.RefType = this.RefType;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.Description = this.Description;

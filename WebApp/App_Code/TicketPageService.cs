@@ -1870,7 +1870,7 @@ namespace TSWebServices
                 foreach(AttachmentProxy attachment in results)
                 {
                     attachment.AttachmentID = 0;    // not used
-                    string originalAttachmentRefID = attachment.RefID.ToString();
+                    string originalAttachmentRefID = ((ActionAttachmentProxy)attachment).ActionID.ToString();
                     string clonedActionAttachmentPath = attachment.Path.Substring(0, attachment.Path.IndexOf(@"\Actions\") + @"\Actions\".Length)
                                     + actionID.ToString()
                                     + attachment.Path.Substring(attachment.Path.IndexOf(originalAttachmentRefID) + originalAttachmentRefID.Length);

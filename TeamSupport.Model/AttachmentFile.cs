@@ -67,15 +67,15 @@ namespace TeamSupport.Model
 
             DateTime now = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
             UserSession user = actionModel.Ticket.User;
-            Data.AttachmentProxy proxy = new Data.AttachmentProxy()
+            Data.AttachmentProxy proxy = new Data.ActionAttachmentProxy(actionModel.ActionID)
             {
                 FilePathID = ActionModel.ActionPathIndex,
                 //SentToSnow = ,
                 //SentToTFS = ,
                 ProductFamilyID = productFamilyID,
                 //SentToJira = ,
-                RefID = actionModel.ActionID,
-                RefType = Data.ReferenceType.Actions,
+                //RefID = actionModel.ActionID,
+                //RefType = Data.AttachmentType.Actions,
                 ModifierID = user.UserID,
                 CreatorID = user.UserID,
                 Description = description,

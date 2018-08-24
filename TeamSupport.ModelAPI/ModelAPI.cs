@@ -33,7 +33,7 @@ namespace TeamSupport.ModelAPI
                             break;
                         case "AttachmentProxy":
                             AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
-                            ActionModel actionModel = new ActionModel(connection, attachmentProxy.RefID);
+                            ActionModel actionModel = new ActionModel(connection, ((ActionAttachmentProxy)attachmentProxy).ActionID);
                             DataAPI.DataAPI.Create(actionModel, attachmentProxy);
                             break;
                     }
