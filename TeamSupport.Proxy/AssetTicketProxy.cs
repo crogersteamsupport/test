@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TeamSupport.IDTree
+namespace TeamSupport.Proxy
 {
-    public interface IdInterface
+    public class AssetTicketProxy
     {
-        ConnectionContext Connection { get; }
+        public int AssetID;
     }
 }

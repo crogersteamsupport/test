@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TeamSupport.Model
+namespace TeamSupport.IDTree
 {
-    public class TagLinkModel : IModel
+    public class TagLinkModel : IdInterface
     {
         public TicketModel Ticket { get; private set; }
         public int TagLinkID { get; private set; }

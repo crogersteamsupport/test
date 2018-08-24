@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeamSupport.Data;
-using TeamSupport.Model;
+using TeamSupport.IDTree;
 using TeamSupport.Proxy;
 using TeamSupport.DataAPI;
 
@@ -31,7 +31,7 @@ namespace TeamSupport.ModelAPI
             if (!Connection.User.CanEdit()) // sufficient permissions?
                 return;
 
-            //MergeAssets();
+            MergeAssets();
             //MergeChildren();
             MergeContacts();
             MergeCustomers();
@@ -46,6 +46,27 @@ namespace TeamSupport.ModelAPI
             //DataAPI.DataAPI.Delete(Source);
             //Source = null;
             //DataAPI.DataAPI.Update(Destination, DataAPI.DataAPI.Read<TicketProxy>(Destination));  // update Date Modified
+        }
+
+        void MergeAssets()
+        {
+            AssetTicketModel[] assetTickets = AssetTicketModel.GetAssetTickets(Source);
+            if (assetTickets.Length == 0)
+                return;
+
+            AssetTicketModel[] destinationAssetTickets = AssetTicketModel.GetAssetTickets(Destination);
+            foreach (AssetTicketModel assetTicket in assetTickets)
+            {
+                // WHERE NOT EXISTS (Select AssetTickets WITH (NOLOCK) WHERE AssetId = {asset} AND TicketId ={sourceTicket.TicketID})
+                if (!destinationAssetTickets.Where(a => a.AssetID == assetTicket.AssetID).Any())
+                {
+                    AssetTicketProxy assetTicketProxy = new AssetTicketProxy() { AssetID = assetTicket.AssetID };
+                    DataAPI.DataAPI.Update(assetTicket, assetTicketProxy);
+                    continue;
+                }
+
+                 DataAPI.DataAPI.Delete(assetTicket);
+            }
         }
 
         void MergeCustomers()
@@ -75,7 +96,7 @@ namespace TeamSupport.ModelAPI
                 return;
 
             Contact[] destinationContacts = Contact.GetContacts(Destination);
-            foreach(Contact contact in contacts)
+            foreach (Contact contact in contacts)
             {
                 // WHERE NOT EXISTS(SELECT * FROM UserTickets WHERE TicketID ={model.TicketID} and UserID ={proxy.UserID})
                 if (!destinationContacts.Where(c => c.UserID == contact.UserID).Any())
@@ -98,16 +119,15 @@ namespace TeamSupport.ModelAPI
             TagLinkProxy[] destinationTagLinks = DataAPI.DataAPI.Read<TagLinkProxy[]>(Destination);
             foreach (TagLinkProxy tagLinkProxy in sourceTagLinks)
             {
-                // ticket already has this tag link
-                if (destinationTagLinks.Where(t => t.TagID == tagLinkProxy.TagID).Any())
+                // WHERE NOT EXISTS(SELECT* FROM TagLinks WITH (NOLOCK) WHERE RefID={destinationTicket.TicketID} AND TagID = {tag} AND Refype = 17)
+                if (!destinationTagLinks.Where(t => t.TagID == tagLinkProxy.TagID).Any())
                 {
-                    DataAPI.DataAPI.Delete(new TagLinkModel(Source, tagLinkProxy.TagLinkID));
+                    tagLinkProxy.RefID = Destination.TicketID;
+                    DataAPI.DataAPI.Update(new TagLinkModel(Source, tagLinkProxy.TagLinkID), tagLinkProxy);
                     continue;
                 }
 
-                // move tag link to destination ticket
-                tagLinkProxy.RefID = Destination.TicketID;
-                DataAPI.DataAPI.Update(new TagLinkModel(Source, tagLinkProxy.TagLinkID), tagLinkProxy);
+                DataAPI.DataAPI.Delete(new TagLinkModel(Source, tagLinkProxy.TagLinkID));
             }
         }
 
@@ -140,7 +160,7 @@ namespace TeamSupport.ModelAPI
         void MergeReminders()
         {
             ReminderModel[] reminders = ReminderModel.GetReminders(Source);
-            foreach(ReminderModel reminderModel in reminders)
+            foreach (ReminderModel reminderModel in reminders)
             {
                 ReminderProxy reminderProxy = DataAPI.DataAPI.Read<ReminderProxy>(reminderModel);
                 DataAPI.DataAPI.Update(Destination, reminderProxy);

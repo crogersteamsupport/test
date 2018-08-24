@@ -9,12 +9,12 @@ using System.Data.Linq.Mapping;
 using System.IO;
 using System.Diagnostics;
 
-namespace TeamSupport.Model
+namespace TeamSupport.IDTree
 {
     /// <summary>
     /// Wrapper for valid OrganizationID
     /// </summary>
-    public class OrganizationModel : IModel
+    public class OrganizationModel : IdInterface
     {
         public ConnectionContext Connection { get; private set; }
 

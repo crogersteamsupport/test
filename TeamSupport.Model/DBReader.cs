@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Data.Linq;
 using System.Diagnostics;
 
-namespace TeamSupport.Model
+namespace TeamSupport.IDTree
 {
     public enum TicketChild
     {
@@ -15,7 +15,7 @@ namespace TeamSupport.Model
         Subscriptions,
         Reminders,
         TaskAssociations,
-        Assets,
+        AssetTickets,
         Children,
         TagLinks
     }
@@ -66,7 +66,10 @@ namespace TeamSupport.Model
         {
             Verify(db, $"SELECT TaskID FROM TaskAssociations WITH (NOLOCK) WHERE TaskID={taskID} AND Refid={ticketID} and RefType = 17");
         }
-
+        public static void VerifyAssetTicket(DataContext db, int organizationID, int ticketID, int assetID)
+        {
+            Verify(db, $"SELECT AssetID From AssetTickets WITH (NOLOCK) WHERE TicketID = {ticketID} AND AssetID={assetID}");
+        }
 
         public static bool UserAllowUserToEditAnyAction(DataContext db, int userID)
         {
@@ -117,7 +120,7 @@ namespace TeamSupport.Model
                 case TicketChild.TaskAssociations:
                     query = $"SELECT TaskID FROM TaskAssociations WITH (NOLOCK) WHERE Refid={ticket.TicketID} and RefType = 17";
                     break;
-                case TicketChild.Assets:
+                case TicketChild.AssetTickets:
                     query = $"SELECT AssetID From AssetTickets WITH (NOLOCK) WHERE TicketID = {ticket.TicketID}";
                     break;
                 case TicketChild.Children:

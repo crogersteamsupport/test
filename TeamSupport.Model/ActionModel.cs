@@ -10,12 +10,12 @@ using System.Diagnostics;
 using System.Web;
 using TeamSupport.Data;
 
-namespace TeamSupport.Model
+namespace TeamSupport.IDTree
 {
     /// <summary>
     /// Wrapper for Valid ActionID
     /// </summary>
-    public class ActionModel : IModel
+    public class ActionModel : IdInterface
     {
         public TicketModel Ticket { get; private set; }
         public int ActionID { get; private set; }

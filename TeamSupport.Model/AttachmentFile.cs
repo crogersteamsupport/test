@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Web;
 
-namespace TeamSupport.Model
+namespace TeamSupport.IDTree
 {
     /// <summary>
     /// The attachment file is stored at AttachmentPath

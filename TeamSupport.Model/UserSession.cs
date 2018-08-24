@@ -7,12 +7,12 @@ using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Diagnostics;
 
-namespace TeamSupport.Model
+namespace TeamSupport.IDTree
 {
     /// <summary>
     /// Wrapper for valid UserID
     /// </summary>
-    public class UserSession : IModel
+    public class UserSession : IdInterface
     {
         public OrganizationModel Organization { get; private set; }
         public ConnectionContext Connection { get; private set; }

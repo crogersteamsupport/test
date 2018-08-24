@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TeamSupport.Model
+namespace TeamSupport.IDTree
 {
-    public class ReminderModel : IModel
+    public class ReminderModel : IdInterface
     {
         public TicketModel Ticket { get; private set; }
         public int ReminderID { get; private set; }

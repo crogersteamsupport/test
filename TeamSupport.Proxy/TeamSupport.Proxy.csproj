@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionsProxy.cs" />
+    <Compile Include="AssetTicketProxy.cs" />
     <Compile Include="AttachmentProxy.cs" />
     <Compile Include="AuthenticationModel.cs" />
     <Compile Include="ContactProxy.cs" />

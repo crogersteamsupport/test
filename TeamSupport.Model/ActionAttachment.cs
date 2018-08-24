@@ -11,10 +11,10 @@ using TeamSupport.Proxy;
 using TeamSupport.Data;
 using System.Web.Security;
 
-namespace TeamSupport.Model
+namespace TeamSupport.IDTree
 {
     /// <summary> Action Attachments </summary>
-    public class ActionAttachment : IModel
+    public class ActionAttachment : IdInterface
     {
         public ActionModel Action { get; private set; }
         public int ActionAttachmentID { get; private set; }

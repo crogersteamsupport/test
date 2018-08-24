@@ -7,8 +7,8 @@
     <ProjectGuid>{11C7D899-BCAA-408F-8B85-35593AB7E617}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TeamSupport.Model</RootNamespace>
-    <AssemblyName>TeamSupport.Model</AssemblyName>
+    <RootNamespace>TeamSupport.IDTree</RootNamespace>
+    <AssemblyName>TeamSupport.IDTree</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="ActionAttachment.cs" />
     <Compile Include="ActionModel.cs" />
+    <Compile Include="AssetTicketModel.cs" />
     <Compile Include="AttachmentFile.cs" />
     <Compile Include="Contact.cs" />
     <Compile Include="ConnectionContext.cs" />

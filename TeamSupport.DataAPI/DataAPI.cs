@@ -10,7 +10,7 @@ using System.Web.Security;
 using System.Diagnostics;
 using TeamSupport.Data;
 using System.Web;
-using TeamSupport.Model;
+using TeamSupport.IDTree;
 
 namespace TeamSupport.DataAPI
 {
@@ -28,7 +28,7 @@ namespace TeamSupport.DataAPI
         /// <summary>
         /// CREATE - create proxy child for model parent
         /// </summary>
-        public static void Create<TProxy>(IModel iModel, TProxy tProxy) where TProxy : class
+        public static void Create<TProxy>(IdInterface iModel, TProxy tProxy) where TProxy : class
         {
             string now = ToSql(DateTime.UtcNow);
             int userID = iModel.Connection.User.UserID;
@@ -90,7 +90,7 @@ namespace TeamSupport.DataAPI
         /// <summary> 
         /// READ - read proxy given a model 
         /// </summary>
-        public static TProxy Read<TProxy>(IModel iModel) where TProxy : class
+        public static TProxy Read<TProxy>(IdInterface iModel) where TProxy : class
         {
             TProxy tProxy = default(TProxy);
             switch (typeof(TProxy).Name) // alphabetized list
@@ -174,11 +174,19 @@ namespace TeamSupport.DataAPI
         ///     ModifierID, DateTimeModified
         ///     Logging
         /// </summary>
-        public static void Update<TProxy>(IModel iModel, TProxy tProxy) where TProxy : class
+        public static void Update<TProxy>(IdInterface iModel, TProxy tProxy) where TProxy : class
         {
             string command = String.Empty;
             switch (typeof(TProxy).Name) // alphabetized list
             {
+                case "AssetTicketProxy":
+                    {
+                        //SELECT[TicketID],[AssetID],[DateCreated],[CreatorID],[ImportFileID] FROM[AssetTickets]
+                        TagLinkModel model = (TagLinkModel)iModel;
+                        TagLinkProxy proxy = tProxy as TagLinkProxy;
+                        command = $"UPDATE TagLinks WITH(ROWLOCK) SET TagID={proxy.TagID}, RefType=17, RefID={proxy.RefID} WHERE TagLinkID={model.TagLinkID}";
+                    }
+                    break;
                 case "TagLinkProxy":    // ticket tag links
                     {
                         TagLinkModel model = (TagLinkModel)iModel;
@@ -208,7 +216,7 @@ namespace TeamSupport.DataAPI
 
         /// <summary> 
         /// DELETE - delete a model </summary>
-        public static void Delete(IModel iModel)
+        public static void Delete(IdInterface iModel)
         {
             string command = String.Empty;
             switch (iModel.GetType().Name) // alphabetized list
@@ -217,6 +225,12 @@ namespace TeamSupport.DataAPI
                     {
                         ActionAttachment model = (ActionAttachment)iModel;
                         command = $"DELETE FROM ActionAttachments WHERE ActionAttachmentID = {model.ActionAttachmentID}";
+                    }
+                    break;
+                case "AssetTicketModel":
+                    {
+                        AssetTicketModel model = (AssetTicketModel)iModel;
+                        command = $"DELETE FROM AssetTickets WHERE TicketID = {model.AssetID} AND AssetID = {model.AssetID}";
                     }
                     break;
                 case "Contact":
@@ -234,13 +248,13 @@ namespace TeamSupport.DataAPI
                 case "TagLinkModel":
                     {
                         TagLinkModel model = (TagLinkModel)iModel;
-                        command = $"DELETE FROM TagLinks WITH (ROWLOCK) WHERE TagLinkID={model.TagLinkID}";
+                        command = $"DELETE FROM TagLinks WHERE TagLinkID={model.TagLinkID}";
                     }
                     break;
                 case "SubscriptionModel":
                     {
                         SubscriptionModel model = (SubscriptionModel)iModel;
-                        command = $"DELETE FROM Subscriptions WITH (ROWLOCK) WHERE RefType=17 AND RefID={model.Ticket.TicketID} AND UserID={model.UserID}";
+                        command = $"DELETE FROM Subscriptions WHERE RefType=17 AND RefID={model.Ticket.TicketID} AND UserID={model.UserID}";
                     }
                     break;
             }

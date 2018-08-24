@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.Web.Security;
 using TeamSupport.Proxy;
 
-namespace TeamSupport.Model
+namespace TeamSupport.IDTree
 {
     /// <summary>
     /// Model for validating OrganizationID, UserID, TicketID, etc

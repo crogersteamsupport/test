@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="TeamSupport.Model.ActionModel">
+  <Class Name="TeamSupport.IDTree.ActionModel">
     <Position X="12.25" Y="1.75" Width="2.25" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
@@ -14,7 +14,7 @@
       <Property Name="Ticket" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="TeamSupport.Model.OrganizationModel">
+  <Class Name="TeamSupport.IDTree.OrganizationModel">
     <Position X="5.25" Y="1.75" Width="1.75" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
@@ -27,7 +27,7 @@
       <Property Name="Connection" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="TeamSupport.Model.TicketModel">
+  <Class Name="TeamSupport.IDTree.TicketModel">
     <Position X="9.5" Y="1.75" Width="2.25" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
@@ -40,7 +40,7 @@
       <Property Name="User" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="TeamSupport.Model.UserSession">
+  <Class Name="TeamSupport.IDTree.UserSession">
     <Position X="7.5" Y="1.75" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
@@ -54,7 +54,7 @@
       <Property Name="Organization" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="TeamSupport.Model.ActionAttachment">
+  <Class Name="TeamSupport.IDTree.ActionAttachment">
     <Position X="15" Y="1.75" Width="1.75" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
@@ -67,7 +67,7 @@
       <Property Name="Action" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="TeamSupport.Model.AttachmentFile">
+  <Class Name="TeamSupport.IDTree.AttachmentFile">
     <Position X="15" Y="4" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
@@ -78,7 +78,7 @@
       <FileName>AttachmentFile.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="TeamSupport.Model.ConnectionContext">
+  <Class Name="TeamSupport.IDTree.ConnectionContext">
     <Position X="3" Y="1.75" Width="1.75" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TeamSupport.Model
+namespace TeamSupport.IDTree
 {
-    public class Contact : IModel
+    public class Contact : IdInterface
     {
         public TicketModel Ticket { get; private set; }
         public int UserID { get; private set; }

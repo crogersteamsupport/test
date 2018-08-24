@@ -8,12 +8,12 @@ using System.Data.Linq.Mapping;
 using System.Diagnostics;
 using TeamSupport.Data;
 
-namespace TeamSupport.Model
+namespace TeamSupport.IDTree
 {
     /// <summary>
     /// Wrapper for valid TicketID
     /// </summary>
-    public class TicketModel : IModel
+    public class TicketModel : IdInterface
     {
         public UserSession User { get; private set; }
         public int TicketID { get; private set; }
