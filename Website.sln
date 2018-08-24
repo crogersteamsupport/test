@@ -43,7 +43,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.JIRA", "TeamSup
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.Messaging", "TeamSupport.Messaging\TeamSupport.Messaging.csproj", "{CC262E84-5002-4E7F-B078-7278E93F0C04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.Model", "TeamSupport.Model\TeamSupport.Model.csproj", "{11C7D899-BCAA-408F-8B85-35593AB7E617}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.IDTree", "TeamSupport.Model\TeamSupport.IDTree.csproj", "{11C7D899-BCAA-408F-8B85-35593AB7E617}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.Proxy", "TeamSupport.Proxy\TeamSupport.Proxy.csproj", "{8F3F388C-10F5-45D4-9F4C-471236DC14C0}"
 EndProject
