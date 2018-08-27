@@ -20,8 +20,8 @@ namespace TeamSupport.IDTree
         {
             Ticket = ticket;
             ReminderID = reminderID;
-            if(verify)
-                IDReader.Verify(TicketChild.TicketReminders, Request._db, ticket.User.Organization.OrganizationID, Ticket.TicketID, ReminderID);
+            if (verify)
+                Verify();
         }
 
         public static TicketReminderNode[] GetReminders(TicketNode ticket)
@@ -31,6 +31,11 @@ namespace TeamSupport.IDTree
             for (int i = 0; i < reminderIDs.Length; ++i)
                 reminderModels[i] = new TicketReminderNode(ticket, reminderIDs[i], false);
             return reminderModels;
+        }
+        public override void Verify()
+        {
+            int organizationID = Ticket.User.Organization.OrganizationID;
+            Verify($"SELECT ReminderID FROM Reminders WITH (NOLOCK) WHERE ReminderID={ReminderID} AND OrganizationID={organizationID} AND RefID={Ticket.TicketID} AND RefType=17");
         }
     }
 }

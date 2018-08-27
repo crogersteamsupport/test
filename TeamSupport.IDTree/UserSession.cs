@@ -12,19 +12,24 @@ namespace TeamSupport.IDTree
     /// <summary>
     /// Wrapper for valid UserID
     /// </summary>
-    public class UserNode : IDNode
+    public class UserSession
     {
         public OrganizationNode Organization { get; private set; }
+        public UserNode User { get; private set; }
         Proxy.AuthenticationModel _authentication;
 
         public int UserID { get { return _authentication.UserID; } }
 
         /// <summary> OrganizationID and UserID come from ConnectionContext.Authentication </summary>
-        public UserNode(OrganizationNode organization) : base(organization.Request)
+        public UserSession(OrganizationNode organization) : base(organization.Request)
         {
             Organization = organization;
             _authentication = Organization.Request.Authentication;
             //DBReader.VerifyUser(_db, Organization.OrganizationID, UserID);     // connection already verified
+        }
+
+        public UserSession(int userID) : base((ClientRequest)null)
+        {
         }
 
         /// <summary>
@@ -38,5 +43,9 @@ namespace TeamSupport.IDTree
         public bool AllowUserToEditAnyAction() { return IDReader.UserAllowUserToEditAnyAction(Request._db, UserID); }
         public bool CanEdit() { return _authentication.IsSystemAdmin || AllowUserToEditAnyAction(); }
 
+        public override void Verify()
+        {
+            Verify($"SELECT UserID FROM Users WITH (NOLOCK) WHERE UserID={UserID} AND OrganizationID={Organization.OrganizationID}");
+        }
     }
 }

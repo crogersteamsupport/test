@@ -57,15 +57,15 @@ namespace TeamSupport.ModelAPI
             AssetTicketNode[] destinationAssetTickets = Destination.AssetTickets();
             foreach (AssetTicketNode assetTicket in assetTickets)
             {
-                // WHERE NOT EXISTS (Select AssetTickets WITH (NOLOCK) WHERE AssetId = {asset} AND TicketId ={sourceTicket.TicketID})
-                if (!destinationAssetTickets.Where(a => a.AssetID == assetTicket.AssetID).Any())
-                {
-                    AssetTicketProxy assetTicketProxy = new AssetTicketProxy() { AssetID = assetTicket.AssetID };
-                    DataAPI.DataAPI.Update(assetTicket, assetTicketProxy);
-                    continue;
-                }
+                //// WHERE NOT EXISTS (Select AssetTickets WITH (NOLOCK) WHERE AssetId = {asset} AND TicketId ={sourceTicket.TicketID})
+                //if (!destinationAssetTickets.Where(a => a.AssetID == assetTicket.AssetID).Any())
+                //{
+                //    AssetTicketProxy assetTicketProxy = new AssetTicketProxy() { AssetID = assetTicket.AssetID };
+                //    DataAPI.DataAPI.Update(assetTicket, assetTicketProxy);
+                //    continue;
+                //}
 
-                 DataAPI.DataAPI.Delete(assetTicket);
+                DataAPI.DataAPI.Delete(assetTicket);
             }
         }
 
@@ -98,12 +98,12 @@ namespace TeamSupport.ModelAPI
             UserTicketNode[] destinationContacts = Destination.Contacts();
             foreach (UserTicketNode contact in contacts)
             {
-                // WHERE NOT EXISTS(SELECT * FROM UserTickets WHERE TicketID ={model.TicketID} and UserID ={proxy.UserID})
-                if (!destinationContacts.Where(c => c.UserID == contact.UserID).Any())
-                {
-                    ContactProxy contactProxy = new ContactProxy() { UserID = contact.UserID };
-                    DataAPI.DataAPI.Create(Destination, contactProxy);
-                }
+                //// WHERE NOT EXISTS(SELECT * FROM UserTickets WHERE TicketID ={model.TicketID} and UserID ={proxy.UserID})
+                //if (!destinationContacts.Where(c => c.UserID == contact.UserID).Any())
+                //{
+                //    ContactProxy contactProxy = new ContactProxy() { UserID = contact.UserID };
+                //    DataAPI.DataAPI.Create(Destination, contactProxy);
+                //}
 
                 DataAPI.DataAPI.Delete(contact);
             }
@@ -123,11 +123,11 @@ namespace TeamSupport.ModelAPI
                 if (!destinationTagLinks.Where(t => t.TagID == tagLinkProxy.TagID).Any())
                 {
                     tagLinkProxy.RefID = Destination.TicketID;
-                    DataAPI.DataAPI.Update(new TagLinkNode(Source, tagLinkProxy.TagLinkID), tagLinkProxy);
+                    //DataAPI.DataAPI.Update(new TagLinkNode(Source, tagLinkProxy.TagLinkID), tagLinkProxy);
                     continue;
                 }
 
-                DataAPI.DataAPI.Delete(new TagLinkNode(Source, tagLinkProxy.TagLinkID));
+                //DataAPI.DataAPI.Delete(new TagLinkNode(Source, tagLinkProxy.TagLinkID));
             }
         }
 

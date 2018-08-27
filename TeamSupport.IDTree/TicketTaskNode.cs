@@ -8,17 +8,17 @@ namespace TeamSupport.IDTree
 {
     public class TicketTaskNode : IDNode
     {
-        public TicketTaskNode TicketTask { get; private set; }
         public TicketNode Ticket { get; private set; }
-        public TicketTaskNode(TicketNode ticket, TicketTaskNode ticketTask) : base(ticket)
+        public int TaskID { get; private set; }
+        public TicketTaskNode(TicketNode ticket, int taskID) : base(ticket)
         {
             Ticket = ticket;
-            TicketTask = TicketTask;
+            TaskID = taskID;
         }
 
         public override void Verify()
         {
-
+            Verify($"SELECT TaskID FROM TaskAssociations WITH (NOLOCK) WHERE TaskID={TaskID} AND Refid={Ticket.TicketID} and RefType = 17");
         }
     }
 }

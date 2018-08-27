@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="TeamSupport.IDTree.UserNode" Collapsed="true">
+  <Class Name="TeamSupport.IDTree.UserSession" Collapsed="true">
     <Position X="6.5" Y="2" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>EAAAAAAAAAAAAAACAAAAAAgAAAAAAAAAAACAAQAAIAA=</HashCode>
-      <FileName>UserNode.cs</FileName>
+      <HashCode>EAABAAAAAAAAAQACAAAAAAgAAAAAAAAAAACAAQAAIAA=</HashCode>
+      <FileName>UserSession.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="Organization" />
@@ -92,7 +92,7 @@
   <Class Name="TeamSupport.IDTree.UserTicketNode" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="9" Y="2" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAABAAAAAAAAAAACAAAAAAgAAAAAAAAAAAAAAABAAAA=</HashCode>
+      <HashCode>AAABAAAAAAAAAQACAAAAAAAAAAAAAAAAAAAAAABAAAA=</HashCode>
       <FileName>UserTicketNode.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -114,7 +114,7 @@
   <Class Name="TeamSupport.IDTree.IDReader" Collapsed="true">
     <Position X="6.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ACAAAAAAAAAAISACAAAAAAAgIAAAAAAAAAAAAAAAICA=</HashCode>
+      <HashCode>ACAAAAAAAAAAICACAAAAAAAgIAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IDReader.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -128,7 +128,7 @@
   <Class Name="TeamSupport.IDTree.TicketReminderNode" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="10.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAACAAAAAAAAAAIAACAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAQACAAAAAAAAAAIAACAAAAAAAAAAAAA=</HashCode>
       <FileName>TicketReminderNode.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -174,7 +174,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>BAEBAIBAAAABIAAAAABAAAAAAAAAAAAAAAAEAAAQAAQ=</HashCode>
+      <HashCode>BAEBAIBAAAABIQAAAABAAAAAAAAAAAAAAAAEAAAQAAQ=</HashCode>
       <FileName>TicketNode.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -184,7 +184,7 @@
   <Class Name="TeamSupport.IDTree.TicketTaskNode" Collapsed="true">
     <Position X="7" Y="6.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAQACAAAIAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAQACAAAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>TicketTaskNode.cs</FileName>
     </TypeIdentifier>
   </Class>

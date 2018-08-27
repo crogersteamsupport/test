@@ -66,7 +66,7 @@ namespace TeamSupport.IDTree
                 productFamilyID = Int32.Parse(tmp);
 
             DateTime now = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
-            UserNode user = actionModel.Ticket.User;
+            UserSession user = actionModel.Ticket.User;
             Data.AttachmentProxy proxy = new Data.ActionAttachmentProxy(actionModel.ActionID)
             {
                 FilePathID = ActionNode.ActionPathIndex,

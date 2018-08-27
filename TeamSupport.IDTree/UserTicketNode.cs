@@ -9,19 +9,18 @@ namespace TeamSupport.IDTree
     public class UserTicketNode : IDNode
     {
         public TicketNode Ticket { get; private set; }
-        public int UserID { get; private set; }
-        public UserNode User { get; private set; }
+        public UserSession User { get; private set; }
 
-        public UserTicketNode(TicketNode ticket, int userID) : this(ticket, userID, true)
+        public UserTicketNode(TicketNode ticket, UserSession user) : this(ticket, user, true)
         {
         }
 
-        private UserTicketNode(TicketNode ticket, int userID, bool verify) : base(ticket.Request)
+        private UserTicketNode(TicketNode ticket, UserSession user, bool verify) : base(ticket.Request)
         {
             Ticket = ticket;
-            UserID = userID;
-            //if (verify)
-            //    DBReader.VerifySubscription(Connection._db, ticket.User.Organization.OrganizationID, Ticket.TicketID, UserID);
+            User = user;
+            if (verify)
+                Verify();
         }
 
         public static UserTicketNode[] GetContacts(TicketNode ticketModel)
@@ -29,8 +28,13 @@ namespace TeamSupport.IDTree
             int[] contactIDs = IDReader.Read(TicketChild.Contacts, ticketModel);
             UserTicketNode[] contacts = new UserTicketNode[contactIDs.Length];
             for (int i = 0; i < contactIDs.Length; ++i)
-                contacts[i] = new UserTicketNode(ticketModel, contactIDs[i], false);
+                contacts[i] = new UserTicketNode(ticketModel, new UserSession(contactIDs[i]), false);
             return contacts;
+        }
+
+        public override void Verify()
+        {
+            
         }
     }
 }

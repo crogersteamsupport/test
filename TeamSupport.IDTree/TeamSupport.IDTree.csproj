@@ -65,7 +65,7 @@
     <Compile Include="TaskAssociationNode.cs" />
     <Compile Include="TicketTaskNode.cs" />
     <Compile Include="TicketNode.cs" />
-    <Compile Include="UserNode.cs" />
+    <Compile Include="UserSession.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="IDTree.cd" />

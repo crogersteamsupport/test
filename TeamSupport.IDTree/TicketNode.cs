@@ -16,7 +16,7 @@ namespace TeamSupport.IDTree
     public class TicketNode : IDNode
     {
         public OrganizationNode Customer { get; private set; }
-        public UserNode User { get; private set; }
+        public UserSession User { get; private set; }
         public int TicketID { get; private set; }
 
         int? _ticketNumber;
@@ -31,11 +31,12 @@ namespace TeamSupport.IDTree
         }
 
         /// <summary> top down - existing action </summary>
-        public TicketNode(UserNode user, int ticketID) : base(user.Request)
+        public TicketNode(UserSession user, int ticketID) : base(user.Request)
         {
+            Customer = user.Organization;   // user session on customer
             User = user;
             TicketID = ticketID;
-            IDReader.Verify(OrganizationChild.Ticket, Request._db, User.Organization.OrganizationID, TicketID);
+            Verify();
         }
 
         /// <summary> bottom up - existing action </summary>
@@ -43,7 +44,7 @@ namespace TeamSupport.IDTree
         {
             User = Request.User;
             TicketID = ticketID;
-            IDReader.Verify(OrganizationChild.Ticket, Request._db, Request.Organization.OrganizationID, TicketID);
+            Verify();
         }
 
         /// <summary> Existing Data.Action </summary>
@@ -59,5 +60,9 @@ namespace TeamSupport.IDTree
         public SubscriptionNode[] Subscriptions() { return SubscriptionNode.GetSubscriptions(this); }
         public TaskAssociationNode[] TaskAssociations() { return TaskAssociationNode.GetTaskAssociations(this); }
 
+        public override void Verify()
+        {
+            Verify($"SELECT TicketID FROM Tickets WITH (NOLOCK) WHERE TicketID={TicketID} AND OrganizationID={Customer.OrganizationID}");
+        }
     }
 }

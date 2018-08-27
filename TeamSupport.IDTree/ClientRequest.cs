@@ -26,7 +26,7 @@ namespace TeamSupport.IDTree
         SqlTransaction _transaction;
         public DataContext _db { get; private set; }
         public OrganizationNode Organization { get; private set; }
-        public UserNode User { get; private set; }
+        public UserSession User { get; private set; }
         public int UserID {  get { return User.UserID; } }
 
         public ClientRequest(bool useTransaction = false)
@@ -47,7 +47,7 @@ namespace TeamSupport.IDTree
 
             // Create Logical Model! - note that OrganizationID and UserID come from Authentication
             Organization = new OrganizationNode(this);
-            User = new UserNode(Organization);
+            User = new UserSession(Organization);
         }
 
         public void Commit() { _db.Transaction.Commit(); }

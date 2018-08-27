@@ -142,7 +142,7 @@ namespace TeamSupport.DataAPI
                 case "TaskAssociationProxy":
                     {
                         TaskAssociationNode model = (TaskAssociationNode)iModel;
-                        string query = $"SELECT TaskID, RefID, RefType,CreatorID, DateCreated FROM TaskAssociations WHERE TaskID = {model.TaskID} AND RefID = {model.Ticket.TicketID} AND RefType = 17";
+                        string query = String.Empty;// = $"SELECT TaskID, RefID, RefType,CreatorID, DateCreated FROM TaskAssociations WHERE TaskID = {model.TaskID} AND RefID = {model.Ticket.TicketID} AND RefType = 17";
                         tProxy = model.Request._db.ExecuteQuery<TaskAssociationProxy>(query).First() as TProxy;
                     }
                     break;
@@ -230,13 +230,13 @@ namespace TeamSupport.DataAPI
                 case "AssetTicketModel":
                     {
                         AssetTicketNode model = (AssetTicketNode)iModel;
-                        command = $"DELETE FROM AssetTickets WHERE TicketID = {model.AssetID} AND AssetID = {model.AssetID}";
+                        //command = $"DELETE FROM AssetTickets WHERE TicketID = {model.AssetID} AND AssetID = {model.AssetID}";
                     }
                     break;
                 case "Contact":
                     {
                         UserTicketNode model = (UserTicketNode)iModel;
-                        command = $"DELETE FROM UserTickets Where TicketID={model.Ticket.TicketID} AND UserId = {model.UserID}";
+                        //command = $"DELETE FROM UserTickets Where TicketID={model.Ticket.TicketID} AND UserId = {model.UserID}";
                     }
                     break;
                 case "Customer":

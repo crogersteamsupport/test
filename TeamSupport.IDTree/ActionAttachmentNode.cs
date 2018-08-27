@@ -38,7 +38,7 @@ namespace TeamSupport.IDTree
 
             TicketNode ticket = Action.Ticket;
             OrganizationNode organization = ticket.User.Organization;
-            IDReader.VerifyActionAttachment(Request._db, organization.OrganizationID, ticket.TicketID, Action.ActionID, ActionAttachmentID);
+            Verify();
         }
 
         public override void Verify()
