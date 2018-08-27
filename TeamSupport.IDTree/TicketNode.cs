@@ -15,8 +15,7 @@ namespace TeamSupport.IDTree
     /// </summary>
     public class TicketNode : IDNode
     {
-        public OrganizationNode Customer { get; private set; }
-        public UserSession User { get; private set; }
+        public OrganizationNode Organization { get; private set; }
         public int TicketID { get; private set; }
 
         int? _ticketNumber;
@@ -25,24 +24,22 @@ namespace TeamSupport.IDTree
             get
             {
                 if (!_ticketNumber.HasValue)
-                    _ticketNumber = IDReader.TicketNumber(Request._db,TicketID);
+                    _ticketNumber = IDReader.TicketNumber(Connection._db,TicketID);
                 return _ticketNumber.Value;
             }
         }
 
-        /// <summary> top down - existing action </summary>
-        public TicketNode(UserSession user, int ticketID) : base(user.Request)
+        /// <summary> top down - existing ticket </summary>
+        public TicketNode(OrganizationNode organization, int ticketID) : base(organization)
         {
-            Customer = user.Organization;   // user session on customer
-            User = user;
+            Organization = organization;   // user session on customer
             TicketID = ticketID;
             Verify();
         }
 
         /// <summary> bottom up - existing action </summary>
-        public TicketNode(ClientRequest connection, int ticketID) : base(connection)
+        public TicketNode(ConnectionContext connection, int ticketID) : base(connection)
         {
-            User = Request.User;
             TicketID = ticketID;
             Verify();
         }
@@ -55,14 +52,14 @@ namespace TeamSupport.IDTree
 
         public AssetTicketNode[] AssetTickets() { return AssetTicketNode.GetAssetTickets(this); }
         public UserTicketNode[] Contacts() { return UserTicketNode.GetContacts(this); }
-        public OrganizationTicketNode[] Customers() { return OrganizationTicketNode.GetClients(this); }
+        public OrganizationTicketNode[] Customers() { return OrganizationTicketNode.GetOrganizationTickets(this); }
         public TicketReminderNode[] Reminders() { return TicketReminderNode.GetReminders(this); }
         public SubscriptionNode[] Subscriptions() { return SubscriptionNode.GetSubscriptions(this); }
         public TaskAssociationNode[] TaskAssociations() { return TaskAssociationNode.GetTaskAssociations(this); }
 
         public override void Verify()
         {
-            Verify($"SELECT TicketID FROM Tickets WITH (NOLOCK) WHERE TicketID={TicketID} AND OrganizationID={Customer.OrganizationID}");
+            Verify($"SELECT TicketID FROM Tickets WITH (NOLOCK) WHERE TicketID={TicketID} AND OrganizationID={Organization.OrganizationID}");
         }
     }
 }

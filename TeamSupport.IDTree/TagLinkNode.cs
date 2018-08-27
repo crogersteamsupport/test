@@ -12,7 +12,7 @@ namespace TeamSupport.IDTree
         public TagNode Tag { get; private set; }
         public int TagLinkID { get; private set; }
 
-        public TagLinkNode(TicketNode ticket, TagNode tag, int tagLinkID) : base(ticket.Request)
+        public TagLinkNode(TicketNode ticket, TagNode tag, int tagLinkID) : base(ticket)
         {
             Ticket = ticket;
             Tag = tag;

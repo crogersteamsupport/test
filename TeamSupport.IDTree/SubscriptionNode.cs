@@ -9,28 +9,31 @@ namespace TeamSupport.IDTree
     public class SubscriptionNode : IDNode
     {
         public TicketNode Ticket { get; private set; }
-        public int UserID { get; private set; }
+        public UserNode User { get; private set; }
 
 
         /// <summary> top down - existing action </summary>
-        public SubscriptionNode(TicketNode ticket, int userID) : this(ticket, userID, true)
+        public SubscriptionNode(TicketNode ticket, UserNode user) : this(ticket, user, true)
         {
         }
 
-        private SubscriptionNode(TicketNode ticket, int userID, bool verify) : base(ticket.Request)
+        private SubscriptionNode(TicketNode ticket, UserNode user, bool verify) : base(ticket)
         {
             Ticket = ticket;
-            UserID = userID;
+            User = user;
             if (verify)
                 Verify();
         }
 
         public static SubscriptionNode[] GetSubscriptions(TicketNode ticket)
         {
+            //query = $"SELECT Subscriptions.userid FROM Subscriptions WITH (NOLOCK) " +
+            //        $"JOIN Users WITH (NOLOCK) on users.userid = Subscriptions.userid " +
+            //        $"WHERE Reftype = 17 and Refid = {ticket.TicketID} and MarkDeleted = 0";
             int[] subscriptionIDs = IDReader.Read(TicketChild.Subscriptions, ticket);
             SubscriptionNode[] subscriptionModels = new SubscriptionNode[subscriptionIDs.Length];
             for (int i = 0; i < subscriptionIDs.Length; ++i)
-                subscriptionModels[i] = new SubscriptionNode(ticket, subscriptionIDs[i], false);
+                subscriptionModels[i] = new SubscriptionNode(ticket, new UserNode(ticket.Connection, subscriptionIDs[i]), false);
             return subscriptionModels;
         }
 

@@ -16,17 +16,22 @@ namespace TeamSupport.IDTree
     /// </summary>
     public class OrganizationNode : IDNode
     {
-        public int OrganizationID { get { return Request.Authentication.OrganizationID; } }
+        public int OrganizationID { get; private set; }
 
         /// <summary> OrganizationID and UserID come from ConnectionContext.Authentication </summary>
-        public OrganizationNode(ClientRequest connection) : base(connection)
+        public OrganizationNode(ConnectionContext connection) : this(connection, connection.Authentication.OrganizationID)
         {
-            //DBReader.VerifyOrganization(_db, OrganizationID); // connection already verified
+
+        }
+
+        public OrganizationNode(ConnectionContext connection, int organizationID) : base(connection)
+        {
+            Verify();
         }
 
         public string AttachmentPath(int id)
         {
-            string path = Request.AttachmentPath(id);
+            string path = Connection.AttachmentPath(id);
             path = Path.Combine(Path.Combine(path, "Organizations"), OrganizationID.ToString());
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);

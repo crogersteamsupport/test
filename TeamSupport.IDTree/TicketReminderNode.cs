@@ -9,6 +9,7 @@ namespace TeamSupport.IDTree
     public class TicketReminderNode : IDNode
     {
         public TicketNode Ticket { get; private set; }
+        public UserNode User { get; private set; }
         public int ReminderID { get; private set; }
 
         /// <summary> top down - existing action </summary>
@@ -16,7 +17,7 @@ namespace TeamSupport.IDTree
         {
         }
 
-        private TicketReminderNode(TicketNode ticket, int reminderID, bool verify) : base(ticket.Request)
+        private TicketReminderNode(TicketNode ticket, int reminderID, bool verify) : base(ticket)
         {
             Ticket = ticket;
             ReminderID = reminderID;
@@ -34,7 +35,7 @@ namespace TeamSupport.IDTree
         }
         public override void Verify()
         {
-            int organizationID = Ticket.User.Organization.OrganizationID;
+            int organizationID = Ticket.Organization.OrganizationID;
             Verify($"SELECT ReminderID FROM Reminders WITH (NOLOCK) WHERE ReminderID={ReminderID} AND OrganizationID={organizationID} AND RefID={Ticket.TicketID} AND RefType=17");
         }
     }

@@ -6,19 +6,20 @@ using System.Threading.Tasks;
 
 namespace TeamSupport.IDTree
 {
-    public class TicketTaskNode : IDNode
+    public class TaskNode : IDNode
     {
-        public TicketNode Ticket { get; private set; }
+        public OrganizationNode Organization { get; private set; }
         public int TaskID { get; private set; }
-        public TicketTaskNode(TicketNode ticket, int taskID) : base(ticket)
+
+        public TaskNode(OrganizationNode organization, int taskID) : base(organization)
         {
-            Ticket = ticket;
+            Organization = organization;
             TaskID = taskID;
         }
 
         public override void Verify()
         {
-            Verify($"SELECT TaskID FROM TaskAssociations WITH (NOLOCK) WHERE TaskID={TaskID} AND Refid={Ticket.TicketID} and RefType = 17");
+            Verify($"SELECT TaskID FROM Tasks WITH (NOLOCK) WHERE TaskID={TaskID} AND OrganizationID={Organization.OrganizationID}");
         }
     }
 }

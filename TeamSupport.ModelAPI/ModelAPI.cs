@@ -23,7 +23,7 @@ namespace TeamSupport.ModelAPI
         {
             try
             {
-                using (ClientRequest connection = new ClientRequest())
+                using (ConnectionContext connection = new ConnectionContext())
                 {
                     switch (typeof(T).Name)
                     {
@@ -64,7 +64,7 @@ namespace TeamSupport.ModelAPI
             T t = default(T);   // null since T is a class
             try
             {
-                using (ClientRequest connection = new ClientRequest())
+                using (ConnectionContext connection = new ConnectionContext())
                 {
                     switch(typeof(T).Name) // alphabetized list
                     {
@@ -113,7 +113,7 @@ namespace TeamSupport.ModelAPI
         {
             try
             {
-                using (ClientRequest connection = new ClientRequest())
+                using (ConnectionContext connection = new ConnectionContext())
                 {
                     switch (typeof(T).Name)
                     {
@@ -152,7 +152,7 @@ namespace TeamSupport.ModelAPI
         {
             try
             {
-                using (ClientRequest connection = new ClientRequest())
+                using (ConnectionContext connection = new ConnectionContext())
                 {
                     switch (typeof(T).Name)
                     {
@@ -188,7 +188,7 @@ namespace TeamSupport.ModelAPI
         /// <summary> ??? </summary>
         public static int AttachmentIDFromGUID(Guid guid)
         {
-            using (ClientRequest connection = new ClientRequest())
+            using (ConnectionContext connection = new ConnectionContext())
             {
                 return connection._db.ExecuteQuery<int>($"SELECT AttachmentID FROM Attachments WHERE AttachmentGUID={guid}").Min();
             }
@@ -199,7 +199,7 @@ namespace TeamSupport.ModelAPI
         {
             try
             {
-                using (ClientRequest connection = new ClientRequest(true))    // use transaction
+                using (ConnectionContext connection = new ConnectionContext(true))    // use transaction
                 {
                     try
                     {
@@ -234,7 +234,7 @@ namespace TeamSupport.ModelAPI
             List<AttachmentProxy> results = new List<AttachmentProxy>();
             try
             {
-                using (ClientRequest connection = new ClientRequest())
+                using (ConnectionContext connection = new ConnectionContext())
                 {
                     ActionNode actionModel = new ActionNode(connection, actionID);
                     HttpFileCollection files = context.Request.Files;
@@ -264,7 +264,7 @@ namespace TeamSupport.ModelAPI
         {
             try
             {
-                using (ClientRequest connection = new ClientRequest())
+                using (ConnectionContext connection = new ConnectionContext())
                 {
                     // user have permission to modify this action?
                     ActionAttachmentNode attachment = new ActionAttachmentNode(connection, attachmentID);
@@ -289,7 +289,7 @@ namespace TeamSupport.ModelAPI
             attachments = null;
             try
             {
-                using (ClientRequest connection = new ClientRequest())
+                using (ConnectionContext connection = new ConnectionContext())
                 {
                     TicketNode ticketModel = connection.Ticket(ticketID);
                     DataAPI.DataAPI.ReadActionAttachmentsForTicket(ticketModel, ticketActionAttachments, out attachments);

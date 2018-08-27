@@ -6,29 +6,30 @@ using System.Threading.Tasks;
 
 namespace TeamSupport.IDTree
 {
+    /// <summary> Link contacts and tickets </summary>
     public class UserTicketNode : IDNode
     {
         public TicketNode Ticket { get; private set; }
-        public UserSession User { get; private set; }
+        public UserNode Contact { get; private set; }
 
-        public UserTicketNode(TicketNode ticket, UserSession user) : this(ticket, user, true)
+        public UserTicketNode(TicketNode ticket, UserNode contact) : this(ticket, contact, true)
         {
         }
 
-        private UserTicketNode(TicketNode ticket, UserSession user, bool verify) : base(ticket.Request)
+        private UserTicketNode(TicketNode ticket, UserNode contact, bool verify) : base(ticket)
         {
             Ticket = ticket;
-            User = user;
+            Contact = contact;
             if (verify)
                 Verify();
         }
 
-        public static UserTicketNode[] GetContacts(TicketNode ticketModel)
+        public static UserTicketNode[] GetContacts(TicketNode ticket)
         {
-            int[] contactIDs = IDReader.Read(TicketChild.Contacts, ticketModel);
+            int[] contactIDs = IDReader.Read(TicketChild.Contacts, ticket);
             UserTicketNode[] contacts = new UserTicketNode[contactIDs.Length];
             for (int i = 0; i < contactIDs.Length; ++i)
-                contacts[i] = new UserTicketNode(ticketModel, new UserSession(contactIDs[i]), false);
+                contacts[i] = new UserTicketNode(ticket, new UserNode(ticket.Connection, contactIDs[i]), false);
             return contacts;
         }
 

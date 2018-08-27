@@ -105,12 +105,12 @@ namespace TeamSupport.IDTree
                     query = $"SELECT TagLinkID FROM TagLinks WITH(NOLOCK) WHERE Reftype=17 and RefID = {ticket.TicketID}";
                     break;
             }
-            return ticket.Request._db.ExecuteQuery<int>(query).ToArray();
+            return ticket.Connection._db.ExecuteQuery<int>(query).ToArray();
         }
 
         public static int[] Read(TicketAssociation childID, TicketNode destinationTicket, TicketNode sourceTicket)
         {
-            if (destinationTicket.Request != sourceTicket.Request)
+            if (destinationTicket.Connection != sourceTicket.Connection)
                 throw new Exception("tickets must come from the same connection");
 
             string query = String.Empty;
@@ -131,7 +131,7 @@ namespace TeamSupport.IDTree
                     break;
             }
 
-            return sourceTicket.Request._db.ExecuteQuery<int>(query).ToArray();
+            return sourceTicket.Connection._db.ExecuteQuery<int>(query).ToArray();
         }
 
     }

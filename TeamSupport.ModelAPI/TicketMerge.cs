@@ -13,12 +13,12 @@ namespace TeamSupport.ModelAPI
     /// <summary> Raquel writes awesome code </summary>
     class TicketMerge
     {
-        public ClientRequest Connection { get; private set; }
+        public ConnectionContext Connection { get; private set; }
         public TicketNode Source { get; private set; } // winning
         public TicketNode Destination { get; private set; }    // losing
 
         /// <summary> On a verified connection merge verified ticket to verified ticket </summary>
-        public TicketMerge(ClientRequest connection, TicketNode destination, TicketNode source)
+        public TicketMerge(ConnectionContext connection, TicketNode destination, TicketNode source)
         {
             Destination = destination;
             Source = source;
@@ -28,7 +28,7 @@ namespace TeamSupport.ModelAPI
         /// <summary> Merge1 </summary>
         public void Merge1()
         {
-            if (!Connection.User.CanEdit()) // sufficient permissions?
+            if (!Connection.CanEdit()) // sufficient permissions?
                 return;
 
             MergeAssets();
@@ -79,9 +79,9 @@ namespace TeamSupport.ModelAPI
             foreach (OrganizationTicketNode customer in customers)
             {
                 // WHERE NOT EXISTS(SELECT * FROM OrganizationTickets WHERE TicketID ={model.TicketID} and OrganizationId ={proxy.OrganizationID})
-                if (!destinationCustomers.Where(c => c.OrganizationID == customer.OrganizationID).Any())
+                if (!destinationCustomers.Where(c => c.Organization.OrganizationID == customer.Organization.OrganizationID).Any())
                 {
-                    CustomerProxy customerProxy = new CustomerProxy() { OrganizationID = customer.OrganizationID };
+                    CustomerProxy customerProxy = new CustomerProxy() { OrganizationID = customer.Organization.OrganizationID };
                     DataAPI.DataAPI.Create(Destination, customerProxy);
                 }
 
@@ -142,13 +142,13 @@ namespace TeamSupport.ModelAPI
             foreach (SubscriptionNode subscriptionModel in subscriptions)
             {
                 // WHERE NOT EXISTS(SELECT * FROM Subscriptions WHERE reftype = 17 AND RefID = {model.TicketID} AND UserID = {proxy.UserID})
-                if (!destinationSubscriptions.Where(s => s.UserID == subscriptionModel.UserID).Any())
+                if (!destinationSubscriptions.Where(s => s.User.UserID == subscriptionModel.User.UserID).Any())
                 {
                     SubscriptionProxy subscriptionProxy = new SubscriptionProxy()
                     {
                         RefType = ReferenceType.Tickets,
                         RefID = Destination.TicketID,
-                        UserID = subscriptionModel.UserID
+                        UserID = subscriptionModel.User.UserID
                     };
                     DataAPI.DataAPI.Create(Destination, subscriptionProxy);
                 }

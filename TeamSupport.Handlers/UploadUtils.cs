@@ -37,7 +37,7 @@ namespace TeamSupport.Handlers
             List<UploadResult> result = new List<UploadResult>();
 
             // Action Attachments
-            if (IDTree.ClientRequest.IsEnabled && (folder == AttachmentPath.Folder.Actions)) // save action attachments
+            if (IDTree.ConnectionContext.IsEnabled && (folder == AttachmentPath.Folder.Actions)) // save action attachments
             {
                 List<AttachmentProxy> attachmentProxies = null;
                 attachmentProxies = ModelAPI.ModelAPI.CreateActionAttachments(itemID.Value, context);    // ticketID, actionID, actionAttachments

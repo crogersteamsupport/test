@@ -9,17 +9,24 @@ namespace TeamSupport.IDTree
 {
     public abstract class IDNode
     {
-        public ClientRequest Request { get; private set; }
+        public ConnectionContext Connection { get; private set; }
 
-        protected IDNode(ClientRequest request) { Request = request; }
-        protected IDNode(IDNode node) : this(node.Request) { }
+        protected IDNode(ConnectionContext request)
+        {
+            Connection = request;
+        }
+
+        protected IDNode(IDNode node) //: this(node.Request)
+        {
+            Connection = node.Connection;
+        }
 
         public abstract void Verify();
 
         /// <summary> Verify helper </summary>
         protected void Verify(string query)
         {
-            if (Request._db.ExecuteQuery<int>(query).Any()) // valid ID found?
+            if (Connection._db.ExecuteQuery<int>(query).Any()) // valid ID found?
                 return;
 
             if (Debugger.IsAttached)

@@ -9,13 +9,13 @@ namespace TeamSupport.IDTree
     public class TaskAssociationNode : IDNode
     {
         public TicketNode Ticket { get; private set; }
-        public TicketTaskNode Task { get; private set; }
+        public TaskNode Task { get; private set; }
 
-        public TaskAssociationNode(TicketNode ticket, TicketTaskNode taskID) : this(ticket, taskID, true)
+        public TaskAssociationNode(TicketNode ticket, TaskNode taskID) : this(ticket, taskID, true)
         {
         }
 
-        private TaskAssociationNode(TicketNode ticket, TicketTaskNode task, bool verify) : base(ticket.Request)
+        private TaskAssociationNode(TicketNode ticket, TaskNode task, bool verify) : base(ticket)
         {
             Ticket = ticket;
             Task = task;
@@ -28,7 +28,7 @@ namespace TeamSupport.IDTree
             int[] taskAssociationIDs = IDReader.Read(TicketChild.TaskAssociations, ticket);
             TaskAssociationNode[] taskAssociationModels = new TaskAssociationNode[taskAssociationIDs.Length];
             for (int i = 0; i < taskAssociationIDs.Length; ++i)
-                taskAssociationModels[i] = new TaskAssociationNode(ticket, new TicketTaskNode(ticket, taskAssociationIDs[i]), false);
+                taskAssociationModels[i] = new TaskAssociationNode(ticket, new TaskNode(ticket.Organization, taskAssociationIDs[i]), false);
             return taskAssociationModels;
         }
 

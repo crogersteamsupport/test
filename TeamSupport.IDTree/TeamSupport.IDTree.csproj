@@ -51,8 +51,9 @@
     <Compile Include="AssetNode.cs" />
     <Compile Include="AssetTicketNode.cs" />
     <Compile Include="AttachmentFile.cs" />
+    <Compile Include="UserNode.cs" />
     <Compile Include="UserTicketNode.cs" />
-    <Compile Include="ClientRequest.cs" />
+    <Compile Include="ConnectionContext.cs" />
     <Compile Include="OrganizationTicketNode.cs" />
     <Compile Include="IDReader.cs" />
     <Compile Include="IDNode.cs" />
@@ -65,10 +66,9 @@
     <Compile Include="TaskAssociationNode.cs" />
     <Compile Include="TicketTaskNode.cs" />
     <Compile Include="TicketNode.cs" />
-    <Compile Include="UserSession.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="IDTree.cd" />
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TeamSupport.Proxy\TeamSupport.Proxy.csproj">

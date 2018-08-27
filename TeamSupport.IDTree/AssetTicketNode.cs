@@ -15,7 +15,7 @@ namespace TeamSupport.IDTree
         {
         }
 
-        private AssetTicketNode(AssetNode asset, TicketNode ticket, bool verify) : base(ticket.Request)
+        private AssetTicketNode(AssetNode asset, TicketNode ticket, bool verify) : base(ticket)
         {
             Asset = asset;
             Ticket = ticket;
@@ -25,7 +25,7 @@ namespace TeamSupport.IDTree
 
         public static AssetTicketNode[] GetAssetTickets(TicketNode ticket)
         {
-            OrganizationNode organization = ticket.User.Organization;
+            OrganizationNode organization = ticket.Organization;
             int[] ids = IDReader.Read(TicketChild.Asset, ticket);
             AssetTicketNode[] models = new AssetTicketNode[ids.Length];
             for (int i = 0; i < ids.Length; ++i)

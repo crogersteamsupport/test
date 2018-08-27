@@ -26,7 +26,7 @@ namespace TeamSupport.IDTree
         }
 
         /// <summary> top down - existing action </summary>
-        public ActionNode(TicketNode ticket, int actionID) : base(ticket.Request)
+        public ActionNode(TicketNode ticket, int actionID) : base(ticket)
         {
             Ticket = ticket;
             ActionID = actionID;
@@ -34,11 +34,11 @@ namespace TeamSupport.IDTree
         }
 
         /// <summary> bottom up  - existing action </summary>
-        public ActionNode(ClientRequest connection, int actionID) : base(connection)
+        public ActionNode(ConnectionContext connection, int actionID) : base(connection)
         {
             ActionID = actionID;
-            int ticketID = GetTicketID(Request._db, actionID);
-            Ticket = new TicketNode(Request, ticketID);
+            int ticketID = GetTicketID(Connection._db, actionID);
+            Ticket = new TicketNode(Connection, ticketID);
             Verify();
         }
 
@@ -48,14 +48,14 @@ namespace TeamSupport.IDTree
             return new ActionAttachmentNode(this, actionAttachmentID);
         }
 
-        public bool CanEdit() { return Ticket.User.CanEdit() || (Ticket.User.UserID == IDReader.CreatorID(Request._db, ActionID)); }
+        public bool CanEdit() { return Connection.CanEdit() || (Connection.User.UserID == IDReader.CreatorID(Connection._db, ActionID)); }
 
         public const int ActionPathIndex = 3;
         public string AttachmentPath
         {
             get
             {
-                string path = Ticket.User.Organization.AttachmentPath(ActionPathIndex);
+                string path = Ticket.Organization.AttachmentPath(ActionPathIndex);
                 path = Path.Combine(path, "Actions");   // see AttachmentPath.GetFolderName(AttachmentPath.Folder.Actions);
                 path = Path.Combine(path, ActionID.ToString());
                 if (!Directory.Exists(path))
@@ -71,12 +71,12 @@ namespace TeamSupport.IDTree
 
         public int CreatorID()
         {
-            return Request._db.ExecuteQuery<int>($"SELECT CreatorID FROM Actions WITH (NOLOCK) WHERE ActionID={ActionID}").Min();
+            return Connection._db.ExecuteQuery<int>($"SELECT CreatorID FROM Actions WITH (NOLOCK) WHERE ActionID={ActionID}").Min();
         }
 
         public int TicketID()
         {
-            return Request._db.ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {ActionID}").Min();
+            return Connection._db.ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {ActionID}").Min();
         }
 
 

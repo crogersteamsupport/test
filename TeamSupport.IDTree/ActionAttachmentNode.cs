@@ -22,7 +22,7 @@ namespace TeamSupport.IDTree
         public AttachmentFile File { get; private set; }
 
         /// <summary> top down - Load existing action attachment /// </summary>
-        public ActionAttachmentNode(ActionNode action, int actionAttachmentID) : base(action.Request)
+        public ActionAttachmentNode(ActionNode action, int actionAttachmentID) : base(action)
         {
             Action = action;
             ActionAttachmentID = actionAttachmentID;
@@ -30,21 +30,21 @@ namespace TeamSupport.IDTree
         }
 
         /// <summary> bottom up - Load existing action attachment /// </summary>
-        public ActionAttachmentNode(ClientRequest connection, int actionAttachmentID) : base(connection)
+        public ActionAttachmentNode(ConnectionContext connection, int actionAttachmentID) : base(connection)
         {
             ActionAttachmentID = actionAttachmentID;
             int actionID = GetActionID(connection._db, ActionAttachmentID);
-            Action = new ActionNode(Request, actionID);
+            Action = new ActionNode(Connection, actionID);
 
             TicketNode ticket = Action.Ticket;
-            OrganizationNode organization = ticket.User.Organization;
+            OrganizationNode organization = ticket.Organization;
             Verify();
         }
 
         public override void Verify()
         {
             TicketNode ticket = Action.Ticket;
-            OrganizationNode organization = ticket.User.Organization;
+            OrganizationNode organization = ticket.Organization;
             Verify($"SELECT AttachmentID FROM Attachments WITH (NOLOCK) " +
                 $"WHERE ActionAttachmentID={ActionAttachmentID} AND OrganizationID={organization.OrganizationID} AND RefID={Action.ActionID} AND RefType=0");
         }

@@ -90,7 +90,7 @@ namespace TSWebServices
             info.CustomValues = ticketService.GetParentCustomValues(ticket.TicketID);
             info.Subscribers = GetSubscribers(ticket);
             info.Queuers = GetQueuers(ticket);
-            if (ClientRequest.IsEnabled)    // append action attachments for ticket by filename
+            if (ConnectionContext.IsEnabled)    // append action attachments for ticket by filename
             {
                 AttachmentProxy[] results;
                 ModelAPI.ReadActionAttachmentsForTicket(ticket.TicketID, ActionAttachmentsByTicketID.ByFilename, out results);
@@ -278,7 +278,7 @@ namespace TSWebServices
                     timeLineItem.item          = viewItem.GetProxy();
                     timeLineItem.item.Message  = SanitizeMessage(timeLineItem.item.Message, loginUser);
 
-                    if(ClientRequest.IsEnabled) // read action attachments
+                    if(ConnectionContext.IsEnabled) // read action attachments
                     {
                         timeLineItem.Attachments = ModelAPI.Read<AttachmentProxy[]>(viewItem.RefID);
                     }
@@ -1768,7 +1768,7 @@ namespace TSWebServices
                 }
             }
 
-            if (ClientRequest.IsEnabled)    // read action attachments
+            if (ConnectionContext.IsEnabled)    // read action attachments
             {
                 int actionID = item.item.RefID;
                 item.Attachments = ModelAPI.Read<AttachmentProxy[]>(actionID);
@@ -1812,7 +1812,7 @@ namespace TSWebServices
         private AttachmentProxy[] GetActionAttachments(int actionID, LoginUser loginUser)
         {
             // Read action attachments
-            if (ClientRequest.IsEnabled)    // read action attachments
+            if (ConnectionContext.IsEnabled)    // read action attachments
             {
                 return ModelAPI.Read<AttachmentProxy[]>(actionID);
             }
@@ -1863,7 +1863,7 @@ namespace TSWebServices
 
         private void CopyInsertedKBAttachments(int actionID, int insertedKBTicketID)
         {
-            if (ClientRequest.IsEnabled)    // clone Knowledge Base action attachments from entire ticket to single action
+            if (ConnectionContext.IsEnabled)    // clone Knowledge Base action attachments from entire ticket to single action
             {
                 AttachmentProxy[] results;
                 ModelAPI.ReadActionAttachmentsForTicket(insertedKBTicketID, ActionAttachmentsByTicketID.KnowledgeBase, out results);

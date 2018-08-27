@@ -15,21 +15,21 @@ namespace TeamSupport.DataAPI
     {
 
         /// <summary> Create Ticket </summary>
-        public static void Create(ClientRequest connection, TicketProxy ticketProxy)
+        public static void Create(ConnectionContext connection, TicketProxy ticketProxy)
         {
             // TODO - create ticket
             DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.Tickets, ticketProxy.TicketID, "Created Ticket");
         }
 
         /// <summary> Read Ticket </summary>
-        public static TicketProxy Read(ClientRequest connection, TicketNode ticketModel)
+        public static TicketProxy Read(ConnectionContext connection, TicketNode ticketModel)
         {
             Table<TicketProxy> table = connection._db.GetTable<TicketProxy>();
             return table.Where(t => t.TicketID == ticketModel.TicketID).First();
         }
 
         /// <summary> Update Ticket </summary>
-        public static void Update(ClientRequest connection, TicketNode ticketModel)
+        public static void Update(ConnectionContext connection, TicketNode ticketModel)
         {
             // TODO - update ticket by Scot.. this one is just for ticket merge.
             string query = $"UPDATE Tickets WITH (ROWLOCK)" +
@@ -39,7 +39,7 @@ namespace TeamSupport.DataAPI
         }
 
         /// <summary> Delete Ticket</summary>
-        public static void Delete(ClientRequest connection, TicketNode ticketModel)
+        public static void Delete(ConnectionContext connection, TicketNode ticketModel)
         {
             string query = $"DELETE FROM Tickets WHERE TicketId = {ticketModel.TicketID}";
             connection._db.ExecuteCommand(query);
@@ -48,7 +48,7 @@ namespace TeamSupport.DataAPI
 
         #region MergeReads
         /// <summary> Read Ticket Contacts </summary>
-        public static bool TryReadContacts(ClientRequest connection, TicketNode ticket, out int[] values)
+        public static bool TryReadContacts(ConnectionContext connection, TicketNode ticket, out int[] values)
         {
             string query = $"SELECT Users.userid FROM Users WITH (NOLOCK)" +
                 $"JOIN UserTickets WITH (NOLOCK) on UserTickets.userid = Users.UserID" +
@@ -58,7 +58,7 @@ namespace TeamSupport.DataAPI
         }
 
         /// <summary>Read Ticket Customers </summary>        
-        public static bool TryReadCustomers(ClientRequest connection, TicketNode ticket, out int[] values)
+        public static bool TryReadCustomers(ConnectionContext connection, TicketNode ticket, out int[] values)
         {
             string query = $"Select organizationid From OrganizationTickets WITH (NOLOCK) Where TicketId = {ticket.TicketID}";
             values = connection._db.ExecuteQuery<int>(query).ToArray();
@@ -69,7 +69,7 @@ namespace TeamSupport.DataAPI
         /// For TicketMerge we only need the tagid from taglinks
         /// Tags Table has the tags, Taglinks has the relationship between tags and tickets.
         /// </summary>      
-        public static bool TryReadTags(ClientRequest connection, TicketNode ticket, out int[] values)
+        public static bool TryReadTags(ConnectionContext connection, TicketNode ticket, out int[] values)
         {
             string query = $"SELECT TagID FROM TagLinks WITH(NOLOCK) WHERE Reftype=17 and RefID = {ticket.TicketID}";
             values = connection._db.ExecuteQuery<int>(query).ToArray();
@@ -77,7 +77,7 @@ namespace TeamSupport.DataAPI
         }
 
         /// <summary>Read Ticket Subscriptions</summary>        
-        public static bool TryReadSubscriptions(ClientRequest connection, TicketNode ticket, out int[] values)
+        public static bool TryReadSubscriptions(ConnectionContext connection, TicketNode ticket, out int[] values)
         {
             string query = $"SELECT Subscriptions.userid FROM Subscriptions WITH (NOLOCK) " +
                 $"JOIN Users WITH (NOLOCK) on users.userid = Subscriptions.userid " +
@@ -87,7 +87,7 @@ namespace TeamSupport.DataAPI
         }
 
         /// <summary>Read quequed tickets</summary>
-        public static bool TryReadQueueUsers(ClientRequest connection, TicketNode sourceTicket, TicketNode destinationTicket, out int[] values)
+        public static bool TryReadQueueUsers(ConnectionContext connection, TicketNode sourceTicket, TicketNode destinationTicket, out int[] values)
         {
             string query = $"SELECT TicketQueue.UserID " +
                 $"FROM TicketQueue WITH (NOLOCK) " +
@@ -99,7 +99,7 @@ namespace TeamSupport.DataAPI
         }
 
         /// <summary>Read Ticket Reminders</summary>
-        public static bool TryReadReminders(ClientRequest connection, TicketNode ticket, out int[] values)
+        public static bool TryReadReminders(ConnectionContext connection, TicketNode ticket, out int[] values)
         {
             string query = $"SELECT ReminderID FROM Reminders WITH (NOLOCK) WHERE RefID = {ticket.TicketID} AND Reftype = 17";
             values = connection._db.ExecuteQuery<int>(query).ToArray();
@@ -107,7 +107,7 @@ namespace TeamSupport.DataAPI
         }
 
         /// <summary>Read Ticket Tasks</summary>
-        public static bool TryReadTasks(ClientRequest connection, TicketNode ticket, out int[] values)
+        public static bool TryReadTasks(ConnectionContext connection, TicketNode ticket, out int[] values)
         {
             string query = $"SELECT TaskID FROM TaskAssociations WITH (NOLOCK) WHERE Refid={ticket.TicketID} and RefType = 17";
             values = connection._db.ExecuteQuery<int>(query).ToArray();
@@ -115,7 +115,7 @@ namespace TeamSupport.DataAPI
         }
 
         /// <summary>Read Ticket Assets</summary>
-        public static bool TryReadAssets(ClientRequest connection, TicketNode ticket, out int[] values)
+        public static bool TryReadAssets(ConnectionContext connection, TicketNode ticket, out int[] values)
         {
             string query = $"SELECT AssetID From AssetTickets WITH (NOLOCK) WHERE TicketID = {ticket.TicketID}";
             values = connection._db.ExecuteQuery<int>(query).ToArray();
@@ -123,7 +123,7 @@ namespace TeamSupport.DataAPI
         }
 
         /// <summary>Read releated tickets 1 </summary>     
-        public static bool TryReadRelationships1(ClientRequest connection, TicketNode sourceTicket, TicketNode destinationTicket, out int[] values)
+        public static bool TryReadRelationships1(ConnectionContext connection, TicketNode sourceTicket, TicketNode destinationTicket, out int[] values)
         {
             string query = $"SELECT TicketRelationshipID FROM TicketRelationships WITH(NOLOCK) WHERE Ticket1ID={sourceTicket.TicketID} AND Ticket2ID <> {destinationTicket.TicketID}";
             values = connection._db.ExecuteQuery<int>(query).ToArray();
@@ -131,7 +131,7 @@ namespace TeamSupport.DataAPI
         }
 
         /// <summary>Read releated tickets 2 </summary>     
-        public static bool TryReadRelationships2(ClientRequest connection, TicketNode sourceTicket, TicketNode destinationTicket, out int[] values)
+        public static bool TryReadRelationships2(ConnectionContext connection, TicketNode sourceTicket, TicketNode destinationTicket, out int[] values)
         {
             string query = $"SELECT TicketRelationshipID FROM TicketRelationships WITH(NOLOCK) WHERE Ticket2ID={sourceTicket.TicketID} and Ticket1ID={destinationTicket.TicketID}";
             values = connection._db.ExecuteQuery<int>(query).ToArray();
@@ -139,7 +139,7 @@ namespace TeamSupport.DataAPI
         }
 
         /// <summary>Read children of ticket</summary> 
-        public static bool TryReadChildren(ClientRequest connection, TicketNode ticket, out int[] values)
+        public static bool TryReadChildren(ConnectionContext connection, TicketNode ticket, out int[] values)
         {
             string query = $"SELECT TicketID FROM Tickets WITH(NOLOCK) WHERE ParentID={ticket.TicketID}";
             values = connection._db.ExecuteQuery<int>(query).ToArray();
@@ -148,7 +148,7 @@ namespace TeamSupport.DataAPI
         #endregion
         #region Merge updates
 
-        public static void MergeAssets(ClientRequest connection, int[] assets, TicketNode sourceTicket, TicketNode destinationTicket)
+        public static void MergeAssets(ConnectionContext connection, int[] assets, TicketNode sourceTicket, TicketNode destinationTicket)
         {
             string query = "";
             foreach (int asset in assets)
@@ -164,7 +164,7 @@ namespace TeamSupport.DataAPI
             DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Assets");
         }
 
-        public static void MergeChildren(ClientRequest connection, int[] children, TicketNode sourceTicket, TicketNode destinationTicket)
+        public static void MergeChildren(ConnectionContext connection, int[] children, TicketNode sourceTicket, TicketNode destinationTicket)
         {
             foreach (int child in children)
             {
@@ -175,7 +175,7 @@ namespace TeamSupport.DataAPI
             DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' children tickets");
         }
 
-        public static void MergeContacts(ClientRequest connection, int[] contacts, TicketNode sourceTicket, TicketNode destinationTicket)
+        public static void MergeContacts(ConnectionContext connection, int[] contacts, TicketNode sourceTicket, TicketNode destinationTicket)
         {
             foreach (int contact in contacts)
             {
@@ -190,7 +190,7 @@ namespace TeamSupport.DataAPI
             DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Contacts");
         }
 
-        public static void MergeCustomers(ClientRequest connection, int[] customers, TicketNode sourceTicket, TicketNode destinationTicket)
+        public static void MergeCustomers(ConnectionContext connection, int[] customers, TicketNode sourceTicket, TicketNode destinationTicket)
         {
             foreach (int customer in customers)
             {
@@ -204,7 +204,7 @@ namespace TeamSupport.DataAPI
             DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Customers");
         }
 
-        public static void MergeQueuedTickets(ClientRequest connection, int[] queued, TicketNode sourceTicket, TicketNode destinationTicket)
+        public static void MergeQueuedTickets(ConnectionContext connection, int[] queued, TicketNode sourceTicket, TicketNode destinationTicket)
         {
             string query;
             foreach (int queue in queued)
@@ -227,7 +227,7 @@ namespace TeamSupport.DataAPI
         /// Update reminders with destination ticket. Duplicates are allowed in table.
         /// </summary>
 
-        public static void MergeReminders(ClientRequest connection, int[] reminders, TicketNode sourceTicket, TicketNode destinationTicket)
+        public static void MergeReminders(ConnectionContext connection, int[] reminders, TicketNode sourceTicket, TicketNode destinationTicket)
         {
             foreach (int reminder in reminders)
             {
@@ -237,7 +237,7 @@ namespace TeamSupport.DataAPI
             DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Reminders");
         }
 
-        public static void MergeTasks(ClientRequest connection, int[] tasks, TicketNode sourceTicket, TicketNode destinationTicket)
+        public static void MergeTasks(ConnectionContext connection, int[] tasks, TicketNode sourceTicket, TicketNode destinationTicket)
         {
             foreach (int task in tasks)
             {
@@ -248,7 +248,7 @@ namespace TeamSupport.DataAPI
         }
 
 
-        public static void MergeTags(ClientRequest connection, int[] tags, TicketNode sourceTicket, TicketNode destinationTicket)
+        public static void MergeTags(ConnectionContext connection, int[] tags, TicketNode sourceTicket, TicketNode destinationTicket)
         {
             string query;
             foreach (int tag in tags)
@@ -265,7 +265,7 @@ namespace TeamSupport.DataAPI
             DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Tags");
         }
 
-        public static void MergeSubscriptions(ClientRequest connection, int[] subscriptions, TicketNode sourceTicket, TicketNode destinationTicket)
+        public static void MergeSubscriptions(ConnectionContext connection, int[] subscriptions, TicketNode sourceTicket, TicketNode destinationTicket)
 
         {
             foreach (int subscription in subscriptions)
@@ -279,7 +279,7 @@ namespace TeamSupport.DataAPI
             }
             DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Subscriptions");
         }
-        public static void MergeRelationships1(ClientRequest connection, int[] relationships, TicketNode sourceTicket, TicketNode destinationTicket)
+        public static void MergeRelationships1(ConnectionContext connection, int[] relationships, TicketNode sourceTicket, TicketNode destinationTicket)
         {
             string query;
             foreach (int relationship in relationships)
@@ -295,7 +295,7 @@ namespace TeamSupport.DataAPI
             DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Related Tickets");
         }
 
-        public static void MergeRelationships2(ClientRequest connection, int[] relationships, TicketNode sourceTicket, TicketNode destinationTicket)
+        public static void MergeRelationships2(ConnectionContext connection, int[] relationships, TicketNode sourceTicket, TicketNode destinationTicket)
         {
             string query;
             foreach (int relationship in relationships)
@@ -311,7 +311,7 @@ namespace TeamSupport.DataAPI
             DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Related Tickets");
         }
 
-        public static void MergeActions(ClientRequest connection, TicketNode sourceTicket, TicketNode destinationTicket)
+        public static void MergeActions(ConnectionContext connection, TicketNode sourceTicket, TicketNode destinationTicket)
         {
 
             string query = $"SELECT actionId from Actions with (NOLOCK) where TicketId = {sourceTicket.TicketID}";
