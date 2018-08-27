@@ -23,7 +23,7 @@ namespace TeamSupport.ModelAPI
         {
             try
             {
-                using (ConnectionContext connection = new ConnectionContext())
+                using (ClientRequest connection = new ClientRequest())
                 {
                     switch (typeof(T).Name)
                     {
@@ -33,7 +33,7 @@ namespace TeamSupport.ModelAPI
                             break;
                         case "AttachmentProxy":
                             AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
-                            ActionModel actionModel = new ActionModel(connection, ((ActionAttachmentProxy)attachmentProxy).ActionID);
+                            ActionNode actionModel = new ActionNode(connection, ((ActionAttachmentProxy)attachmentProxy).ActionID);
                             DataAPI.DataAPI.Create(actionModel, attachmentProxy);
                             break;
                     }
@@ -64,24 +64,24 @@ namespace TeamSupport.ModelAPI
             T t = default(T);   // null since T is a class
             try
             {
-                using (ConnectionContext connection = new ConnectionContext())
+                using (ClientRequest connection = new ClientRequest())
                 {
                     switch(typeof(T).Name) // alphabetized list
                     {
                         case "ActionProxy": // action
-                            t = DataAPI.DataAPI.Read<T>(new ActionModel(connection, id));
+                            t = DataAPI.DataAPI.Read<T>(new ActionNode(connection, id));
                             break;
                         case "ActionProxy[]": // ticket actions
-                            t = DataAPI.DataAPI.Read<T>(new TicketModel(connection, id));
+                            t = DataAPI.DataAPI.Read<T>(new TicketNode(connection, id));
                             break;
                         case "AttachmentProxy": // attachment
-                            t = DataAPI.DataAPI.Read<T>(new ActionAttachment(connection, id));
+                            t = DataAPI.DataAPI.Read<T>(new ActionAttachmentNode(connection, id));
                             break;
                         case "AttachmentProxy[]": // action attachments
-                            t = DataAPI.DataAPI.Read<T>(new ActionModel(connection, id));
+                            t = DataAPI.DataAPI.Read<T>(new ActionNode(connection, id));
                             break;
                         case "TicketProxy": // ticket
-                            t = DataAPI.DataAPI.Read<T>(new TicketModel(connection, id));
+                            t = DataAPI.DataAPI.Read<T>(new TicketNode(connection, id));
                             break;
                         default:
                             throw new Exception("bad call to ModelAPI.Read");
@@ -113,13 +113,13 @@ namespace TeamSupport.ModelAPI
         {
             try
             {
-                using (ConnectionContext connection = new ConnectionContext())
+                using (ClientRequest connection = new ClientRequest())
                 {
                     switch (typeof(T).Name)
                     {
                         case "ActionProxy":
                             ActionProxy actionProxy = proxy as ActionProxy;
-                            DataAPI.DataAPI.Update(new ActionModel(connection, actionProxy.ActionID), actionProxy);
+                            DataAPI.DataAPI.Update(new ActionNode(connection, actionProxy.ActionID), actionProxy);
                             break;
                         case "AttachmentProxy":
                             AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
@@ -152,17 +152,17 @@ namespace TeamSupport.ModelAPI
         {
             try
             {
-                using (ConnectionContext connection = new ConnectionContext())
+                using (ClientRequest connection = new ClientRequest())
                 {
                     switch (typeof(T).Name)
                     {
                         case "ActionProxy":
                             ActionProxy actionProxy = proxy as ActionProxy;
-                            DataAPI.DataAPI.Delete(new ActionModel(connection, actionProxy.ActionID));
+                            DataAPI.DataAPI.Delete(new ActionNode(connection, actionProxy.ActionID));
                             break;
                         case "AttachmentProxy":
                             AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
-                            DataAPI.DataAPI.Delete(new ActionAttachment(connection, attachmentProxy.AttachmentID));
+                            DataAPI.DataAPI.Delete(new ActionAttachmentNode(connection, attachmentProxy.AttachmentID));
                             break;
                     }
                 }
@@ -188,7 +188,7 @@ namespace TeamSupport.ModelAPI
         /// <summary> ??? </summary>
         public static int AttachmentIDFromGUID(Guid guid)
         {
-            using (ConnectionContext connection = new ConnectionContext())
+            using (ClientRequest connection = new ClientRequest())
             {
                 return connection._db.ExecuteQuery<int>($"SELECT AttachmentID FROM Attachments WHERE AttachmentGUID={guid}").Min();
             }
@@ -199,7 +199,7 @@ namespace TeamSupport.ModelAPI
         {
             try
             {
-                using (ConnectionContext connection = new ConnectionContext(true))    // use transaction
+                using (ClientRequest connection = new ClientRequest(true))    // use transaction
                 {
                     try
                     {
@@ -234,9 +234,9 @@ namespace TeamSupport.ModelAPI
             List<AttachmentProxy> results = new List<AttachmentProxy>();
             try
             {
-                using (ConnectionContext connection = new ConnectionContext())
+                using (ClientRequest connection = new ClientRequest())
                 {
-                    ActionModel actionModel = new ActionModel(connection, actionID);
+                    ActionNode actionModel = new ActionNode(connection, actionID);
                     HttpFileCollection files = context.Request.Files;
                     for (int i = 0; i < files.Count; i++)   // foreach returns strings?
                     {
@@ -264,10 +264,10 @@ namespace TeamSupport.ModelAPI
         {
             try
             {
-                using (ConnectionContext connection = new ConnectionContext())
+                using (ClientRequest connection = new ClientRequest())
                 {
                     // user have permission to modify this action?
-                    ActionAttachment attachment = new ActionAttachment(connection, attachmentID);
+                    ActionAttachmentNode attachment = new ActionAttachmentNode(connection, attachmentID);
                     if (!attachment.Action.CanEdit())
                         return;
 
@@ -289,9 +289,9 @@ namespace TeamSupport.ModelAPI
             attachments = null;
             try
             {
-                using (ConnectionContext connection = new ConnectionContext())
+                using (ClientRequest connection = new ClientRequest())
                 {
-                    TicketModel ticketModel = connection.Ticket(ticketID);
+                    TicketNode ticketModel = connection.Ticket(ticketID);
                     DataAPI.DataAPI.ReadActionAttachmentsForTicket(ticketModel, ticketActionAttachments, out attachments);
                 }
             }

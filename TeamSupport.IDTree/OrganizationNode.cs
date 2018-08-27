@@ -14,26 +14,28 @@ namespace TeamSupport.IDTree
     /// <summary>
     /// Wrapper for valid OrganizationID
     /// </summary>
-    public class OrganizationModel : IdInterface
+    public class OrganizationNode : IDNode
     {
-        public ConnectionContext Connection { get; private set; }
-
-        public int OrganizationID { get { return Connection.Authentication.OrganizationID; } }
+        public int OrganizationID { get { return Request.Authentication.OrganizationID; } }
 
         /// <summary> OrganizationID and UserID come from ConnectionContext.Authentication </summary>
-        public OrganizationModel(ConnectionContext connection)
+        public OrganizationNode(ClientRequest connection) : base(connection)
         {
-            Connection = connection;
             //DBReader.VerifyOrganization(_db, OrganizationID); // connection already verified
         }
 
         public string AttachmentPath(int id)
         {
-            string path = Connection.AttachmentPath(id);
+            string path = Request.AttachmentPath(id);
             path = Path.Combine(Path.Combine(path, "Organizations"), OrganizationID.ToString());
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             return path;
+        }
+
+        public override void Verify()
+        {
+            Verify($"SELECT OrganizationID FROM Organizations WITH (NOLOCK) WHERE OrganizationID={OrganizationID}");
         }
 
     }

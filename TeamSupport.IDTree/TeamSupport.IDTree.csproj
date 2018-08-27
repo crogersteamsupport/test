@@ -46,26 +46,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActionAttachment.cs" />
-    <Compile Include="ActionModel.cs" />
-    <Compile Include="AssetTicketModel.cs" />
+    <Compile Include="ActionAttachmentNode.cs" />
+    <Compile Include="ActionNode.cs" />
+    <Compile Include="AssetNode.cs" />
+    <Compile Include="AssetTicketNode.cs" />
     <Compile Include="AttachmentFile.cs" />
-    <Compile Include="Contact.cs" />
-    <Compile Include="ConnectionContext.cs" />
-    <Compile Include="Customer.cs" />
-    <Compile Include="DBReader.cs" />
-    <Compile Include="IdInterface.cs" />
-    <Compile Include="OrganizationModel.cs" />
+    <Compile Include="UserTicketNode.cs" />
+    <Compile Include="ClientRequest.cs" />
+    <Compile Include="OrganizationTicketNode.cs" />
+    <Compile Include="IDReader.cs" />
+    <Compile Include="IDNode.cs" />
+    <Compile Include="OrganizationNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReminderModel.cs" />
-    <Compile Include="SubscriptionModel.cs" />
-    <Compile Include="TagLinkModel.cs" />
-    <Compile Include="TaskAssociationModel.cs" />
-    <Compile Include="TicketModel.cs" />
-    <Compile Include="UserSession.cs" />
+    <Compile Include="TicketReminderNode.cs" />
+    <Compile Include="SubscriptionNode.cs" />
+    <Compile Include="TagLinkNode.cs" />
+    <Compile Include="TagNode.cs" />
+    <Compile Include="TaskAssociationNode.cs" />
+    <Compile Include="TicketTaskNode.cs" />
+    <Compile Include="TicketNode.cs" />
+    <Compile Include="UserNode.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="LogicalModel.cd" />
+    <None Include="IDTree.cd" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TeamSupport.Proxy\TeamSupport.Proxy.csproj">

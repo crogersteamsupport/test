@@ -13,12 +13,12 @@ namespace TeamSupport.ModelAPI
     /// <summary> Raquel writes awesome code </summary>
     class TicketMerge
     {
-        public ConnectionContext Connection { get; private set; }
-        public TicketModel Source { get; private set; } // winning
-        public TicketModel Destination { get; private set; }    // losing
+        public ClientRequest Connection { get; private set; }
+        public TicketNode Source { get; private set; } // winning
+        public TicketNode Destination { get; private set; }    // losing
 
         /// <summary> On a verified connection merge verified ticket to verified ticket </summary>
-        public TicketMerge(ConnectionContext connection, TicketModel destination, TicketModel source)
+        public TicketMerge(ClientRequest connection, TicketNode destination, TicketNode source)
         {
             Destination = destination;
             Source = source;
@@ -50,12 +50,12 @@ namespace TeamSupport.ModelAPI
 
         void MergeAssets()
         {
-            AssetTicketModel[] assetTickets = AssetTicketModel.GetAssetTickets(Source);
+            AssetTicketNode[] assetTickets = Source.AssetTickets();
             if (assetTickets.Length == 0)
                 return;
 
-            AssetTicketModel[] destinationAssetTickets = AssetTicketModel.GetAssetTickets(Destination);
-            foreach (AssetTicketModel assetTicket in assetTickets)
+            AssetTicketNode[] destinationAssetTickets = Destination.AssetTickets();
+            foreach (AssetTicketNode assetTicket in assetTickets)
             {
                 // WHERE NOT EXISTS (Select AssetTickets WITH (NOLOCK) WHERE AssetId = {asset} AND TicketId ={sourceTicket.TicketID})
                 if (!destinationAssetTickets.Where(a => a.AssetID == assetTicket.AssetID).Any())
@@ -71,12 +71,12 @@ namespace TeamSupport.ModelAPI
 
         void MergeCustomers()
         {
-            Customer[] customers = Customer.GetCustomers(Source);
+            OrganizationTicketNode[] customers = Source.Customers();
             if (customers.Length == 0)
                 return;
 
-            Customer[] destinationCustomers = Customer.GetCustomers(Destination);
-            foreach (Customer customer in customers)
+            OrganizationTicketNode[] destinationCustomers = Destination.Customers();
+            foreach (OrganizationTicketNode customer in customers)
             {
                 // WHERE NOT EXISTS(SELECT * FROM OrganizationTickets WHERE TicketID ={model.TicketID} and OrganizationId ={proxy.OrganizationID})
                 if (!destinationCustomers.Where(c => c.OrganizationID == customer.OrganizationID).Any())
@@ -91,12 +91,12 @@ namespace TeamSupport.ModelAPI
 
         void MergeContacts()
         {
-            Contact[] contacts = Contact.GetContacts(Source);
+            UserTicketNode[] contacts = Source.Contacts();
             if (contacts.Length == 0)
                 return;
 
-            Contact[] destinationContacts = Contact.GetContacts(Destination);
-            foreach (Contact contact in contacts)
+            UserTicketNode[] destinationContacts = Destination.Contacts();
+            foreach (UserTicketNode contact in contacts)
             {
                 // WHERE NOT EXISTS(SELECT * FROM UserTickets WHERE TicketID ={model.TicketID} and UserID ={proxy.UserID})
                 if (!destinationContacts.Where(c => c.UserID == contact.UserID).Any())
@@ -123,23 +123,23 @@ namespace TeamSupport.ModelAPI
                 if (!destinationTagLinks.Where(t => t.TagID == tagLinkProxy.TagID).Any())
                 {
                     tagLinkProxy.RefID = Destination.TicketID;
-                    DataAPI.DataAPI.Update(new TagLinkModel(Source, tagLinkProxy.TagLinkID), tagLinkProxy);
+                    DataAPI.DataAPI.Update(new TagLinkNode(Source, tagLinkProxy.TagLinkID), tagLinkProxy);
                     continue;
                 }
 
-                DataAPI.DataAPI.Delete(new TagLinkModel(Source, tagLinkProxy.TagLinkID));
+                DataAPI.DataAPI.Delete(new TagLinkNode(Source, tagLinkProxy.TagLinkID));
             }
         }
 
         /// <summary> Subscriptions </summary>
         void MergeSubscriptions()
         {
-            SubscriptionModel[] subscriptions = SubscriptionModel.GetSubscriptions(Source);
+            SubscriptionNode[] subscriptions = Source.Subscriptions();
             if (subscriptions.Length == 0)
                 return;
 
-            SubscriptionModel[] destinationSubscriptions = SubscriptionModel.GetSubscriptions(Destination);
-            foreach (SubscriptionModel subscriptionModel in subscriptions)
+            SubscriptionNode[] destinationSubscriptions = Destination.Subscriptions();
+            foreach (SubscriptionNode subscriptionModel in subscriptions)
             {
                 // WHERE NOT EXISTS(SELECT * FROM Subscriptions WHERE reftype = 17 AND RefID = {model.TicketID} AND UserID = {proxy.UserID})
                 if (!destinationSubscriptions.Where(s => s.UserID == subscriptionModel.UserID).Any())
@@ -159,8 +159,8 @@ namespace TeamSupport.ModelAPI
 
         void MergeReminders()
         {
-            ReminderModel[] reminders = ReminderModel.GetReminders(Source);
-            foreach (ReminderModel reminderModel in reminders)
+            TicketReminderNode[] reminders = Source.Reminders();
+            foreach (TicketReminderNode reminderModel in reminders)
             {
                 ReminderProxy reminderProxy = DataAPI.DataAPI.Read<ReminderProxy>(reminderModel);
                 DataAPI.DataAPI.Update(Destination, reminderProxy);
@@ -169,8 +169,8 @@ namespace TeamSupport.ModelAPI
 
         void MergeTaskAssociations()
         {
-            TaskAssociationModel[] tasks = TaskAssociationModel.GetTaskAssociations(Source);
-            foreach (TaskAssociationModel task in tasks)
+            TaskAssociationNode[] taskAssociations = Source.TaskAssociations();
+            foreach (TaskAssociationNode task in taskAssociations)
             {
                 TaskAssociationProxy taskAssociationProxy = DataAPI.DataAPI.Read<TaskAssociationProxy>(task);
                 DataAPI.DataAPI.Update(Destination, taskAssociationProxy);

@@ -5,19 +5,31 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Linq;
 using System.Diagnostics;
+using System.Data.SqlClient;
 
 namespace TeamSupport.IDTree
 {
+    public enum OrganizationChild
+    {
+        OrganizationTicket,
+        Tag,
+        Task,
+        Ticket,
+        User
+    }
+
     public enum TicketChild
     {
+        Action,
+        AssetTicket,
+        Asset,
+        Children,
         Contacts,
         Customers,
+        TicketReminders,
         Subscriptions,
-        Reminders,
+        TicketTagLinks,
         TaskAssociations,
-        AssetTickets,
-        Children,
-        TagLinks
     }
 
     public enum TicketAssociation
@@ -31,9 +43,71 @@ namespace TeamSupport.IDTree
     /// <summary>
     /// ultralight read-only interface to database for verifying primary keys
     /// </summary>
-    static class DBReader
+    public static class IDReader
     {
-        static void Verify(DataContext db, string query)
+        // Verify row correctness knowing the associated model is also internally correct
+        public static void VerifyOrganization(DataContext db, int organizationID)
+        {
+            Verify(db, $"SELECT OrganizationID FROM Organizations WITH (NOLOCK) WHERE OrganizationID={organizationID}");
+        }
+
+        public static void Verify(OrganizationChild organizationChild, DataContext db, int organizationID, int id)
+        {
+            string query = String.Empty;
+            switch(organizationChild)
+            {
+                case OrganizationChild.OrganizationTicket:
+                    query = $"SELECT OrganizationID FROM OrganizationTickets WITH (NOLOCK) WHERE TicketID={id} AND OrganizationID={organizationID}";
+                    break;
+                case OrganizationChild.Tag:
+                    query = $"SELECT TagID FROM Tags WITH (NOLOCK) WHERE TagID={id} && OrganizationID={organizationID}";
+                    break;
+                case OrganizationChild.Ticket:
+                    query = $"SELECT TicketID FROM Tickets WITH (NOLOCK) WHERE TicketID={id} AND OrganizationID={organizationID}";
+                    break;
+                case OrganizationChild.User:
+                    query = $"SELECT UserID FROM Users WITH (NOLOCK) WHERE UserID={id} AND OrganizationID={organizationID}";
+                    break;
+                case OrganizationChild.Task:
+                    query = $"SELECT TaskID FROM Tasks WITH (NOLOCK) WHERE TaskID={id} AND OrganizationID={organizationID}";
+                    break;
+            }
+            Verify(db, query);
+        }
+
+        public static void Verify(TicketChild ticketChild, DataContext db, int organizationID, int ticketID, int id)
+        {
+            string query = String.Empty;
+            switch(ticketChild)
+            {
+                case TicketChild.Action:
+                    query = $"SELECT ActionID FROM Actions WITH (NOLOCK) WHERE ActionID={id} AND TicketID={ticketID}";
+                    break;
+                case TicketChild.Asset:
+                    query = $"SELECT AssetID FROM Assets WITH (NOLOCK) WHERE AssetID={id} AND TicketID={ticketID}";
+                    break;
+                case TicketChild.TicketTagLinks:
+                    query = $"SELECT TagLinkID FROM TagLinks WITH (NOLOCK) WHERE TagLinkID={id} AND RefID={ticketID} AND RefType=17";
+                    break;
+                case TicketChild.TicketReminders:
+                    query = $"SELECT ReminderID FROM Reminders WITH (NOLOCK) WHERE ReminderID={id} AND OrganizationID={organizationID} AND RefID={ticketID} AND RefType=17";
+                    break;
+                case TicketChild.Subscriptions:
+                    query = $"SELECT Subscriptions.userid FROM Subscriptions WITH (NOLOCK) " +
+                            $"JOIN Users WITH (NOLOCK) ON users.userid = Subscriptions.userid " +
+                            $"WHERE Subscriptions.userid = userID AND Reftype = 17 AND Refid = {ticketID} AND MarkDeleted = 0";
+                    break;
+                case TicketChild.TaskAssociations:
+                    query = $"SELECT TaskID FROM TaskAssociations WITH (NOLOCK) WHERE TaskID={id} AND Refid={ticketID} and RefType = 17";
+                    break;
+                case TicketChild.AssetTicket:
+                    query = $"SELECT AssetID FROM AssetTickets WITH (NOLOCK) WHERE AssetID={id} AND TicketID={ticketID}";
+                    break;
+            }
+            Verify(db, query);
+        }
+
+        private static void Verify(DataContext db, string query)
         {
             if (db.ExecuteQuery<int>(query).Any()) // valid ID found?
                 return;
@@ -46,29 +120,10 @@ namespace TeamSupport.IDTree
             throw new System.Data.ConstraintException(String.Format($"{query} not found")); // error - a join of the records to authentication just doesn't add up
         }
 
-        // Verify row correctness knowing the associated model is also internally correct
-        public static void VerifyOrganization(DataContext db, int organizationID) { Verify(db, $"SELECT OrganizationID FROM Organizations WITH (NOLOCK) WHERE OrganizationID={organizationID}"); }
-        public static void VerifyUser(DataContext db, int organizationID, int userID) { Verify(db, $"SELECT UserID FROM Users WITH (NOLOCK) WHERE UserID={userID} AND OrganizationID={organizationID}"); }
-        public static void VerifyTicket(DataContext db, int organizationID, int ticketID) { Verify(db, $"SELECT TicketID FROM Tickets WITH (NOLOCK) WHERE TicketID={ticketID} AND OrganizationID={organizationID}"); }
-        public static void VerifyAction(DataContext db, int organizationID, int ticketID, int actionID) { Verify(db, $"SELECT ActionID FROM Actions WITH (NOLOCK) WHERE ActionID={actionID} AND TicketID={ticketID}"); }
-        public static void VerifyActionAttachment(DataContext db, int organizationID, int ticketID, int actionID, int actionAttachmentID) { Verify(db, $"SELECT ActionAttachmentID FROM ActionAttachments WITH (NOLOCK) WHERE ActionAttachmentID={actionAttachmentID} AND ActionID={actionID} AND OrganizationID={organizationID}"); }
-        public static void VerifyAsset(DataContext db, int organizationID, int ticketID, int assetID) { Verify(db, $"SELECT AssetID FROM Assets WITH (NOLOCK) WHERE AssetID={assetID} AND TicketID={ticketID}"); }
-        public static void VerifyTagLink(DataContext db, int organizationID, int ticketID, int tagLinkID) { Verify(db, $"SELECT TagLinkID FROM TagLinks WITH (NOLOCK) WHERE TagLinkID={tagLinkID} AND RefID={ticketID} AND RefType=17"); }
-        public static void VerifyReminder(DataContext db, int organizationID, int ticketID, int reminderID) { Verify(db, $"SELECT ReminderID FROM Reminders WITH (NOLOCK) WHERE ReminderID={reminderID} AND OrganizationID={organizationID}"); }
-        public static void VerifySubscription(DataContext db, int organizationID, int ticketID, int userID)
+
+        public static void VerifyActionAttachment(DataContext db, int organizationID, int ticketID, int actionID, int attachmentID)
         {
-            string query = $"SELECT Subscriptions.userid FROM Subscriptions WITH (NOLOCK) " +
-                $"JOIN Users WITH (NOLOCK) ON users.userid = Subscriptions.userid " +
-                $"WHERE Subscriptions.userid = userID AND Reftype = 17 AND Refid = {ticketID} AND MarkDeleted = 0";
-            Verify(db, query);
-        }
-        public static void VerifyTaskAssociation(DataContext db, int organizationID, int ticketID, int taskID)
-        {
-            Verify(db, $"SELECT TaskID FROM TaskAssociations WITH (NOLOCK) WHERE TaskID={taskID} AND Refid={ticketID} and RefType = 17");
-        }
-        public static void VerifyAssetTicket(DataContext db, int organizationID, int ticketID, int assetID)
-        {
-            Verify(db, $"SELECT AssetID From AssetTickets WITH (NOLOCK) WHERE TicketID = {ticketID} AND AssetID={assetID}");
+            Verify(db, $"SELECT AttachmentID FROM Attachments WITH (NOLOCK) WHERE ActionAttachmentID={attachmentID} AND OrganizationID={organizationID} AND RefID={actionID} AND RefType=0");
         }
 
         public static bool UserAllowUserToEditAnyAction(DataContext db, int userID)
@@ -96,7 +151,7 @@ namespace TeamSupport.IDTree
         }
 
 
-        public static int[] Read(TicketChild childID, TicketModel ticket)
+        public static int[] Read(TicketChild childID, TicketNode ticket)
         {
             string query = String.Empty;
             switch (childID)
@@ -107,35 +162,35 @@ namespace TeamSupport.IDTree
                         $" WHERE UserTickets.TicketID = {ticket.TicketID} AND (Users.MarkDeleted = 0)";
                     break;
                 case TicketChild.Customers:
-                    query = $"Select organizationid From OrganizationTickets WITH (NOLOCK) Where TicketId = {ticket.TicketID}";
+                    query = $"Select Organizationid From OrganizationTickets WITH (NOLOCK) WHERE TicketId = {ticket.TicketID}";
                     break;
                 case TicketChild.Subscriptions:
                     query = $"SELECT Subscriptions.userid FROM Subscriptions WITH (NOLOCK) " +
                         $"JOIN Users WITH (NOLOCK) on users.userid = Subscriptions.userid " +
                         $"WHERE Reftype = 17 and Refid = {ticket.TicketID} and MarkDeleted = 0";
                     break;
-                case TicketChild.Reminders:
+                case TicketChild.TicketReminders:
                     query = $"SELECT ReminderID FROM Reminders WITH (NOLOCK) WHERE RefID = {ticket.TicketID} AND Reftype = 17";
                     break;
                 case TicketChild.TaskAssociations:
                     query = $"SELECT TaskID FROM TaskAssociations WITH (NOLOCK) WHERE Refid={ticket.TicketID} and RefType = 17";
                     break;
-                case TicketChild.AssetTickets:
+                case TicketChild.Asset:
                     query = $"SELECT AssetID From AssetTickets WITH (NOLOCK) WHERE TicketID = {ticket.TicketID}";
                     break;
                 case TicketChild.Children:
                     query = $"SELECT TicketID FROM Tickets WITH(NOLOCK) WHERE ParentID={ticket.TicketID}";
                     break;
-                case TicketChild.TagLinks:
+                case TicketChild.TicketTagLinks:
                     query = $"SELECT TagLinkID FROM TagLinks WITH(NOLOCK) WHERE Reftype=17 and RefID = {ticket.TicketID}";
                     break;
             }
-            return ticket.Connection._db.ExecuteQuery<int>(query).ToArray();
+            return ticket.Request._db.ExecuteQuery<int>(query).ToArray();
         }
 
-        public static int[] Read(TicketAssociation childID, TicketModel destinationTicket, TicketModel sourceTicket)
+        public static int[] Read(TicketAssociation childID, TicketNode destinationTicket, TicketNode sourceTicket)
         {
-            if (destinationTicket.Connection != sourceTicket.Connection)
+            if (destinationTicket.Request != sourceTicket.Request)
                 throw new Exception("tickets must come from the same connection");
 
             string query = String.Empty;
@@ -156,7 +211,7 @@ namespace TeamSupport.IDTree
                     break;
             }
 
-            return sourceTicket.Connection._db.ExecuteQuery<int>(query).ToArray();
+            return sourceTicket.Request._db.ExecuteQuery<int>(query).ToArray();
         }
 
     }

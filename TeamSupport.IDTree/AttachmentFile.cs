@@ -19,7 +19,7 @@ namespace TeamSupport.IDTree
         public string ContentType { get; private set; }
 
         /// <summary> New file </summary>
-        public AttachmentFile(ActionModel actionModel, HttpPostedFile postedFile)
+        public AttachmentFile(ActionNode actionModel, HttpPostedFile postedFile)
         {
             FileName = VerifyFileName(actionModel.AttachmentPath, postedFile.FileName);
             FilePath = Path.Combine(actionModel.AttachmentPath, FileName);
@@ -29,7 +29,7 @@ namespace TeamSupport.IDTree
         }
 
         /// <summary> Existing file </summary>
-        public AttachmentFile(ActionAttachment attachment, Data.AttachmentProxy proxy)
+        public AttachmentFile(ActionAttachmentNode attachment, Data.AttachmentProxy proxy)
         {
             FileInfo file = new FileInfo(proxy.Path);
             DirectoryInfo dir = file.Directory;
@@ -54,7 +54,7 @@ namespace TeamSupport.IDTree
             File.Delete(filePath);
         }
 
-        public Data.AttachmentProxy AsAttachmentProxy(HttpRequest request, ActionModel actionModel)
+        public Data.AttachmentProxy AsAttachmentProxy(HttpRequest request, ActionNode actionModel)
         {
             string description = request.Form["description"];
             if (description != null)
@@ -66,10 +66,10 @@ namespace TeamSupport.IDTree
                 productFamilyID = Int32.Parse(tmp);
 
             DateTime now = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
-            UserSession user = actionModel.Ticket.User;
+            UserNode user = actionModel.Ticket.User;
             Data.AttachmentProxy proxy = new Data.ActionAttachmentProxy(actionModel.ActionID)
             {
-                FilePathID = ActionModel.ActionPathIndex,
+                FilePathID = ActionNode.ActionPathIndex,
                 //SentToSnow = ,
                 //SentToTFS = ,
                 ProductFamilyID = productFamilyID,

@@ -960,7 +960,7 @@ namespace TeamSupport.Handlers
             int id;
             if (int.TryParse(attachmentID, out id))
             {
-                if (IDTree.ConnectionContext.IsEnabled)  // open action attachment by ID
+                if (IDTree.ClientRequest.IsEnabled)  // open action attachment by ID
                 {
                     AttachmentProxy proxy = ModelAPI.ModelAPI.Read<AttachmentProxy>(id);
                     OpenActionAttachment(context, browser, proxy);
@@ -1053,7 +1053,7 @@ namespace TeamSupport.Handlers
 
             else
             {
-                if (IDTree.ConnectionContext.IsEnabled)  // open action attachment by Guid
+                if (IDTree.ClientRequest.IsEnabled)  // open action attachment by Guid
                 {
                     int idFromGuid = ModelAPI.ModelAPI.AttachmentIDFromGUID(Guid.Parse(attachmentID));
                     AttachmentProxy proxy = ModelAPI.ModelAPI.Read<AttachmentProxy>(idFromGuid);

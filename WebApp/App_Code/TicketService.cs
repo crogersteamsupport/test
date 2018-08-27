@@ -3157,7 +3157,7 @@ WHERE t.TicketID = @TicketID
             UsersViewItem creator = UsersView.GetUsersViewItem(loginUser, action.CreatorID);
             if (creator != null) actionInfo.Creator = new UserInfo(creator);
 
-            if (TeamSupport.IDTree.ConnectionContext.IsEnabled)  // Read action attachments
+            if (TeamSupport.IDTree.ClientRequest.IsEnabled)  // Read action attachments
             {
                 actionInfo.Attachments = ModelAPI.Read<AttachmentProxy[]>(action.ActionID);
             }
@@ -3591,7 +3591,7 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public void DeleteAttachment(int attachmentID)
         {
-            if (TeamSupport.IDTree.ConnectionContext.IsEnabled)  // delete action attachment
+            if (TeamSupport.IDTree.ClientRequest.IsEnabled)  // delete action attachment
             {
                 ModelAPI.DeleteActionAttachment(attachmentID);
                 return;

@@ -16,7 +16,7 @@ namespace TeamSupport.IDTree
     /// Model for validating OrganizationID, UserID, TicketID, etc
     /// Centralizes queries for Attachments
     /// </summary>
-    public class ConnectionContext : IDisposable
+    public class ClientRequest : IDisposable
     {
         const bool _isEnabled = false;
         public static bool IsEnabled { get { return _isEnabled; } }
@@ -25,10 +25,11 @@ namespace TeamSupport.IDTree
         SqlConnection _connection;
         SqlTransaction _transaction;
         public DataContext _db { get; private set; }
-        public OrganizationModel Organization { get; private set; }
-        public UserSession User { get; private set; }
+        public OrganizationNode Organization { get; private set; }
+        public UserNode User { get; private set; }
+        public int UserID {  get { return User.UserID; } }
 
-        public ConnectionContext(bool useTransaction = false)
+        public ClientRequest(bool useTransaction = false)
         {
             // SqlConnection
             Authentication = new AuthenticationModel();
@@ -45,16 +46,16 @@ namespace TeamSupport.IDTree
             }
 
             // Create Logical Model! - note that OrganizationID and UserID come from Authentication
-            Organization = new OrganizationModel(this);
-            User = new UserSession(Organization);
+            Organization = new OrganizationNode(this);
+            User = new UserNode(Organization);
         }
 
         public void Commit() { _db.Transaction.Commit(); }
         public void Rollback() { _db.Transaction.Rollback(); }
 
-        public TicketModel Ticket(int ticketID) { return new TicketModel(User, ticketID); }
+        public TicketNode Ticket(int ticketID) { return new TicketNode(User, ticketID); }
 
-        public string AttachmentPath(int id) { return DBReader.AttachmentPath(_db, id); }
+        public string AttachmentPath(int id) { return IDReader.AttachmentPath(_db, id); }
 
         public void Dispose()
         {

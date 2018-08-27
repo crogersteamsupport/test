@@ -15,11 +15,10 @@ namespace TeamSupport.IDTree
     /// <summary>
     /// Wrapper for Valid ActionID
     /// </summary>
-    public class ActionModel : IdInterface
+    public class ActionNode : IDNode
     {
-        public TicketModel Ticket { get; private set; }
+        public TicketNode Ticket { get; private set; }
         public int ActionID { get; private set; }
-        public ConnectionContext Connection { get; private set; }
 
         public static int GetTicketID(DataContext db, int actionID)
         {
@@ -27,31 +26,29 @@ namespace TeamSupport.IDTree
         }
 
         /// <summary> top down - existing action </summary>
-        public ActionModel(TicketModel ticket, int actionID)
+        public ActionNode(TicketNode ticket, int actionID) : base(ticket.Request)
         {
             Ticket = ticket;
             ActionID = actionID;
-            Connection = ticket.Connection;
-            DBReader.VerifyAction(Connection._db, ticket.User.Organization.OrganizationID, Ticket.TicketID, ActionID);
+            Verify();
         }
 
         /// <summary> bottom up  - existing action </summary>
-        public ActionModel(ConnectionContext connection, int actionID)
+        public ActionNode(ClientRequest connection, int actionID) : base(connection)
         {
             ActionID = actionID;
-            Connection = connection;
-            int ticketID = GetTicketID(Connection._db, actionID);
-            Ticket = new TicketModel(Connection, ticketID);
-            DBReader.VerifyAction(Connection._db, Connection.Organization.OrganizationID, Ticket.TicketID, ActionID);
+            int ticketID = GetTicketID(Request._db, actionID);
+            Ticket = new TicketNode(Request, ticketID);
+            Verify();
         }
 
         /// <summary> existing action attachment </summary>
-        public ActionAttachment ActionAttachment(int actionAttachmentID)
+        public ActionAttachmentNode ActionAttachment(int actionAttachmentID)
         {
-            return new ActionAttachment(this, actionAttachmentID);
+            return new ActionAttachmentNode(this, actionAttachmentID);
         }
 
-        public bool CanEdit() { return Ticket.User.CanEdit() || (Ticket.User.UserID == DBReader.CreatorID(Connection._db, ActionID)); }
+        public bool CanEdit() { return Ticket.User.CanEdit() || (Ticket.User.UserID == IDReader.CreatorID(Request._db, ActionID)); }
 
         public const int ActionPathIndex = 3;
         public string AttachmentPath
@@ -66,6 +63,22 @@ namespace TeamSupport.IDTree
                 return path;
             }
         }
+
+        public override void Verify()
+        {
+            Verify($"SELECT ActionID FROM Actions WITH (NOLOCK) WHERE ActionID={ActionID} AND TicketID={Ticket.TicketID}");
+        }
+
+        public int CreatorID()
+        {
+            return Request._db.ExecuteQuery<int>($"SELECT CreatorID FROM Actions WITH (NOLOCK) WHERE ActionID={ActionID}").Min();
+        }
+
+        public int TicketID()
+        {
+            return Request._db.ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {ActionID}").Min();
+        }
+
 
     }
 }
