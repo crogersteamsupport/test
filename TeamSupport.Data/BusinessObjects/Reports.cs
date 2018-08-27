@@ -763,7 +763,7 @@ namespace TeamSupport.Data
                         break;
                     case ProductFamiliesRightType.SomeFamilies:
                         rightsClause = @" AND (
-                    TicketID IN 
+                    {0}.TicketID IN 
                     (
                         SELECT 
                             t.TicketID 
@@ -781,12 +781,12 @@ namespace TeamSupport.Data
                             LEFT JOIN UserRightsProductFamilies urpf
                                 ON p.ProductFamilyID = urpf.ProductFamilyID 
                         WHERE                             
-                          urpf.UserID = {0} and t.Organizationid = {1} 
+                          urpf.UserID = @UserID and t.Organizationid = {1} 
 
                     ) 
-                    OR userticketsview.UserID = {0} 
+                    OR {0}.UserID = @UserID
                   )";
-                        builder.Append(string.Format(rightsClause, loginUser.UserID.ToString(), loginUser.OrganizationID));
+                        builder.Append(string.Format(rightsClause, mainTableName, loginUser.OrganizationID));
                         break;
                     default:
                         break;
