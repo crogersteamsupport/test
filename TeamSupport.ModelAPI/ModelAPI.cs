@@ -119,7 +119,7 @@ namespace TeamSupport.ModelAPI
                     {
                         case "ActionProxy":
                             ActionProxy actionProxy = proxy as ActionProxy;
-                            DataAPI.DataAPI.Update(new ActionNode(connection, actionProxy.ActionID), actionProxy);
+                            //DataAPI.DataAPI.Update(new ActionNode(connection, actionProxy.ActionID), actionProxy);
                             break;
                         case "AttachmentProxy":
                             AttachmentProxy attachmentProxy = proxy as AttachmentProxy;

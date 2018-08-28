@@ -24,7 +24,7 @@ namespace TeamSupport.IDTree
             get
             {
                 if (!_ticketNumber.HasValue)
-                    _ticketNumber = IDReader.TicketNumber(Connection._db,TicketID);
+                    _ticketNumber = Connection._db.ExecuteQuery<int>($"SELECT TicketNumber FROM Tickets WITH(NOLOCK) WHERE TicketId = {TicketID}").First();
                 return _ticketNumber.Value;
             }
         }
@@ -44,6 +44,11 @@ namespace TeamSupport.IDTree
             Verify();
         }
 
+        public override void Verify()
+        {
+            Verify($"SELECT TicketID FROM Tickets WITH (NOLOCK) WHERE TicketID={TicketID} AND OrganizationID={Organization.OrganizationID}");
+        }
+
         /// <summary> Existing Data.Action </summary>
         public ActionNode Action(int actionID)
         {
@@ -51,15 +56,19 @@ namespace TeamSupport.IDTree
         }
 
         public AssetTicketNode[] AssetTickets() { return AssetTicketNode.GetAssetTickets(this); }
-        public UserTicketNode[] Contacts() { return UserTicketNode.GetContacts(this); }
-        public OrganizationTicketNode[] Customers() { return OrganizationTicketNode.GetOrganizationTickets(this); }
-        public TicketReminderNode[] Reminders() { return TicketReminderNode.GetReminders(this); }
+        public UserTicketNode[] UserTickets() { return UserTicketNode.GetUserTickets(this); }
+        public OrganizationTicketNode[] OrganizationTickets() { return OrganizationTicketNode.GetOrganizationTickets(this); }
+        public TicketReminderNode[] Reminders() { return TicketReminderNode.GetTicketReminders(this); }
         public SubscriptionNode[] Subscriptions() { return SubscriptionNode.GetSubscriptions(this); }
         public TaskAssociationNode[] TaskAssociations() { return TaskAssociationNode.GetTaskAssociations(this); }
-
-        public override void Verify()
+        public TicketNode[] ChildTickets()
         {
-            Verify($"SELECT TicketID FROM Tickets WITH (NOLOCK) WHERE TicketID={TicketID} AND OrganizationID={Organization.OrganizationID}");
+            int[] ticketIDs = IDReader.Read(TicketChild.Children, this);
+            TicketNode[] childTickets = new TicketNode[ticketIDs.Length];
+            for (int i = 0; i < ticketIDs.Length; ++i)
+                childTickets[i] = new TicketNode(Organization, ticketIDs[i]);
+            return childTickets;
         }
+
     }
 }

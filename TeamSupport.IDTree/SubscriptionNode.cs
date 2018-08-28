@@ -30,11 +30,11 @@ namespace TeamSupport.IDTree
             //query = $"SELECT Subscriptions.userid FROM Subscriptions WITH (NOLOCK) " +
             //        $"JOIN Users WITH (NOLOCK) on users.userid = Subscriptions.userid " +
             //        $"WHERE Reftype = 17 and Refid = {ticket.TicketID} and MarkDeleted = 0";
-            int[] subscriptionIDs = IDReader.Read(TicketChild.Subscriptions, ticket);
-            SubscriptionNode[] subscriptionModels = new SubscriptionNode[subscriptionIDs.Length];
-            for (int i = 0; i < subscriptionIDs.Length; ++i)
-                subscriptionModels[i] = new SubscriptionNode(ticket, new UserNode(ticket.Connection, subscriptionIDs[i]), false);
-            return subscriptionModels;
+            int[] subscriptionUserIDs = IDReader.Read(TicketChild.Subscriptions, ticket);
+            SubscriptionNode[] subscriptions = new SubscriptionNode[subscriptionUserIDs.Length];
+            for (int i = 0; i < subscriptionUserIDs.Length; ++i)
+                subscriptions[i] = new SubscriptionNode(ticket, new UserNode(ticket.Connection, subscriptionUserIDs[i]), false);
+            return subscriptions;
         }
 
         public override void Verify()

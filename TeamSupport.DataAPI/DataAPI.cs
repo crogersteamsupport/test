@@ -167,6 +167,33 @@ namespace TeamSupport.DataAPI
             return tProxy;
         }
 
+        public static void Update(IDNode node, UpdateArguments args)
+        {
+            string command = String.Empty;
+            int id;
+            switch (node.GetType().Name) // alphabetized list
+            {
+                case "TagLinkNode":
+                    id = ((TagLinkNode)node).TagLinkID;
+                    command = $"UPDATE TagLinks WITH(ROWLOCK) SET {command.ToString()} WHERE TagLinkID={id} AND RefType=17";
+                    break;
+                case "TaskAssociationNode":
+                    id = ((TaskAssociationNode)node).Task.TaskID;
+                    command = $"UPDATE TaskAssociations SET {command.ToString()} WHERE TaskID={id} AND RefType=17";
+                    break;
+                case "TicketNode":
+                    id = ((TicketNode)node).TicketID;
+                    command = $"UPDATE Tickets SET {command.ToString()} WHERE TicketID= {id}";
+                    break;
+                case "TicketReminderNode":
+                    id = ((TicketReminderNode)node).ReminderID;
+                    command = $" UPDATE Reminders WITH(ROWLOCK) SET {command.ToString()} WHERE ReminderID={id} AND RefType=17";
+                    break;
+            }
+            node.Connection._db.ExecuteCommand(command);
+        }
+
+
         /// <summary> 
         /// UPDATE - update a model with the proxy data 
         /// 
@@ -174,19 +201,11 @@ namespace TeamSupport.DataAPI
         ///     ModifierID, DateTimeModified
         ///     Logging
         /// </summary>
-        public static void Update<TProxy>(IDNode iModel, TProxy tProxy) where TProxy : class
+        private static void Update<TProxy>(IDNode iModel, TProxy tProxy) where TProxy : class
         {
             string command = String.Empty;
             switch (typeof(TProxy).Name) // alphabetized list
             {
-                case "AssetTicketProxy":
-                    {
-                        //SELECT[TicketID],[AssetID],[DateCreated],[CreatorID],[ImportFileID] FROM[AssetTickets]
-                        TagLinkNode model = (TagLinkNode)iModel;
-                        TagLinkProxy proxy = tProxy as TagLinkProxy;
-                        command = $"UPDATE TagLinks WITH(ROWLOCK) SET TagID={proxy.TagID}, RefType=17, RefID={proxy.RefID} WHERE TagLinkID={model.TagLinkID}";
-                    }
-                    break;
                 case "TagLinkProxy":    // ticket tag links
                     {
                         TagLinkNode model = (TagLinkNode)iModel;
@@ -199,6 +218,13 @@ namespace TeamSupport.DataAPI
                         TicketNode model = (TicketNode)iModel;
                         TaskAssociationProxy proxy = tProxy as TaskAssociationProxy;
                         command = $"UPDATE TaskAssociations SET RefID = {model.TicketID} WHERE(TaskId = {proxy.TaskID})";
+                    }
+                    break;
+                case "TicketProxy":
+                    {
+                        TicketNode model = (TicketNode)iModel;
+                        TicketProxy proxy = tProxy as TicketProxy;
+                        command = $"UPDATE Tickets SET RefID = {model.TicketID} WHERE(TicketID= {model.TicketID})";
                     }
                     break;
                 case "ReminderProxy":    // ticket reminder

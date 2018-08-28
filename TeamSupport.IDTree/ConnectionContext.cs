@@ -48,7 +48,7 @@ namespace TeamSupport.IDTree
 
             // Create Logical Model! - note that OrganizationID and UserID come from Authentication
             Organization = new OrganizationNode(this);
-            User = new UserNode(this, Authentication.UserID);
+            User = new UserNode(Organization, Authentication.UserID);
             //UserSession = new UserSession(Organization);
         }
 
@@ -59,7 +59,10 @@ namespace TeamSupport.IDTree
 
         public bool CanEdit() { return Authentication.IsSystemAdmin || User.AllowUserToEditAnyAction(); }
 
-        public string AttachmentPath(int id) { return IDReader.AttachmentPath(_db, id); }
+        public string AttachmentPath(int id)
+        {
+            return _db.ExecuteQuery<string>($"SELECT Value FROM FilePaths WITH(NOLOCK) WHERE ID = {id}").FirstOrDefault();
+        }
 
         public void Dispose()
         {

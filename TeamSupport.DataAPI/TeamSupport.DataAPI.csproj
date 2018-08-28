@@ -46,6 +46,7 @@
     <Compile Include="DataAPI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TicketAPI.cs" />
+    <Compile Include="UpdateArguments.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TeamSupport.Data\TeamSupport.Data.csproj">

@@ -32,20 +32,34 @@ namespace TeamSupport.ModelAPI
                 return;
 
             MergeAssets();
-            //MergeChildren();
+            MergeChildren();
             MergeContacts();
             MergeCustomers();
             MergeReminders();
             MergeTagLinks();
             MergeSubscriptions();
             MergeTaskAssociations();
-            //MergeRelationships()  // 1 and 2
+            MergeRelationships();  // 1 and 2
             //MergeQueueUsers();
             //MergeActions();
 
             //DataAPI.DataAPI.Delete(Source);
             //Source = null;
             //DataAPI.DataAPI.Update(Destination, DataAPI.DataAPI.Read<TicketProxy>(Destination));  // update Date Modified
+        }
+
+        void MergeRelationships()
+        {
+
+        }
+
+        void MergeChildren()
+        {
+            //TODO: Think about when parentid = ticketid
+            UpdateArguments args = new UpdateArguments("ParentID", Destination.TicketID);
+            TicketNode[] children = Source.ChildTickets();
+            foreach (TicketNode child in children)
+                DataAPI.DataAPI.Update(child, args);
         }
 
         void MergeAssets()
@@ -55,27 +69,24 @@ namespace TeamSupport.ModelAPI
                 return;
 
             AssetTicketNode[] destinationAssetTickets = Destination.AssetTickets();
+            UpdateArguments args = new UpdateArguments("TicketID", Destination.TicketID);
             foreach (AssetTicketNode assetTicket in assetTickets)
             {
-                //// WHERE NOT EXISTS (Select AssetTickets WITH (NOLOCK) WHERE AssetId = {asset} AND TicketId ={sourceTicket.TicketID})
-                //if (!destinationAssetTickets.Where(a => a.AssetID == assetTicket.AssetID).Any())
-                //{
-                //    AssetTicketProxy assetTicketProxy = new AssetTicketProxy() { AssetID = assetTicket.AssetID };
-                //    DataAPI.DataAPI.Update(assetTicket, assetTicketProxy);
-                //    continue;
-                //}
-
-                DataAPI.DataAPI.Delete(assetTicket);
+                // WHERE NOT EXISTS (Select AssetTickets WITH (NOLOCK) WHERE AssetId = {asset} AND TicketId ={sourceTicket.TicketID})
+                if (!destinationAssetTickets.Where(a => a.Asset.AssetID == assetTicket.Asset.AssetID).Any())
+                    DataAPI.DataAPI.Update(assetTicket, args);
+                else
+                    DataAPI.DataAPI.Delete(assetTicket);
             }
         }
 
         void MergeCustomers()
         {
-            OrganizationTicketNode[] customers = Source.Customers();
+            OrganizationTicketNode[] customers = Source.OrganizationTickets();
             if (customers.Length == 0)
                 return;
 
-            OrganizationTicketNode[] destinationCustomers = Destination.Customers();
+            OrganizationTicketNode[] destinationCustomers = Destination.OrganizationTickets();
             foreach (OrganizationTicketNode customer in customers)
             {
                 // WHERE NOT EXISTS(SELECT * FROM OrganizationTickets WHERE TicketID ={model.TicketID} and OrganizationId ={proxy.OrganizationID})
@@ -91,19 +102,19 @@ namespace TeamSupport.ModelAPI
 
         void MergeContacts()
         {
-            UserTicketNode[] contacts = Source.Contacts();
+            UserTicketNode[] contacts = Source.UserTickets();
             if (contacts.Length == 0)
                 return;
 
-            UserTicketNode[] destinationContacts = Destination.Contacts();
+            UserTicketNode[] destinationContacts = Destination.UserTickets();
             foreach (UserTicketNode contact in contacts)
             {
-                //// WHERE NOT EXISTS(SELECT * FROM UserTickets WHERE TicketID ={model.TicketID} and UserID ={proxy.UserID})
-                //if (!destinationContacts.Where(c => c.UserID == contact.UserID).Any())
-                //{
-                //    ContactProxy contactProxy = new ContactProxy() { UserID = contact.UserID };
-                //    DataAPI.DataAPI.Create(Destination, contactProxy);
-                //}
+                // WHERE NOT EXISTS(SELECT * FROM UserTickets WHERE TicketID ={model.TicketID} and UserID ={proxy.UserID})
+                if (!destinationContacts.Where(c => c.User.UserID == contact.User.UserID).Any())
+                {
+                    ContactProxy contactProxy = new ContactProxy() { UserID = contact.User.UserID };
+                    DataAPI.DataAPI.Create(Destination, contactProxy);
+                }
 
                 DataAPI.DataAPI.Delete(contact);
             }
@@ -119,13 +130,14 @@ namespace TeamSupport.ModelAPI
             TagLinkProxy[] destinationTagLinks = DataAPI.DataAPI.Read<TagLinkProxy[]>(Destination);
             foreach (TagLinkProxy tagLinkProxy in sourceTagLinks)
             {
-                // WHERE NOT EXISTS(SELECT* FROM TagLinks WITH (NOLOCK) WHERE RefID={destinationTicket.TicketID} AND TagID = {tag} AND Refype = 17)
-                if (!destinationTagLinks.Where(t => t.TagID == tagLinkProxy.TagID).Any())
-                {
-                    tagLinkProxy.RefID = Destination.TicketID;
-                    //DataAPI.DataAPI.Update(new TagLinkNode(Source, tagLinkProxy.TagLinkID), tagLinkProxy);
-                    continue;
-                }
+                //// WHERE NOT EXISTS(SELECT* FROM TagLinks WITH (NOLOCK) WHERE RefID={destinationTicket.TicketID} AND TagID = {tag} AND Refype = 17)
+                //if (!destinationTagLinks.Where(t => t.TagID == tagLinkProxy.TagID).Any())
+                //{
+                //    tagLinkProxy.RefID = Destination.TicketID;
+                //    TagNode tag = new TagNode(Source.Organization, );
+                //    DataAPI.DataAPI.Update(new TagLinkNode(Source, tag), tagLinkProxy);
+                //    continue;
+                //}
 
                 //DataAPI.DataAPI.Delete(new TagLinkNode(Source, tagLinkProxy.TagLinkID));
             }
@@ -160,21 +172,17 @@ namespace TeamSupport.ModelAPI
         void MergeReminders()
         {
             TicketReminderNode[] reminders = Source.Reminders();
+            UpdateArguments args = new UpdateArguments("RefID", Destination.TicketID);
             foreach (TicketReminderNode reminderModel in reminders)
-            {
-                ReminderProxy reminderProxy = DataAPI.DataAPI.Read<ReminderProxy>(reminderModel);
-                DataAPI.DataAPI.Update(Destination, reminderProxy);
-            }
+                DataAPI.DataAPI.Update(Destination, args);
         }
 
         void MergeTaskAssociations()
         {
             TaskAssociationNode[] taskAssociations = Source.TaskAssociations();
+            UpdateArguments args = new UpdateArguments("RefID", Destination.TicketID);
             foreach (TaskAssociationNode task in taskAssociations)
-            {
-                TaskAssociationProxy taskAssociationProxy = DataAPI.DataAPI.Read<TaskAssociationProxy>(task);
-                DataAPI.DataAPI.Update(Destination, taskAssociationProxy);
-            }
+                DataAPI.DataAPI.Update(Destination, args);
         }
 
         public void Merge()

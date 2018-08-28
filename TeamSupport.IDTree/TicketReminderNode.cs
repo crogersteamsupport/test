@@ -25,7 +25,7 @@ namespace TeamSupport.IDTree
                 Verify();
         }
 
-        public static TicketReminderNode[] GetReminders(TicketNode ticket)
+        public static TicketReminderNode[] GetTicketReminders(TicketNode ticket)
         {
             int[] reminderIDs = IDReader.Read(TicketChild.TicketReminders, ticket);
             TicketReminderNode[] reminderModels = new TicketReminderNode[reminderIDs.Length];

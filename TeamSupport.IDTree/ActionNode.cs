@@ -48,7 +48,7 @@ namespace TeamSupport.IDTree
             return new ActionAttachmentNode(this, actionAttachmentID);
         }
 
-        public bool CanEdit() { return Connection.CanEdit() || (Connection.User.UserID == IDReader.CreatorID(Connection._db, ActionID)); }
+        public bool CanEdit() { return Connection.CanEdit() || (Connection.User.UserID == CreatorID()); }
 
         public const int ActionPathIndex = 3;
         public string AttachmentPath

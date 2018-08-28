@@ -10,7 +10,7 @@ namespace TeamSupport.IDTree
     public class UserTicketNode : IDNode
     {
         public TicketNode Ticket { get; private set; }
-        public UserNode Contact { get; private set; }
+        public UserNode User { get; private set; }
 
         public UserTicketNode(TicketNode ticket, UserNode contact) : this(ticket, contact, true)
         {
@@ -19,13 +19,17 @@ namespace TeamSupport.IDTree
         private UserTicketNode(TicketNode ticket, UserNode contact, bool verify) : base(ticket)
         {
             Ticket = ticket;
-            Contact = contact;
+            User = contact;
             if (verify)
                 Verify();
         }
 
-        public static UserTicketNode[] GetContacts(TicketNode ticket)
+        public static UserTicketNode[] GetUserTickets(TicketNode ticket)
         {
+            //query = $"SELECT Users.userid FROM Users WITH (NOLOCK)" +
+            //    $"JOIN UserTickets WITH (NOLOCK) on UserTickets.userid = Users.UserID" +
+            //    $" WHERE UserTickets.TicketID = {ticket.TicketID} AND (Users.MarkDeleted = 0)";
+
             int[] contactIDs = IDReader.Read(TicketChild.Contacts, ticket);
             UserTicketNode[] contacts = new UserTicketNode[contactIDs.Length];
             for (int i = 0; i < contactIDs.Length; ++i)

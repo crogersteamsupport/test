@@ -26,7 +26,9 @@ namespace TeamSupport.IDTree
         public static AssetTicketNode[] GetAssetTickets(TicketNode ticket)
         {
             OrganizationNode organization = ticket.Organization;
-            int[] ids = IDReader.Read(TicketChild.Asset, ticket);
+            //int[] ids = IDReader.Read(TicketChild.Asset, ticket);   // $"SELECT AssetID From AssetTickets WITH (NOLOCK) WHERE TicketID = {ticket.TicketID}"
+            string query = $"SELECT AssetID From AssetTickets WITH (NOLOCK) WHERE TicketID = {ticket.TicketID}";
+            int[] ids = ticket.Connection._db.ExecuteQuery<int>(query).ToArray();
             AssetTicketNode[] models = new AssetTicketNode[ids.Length];
             for (int i = 0; i < ids.Length; ++i)
                 models[i] = new AssetTicketNode(new AssetNode(organization, ids[i]), ticket, false);

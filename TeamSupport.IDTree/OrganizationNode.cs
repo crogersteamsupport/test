@@ -21,12 +21,20 @@ namespace TeamSupport.IDTree
         /// <summary> OrganizationID and UserID come from ConnectionContext.Authentication </summary>
         public OrganizationNode(ConnectionContext connection) : this(connection, connection.Authentication.OrganizationID)
         {
-
         }
 
         public OrganizationNode(ConnectionContext connection, int organizationID) : base(connection)
         {
+            OrganizationID = organizationID;
             Verify();
+        }
+
+        public OrganizationNode Parent()
+        {
+            int? parentID = Connection._db.ExecuteQuery<int?>($"SELECT ParentID FROM Organizations WITH (NOLOCK) WHERE OrganizationID={OrganizationID}").FirstOrDefault();
+            if (!parentID.HasValue)
+                return null;
+            return new OrganizationNode(Connection, parentID.Value);
         }
 
         public string AttachmentPath(int id)

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="TeamSupport.IDTree.ActionAttachmentNode" Collapsed="true">
-    <Position X="17.25" Y="5.25" Width="2" />
+    <Position X="17.25" Y="5.75" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAABAAAAAAQAAAAAAAAAAAAAEAAAAAAAAAAAIAAQ=</HashCode>
       <FileName>ActionAttachmentNode.cs</FileName>
@@ -12,7 +12,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.IDTree.ActionNode" Collapsed="true">
-    <Position X="15" Y="5.25" Width="1.5" />
+    <Position X="15" Y="5.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ACAAACAAAAAgAQACAAAAAAAAAAgAAAAQAACAAAAQAAA=</HashCode>
       <FileName>ActionNode.cs</FileName>
@@ -22,7 +22,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.IDTree.AssetNode" Collapsed="true">
-    <Position X="7.5" Y="6" Width="1.5" />
+    <Position X="7.5" Y="6.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAQAAAAACAAAAAAAAAAAAAAAAAAAAIAA=</HashCode>
       <FileName>AssetNode.cs</FileName>
@@ -32,7 +32,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.IDTree.AssetTicketNode" Collapsed="true">
-    <Position X="10.25" Y="6" Width="1.5" />
+    <Position X="10.25" Y="6.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAQACQAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
       <FileName>AssetTicketNode.cs</FileName>
@@ -43,14 +43,14 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.IDTree.AttachmentFile" Collapsed="true">
-    <Position X="17.25" Y="6.25" Width="1.5" />
+    <Position X="17.25" Y="6.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAACIAAAAAAAAAAAEAAhABAABQAABAAAA=</HashCode>
       <FileName>AttachmentFile.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TeamSupport.IDTree.ConnectionContext" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="3.5" Y="3.75" Width="1.75" />
+    <Position X="3.5" Y="4" Width="1.75" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
@@ -59,8 +59,8 @@
       <FileName>ConnectionContext.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Field Name="_transaction" />
       <Field Name="_connection" />
+      <Field Name="_transaction" />
       <Property Name="Authentication" />
       <Property Name="_db" />
       <Property Name="Organization" />
@@ -69,28 +69,31 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="TeamSupport.IDTree.IDReader" Collapsed="true">
-    <Position X="3.5" Y="5.75" Width="1.5" />
+    <Position X="3.5" Y="5.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ACAAAAAAAAAAICACAAAAAAAgIAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IDReader.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="TeamSupport.IDTree.OrganizationNode" Collapsed="true">
-    <Position X="6.25" Y="3.75" Width="1.5" />
+  <Class Name="TeamSupport.IDTree.OrganizationNode">
+    <Position X="6.25" Y="4.25" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
-      <HashCode>ACAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAABAAAAAAA=</HashCode>
+      <HashCode>ACAAAAAAAAAAAQAAAAAAQAAAAAAAAAAAAAABAAAAAAA=</HashCode>
       <FileName>OrganizationNode.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TeamSupport.IDTree.OrganizationTicketNode" Collapsed="true">
-    <Position X="9" Y="3.75" Width="2" />
+    <Position X="7.5" Y="3.25" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAQACAAAAAAAAAAAAAAAAAAIAAAAAIAA=</HashCode>
       <FileName>OrganizationTicketNode.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Property Name="Organization" />
       <Property Name="Ticket" />
+      <Property Name="Organization" />
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.IDTree.SubscriptionNode" Collapsed="true">
@@ -105,18 +108,18 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.IDTree.TagLinkNode" Collapsed="true">
-    <Position X="12" Y="7" Width="1.5" />
+    <Position X="12" Y="7.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAgAUACAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>TagLinkNode.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Property Name="Tag" />
       <Property Name="Ticket" />
+      <Property Name="Tag" />
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.IDTree.TagNode" Collapsed="true">
-    <Position X="6.5" Y="7" Width="1.5" />
+    <Position X="6.5" Y="7.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAQAAAAAAAAAAAAAAAQAAAAAAAAAAIAA=</HashCode>
       <FileName>TagNode.cs</FileName>
@@ -126,7 +129,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.IDTree.TaskAssociationNode" Collapsed="true">
-    <Position X="12.75" Y="8" Width="1.75" />
+    <Position X="12.75" Y="8.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAEAAAQACAAAAAAAAAAAAAAAAAEAAAAAAAAA=</HashCode>
       <FileName>TaskAssociationNode.cs</FileName>
@@ -137,28 +140,32 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.IDTree.TicketNode">
-    <Position X="12.25" Y="3.75" Width="1.5" />
+    <Position X="12.25" Y="4.25" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>BAEAAIBAAAABIQAAAABAAAAAAAAAAAAAAAAEAAAQIAQ=</HashCode>
+      <HashCode>AAAACIBAAAABIQAAAABAAAAAAAAAAgAAAAAEEAAQIAQ=</HashCode>
       <FileName>TicketNode.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Organization" />
+    </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.IDTree.TicketReminderNode" Collapsed="true">
     <Position X="12.5" Y="1.5" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAABAAAAAAAAAQACAAAAAAAAAAIAACAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAABAAAAAAAAAQACAAAQAAAAAAAAACAAAAAAAAAAAAA=</HashCode>
       <FileName>TicketReminderNode.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Property Name="User" />
       <Property Name="Ticket" />
+      <Property Name="User" />
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.IDTree.TaskNode" Collapsed="true">
-    <Position X="5.75" Y="8" Width="1.5" />
+    <Position X="5.75" Y="8.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAQAAAAAAAAAAAAgAAAAAAAAAAAAAIAA=</HashCode>
       <FileName>TicketTaskNode.cs</FileName>
@@ -167,22 +174,28 @@
       <Property Name="Organization" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="TeamSupport.IDTree.UserNode" Collapsed="true">
-    <Position X="6.25" Y="1.75" Width="1.5" />
+  <Class Name="TeamSupport.IDTree.UserNode">
+    <Position X="6.25" Y="1.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
-      <HashCode>EAAAAAAAAAAAAQAAAAAAAAgAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>EAAAAAAAAAAAAQAAAAAAAAgAAAAAAAAAAAAAAAAAIAA=</HashCode>
       <FileName>UserNode.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Organization" />
+    </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.IDTree.UserTicketNode" Collapsed="true">
     <Position X="12.25" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAQACCAAAAAAAAAAAAAAAAAAAAABAAAA=</HashCode>
+      <HashCode>AAABAAAAAAAAAQACAAAAAAAACAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>UserTicketNode.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Property Name="Contact" />
       <Property Name="Ticket" />
+      <Property Name="User" />
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.Proxy.AuthenticationModel" Collapsed="true">
@@ -193,7 +206,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="System.Data.Linq.DataContext" Collapsed="true">
-    <Position X="0.5" Y="4.75" Width="1.5" />
+    <Position X="0.5" Y="5.25" Width="1.5" />
     <TypeIdentifier />
     <Lollipop Position="0.2" />
   </Class>
