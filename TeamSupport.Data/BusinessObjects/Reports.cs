@@ -331,7 +331,37 @@ namespace TeamSupport.Data
                     break;
             }
 
-            AddCommandParameters(command, Collection.LoginUser);
+            AddCommandParametersForExport(command, Collection.LoginUser);
+            command.CommandText = $" /* ReportID: {ReportID.ToString()} OrganizationID: {OrganizationID.ToString()} */ " + command.CommandText;
+        }
+        public void GetCommandForExports(SqlCommand command, bool inlcudeHiddenFields = true, bool isSchemaOnly = false, bool useUserFilter = true, string sortField = null, string sortDir = null)
+        {
+            MigrateToNewReport();
+
+            command.CommandType = CommandType.Text;
+            command.CommandTimeout = SystemSettings.GetReportTimeout();
+            switch (ReportDefType)
+            {
+                case ReportType.Table:
+                    GetTabularSqlForExports(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID, useUserFilter, sortField, sortDir);
+                    break;
+                case ReportType.Chart:
+                    GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, null, false, true);
+                    break;
+                case ReportType.Custom:
+                    GetCustomSql(command, isSchemaOnly, useUserFilter);
+                    break;
+                case ReportType.Summary:
+                    GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, ReportID, useUserFilter, false);
+                    break;
+                case ReportType.TicketView:
+                    GetTabularSql(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID, useUserFilter, sortField, sortDir);
+                    break;
+                default:
+                    break;
+            }
+
+            AddCommandParametersForExport(command, Collection.LoginUser);
             command.CommandText = $" /* ReportID: {ReportID.ToString()} OrganizationID: {OrganizationID.ToString()} */ " + command.CommandText;
         }
 
@@ -385,6 +415,27 @@ namespace TeamSupport.Data
             if (command.CommandText.IndexOf("@OrganizationID") > -1)
             {
                 command.Parameters.AddWithValue("OrganizationID", user.OrganizationID);
+                command.Parameters.AddWithValue("Self", user.FirstLastName);
+                command.Parameters.AddWithValue("SelfID", user.UserID);
+                command.Parameters.AddWithValue("UserID", user.UserID);
+
+                TimeSpan offset = loginUser.Offset;
+                command.Parameters.AddWithValue("Offset", string.Format("{0}{1:D2}:{2:D2}", offset < TimeSpan.Zero ? "-" : "+", Math.Abs(offset.Hours), Math.Abs(offset.Minutes)));
+            }
+            else
+            {
+                // throw new Exception("Missing OrganizationID parameter in report query.");
+            }
+        }
+
+        private static void AddCommandParametersForExport(SqlCommand command, LoginUser loginUser)
+        {
+            User user = loginUser.GetUser();
+
+            if (command.CommandText.IndexOf("@OrganizationID") > -1)
+            {
+                command.CommandText = command.CommandText.Replace("@OrganizationID", user.OrganizationID.ToString());
+                //command.Parameters.AddWithValue("OrganizationID", user.OrganizationID);
                 command.Parameters.AddWithValue("Self", user.FirstLastName);
                 command.Parameters.AddWithValue("SelfID", user.UserID);
                 command.Parameters.AddWithValue("UserID", user.UserID);
@@ -482,6 +533,49 @@ namespace TeamSupport.Data
             }
         }
 
+        private static void GetTabularSqlForExports(LoginUser loginUser, SqlCommand command, TabularReport tabularReport, bool inlcudeHiddenFields, bool isSchemaOnly, int? reportID, bool useUserFilter, string sortField = null, string sortDir = null)
+        {
+            StringBuilder builder = new StringBuilder();
+            GetTabluarSelectClause(loginUser, command, builder, tabularReport, inlcudeHiddenFields, isSchemaOnly, sortField, sortDir);
+            if (isSchemaOnly)
+            {
+                command.CommandText = builder.ToString();
+            }
+            else
+            {
+
+                string primaryTableKeyFieldName = null;
+                if (tabularReport.Subcategory == 70)
+                {
+                    primaryTableKeyFieldName = "UserTicketsView.TicketID";
+                }
+
+                GetWhereClauseForExport(loginUser, command, builder, tabularReport.Filters, primaryTableKeyFieldName);
+                if (useUserFilter && reportID != null)
+                {
+                    Report report = Reports.GetReport(loginUser, (int)reportID, loginUser.UserID);
+                    if (report != null && report.Row["Settings"] != DBNull.Value)
+                    {
+                        try
+                        {
+                            UserTabularSettings userFilters = JsonConvert.DeserializeObject<UserTabularSettings>((string)report.Row["Settings"]);
+
+                            if (userFilters != null)
+                            {
+                                GetWhereClauseForExport(loginUser, command, builder, userFilters.Filters);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            ExceptionLogs.LogException(loginUser, ex, "Tabular SQL - User filters");
+                        }
+                    }
+                }
+
+                command.CommandText = builder.ToString();
+
+            }
+        }
         private static void GetPortalTicketsSQL(LoginUser loginUser, SqlCommand command, TabularReport tabularReport, bool inlcudeHiddenFields, bool isSchemaOnly)
         {
             StringBuilder builder = new StringBuilder();
@@ -815,6 +909,11 @@ namespace TeamSupport.Data
             if (filters != null) WriteFilters(loginUser, command, builder, filters, null, primaryTableKeyName);
         }
 
+        private static void GetWhereClauseForExport(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter[] filters, string primaryTableKeyName = null)
+        {
+            if (filters != null) WriteFiltersForExports(loginUser, command, builder, filters, null, primaryTableKeyName);
+        }
+
         private static void WriteFilters(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter[] filters, ReportFilter parentFilter, string primaryTableKeyName = null)
         {
             foreach (ReportFilter filter in filters)
@@ -828,6 +927,20 @@ namespace TeamSupport.Data
             }
         }
 
+        private static void WriteFiltersForExports(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter[] filters, ReportFilter parentFilter, string primaryTableKeyName = null)
+        {
+            foreach (ReportFilter filter in filters)
+            {
+                if (filter.Conditions.Length < 1) continue;
+
+                builder.Append(string.Format(" {0} (", parentFilter == null ? "AND" : parentFilter.Conjunction.ToUpper()));
+                WriteFilterForExport(loginUser, command, builder, filter, primaryTableKeyName);
+                WriteFiltersForExports(loginUser, command, builder, filter.Filters, filter, primaryTableKeyName);
+                builder.Append(")");
+            }
+        }
+
+
         private static void WriteFilter(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter filter, string primaryTableKeyName = null)
         {
             for (int i = 0; i < filter.Conditions.Length; i++)
@@ -836,6 +949,18 @@ namespace TeamSupport.Data
                 if (i > 0) builder.Append(string.Format(" {0} ", filter.Conjunction.ToUpper()));
                 builder.Append("(");
                 WriteFilterCondition(loginUser, command, builder, condition, primaryTableKeyName);
+                builder.Append(")");
+            }
+        }
+
+        private static void WriteFilterForExport(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter filter, string primaryTableKeyName = null)
+        {
+            for (int i = 0; i < filter.Conditions.Length; i++)
+            {
+                ReportFilterCondition condition = filter.Conditions[i];
+                if (i > 0) builder.Append(string.Format(" {0} ", filter.Conjunction.ToUpper()));
+                builder.Append("(");
+                WriteFilterConditionForExports(loginUser, command, builder, condition, primaryTableKeyName);
                 builder.Append(")");
             }
         }
@@ -1026,6 +1151,390 @@ namespace TeamSupport.Data
                             break;
                         case "SPECIFIC YEAR":
                             builder.Append(string.Format("DATEPART(year, {0}) = @{1}", datetimeSql, paramName));
+                            command.Parameters.AddWithValue(paramName, int.Parse(condition.Value1));
+                            break;
+                        case "PREVIOUS # YEARS":
+                            builder.Append(string.Format("(DATEPART(year, {0}) < {1:D} AND DATEPART(year, {0}) > {2:D})", dateSql, DateTime.Now.Year, DateTime.Now.Year - int.Parse(condition.Value1)));
+                            break;
+                        case "LAST # YEARS":
+                            builder.Append(string.Format("(DATEPART(year, {0}) < {1:D} AND DATEPART(year, {0}) > {2:D})", dateSql, DateTime.Now.Year + 1, DateTime.Now.Year - int.Parse(condition.Value1)));
+                            break;
+                        case "NEXT # YEARS":
+                            builder.Append(string.Format("(DATEPART(year, {0}) < {1:D} AND DATEPART(year, {0}) > {2:D})", dateSql, DateTime.Now.Year + int.Parse(condition.Value1), DateTime.Now.Year));
+                            break;
+
+                        case "CURRENT QUARTER":
+                            builder.Append(string.Format("(DATEPART(quarter, {0}) = {1:D} AND DATEPART(year, {0}) = {2:D})", dateSql, DataUtils.GetQuarter(DateTime.Now), DateTime.Now.Year));
+                            break;
+                        case "PREVIOUS QUARTER":
+                            int prevQuarter = DataUtils.GetQuarter(DateTime.Now) - 1;
+                            int prevYear = DateTime.Now.Year;
+                            if (prevQuarter < 1)
+                            {
+                                prevQuarter = 4;
+                                prevYear--;
+                            }
+                            builder.Append(string.Format("(DATEPART(quarter, {0}) = {1:D} AND DATEPART(year, {0}) = {2:D})", dateSql, prevQuarter, prevYear));
+                            break;
+                        case "NEXT QUARTER":
+                            int nextQuarter = DataUtils.GetQuarter(DateTime.Now) + 1;
+                            int nextYear = DateTime.Now.Year;
+                            if (nextQuarter > 4)
+                            {
+                                nextQuarter = 1;
+                                nextYear++;
+                            }
+                            builder.Append(string.Format("(DATEPART(quarter, {0}) = {1:D} AND DATEPART(year, {0}) = {2:D})", dateSql, nextQuarter, nextYear));
+                            break;
+                        case "SPECIFIC QUARTER":
+                            builder.Append(string.Format("DATEPART(quarter, {0}) = {1:D}", dateSql, int.Parse(condition.Value1)));
+                            break;
+                        case "PREVIOUS # QUARTERS": break;
+                        case "LAST # QUARTERS": break;
+                        case "NEXT # QUARTERS": break;
+
+                        case "CURRENT MONTH":
+                            builder.Append(string.Format("(DATEPART(month, {0}) = {1:D} AND DATEPART(year, {0}) = {2:D})", dateSql, DateTime.Now.Month, DateTime.Now.Year));
+                            break;
+                        case "PREVIOUS MONTH":
+                            int prevMonth = DateTime.Now.Month - 1;
+                            int prevMYear = DateTime.Now.Year;
+                            if (prevMonth < 1)
+                            {
+                                prevMonth = 12;
+                                prevMYear--;
+                            }
+                            builder.Append(string.Format("(DATEPART(month, {0}) = {1:D} AND DATEPART(year, {0}) = {2:D})", dateSql, prevMonth, prevMYear));
+                            break;
+
+                        case "NEXT MONTH":
+                            int nextMonth = DateTime.Now.Month + 1;
+                            int nextMYear = DateTime.Now.Year;
+                            if (nextMonth > 12)
+                            {
+                                nextMonth = 1;
+                                nextMYear++;
+                            }
+                            builder.Append(string.Format("(DATEPART(month, {0}) = {1:D} AND DATEPART(year, {0}) = {2:D})", dateSql, nextMonth, nextMYear));
+                            break;
+                        case "SPECIFIC MONTH":
+                            builder.Append(string.Format("DATEPART(month, {0}) = {1:D}", dateSql, int.Parse(condition.Value1)));
+                            break;
+                        case "PREVIOUS # MONTHS": break;
+                        case "LAST # MONTHS": break;
+                        case "NEXT # MONTHS": break;
+
+                        case "CURRENT WEEK":
+                            builder.Append(string.Format("(DATEPART(week, {0}) = DATEPART(week, GETUTCDATE()) AND DATEPART(year, {0}) = {1:D})", dateSql, DateTime.Now.Year));
+                            break;
+                        case "PREVIOUS WEEK":
+                            builder.Append(string.Format("(DATEPART(week, {0}) = DATEPART(week, GETUTCDATE())-1 AND DATEPART(year, {0}) = {1:D})", dateSql, DateTime.Now.Year));
+                            break;
+                        case "NEXT WEEK":
+                            builder.Append(string.Format("(DATEPART(week, {0}) = DATEPART(week, GETUTCDATE())+1 AND DATEPART(year, {0}) = {1:D})", dateSql, DateTime.Now.Year));
+                            break;
+                        case "PREVIOUS # WEEKS": break;
+                        case "LAST # WEEKS": break;
+                        case "NEXT # WEEKS": break;
+
+                        case "TODAY":
+                            builder.Append(string.Format("{0} = @{1}", dateSql, paramName));
+                            command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).Date;
+                            break;
+                        case "YESTERDAY":
+                            builder.Append(string.Format("{0} = @{1}", dateSql, paramName));
+                            command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).AddDays(-1).Date;
+                            break;
+                        case "TOMORROW":
+                            builder.Append(string.Format("{0} = @{1}", dateSql, paramName));
+                            command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).AddDays(1).Date;
+                            break;
+                        case "SPECIFIC DAY":
+                            builder.Append(string.Format("DATEPART(weekday, {0}) = {1:D}", dateSql, int.Parse(condition.Value1)));
+                            break;
+                        case "PREVIOUS # DAYS":
+                            string paramName2 = paramName + "x2";
+                            builder.Append(string.Format("({0} >= @{1} AND {0} < @{2})", dateSql, paramName, paramName2));
+                            command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).AddDays(-1 * int.Parse(condition.Value1)).Date;
+                            command.Parameters.Add(paramName2, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).Date;
+                            break;
+                        case "LAST # DAYS":
+                            string paramName2a = paramName + "x2";
+                            builder.Append(string.Format("({0} >= @{1} AND {0} <= @{2})", dateSql, paramName, paramName2a));
+                            command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).AddDays(-1 * int.Parse(condition.Value1)).Date;
+                            command.Parameters.Add(paramName2a, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).Date;
+                            break;
+                        case "NEXT # DAYS":
+                            string paramName2b = paramName + "x2";
+                            builder.Append(string.Format("({0} >= @{1} AND {0} <= @{2})", dateSql, paramName2b, paramName));
+                            command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).AddDays(int.Parse(condition.Value1)).Date;
+                            command.Parameters.Add(paramName2b, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).Date;
+                            break;
+
+                        case "CURRENT HOUR": break;
+                        case "PREVIOUS HOUR": break;
+                        case "NEXT HOUR": break;
+                        case "SPECIFIC HOUR": break;
+                        case "PREVIOUS # HOURS": break;
+                        case "LAST # HOURS": break;
+                        case "NEXT # HOURS": break;
+                        case "": break;
+                        default:
+                            break;
+                    }
+                    break;
+                default:
+                    //if (condition.Value1 != null) command.Parameters.Add(paramName, SqlDbType.NVarChar).Value = condition.Value1;
+
+                    switch (condition.Comparator.ToUpper())
+                    {
+                        case "IS":
+                            builder.Append(string.Format("{0} = @{1}", fieldName, paramName));
+                            command.Parameters.Add(paramName, SqlDbType.NVarChar).Value = condition.Value1;
+                            break;
+                        case "IS NOT":
+                            builder.Append(string.Format("{0} <> @{1}", fieldName, paramName));
+                            command.Parameters.Add(paramName, SqlDbType.NVarChar).Value = condition.Value1;
+                            break;
+                        case "CONTAINS":
+                            builder.Append(string.Format("{0} LIKE @{1}", fieldName, paramName));
+                            command.Parameters.Add(paramName, SqlDbType.NVarChar).Value = $"%{condition.Value1}%";
+                            break;
+                        case "DOES NOT CONTAIN":
+                            builder.Append(string.Format("{0} NOT LIKE @{1}", fieldName, paramName));
+                            command.Parameters.Add(paramName, SqlDbType.NVarChar).Value = $"%{condition.Value1}%";
+                            break;
+                        case "STARTS WITH":
+                            builder.Append(string.Format("{0} LIKE @{1}", fieldName, paramName));
+                            command.Parameters.Add(paramName, SqlDbType.NVarChar).Value = $"{condition.Value1}%";
+                            break;
+                        case "ENDS WITH":
+                            builder.Append(string.Format("{0} LIKE @{1}", fieldName, paramName));
+                            command.Parameters.Add(paramName, SqlDbType.NVarChar).Value = $"%{condition.Value1}";
+                            break;
+                        case "IS EMPTY":
+                            builder.Append(string.Format("{0} IS NULL", fieldName));
+                            break;
+                        case "IS NOT EMPTY":
+                            builder.Append(string.Format("{0} IS NOT NULL", fieldName));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+            }
+        }
+
+        private static void WriteFilterConditionForExports(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilterCondition condition, string primaryTableKeyName = null)
+        {
+            string fieldName = "";
+            string dataType;
+            bool isUnicode = false;
+            if (condition.FieldID < 0)
+            {
+                dataType = condition.DataType;
+                fieldName = string.Format("[{0}]", condition.FieldName);
+            }
+            else
+            {
+
+                if (condition.IsCustom)
+                {
+                    CustomField customField = TeamSupport.Data.CustomFields.GetCustomField(loginUser, condition.FieldID);
+                    if (customField == null) return;
+
+                    //assign the primary key to a variable and update it with the passed in value if present
+                    string PrimaryTableKeyName = DataUtils.GetReportPrimaryKeyFieldName(customField.RefType);
+                    if (primaryTableKeyName != null) PrimaryTableKeyName = primaryTableKeyName;
+
+                    fieldName = DataUtils.GetCustomFieldColumn(loginUser, customField, PrimaryTableKeyName, true, false);
+                    switch (customField.FieldType)
+                    {
+                        case CustomFieldType.DateTime:
+                            dataType = "datetime";
+                            break;
+                        case CustomFieldType.Boolean:
+                            dataType = "bit";
+                            break;
+                        case CustomFieldType.Number:
+                            dataType = "float";
+                            break;
+                        case CustomFieldType.Date:
+                            dataType = "datetime";
+                            break;
+                        default:
+                            dataType = "text";
+                            break;
+                    }
+
+                }
+                else
+                {
+                    ReportTableField field = ReportTableFields.GetReportTableField(loginUser, condition.FieldID);
+                    ReportTable reportTable = ReportTables.GetReportTable(loginUser, field.ReportTableID);
+                    fieldName = reportTable.TableName + ".[" + field.FieldName + "]";
+                    dataType = field.DataType;
+                }
+            }
+
+            string paramName = string.Format("Param{0:D5}", command.Parameters.Count + 1);
+
+            if (condition.Value1 == "The Report Viewer")
+            {
+                condition.Value1 = loginUser.GetUserFullName();
+            }
+
+            switch (dataType)
+            {
+                case "float":
+                    switch (condition.Comparator.ToUpper())
+                    {
+                        case "IS":
+                            builder.Append(string.Format("{0} = @{1}", fieldName, paramName));
+                            command.Parameters.Add(paramName, SqlDbType.Float).Value = float.Parse(condition.Value1);
+                            break;
+                        case "IS NOT":
+                            builder.Append(string.Format("{0} <> @{1}", fieldName, paramName));
+                            command.Parameters.Add(paramName, SqlDbType.Float).Value = float.Parse(condition.Value1);
+                            break;
+                        case "LESS THAN":
+                            builder.Append(string.Format("{0} < @{1}", fieldName, paramName));
+                            command.Parameters.AddWithValue(paramName, float.Parse(condition.Value1));
+                            break;
+                        case "GREATER THAN":
+                            builder.Append(string.Format("{0} > @{1}", fieldName, paramName));
+                            command.Parameters.AddWithValue(paramName, float.Parse(condition.Value1));
+                            break;
+                        case "IS EMPTY":
+                            builder.Append(string.Format("{0} IS NULL", fieldName));
+                            break;
+                        case "IS NOT EMPTY":
+                            builder.Append(string.Format("{0} IS NOT NULL", fieldName));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case "int":
+                    switch (condition.Comparator.ToUpper())
+                    {
+                        case "IS":
+                            builder.Append(string.Format("{0} = @{1}", fieldName, paramName));
+                            command.Parameters.Add(paramName, SqlDbType.Int).Value = int.Parse(condition.Value1);
+                            break;
+                        case "IS NOT":
+                            builder.Append(string.Format("{0} <> @{1}", fieldName, paramName));
+                            command.Parameters.Add(paramName, SqlDbType.Int).Value = int.Parse(condition.Value1);
+                            break;
+                        case "LESS THAN":
+                            builder.Append(string.Format("{0} < @{1}", fieldName, paramName));
+                            command.Parameters.AddWithValue(paramName, int.Parse(condition.Value1));
+                            break;
+                        case "GREATER THAN":
+                            builder.Append(string.Format("{0} > @{1}", fieldName, paramName));
+                            command.Parameters.AddWithValue(paramName, int.Parse(condition.Value1));
+                            break;
+                        case "IS EMPTY":
+                            builder.Append(string.Format("{0} IS NULL", fieldName));
+                            break;
+                        case "IS NOT EMPTY":
+                            builder.Append(string.Format("{0} IS NOT NULL", fieldName));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case "bit":
+                    switch (condition.Comparator.ToUpper())
+                    {
+                        case "IS TRUE": builder.Append(string.Format("{0} = 'True'", fieldName)); break;
+                        case "IS FALSE": builder.Append(string.Format("{0} = 'False'", fieldName)); break;
+                        case "IS EMPTY": builder.Append(string.Format("{0} IS NULL", fieldName)); break;
+                        case "IS NOT EMPTY": builder.Append(string.Format("{0} IS NOT NULL", fieldName)); break;
+                        default:
+                            break;
+                    }
+                    break;
+                case "bool":
+                    switch (condition.Comparator.ToUpper())
+                    {
+                        case "IS TRUE": builder.Append(string.Format("{0} = 'True'", fieldName)); break;
+                        case "IS FALSE": builder.Append(string.Format("{0} = 'False'", fieldName)); break;
+                        case "IS EMPTY": builder.Append(string.Format("{0} IS NULL", fieldName)); break;
+                        case "IS NOT EMPTY": builder.Append(string.Format("{0} IS NOT NULL", fieldName)); break;
+                        default:
+                            break;
+                    }
+                    break;
+                case "datetime":
+                    TimeSpan offset = loginUser.Offset;
+                    string datetimeSql = string.Format("CAST(SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}') AS DATETIME)",
+                      fieldName,
+                      offset < TimeSpan.Zero ? "-" : "+",
+                      Math.Abs(offset.Hours),
+                      Math.Abs(offset.Minutes));
+                    string timeSql = string.Format("CAST({0} AS TIME)", datetimeSql);
+                    string dateSql = string.Format("CAST({0} AS DATE)", datetimeSql);
+
+                    //New code                   
+                    //Setting datetime to search with user offset
+                   
+                    DateTime myDate = DateTime.Parse(condition.Value1);
+                    DateTime testDate = new DateTime(myDate.Year, myDate.Month, myDate.Day, 0, 0, 0);
+
+                    //change to timezpan = 0
+                    DateTimeOffset myOffSetDateTime = new DateTimeOffset(testDate, offset.Negate());   
+                    
+                    //change to negate offset for comparison                    
+                    DateTime myNewDate = DateTime.Parse(myOffSetDateTime.ToString());
+
+                   
+                    //string timeSql = fieldName;
+                    //string dateSql = fieldName;
+
+                    switch (condition.Comparator.ToUpper())
+                    {
+
+                        case "IS":
+                            builder.Append(string.Format("{0} = @{1}", dateSql, paramName));
+                            //command.Parameters.Add(paramName, SqlDbType.date).Value = DateTime.Parse(condition.Value1);
+                            command.Parameters.Add(paramName, SqlDbType.DateTime).Value = myDate;
+                            break;
+                        case "IS NOT":
+                            builder.Append(string.Format("{0} <> @{1}", dateSql, paramName));
+                            //command.Parameters.Add(paramName, SqlDbType.Date).Value = DateTime.Parse(condition.Value1);
+                            command.Parameters.Add(paramName, SqlDbType.DateTime).Value =myDate;
+                            break;
+                        case "IS BEFORE":
+                            builder.Append(string.Format("{0} < @{1}", dateSql, paramName));
+                            //command.Parameters.Add(paramName, SqlDbType.Date).Value = DateTime.Parse(condition.Value1);
+                            command.Parameters.Add(paramName, SqlDbType.DateTime).Value = myDate;
+                            break;
+                        case "IS AFTER":
+                            builder.Append(string.Format("{0} > @{1}", dateSql, paramName));
+                            //command.Parameters.Add(paramName, SqlDbType.Date).Value = DateTime.Parse(condition.Value1);
+                            command.Parameters.Add(paramName, SqlDbType.DateTime).Value = myDate;
+                            break;
+                        case "IS EMPTY":
+                            builder.Append(string.Format("{0} IS NULL", fieldName));
+                            break;
+                        case "IS NOT EMPTY":
+                            builder.Append(string.Format("{0} IS NOT NULL", fieldName));
+                            break;
+                        case "CURRENT YEAR":
+                            builder.Append(string.Format("DATEPART(year, {0}) = {1}", datetimeSql, DateTime.Now.Year));
+                            //builder.Append(string.Format("DATEPART(year, {0}) = {1}", fieldName, myDate.Year));
+                            break;
+                        case "PREVIOUS YEAR":
+                            builder.Append(string.Format("DATEPART(year, {0}) = {1}", datetimeSql, DateTime.Now.Year - 1));
+                            //builder.Append(string.Format("DATEPART(year, {0}) = {1}", fieldName, myDate.Year - 1));
+                            break;
+                        case "NEXT YEAR":
+                            builder.Append(string.Format("DATEPART(year, {0}) = {1}", datetimeSql, DateTime.Now.Year + 1));
+                            //builder.Append(string.Format("DATEPART(year, {0}) = {1}", fieldName, myDate.Year + 1));
+                            break;
+                        case "SPECIFIC YEAR":
+                            builder.Append(string.Format("DATEPART(year, {0}) = @{1}", datetimeSql, paramName));                          
                             command.Parameters.AddWithValue(paramName, int.Parse(condition.Value1));
                             break;
                         case "PREVIOUS # YEARS":
@@ -2129,6 +2638,64 @@ namespace TeamSupport.Data
             return result;
         }
 
+        //For exports
+        public static DataTable GetReportTableForExports(LoginUser loginUser, int reportID,  string sortField, bool isDesc, bool useUserFilter, bool includeHiddenFields)
+        {
+            Report report = Reports.GetReport(loginUser, reportID);
+            if (report.IsDisabled || SystemSettings.GetIsReportsDisabled()) return null;
+            DateTime timeStart = DateTime.Now;
+            DataTable result = null;
+            try
+            {
+                if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
+                {
+                    result = GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, includeHiddenFields);
+                }
+                else
+                {
+                    result = GetReportTablePageForExports(loginUser, report,sortField, isDesc, useUserFilter, includeHiddenFields);
+                }
+            }
+            catch (Exception)
+            {
+                // try without the sort
+                try
+                {
+                    if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
+                    {
+                        result = GetReportTableAll(loginUser, report, null, isDesc, useUserFilter, includeHiddenFields);
+                    }
+                    else
+                    {
+                        result = GetReportTablePageForExports(loginUser, report,  null, isDesc, useUserFilter, includeHiddenFields);
+                    }
+                }
+                catch (Exception)
+                {
+                    // try without the user filters
+                    if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
+                    {
+                        result = GetReportTableAll(loginUser, report, null, isDesc, false, includeHiddenFields);
+                    }
+                    else
+                    {
+                        result = GetReportTablePageForExports(loginUser, report, null, isDesc, false, includeHiddenFields);
+                    }
+
+                    UserTabularSettings userFilters = JsonConvert.DeserializeObject<UserTabularSettings>((string)report.Row["Settings"]);
+                    userFilters.Filters = null;
+                    report.Row["Settings"] = JsonConvert.SerializeObject(userFilters);
+                    report.Collection.Save();
+                }
+            }
+            report.LastTimeTaken = (int)(DateTime.Now - timeStart).TotalSeconds;
+            report.Collection.Save();
+
+
+            return result;
+        }
+
+
         private static GridResult GetReportDataPage(LoginUser loginUser, Report report, int from, int to, string sortField, bool isDesc, bool useUserFilter)
         {
             DataTable table = GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, true);
@@ -2251,6 +2818,102 @@ WHERE RowNum BETWEEN @From AND @To";
             return table;
         }
 
+        //For Exports
+        private static DataTable GetReportTablePageForExports(LoginUser loginUser, Report report, string sortField, bool isDesc, bool useUserFilter, bool includeHiddenFields)
+        {
+            //from++;
+            //to++;
+
+            SqlCommand command = new SqlCommand();
+            string query = string.Empty;
+          //  string query = @"WITH  q AS({0}) SELECT * FROM q WHERE RowNum BETWEEN @From AND @To ORDER BY RowNum ASC";
+
+            /*WITH 
+            q AS ({0}),
+            r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY [{1}] {2}) AS 'RowNum' FROM q)
+            SELECT  *{3} FROM r
+            WHERE RowNum BETWEEN @From AND @To";
+            */
+
+            if (report.ReportDefType == ReportType.Custom)
+            {
+//                query = @"
+//WITH 
+//{0}
+//,r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY [{1}] {2}) AS 'RowNum' FROM q)
+//SELECT  * FROM r
+//WHERE RowNum BETWEEN @From AND @To";
+            }
+
+            if (string.IsNullOrWhiteSpace(sortField))
+            {
+                sortField = GetReportColumnNames(loginUser, report.ReportID)[0];
+                isDesc = false;
+            }
+
+            if (includeHiddenFields && report.ReportSubcategoryID == 70)
+            {
+                switch (sortField)
+                {
+                    case "Severity":
+                        sortField = "hiddenSeverityPosition";
+                        break;
+                    case "Status":
+                        sortField = "hiddenStatusPosition";
+                        break;
+                }
+            }
+
+
+            //command.Parameters.AddWithValue("@From", from);
+            //command.Parameters.AddWithValue("@To", to);
+
+            if (report.ReportDefType != ReportType.Custom)
+            {
+                report.GetCommandForExports(command, includeHiddenFields, false, useUserFilter, sortField, isDesc ? "DESC" : "ASC");
+            //    command.CommandText = string.Format(query, command.CommandText);
+            }
+            else
+            {
+               report.GetCommandForExports(command, includeHiddenFields, false, useUserFilter);
+            //    command.CommandText = string.Format(query, command.CommandText, sortField, isDesc ? "DESC" : "ASC");
+            }
+
+            report.LastSqlExecuted = DataUtils.GetCommandTextSql(command);
+            report.Collection.Save();
+            FixCommandParameters(command);
+
+            DataTable table = new DataTable();
+            using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+            {
+                connection.Open();
+                SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+
+                command.Connection = connection;
+                command.Transaction = transaction;
+                try
+                {
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                    {
+                        adapter.Fill(table);
+                    }
+                    transaction.Commit();
+                    table = DataUtils.DecodeDataTable(table);
+                    table = DataUtils.StripHtmlDataTable(table);
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    ExceptionLogs.LogException(loginUser, ex, "Report Data", DataUtils.GetCommandTextSql(command));
+                    throw;
+                }
+                connection.Close();
+            }
+
+            if (!includeHiddenFields) table.Columns.Remove("RowNum");
+
+            return table;
+        }
         private static GridResult GetReportDataAll(LoginUser loginUser, Report report, string sortField, bool isDesc, bool useUserFilter)
         {
             DataTable table = GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, true);
