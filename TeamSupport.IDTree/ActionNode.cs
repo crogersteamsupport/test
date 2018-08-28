@@ -26,11 +26,16 @@ namespace TeamSupport.IDTree
         }
 
         /// <summary> top down - existing action </summary>
-        public ActionNode(TicketNode ticket, int actionID) : base(ticket)
+        public ActionNode(TicketNode ticket, int actionID) : this(ticket, actionID, true)
+        {
+        }
+
+        public ActionNode(TicketNode ticket, int actionID, bool verify) : base(ticket)
         {
             Ticket = ticket;
             ActionID = actionID;
-            Verify();
+            if(verify)
+                Verify();
         }
 
         /// <summary> bottom up  - existing action </summary>
@@ -79,6 +84,15 @@ namespace TeamSupport.IDTree
             return Connection._db.ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {ActionID}").Min();
         }
 
+        public static ActionNode[] GetActions(TicketNode ticket)
+        {
+            string query = $"SELECT ActionId FROM Actions WITH (NOLOCK) WHERE TicketId={ticket.TicketID}";
+            int[] actionIDs = ticket.Connection._db.ExecuteQuery<int>(query).ToArray();
+            ActionNode[] actions = new ActionNode[actionIDs.Length];
+            for (int i = 0; i < actionIDs.Length; ++i)
+                actions[i] = new ActionNode(ticket, actionIDs[i], false);
+            return actions;
+        }
 
     }
 }

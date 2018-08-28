@@ -8,29 +8,34 @@ namespace TeamSupport.DataAPI
 {
     public class UpdateArguments
     {
-        StringBuilder _builder;
-        public UpdateArguments()
+        static string ToSql(DateTime dateTime) { return dateTime.ToString("yyyy-MM-dd HH:mm:ss.fff"); }
+        static char ToSql(bool value) { return value ? '1' : '0'; }
+
+        public string Args { get; private set; }
+
+        public UpdateArguments() { }
+        public void Append(string name, int value) { PrivateAppend(name, value.ToString()); }
+        public void Append(string name, DateTime value) { PrivateAppend(name, ToSql(value)); }
+        public void Append(string name, bool value) { Append(name, ToSql(value)); }
+
+        public UpdateArguments(string name, int value)
         {
-            _builder = new StringBuilder();
+            Args = $"{name}={value}";
         }
 
-        public UpdateArguments(string name, int value) : this()
+        // do NOT allow inlining strings - they MUST be sql injection checked by the DB
+        private void PrivateAppend(string name, string value)
         {
-            Insert(name, value);
-        }
-
-        public void Insert(string name, int value)
-        {
-            if (_builder.Length == 0)
-                _builder.Append($"{name}={value}");
+            if (String.IsNullOrEmpty(Args))
+                Args = $"{name}={value}";
             else
-                _builder.Append($", {name}={value}");
+                Args += $", {name}={value}";
         }
+
         public override string ToString()
         {
-            return _builder.ToString();
+            return Args;
         }
     }
-
 
 }

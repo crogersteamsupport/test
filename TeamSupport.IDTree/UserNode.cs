@@ -20,9 +20,9 @@ namespace TeamSupport.IDTree
 
         public UserNode(ConnectionContext connection, int userID) : base(connection)
         {
-            int organizationID = Connection._db.ExecuteQuery<int>($"SELECT OrganizationID FROM Users WITH (NOLOCK) WHERE UserID={UserID}").First();
-            Organization = new OrganizationNode(connection, organizationID);
             UserID = userID;
+            int organizationID = Connection._db.ExecuteQuery<int>($"SELECT OrganizationID FROM Users WITH (NOLOCK) WHERE UserID={userID}").First();
+            Organization = new OrganizationNode(connection, organizationID);
         }
 
         public override void Verify()

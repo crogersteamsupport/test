@@ -40,17 +40,60 @@ namespace TeamSupport.ModelAPI
             MergeSubscriptions();
             MergeTaskAssociations();
             MergeRelationships();  // 1 and 2
-            //MergeQueueUsers();
-            //MergeActions();
+            //MergeQueuedTickets();
+            MergeActions();
 
-            //DataAPI.DataAPI.Delete(Source);
+            DataAPI.DataAPI.Delete(Source);
             //Source = null;
-            //DataAPI.DataAPI.Update(Destination, DataAPI.DataAPI.Read<TicketProxy>(Destination));  // update Date Modified
+            //DataAPI.DataAPI.Update(Destination, null);  // update Date Modified
+        }
+
+        public void MergeActions()
+        {
+            ActionNode[] actions = Source.Actions();
+            foreach (ActionNode action in actions)
+                DataAPI.DataAPI.Update(action, new UpdateArguments("TicketID", Destination.TicketID));
+        }
+
+        enum TicketRelationship
+        {
+            SourceIsDestination,
+            SourceTicket2,
+            Ticket1Source
+        }
+
+        TicketRelationship GetState(TicketRelationshipProxy proxy)
+        {
+            if (proxy.Ticket1ID == Source.TicketID)
+                return proxy.Ticket2ID == Destination.TicketID ? TicketRelationship.SourceIsDestination : TicketRelationship.SourceTicket2;
+
+            return proxy.Ticket1ID == Destination.TicketID ? TicketRelationship.SourceIsDestination : TicketRelationship.Ticket1Source;
         }
 
         void MergeRelationships()
         {
-
+            TicketRelationshipProxy[] proxies = DataAPI.DataAPI.Read<TicketRelationshipProxy[]>(Source);
+            TicketRelationshipNode idNode;
+            foreach (TicketRelationshipProxy proxy in proxies)
+            {
+                switch(GetState(proxy))
+                {
+                    case TicketRelationship.SourceIsDestination:
+                        idNode = new TicketRelationshipNode(Source, Destination, proxy.TicketRelationshipID);
+                        DataAPI.DataAPI.Delete(idNode);   // circular reference
+                        break;
+                    case TicketRelationship.SourceTicket2:
+                        TicketNode ticket2 = new TicketNode(Source.Connection, proxy.Ticket2ID);
+                        idNode = new TicketRelationshipNode(Source, ticket2, proxy.TicketRelationshipID);
+                        DataAPI.DataAPI.Update(idNode, new UpdateArguments("Ticket1ID", Destination.TicketID));
+                        break;
+                    case TicketRelationship.Ticket1Source:
+                        TicketNode ticket1 = new TicketNode(Source.Connection, proxy.Ticket1ID);
+                        idNode = new TicketRelationshipNode(ticket1, Source, proxy.TicketRelationshipID);
+                        DataAPI.DataAPI.Update(idNode, new UpdateArguments("Ticket2ID", Destination.TicketID));
+                        break;
+                }
+            }
         }
 
         void MergeChildren()

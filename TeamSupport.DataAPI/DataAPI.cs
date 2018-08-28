@@ -28,17 +28,19 @@ namespace TeamSupport.DataAPI
         /// <summary>
         /// CREATE - create proxy child for model parent
         /// </summary>
-        public static void Create<TProxy>(IDNode iModel, TProxy tProxy) where TProxy : class
+        public static void Create<TProxy>(IDNode idNode, TProxy tProxy) where TProxy : class
         {
+            string modification = $", CreatorID={idNode.Connection.UserID}, DateCreated={ToSql(DateTime.UtcNow)}";
+
             string now = ToSql(DateTime.UtcNow);
-            int userID = iModel.Connection.UserID;
+            int creatorID = idNode.Connection.UserID;
 
             string command = String.Empty;
             switch (typeof(TProxy).Name) // alphabetized list
             {
                 case "ActionAttachment":
                     {
-                        ActionNode model = (ActionNode)iModel;
+                        ActionNode model = (ActionNode)idNode;
                         AttachmentProxy proxy = tProxy as AttachmentProxy;
                         string query = "SET Context_Info 0x55555; " + 
                             "INSERT INTO ActionAttachments(OrganizationID, FileName, FileType, FileSize, Path, DateCreated, DateModified, CreatorID, ModifierID, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID) " +
@@ -50,7 +52,7 @@ namespace TeamSupport.DataAPI
                     break;
                 case "ActionProxy":
                     {
-                        TicketNode model = (TicketNode)iModel;
+                        TicketNode model = (TicketNode)idNode;
                         ActionProxy proxy = tProxy as ActionProxy;
                         AuthenticationModel authentication = model.Connection.Authentication;
                         Data.Action.Create(model.Connection._db, authentication.OrganizationID, authentication.UserID, model.TicketID, ref proxy);
@@ -58,141 +60,165 @@ namespace TeamSupport.DataAPI
                     break;
                 case "ContactProxy":
                     {
-                        TicketNode model = (TicketNode)iModel;
+                        TicketNode model = (TicketNode)idNode;
                         ContactProxy proxy = tProxy as ContactProxy;
                         command = $"INSERT INTO UserTickets (TicketID, UserID, DateCreated, CreatorID)" +
-                            $"SELECT {model.TicketID}, {proxy.UserID}, '{now}', {userID} ";
+                            $"SELECT {model.TicketID}, {proxy.UserID}, '{now}', {creatorID} ";
                     }
                     break;
                 case "CustomerProxy":
                     {
-                        TicketNode model = (TicketNode)iModel;
+                        TicketNode model = (TicketNode)idNode;
                         CustomerProxy proxy = tProxy as CustomerProxy;
                         command = $"INSERT INTO OrganizationTickets (TicketID, OrganizationID, DateCreated, CreatorID, DateModified, ModifierID)" +
-                            $"SELECT {model.TicketID}, {proxy.OrganizationID}, '{now}', {userID}, '{now}', {userID}"; 
+                            $"SELECT {model.TicketID}, {proxy.OrganizationID}, '{now}', {creatorID}, '{now}', {creatorID}"; 
                     }
                     break;
                 case "SubscriptionProxy":
                     {
-                        TicketNode model = (TicketNode)iModel;
+                        TicketNode model = (TicketNode)idNode;
                         SubscriptionProxy proxy = tProxy as SubscriptionProxy;
                         command = $"INSERT INTO Subscriptions (RefType, RefID, UserID, DateCreated, DateModified, CreatorID, ModifierID)" +
-                                $"SELECT 17, {model.TicketID}, {proxy.UserID}, '{now}','{now}', {userID}, {userID} ";
+                                $"SELECT 17, {model.TicketID}, {proxy.UserID}, '{now}','{now}', {creatorID}, {creatorID} ";
                     }
+                    break;
+                default:
+                    if (Debugger.IsAttached) Debugger.Break();
                     break;
             }
 
-            if(!String.IsNullOrEmpty(command))
-                iModel.Connection._db.ExecuteCommand(command);
+            if (!String.IsNullOrEmpty(command))
+                idNode.Connection._db.ExecuteCommand(command);
             // TODO - log
         }
 
         /// <summary> 
         /// READ - read proxy given a model 
         /// </summary>
-        public static TProxy Read<TProxy>(IDNode iModel) where TProxy : class
+        public static TProxy Read<TProxy>(IDNode node) where TProxy : class
         {
             TProxy tProxy = default(TProxy);
             switch (typeof(TProxy).Name) // alphabetized list
             {
                 case "ActionProxy": // action
                     {
-                        ActionNode model = (ActionNode)iModel;
-                        Table<ActionProxy> table = model.Connection._db.GetTable<ActionProxy>();
-                        tProxy = table.Where(t => t.ActionID == model.ActionID).First() as TProxy;
+                        ActionNode action = (ActionNode)node;
+                        Table<ActionProxy> table = action.Connection._db.GetTable<ActionProxy>();
+                        tProxy = table.Where(t => t.ActionID == action.ActionID).First() as TProxy;
                     }
                     break;
                 case "ActionProxy[]":   // ticket actions
                     {
-                        TicketNode model = (TicketNode)iModel;
-                        Table<ActionProxy> table = model.Connection._db.GetTable<ActionProxy>();
-                        tProxy = table.Where(t => t.TicketID == model.TicketID).ToArray() as TProxy;
+                        TicketNode ticket = (TicketNode)node;
+                        Table<ActionProxy> table = ticket.Connection._db.GetTable<ActionProxy>();
+                        tProxy = table.Where(t => t.TicketID == ticket.TicketID).ToArray() as TProxy;
                     }
                     break;
                 case "AttachmentProxy": // action attachment (organization attachments?)
                     {
-                        ActionAttachmentNode model = (ActionAttachmentNode)iModel;
-                        string query = SelectActionAttachmentProxy + $"WHERE ActionAttachmentID = {model.ActionAttachmentID}";
-                        tProxy = model.Connection._db.ExecuteQuery<AttachmentProxy>(query).First() as TProxy;
+                        ActionAttachmentNode attachment = (ActionAttachmentNode)node;
+                        string query = SelectActionAttachmentProxy + $"WHERE ActionAttachmentID = {attachment.ActionAttachmentID}";
+                        tProxy = attachment.Connection._db.ExecuteQuery<AttachmentProxy>(query).First() as TProxy;
                     }
                     break;
                 case "AttachmentProxy[]": // action attachments
                     {
-                        ActionNode model = (ActionNode)iModel;
-                        string query = SelectActionAttachmentProxy + $"WHERE ActionID = {model.ActionID}";
-                        tProxy = model.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray() as TProxy;
+                        ActionNode action = (ActionNode)node;
+                        string query = SelectActionAttachmentProxy + $"WHERE ActionID = {action.ActionID}";
+                        tProxy = action.Connection._db.ExecuteQuery<AttachmentProxy>(query).ToArray() as TProxy;
                     }
                     break;
                 case "ReminderProxy":
                     {
-                        TicketReminderNode model = (TicketReminderNode)iModel;
+                        TicketReminderNode reminder = (TicketReminderNode)node;
                         string query = $"SELECT ReminderID, OrganizationID, RefType, RefID, Description, DueDate, UserID, IsDismissed, HasEmailSent, CreatorID, DateCreated " +
-                            $"FROM Reminders WHERE ReminderID = {model.ReminderID}";
-                        tProxy = model.Connection._db.ExecuteQuery<ReminderProxy>(query).ToArray() as TProxy;
+                            $"FROM Reminders WHERE ReminderID = {reminder.ReminderID} AND RefType=17";
+                        tProxy = reminder.Connection._db.ExecuteQuery<ReminderProxy>(query).ToArray() as TProxy;
                     }
                     break;
                 case "SubscriptionModel[]":
                     {
-                        TicketNode model = (TicketNode)iModel;
+                        TicketNode ticket = (TicketNode)node;
                         string query = $"SELECT RefType,RefID,UserID,DateCreated,DateModified,CreatorID,ModifierID FROM Subscriptions " +
-                            $"WHERE Reftype = 17 and Refid = {model.TicketID} and MarkDeleted = 0";
-                        tProxy = model.Connection._db.ExecuteQuery<SubscriptionNode>(query).ToArray() as TProxy;
+                            $"WHERE Reftype = 17 and RefID = {ticket.TicketID} and MarkDeleted = 0";
+                        tProxy = ticket.Connection._db.ExecuteQuery<SubscriptionNode>(query).ToArray() as TProxy;
                     }
                     break;
                 case "TaskAssociationProxy":
                     {
-                        TaskAssociationNode model = (TaskAssociationNode)iModel;
+                        TaskAssociationNode taskAssociation = (TaskAssociationNode)node;
                         string query = String.Empty;// = $"SELECT TaskID, RefID, RefType,CreatorID, DateCreated FROM TaskAssociations WHERE TaskID = {model.TaskID} AND RefID = {model.Ticket.TicketID} AND RefType = 17";
-                        tProxy = model.Connection._db.ExecuteQuery<TaskAssociationProxy>(query).First() as TProxy;
+                        tProxy = taskAssociation.Connection._db.ExecuteQuery<TaskAssociationProxy>(query).First() as TProxy;
                     }
                     break;
                 case "TagLinkProxy[]":
                     {
-                        //query = $"SELECT TagLinkID, TagID, RefType, RefID, DateCreated, CreatorID FROM TagLinks WHERE RefType = 17 AND RefID = {model.TicketID}";
-                        TicketNode model = (TicketNode)iModel;
-                        Table<TagLinkProxy> table = model.Connection._db.GetTable<TagLinkProxy>();
-                        tProxy = table.Where(t => (t.RefType == ReferenceType.Tickets) && (t.RefID == model.TicketID)).ToArray() as TProxy;
+                        TicketNode ticket = (TicketNode)node;
+                        //string query = $"SELECT * FROM TagLinks WHERE RefType = 17 AND RefID = {ticket.TicketID}";
+                        //tProxy = ticket.Connection._db.ExecuteQuery<TProxy>(query).ToArray() as TProxy;
+
+                        Table<TagLinkProxy> table = ticket.Connection._db.GetTable<TagLinkProxy>();
+                        tProxy = table.Where(t => (t.RefType == ReferenceType.Tickets) && (t.RefID == ticket.TicketID)).ToArray() as TProxy;
                     }
                     break;
                 case "TicketProxy": // ticket
                     {
-                        TicketNode model = (TicketNode)iModel;
-                        Table<TicketProxy> table = model.Connection._db.GetTable<TicketProxy>();
-                        tProxy = table.Where(t => t.TicketID == model.TicketID).First() as TProxy;
+                        TicketNode ticket = (TicketNode)node;
+                        Table<TicketProxy> table = ticket.Connection._db.GetTable<TicketProxy>();
+                        tProxy = table.Where(t => t.TicketID == ticket.TicketID).First() as TProxy;
+                    }
+                    break;
+                case "TicketRelationshipProxy[]":
+                    {
+                        TicketNode model = (TicketNode)node;
+                        //string query = $"SELECT * FROM TicketRelationships WHERE Ticket1ID={model.TicketID} OR Ticket2ID={model.TicketID}";
+                        string query = $"SELECT TicketRelationshipID, OrganizationID, Ticket1ID, Ticket2ID, CreatorID, DateCreated, ImportFileID FROM TicketRelationships " +
+                            $"WHERE Ticket1ID={model.TicketID} OR Ticket2ID={model.TicketID}";
+                        tProxy = model.Connection._db.ExecuteQuery<TicketRelationshipProxy>(query).ToArray() as TProxy;
                     }
                     break;
                 default:
-                    throw new Exception("Bad call to DataApi.Read");
+                    if (Debugger.IsAttached) Debugger.Break();
+                    break;
             }
             return tProxy;
         }
 
         public static void Update(IDNode node, UpdateArguments args)
         {
-            string command = String.Empty;
+            string modification = $", ModifierID={node.Connection.UserID}, DateModified={ToSql(DateTime.UtcNow)}";
+
             int id;
+            string command = String.Empty;
             switch (node.GetType().Name) // alphabetized list
             {
+                case "ActionNode":
+                    id = ((ActionNode)node).ActionID;
+                    command = $"UPDATE Actions WITH(ROWLOCK) SET {args.ToString()} WHERE ActionID={id}";
+                    break;
                 case "TagLinkNode":
                     id = ((TagLinkNode)node).TagLinkID;
-                    command = $"UPDATE TagLinks WITH(ROWLOCK) SET {command.ToString()} WHERE TagLinkID={id} AND RefType=17";
+                    command = $"UPDATE TagLinks WITH(ROWLOCK) SET {args.ToString()} WHERE TagLinkID={id} AND RefType=17";
                     break;
                 case "TaskAssociationNode":
                     id = ((TaskAssociationNode)node).Task.TaskID;
-                    command = $"UPDATE TaskAssociations SET {command.ToString()} WHERE TaskID={id} AND RefType=17";
+                    command = $"UPDATE TaskAssociations SET {args.ToString()} WHERE TaskID={id} AND RefType=17";
                     break;
                 case "TicketNode":
                     id = ((TicketNode)node).TicketID;
-                    command = $"UPDATE Tickets SET {command.ToString()} WHERE TicketID= {id}";
+                    command = $"UPDATE Tickets SET {args.ToString()} WHERE TicketID= {id}";
                     break;
                 case "TicketReminderNode":
                     id = ((TicketReminderNode)node).ReminderID;
-                    command = $" UPDATE Reminders WITH(ROWLOCK) SET {command.ToString()} WHERE ReminderID={id} AND RefType=17";
+                    command = $" UPDATE Reminders WITH(ROWLOCK) SET {args.ToString()} WHERE ReminderID={id} AND RefType=17";
+                    break;
+                default:
+                    if(Debugger.IsAttached) Debugger.Break();
                     break;
             }
             node.Connection._db.ExecuteCommand(command);
+            // TODO - Log
         }
-
 
         /// <summary> 
         /// UPDATE - update a model with the proxy data 
@@ -201,90 +227,111 @@ namespace TeamSupport.DataAPI
         ///     ModifierID, DateTimeModified
         ///     Logging
         /// </summary>
-        private static void Update<TProxy>(IDNode iModel, TProxy tProxy) where TProxy : class
-        {
-            string command = String.Empty;
-            switch (typeof(TProxy).Name) // alphabetized list
-            {
-                case "TagLinkProxy":    // ticket tag links
-                    {
-                        TagLinkNode model = (TagLinkNode)iModel;
-                        TagLinkProxy proxy = tProxy as TagLinkProxy;
-                        command = $"UPDATE TagLinks WITH(ROWLOCK) SET TagID={proxy.TagID}, RefType=17, RefID={proxy.RefID} WHERE TagLinkID={model.TagLinkID}";
-                    }
-                    break;
-                case "TaskAssociationProxy":
-                    {
-                        TicketNode model = (TicketNode)iModel;
-                        TaskAssociationProxy proxy = tProxy as TaskAssociationProxy;
-                        command = $"UPDATE TaskAssociations SET RefID = {model.TicketID} WHERE(TaskId = {proxy.TaskID})";
-                    }
-                    break;
-                case "TicketProxy":
-                    {
-                        TicketNode model = (TicketNode)iModel;
-                        TicketProxy proxy = tProxy as TicketProxy;
-                        command = $"UPDATE Tickets SET RefID = {model.TicketID} WHERE(TicketID= {model.TicketID})";
-                    }
-                    break;
-                case "ReminderProxy":    // ticket reminder
-                    {
-                        TicketReminderNode model = (TicketReminderNode)iModel;
-                        ReminderProxy proxy = tProxy as ReminderProxy;
-                        command = $" UPDATE Reminders WITH(ROWLOCK) SET RefID ={proxy.RefID} " +
-                            $"WHERE(ReminderId = {model.ReminderID})";
-                    }
-                    break;
-            }
+        //private static void Update<TProxy>(IDNode iModel, TProxy tProxy) where TProxy : class
+        //{
+        //    string command = String.Empty;
+        //    switch (typeof(TProxy).Name) // alphabetized list
+        //    {
+        //        case "TagLinkProxy":    // ticket tag links
+        //            {
+        //                TagLinkNode model = (TagLinkNode)iModel;
+        //                TagLinkProxy proxy = tProxy as TagLinkProxy;
+        //                command = $"UPDATE TagLinks WITH(ROWLOCK) SET TagID={proxy.TagID}, RefType=17, RefID={proxy.RefID} WHERE TagLinkID={model.TagLinkID}";
+        //            }
+        //            break;
+        //        case "TaskAssociationProxy":
+        //            {
+        //                TicketNode model = (TicketNode)iModel;
+        //                TaskAssociationProxy proxy = tProxy as TaskAssociationProxy;
+        //                command = $"UPDATE TaskAssociations SET RefID = {model.TicketID} WHERE(TaskId = {proxy.TaskID})";
+        //            }
+        //            break;
+        //        case "TicketProxy":
+        //            {
+        //                TicketNode model = (TicketNode)iModel;
+        //                TicketProxy proxy = tProxy as TicketProxy;
+        //                command = $"UPDATE Tickets SET RefID = {model.TicketID} WHERE(TicketID= {model.TicketID})";
+        //            }
+        //            break;
+        //        case "ReminderProxy":    // ticket reminder
+        //            {
+        //                TicketReminderNode model = (TicketReminderNode)iModel;
+        //                ReminderProxy proxy = tProxy as ReminderProxy;
+        //                command = $" UPDATE Reminders WITH(ROWLOCK) SET RefID ={proxy.RefID} " +
+        //                    $"WHERE(ReminderId = {model.ReminderID})";
+        //            }
+        //            break;
+        //        default:
+        //            if (Debugger.IsAttached) Debugger.Break();
+        //            break;
+        //    }
 
-            iModel.Connection._db.ExecuteCommand(command);
-        }
+        //    iModel.Connection._db.ExecuteCommand(command);
+        //}
 
         /// <summary> 
         /// DELETE - delete a model </summary>
-        public static void Delete(IDNode iModel)
+        public static void Delete(ref IDNode node)
         {
+            int modifierID = node.Connection.UserID;
+
             string command = String.Empty;
-            switch (iModel.GetType().Name) // alphabetized list
+            switch (node.GetType().Name) // alphabetized list
             {
-                case "ActionAttachment":
+                case "ActionAttachmentNode":
                     {
-                        ActionAttachmentNode model = (ActionAttachmentNode)iModel;
+                        ActionAttachmentNode model = (ActionAttachmentNode)node;
                         command = $"DELETE FROM ActionAttachments WHERE ActionAttachmentID = {model.ActionAttachmentID}";
                     }
                     break;
-                case "AssetTicketModel":
+                case "AssetTicketNode":
                     {
-                        AssetTicketNode model = (AssetTicketNode)iModel;
+                        AssetTicketNode model = (AssetTicketNode)node;
                         //command = $"DELETE FROM AssetTickets WHERE TicketID = {model.AssetID} AND AssetID = {model.AssetID}";
                     }
                     break;
-                case "Contact":
+                case "UserTicketNode":
                     {
-                        UserTicketNode model = (UserTicketNode)iModel;
+                        UserTicketNode model = (UserTicketNode)node;
                         //command = $"DELETE FROM UserTickets Where TicketID={model.Ticket.TicketID} AND UserId = {model.UserID}";
                     }
                     break;
-                case "Customer":
+                case "OrganizationTicketNode":
                     {
-                        OrganizationTicketNode model = (OrganizationTicketNode)iModel;
+                        OrganizationTicketNode model = (OrganizationTicketNode)node;
                         command = $"DELETE FROM OrganizationTickets WHERE TicketID={model.Ticket.TicketID} AND OrganizationId = {model.Organization.OrganizationID}";
                     }
                     break;
-                case "TagLinkModel":
+                case "TagLinkNode":
                     {
-                        TagLinkNode model = (TagLinkNode)iModel;
+                        TagLinkNode model = (TagLinkNode)node;
                         command = $"DELETE FROM TagLinks WHERE TagLinkID={model.TagLinkID}";
                     }
                     break;
-                case "SubscriptionModel":
+                case "TicketNode":
                     {
-                        SubscriptionNode model = (SubscriptionNode)iModel;
+                        TicketNode model = (TicketNode)node;
+                        command = $"DELETE FROM Tickets WHERE TicketID={model.TicketID}";
+                    }
+                    break;
+                case "TicketRelationshipNode":
+                    {
+                        TicketRelationshipNode model = (TicketRelationshipNode)node;
+                        command = $"DELETE FROM TicketRelationships WHERE TicketID={model.TicketRelationshipID}";
+                    }
+                    break;
+                case "SubscriptionNode":
+                    {
+                        SubscriptionNode model = (SubscriptionNode)node;
                         command = $"DELETE FROM Subscriptions WHERE RefType=17 AND RefID={model.Ticket.TicketID} AND UserID={model.User.UserID}";
                     }
                     break;
+                default:
+                    if (Debugger.IsAttached) Debugger.Break();
+                    break;
             }
-            iModel.Connection._db.ExecuteCommand(command);
+            node.Connection._db.ExecuteCommand(command);
+            node = null;    // it's gone :)
             // TODO - log
         }
 

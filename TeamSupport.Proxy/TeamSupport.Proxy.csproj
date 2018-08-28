@@ -58,6 +58,7 @@
     <Compile Include="TagLinksProxy.cs" />
     <Compile Include="TaskAssociationsProxy.cs" />
     <Compile Include="TasksProxy.cs" />
+    <Compile Include="TicketRelationshipsProxy.cs" />
     <Compile Include="TicketsProxy.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

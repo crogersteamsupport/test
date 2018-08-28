@@ -55,12 +55,14 @@ namespace TeamSupport.IDTree
             return new ActionNode(this, actionID);
         }
 
+        public ActionNode[] Actions() { return ActionNode.GetActions(this); }
         public AssetTicketNode[] AssetTickets() { return AssetTicketNode.GetAssetTickets(this); }
         public UserTicketNode[] UserTickets() { return UserTicketNode.GetUserTickets(this); }
         public OrganizationTicketNode[] OrganizationTickets() { return OrganizationTicketNode.GetOrganizationTickets(this); }
         public TicketReminderNode[] Reminders() { return TicketReminderNode.GetTicketReminders(this); }
         public SubscriptionNode[] Subscriptions() { return SubscriptionNode.GetSubscriptions(this); }
         public TaskAssociationNode[] TaskAssociations() { return TaskAssociationNode.GetTaskAssociations(this); }
+
         public TicketNode[] ChildTickets()
         {
             int[] ticketIDs = IDReader.Read(TicketChild.Children, this);
