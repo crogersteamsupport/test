@@ -10,6 +10,7 @@ using TeamSupport.IDTree;
 using System.Security.Authentication;
 using System.Data.SqlClient;
 using System.Data.Linq;
+using System.Diagnostics;
 
 namespace TeamSupport.ModelAPI
 {
@@ -61,30 +62,54 @@ namespace TeamSupport.ModelAPI
         /// </summary>
         public static T Read<T>(int id) where T : class
         {
-            T t = default(T);   // null since T is a class
+            T t = null;
             try
             {
                 using (ConnectionContext connection = new ConnectionContext())
                 {
                     switch(typeof(T).Name) // alphabetized list
                     {
-                        case "ActionProxy": // action
-                            t = DataAPI.DataAPI.Read<T>(new ActionNode(connection, id));
+                        case "ActionProxy":
+                            {
+                                Table<ActionProxy> table = connection._db.GetTable<ActionProxy>();
+                                var q = from action in table where action.ActionID == id select action;
+                                t = q.Single() as T;
+                            }
+
+                            //string query = $"SET NOCOUNT OFF; SELECT [ActionID], [ActionTypeID], [SystemActionTypeID], [Name], [TimeSpent], [DateStarted], [IsVisibleOnPortal], [IsKnowledgeBase], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [TicketID], [ActionSource], [DateModifiedBySalesForceSync], [SalesForceID], [DateModifiedByJiraSync], [JiraID], [Pinned], [Description], [IsClean], [ImportFileID] FROM [dbo].[Actions] WITH (NOLOCK) WHERE ([ActionID] = {id})";
+                            //IEnumerable<ActionProxy> stuff = connection._db.ExecuteQuery<ActionProxy>(query);
+
+                            //ActionProxy proxy = connection._db.ExecuteQuery<ActionProxy>(query).Min();
+
+                            //t = new ActionNode(connection, id).ActionProxy() as T;
+                            ////t = DataAPI.DataAPI.Read<T>(new ActionNode(connection, id));
                             break;
-                        case "ActionProxy[]": // ticket actions
-                            t = DataAPI.DataAPI.Read<T>(new TicketNode(connection, id));
+                        case "ActionProxy[]":
+                            t = new TicketNode(connection, id).ActionProxies() as T;
+                            //t = DataAPI.DataAPI.Read<T>(new TicketNode(connection, id));
                             break;
-                        case "AttachmentProxy": // attachment
+                        case "AttachmentProxy":
                             t = DataAPI.DataAPI.Read<T>(new ActionAttachmentNode(connection, id));
                             break;
-                        case "AttachmentProxy[]": // action attachments
+                        case "AttachmentProxy[]":
                             t = DataAPI.DataAPI.Read<T>(new ActionNode(connection, id));
                             break;
-                        case "TicketProxy": // ticket
+                        case "CustomValueProxy":
                             t = DataAPI.DataAPI.Read<T>(new TicketNode(connection, id));
                             break;
+                        case "TicketProxy":
+                            t = DataAPI.DataAPI.Read<T>(new TicketNode(connection, id));
+                            break;
+                        case "UserProxy":
+                            {
+                                Table<UserProxy> table = connection._db.GetTable<UserProxy>();
+                                var q = from user in table where user.UserID == id select user;
+                                t = q.Single() as T;
+                            }                            //t = DataAPI.DataAPI.Read<T>(new UserNode(connection, id));
+                            break;
                         default:
-                            throw new Exception("bad call to ModelAPI.Read");
+                            if (Debugger.IsAttached) Debugger.Break();
+                            break;
                     }
                 }
             }

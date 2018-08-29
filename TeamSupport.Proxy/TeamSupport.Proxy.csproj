@@ -60,6 +60,7 @@
     <Compile Include="TasksProxy.cs" />
     <Compile Include="TicketRelationshipsProxy.cs" />
     <Compile Include="TicketsProxy.cs" />
+    <Compile Include="UsersProxy.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

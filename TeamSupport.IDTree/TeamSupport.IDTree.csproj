@@ -51,6 +51,7 @@
     <Compile Include="AssetNode.cs" />
     <Compile Include="AssetTicketNode.cs" />
     <Compile Include="AttachmentFile.cs" />
+    <Compile Include="TSDataTable.cs" />
     <Compile Include="TicketRelationshipNode.cs" />
     <Compile Include="UserNode.cs" />
     <Compile Include="UserTicketNode.cs" />

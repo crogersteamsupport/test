@@ -47,6 +47,11 @@ namespace TeamSupport.IDTree
             Verify();
         }
 
+        public ActionProxy ActionProxy()
+        {
+            return ExecuteQuery<ActionProxy>($"SELECT * FROM Actions WHERE ActionID={ActionID}").First();
+        }
+
         /// <summary> existing action attachment </summary>
         public ActionAttachmentNode ActionAttachment(int actionAttachmentID)
         {

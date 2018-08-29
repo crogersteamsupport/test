@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TeamSupport.Data;
 
 namespace TeamSupport.IDTree
 {
@@ -23,6 +24,11 @@ namespace TeamSupport.IDTree
             UserID = userID;
             int organizationID = Connection._db.ExecuteQuery<int>($"SELECT OrganizationID FROM Users WITH (NOLOCK) WHERE UserID={userID}").First();
             Organization = new OrganizationNode(connection, organizationID);
+        }
+
+        public UserProxy UserProxy()
+        {
+            return ExecuteQuery<UserProxy>($"SELECT * FROM Users WHERE UserID={UserID}").First();
         }
 
         public override void Verify()

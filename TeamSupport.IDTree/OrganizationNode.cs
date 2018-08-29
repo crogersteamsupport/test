@@ -26,7 +26,7 @@ namespace TeamSupport.IDTree
         public OrganizationNode(ConnectionContext connection, int organizationID) : base(connection)
         {
             OrganizationID = organizationID;
-            Verify();
+            //Verify();
         }
 
         public OrganizationNode Parent()

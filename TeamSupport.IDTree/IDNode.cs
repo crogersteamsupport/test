@@ -21,6 +21,15 @@ namespace TeamSupport.IDTree
             Connection = node.Connection;
         }
 
+        public IEnumerable<TResult> ExecuteQuery<TResult>(string query, params object[] parameters)
+        {
+            return Connection._db.ExecuteQuery<TResult>(query, parameters);
+        }
+        public int ExecuteCommand(string command, params object[] parameters)
+        {
+            return Connection._db.ExecuteCommand(command, parameters);
+        }
+
         public abstract void Verify();
 
         /// <summary> Verify helper </summary>

@@ -40,8 +40,19 @@ namespace TeamSupport.IDTree
         /// <summary> bottom up - existing action </summary>
         public TicketNode(ConnectionContext connection, int ticketID) : base(connection)
         {
+            Organization = new OrganizationNode(connection, connection.Organization.OrganizationID);
             TicketID = ticketID;
             Verify();
+        }
+
+        public TicketProxy TicketProxy()
+        {
+            return ExecuteQuery<TicketProxy>($"SELECT * FROM Tickets WHERE TicketID={TicketID}").First();
+        }
+
+        public ActionProxy[] ActionProxies()
+        {
+            return ExecuteQuery<ActionProxy>($"SELECT * FROM Actions WHERE TicketID={TicketID}").ToArray();
         }
 
         public override void Verify()
