@@ -33,7 +33,7 @@ namespace TeamSupport.DataAPI
         {
             // TODO - update ticket by Scot.. this one is just for ticket merge.
             string query = $"UPDATE Tickets WITH (ROWLOCK)" +
-                $" SET DateModified = '{DateTime.UtcNow}', ModifierId = {connection.Authentication.UserID}";
+                $" SET DateModified = '{DateTime.UtcNow}', ModifierId = {connection.UserID}";
                 connection._db.ExecuteCommand(query);
             DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, ticketModel.TicketID, "Updated Ticket");
         }
@@ -182,7 +182,7 @@ namespace TeamSupport.DataAPI
                 string query = $"DELETE FROM UserTickets Where TicketID={sourceTicket.TicketID} AND UserId = {contact}";
                 connection._db.ExecuteCommand(query);
                 query = $"INSERT INTO UserTickets (TicketID, UserID, DateCreated, CreatorID)" +
-                        $"SELECT {destinationTicket.TicketID}, {contact}, '{DateTime.UtcNow}', {connection.Authentication.UserID} " +
+                        $"SELECT {destinationTicket.TicketID}, {contact}, '{DateTime.UtcNow}', {connection.UserID} " +
                         $"WHERE NOT EXISTS(SELECT * FROM UserTickets WHERE TicketID ={destinationTicket.TicketID} and UserID ={contact})";
                 connection._db.ExecuteCommand(query);
             }
@@ -197,7 +197,7 @@ namespace TeamSupport.DataAPI
                 string query = $"DELETE FROM OrganizationTickets Where TicketID={sourceTicket.TicketID} AND OrganizationId = {customer}";
                 connection._db.ExecuteCommand(query);
                 query = $"INSERT INTO OrganizationTickets (TicketID, OrganizationID, DateCreated, CreatorID, DateModified, ModifierID)" +
-                        $"SELECT {destinationTicket.TicketID}, {customer}, '{DateTime.UtcNow}', {connection.Authentication.UserID}, '{DateTime.UtcNow}', {connection.Authentication.UserID}" +
+                        $"SELECT {destinationTicket.TicketID}, {customer}, '{DateTime.UtcNow}', {connection.UserID}, '{DateTime.UtcNow}', {connection.UserID}" +
                         $"WHERE NOT EXISTS(SELECT * FROM OrganizationTickets WHERE TicketID ={destinationTicket.TicketID} and OrganizationId ={customer})";
                 connection._db.ExecuteCommand(query);
             }
@@ -273,7 +273,7 @@ namespace TeamSupport.DataAPI
                 string query = $"DELETE FROM Subscriptions Where RefId={sourceTicket.TicketID} AND RefType = 17 and UserId = {subscription}";
                 connection._db.ExecuteCommand(query);
                 query = $"INSERT INTO Subscriptions (RefType, RefID, UserID, DateCreated, DateModified, CreatorID, ModifierID)" +
-                        $"SELECT 17, {destinationTicket.TicketID},{subscription}, '{DateTime.UtcNow}','{DateTime.UtcNow}', {connection.Authentication.UserID},  {connection.Authentication.UserID} " +
+                        $"SELECT 17, {destinationTicket.TicketID},{subscription}, '{DateTime.UtcNow}','{DateTime.UtcNow}', {connection.UserID},  {connection.UserID} " +
                         $"WHERE NOT EXISTS(SELECT * FROM Subscriptions WHERE reftype = 17 AND RefID = {destinationTicket.TicketID} AND UserID = {subscription})";
                 connection._db.ExecuteCommand(query);
             }

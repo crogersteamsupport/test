@@ -18,23 +18,27 @@ namespace TeamSupport.IDTree
     /// </summary>
     public class ConnectionContext : IDisposable
     {
-        const bool _isEnabled = false;
-        public static bool IsEnabled { get { return _isEnabled; } }
+        const bool _actionAttachments = false;
+        public static bool ActionAttachmentsEnabled { get { return _actionAttachments; } }
 
-        public AuthenticationModel Authentication { get; private set; }
+        AuthenticationModel _authentication;
         SqlConnection _connection;
         SqlTransaction _transaction;
         public DataContext _db { get; private set; }
+
+        // Login Organization
         public OrganizationModel Organization { get; private set; }
+        public int OrganizationID { get { return Organization.OrganizationID; } }
+
+        // Login User
         public UserModel User { get; private set; }
-        //public UserSession UserSession { get; private set; }
-        public int UserID {  get { return User.UserID; } }
+        public int UserID { get { return User.UserID; } }
 
         public ConnectionContext(bool useTransaction = false)
         {
             // SqlConnection
-            Authentication = new AuthenticationModel();
-            _connection = new SqlConnection(Authentication.ConnectionString);  // using
+            _authentication = new AuthenticationModel();
+            _connection = new SqlConnection(_authentication.ConnectionString);  // using
             _connection.Open(); // connection must be open to begin transaction
 
             // DataContext
@@ -48,7 +52,7 @@ namespace TeamSupport.IDTree
 
             // Create Logical Model! - note that OrganizationID and UserID come from Authentication
             Organization = new OrganizationModel(this);
-            User = new UserModel(Organization, Authentication.UserID);
+            User = new UserModel(this);
             //UserSession = new UserSession(Organization);
         }
 
@@ -57,7 +61,7 @@ namespace TeamSupport.IDTree
 
         public TicketModel Ticket(int ticketID) { return new TicketModel(Organization, ticketID); }
 
-        public bool CanEdit() { return Authentication.IsSystemAdmin || User.AllowUserToEditAnyAction(); }
+        public bool CanEdit() { return _authentication.IsSystemAdmin || User.AllowUserToEditAnyAction(); }
 
         public string AttachmentPath(int id)
         {

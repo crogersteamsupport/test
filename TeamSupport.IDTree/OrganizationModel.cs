@@ -19,14 +19,19 @@ namespace TeamSupport.IDTree
         public int OrganizationID { get; private set; }
 
         /// <summary> OrganizationID and UserID come from ConnectionContext.Authentication </summary>
-        public OrganizationModel(ConnectionContext connection) : this(connection, connection.Authentication.OrganizationID)
+        public OrganizationModel(ConnectionContext connection) : this(connection, connection.Organization.OrganizationID, false)
         {
         }
 
-        public OrganizationModel(ConnectionContext connection, int organizationID) : base(connection)
+        public OrganizationModel(ConnectionContext connection, int organizationID) : this(connection, organizationID, true)
+        {
+        }
+
+        private OrganizationModel(ConnectionContext connection, int organizationID, bool verify) : base(connection)
         {
             OrganizationID = organizationID;
-            //Verify();
+            if(verify)
+                Verify();
         }
 
         public OrganizationModel Parent()

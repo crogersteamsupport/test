@@ -54,8 +54,7 @@ namespace TeamSupport.DataAPI
                     {
                         TicketModel model = (TicketModel)idNode;
                         ActionProxy proxy = tProxy as ActionProxy;
-                        AuthenticationModel authentication = model.Connection.Authentication;
-                        Data.Action.Create(model.Connection._db, authentication.OrganizationID, authentication.UserID, model.TicketID, ref proxy);
+                        Data.Action.Create(model.Connection._db, model.Connection.OrganizationID, model.Connection.UserID, model.TicketID, ref proxy);
                     }
                     break;
                 case "ContactProxy":

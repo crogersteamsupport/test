@@ -12,11 +12,16 @@ namespace TeamSupport.IDTree
         public OrganizationModel Organization { get; private set; }
         public int UserID { get; private set; }
 
-        public UserModel(OrganizationModel organization, int userID) : base(organization)
+        public UserModel(ConnectionContext connection) : this(connection.Organization, connection.UserID, false)
+        {
+        }
+
+        private UserModel(OrganizationModel organization, int userID, bool verify) : base(organization)
         {
             Organization = organization;
             UserID = userID;
-            Verify();
+            if(verify)
+                Verify();
         }
 
         public UserModel(ConnectionContext connection, int userID) : base(connection)
@@ -26,6 +31,7 @@ namespace TeamSupport.IDTree
             Organization = new OrganizationModel(connection, organizationID);
         }
 
+        // slow :(
         public UserProxy UserProxy()
         {
             return ExecuteQuery<UserProxy>($"SELECT * FROM Users WHERE UserID={UserID}").First();
