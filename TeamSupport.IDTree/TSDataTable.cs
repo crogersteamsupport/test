@@ -35,7 +35,11 @@ namespace TeamSupport.IDTree
                 CommandType = CommandType.Text,
             };
             for (int i = 0; i < args.Length; ++i)
-                _command.Parameters.AddWithValue($"t{i}", args[0]);
+            {
+                SqlParameter parameter = new SqlParameter($"@t{i}", _typeMap[args[i].GetType()]);
+                parameter.Value = args[i];
+                _command.Parameters.Add(parameter);
+            }
 
             _table = new DataTable();
             try
@@ -76,6 +80,48 @@ namespace TeamSupport.IDTree
                 _connection.Close();
                 _connection.Dispose();
             }
+        }
+
+        static Dictionary<Type, DbType> _typeMap;
+
+        static TSDataTable()
+        {
+            _typeMap = new Dictionary<Type, DbType>();
+            _typeMap[typeof(byte)] = DbType.Byte;
+            _typeMap[typeof(sbyte)] = DbType.SByte;
+            _typeMap[typeof(short)] = DbType.Int16;
+            _typeMap[typeof(ushort)] = DbType.UInt16;
+            _typeMap[typeof(int)] = DbType.Int32;
+            _typeMap[typeof(uint)] = DbType.UInt32;
+            _typeMap[typeof(long)] = DbType.Int64;
+            _typeMap[typeof(ulong)] = DbType.UInt64;
+            _typeMap[typeof(float)] = DbType.Single;
+            _typeMap[typeof(double)] = DbType.Double;
+            _typeMap[typeof(decimal)] = DbType.Decimal;
+            _typeMap[typeof(bool)] = DbType.Boolean;
+            _typeMap[typeof(string)] = DbType.String;
+            _typeMap[typeof(char)] = DbType.StringFixedLength;
+            _typeMap[typeof(Guid)] = DbType.Guid;
+            _typeMap[typeof(DateTime)] = DbType.DateTime;
+            _typeMap[typeof(DateTimeOffset)] = DbType.DateTimeOffset;
+            _typeMap[typeof(byte[])] = DbType.Binary;
+            _typeMap[typeof(byte?)] = DbType.Byte;
+            _typeMap[typeof(sbyte?)] = DbType.SByte;
+            _typeMap[typeof(short?)] = DbType.Int16;
+            _typeMap[typeof(ushort?)] = DbType.UInt16;
+            _typeMap[typeof(int?)] = DbType.Int32;
+            _typeMap[typeof(uint?)] = DbType.UInt32;
+            _typeMap[typeof(long?)] = DbType.Int64;
+            _typeMap[typeof(ulong?)] = DbType.UInt64;
+            _typeMap[typeof(float?)] = DbType.Single;
+            _typeMap[typeof(double?)] = DbType.Double;
+            _typeMap[typeof(decimal?)] = DbType.Decimal;
+            _typeMap[typeof(bool?)] = DbType.Boolean;
+            _typeMap[typeof(char?)] = DbType.StringFixedLength;
+            _typeMap[typeof(Guid?)] = DbType.Guid;
+            _typeMap[typeof(DateTime?)] = DbType.DateTime;
+            _typeMap[typeof(DateTimeOffset?)] = DbType.DateTimeOffset;
+            _typeMap[typeof(System.Data.Linq.Binary)] = DbType.Binary;
         }
     }
 

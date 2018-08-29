@@ -3526,8 +3526,7 @@ AND
             string description = "Merged '" + ticket.TicketNumber + "' Action Attachments";
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
         }
-
-
+        
         public void LoadFirstJiraSynced(int organizationID)
         {
             using (SqlCommand command = new SqlCommand())

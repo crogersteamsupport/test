@@ -21,7 +21,7 @@ namespace TeamSupport.IDTree
         const bool _actionAttachments = false;
         public static bool ActionAttachmentsEnabled { get { return _actionAttachments; } }
 
-        AuthenticationModel _authentication;
+        public AuthenticationModel Authentication { get; private set; }
         SqlConnection _connection;
         SqlTransaction _transaction;
         public DataContext _db { get; private set; }
@@ -37,8 +37,8 @@ namespace TeamSupport.IDTree
         public ConnectionContext(bool useTransaction = false)
         {
             // SqlConnection
-            _authentication = new AuthenticationModel();
-            _connection = new SqlConnection(_authentication.ConnectionString);  // using
+            Authentication = new AuthenticationModel();
+            _connection = new SqlConnection(Authentication.ConnectionString);  // using
             _connection.Open(); // connection must be open to begin transaction
 
             // DataContext
@@ -61,7 +61,7 @@ namespace TeamSupport.IDTree
 
         public TicketModel Ticket(int ticketID) { return new TicketModel(Organization, ticketID); }
 
-        public bool CanEdit() { return _authentication.IsSystemAdmin || User.AllowUserToEditAnyAction(); }
+        public bool CanEdit() { return Authentication.IsSystemAdmin || User.AllowUserToEditAnyAction(); }
 
         public string AttachmentPath(int id)
         {

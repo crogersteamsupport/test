@@ -125,8 +125,7 @@ namespace TeamSupport.ModelAPI
             }
             catch (Exception ex)
             {
-                // TODO - tell user we failed to read
-                DataAPI.DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.None, id, "choke", ex);
+                int logid = DataAPI.DataAPI.LogException(new Proxy.AuthenticationModel(), ex, "Ticket Merge Exception:" + ex.Source);
             }
             return t;
         }
@@ -222,6 +221,7 @@ namespace TeamSupport.ModelAPI
         #region Tickets
         public static string MergeTickets(int destinationTicketID, int sourceTicketID)
         {
+
             try
             {
                 using (ConnectionContext connection = new ConnectionContext(true))    // use transaction
@@ -236,17 +236,15 @@ namespace TeamSupport.ModelAPI
                     catch (Exception ex)
                     {
                         connection.Rollback();
-                        DataAPI.DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Attachments, destinationTicketID, $"failed to merge {destinationTicketID} <= {sourceTicketID}", ex);
-                        //TODO : Work on the messages
-                        return "Failed to merge";
+                        int logid = DataAPI.DataAPI.LogException(connection.Authentication, ex, "Ticket Merge Exception:" + ex.Source);
+                        return $"Error merging tickets. Exception #{logid}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.";
                     }
                 }
             }
             catch (Exception ex)
             {
-                DataAPI.DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Attachments, destinationTicketID, $"failed to merge {destinationTicketID} <= {sourceTicketID}", ex);
-                //TODO : Work on the messages
-                return "Failed to merge";
+                int logid = DataAPI.DataAPI.LogException(new Proxy.AuthenticationModel(), ex, "Ticket Merge Exception:" + ex.Source);
+                return $"Error merging tickets. Exception #{logid}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.";
             }
         }
         #endregion

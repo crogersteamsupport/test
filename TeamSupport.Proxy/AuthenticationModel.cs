@@ -19,8 +19,8 @@ namespace TeamSupport.Proxy
         public int UserID { get { return int.Parse(_userData[0]); } }
         public int OrganizationID { get { return int.Parse(_userData[1]); } }
         public bool IsBackdoor { get { return (_userData[2] == "1"); } }
-        public bool IsSystemAdmin { get { return (_userData[4] == "1"); } }
         public string SessionID { get { return _userData[3]; } }
+        public bool IsSystemAdmin { get { return (_userData[4] == "1"); } }
         public string ConnectionString { get; private set; }
 
         public AuthenticationModel()

@@ -33,8 +33,8 @@ namespace TeamSupport.DataAPI
         {
             // TODO - update ticket by Scot.. this one is just for ticket merge.
             string query = $"UPDATE Tickets WITH (ROWLOCK)" +
-                $" SET DateModified = '{DateTime.UtcNow}', ModifierId = {connection.UserID}";
-                connection._db.ExecuteCommand(query);
+                $" SET DateModified = '{DateTime.UtcNow}', ModifierId = {connection.UserID} Where TicketID = {ticketModel.TicketID}";
+            connection._db.ExecuteCommand(query);
             DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, ticketModel.TicketID, "Updated Ticket");
         }
 
@@ -148,21 +148,27 @@ namespace TeamSupport.DataAPI
         #endregion
         #region Merge updates
 
+        /// <summary>
+        /// Merge of assets. Table AssetTickets 
+        /// Delete oldticket record and insert one by one if it does not exist on new ticket.
+        /// </summary>        
         public static void MergeAssets(ConnectionContext connection, int[] assets, TicketModel sourceTicket, TicketModel destinationTicket)
         {
             string query = "";
             foreach (int asset in assets)
             {
-                query = $"UPDATE AssetTickets WITH(ROWLOCK) SET TicketID={destinationTicket.TicketID} WHERE AssetId = {asset} AND TicketId ={sourceTicket.TicketID}" +
-                   $" AND NOT EXISTS (Select AssetTickets WITH (NOLOCK) WHERE AssetId = {asset} AND TicketId ={sourceTicket.TicketID})";
+                query = $"DELETE FROM AssetTickets WITH (ROWLOCK)  WHERE TicketID ={sourceTicket.TicketID} and AssetID = {asset}  ";
+                connection._db.ExecuteCommand(query);
+                query = $"INSERT INTO AssetTickets (TicketID, AssetID, DateCreated, CreatorID)" +
+                        $"SELECT {destinationTicket.TicketID}, {asset}, '{DateTime.UtcNow}', {connection.UserID} " +
+                        $"WHERE NOT EXISTS(Select * FROM AssetTickets WITH (NOLOCK) WHERE AssetId = {asset} AND TicketId = {destinationTicket.TicketID})";
+
                 connection._db.ExecuteCommand(query);
             }
-            //cleanup after inserts?
-            query = $"DELETE FROM AssetTickets WITH (ROWLOCK)  WHERE TicketID ={sourceTicket.TicketID} ";
-            connection._db.ExecuteCommand(query);
 
             DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Assets");
         }
+
 
         public static void MergeChildren(ConnectionContext connection, int[] children, TicketModel sourceTicket, TicketModel destinationTicket)
         {
@@ -175,6 +181,10 @@ namespace TeamSupport.DataAPI
             DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' children tickets");
         }
 
+        /// <summary>
+        /// Merge of Contacts. Table UserTickets
+        /// Delete oldtickets records and then insert one by one if relationship does not exist on new ticket.
+        /// </summary>
         public static void MergeContacts(ConnectionContext connection, int[] contacts, TicketModel sourceTicket, TicketModel destinationTicket)
         {
             foreach (int contact in contacts)
@@ -190,6 +200,11 @@ namespace TeamSupport.DataAPI
             DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Contacts");
         }
 
+        /// <summary>
+        /// Merge Customers. Table OrganizationTickets
+        /// Delete oldtickets records and then insert one by one if relationship does not exist on new ticket.
+        /// </summary>
+
         public static void MergeCustomers(ConnectionContext connection, int[] customers, TicketModel sourceTicket, TicketModel destinationTicket)
         {
             foreach (int customer in customers)
@@ -204,6 +219,14 @@ namespace TeamSupport.DataAPI
             DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Customers");
         }
 
+        /// <summary>
+        /// Merge of queueue users. Table TicketQueue
+        /// Loop through the userids that need to be modified.
+        /// Get the max position of queue with the new ticketid.
+        /// Update the ticketqueue only if relationship does not exist.
+        /// Cleanup after possible updates.
+        /// </summary>
+
         public static void MergeQueuedTickets(ConnectionContext connection, int[] queued, TicketModel sourceTicket, TicketModel destinationTicket)
         {
             string query;
@@ -212,10 +235,12 @@ namespace TeamSupport.DataAPI
                 query = $"SELECT MAX(Position) FROM TicketQueue WHERE UserID = {queue}";
                 int position = connection._db.ExecuteQuery<int>(query).FirstOrDefault();
 
-                query = $"Update TicketQueue WITH(ROWLOCK) SET TicketID = {destinationTicket.TicketID}, Position = {position + 1} WHERE Userid= {queue}"; ;
+                query = $"Update TicketQueue WITH(ROWLOCK) SET TicketID = {destinationTicket.TicketID}, Position = {position + 1} WHERE Userid= {queue}" +
+                        $" AND NOT EXISTS(SELECT * FROM TicketQueue WHERE TicketID ={destinationTicket.TicketID} and UserId ={queue})";
+
                 connection._db.ExecuteCommand(query);
             }
-            //cleanup after inserts?
+            //cleanup after inserts
             query = $"DELETE FROM TicketQueue WITH (ROWLOCK)  WHERE TicketID ={sourceTicket.TicketID} ";
             connection._db.ExecuteCommand(query);
 
@@ -241,7 +266,12 @@ namespace TeamSupport.DataAPI
         {
             foreach (int task in tasks)
             {
-                string query = $" UPDATE TaskAssociations WITH(ROWLOCK) SET RefID ={destinationTicket.TicketID} WHERE(TaskId = {task})";
+
+                string query = $"DELETE FROM TaskAssociations WITH (ROWLOCK)  WHERE RefId ={sourceTicket.TicketID} and TaskId = {task}  and RefType = 17 ";
+                connection._db.ExecuteCommand(query);
+                query = $"INSERT INTO TaskAssociations (TaskId, RefID, RefType, CreatorID, DateCreated) " +
+                    $"SELECT {task},{destinationTicket.TicketID}, 17, {connection.UserID}, '{DateTime.UtcNow}' " +
+                    $"WHERE NOT EXISTS(Select * FROM TaskAssociations WITH (NOLOCK) WHERE TaskId = {task} AND RefId = {destinationTicket.TicketID} and RefType = 17)";
                 connection._db.ExecuteCommand(query);
             }
             DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Tasks");
@@ -254,12 +284,12 @@ namespace TeamSupport.DataAPI
             foreach (int tag in tags)
             {
                 query = $" UPDATE TagLinks WITH(ROWLOCK) SET RefID ={destinationTicket.TicketID} WHERE(TagID = {tag} AND RefID = {sourceTicket.TicketID} AND reftype = 17)" +
-                   $"AND NOT EXISTS (SELECT * FROM TagLinks WITH (NOLOCK) WHERE RefID={destinationTicket.TicketID} and TagID = {tag} and Refype = 17)  ";
+                   $"AND NOT EXISTS (SELECT * FROM TagLinks WITH (NOLOCK) WHERE RefID={destinationTicket.TicketID} and TagID = {tag} and RefType = 17)  ";
                 connection._db.ExecuteCommand(query);
             }
 
             //Cleanup any tags left 
-            query = $"DELETE FROM TagLinks WITH (ROWLOCK) WHERE RefID={sourceTicket.TicketID} and Refype = 17";
+            query = $"DELETE FROM TagLinks WITH (ROWLOCK) WHERE RefID={sourceTicket.TicketID} and RefType = 17";
             connection._db.ExecuteCommand(query);
 
             DataAPI.LogMessage(ActionLogType.Update, ReferenceType.Tickets, destinationTicket.TicketID, "Merged '" + sourceTicket.TicketNumber + "' Tags");
