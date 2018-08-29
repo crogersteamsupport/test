@@ -192,16 +192,16 @@ namespace TeamSupport.WebUtils
       return Users.GetUser(loginUser, UserID);
     }
 
-	public static List<string> GetUserGroups()
+	public static List<int> GetUserGroups()
     {
-		List<string> groups = new List<string>();
+		List<int> groups = new List<int>();
 
 		using (SqlConnection connection = new SqlConnection(LoginUser.Anonymous.ConnectionString))
 		{
 			connection.Open();
 			SqlCommand command = new SqlCommand();
 			command.Connection = connection;
-			command.CommandText = "SELECT Name FROM GroupUsers JOIN Groups ON GroupUsers.GroupID = Groups.GroupID WHERE UserID = @UserID";
+			command.CommandText = "SELECT GroupID FROM GroupUsers WITH(NOLOCK) WHERE UserID = @UserID";
 			command.Parameters.AddWithValue("UserID", TSAuthentication.UserID);
 			SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
 			DataTable groupUsersTable = new DataTable();
@@ -209,7 +209,7 @@ namespace TeamSupport.WebUtils
 
 			for (int i = 0; i < groupUsersTable.Rows.Count; i++)
             {
-				groups.Add(groupUsersTable.Rows[i]["Name"].ToString());
+				groups.Add((int)groupUsersTable.Rows[i]["GroupID"]);
             }
 
 			reader.Close();
