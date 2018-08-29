@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace TeamSupport.IDTree
 {
-    public class SubscriptionNode : IDNode
+    public class SubscriptionModel : IDNode
     {
-        public TicketNode Ticket { get; private set; }
-        public UserNode User { get; private set; }
+        public TicketModel Ticket { get; private set; }
+        public UserModel User { get; private set; }
 
 
         /// <summary> top down - existing action </summary>
-        public SubscriptionNode(TicketNode ticket, UserNode user) : this(ticket, user, true)
+        public SubscriptionModel(TicketModel ticket, UserModel user) : this(ticket, user, true)
         {
         }
 
-        private SubscriptionNode(TicketNode ticket, UserNode user, bool verify) : base(ticket)
+        private SubscriptionModel(TicketModel ticket, UserModel user, bool verify) : base(ticket)
         {
             Ticket = ticket;
             User = user;
@@ -25,15 +25,15 @@ namespace TeamSupport.IDTree
                 Verify();
         }
 
-        public static SubscriptionNode[] GetSubscriptions(TicketNode ticket)
+        public static SubscriptionModel[] GetSubscriptions(TicketModel ticket)
         {
             //query = $"SELECT Subscriptions.userid FROM Subscriptions WITH (NOLOCK) " +
             //        $"JOIN Users WITH (NOLOCK) on users.userid = Subscriptions.userid " +
             //        $"WHERE Reftype = 17 and Refid = {ticket.TicketID} and MarkDeleted = 0";
             int[] subscriptionUserIDs = IDReader.Read(TicketChild.Subscriptions, ticket);
-            SubscriptionNode[] subscriptions = new SubscriptionNode[subscriptionUserIDs.Length];
+            SubscriptionModel[] subscriptions = new SubscriptionModel[subscriptionUserIDs.Length];
             for (int i = 0; i < subscriptionUserIDs.Length; ++i)
-                subscriptions[i] = new SubscriptionNode(ticket, new UserNode(ticket.Connection, subscriptionUserIDs[i]), false);
+                subscriptions[i] = new SubscriptionModel(ticket, new UserModel(ticket.Connection, subscriptionUserIDs[i]), false);
             return subscriptions;
         }
 

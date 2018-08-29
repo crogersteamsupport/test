@@ -45,7 +45,7 @@ namespace TeamSupport.IDTree
     /// </summary>
     public static class IDReader
     {
-        public static int[] Read(TicketChild childID, TicketNode ticket)
+        public static int[] Read(TicketChild childID, TicketModel ticket)
         {
             string query = String.Empty;
             switch (childID)
@@ -82,7 +82,7 @@ namespace TeamSupport.IDTree
             return ticket.Connection._db.ExecuteQuery<int>(query).ToArray();
         }
 
-        public static int[] Read(TicketAssociation childID, TicketNode destinationTicket, TicketNode sourceTicket)
+        public static int[] Read(TicketAssociation childID, TicketModel destinationTicket, TicketModel sourceTicket)
         {
             if (destinationTicket.Connection != sourceTicket.Connection)
                 throw new Exception("tickets must come from the same connection");

@@ -14,15 +14,15 @@ using System.Web.Security;
 namespace TeamSupport.IDTree
 {
     /// <summary> Action Attachments </summary>
-    public class ActionAttachmentNode : IDNode
+    public class ActionAttachmentModel : IDNode
     {
-        public ActionNode Action { get; private set; }
+        public ActionModel Action { get; private set; }
         public int ActionAttachmentID { get; private set; }
 
         public AttachmentFile File { get; private set; }
 
         /// <summary> top down - Load existing action attachment /// </summary>
-        public ActionAttachmentNode(ActionNode action, int actionAttachmentID) : base(action)
+        public ActionAttachmentModel(ActionModel action, int actionAttachmentID) : base(action)
         {
             Action = action;
             ActionAttachmentID = actionAttachmentID;
@@ -30,21 +30,21 @@ namespace TeamSupport.IDTree
         }
 
         /// <summary> bottom up - Load existing action attachment /// </summary>
-        public ActionAttachmentNode(ConnectionContext connection, int actionAttachmentID) : base(connection)
+        public ActionAttachmentModel(ConnectionContext connection, int actionAttachmentID) : base(connection)
         {
             ActionAttachmentID = actionAttachmentID;
             int actionID = GetActionID(connection._db, ActionAttachmentID);
-            Action = new ActionNode(Connection, actionID);
+            Action = new ActionModel(Connection, actionID);
 
-            TicketNode ticket = Action.Ticket;
-            OrganizationNode organization = ticket.Organization;
+            TicketModel ticket = Action.Ticket;
+            OrganizationModel organization = ticket.Organization;
             Verify();
         }
 
         public override void Verify()
         {
-            TicketNode ticket = Action.Ticket;
-            OrganizationNode organization = ticket.Organization;
+            TicketModel ticket = Action.Ticket;
+            OrganizationModel organization = ticket.Organization;
             Verify($"SELECT AttachmentID FROM Attachments WITH (NOLOCK) " +
                 $"WHERE ActionAttachmentID={ActionAttachmentID} AND OrganizationID={organization.OrganizationID} AND RefID={Action.ActionID} AND RefType=0");
         }

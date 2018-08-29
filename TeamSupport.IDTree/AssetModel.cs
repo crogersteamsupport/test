@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace TeamSupport.IDTree
 {
-    public class AssetNode : IDNode
+    public class AssetModel : IDNode
     {
-        public OrganizationNode Organization { get; private set; }
+        public OrganizationModel Organization { get; private set; }
         public int AssetID { get; private set; }
-        public AssetNode(OrganizationNode organization, int assetID) : base(organization)
+        public AssetModel(OrganizationModel organization, int assetID) : base(organization)
         {
             Organization = organization;
             AssetID = assetID;

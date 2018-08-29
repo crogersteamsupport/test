@@ -14,11 +14,11 @@ namespace TeamSupport.ModelAPI
     class TicketMerge
     {
         public ConnectionContext Connection { get; private set; }
-        public TicketNode Source { get; private set; } // winning
-        public TicketNode Destination { get; private set; }    // losing
+        public TicketModel Source { get; private set; } // winning
+        public TicketModel Destination { get; private set; }    // losing
 
         /// <summary> On a verified connection merge verified ticket to verified ticket </summary>
-        public TicketMerge(ConnectionContext connection, TicketNode destination, TicketNode source)
+        public TicketMerge(ConnectionContext connection, TicketModel destination, TicketModel source)
         {
             Destination = destination;
             Source = source;
@@ -50,8 +50,8 @@ namespace TeamSupport.ModelAPI
 
         public void MergeActions()
         {
-            ActionNode[] actions = Source.Actions();
-            foreach (ActionNode action in actions)
+            ActionModel[] actions = Source.Actions();
+            foreach (ActionModel action in actions)
                 DataAPI.DataAPI.Update(action, new UpdateArguments("TicketID", Destination.TicketID));
         }
 
@@ -73,23 +73,23 @@ namespace TeamSupport.ModelAPI
         void MergeRelationships()
         {
             TicketRelationshipProxy[] proxies = DataAPI.DataAPI.Read<TicketRelationshipProxy[]>(Source);
-            TicketRelationshipNode idNode;
+            TicketRelationshipModel idNode;
             foreach (TicketRelationshipProxy proxy in proxies)
             {
                 switch(GetState(proxy))
                 {
                     case TicketRelationship.SourceIsDestination:
-                        idNode = new TicketRelationshipNode(Source, Destination, proxy.TicketRelationshipID);
+                        idNode = new TicketRelationshipModel(Source, Destination, proxy.TicketRelationshipID);
                         DataAPI.DataAPI.Delete(idNode);   // circular reference
                         break;
                     case TicketRelationship.SourceTicket2:
-                        TicketNode ticket2 = new TicketNode(Source.Connection, proxy.Ticket2ID);
-                        idNode = new TicketRelationshipNode(Source, ticket2, proxy.TicketRelationshipID);
+                        TicketModel ticket2 = new TicketModel(Source.Connection, proxy.Ticket2ID);
+                        idNode = new TicketRelationshipModel(Source, ticket2, proxy.TicketRelationshipID);
                         DataAPI.DataAPI.Update(idNode, new UpdateArguments("Ticket1ID", Destination.TicketID));
                         break;
                     case TicketRelationship.Ticket1Source:
-                        TicketNode ticket1 = new TicketNode(Source.Connection, proxy.Ticket1ID);
-                        idNode = new TicketRelationshipNode(ticket1, Source, proxy.TicketRelationshipID);
+                        TicketModel ticket1 = new TicketModel(Source.Connection, proxy.Ticket1ID);
+                        idNode = new TicketRelationshipModel(ticket1, Source, proxy.TicketRelationshipID);
                         DataAPI.DataAPI.Update(idNode, new UpdateArguments("Ticket2ID", Destination.TicketID));
                         break;
                 }
@@ -100,20 +100,20 @@ namespace TeamSupport.ModelAPI
         {
             //TODO: Think about when parentid = ticketid
             UpdateArguments args = new UpdateArguments("ParentID", Destination.TicketID);
-            TicketNode[] children = Source.ChildTickets();
-            foreach (TicketNode child in children)
+            TicketModel[] children = Source.ChildTickets();
+            foreach (TicketModel child in children)
                 DataAPI.DataAPI.Update(child, args);
         }
 
         void MergeAssets()
         {
-            AssetTicketNode[] assetTickets = Source.AssetTickets();
+            AssetTicketModel[] assetTickets = Source.AssetTickets();
             if (assetTickets.Length == 0)
                 return;
 
-            AssetTicketNode[] destinationAssetTickets = Destination.AssetTickets();
+            AssetTicketModel[] destinationAssetTickets = Destination.AssetTickets();
             UpdateArguments args = new UpdateArguments("TicketID", Destination.TicketID);
-            foreach (AssetTicketNode assetTicket in assetTickets)
+            foreach (AssetTicketModel assetTicket in assetTickets)
             {
                 // WHERE NOT EXISTS (Select AssetTickets WITH (NOLOCK) WHERE AssetId = {asset} AND TicketId ={sourceTicket.TicketID})
                 if (!destinationAssetTickets.Where(a => a.Asset.AssetID == assetTicket.Asset.AssetID).Any())
@@ -125,12 +125,12 @@ namespace TeamSupport.ModelAPI
 
         void MergeCustomers()
         {
-            OrganizationTicketNode[] customers = Source.OrganizationTickets();
+            OrganizationTicketModel[] customers = Source.OrganizationTickets();
             if (customers.Length == 0)
                 return;
 
-            OrganizationTicketNode[] destinationCustomers = Destination.OrganizationTickets();
-            foreach (OrganizationTicketNode customer in customers)
+            OrganizationTicketModel[] destinationCustomers = Destination.OrganizationTickets();
+            foreach (OrganizationTicketModel customer in customers)
             {
                 // WHERE NOT EXISTS(SELECT * FROM OrganizationTickets WHERE TicketID ={model.TicketID} and OrganizationId ={proxy.OrganizationID})
                 if (!destinationCustomers.Where(c => c.Organization.OrganizationID == customer.Organization.OrganizationID).Any())
@@ -145,12 +145,12 @@ namespace TeamSupport.ModelAPI
 
         void MergeContacts()
         {
-            UserTicketNode[] contacts = Source.UserTickets();
+            UserTicketModel[] contacts = Source.UserTickets();
             if (contacts.Length == 0)
                 return;
 
-            UserTicketNode[] destinationContacts = Destination.UserTickets();
-            foreach (UserTicketNode contact in contacts)
+            UserTicketModel[] destinationContacts = Destination.UserTickets();
+            foreach (UserTicketModel contact in contacts)
             {
                 // WHERE NOT EXISTS(SELECT * FROM UserTickets WHERE TicketID ={model.TicketID} and UserID ={proxy.UserID})
                 if (!destinationContacts.Where(c => c.User.UserID == contact.User.UserID).Any())
@@ -189,12 +189,12 @@ namespace TeamSupport.ModelAPI
         /// <summary> Subscriptions </summary>
         void MergeSubscriptions()
         {
-            SubscriptionNode[] subscriptions = Source.Subscriptions();
+            SubscriptionModel[] subscriptions = Source.Subscriptions();
             if (subscriptions.Length == 0)
                 return;
 
-            SubscriptionNode[] destinationSubscriptions = Destination.Subscriptions();
-            foreach (SubscriptionNode subscriptionModel in subscriptions)
+            SubscriptionModel[] destinationSubscriptions = Destination.Subscriptions();
+            foreach (SubscriptionModel subscriptionModel in subscriptions)
             {
                 // WHERE NOT EXISTS(SELECT * FROM Subscriptions WHERE reftype = 17 AND RefID = {model.TicketID} AND UserID = {proxy.UserID})
                 if (!destinationSubscriptions.Where(s => s.User.UserID == subscriptionModel.User.UserID).Any())
@@ -214,17 +214,17 @@ namespace TeamSupport.ModelAPI
 
         void MergeReminders()
         {
-            TicketReminderNode[] reminders = Source.Reminders();
+            TicketReminderModel[] reminders = Source.Reminders();
             UpdateArguments args = new UpdateArguments("RefID", Destination.TicketID);
-            foreach (TicketReminderNode reminderModel in reminders)
+            foreach (TicketReminderModel reminderModel in reminders)
                 DataAPI.DataAPI.Update(Destination, args);
         }
 
         void MergeTaskAssociations()
         {
-            TaskAssociationNode[] taskAssociations = Source.TaskAssociations();
+            TaskAssociationModel[] taskAssociations = Source.TaskAssociations();
             UpdateArguments args = new UpdateArguments("RefID", Destination.TicketID);
-            foreach (TaskAssociationNode task in taskAssociations)
+            foreach (TaskAssociationModel task in taskAssociations)
                 DataAPI.DataAPI.Update(Destination, args);
         }
 

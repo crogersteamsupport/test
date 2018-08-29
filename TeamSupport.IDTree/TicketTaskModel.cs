@@ -8,10 +8,10 @@ namespace TeamSupport.IDTree
 {
     public class TaskNode : IDNode
     {
-        public OrganizationNode Organization { get; private set; }
+        public OrganizationModel Organization { get; private set; }
         public int TaskID { get; private set; }
 
-        public TaskNode(OrganizationNode organization, int taskID) : base(organization)
+        public TaskNode(OrganizationModel organization, int taskID) : base(organization)
         {
             Organization = organization;
             TaskID = taskID;

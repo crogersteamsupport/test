@@ -13,9 +13,9 @@ namespace TeamSupport.IDTree
     /// <summary>
     /// Wrapper for valid TicketID
     /// </summary>
-    public class TicketNode : IDNode
+    public class TicketModel : IDNode
     {
-        public OrganizationNode Organization { get; private set; }
+        public OrganizationModel Organization { get; private set; }
         public int TicketID { get; private set; }
 
         int? _ticketNumber;
@@ -30,7 +30,7 @@ namespace TeamSupport.IDTree
         }
 
         /// <summary> top down - existing ticket </summary>
-        public TicketNode(OrganizationNode organization, int ticketID) : base(organization)
+        public TicketModel(OrganizationModel organization, int ticketID) : base(organization)
         {
             Organization = organization;   // user session on customer
             TicketID = ticketID;
@@ -38,9 +38,9 @@ namespace TeamSupport.IDTree
         }
 
         /// <summary> bottom up - existing action </summary>
-        public TicketNode(ConnectionContext connection, int ticketID) : base(connection)
+        public TicketModel(ConnectionContext connection, int ticketID) : base(connection)
         {
-            Organization = new OrganizationNode(connection, connection.Organization.OrganizationID);
+            Organization = new OrganizationModel(connection, connection.Organization.OrganizationID);
             TicketID = ticketID;
             Verify();
         }
@@ -61,25 +61,25 @@ namespace TeamSupport.IDTree
         }
 
         /// <summary> Existing Data.Action </summary>
-        public ActionNode Action(int actionID)
+        public ActionModel Action(int actionID)
         {
-            return new ActionNode(this, actionID);
+            return new ActionModel(this, actionID);
         }
 
-        public ActionNode[] Actions() { return ActionNode.GetActions(this); }
-        public AssetTicketNode[] AssetTickets() { return AssetTicketNode.GetAssetTickets(this); }
-        public UserTicketNode[] UserTickets() { return UserTicketNode.GetUserTickets(this); }
-        public OrganizationTicketNode[] OrganizationTickets() { return OrganizationTicketNode.GetOrganizationTickets(this); }
-        public TicketReminderNode[] Reminders() { return TicketReminderNode.GetTicketReminders(this); }
-        public SubscriptionNode[] Subscriptions() { return SubscriptionNode.GetSubscriptions(this); }
-        public TaskAssociationNode[] TaskAssociations() { return TaskAssociationNode.GetTaskAssociations(this); }
+        public ActionModel[] Actions() { return ActionModel.GetActions(this); }
+        public AssetTicketModel[] AssetTickets() { return AssetTicketModel.GetAssetTickets(this); }
+        public UserTicketModel[] UserTickets() { return UserTicketModel.GetUserTickets(this); }
+        public OrganizationTicketModel[] OrganizationTickets() { return OrganizationTicketModel.GetOrganizationTickets(this); }
+        public TicketReminderModel[] Reminders() { return TicketReminderModel.GetTicketReminders(this); }
+        public SubscriptionModel[] Subscriptions() { return SubscriptionModel.GetSubscriptions(this); }
+        public TaskAssociationModel[] TaskAssociations() { return TaskAssociationModel.GetTaskAssociations(this); }
 
-        public TicketNode[] ChildTickets()
+        public TicketModel[] ChildTickets()
         {
             int[] ticketIDs = IDReader.Read(TicketChild.Children, this);
-            TicketNode[] childTickets = new TicketNode[ticketIDs.Length];
+            TicketModel[] childTickets = new TicketModel[ticketIDs.Length];
             for (int i = 0; i < ticketIDs.Length; ++i)
-                childTickets[i] = new TicketNode(Organization, ticketIDs[i]);
+                childTickets[i] = new TicketModel(Organization, ticketIDs[i]);
             return childTickets;
         }
 

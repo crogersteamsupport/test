@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace TeamSupport.IDTree
 {
-    public class TaskAssociationNode : IDNode
+    public class TaskAssociationModel : IDNode
     {
-        public TicketNode Ticket { get; private set; }
+        public TicketModel Ticket { get; private set; }
         public TaskNode Task { get; private set; }
 
-        public TaskAssociationNode(TicketNode ticket, TaskNode taskID) : this(ticket, taskID, true)
+        public TaskAssociationModel(TicketModel ticket, TaskNode taskID) : this(ticket, taskID, true)
         {
         }
 
-        private TaskAssociationNode(TicketNode ticket, TaskNode task, bool verify) : base(ticket)
+        private TaskAssociationModel(TicketModel ticket, TaskNode task, bool verify) : base(ticket)
         {
             Ticket = ticket;
             Task = task;
@@ -23,12 +23,12 @@ namespace TeamSupport.IDTree
                 Verify();
         }
 
-        public static TaskAssociationNode[] GetTaskAssociations(TicketNode ticket)
+        public static TaskAssociationModel[] GetTaskAssociations(TicketModel ticket)
         {
             int[] taskAssociationIDs = IDReader.Read(TicketChild.TaskAssociations, ticket);
-            TaskAssociationNode[] taskAssociationModels = new TaskAssociationNode[taskAssociationIDs.Length];
+            TaskAssociationModel[] taskAssociationModels = new TaskAssociationModel[taskAssociationIDs.Length];
             for (int i = 0; i < taskAssociationIDs.Length; ++i)
-                taskAssociationModels[i] = new TaskAssociationNode(ticket, new TaskNode(ticket.Organization, taskAssociationIDs[i]), false);
+                taskAssociationModels[i] = new TaskAssociationModel(ticket, new TaskNode(ticket.Organization, taskAssociationIDs[i]), false);
             return taskAssociationModels;
         }
 

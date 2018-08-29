@@ -34,7 +34,7 @@ namespace TeamSupport.ModelAPI
                             break;
                         case "AttachmentProxy":
                             AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
-                            ActionNode actionModel = new ActionNode(connection, ((ActionAttachmentProxy)attachmentProxy).ActionID);
+                            ActionModel actionModel = new ActionModel(connection, ((ActionAttachmentProxy)attachmentProxy).ActionID);
                             DataAPI.DataAPI.Create(actionModel, attachmentProxy);
                             break;
                     }
@@ -85,20 +85,20 @@ namespace TeamSupport.ModelAPI
                             ////t = DataAPI.DataAPI.Read<T>(new ActionNode(connection, id));
                             break;
                         case "ActionProxy[]":
-                            t = new TicketNode(connection, id).ActionProxies() as T;
+                            t = new TicketModel(connection, id).ActionProxies() as T;
                             //t = DataAPI.DataAPI.Read<T>(new TicketNode(connection, id));
                             break;
                         case "AttachmentProxy":
-                            t = DataAPI.DataAPI.Read<T>(new ActionAttachmentNode(connection, id));
+                            t = DataAPI.DataAPI.Read<T>(new ActionAttachmentModel(connection, id));
                             break;
                         case "AttachmentProxy[]":
-                            t = DataAPI.DataAPI.Read<T>(new ActionNode(connection, id));
+                            t = DataAPI.DataAPI.Read<T>(new ActionModel(connection, id));
                             break;
                         case "CustomValueProxy":
-                            t = DataAPI.DataAPI.Read<T>(new TicketNode(connection, id));
+                            t = DataAPI.DataAPI.Read<T>(new TicketModel(connection, id));
                             break;
                         case "TicketProxy":
-                            t = DataAPI.DataAPI.Read<T>(new TicketNode(connection, id));
+                            t = DataAPI.DataAPI.Read<T>(new TicketModel(connection, id));
                             break;
                         case "UserProxy":
                             {
@@ -183,11 +183,11 @@ namespace TeamSupport.ModelAPI
                     {
                         case "ActionProxy":
                             ActionProxy actionProxy = proxy as ActionProxy;
-                            DataAPI.DataAPI.Delete(new ActionNode(connection, actionProxy.ActionID));
+                            DataAPI.DataAPI.Delete(new ActionModel(connection, actionProxy.ActionID));
                             break;
                         case "AttachmentProxy":
                             AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
-                            DataAPI.DataAPI.Delete(new ActionAttachmentNode(connection, attachmentProxy.AttachmentID));
+                            DataAPI.DataAPI.Delete(new ActionAttachmentModel(connection, attachmentProxy.AttachmentID));
                             break;
                     }
                 }
@@ -261,7 +261,7 @@ namespace TeamSupport.ModelAPI
             {
                 using (ConnectionContext connection = new ConnectionContext())
                 {
-                    ActionNode actionModel = new ActionNode(connection, actionID);
+                    ActionModel actionModel = new ActionModel(connection, actionID);
                     HttpFileCollection files = context.Request.Files;
                     for (int i = 0; i < files.Count; i++)   // foreach returns strings?
                     {
@@ -292,7 +292,7 @@ namespace TeamSupport.ModelAPI
                 using (ConnectionContext connection = new ConnectionContext())
                 {
                     // user have permission to modify this action?
-                    ActionAttachmentNode attachment = new ActionAttachmentNode(connection, attachmentID);
+                    ActionAttachmentModel attachment = new ActionAttachmentModel(connection, attachmentID);
                     if (!attachment.Action.CanEdit())
                         return;
 
@@ -316,7 +316,7 @@ namespace TeamSupport.ModelAPI
             {
                 using (ConnectionContext connection = new ConnectionContext())
                 {
-                    TicketNode ticketModel = connection.Ticket(ticketID);
+                    TicketModel ticketModel = connection.Ticket(ticketID);
                     DataAPI.DataAPI.ReadActionAttachmentsForTicket(ticketModel, ticketActionAttachments, out attachments);
                 }
             }

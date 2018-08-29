@@ -25,8 +25,8 @@ namespace TeamSupport.IDTree
         SqlConnection _connection;
         SqlTransaction _transaction;
         public DataContext _db { get; private set; }
-        public OrganizationNode Organization { get; private set; }
-        public UserNode User { get; private set; }
+        public OrganizationModel Organization { get; private set; }
+        public UserModel User { get; private set; }
         //public UserSession UserSession { get; private set; }
         public int UserID {  get { return User.UserID; } }
 
@@ -47,15 +47,15 @@ namespace TeamSupport.IDTree
             }
 
             // Create Logical Model! - note that OrganizationID and UserID come from Authentication
-            Organization = new OrganizationNode(this);
-            User = new UserNode(Organization, Authentication.UserID);
+            Organization = new OrganizationModel(this);
+            User = new UserModel(Organization, Authentication.UserID);
             //UserSession = new UserSession(Organization);
         }
 
         public void Commit() { _db.Transaction.Commit(); }
         public void Rollback() { _db.Transaction.Rollback(); }
 
-        public TicketNode Ticket(int ticketID) { return new TicketNode(Organization, ticketID); }
+        public TicketModel Ticket(int ticketID) { return new TicketModel(Organization, ticketID); }
 
         public bool CanEdit() { return Authentication.IsSystemAdmin || User.AllowUserToEditAnyAction(); }
 

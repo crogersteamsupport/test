@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 namespace TeamSupport.IDTree
 {
     /// <summary> Link contacts and tickets </summary>
-    public class UserTicketNode : IDNode
+    public class UserTicketModel : IDNode
     {
-        public TicketNode Ticket { get; private set; }
-        public UserNode User { get; private set; }
+        public TicketModel Ticket { get; private set; }
+        public UserModel User { get; private set; }
 
-        public UserTicketNode(TicketNode ticket, UserNode contact) : this(ticket, contact, true)
+        public UserTicketModel(TicketModel ticket, UserModel contact) : this(ticket, contact, true)
         {
         }
 
-        private UserTicketNode(TicketNode ticket, UserNode contact, bool verify) : base(ticket)
+        private UserTicketModel(TicketModel ticket, UserModel contact, bool verify) : base(ticket)
         {
             Ticket = ticket;
             User = contact;
@@ -24,16 +24,16 @@ namespace TeamSupport.IDTree
                 Verify();
         }
 
-        public static UserTicketNode[] GetUserTickets(TicketNode ticket)
+        public static UserTicketModel[] GetUserTickets(TicketModel ticket)
         {
             //query = $"SELECT Users.userid FROM Users WITH (NOLOCK)" +
             //    $"JOIN UserTickets WITH (NOLOCK) on UserTickets.userid = Users.UserID" +
             //    $" WHERE UserTickets.TicketID = {ticket.TicketID} AND (Users.MarkDeleted = 0)";
 
             int[] contactIDs = IDReader.Read(TicketChild.Contacts, ticket);
-            UserTicketNode[] contacts = new UserTicketNode[contactIDs.Length];
+            UserTicketModel[] contacts = new UserTicketModel[contactIDs.Length];
             for (int i = 0; i < contactIDs.Length; ++i)
-                contacts[i] = new UserTicketNode(ticket, new UserNode(ticket.Connection, contactIDs[i]), false);
+                contacts[i] = new UserTicketModel(ticket, new UserModel(ticket.Connection, contactIDs[i]), false);
             return contacts;
         }
 

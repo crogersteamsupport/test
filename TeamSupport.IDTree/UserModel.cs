@@ -7,23 +7,23 @@ using TeamSupport.Data;
 
 namespace TeamSupport.IDTree
 {
-    public class UserNode : IDNode
+    public class UserModel : IDNode
     {
-        public OrganizationNode Organization { get; private set; }
+        public OrganizationModel Organization { get; private set; }
         public int UserID { get; private set; }
 
-        public UserNode(OrganizationNode organization, int userID) : base(organization)
+        public UserModel(OrganizationModel organization, int userID) : base(organization)
         {
             Organization = organization;
             UserID = userID;
             Verify();
         }
 
-        public UserNode(ConnectionContext connection, int userID) : base(connection)
+        public UserModel(ConnectionContext connection, int userID) : base(connection)
         {
             UserID = userID;
             int organizationID = Connection._db.ExecuteQuery<int>($"SELECT OrganizationID FROM Users WITH (NOLOCK) WHERE UserID={userID}").First();
-            Organization = new OrganizationNode(connection, organizationID);
+            Organization = new OrganizationModel(connection, organizationID);
         }
 
         public UserProxy UserProxy()

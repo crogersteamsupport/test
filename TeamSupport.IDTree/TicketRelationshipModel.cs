@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace TeamSupport.IDTree
 {
-    public class TicketRelationshipNode : IDNode
+    public class TicketRelationshipModel : IDNode
     {
-        TicketNode[] Ticket;
+        TicketModel[] Ticket;
         public int TicketRelationshipID { get; private set; }
 
-        public TicketRelationshipNode(TicketNode ticket1, TicketNode ticket2, int ticketRelationshipID) : base(ticket1)
+        public TicketRelationshipModel(TicketModel ticket1, TicketModel ticket2, int ticketRelationshipID) : base(ticket1)
         {
-            Ticket = new TicketNode[2] { ticket1, ticket2 };
+            Ticket = new TicketModel[2] { ticket1, ticket2 };
             TicketRelationshipID = ticketRelationshipID;
             Verify();
         }

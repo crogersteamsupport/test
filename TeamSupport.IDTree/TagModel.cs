@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace TeamSupport.IDTree
 {
-    public class TagNode : IDNode
+    public class TagModel : IDNode
     {
-        public OrganizationNode Organization { get; private set; }
+        public OrganizationModel Organization { get; private set; }
         public int TagID { get; private set; }
-        public TagNode(OrganizationNode organization, int tagID) : base(organization)
+        public TagModel(OrganizationModel organization, int tagID) : base(organization)
         {
 
         }

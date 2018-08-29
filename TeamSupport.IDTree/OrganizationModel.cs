@@ -14,27 +14,27 @@ namespace TeamSupport.IDTree
     /// <summary>
     /// Wrapper for valid OrganizationID
     /// </summary>
-    public class OrganizationNode : IDNode
+    public class OrganizationModel : IDNode
     {
         public int OrganizationID { get; private set; }
 
         /// <summary> OrganizationID and UserID come from ConnectionContext.Authentication </summary>
-        public OrganizationNode(ConnectionContext connection) : this(connection, connection.Authentication.OrganizationID)
+        public OrganizationModel(ConnectionContext connection) : this(connection, connection.Authentication.OrganizationID)
         {
         }
 
-        public OrganizationNode(ConnectionContext connection, int organizationID) : base(connection)
+        public OrganizationModel(ConnectionContext connection, int organizationID) : base(connection)
         {
             OrganizationID = organizationID;
             //Verify();
         }
 
-        public OrganizationNode Parent()
+        public OrganizationModel Parent()
         {
             int? parentID = Connection._db.ExecuteQuery<int?>($"SELECT ParentID FROM Organizations WITH (NOLOCK) WHERE OrganizationID={OrganizationID}").FirstOrDefault();
             if (!parentID.HasValue)
                 return null;
-            return new OrganizationNode(Connection, parentID.Value);
+            return new OrganizationModel(Connection, parentID.Value);
         }
 
         public string AttachmentPath(int id)

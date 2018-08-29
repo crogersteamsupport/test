@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace TeamSupport.IDTree
 {
-    public class TicketReminderNode : IDNode
+    public class TicketReminderModel : IDNode
     {
-        public TicketNode Ticket { get; private set; }
-        public UserNode User { get; private set; }
+        public TicketModel Ticket { get; private set; }
+        public UserModel User { get; private set; }
         public int ReminderID { get; private set; }
 
         /// <summary> top down - existing action </summary>
-        public TicketReminderNode(TicketNode ticket, int reminderID) : this(ticket, reminderID, true)
+        public TicketReminderModel(TicketModel ticket, int reminderID) : this(ticket, reminderID, true)
         {
         }
 
-        private TicketReminderNode(TicketNode ticket, int reminderID, bool verify) : base(ticket)
+        private TicketReminderModel(TicketModel ticket, int reminderID, bool verify) : base(ticket)
         {
             Ticket = ticket;
             ReminderID = reminderID;
@@ -25,12 +25,12 @@ namespace TeamSupport.IDTree
                 Verify();
         }
 
-        public static TicketReminderNode[] GetTicketReminders(TicketNode ticket)
+        public static TicketReminderModel[] GetTicketReminders(TicketModel ticket)
         {
             int[] reminderIDs = IDReader.Read(TicketChild.TicketReminders, ticket);
-            TicketReminderNode[] reminderModels = new TicketReminderNode[reminderIDs.Length];
+            TicketReminderModel[] reminderModels = new TicketReminderModel[reminderIDs.Length];
             for (int i = 0; i < reminderIDs.Length; ++i)
-                reminderModels[i] = new TicketReminderNode(ticket, reminderIDs[i], false);
+                reminderModels[i] = new TicketReminderModel(ticket, reminderIDs[i], false);
             return reminderModels;
         }
         public override void Verify()

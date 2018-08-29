@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 namespace TeamSupport.IDTree
 {
     /// <summary> Link contact organizations and tickets </summary>
-    public class OrganizationTicketNode : IDNode
+    public class OrganizationTicketModel : IDNode
     {
-        public TicketNode Ticket { get; private set; }
-        public OrganizationNode Organization { get; private set; }
+        public TicketModel Ticket { get; private set; }
+        public OrganizationModel Organization { get; private set; }
 
-        public OrganizationTicketNode(TicketNode ticket, OrganizationNode organization) : this(ticket, organization, true)
+        public OrganizationTicketModel(TicketModel ticket, OrganizationModel organization) : this(ticket, organization, true)
         {
         }
 
-        private OrganizationTicketNode(TicketNode ticket, OrganizationNode organization, bool verify) : base(ticket)
+        private OrganizationTicketModel(TicketModel ticket, OrganizationModel organization, bool verify) : base(ticket)
         {
             Ticket = ticket;
             Organization = organization;
@@ -24,13 +24,13 @@ namespace TeamSupport.IDTree
                 Verify();
         }
 
-        public static OrganizationTicketNode[] GetOrganizationTickets(TicketNode ticket)
+        public static OrganizationTicketModel[] GetOrganizationTickets(TicketModel ticket)
         {
             //$"Select Organizationid From OrganizationTickets WITH (NOLOCK) WHERE TicketId = {ticket.TicketID}"
             int[] customerIDs = IDReader.Read(TicketChild.Customers, ticket);
-            OrganizationTicketNode[] organizationTickets = new OrganizationTicketNode[customerIDs.Length];
+            OrganizationTicketModel[] organizationTickets = new OrganizationTicketModel[customerIDs.Length];
             for (int i = 0; i < customerIDs.Length; ++i)
-                organizationTickets[i] = new OrganizationTicketNode(ticket, new OrganizationNode(ticket.Connection, customerIDs[i]), false);
+                organizationTickets[i] = new OrganizationTicketModel(ticket, new OrganizationModel(ticket.Connection, customerIDs[i]), false);
             return organizationTickets;
         }
 

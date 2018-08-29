@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace TeamSupport.IDTree
 {
-    public class AssetTicketNode : IDNode
+    public class AssetTicketModel : IDNode
     {
-        public AssetNode Asset { get; private set; }
-        public TicketNode Ticket { get; private set; }
+        public AssetModel Asset { get; private set; }
+        public TicketModel Ticket { get; private set; }
 
-        public AssetTicketNode(AssetNode asset, TicketNode ticket) : this(asset, ticket, true)
+        public AssetTicketModel(AssetModel asset, TicketModel ticket) : this(asset, ticket, true)
         {
         }
 
-        private AssetTicketNode(AssetNode asset, TicketNode ticket, bool verify) : base(ticket)
+        private AssetTicketModel(AssetModel asset, TicketModel ticket, bool verify) : base(ticket)
         {
             Asset = asset;
             Ticket = ticket;
@@ -23,15 +23,15 @@ namespace TeamSupport.IDTree
                 Verify();
         }
 
-        public static AssetTicketNode[] GetAssetTickets(TicketNode ticket)
+        public static AssetTicketModel[] GetAssetTickets(TicketModel ticket)
         {
-            OrganizationNode organization = ticket.Organization;
+            OrganizationModel organization = ticket.Organization;
             //int[] ids = IDReader.Read(TicketChild.Asset, ticket);   // $"SELECT AssetID From AssetTickets WITH (NOLOCK) WHERE TicketID = {ticket.TicketID}"
             string query = $"SELECT AssetID From AssetTickets WITH (NOLOCK) WHERE TicketID = {ticket.TicketID}";
             int[] ids = ticket.Connection._db.ExecuteQuery<int>(query).ToArray();
-            AssetTicketNode[] models = new AssetTicketNode[ids.Length];
+            AssetTicketModel[] models = new AssetTicketModel[ids.Length];
             for (int i = 0; i < ids.Length; ++i)
-                models[i] = new AssetTicketNode(new AssetNode(organization, ids[i]), ticket, false);
+                models[i] = new AssetTicketModel(new AssetModel(organization, ids[i]), ticket, false);
             return models;
         }
 

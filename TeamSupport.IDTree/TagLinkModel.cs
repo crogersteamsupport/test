@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace TeamSupport.IDTree
 {
-    public class TagLinkNode : IDNode
+    public class TagLinkModel : IDNode
     {
-        public TicketNode Ticket { get; private set; }
-        public TagNode Tag { get; private set; }
+        public TicketModel Ticket { get; private set; }
+        public TagModel Tag { get; private set; }
         public int TagLinkID { get; private set; }
 
-        public TagLinkNode(TicketNode ticket, TagNode tag, int tagLinkID) : base(ticket)
+        public TagLinkModel(TicketModel ticket, TagModel tag, int tagLinkID) : base(ticket)
         {
             Ticket = ticket;
             Tag = tag;
