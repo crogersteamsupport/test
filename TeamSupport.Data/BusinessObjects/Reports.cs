@@ -763,30 +763,23 @@ namespace TeamSupport.Data
                         break;
                     case ProductFamiliesRightType.SomeFamilies:
                         rightsClause = @" AND (
-                    TicketID IN 
+                    {0}.TicketID IN 
                     (
                         SELECT 
                             t.TicketID 
                         FROM 
-                            Tickets t WITH (NOLOCK)
-                        WHERE 
-                            t.ProductID IS NULL and t.Organizationid = {1}                         
-                        UNION
-                        SELECT 
-                            t.TicketID 
-                        FROM 
-                            Tickets t WITH (NOLOCK)
-                            LEFT JOIN Products p WITH (NOLOCK)
+                            Tickets t
+                            LEFT JOIN Products p
                                 ON t.ProductID = p.ProductID
                             LEFT JOIN UserRightsProductFamilies urpf
                                 ON p.ProductFamilyID = urpf.ProductFamilyID 
-                        WHERE                             
-                          urpf.UserID = {0} and t.Organizationid = {1} 
-
+                        WHERE 
+                            t.ProductID IS NULL
+                            OR urpf.UserID = @UserID
                     ) 
-                    OR userticketsview.UserID = {0} 
-                  )";
-                        builder.Append(string.Format(rightsClause, loginUser.UserID.ToString(), loginUser.OrganizationID));
+                    OR {0}.UserID = @UserID 
+                )";
+                        builder.Append(string.Format(rightsClause, mainTableName));
                         break;
                     default:
                         break;
