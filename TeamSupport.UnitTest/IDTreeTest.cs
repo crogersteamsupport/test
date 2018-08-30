@@ -26,17 +26,23 @@ namespace TeamSupport.UnitTest
                 OrganizationModel organization = connection.Organization;
                 UserModel user = connection.User;
 
-                // new ticket
-                TicketProxy inTicketProxy = EmptyTicket();
-                TicketModel ticket = Data_API.Create(user, inTicketProxy) as TicketModel;  // user created a ticketD
-                TicketProxy outTicketProxy = Data_API.Read<TicketProxy>(ticket);
-                Assert.AreEqual(inTicketProxy, outTicketProxy);
+                for (int i = 0; i < 10; ++i)
+                {
+                    // new ticket
+                    TicketProxy inTicketProxy = EmptyTicket();
+                    TicketModel ticket = Data_API.Create(user, inTicketProxy) as TicketModel;  // user created a ticketD
+                    TicketProxy outTicketProxy = Data_API.Read<TicketProxy>(ticket);
+                    Assert.AreEqual(inTicketProxy, outTicketProxy);
 
-                // new action
-                ActionProxy inActionProxy = EmptyAction();
-                ActionModel action = Data_API.Create(ticket, inActionProxy);
-                ActionProxy outActionProxy = Data_API.Read<ActionProxy>(action);
-                Assert.AreEqual(inActionProxy, outActionProxy);
+                    for (int j = 0; j < 10; ++j)
+                    {
+                        // new action
+                        ActionProxy inActionProxy = EmptyAction();
+                        ActionModel action = Data_API.Create(ticket, inActionProxy) as ActionModel;
+                        ActionProxy outActionProxy = Data_API.Read<ActionProxy>(action);
+                        Assert.AreEqual(inActionProxy, outActionProxy);
+                    }
+                }
             }
         }
 
@@ -92,14 +98,34 @@ namespace TeamSupport.UnitTest
                 ReportedVersionID = null,
                 //Identity = p48 output
             };
-
         }
 
         public static ActionProxy EmptyAction()
         {
             return new ActionProxy()
             {
-
+                ImportFileID = null,
+                //IsClean = 0,
+                Description = "<p style=\"font - size: 12pt; font - family: helvetica; \">asdfasdf</p>",
+                Pinned = false,
+                //JiraID = null,
+                //DateModifiedByJiraSync = null,
+                SalesForceID = null,
+                DateModifiedBySalesForceSync = null,
+                ActionSource = null,
+                TicketID = -1,
+                ModifierID = 4787299,
+                CreatorID = 4787299,
+                DateModified = DateTime.UtcNow,
+                DateCreated = DateTime.UtcNow,
+                ImportID = null,
+                IsKnowledgeBase = false,
+                IsVisibleOnPortal = true,
+                DateStarted = DateTime.UtcNow,
+                TimeSpent = 0,
+                Name = "",
+                SystemActionTypeID = 0,
+                ActionTypeID = 2119
             };
         }
     }

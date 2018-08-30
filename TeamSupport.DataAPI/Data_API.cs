@@ -55,7 +55,15 @@ namespace TeamSupport.DataAPI
                     {
                         TicketModel model = (TicketModel)idNode;
                         ActionProxy proxy = tProxy as ActionProxy;
-                        Data.Action.Create(model.Connection._db, model.Connection.OrganizationID, model.Connection.UserID, model.TicketID, ref proxy);
+                        proxy.TicketID = model.TicketID;
+                        proxy.CreatorID = proxy.ModifierID = model.Connection.UserID;
+                        proxy.DateCreated = proxy.DateModified = DateTime.UtcNow;
+
+                        DataContext db = model.Connection._db;
+                        Table<ActionProxy> table = db.GetTable<ActionProxy>();
+                        table.InsertOnSubmit(proxy);
+                        db.SubmitChanges();
+                        result = new ActionModel(model, proxy.ActionID);    // how to bypass Verify?
                     }
                     break;
                 case "ContactProxy":
@@ -84,19 +92,20 @@ namespace TeamSupport.DataAPI
                     break;
                 case "TicketProxy":
                     {
-                        UserModel user = (UserModel)idNode;
+                        UserModel model = (UserModel)idNode;
                         TicketProxy proxy = tProxy as TicketProxy;
+                        proxy.OrganizationID = model.Organization.OrganizationID;
+                        proxy.CreatorID = proxy.ModifierID = model.UserID;
+                        proxy.UserID = model.Connection.UserID;
+                        proxy.DateCreated = proxy.DateModified = DateTime.UtcNow;
 
-                        DataContext db = user.Organization.Connection._db;
+                        DataContext db = model.Organization.Connection._db;
                         Table<TicketProxy> table = db.GetTable<TicketProxy>();
-                        proxy.TicketNumber = 1 + (from ticket in table where ticket.OrganizationID == user.Organization.OrganizationID select ticket.TicketNumber).Max();
+                        proxy.TicketNumber = 1 + (from row in table where row.OrganizationID == model.Organization.OrganizationID select row.TicketNumber).Max();
                         table.InsertOnSubmit(proxy);
                         db.SubmitChanges();
                         
-                        //int ticketNumber = 1 + GetMaxTicketNumber(user.Organization);
-                        //command = proxy.InsertCommandText(ticketNumber);
-                        //int ticketID = idNode.ExecuteCommand(command);
-                        result = new TicketModel(user.Organization, proxy.TicketID);    // how to bypass Verify? - move to UserModel?
+                        result = new TicketModel(model.Organization, proxy.TicketID);    // how to bypass Verify? - move to UserModel?
                     }
                     break;
                 default:
@@ -110,14 +119,6 @@ namespace TeamSupport.DataAPI
             return result;
         }
 
-        static int GetMaxTicketNumber(OrganizationModel organization)
-        {
-            DataContext db = organization.Connection._db;
-            Table<TicketProxy> table = db.GetTable<TicketProxy>();
-            var query = from ticket in table where ticket.OrganizationID == organization.OrganizationID select ticket.TicketNumber;
-            return query.Max();
-        }
-
         /// <summary> 
         /// READ - read proxy given a model 
         /// </summary>
@@ -128,9 +129,11 @@ namespace TeamSupport.DataAPI
             {
                 case "ActionProxy": // action
                     {
-                        ActionModel action = (ActionModel)node;
-                        string query = $"SELECT * FROM Actions WHERE ActionID={action.ActionID}";
-                        tProxy = action.ExecuteQuery<ActionProxy>(query).First() as TProxy;
+                        ActionModel model = (ActionModel)node;
+                        DataContext db = model.Connection._db;
+                        Table<ActionProxy> table = db.GetTable<ActionProxy>();
+                        var query = from row in table where row.ActionID == model.ActionID select row;
+                        tProxy = query.First() as TProxy;
                     }
                     break;
                 case "ActionProxy[]":   // ticket actions
@@ -187,9 +190,11 @@ namespace TeamSupport.DataAPI
                     break;
                 case "TicketProxy": // ticket
                     {
-                        TicketModel ticket = (TicketModel)node;
-                        string query = $"SELECT * FROM Tickets WHERE TicketID={ticket.TicketID}";
-                        tProxy = node.ExecuteQuery<TicketProxy>(query).First() as TProxy;
+                        TicketModel model = (TicketModel)node;
+                        DataContext db = model.Connection._db;
+                        Table<TicketProxy> table = db.GetTable<TicketProxy>();
+                        var query = from row in table where row.TicketID == model.TicketID select row;
+                        tProxy = query.First() as TProxy;
                     }
                     break;
                 case "TicketRelationshipProxy[]":

@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Data.Linq;
 
 namespace TeamSupport.IDTree
 {
     public abstract class IDNode
     {
         public ConnectionContext Connection { get; private set; }
-
+        
         protected IDNode(ConnectionContext request)
         {
             Connection = request;

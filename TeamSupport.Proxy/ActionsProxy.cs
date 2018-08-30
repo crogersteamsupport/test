@@ -15,7 +15,7 @@ namespace TeamSupport.Data
     public class ActionProxy
     {
         public ActionProxy() { }
-        [DataMember, Column] public int ActionID { get; set; }
+        [DataMember, Column(DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true)] public int ActionID { get; set; }
         [DataMember, Column] public int? ActionTypeID { get; set; }
         [DataMember, Column] public SystemActionType SystemActionTypeID { get; set; }
         [DataMember, Column] public string Name { get; set; }
