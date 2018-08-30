@@ -11,6 +11,7 @@ using System.Security.Authentication;
 using System.Data.SqlClient;
 using System.Data.Linq;
 using System.Diagnostics;
+using TeamSupport.DataAPI;
 
 namespace TeamSupport.ModelAPI
 {
@@ -30,12 +31,12 @@ namespace TeamSupport.ModelAPI
                     {
                         case "ActionProxy":
                             ActionProxy actionProxy = proxy as ActionProxy;
-                            DataAPI.DataAPI.Create(connection.Ticket(actionProxy.TicketID), actionProxy);
+                            Data_API.Create(connection.Ticket(actionProxy.TicketID), actionProxy);
                             break;
                         case "AttachmentProxy":
                             AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
                             ActionModel actionModel = new ActionModel(connection, ((ActionAttachmentProxy)attachmentProxy).ActionID);
-                            DataAPI.DataAPI.Create(actionModel, attachmentProxy);
+                            Data_API.Create(actionModel, attachmentProxy);
                             break;
                     }
                 }
@@ -43,17 +44,17 @@ namespace TeamSupport.ModelAPI
             catch (AuthenticationException ex)
             {
                 // TODO - tell user they don't have permission
-                DataAPI.DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
+                Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
             }
             catch (System.Data.ConstraintException ex)
             {
                 // TODO - data integrity failure
-                DataAPI.DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
+                Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
             }
             catch (Exception ex)
             {
                 // TODO - tell user we failed to read
-                DataAPI.DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
+                Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
             }
         }
 
@@ -89,16 +90,16 @@ namespace TeamSupport.ModelAPI
                             //t = DataAPI.DataAPI.Read<T>(new TicketNode(connection, id));
                             break;
                         case "AttachmentProxy":
-                            t = DataAPI.DataAPI.Read<T>(new ActionAttachmentModel(connection, id));
+                            t = Data_API.Read<T>(new ActionAttachmentModel(connection, id));
                             break;
                         case "AttachmentProxy[]":
-                            t = DataAPI.DataAPI.Read<T>(new ActionModel(connection, id));
+                            t = Data_API.Read<T>(new ActionModel(connection, id));
                             break;
                         case "CustomValueProxy":
-                            t = DataAPI.DataAPI.Read<T>(new TicketModel(connection, id));
+                            t = Data_API.Read<T>(new TicketModel(connection, id));
                             break;
                         case "TicketProxy":
-                            t = DataAPI.DataAPI.Read<T>(new TicketModel(connection, id));
+                            t = Data_API.Read<T>(new TicketModel(connection, id));
                             break;
                         case "UserProxy":
                             {
@@ -116,16 +117,16 @@ namespace TeamSupport.ModelAPI
             catch (AuthenticationException ex)
             {
                 // TODO - tell user they don't have permission
-                DataAPI.DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.None, id, "choke", ex);
+                Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, id, "choke", ex);
             }
             catch (System.Data.ConstraintException ex)
             {
                 // TODO - data integrity failure
-                DataAPI.DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.None, id, "choke", ex);
+                Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, id, "choke", ex);
             }
             catch (Exception ex)
             {
-                int logid = DataAPI.DataAPI.LogException(new Proxy.AuthenticationModel(), ex, "Ticket Merge Exception:" + ex.Source);
+                int logid = Data_API.LogException(new Proxy.AuthenticationModel(), ex, "Ticket Merge Exception:" + ex.Source);
             }
             return t;
         }
@@ -155,17 +156,17 @@ namespace TeamSupport.ModelAPI
             catch (AuthenticationException ex)
             {
                 // TODO - tell user they don't have permission
-                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
+                Data_API.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
             }
             catch (System.Data.ConstraintException ex)
             {
                 // TODO - data integrity failure
-                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
+                Data_API.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
             }
             catch (Exception ex)
             {
                 // TODO - tell user we failed to read
-                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
+                Data_API.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
             }
         }
 
@@ -182,11 +183,11 @@ namespace TeamSupport.ModelAPI
                     {
                         case "ActionProxy":
                             ActionProxy actionProxy = proxy as ActionProxy;
-                            DataAPI.DataAPI.Delete(new ActionModel(connection, actionProxy.ActionID));
+                            Data_API.Delete(new ActionModel(connection, actionProxy.ActionID));
                             break;
                         case "AttachmentProxy":
                             AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
-                            DataAPI.DataAPI.Delete(new ActionAttachmentModel(connection, attachmentProxy.AttachmentID));
+                            Data_API.Delete(new ActionAttachmentModel(connection, attachmentProxy.AttachmentID));
                             break;
                     }
                 }
@@ -194,17 +195,17 @@ namespace TeamSupport.ModelAPI
             catch (AuthenticationException ex)
             {
                 // TODO - tell user they don't have permission
-                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
+                Data_API.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
             }
             catch (System.Data.ConstraintException ex)
             {
                 // TODO - data integrity failure
-                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
+                Data_API.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
             }
             catch (Exception ex)
             {
                 // TODO - tell user we failed to read
-                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
+                Data_API.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
             }
         }
 
@@ -236,14 +237,14 @@ namespace TeamSupport.ModelAPI
                     catch (Exception ex)
                     {
                         connection.Rollback();
-                        int logid = DataAPI.DataAPI.LogException(connection.Authentication, ex, "Ticket Merge Exception:" + ex.Source);
+                        int logid = Data_API.LogException(connection.Authentication, ex, "Ticket Merge Exception:" + ex.Source);
                         return $"Error merging tickets. Exception #{logid}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.";
                     }
                 }
             }
             catch (Exception ex)
             {
-                int logid = DataAPI.DataAPI.LogException(new Proxy.AuthenticationModel(), ex, "Ticket Merge Exception:" + ex.Source);
+                int logid = Data_API.LogException(new Proxy.AuthenticationModel(), ex, "Ticket Merge Exception:" + ex.Source);
                 return $"Error merging tickets. Exception #{logid}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.";
             }
         }
@@ -270,14 +271,14 @@ namespace TeamSupport.ModelAPI
 
                         // send proxy to DB
                         AttachmentProxy attachmentProxy = attachmentFile.AsAttachmentProxy(context.Request, actionModel);
-                        DataAPI.DataAPI.Create(actionModel, attachmentProxy);
+                        Data_API.Create(actionModel, attachmentProxy);
                         results.Add(attachmentProxy);
                     }
                 }
             }
             catch (Exception ex)
             {
-                DataAPI.DataAPI.LogMessage(ActionLogType.Insert, ReferenceType.Actions, actionID, "Unable to save attachments on action", ex);
+                Data_API.LogMessage(ActionLogType.Insert, ReferenceType.Actions, actionID, "Unable to save attachments on action", ex);
             }
             return results;
         }
@@ -294,15 +295,15 @@ namespace TeamSupport.ModelAPI
                     if (!attachment.Action.CanEdit())
                         return;
 
-                    AttachmentProxy proxy = DataAPI.DataAPI.Read<AttachmentProxy>(attachment);
+                    AttachmentProxy proxy = Data_API.Read<AttachmentProxy>(attachment);
                     AttachmentFile file = new AttachmentFile(attachment, proxy);
-                    DataAPI.DataAPI.Delete(attachment); // remove from database
+                    Data_API.Delete(attachment); // remove from database
                     file.Delete();  // delete file
                 }
             }
             catch (Exception ex)
             {
-                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.Attachments, attachmentID, "Unable to delete attachment", ex);
+                Data_API.LogMessage(ActionLogType.Delete, ReferenceType.Attachments, attachmentID, "Unable to delete attachment", ex);
             }
         }
 
@@ -315,12 +316,12 @@ namespace TeamSupport.ModelAPI
                 using (ConnectionContext connection = new ConnectionContext())
                 {
                     TicketModel ticketModel = connection.Ticket(ticketID);
-                    DataAPI.DataAPI.ReadActionAttachmentsForTicket(ticketModel, ticketActionAttachments, out attachments);
+                    Data_API.ReadActionAttachmentsForTicket(ticketModel, ticketActionAttachments, out attachments);
                 }
             }
             catch (Exception ex)
             {
-                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.Attachments, ticketID, "failed to read action attachments", ex);
+                Data_API.LogMessage(ActionLogType.Delete, ReferenceType.Attachments, ticketID, "failed to read action attachments", ex);
             }
         }
 

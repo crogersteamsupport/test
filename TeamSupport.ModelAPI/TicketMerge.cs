@@ -40,19 +40,34 @@ namespace TeamSupport.ModelAPI
             MergeSubscriptions();
             MergeTaskAssociations();
             MergeRelationships();  // 1 and 2
-            //MergeQueuedTickets();
+            MergeQueuedTickets();
             MergeActions();
 
-            DataAPI.DataAPI.Delete(Source);
+            Data_API.Delete(Source);
             //Source = null;
             //DataAPI.DataAPI.Update(Destination, null);  // update Date Modified
         }
 
-        public void MergeActions()
+        void MergeQueuedTickets()
+        {
+            // all the instances where this ticket is in a queue
+            TicketQueueModel[] ticketQueues = Source.TicketQueue();
+
+            //foreach(TicketQueueModel ticketQueue in ticketQueues)
+            //{
+            //    // Is the destination ticket already in the user's queue?
+            //    if (ticketQueue.User.HasQueueTicket(ticketQueue.Ticket))
+            //        DataAPI.DataAPI.Delete(ticketQueue);    // delete original
+            //    else
+            //        DataAPI.DataAPI.Update(ticketQueue, new UpdateArguments("TicketID", Destination.TicketID)); // 
+            //}
+        }
+
+        void MergeActions()
         {
             ActionModel[] actions = Source.Actions();
             foreach (ActionModel action in actions)
-                DataAPI.DataAPI.Update(action, new UpdateArguments("TicketID", Destination.TicketID));
+                Data_API.Update(action, new UpdateArguments("TicketID", Destination.TicketID));
         }
 
         enum TicketRelationship
@@ -72,7 +87,7 @@ namespace TeamSupport.ModelAPI
 
         void MergeRelationships()
         {
-            TicketRelationshipProxy[] proxies = DataAPI.DataAPI.Read<TicketRelationshipProxy[]>(Source);
+            TicketRelationshipProxy[] proxies = Data_API.Read<TicketRelationshipProxy[]>(Source);
             TicketRelationshipModel idNode;
             foreach (TicketRelationshipProxy proxy in proxies)
             {
@@ -80,17 +95,17 @@ namespace TeamSupport.ModelAPI
                 {
                     case TicketRelationship.SourceIsDestination:
                         idNode = new TicketRelationshipModel(Source, Destination, proxy.TicketRelationshipID);
-                        DataAPI.DataAPI.Delete(idNode);   // circular reference
+                        Data_API.Delete(idNode);   // circular reference
                         break;
                     case TicketRelationship.SourceTicket2:
                         TicketModel ticket2 = new TicketModel(Source.Connection, proxy.Ticket2ID);
                         idNode = new TicketRelationshipModel(Source, ticket2, proxy.TicketRelationshipID);
-                        DataAPI.DataAPI.Update(idNode, new UpdateArguments("Ticket1ID", Destination.TicketID));
+                        Data_API.Update(idNode, new UpdateArguments("Ticket1ID", Destination.TicketID));
                         break;
                     case TicketRelationship.Ticket1Source:
                         TicketModel ticket1 = new TicketModel(Source.Connection, proxy.Ticket1ID);
                         idNode = new TicketRelationshipModel(ticket1, Source, proxy.TicketRelationshipID);
-                        DataAPI.DataAPI.Update(idNode, new UpdateArguments("Ticket2ID", Destination.TicketID));
+                        Data_API.Update(idNode, new UpdateArguments("Ticket2ID", Destination.TicketID));
                         break;
                 }
             }
@@ -102,7 +117,7 @@ namespace TeamSupport.ModelAPI
             UpdateArguments args = new UpdateArguments("ParentID", Destination.TicketID);
             TicketModel[] children = Source.ChildTickets();
             foreach (TicketModel child in children)
-                DataAPI.DataAPI.Update(child, args);
+                Data_API.Update(child, args);
         }
 
         void MergeAssets()
@@ -117,9 +132,9 @@ namespace TeamSupport.ModelAPI
             {
                 // WHERE NOT EXISTS (Select AssetTickets WITH (NOLOCK) WHERE AssetId = {asset} AND TicketId ={sourceTicket.TicketID})
                 if (!destinationAssetTickets.Where(a => a.Asset.AssetID == assetTicket.Asset.AssetID).Any())
-                    DataAPI.DataAPI.Update(assetTicket, args);
+                    Data_API.Update(assetTicket, args);
                 else
-                    DataAPI.DataAPI.Delete(assetTicket);
+                    Data_API.Delete(assetTicket);
             }
         }
 
@@ -136,10 +151,10 @@ namespace TeamSupport.ModelAPI
                 if (!destinationCustomers.Where(c => c.Organization.OrganizationID == customer.Organization.OrganizationID).Any())
                 {
                     CustomerProxy customerProxy = new CustomerProxy() { OrganizationID = customer.Organization.OrganizationID };
-                    DataAPI.DataAPI.Create(Destination, customerProxy);
+                    Data_API.Create(Destination, customerProxy);
                 }
 
-                DataAPI.DataAPI.Delete(customer);
+                Data_API.Delete(customer);
             }
         }
 
@@ -156,21 +171,21 @@ namespace TeamSupport.ModelAPI
                 if (!destinationContacts.Where(c => c.User.UserID == contact.User.UserID).Any())
                 {
                     ContactProxy contactProxy = new ContactProxy() { UserID = contact.User.UserID };
-                    DataAPI.DataAPI.Create(Destination, contactProxy);
+                    Data_API.Create(Destination, contactProxy);
                 }
 
-                DataAPI.DataAPI.Delete(contact);
+                Data_API.Delete(contact);
             }
         }
 
         /// <summary> TagLinks </summary>
         void MergeTagLinks()
         {
-            TagLinkProxy[] sourceTagLinks = DataAPI.DataAPI.Read<TagLinkProxy[]>(Source);
+            TagLinkProxy[] sourceTagLinks = Data_API.Read<TagLinkProxy[]>(Source);
             if (sourceTagLinks.Length == 0)
                 return;
 
-            TagLinkProxy[] destinationTagLinks = DataAPI.DataAPI.Read<TagLinkProxy[]>(Destination);
+            TagLinkProxy[] destinationTagLinks = Data_API.Read<TagLinkProxy[]>(Destination);
             foreach (TagLinkProxy tagLinkProxy in sourceTagLinks)
             {
                 //// WHERE NOT EXISTS(SELECT* FROM TagLinks WITH (NOLOCK) WHERE RefID={destinationTicket.TicketID} AND TagID = {tag} AND Refype = 17)
@@ -205,10 +220,10 @@ namespace TeamSupport.ModelAPI
                         RefID = Destination.TicketID,
                         UserID = subscriptionModel.User.UserID
                     };
-                    DataAPI.DataAPI.Create(Destination, subscriptionProxy);
+                    Data_API.Create(Destination, subscriptionProxy);
                 }
 
-                DataAPI.DataAPI.Delete(subscriptionModel);
+                Data_API.Delete(subscriptionModel);
             }
         }
 
@@ -217,7 +232,7 @@ namespace TeamSupport.ModelAPI
             TicketReminderModel[] reminders = Source.Reminders();
             UpdateArguments args = new UpdateArguments("RefID", Destination.TicketID);
             foreach (TicketReminderModel reminderModel in reminders)
-                DataAPI.DataAPI.Update(Destination, args);
+                Data_API.Update(Destination, args);
         }
 
         void MergeTaskAssociations()
@@ -225,7 +240,7 @@ namespace TeamSupport.ModelAPI
             TaskAssociationModel[] taskAssociations = Source.TaskAssociations();
             UpdateArguments args = new UpdateArguments("RefID", Destination.TicketID);
             foreach (TaskAssociationModel task in taskAssociations)
-                DataAPI.DataAPI.Update(Destination, args);
+                Data_API.Update(Destination, args);
         }
 
         public void Merge()

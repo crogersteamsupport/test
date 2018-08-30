@@ -57,8 +57,8 @@ namespace TeamSupport.Data
     [DataMember, Column] public string OrgsUserCanSeeOnPortal { get; set; }
     [DataMember, Column] public bool DoNotAutoSubscribe { get; set; }
     [DataMember, Column] public bool IsClassicView { get; set; }
-    [DataMember] public string timeZoneDisplay { get; set; }
-    [DataMember] public string CultureDisplay { get; set; }
+    [DataMember, Column] public string timeZoneDisplay { get; set; }
+    [DataMember, Column] public string CultureDisplay { get; set; }
     [DataMember, Column] public bool ShowWelcomePage { get; set; }
     [DataMember, Column] public string UserInformation { get; set; }
     [DataMember, Column] public bool AppChatStatus { get; set; }
@@ -72,14 +72,14 @@ namespace TeamSupport.Data
     [DataMember, Column] public bool ChangeTicketVisibility { get; set; }
     [DataMember, Column] public bool CanChangeCommunityVisibility { get; set; }
     [DataMember, Column] public bool ChangeKbVisibility { get; set; }
-    [DataMember] public string Avatar { get; set; }
+    [DataMember, Column] public string Avatar { get; set; }
     [DataMember, Column] public bool EnforceSingleSession { get; set; }
     [DataMember, Column] public bool NeedsIndexing { get; set; }
     [DataMember, Column] public bool AllowAnyTicketCustomer { get; set; }
     [DataMember, Column] public FontFamily FontFamily { get; set; }
     [DataMember, Column] public FontSize FontSize { get; set; }
-    [DataMember] public string FontFamilyDescription { get; set; }
-    [DataMember] public string FontSizeDescription { get; set; }
+    [DataMember, Column] public string FontFamilyDescription { get; set; }
+    [DataMember, Column] public string FontSizeDescription { get; set; }
     [DataMember, Column] public bool CanCreateCompany { get; set; }
     [DataMember, Column] public bool CanEditCompany { get; set; }
     [DataMember, Column] public bool CanCreateContact { get; set; }

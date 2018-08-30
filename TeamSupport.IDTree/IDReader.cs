@@ -79,7 +79,7 @@ namespace TeamSupport.IDTree
                     query = $"SELECT TagLinkID FROM TagLinks WITH(NOLOCK) WHERE Reftype=17 and RefID = {ticket.TicketID}";
                     break;
             }
-            return ticket.Connection._db.ExecuteQuery<int>(query).ToArray();
+            return ticket.ExecuteQuery<int>(query).ToArray();
         }
 
         public static int[] Read(TicketAssociation childID, TicketModel destinationTicket, TicketModel sourceTicket)
@@ -105,7 +105,7 @@ namespace TeamSupport.IDTree
                     break;
             }
 
-            return sourceTicket.Connection._db.ExecuteQuery<int>(query).ToArray();
+            return sourceTicket.ExecuteQuery<int>(query).ToArray();
         }
 
     }

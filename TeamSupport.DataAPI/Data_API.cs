@@ -19,7 +19,7 @@ namespace TeamSupport.DataAPI
     /// 
     /// Log all changes to DB here!!  Thanks :)
     /// </summary>
-    public static class DataAPI
+    public static class Data_API
     {
         /// <summary> default ToString() doesn't work in some cases </summary>
         static string ToSql(DateTime dateTime) { return dateTime.ToString("yyyy-MM-dd HH:mm:ss.fff"); }
@@ -28,8 +28,9 @@ namespace TeamSupport.DataAPI
         /// <summary>
         /// CREATE - create proxy child for model parent
         /// </summary>
-        public static void Create<TProxy>(IDNode idNode, TProxy tProxy) where TProxy : class
+        public static IDNode Create<TProxy>(IDNode idNode, TProxy tProxy) where TProxy : class
         {
+            IDNode result = null;
             string modification = $", CreatorID={idNode.Connection.UserID}, DateCreated={ToSql(DateTime.UtcNow)}";
 
             string now = ToSql(DateTime.UtcNow);
@@ -42,7 +43,7 @@ namespace TeamSupport.DataAPI
                     {
                         ActionModel model = (ActionModel)idNode;
                         AttachmentProxy proxy = tProxy as AttachmentProxy;
-                        string query = "SET Context_Info 0x55555; " + 
+                        string query = "SET Context_Info 0x55555; " +
                             "INSERT INTO ActionAttachments(OrganizationID, FileName, FileType, FileSize, Path, DateCreated, DateModified, CreatorID, ModifierID, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID) " +
                             $"VALUES({model.Connection.Organization.OrganizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{ToSql(proxy.DateCreated)}', '{ToSql(proxy.DateModified)}', {proxy.CreatorID}, {proxy.ModifierID}, {model.ActionID}, {ToSql(proxy.SentToJira)}, {ToSql(proxy.SentToTFS)}, {ToSql(proxy.SentToSnow)}, {proxy.FilePathID})" +
                             "SELECT SCOPE_IDENTITY()";
@@ -70,7 +71,7 @@ namespace TeamSupport.DataAPI
                         TicketModel model = (TicketModel)idNode;
                         CustomerProxy proxy = tProxy as CustomerProxy;
                         command = $"INSERT INTO OrganizationTickets (TicketID, OrganizationID, DateCreated, CreatorID, DateModified, ModifierID)" +
-                            $"SELECT {model.TicketID}, {proxy.OrganizationID}, '{now}', {creatorID}, '{now}', {creatorID}"; 
+                            $"SELECT {model.TicketID}, {proxy.OrganizationID}, '{now}', {creatorID}, '{now}', {creatorID}";
                     }
                     break;
                 case "SubscriptionProxy":
@@ -81,6 +82,23 @@ namespace TeamSupport.DataAPI
                                 $"SELECT 17, {model.TicketID}, {proxy.UserID}, '{now}','{now}', {creatorID}, {creatorID} ";
                     }
                     break;
+                case "TicketProxy":
+                    {
+                        UserModel user = (UserModel)idNode;
+                        TicketProxy proxy = tProxy as TicketProxy;
+
+                        DataContext db = user.Organization.Connection._db;
+                        Table<TicketProxy> table = db.GetTable<TicketProxy>();
+                        proxy.TicketNumber = 1 + (from ticket in table where ticket.OrganizationID == user.Organization.OrganizationID select ticket.TicketNumber).Max();
+                        table.InsertOnSubmit(proxy);
+                        db.SubmitChanges();
+                        
+                        //int ticketNumber = 1 + GetMaxTicketNumber(user.Organization);
+                        //command = proxy.InsertCommandText(ticketNumber);
+                        //int ticketID = idNode.ExecuteCommand(command);
+                        result = new TicketModel(user.Organization, proxy.TicketID);    // how to bypass Verify? - move to UserModel?
+                    }
+                    break;
                 default:
                     if (Debugger.IsAttached) Debugger.Break();
                     break;
@@ -89,6 +107,15 @@ namespace TeamSupport.DataAPI
             if (!String.IsNullOrEmpty(command))
                 idNode.ExecuteCommand(command);
             // TODO - log
+            return result;
+        }
+
+        static int GetMaxTicketNumber(OrganizationModel organization)
+        {
+            DataContext db = organization.Connection._db;
+            Table<TicketProxy> table = db.GetTable<TicketProxy>();
+            var query = from ticket in table where ticket.OrganizationID == organization.OrganizationID select ticket.TicketNumber;
+            return query.Max();
         }
 
         /// <summary> 
@@ -162,7 +189,7 @@ namespace TeamSupport.DataAPI
                     {
                         TicketModel ticket = (TicketModel)node;
                         string query = $"SELECT * FROM Tickets WHERE TicketID={ticket.TicketID}";
-                        tProxy = node.ExecuteQuery<TaskAssociationProxy>(query).First() as TProxy;
+                        tProxy = node.ExecuteQuery<TicketProxy>(query).First() as TProxy;
                     }
                     break;
                 case "TicketRelationshipProxy[]":
@@ -200,7 +227,7 @@ namespace TeamSupport.DataAPI
                     command = $"UPDATE Actions WITH(ROWLOCK) SET {args.ToString()} WHERE ActionID={id}";
                     break;
                 case "TagLinkNode":
-                    id = ((TagLinkModel)node).TagLinkID;                    command = $"UPDATE TagLinks WITH(ROWLOCK) SET {args.ToString()} WHERE TagLinkID={id} AND RefType=17";
+                    id = ((TagLinkModel)node).TagLinkID; command = $"UPDATE TagLinks WITH(ROWLOCK) SET {args.ToString()} WHERE TagLinkID={id} AND RefType=17";
                     break;
                 case "TaskAssociationNode":
                     id = ((TaskAssociationModel)node).Task.TaskID;
@@ -215,7 +242,7 @@ namespace TeamSupport.DataAPI
                     command = $" UPDATE Reminders WITH(ROWLOCK) SET {args.ToString()} WHERE ReminderID={id} AND RefType=17";
                     break;
                 default:
-                    if(Debugger.IsAttached) Debugger.Break();
+                    if (Debugger.IsAttached) Debugger.Break();
                     break;
             }
             node.ExecuteCommand(command);
@@ -454,7 +481,7 @@ namespace TeamSupport.DataAPI
 
             return log.ExceptionLogID;
         }
-      
+
         #endregion
 
     }

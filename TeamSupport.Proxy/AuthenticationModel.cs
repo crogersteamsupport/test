@@ -38,5 +38,15 @@ namespace TeamSupport.Proxy
             ConnectionString = (cStrings != null) ? cStrings.ConnectionString : ConfigurationManager.AppSettings["ConnectionString"];
         }
 
+        private AuthenticationModel(string userData, string connectionString)
+        {
+            _userData = userData.Split('|');
+            ConnectionString = connectionString;
+        }
+
+        public static AuthenticationModel AuthenticationModelTest(string userData, string connectionString)
+        {
+            return new AuthenticationModel(userData, connectionString);
+        }
     }
 }

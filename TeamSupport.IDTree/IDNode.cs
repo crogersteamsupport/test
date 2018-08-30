@@ -35,7 +35,7 @@ namespace TeamSupport.IDTree
         /// <summary> Verify helper </summary>
         protected void Verify(string query)
         {
-            if (Connection._db.ExecuteQuery<int>(query).Any()) // valid ID found?
+            if (ExecuteQuery<int>(query).Any()) // valid ID found?
                 return;
 
             if (Debugger.IsAttached)

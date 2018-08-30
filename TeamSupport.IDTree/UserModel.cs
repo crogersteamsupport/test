@@ -12,7 +12,7 @@ namespace TeamSupport.IDTree
         public OrganizationModel Organization { get; private set; }
         public int UserID { get; private set; }
 
-        public UserModel(ConnectionContext connection) : this(connection.Organization, connection.UserID, false)
+        public UserModel(ConnectionContext connection) : this(connection.Organization, connection.Authentication.UserID, false)
         {
         }
 
@@ -27,7 +27,7 @@ namespace TeamSupport.IDTree
         public UserModel(ConnectionContext connection, int userID) : base(connection)
         {
             UserID = userID;
-            int organizationID = Connection._db.ExecuteQuery<int>($"SELECT OrganizationID FROM Users WITH (NOLOCK) WHERE UserID={userID}").First();
+            int organizationID = ExecuteQuery<int>($"SELECT OrganizationID FROM Users WITH (NOLOCK) WHERE UserID={userID}").First();
             Organization = new OrganizationModel(connection, organizationID);
         }
 
@@ -44,7 +44,12 @@ namespace TeamSupport.IDTree
 
         public bool AllowUserToEditAnyAction()
         {
-            return Connection._db.ExecuteQuery<bool>($"SELECT AllowUserToEditAnyAction FROM Users WITH (NOLOCK) WHERE UserID={UserID}").First();
+            return ExecuteQuery<bool>($"SELECT AllowUserToEditAnyAction FROM Users WITH (NOLOCK) WHERE UserID={UserID}").First();
+        }
+
+        public bool MarkDeleted()
+        {
+            return ExecuteQuery<bool>($"SELECT MarkDeleted FROM Users WITH (NOLOCK) WHERE UserID={UserID}").First();
         }
 
     }

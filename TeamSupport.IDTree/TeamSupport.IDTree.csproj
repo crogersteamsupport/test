@@ -51,6 +51,7 @@
     <Compile Include="AssetModel.cs" />
     <Compile Include="AssetTicketModel.cs" />
     <Compile Include="AttachmentFile.cs" />
+    <Compile Include="TicketQueueModel.cs" />
     <Compile Include="TSDataTable.cs" />
     <Compile Include="TicketRelationshipModel.cs" />
     <Compile Include="UserModel.cs" />

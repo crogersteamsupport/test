@@ -81,18 +81,18 @@ namespace TeamSupport.IDTree
 
         public int CreatorID()
         {
-            return Connection._db.ExecuteQuery<int>($"SELECT CreatorID FROM Actions WITH (NOLOCK) WHERE ActionID={ActionID}").Min();
+            return ExecuteQuery<int>($"SELECT CreatorID FROM Actions WITH (NOLOCK) WHERE ActionID={ActionID}").Min();
         }
 
         public int TicketID()
         {
-            return Connection._db.ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {ActionID}").Min();
+            return ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {ActionID}").Min();
         }
 
         public static ActionModel[] GetActions(TicketModel ticket)
         {
             string query = $"SELECT ActionId FROM Actions WITH (NOLOCK) WHERE TicketId={ticket.TicketID}";
-            int[] actionIDs = ticket.Connection._db.ExecuteQuery<int>(query).ToArray();
+            int[] actionIDs = ticket.ExecuteQuery<int>(query).ToArray();
             ActionModel[] actions = new ActionModel[actionIDs.Length];
             for (int i = 0; i < actionIDs.Length; ++i)
                 actions[i] = new ActionModel(ticket, actionIDs[i], false);

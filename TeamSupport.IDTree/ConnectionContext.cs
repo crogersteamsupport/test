@@ -34,16 +34,21 @@ namespace TeamSupport.IDTree
         public UserModel User { get; private set; }
         public int UserID { get { return User.UserID; } }
 
-        public ConnectionContext(bool useTransaction = false)
+        public ConnectionContext(bool useTransaction = false) : this(new AuthenticationModel(), useTransaction)
+        {
+
+        }
+
+        public ConnectionContext(AuthenticationModel authentication, bool useTransaction = false)
         {
             // SqlConnection
-            Authentication = new AuthenticationModel();
+            Authentication = authentication;
             _connection = new SqlConnection(Authentication.ConnectionString);  // using
             _connection.Open(); // connection must be open to begin transaction
 
             // DataContext
             _db = new DataContext(_connection);
-            _db.ObjectTrackingEnabled = false;  // use linq read-only
+            //_db.ObjectTrackingEnabled = false;  // use linq read-only
             if (useTransaction)
             {
                 _transaction = _connection.BeginTransaction();

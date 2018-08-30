@@ -24,7 +24,7 @@ namespace TeamSupport.IDTree
             get
             {
                 if (!_ticketNumber.HasValue)
-                    _ticketNumber = Connection._db.ExecuteQuery<int>($"SELECT TicketNumber FROM Tickets WITH(NOLOCK) WHERE TicketId = {TicketID}").First();
+                    _ticketNumber = ExecuteQuery<int>($"SELECT TicketNumber FROM Tickets WITH(NOLOCK) WHERE TicketId = {TicketID}").First();
                 return _ticketNumber.Value;
             }
         }
@@ -73,6 +73,8 @@ namespace TeamSupport.IDTree
         public TicketReminderModel[] Reminders() { return TicketReminderModel.GetTicketReminders(this); }
         public SubscriptionModel[] Subscriptions() { return SubscriptionModel.GetSubscriptions(this); }
         public TaskAssociationModel[] TaskAssociations() { return TaskAssociationModel.GetTaskAssociations(this); }
+        public TicketQueueModel[] TicketQueue() { return TicketQueueModel.GetQueuedTicket(this); }
+
 
         public TicketModel[] ChildTickets()
         {

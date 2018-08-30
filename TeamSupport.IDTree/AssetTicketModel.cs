@@ -28,7 +28,7 @@ namespace TeamSupport.IDTree
             OrganizationModel organization = ticket.Organization;
             //int[] ids = IDReader.Read(TicketChild.Asset, ticket);   // $"SELECT AssetID From AssetTickets WITH (NOLOCK) WHERE TicketID = {ticket.TicketID}"
             string query = $"SELECT AssetID From AssetTickets WITH (NOLOCK) WHERE TicketID = {ticket.TicketID}";
-            int[] ids = ticket.Connection._db.ExecuteQuery<int>(query).ToArray();
+            int[] ids = ticket.ExecuteQuery<int>(query).ToArray();
             AssetTicketModel[] models = new AssetTicketModel[ids.Length];
             for (int i = 0; i < ids.Length; ++i)
                 models[i] = new AssetTicketModel(new AssetModel(organization, ids[i]), ticket, false);

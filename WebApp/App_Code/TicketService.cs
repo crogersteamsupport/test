@@ -3919,8 +3919,7 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public string MergeTickets(int winningTicketID, int losingTicketID)
         {
-           //return  ModelAPI.MergeTickets(winningTicketID, losingTicketID);
-           //return  ModelAPI.MergeTickets(TSAuthentication.Ticket, winningTicketID, losingTicketID);
+           return  ModelAPI.MergeTickets(winningTicketID, losingTicketID);
 
             Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), winningTicketID);
             String errLocation = "";

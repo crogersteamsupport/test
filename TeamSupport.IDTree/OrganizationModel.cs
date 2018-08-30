@@ -19,7 +19,7 @@ namespace TeamSupport.IDTree
         public int OrganizationID { get; private set; }
 
         /// <summary> OrganizationID and UserID come from ConnectionContext.Authentication </summary>
-        public OrganizationModel(ConnectionContext connection) : this(connection, connection.Organization.OrganizationID, false)
+        public OrganizationModel(ConnectionContext connection) : this(connection, connection.Authentication.OrganizationID, false)
         {
         }
 
@@ -36,7 +36,7 @@ namespace TeamSupport.IDTree
 
         public OrganizationModel Parent()
         {
-            int? parentID = Connection._db.ExecuteQuery<int?>($"SELECT ParentID FROM Organizations WITH (NOLOCK) WHERE OrganizationID={OrganizationID}").FirstOrDefault();
+            int? parentID = ExecuteQuery<int?>($"SELECT ParentID FROM Organizations WITH (NOLOCK) WHERE OrganizationID={OrganizationID}").FirstOrDefault();
             if (!parentID.HasValue)
                 return null;
             return new OrganizationModel(Connection, parentID.Value);
