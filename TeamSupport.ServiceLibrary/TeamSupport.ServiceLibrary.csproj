@@ -288,6 +288,10 @@
     <Compile Include="IndexSources\ContactIndexDataSource.cs" />
     <Compile Include="IndexSources\WaterCoolerIndexDataSource.cs" />
     <Compile Include="IndexSources\WikiIndexDataSource.cs" />
+    <Compile Include="ZohoCRM\ZohoAccountProducts.cs" />
+    <Compile Include="ZohoCRM\ZohoAccountData.cs" />
+    <Compile Include="ZohoCRM\ZohoContactData.cs" />
+    <Compile Include="ZohoCRM\ZohoCRMv2.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TeamSupport.Data\TeamSupport.Data.csproj">
