@@ -943,7 +943,6 @@
     <Compile Include="Proxies\InvoicesProxy.cs" />
     <Compile Include="Proxies\KBStatsProxy.cs" />
     <Compile Include="Proxies\KnowledgeBaseCategoriesProxy.cs" />
-    <Compile Include="Proxies\KnowledgeBaseCategoryTicketsProxy.cs" />
     <Compile Include="Proxies\LoginAttemptsProxy.cs" />
     <Compile Include="Proxies\LoginHistoryProxy.cs" />
     <Compile Include="Proxies\MiscellaneousLogProxy.cs" />

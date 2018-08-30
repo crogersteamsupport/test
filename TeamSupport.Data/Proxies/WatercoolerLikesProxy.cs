@@ -8,23 +8,11 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(WatercoolerLikProxy))]
-  public class WatercoolerLikProxy
+  public partial class WatercoolerLike : BaseItem
   {
-    public WatercoolerLikProxy() {}
-    [DataMember] public int MessageID { get; set; }
-    [DataMember] public int UserID { get; set; }
-    [DataMember] public string UserName { get; set; }
-    [DataMember] public DateTime DateCreated { get; set; }
-          
-  }
-  
-  public partial class WatercoolerLik : BaseItem
-  {
-    public WatercoolerLikProxy GetProxy()
+    public WatercoolerLikeProxy GetProxy()
     {
-      WatercoolerLikProxy result = new WatercoolerLikProxy();
+      WatercoolerLikeProxy result = new WatercoolerLikeProxy();
       result.UserID = this.UserID;
       result.MessageID = this.MessageID;
 

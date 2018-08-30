@@ -8,18 +8,6 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(ActionLinkToTFSItemProxy))]
-  public class ActionLinkToTFSItemProxy
-  {
-    public ActionLinkToTFSItemProxy() {}
-    [DataMember] public int id { get; set; }
-    [DataMember] public int ActionID { get; set; }
-    [DataMember] public DateTime? DateModifiedByTFSSync { get; set; }
-    [DataMember] public int? TFSID { get; set; }
-          
-  }
-  
   public partial class ActionLinkToTFSItem : BaseItem
   {
     public ActionLinkToTFSItemProxy GetProxy()
