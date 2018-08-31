@@ -31,7 +31,7 @@ namespace TeamSupport.UnitTest
                     TicketProxy inTicketProxy = EmptyTicket();
                     TicketModel ticket = Data_API.Create(user, inTicketProxy) as TicketModel;  // user created a ticketD
                     TicketProxy outTicketProxy = Data_API.Read<TicketProxy>(ticket);
-                    //Assert.AreEqual(inTicketProxy, outTicketProxy);
+                    Assert.AreEqual(inTicketProxy, outTicketProxy);
 
                     for (int j = 0; j < 10; ++j)
                     {
@@ -39,7 +39,7 @@ namespace TeamSupport.UnitTest
                         ActionProxy inActionProxy = EmptyAction();
                         ActionModel action = Data_API.Create(ticket, inActionProxy) as ActionModel;
                         ActionProxy outActionProxy = Data_API.Read<ActionProxy>(action);
-                        //Assert.AreEqual(inActionProxy, outActionProxy);
+                        Assert.AreEqual(inActionProxy, outActionProxy);
                     }
                 }
             }

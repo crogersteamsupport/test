@@ -68,13 +68,13 @@ namespace TeamSupport.DataAPI
                         //result = new ActionModel(model, id);    // how to bypass Verify?
 
                         // 2. linq
-                        //DataContext db = model.Connection._db;
-                        //Table<ActionProxy> table = db.GetTable<ActionProxy>();
-                        //table.InsertOnSubmit(proxy);
-                        //db.SubmitChanges();
+                        DataContext db = model.Connection._db;
+                        Table<ActionProxy> table = db.GetTable<ActionProxy>();
+                        table.InsertOnSubmit(proxy);
+                        db.SubmitChanges();
 
                         // 3. TeamSupport.Data
-                        proxy.ActionID = NewAction(model, proxy);
+                        //proxy.ActionID = NewAction(model, proxy);
 
                         result = new ActionModel(model, proxy.ActionID);    // how to bypass Verify?
                     }
@@ -120,13 +120,13 @@ namespace TeamSupport.DataAPI
                         //result = new TicketModel(model.Organization, id);    // how to bypass Verify?
 
                         // 2. linq
-                        //DataContext db = model.Organization.Connection._db;
-                        //Table<TicketProxy> table = db.GetTable<TicketProxy>();
-                        //table.InsertOnSubmit(proxy);
-                        //db.SubmitChanges();
+                        DataContext db = model.Organization.Connection._db;
+                        Table<TicketProxy> table = db.GetTable<TicketProxy>();
+                        table.InsertOnSubmit(proxy);
+                        db.SubmitChanges();
 
                         // 3. TeamSupport.Data
-                        proxy.TicketID = NewTicket(model, proxy);
+                        //proxy.TicketID = NewTicket(model, proxy);
 
                         result = new TicketModel(model.Organization, proxy.TicketID);    // how to bypass Verify? - move to UserModel?
                     }
