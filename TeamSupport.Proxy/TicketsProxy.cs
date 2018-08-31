@@ -54,33 +54,31 @@ namespace TeamSupport.Data
     [DataMember, Column] public DateTime? DateModifiedBySalesForceSync { get; set; }
     [DataMember, Column] public int? ImportFileID { get; set; }
 
-        string ToSql<T>(T value) { return value == null ? "NULL" : value.ToString(); }
-        string ToSql(int? value) { return value.HasValue ? value.Value.ToString() : "NULL"; }
-        string ToSql(DateTime? value) { return value.HasValue ? ToSql(value.Value) : "NULL"; }
-        string ToSql(DateTime value) { return "'" + value.ToString("yyyy-MM-dd HH:mm:ss.fff") + "'"; }
-        string ToSql(bool value) { return value ? "1" : "0"; }
-        string ToSql(string value) { return $"'{value}'"; }
+        //string ToSql<T>(T value) { return value == null ? "NULL" : value.ToString(); }
+        //string ToSql(int? value) { return value.HasValue ? value.Value.ToString() : "NULL"; }
+        //string ToSql(DateTime? value) { return value.HasValue ? ToSql(value.Value) : "NULL"; }
+        //string ToSql(DateTime value) { return "'" + value.ToString("yyyy-MM-dd HH:mm:ss.fff") + "'"; }
+        //string ToSql(bool value) { return value ? "1" : "0"; }
+        //string ToSql(string value) { return $"'{value}'"; }
 
-
-
-        public string InsertCommandText(int ticketNumber)
-        {
-            return $"INSERT INTO Tickets (" +
-                $"ReportedVersionID, SolvedVersionID, ProductID, GroupID, UserID, TicketStatusID, TicketTypeID, " +
-                $"TicketSeverityID, OrganizationID, Name, ParentID, TicketNumber, IsVisibleOnPortal, IsKnowledgeBase, " +
-                $"DateClosed, CloserID, ImportID, LastViolationTime, LastWarningTime, TicketSource, PortalEmail, " +
-                $"SlaViolationTimeClosed, SlaViolationLastAction, SlaViolationInitialResponse, SlaWarningTimeClosed, " +
-                $"SlaWarningLastAction, SlaWarningInitialResponse, NeedsIndexing, DocID, DateCreated, DateModified, " +
-                $"CreatorID, ModifierID, KnowledgeBaseCategoryID, DateModifiedBySalesForceSync, SalesForceID, ImportFileID" +
-                $") VALUES(" +
-                $"{ToSql(ReportedVersionID)}, {ToSql(SolvedVersionID)}, {ToSql(ProductID)}, {ToSql(GroupID)}, {ToSql(UserID)}, {ToSql(TicketStatusID)}, {ToSql(TicketTypeID)}, " +
-                $"{ToSql(TicketSeverityID)}, {ToSql(OrganizationID)}, {ToSql(Name)}, {ToSql(ParentID)}, {ticketNumber}, {ToSql(IsVisibleOnPortal)}, {ToSql(IsKnowledgeBase)}, " +
-                $"{ToSql(DateClosed)}, {ToSql(CloserID)}, {ToSql(ImportID)}, {ToSql(LastViolationTime)}, {ToSql(LastWarningTime)}, {ToSql(TicketSource)}, {ToSql(PortalEmail)}, " +
-                $"{ToSql(SlaViolationTimeClosed)}, {ToSql(SlaViolationLastAction)}, {ToSql(SlaViolationInitialResponse)}, {ToSql(SlaWarningTimeClosed)}, " +
-                $"{ToSql(SlaWarningLastAction)}, {ToSql(SlaWarningInitialResponse)}, {ToSql(NeedsIndexing)}, {ToSql(DocID)}, {ToSql(DateCreated)}, {ToSql(DateModified)}, " +
-                $"{ToSql(CreatorID)}, {ToSql(ModifierID)}, {ToSql(KnowledgeBaseCategoryID)}, {ToSql(DateModifiedBySalesForceSync)}, {ToSql(SalesForceID)}, {ToSql(ImportFileID)}" +
-                $") SELECT SCOPE_IDENTITY()";
-        }
+        //public string InsertCommandText(int ticketNumber)
+        //{
+        //    return $"INSERT INTO Tickets (" +
+        //        $"ReportedVersionID, SolvedVersionID, ProductID, GroupID, UserID, TicketStatusID, TicketTypeID, " +
+        //        $"TicketSeverityID, OrganizationID, Name, ParentID, TicketNumber, IsVisibleOnPortal, IsKnowledgeBase, " +
+        //        $"DateClosed, CloserID, ImportID, LastViolationTime, LastWarningTime, TicketSource, PortalEmail, " +
+        //        $"SlaViolationTimeClosed, SlaViolationLastAction, SlaViolationInitialResponse, SlaWarningTimeClosed, " +
+        //        $"SlaWarningLastAction, SlaWarningInitialResponse, NeedsIndexing, DocID, DateCreated, DateModified, " +
+        //        $"CreatorID, ModifierID, KnowledgeBaseCategoryID, DateModifiedBySalesForceSync, SalesForceID, ImportFileID" +
+        //        $") VALUES(" +
+        //        $"{ToSql(ReportedVersionID)}, {ToSql(SolvedVersionID)}, {ToSql(ProductID)}, {ToSql(GroupID)}, {ToSql(UserID)}, {ToSql(TicketStatusID)}, {ToSql(TicketTypeID)}, " +
+        //        $"{ToSql(TicketSeverityID)}, {ToSql(OrganizationID)}, {ToSql(Name)}, {ToSql(ParentID)}, {ticketNumber}, {ToSql(IsVisibleOnPortal)}, {ToSql(IsKnowledgeBase)}, " +
+        //        $"{ToSql(DateClosed)}, {ToSql(CloserID)}, {ToSql(ImportID)}, {ToSql(LastViolationTime)}, {ToSql(LastWarningTime)}, {ToSql(TicketSource)}, {ToSql(PortalEmail)}, " +
+        //        $"{ToSql(SlaViolationTimeClosed)}, {ToSql(SlaViolationLastAction)}, {ToSql(SlaViolationInitialResponse)}, {ToSql(SlaWarningTimeClosed)}, " +
+        //        $"{ToSql(SlaWarningLastAction)}, {ToSql(SlaWarningInitialResponse)}, {ToSql(NeedsIndexing)}, {ToSql(DocID)}, {ToSql(DateCreated)}, {ToSql(DateModified)}, " +
+        //        $"{ToSql(CreatorID)}, {ToSql(ModifierID)}, {ToSql(KnowledgeBaseCategoryID)}, {ToSql(DateModifiedBySalesForceSync)}, {ToSql(SalesForceID)}, {ToSql(ImportFileID)}" +
+        //        $") SELECT SCOPE_IDENTITY()";
+        //}
     }
   
 }

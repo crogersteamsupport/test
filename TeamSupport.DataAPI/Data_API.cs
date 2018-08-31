@@ -11,6 +11,8 @@ using System.Diagnostics;
 using TeamSupport.Data;
 using System.Web;
 using TeamSupport.IDTree;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace TeamSupport.DataAPI
 {
@@ -59,6 +61,11 @@ namespace TeamSupport.DataAPI
                         proxy.CreatorID = proxy.ModifierID = model.Connection.UserID;
                         proxy.DateCreated = proxy.DateModified = DateTime.UtcNow;
 
+                        //command = proxy.InsertCommandText();
+                        //SqlCommand sqlCommand = new SqlCommand(command, model.Connection._connection);
+                        //int id = Decimal.ToInt32((decimal)sqlCommand.ExecuteScalar());
+                        //result = new ActionModel(model, id);    // how to bypass Verify?
+
                         DataContext db = model.Connection._db;
                         Table<ActionProxy> table = db.GetTable<ActionProxy>();
                         table.InsertOnSubmit(proxy);
@@ -98,13 +105,17 @@ namespace TeamSupport.DataAPI
                         proxy.CreatorID = proxy.ModifierID = model.UserID;
                         proxy.UserID = model.Connection.UserID;
                         proxy.DateCreated = proxy.DateModified = DateTime.UtcNow;
+                        proxy.TicketNumber = 1 + model.ExecuteQuery<int>($"SELECT MAX(TicketNumber) FROM Tickets WHERE OrganizationID={model.Organization.OrganizationID}").Max();
+
+                        //command = proxy.InsertCommandText(proxy.TicketNumber);
+                        //SqlCommand sqlCommand = new SqlCommand(command, model.Connection._connection);
+                        //int id = Decimal.ToInt32((decimal)sqlCommand.ExecuteScalar());
+                        //result = new TicketModel(model.Organization, id);    // how to bypass Verify?
 
                         DataContext db = model.Organization.Connection._db;
                         Table<TicketProxy> table = db.GetTable<TicketProxy>();
-                        proxy.TicketNumber = 1 + (from row in table where row.OrganizationID == model.Organization.OrganizationID select row.TicketNumber).Max();
                         table.InsertOnSubmit(proxy);
                         db.SubmitChanges();
-                        
                         result = new TicketModel(model.Organization, proxy.TicketID);    // how to bypass Verify? - move to UserModel?
                     }
                     break;
@@ -113,8 +124,8 @@ namespace TeamSupport.DataAPI
                     break;
             }
 
-            if (!String.IsNullOrEmpty(command))
-                idNode.ExecuteCommand(command);
+            //if (!String.IsNullOrEmpty(command))
+            //    idNode.ExecuteCommand(command);
             // TODO - log
             return result;
         }
@@ -130,10 +141,17 @@ namespace TeamSupport.DataAPI
                 case "ActionProxy": // action
                     {
                         ActionModel model = (ActionModel)node;
-                        DataContext db = model.Connection._db;
-                        Table<ActionProxy> table = db.GetTable<ActionProxy>();
-                        var query = from row in table where row.ActionID == model.ActionID select row;
-                        tProxy = query.First() as TProxy;
+                        {
+                            DataContext db = model.Connection._db;
+                            Table<ActionProxy> table = db.GetTable<ActionProxy>();
+                            var query = from row in table where row.ActionID == model.ActionID select row;
+                            tProxy = query.First() as TProxy;
+                        }
+                        //{
+                        //    string query = $"SELECT ActionID, ActionTypeID, SystemActionTypeID, Name, TimeSpent, DateStarted, IsVisibleOnPortal, IsKnowledgeBase, ImportID, DateCreated, DateModified, CreatorID, ModifierID, TicketID, Description, SalesForceID, DateModifiedBySalesForceSync, Pinned, ImportFileID FROM Actions WHERE ActionID={model.ActionID}";
+                        //    DataRow row = model.Connection.GetRowCollection(query)[0];
+                        //    tProxy = new ActionProxy(row) as TProxy;
+                        //}
                     }
                     break;
                 case "ActionProxy[]":   // ticket actions

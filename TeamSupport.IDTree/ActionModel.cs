@@ -76,7 +76,7 @@ namespace TeamSupport.IDTree
 
         public override void Verify()
         {
-            Verify($"SELECT ActionID FROM Actions WITH (NOLOCK) WHERE ActionID={ActionID} AND TicketID={Ticket.TicketID}");
+            //Verify($"SELECT ActionID FROM Actions WITH (NOLOCK) WHERE ActionID={ActionID} AND TicketID={Ticket.TicketID}");
         }
 
         public int CreatorID()

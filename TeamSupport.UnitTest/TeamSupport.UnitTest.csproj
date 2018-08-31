@@ -66,10 +66,6 @@
       <Project>{11c7d899-bcaa-408f-8b85-35593ab7e617}</Project>
       <Name>TeamSupport.IDTree</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TeamSupport.ModelAPI\TeamSupport.ModelAPI.csproj">
-      <Project>{7e2b2e07-518a-47a4-a39a-502654e8c8ed}</Project>
-      <Name>TeamSupport.ModelAPI</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TeamSupport.Proxy\TeamSupport.Proxy.csproj">
       <Project>{8f3f388c-10f5-45d4-9f4c-471236dc14c0}</Project>
       <Name>TeamSupport.Proxy</Name>

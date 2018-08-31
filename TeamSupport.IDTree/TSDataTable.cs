@@ -11,12 +11,9 @@ namespace TeamSupport.IDTree
 {
     public class TSDataTable : IDisposable
     {
-        public DataTable _table { get; private set; }
         Proxy.AuthenticationModel _authentication;
         SqlConnection _connection;
         SqlTransaction _transaction;
-        SqlCommand _command;
-        SqlDataAdapter _adapter;
 
         //const string ActionQuery = "SET NOCOUNT OFF; SELECT [ActionID], [ActionTypeID], [SystemActionTypeID], [Name], [TimeSpent], [DateStarted], [IsVisibleOnPortal], [IsKnowledgeBase], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [TicketID], [ActionSource], [DateModifiedBySalesForceSync], [SalesForceID], [DateModifiedByJiraSync], [JiraID], [Pinned], [Description], [IsClean], [ImportFileID] FROM [dbo].[Actions] WHERE ([ActionID] = @t0);";
         //const string UserQuery = "SET NOCOUNT OFF; SELECT [UserID], [Email], [FirstName], [MiddleName], [LastName], [Title], [CryptedPassword], [IsActive], [MarkDeleted], [TimeZoneID], [CultureName], [LastLogin], [LastActivity], [LastPing], [LastWaterCoolerID], [IsSystemAdmin], [IsFinanceAdmin], [IsPasswordExpired], [IsPortalUser], [IsChatUser], [PrimaryGroupID], [InOffice], [InOfficeComment], [ReceiveTicketNotifications], [ReceiveAllGroupNotifications], [SubscribeToNewTickets], [ActivatedOn], [DeactivatedOn], [OrganizationID], [LastVersion], [SessionID], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [OrgsUserCanSeeOnPortal], [DoNotAutoSubscribe], [IsClassicView], [SubscribeToNewActions], [ApprovedTerms], [ShowWelcomePage], [UserInformation], [PortalAutoReg], [AppChatID], [AppChatStatus], [MenuItems], [TicketRights], [Signature], [LinkedIn], [OnlyEmailAfterHours], [BlockInboundEmail], [SalesForceID], [ChangeTicketVisibility], [ChangeKBVisibility], [EnforceSingleSession], [NeedsIndexing], [AllowAnyTicketCustomer], [FontFamily], [FontSize], [CanCreateCompany], [CanEditCompany], [CanCreateContact], [CanEditContact], [RestrictUserFromEditingAnyActions], [AllowUserToEditAnyAction], [UserCanPinAction], [PortalLimitOrgTickets], [CanCreateAsset], [CanEditAsset], [CanChangeCommunityVisibility], [FilterInactive], [DisableExporting], [DisablePublic], [CanCreateProducts], [CanEditProducts], [CanCreateVersions], [CanEditVersions], [ReceiveUnassignedGroupEmails], [ProductFamiliesRights], [BlockEmailFromCreatingOnly], [CalGUID], [PortalViewOnly], [verificationPhoneNumber], [verificationCode], [verificationCodeExpiration], [PasswordCreatedUtc], [ImportFileID], [PortalLimitOrgChildrenTickets], [CanBulkMerge] FROM [dbo].[Users] WHERE ([UserID] = @t0);";
@@ -27,33 +24,36 @@ namespace TeamSupport.IDTree
             _connection = new SqlConnection(_authentication.ConnectionString);
             _connection.Open();
             _transaction = _connection.BeginTransaction(IsolationLevel.ReadUncommitted);
-            _command = new SqlCommand()
-            {
-                Connection = _connection,
-                Transaction = _transaction,
-                CommandText = query,
-                CommandType = CommandType.Text,
-            };
-            for (int i = 0; i < args.Length; ++i)
-            {
-                SqlParameter parameter = new SqlParameter($"@t{i}", _typeMap[args[i].GetType()]);
-                parameter.Value = args[i];
-                _command.Parameters.Add(parameter);
-            }
+        }
 
-            _table = new DataTable();
-            try
+        public void Commit() { _transaction.Commit(); }
+        public void Rollback() { _transaction.Rollback(); }
+
+        public DataRowCollection Load(string query, params object[] args)
+        {
+            using (DataTable _table = new DataTable())
+            using (SqlCommand _command = new SqlCommand())
             {
-                _adapter = new SqlDataAdapter(_command);
-                _adapter.FillSchema(_table, SchemaType.Source);
-                _adapter.Fill(_table);
-                _transaction.Commit();
+                _command.Connection = _connection;
+                _command.Transaction = _transaction;
+                _command.CommandText = query;
+                _command.CommandType = CommandType.Text;
+
+                // parameters
+                for (int i = 0; i < args.Length; ++i)
+                {
+                    SqlParameter parameter = new SqlParameter($"@t{i}", _typeMap[args[i].GetType()]);
+                    parameter.Value = args[i];
+                    _command.Parameters.Add(parameter);
+                }
+
+                using (SqlDataAdapter _adapter = new SqlDataAdapter(_command))
+                {
+                    _adapter.FillSchema(_table, SchemaType.Source);
+                    _adapter.Fill(_table);
+                }
+                return _table.Rows;
             }
-            catch (Exception e)
-            {
-                _transaction.Rollback();
-            }
-            _connection.Close();
         }
 
         public void Dispose()
@@ -67,12 +67,6 @@ namespace TeamSupport.IDTree
             if (!disposing)
                 return;
 
-            if (_adapter != null)
-                _adapter.Dispose();
-            if (_command != null)
-                _command.Dispose();
-            if (_table != null)
-                _table.Dispose();
             if (_transaction != null)
                 _transaction.Dispose();
             if (_connection != null)
