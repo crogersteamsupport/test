@@ -61,15 +61,21 @@ namespace TeamSupport.DataAPI
                         proxy.CreatorID = proxy.ModifierID = model.Connection.UserID;
                         proxy.DateCreated = proxy.DateModified = DateTime.UtcNow;
 
+                        // 1. sql command
                         //command = proxy.InsertCommandText();
                         //SqlCommand sqlCommand = new SqlCommand(command, model.Connection._connection);
                         //int id = Decimal.ToInt32((decimal)sqlCommand.ExecuteScalar());
                         //result = new ActionModel(model, id);    // how to bypass Verify?
 
-                        DataContext db = model.Connection._db;
-                        Table<ActionProxy> table = db.GetTable<ActionProxy>();
-                        table.InsertOnSubmit(proxy);
-                        db.SubmitChanges();
+                        // 2. linq
+                        //DataContext db = model.Connection._db;
+                        //Table<ActionProxy> table = db.GetTable<ActionProxy>();
+                        //table.InsertOnSubmit(proxy);
+                        //db.SubmitChanges();
+
+                        // 3. TeamSupport.Data
+                        proxy.ActionID = NewAction(model, proxy);
+
                         result = new ActionModel(model, proxy.ActionID);    // how to bypass Verify?
                     }
                     break;
@@ -107,15 +113,21 @@ namespace TeamSupport.DataAPI
                         proxy.DateCreated = proxy.DateModified = DateTime.UtcNow;
                         proxy.TicketNumber = 1 + model.ExecuteQuery<int>($"SELECT MAX(TicketNumber) FROM Tickets WHERE OrganizationID={model.Organization.OrganizationID}").Max();
 
+                        // 1. sql command
                         //command = proxy.InsertCommandText(proxy.TicketNumber);
                         //SqlCommand sqlCommand = new SqlCommand(command, model.Connection._connection);
                         //int id = Decimal.ToInt32((decimal)sqlCommand.ExecuteScalar());
                         //result = new TicketModel(model.Organization, id);    // how to bypass Verify?
 
-                        DataContext db = model.Organization.Connection._db;
-                        Table<TicketProxy> table = db.GetTable<TicketProxy>();
-                        table.InsertOnSubmit(proxy);
-                        db.SubmitChanges();
+                        // 2. linq
+                        //DataContext db = model.Organization.Connection._db;
+                        //Table<TicketProxy> table = db.GetTable<TicketProxy>();
+                        //table.InsertOnSubmit(proxy);
+                        //db.SubmitChanges();
+
+                        // 3. TeamSupport.Data
+                        proxy.TicketID = NewTicket(model, proxy);
+
                         result = new TicketModel(model.Organization, proxy.TicketID);    // how to bypass Verify? - move to UserModel?
                     }
                     break;
@@ -503,6 +515,66 @@ namespace TeamSupport.DataAPI
             log.Collection.Save();
 
             return log.ExceptionLogID;
+        }
+
+        public static int NewTicket(UserModel user, TicketProxy info)
+        {
+            LoginUser loginUser = new LoginUser(user.Connection.Authentication.ConnectionString, user.UserID, user.Connection.OrganizationID, null);
+            Ticket ticket = new Tickets(loginUser).AddNewTicket();
+            ticket.OrganizationID = info.OrganizationID;
+            //ticket.TicketSource = info.ChatID != null ? "Chat" : "Agent";
+            ticket.Name = info.Name;
+            ticket.TicketTypeID = info.TicketTypeID;
+            ticket.TicketStatusID = info.TicketStatusID;
+            ticket.TicketSeverityID = info.TicketSeverityID;
+            ticket.UserID = info.UserID < 0 ? null : (int?)info.UserID;
+            ticket.GroupID = info.GroupID < 0 ? null : (int?)info.GroupID;
+            ticket.ProductID = info.ProductID < 0 ? null : (int?)info.ProductID;
+            //ticket.ReportedVersionID = info.ReportedID < 0 ? null : (int?)info.ReportedID;
+            //ticket.SolvedVersionID = info.ResolvedID < 0 ? null : (int?)info.ResolvedID;
+            ticket.ProductID = info.ProductID < 0 ? null : (int?)info.ProductID;
+            //ticket.IsKnowledgeBase = info.IsKnowledgebase;
+            ticket.KnowledgeBaseCategoryID = info.KnowledgeBaseCategoryID < 0 ? null : (int?)info.KnowledgeBaseCategoryID;
+
+            //User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
+            //if (ticket.IsKnowledgeBase && !user.ChangeKBVisibility && !user.IsSystemAdmin)
+            //{
+            //    ticket.IsVisibleOnPortal = false;
+            //}
+            //else
+            //{
+            //    ticket.IsVisibleOnPortal = info.IsVisibleOnPortal;
+            //}
+
+            //ticket.ParentID = info.ParentTicketID;
+            //ticket.DueDate = info.DueDate;
+            ticket.Collection.Save();
+            return ticket.TicketID;
+        }
+
+        public static int NewAction(TicketModel ticket, ActionProxy info)
+        {
+            ConnectionContext connection = ticket.Connection;
+            LoginUser loginUser = new LoginUser(connection.Authentication.ConnectionString, connection.UserID, connection.OrganizationID, null);
+            TeamSupport.Data.Action action = (new Actions(loginUser)).AddNewAction();
+            action.ActionTypeID = null;
+            action.Name = "Description";
+            action.SystemActionTypeID = SystemActionType.Description;
+            //action.ActionSource = ticket.TicketSource;
+            action.Description = info.Description;
+
+            //if (!string.IsNullOrWhiteSpace(user.Signature) && info.IsVisibleOnPortal)
+            //{
+            //    action.Description = action.Description + "<br/><br/>" + user.Signature;
+            //}
+
+            //action.IsVisibleOnPortal = ticket.IsVisibleOnPortal;
+            //action.IsKnowledgeBase = ticket.IsKnowledgeBase;
+            action.TicketID = ticket.TicketID;
+            action.TimeSpent = info.TimeSpent;
+            action.DateStarted = info.DateStarted;
+            action.Collection.Save();
+            return action.ActionID;
         }
 
         #endregion
