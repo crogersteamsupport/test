@@ -93,7 +93,7 @@ namespace TSWebServices
             if (ConnectionContext.ActionAttachmentsEnabled)    // append action attachments for ticket by filename
             {
                 AttachmentProxy[] results;
-                ModelAPI.ReadActionAttachmentsForTicket(ticket.TicketID, ActionAttachmentsByTicketID.ByFilename, out results);
+                Model_API.ReadActionAttachmentsForTicket(ticket.TicketID, ActionAttachmentsByTicketID.ByFilename, out results);
                 info.Attachments = results;
             }
             else
@@ -280,7 +280,7 @@ namespace TSWebServices
 
                     if(ConnectionContext.ActionAttachmentsEnabled) // read action attachments
                     {
-                        timeLineItem.Attachments = ModelAPI.Read<AttachmentProxy[]>(viewItem.RefID);
+                        timeLineItem.Attachments = Model_API.Read<AttachmentProxy[]>(viewItem.RefID);
                     }
                     else
                     {
@@ -1771,7 +1771,7 @@ namespace TSWebServices
             if (ConnectionContext.ActionAttachmentsEnabled)    // read action attachments
             {
                 int actionID = item.item.RefID;
-                item.Attachments = ModelAPI.Read<AttachmentProxy[]>(actionID);
+                item.Attachments = Model_API.Read<AttachmentProxy[]>(actionID);
             }
             else
             {
@@ -1814,7 +1814,7 @@ namespace TSWebServices
             // Read action attachments
             if (ConnectionContext.ActionAttachmentsEnabled)    // read action attachments
             {
-                return ModelAPI.Read<AttachmentProxy[]>(actionID);
+                return Model_API.Read<AttachmentProxy[]>(actionID);
             }
 
             Attachments attachments = new Attachments(loginUser);
@@ -1866,7 +1866,7 @@ namespace TSWebServices
             if (ConnectionContext.ActionAttachmentsEnabled)    // clone Knowledge Base action attachments from entire ticket to single action
             {
                 AttachmentProxy[] results;
-                ModelAPI.ReadActionAttachmentsForTicket(insertedKBTicketID, ActionAttachmentsByTicketID.KnowledgeBase, out results);
+                Model_API.ReadActionAttachmentsForTicket(insertedKBTicketID, ActionAttachmentsByTicketID.KnowledgeBase, out results);
                 foreach(AttachmentProxy attachment in results)
                 {
                     attachment.AttachmentID = 0;    // not used
@@ -1879,7 +1879,7 @@ namespace TSWebServices
                     File.Copy(attachment.Path, clonedActionAttachmentPath);
                     attachment.Path = clonedActionAttachmentPath;
 
-                    ModelAPI.Create(attachment);
+                    Model_API.Create(attachment);
                 }
                 return;
             }

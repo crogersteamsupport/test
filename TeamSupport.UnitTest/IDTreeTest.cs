@@ -4,6 +4,7 @@ using TeamSupport.IDTree;
 using TeamSupport.Data;
 using TeamSupport.Proxy;
 using TeamSupport.DataAPI;
+using TeamSupport.ModelAPI;
 using System.Configuration;
 using System.Web.Configuration;
 using System.Data.Linq;
@@ -16,8 +17,9 @@ namespace TeamSupport.UnitTest
         [TestMethod]
         public void TestMethod1()
         {
-            AuthenticationModel authentication = AuthenticationModel.AuthenticationModelTest("4787299|1078|0|51dab274-5d73-4f56-8df9-da97d20cdc5b|1",
-                "Application Name=App;Data Source=dev-sql.corp.teamsupport.com; Initial Catalog=TeamSupportNightly;Persist Security Info=True;User ID=Dev-Sql-WebApp;Password=TeamSupportDev;Connect Timeout=500;");
+            string userData = "4787299|1078|0|51dab274-5d73-4f56-8df9-da97d20cdc5b|1";
+            string connectionString = "Application Name=App;Data Source=dev-sql.corp.teamsupport.com; Initial Catalog=TeamSupportNightly;Persist Security Info=True;User ID=Dev-Sql-WebApp;Password=TeamSupportDev;Connect Timeout=500;";
+            AuthenticationModel authentication = AuthenticationModel.AuthenticationModelTest(userData, connectionString);
 
             using (ConnectionContext connection = new ConnectionContext(authentication))
             {
@@ -25,24 +27,36 @@ namespace TeamSupport.UnitTest
                 OrganizationModel organization = connection.Organization;
                 UserModel user = connection.User;
 
-                for (int i = 0; i < 10; ++i)
-                {
-                    // new ticket
-                    TicketProxy inTicketProxy = EmptyTicket();
-                    TicketModel ticket = Data_API.Create(user, inTicketProxy) as TicketModel;  // user created a ticketD
-                    TicketProxy outTicketProxy = Data_API.Read<TicketProxy>(ticket);
-                    Assert.AreEqual(inTicketProxy, outTicketProxy);
-
-                    for (int j = 0; j < 10; ++j)
-                    {
-                        // new action
-                        ActionProxy inActionProxy = EmptyAction();
-                        ActionModel action = Data_API.Create(ticket, inActionProxy) as ActionModel;
-                        ActionProxy outActionProxy = Data_API.Read<ActionProxy>(action);
-                        Assert.AreEqual(inActionProxy, outActionProxy);
-                    }
-                }
+                TicketModel source = InsertTicket(user);
+                TicketModel destination = InsertTicket(user);
+                Model_API.MergeTickets(source.TicketID, destination.TicketID);
             }
+        }
+
+        public static TicketModel InsertTicket(UserModel user)
+        {
+            // new ticket
+            TicketProxy inTicketProxy = EmptyTicket();
+            TicketModel ticket = Data_API.Create(user, inTicketProxy) as TicketModel;  // user created a ticketD
+            TicketProxy outTicketProxy = Data_API.Read<TicketProxy>(ticket);
+            Assert.AreEqual(inTicketProxy, outTicketProxy);
+
+            // Actions
+            ActionModel[] actions = new ActionModel[4];
+            for (int j = 0; j < 4; ++j)
+            {
+                // new action
+                ActionProxy inActionProxy = EmptyAction();
+                actions[j] = Data_API.Create(ticket, inActionProxy) as ActionModel;
+                Assert.AreEqual(actions[j], ticket.Action(actions[j].ActionID));
+                ActionProxy outActionProxy = Data_API.Read<ActionProxy>(actions[j]);
+                Assert.AreEqual(inActionProxy, outActionProxy);
+            }
+
+            ActionModel[] readActions = ticket.Actions();
+            CollectionAssert.AreEqual(actions, readActions);
+
+            return ticket;
         }
 
         public static TicketProxy EmptyTicket()

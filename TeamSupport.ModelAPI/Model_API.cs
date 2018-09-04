@@ -16,7 +16,7 @@ using TeamSupport.DataAPI;
 namespace TeamSupport.ModelAPI
 {
     /// <summary> CRUD interface to DataAPI - Create, Read, Update, Delete proxy </summary>
-    public static class ModelAPI
+    public static class Model_API
     {
         /// <summary> 
         /// CREATE

@@ -47,6 +47,12 @@ namespace TeamSupport.IDTree
             Verify();
         }
 
+        public override bool Equals(object o)
+        {
+            ActionModel rhs = o as ActionModel;
+            return (Connection == rhs.Connection) && (Ticket == rhs.Ticket) && (ActionID == rhs.ActionID);
+        }
+
         public ActionProxy ActionProxy()
         {
             return ExecuteQuery<ActionProxy>($"SELECT * FROM Actions WHERE ActionID={ActionID}").First();
@@ -91,7 +97,7 @@ namespace TeamSupport.IDTree
 
         public static ActionModel[] GetActions(TicketModel ticket)
         {
-            string query = $"SELECT ActionId FROM Actions WITH (NOLOCK) WHERE TicketId={ticket.TicketID}";
+            string query = $"SELECT ActionID FROM Actions WITH (NOLOCK) WHERE TicketId={ticket.TicketID}";
             int[] actionIDs = ticket.ExecuteQuery<int>(query).ToArray();
             ActionModel[] actions = new ActionModel[actionIDs.Length];
             for (int i = 0; i < actionIDs.Length; ++i)

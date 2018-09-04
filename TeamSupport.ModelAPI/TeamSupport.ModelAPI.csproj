@@ -43,7 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ModelAPI.cs" />
+    <Compile Include="Model_API.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TicketMerge.cs" />
   </ItemGroup>

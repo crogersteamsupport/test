@@ -3159,7 +3159,7 @@ WHERE t.TicketID = @TicketID
 
             if (TeamSupport.IDTree.ConnectionContext.ActionAttachmentsEnabled)  // Read action attachments
             {
-                actionInfo.Attachments = ModelAPI.Read<AttachmentProxy[]>(action.ActionID);
+                actionInfo.Attachments = Model_API.Read<AttachmentProxy[]>(action.ActionID);
             }
             else
                 actionInfo.Attachments = action.GetAttachments().GetAttachmentProxies();
@@ -3593,7 +3593,7 @@ WHERE t.TicketID = @TicketID
         {
             if (TeamSupport.IDTree.ConnectionContext.ActionAttachmentsEnabled)  // delete action attachment
             {
-                ModelAPI.DeleteActionAttachment(attachmentID);
+                Model_API.DeleteActionAttachment(attachmentID);
                 return;
             }
 
@@ -3919,7 +3919,7 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public string MergeTickets(int winningTicketID, int losingTicketID)
         {
-           return  ModelAPI.MergeTickets(winningTicketID, losingTicketID);
+           return  Model_API.MergeTickets(winningTicketID, losingTicketID);
 
             Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), winningTicketID);
             String errLocation = "";

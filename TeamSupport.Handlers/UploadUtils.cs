@@ -40,7 +40,7 @@ namespace TeamSupport.Handlers
             if (IDTree.ConnectionContext.ActionAttachmentsEnabled && (folder == AttachmentPath.Folder.Actions)) // save action attachments
             {
                 List<AttachmentProxy> attachmentProxies = null;
-                attachmentProxies = ModelAPI.ModelAPI.CreateActionAttachments(itemID.Value, context);    // ticketID, actionID, actionAttachments
+                attachmentProxies = ModelAPI.Model_API.CreateActionAttachments(itemID.Value, context);    // ticketID, actionID, actionAttachments
 
                 // respond to front end
                 context.Response.Clear();
