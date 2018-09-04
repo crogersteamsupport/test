@@ -5059,9 +5059,9 @@ function CreateTicketToolbarDomEvents() {
             return;
         }
 
-        //if ($('#dialog-ticketmerge-confirm').prop("checked")) {
-            var winningID = $('#Ticket-Merge-search').val()
-            var winningTicketNumber = winningID;//$('#Ticket-Merge-search').data('ticketnumber');
+        if ($('#dialog-ticketmerge-confirm').prop("checked")) {
+            var winningID = $('#Ticket-Merge-search').data('ticketid');
+            var winningTicketNumber = $('#Ticket-Merge-search').data('ticketnumber');
             var JSTop = top;
             window.parent.Ts.Services.Tickets.MergeTickets(winningID, _ticketID, function(result) {
                 if (result != "") {
@@ -5074,9 +5074,9 @@ function CreateTicketToolbarDomEvents() {
                     window.parent.Ts.Services.Dispatch.TicketUpdate(_ticketNumber + "," + winningTicketNumber, "merge", userFullName);
                 }
             });
-        //} else {
-        //    alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
-        //}
+        } else {
+            alert("You did not agree to the conditions of the merge. Please go back and check the box if you would like to merge.")
+        }
     });
 
     $('#Ticket-Refresh').click(function(e) {
