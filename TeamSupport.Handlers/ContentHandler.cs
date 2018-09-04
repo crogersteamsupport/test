@@ -960,12 +960,12 @@ namespace TeamSupport.Handlers
             int id;
             if (int.TryParse(attachmentID, out id))
             {
-                if (IDTree.ConnectionContext.ActionAttachmentsEnabled)  // open action attachment by ID
-                {
-                    AttachmentProxy proxy = ModelAPI.Model_API.Read<AttachmentProxy>(id);
-                    OpenActionAttachment(context, browser, proxy);
-                    return;
-                }
+                //if (IDTree.ConnectionContext.ActionAttachmentsEnabled)  // open action attachment by ID
+                //{
+                //    AttachmentProxy proxy = ModelAPI.Model_API.Read<AttachmentProxy>(id);
+                //    OpenActionAttachment(context, browser, proxy);
+                //    return;
+                //}
 
                 TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, id);
                 Organization organization = Organizations.GetOrganization(attachment.Collection.LoginUser, attachment.OrganizationID);
@@ -1053,13 +1053,13 @@ namespace TeamSupport.Handlers
 
             else
             {
-                if (IDTree.ConnectionContext.ActionAttachmentsEnabled)  // open action attachment by Guid
-                {
-                    int idFromGuid = ModelAPI.Model_API.AttachmentIDFromGUID(Guid.Parse(attachmentID));
-                    AttachmentProxy proxy = ModelAPI.Model_API.Read<AttachmentProxy>(idFromGuid);
-                    OpenActionAttachment(context, browser, proxy);
-                    return;
-                }
+                //if (IDTree.ConnectionContext.ActionAttachmentsEnabled)  // open action attachment by Guid
+                //{
+                //    int idFromGuid = ModelAPI.Model_API.AttachmentIDFromGUID(Guid.Parse(attachmentID));
+                //    AttachmentProxy proxy = ModelAPI.Model_API.Read<AttachmentProxy>(idFromGuid);
+                //    OpenActionAttachment(context, browser, proxy);
+                //    return;
+                //}
 
                 SqlCommand command = new SqlCommand();
                 command.CommandText = "SELECT AttachmentID FROM Attachments WHERE AttachmentGUID=@AttachmentGUID";
