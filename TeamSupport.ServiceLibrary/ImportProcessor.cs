@@ -6568,7 +6568,7 @@ namespace TeamSupport.ServiceLibrary
                 note.CreatorID = creatorID;
                 note.Description = ConvertHtmlLineBreaks(ReadString("Description", string.Empty));
                 note.RefID = companyID;
-                note.RefType = AttachmentType.Organizations;
+                note.RefType = ReferenceType.Organizations;
                 note.Title = ReadString("Title", string.Empty).Trim();
                 note.ModifierID = -5;
                 note.ImportFileID = import.ImportID;
@@ -6693,7 +6693,7 @@ namespace TeamSupport.ServiceLibrary
                 note.CreatorID = creatorID;
                 note.Description = ConvertHtmlLineBreaks(ReadString("Description", string.Empty));
                 note.RefID = contactID;
-                note.RefType = AttachmentType.Users;
+                note.RefType = ReferenceType.Users;
                 note.Title = ReadString("Title", string.Empty).Trim();
                 if (note.Title == string.Empty)
                 {

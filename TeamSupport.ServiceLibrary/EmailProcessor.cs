@@ -567,8 +567,8 @@ namespace TeamSupport.ServiceLibrary
 
 				if (CanIncludeAttachments(ticket, actions, ticketOrganization))
 				{
-					AttachmentProxy[] attachments = ModelAPI.ModelAPI.Read<AttachmentProxy[]>(actions[0].ActionID);
-					foreach (AttachmentProxy attachment in attachments)
+					Attachments attachments = actions[0].GetAttachments();
+					foreach (Data.Attachment attachment in attachments)
 					{
 						fileNames.Add(attachment.Path);
 						Logs.WriteEventFormat("Adding Attachment   AttachmentID:{0}, ActionID:{1}, Path:{2}", attachment.AttachmentID.ToString(), actions[0].ActionID.ToString(), attachment.Path);
@@ -689,8 +689,8 @@ namespace TeamSupport.ServiceLibrary
 
 					if (CanIncludeAttachments(ticket, actions, ticketOrganization))
 					{
-						AttachmentProxy[] attachments = ModelAPI.ModelAPI.Read<AttachmentProxy[]>(actions[0].ActionID);
-						foreach (AttachmentProxy attachment in attachments)
+						Attachments attachments = actions[0].GetAttachments();
+						foreach (Data.Attachment attachment in attachments)
 						{
 							fileNames.Add(attachment.Path);
 						}
@@ -864,8 +864,9 @@ namespace TeamSupport.ServiceLibrary
 
 					if (CanIncludeAttachments(ticket, actions, ticketOrganization))
 					{
-						AttachmentProxy[] attachments = ModelAPI.ModelAPI.Read<AttachmentProxy[]>(actions[0].ActionID);
-						foreach (AttachmentProxy attachment in attachments)
+						Attachments attachments = actions[0].GetAttachments();
+
+						foreach (Data.Attachment attachment in attachments)
 						{
 							fileNames.Add(attachment.Path);
 							Logs.WriteEvent(string.Format("Adding Attachment   AttachmentID:{0}, ActionID:{1}, Path:{2}", attachment.AttachmentID.ToString(), actions[0].ActionID.ToString(), attachment.Path));
@@ -1114,8 +1115,9 @@ namespace TeamSupport.ServiceLibrary
 
 				if (includeAttachments)
 				{
-					AttachmentProxy[] attachments = ModelAPI.ModelAPI.Read<AttachmentProxy[]>(actions[0].ActionID);
-					foreach (AttachmentProxy attachment in attachments)
+					Attachments attachments = action.GetAttachments();
+
+					foreach (Data.Attachment attachment in attachments)
 					{
 						fileNames.Add(attachment.Path);
 						Logs.WriteEventFormat("Adding Attachment   AttachmentID:{0}, ActionID:{1}, Path:{2}", attachment.AttachmentID.ToString(), actions[0].ActionID.ToString(), attachment.Path);

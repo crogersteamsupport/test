@@ -12,8 +12,9 @@ namespace TeamSupport.Data
 
     [DataContract(Namespace = "http://teamsupport.com/")]
     [KnownType(typeof(AttachmentProxy))]
-    public abstract class AttachmentProxy
+    public class AttachmentProxy
     {
+        public AttachmentProxy() { }
         protected AttachmentProxy(ReferenceType type, int refID)
         {
             RefType = type;
@@ -31,8 +32,8 @@ namespace TeamSupport.Data
         [DataMember, Column] public DateTime DateModified { get; set; }
         [DataMember, Column] public int CreatorID { get; set; }
         [DataMember, Column] public int ModifierID { get; set; }
-        [DataMember, Column] protected ReferenceType RefType { get; set; }
-        [DataMember, Column] protected int RefID { get; set; }
+        [DataMember, Column] public ReferenceType RefType { get; set; }
+        [DataMember, Column] public int RefID { get; set; }
         [DataMember, Column] public string CreatorName { get; set; }
         [DataMember, Column] public bool SentToJira { get; set; }
         [DataMember, Column] public int? ProductFamilyID { get; set; }

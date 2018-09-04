@@ -83,7 +83,6 @@ namespace TeamSupport.Data
         return attachments[0];
     }
 
-    [Obsolete("Use DataAPI instead!", false)]
     public void LoadByActionID(int actionID, string orderBy = "")
     {
       LoadByReference((ReferenceType)ReferenceType.Actions, actionID, orderBy);
