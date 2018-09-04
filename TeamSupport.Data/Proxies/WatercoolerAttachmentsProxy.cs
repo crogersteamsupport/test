@@ -37,7 +37,7 @@ namespace TeamSupport.Data
         [DataMember]
         public string UserName { get; set; }
         [DataMember]
-        public AttachmentType ActivityRefType { get; set; }
+        public ReferenceType ActivityRefType { get; set; }
         [DataMember]
         public string ActivityTitle { get; set; }
         [DataMember]

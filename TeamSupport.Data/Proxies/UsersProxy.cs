@@ -120,7 +120,7 @@ namespace TeamSupport.Data
       result.CanCreateVersions = this.CanCreateVersions;
       result.CanEditVersions = this.CanEditVersions;
       Attachments att = new Attachments(BaseCollection.LoginUser);
-      att.LoadByReference(AttachmentType.UserPhoto, this.UserID);
+      att.LoadByReference(ReferenceType.UserPhoto, this.UserID);
 
       if (att.Count > 0)
       {

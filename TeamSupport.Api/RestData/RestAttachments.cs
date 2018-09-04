@@ -102,11 +102,11 @@ namespace TeamSupport.Api
       Attachments attachments = new Attachments(command.LoginUser);
       if (orderByDateCreated)
       {
-        attachments.LoadByReference(AttachmentType.Assets, assetID, "DateCreated DESC");
+        attachments.LoadByReference(ReferenceType.Assets, assetID, "DateCreated DESC");
       }
       else
       {
-        attachments.LoadByReference(AttachmentType.Assets, assetID);
+        attachments.LoadByReference(ReferenceType.Assets, assetID);
       }
 
       return attachments.GetXml("Attachments", "Attachment", true, command.Filters);

@@ -1786,7 +1786,7 @@ SET IDENTITY_INSERT Users Off
 		  public void MergeUpdateFiles(int losingUserID, int winningUserID, string contactName, LoginUser loginUser)
 		  {
 			  Attachments attachments = new Attachments(loginUser);
-			  attachments.LoadByReference(AttachmentType.Users, losingUserID);
+			  attachments.LoadByReference(ReferenceType.Users, losingUserID);
 			  if (attachments.Count > 0)
 			  {
 				  string pathWithoutFileName = System.IO.Path.GetDirectoryName(attachments[0].Path);

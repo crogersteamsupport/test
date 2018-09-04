@@ -17,7 +17,7 @@ using System.IO;
 
 public partial class Dialogs_Note : BaseDialogPage
 {
-  private AttachmentType _referenceType;
+  private ReferenceType _referenceType;
   private int _referenceID;
   private int _noteID = -1;
 
@@ -32,7 +32,7 @@ public partial class Dialogs_Note : BaseDialogPage
     else
     {
       _referenceID = int.Parse(Request["RefID"]);
-      _referenceType = (AttachmentType)int.Parse(Request["RefType"]);
+      _referenceType = (ReferenceType)int.Parse(Request["RefType"]);
 
     }
     

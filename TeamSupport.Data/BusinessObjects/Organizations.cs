@@ -2884,7 +2884,7 @@ ORDER BY
         public void MergeUpdateFiles(int losingOrganizationID, int winningOrganizationID, string companyName, LoginUser loginUser)
         {
             Attachments attachments = new Attachments(loginUser);
-            attachments.LoadByReference(AttachmentType.Organizations, losingOrganizationID);
+            attachments.LoadByReference(ReferenceType.Organizations, losingOrganizationID);
             if (attachments.Count > 0)
             {
                 string pathWithoutFileName = System.IO.Path.GetDirectoryName(attachments[0].Path);

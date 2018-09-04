@@ -1191,12 +1191,12 @@ namespace TSWebServices
                 //org
                 switch (n.RefType)
                 {
-                    case AttachmentType.Organizations:
+                    case ReferenceType.Organizations:
                         Organizations org = new Organizations(TSAuthentication.GetLoginUser());
                         org.LoadByOrganizationID(n.RefID);
                         organizationName = org.FirstOrDefault().Name;
                         break;
-                    case AttachmentType.Users:
+                    case ReferenceType.Users:
                         Users user = new Users(TSAuthentication.GetLoginUser());
                         user.LoadByUserID(n.RefID);
                         Organizations userorg = new Organizations(TSAuthentication.GetLoginUser());
@@ -1213,7 +1213,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public NoteProxy[] LoadNotes(int refID, AttachmentType refType)
+        public NoteProxy[] LoadNotes(int refID, ReferenceType refType)
         {
             Notes notes = new Notes(TSAuthentication.GetLoginUser());
             notes.LoadByReferenceType(refType, refID);
@@ -1221,10 +1221,10 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public NoteProxy[] LoadNotes2(int refID, AttachmentType refType, bool includeChildren)
+        public NoteProxy[] LoadNotes2(int refID, ReferenceType refType, bool includeChildren)
         {
             Notes notes = new Notes(TSAuthentication.GetLoginUser());
-            if (refType == AttachmentType.Users)
+            if (refType == ReferenceType.Users)
                 notes.LoadByReferenceTypeUser(refType, refID, "DateCreated", includeChildren);
             else
                 notes.LoadByReferenceType(refType, refID, "DateCreated", includeChildren);
@@ -1235,11 +1235,11 @@ namespace TSWebServices
             var notesProxy = notes.GetNoteProxies();
             foreach (var note in notesProxy)
             {
-                if (refType == AttachmentType.Users)
+                if (refType == ReferenceType.Users)
                 {
                     note.Owner = Users.GetUserFullName(TSAuthentication.GetLoginUser(), note.RefID);
                 }
-                note.Attachments = LoadFiles(note.NoteID, refType == AttachmentType.Organizations ? AttachmentType.CompanyActivity : AttachmentType.ContactActivity);
+                note.Attachments = LoadFiles(note.NoteID, refType == ReferenceType.Organizations ? ReferenceType.CompanyActivity : ReferenceType.ContactActivity);
                 if (note.ActivityType < 5) //default values
                 {
                     note.ActivityTypeString = Enum.GetName(typeof(ActivityTypeEnum), note.ActivityType);
@@ -1254,7 +1254,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public NoteProxy[] LoadNotesByUserRights(int refID, AttachmentType refType, bool includeChildren, string organizationID = "")
+        public NoteProxy[] LoadNotesByUserRights(int refID, ReferenceType refType, bool includeChildren, string organizationID = "")
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Notes notes = new Notes(loginUser);
@@ -1270,8 +1270,8 @@ namespace TSWebServices
 
             foreach (var note in notesProxy)
             {
-                note.Attachments = LoadFiles(note.NoteID, refType == AttachmentType.Organizations ? AttachmentType.CompanyActivity : AttachmentType.ContactActivity);
-                if(refType == AttachmentType.Users)
+                note.Attachments = LoadFiles(note.NoteID, refType == ReferenceType.Organizations ? ReferenceType.CompanyActivity : ReferenceType.ContactActivity);
+                if(refType == ReferenceType.Users)
                 {
                     note.Owner = Users.GetUserFullName(TSAuthentication.GetLoginUser(), note.RefID);
                 }
@@ -1295,7 +1295,7 @@ namespace TSWebServices
             notes.LoadByNoteID(noteID);
 
             var notesProxy = notes[0].GetProxy();
-            notesProxy.Attachments = LoadFiles(notesProxy.NoteID, notesProxy.RefType == AttachmentType.Organizations ? AttachmentType.CompanyActivity : AttachmentType.ContactActivity);
+            notesProxy.Attachments = LoadFiles(notesProxy.NoteID, notesProxy.RefType == ReferenceType.Organizations ? ReferenceType.CompanyActivity : ReferenceType.ContactActivity);
 
             return notesProxy;
         }
@@ -1545,7 +1545,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public AttachmentProxy[] LoadFiles(int refID, AttachmentType refType)
+        public AttachmentProxy[] LoadFiles(int refID, ReferenceType refType)
         {
             Attachments attachments = new Attachments(TSAuthentication.GetLoginUser());
             attachments.LoadByReference(refType, refID, "DateCreated desc");
@@ -1554,7 +1554,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public AttachmentProxy[] LoadFiles2(int refID, AttachmentType refType, bool includeChildren)
+        public AttachmentProxy[] LoadFiles2(int refID, ReferenceType refType, bool includeChildren)
         {
             Attachments attachments = new Attachments(TSAuthentication.GetLoginUser());
             attachments.LoadByReference(refType, refID, "DateCreated desc", includeChildren);
@@ -2858,7 +2858,7 @@ SELECT
         }
 
         [WebMethod]
-        public int SaveNote(string title, string noteText, int noteID, int refID, AttachmentType refType, int ActivityType, string DateOccurred, bool isAlert = false, int productFamilyID = -1)
+        public int SaveNote(string title, string noteText, int noteID, int refID, ReferenceType refType, int ActivityType, string DateOccurred, bool isAlert = false, int productFamilyID = -1)
         {
             Note note = null;
             bool isNew = false;

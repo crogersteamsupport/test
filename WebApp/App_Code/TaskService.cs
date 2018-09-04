@@ -196,7 +196,7 @@ namespace TSWebServices
         public AttachmentProxy[] GetAttachments(int reminderID)
         {
             Attachments attachments = new Attachments(TSAuthentication.GetLoginUser());
-            attachments.LoadByReference(AttachmentType.Tasks, reminderID);
+            attachments.LoadByReference(ReferenceType.Tasks, reminderID);
             return attachments.GetAttachmentProxies();
         }
 
@@ -382,11 +382,11 @@ namespace TSWebServices
                 if(notes.Count > 0)
                 {
                     var note = notes[0];
-                    if(note.RefType == AttachmentType.Organizations)
+                    if(note.RefType == ReferenceType.Organizations)
                     {
                         AddAssociation(newTask.TaskID, ActivityID, ReferenceType.CompanyActivity);
                     }
-                    else if (note.RefType == AttachmentType.Users)
+                    else if (note.RefType == ReferenceType.Users)
                     {
                         AddAssociation(newTask.TaskID, ActivityID, ReferenceType.ContactActivity);
                     }

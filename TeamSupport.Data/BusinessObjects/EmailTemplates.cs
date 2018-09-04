@@ -481,7 +481,7 @@ namespace TeamSupport.Data
             if (Subject.ToLower().Contains(associationsParameterName.ToLower()) || Body.ToLower().Contains(associationsParameterName.ToLower()))
             {
                 Attachments attachments = new Attachments(loginUser);
-                attachments.LoadByReference(AttachmentType.Tasks, taskID);
+                attachments.LoadByReference(ReferenceType.Tasks, taskID);
 
                 TaskAssociationsView associations = new TaskAssociationsView(loginUser);
                 associations.LoadByTaskIDOnly(taskID);

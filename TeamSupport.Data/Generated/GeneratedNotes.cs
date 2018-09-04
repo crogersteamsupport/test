@@ -90,9 +90,9 @@ namespace TeamSupport.Data
       set { Row["RefID"] = CheckValue("RefID", value); }
     }
     
-    public AttachmentType RefType
+    public ReferenceType RefType
     {
-      get { return (AttachmentType)Row["RefType"]; }
+      get { return (ReferenceType)Row["RefType"]; }
       set { Row["RefType"] = CheckValue("RefType", value); }
     }
     

@@ -487,7 +487,7 @@ namespace TeamSupport.Handlers
 
             //New image, check if one has been uploaded
             Attachments attachments = new Attachments(LoginUser.Anonymous);
-            attachments.LoadByReference(AttachmentType.UserPhoto, userID);
+            attachments.LoadByReference(ReferenceType.UserPhoto, userID);
             StringBuilder path = new StringBuilder();
             if (attachments.Count > 0)
             {

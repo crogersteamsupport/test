@@ -807,7 +807,7 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public AttachmentProxy[] LoadFiles(int refID, AttachmentType refType)
+    public AttachmentProxy[] LoadFiles(int refID, ReferenceType refType)
     {
       Attachments attachments = new Attachments(TSAuthentication.GetLoginUser());
       attachments.LoadByReference(refType, refID);

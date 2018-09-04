@@ -86,20 +86,20 @@ namespace TeamSupport.Data
     [Obsolete("Use DataAPI instead!", false)]
     public void LoadByActionID(int actionID, string orderBy = "")
     {
-      LoadByReference((AttachmentType)ReferenceType.Actions, actionID, orderBy);
+      LoadByReference((ReferenceType)ReferenceType.Actions, actionID, orderBy);
     }
 
     public void LoadByWatercoolerID(int WaterCoolerID)
     {
-        LoadByReference(AttachmentType.WaterCooler, WaterCoolerID);
+        LoadByReference(ReferenceType.WaterCooler, WaterCoolerID);
     }
 
     public void LoadByOrganizationID(int organizationID)
     {
-      LoadByReference(AttachmentType.Organizations, organizationID);
+      LoadByReference(ReferenceType.Organizations, organizationID);
     }
 
-    public void LoadByReference(AttachmentType refType, int refID, string orderBy = "", bool includeCompanyChildren = false)
+    public void LoadByReference(ReferenceType refType, int refID, string orderBy = "", bool includeCompanyChildren = false)
     {
       using (SqlCommand command = new SqlCommand())
       {
