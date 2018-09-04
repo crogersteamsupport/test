@@ -5223,10 +5223,12 @@ function CreateTicketToolbarDomEvents() {
             _newAction = actionInfo;
 
             if ($('.upload-queue li').length > 0) {
-                UploadAttachments(_newAction)
+                UploadAttachments(_newAction);
             }
             else {
-                resetEmailModal();
+                window.parent.Ts.Services.TicketPage.EmailTicket(_ticketID, $("#ticket-email-input").val(), $("#ticket-intro-input").val(), _newAction.item.RefID, function () {
+                    resetEmailModal();
+                });
             }
             var actionElement = CreateActionElement(actionInfo, false);
             actionElement.find('.ticket-action-number').text(_actionTotal);

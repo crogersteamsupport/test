@@ -1010,29 +1010,30 @@ $(document).ready(function () {
             $('#btnNotesSave').text("Save");
             $('#btnNotesCancel').show();
             $('#noteAttachmentsRow').show();
-            for (var i = 0; i < note.Attachments.length ; i++)
-            {
-                var div = $('<div>');
+            if (note.Attachments != null) {
+                for (var i = 0; i < note.Attachments.length ; i++) {
+                    var div = $('<div>');
 
-                var name = $('<span>')
-                    .addClass('noteAttachmentName')
-                    .text(note.Attachments[i].FileName)
-                    .appendTo(div);
+                    var name = $('<span>')
+                        .addClass('noteAttachmentName')
+                        .text(note.Attachments[i].FileName)
+                        .appendTo(div);
 
-                $('<i>')
-                    .addClass('fa fa-trash-o')
-                    .appendTo(div)
-                    .click(function (e) {
-                        if (confirm("Are you sure you want to delete this file attachment")) {
-                            _mainFrame.Ts.System.logAction('Contact Detail - Delete Note File Attachment');
-                            parent.privateServices.DeleteAttachment(note.Attachments[i].AttachmentID, function (e) {
-                                div.remove();
-                            });
-                        }
-                    });
+                    $('<i>')
+                        .addClass('fa fa-trash-o')
+                        .appendTo(div)
+                        .click(function (e) {
+                            if (confirm("Are you sure you want to delete this file attachment")) {
+                                _mainFrame.Ts.System.logAction('Contact Detail - Delete Note File Attachment');
+                                parent.privateServices.DeleteAttachment(note.Attachments[i].AttachmentID, function (e) {
+                                    div.remove();
+                                });
+                            }
+                        });
 
-                div.appendTo($('#noteAttachments'));
-            };
+                    div.appendTo($('#noteAttachments'));
+                };
+            }
             $('#noteForm').show();
             initEditor($('#fieldNoteDesc'), function (ed) {
                 $('#fieldNoteDesc').tinymce().setContent(desc);

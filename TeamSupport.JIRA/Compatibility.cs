@@ -89,14 +89,14 @@ namespace TeamSupport.JIRA
     public class JiraClient : IJiraClient
     {
         private readonly IJiraClient<IssueFields> client;
-        public JiraClient(string baseUrl, string username, string password)
+        public JiraClient(string baseUrl, string username, string token)
         {
-            client = new JiraClient<IssueFields>(baseUrl, username, password);
+            client = new JiraClient<IssueFields>(baseUrl, username, token);
         }
 
-		public JiraClient(string baseUrl, string username, string password, string apiPath)
+		public JiraClient(string baseUrl, string username, string token, string apiPath)
 		{
-			client = new JiraClient<IssueFields>(baseUrl, username, password, apiPath);
+            client = new JiraClient<IssueFields>(baseUrl, username, token);
 		}
 
 		public IssueMetaData.RootObject GetIssueMetaData(string projectKey, string issueType)

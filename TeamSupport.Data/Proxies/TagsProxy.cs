@@ -16,7 +16,7 @@ namespace TeamSupport.Data
       TagProxy result = new TagProxy();
 
       result.CreatorID = this.CreatorID;
-      result.Value = (this.Value);
+      result.Value = this.Value;
       result.OrganizationID = this.OrganizationID;
       result.TagID = this.TagID;
        

@@ -141,7 +141,8 @@ namespace TeamSupport.ModelAPI
             catch (Exception ex)
             {
                 // TODO - tell user we failed to read
-                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
+                        int logid = DataAPI.DataAPI.LogException(connection.Authentication, ex, "Ticket Merge Exception:" + ex.Source);
+                        return $"Error merging tickets. Exception #{logid}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.";
             }
         }
 
@@ -179,8 +180,8 @@ namespace TeamSupport.ModelAPI
             }
             catch (Exception ex)
             {
-                // TODO - tell user we failed to read
-                DataAPI.DataAPI.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
+                int logid = DataAPI.DataAPI.LogException(new Proxy.AuthenticationModel(authenticationTicket), ex, "Ticket Merge Exception:" + ex.Source);
+                return $"Error merging tickets. Exception #{logid}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.";
             }
         }
 

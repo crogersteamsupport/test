@@ -56,6 +56,7 @@ namespace TeamSupport.Model
         public static void VerifyTagLink(DataContext db, int organizationID, int ticketID, int tagLinkID) { Verify(db, $"SELECT TagLinkID FROM TagLinks WITH (NOLOCK) WHERE TagLinkID={tagLinkID} AND RefID={ticketID} AND RefType=17"); }
         public static void VerifyReminder(DataContext db, int organizationID, int ticketID, int reminderID) { Verify(db, $"SELECT ReminderID FROM Reminders WITH (NOLOCK) WHERE ReminderID={reminderID} AND OrganizationID={organizationID}"); }
         public static void VerifySubscription(DataContext db, int organizationID, int ticketID, int userID)
+        static void Verify(DataContext db, string query)
         {
             string query = $"SELECT Subscriptions.userid FROM Subscriptions WITH (NOLOCK) " +
                 $"JOIN Users WITH (NOLOCK) ON users.userid = Subscriptions.userid " +
@@ -65,6 +66,8 @@ namespace TeamSupport.Model
         public static void VerifyTaskAssociation(DataContext db, int organizationID, int ticketID, int taskID)
         {
             Verify(db, $"SELECT TaskID FROM TaskAssociations WITH (NOLOCK) WHERE TaskID={taskID} AND Refid={ticketID} and RefType = 17");
+            if (!db.ExecuteQuery<int>(query).Any()) // valid ID found?
+                throw new Exception(String.Format($"{query} not found"));
         }
 
 
@@ -157,6 +160,4 @@ namespace TeamSupport.Model
         }
 
     }
-
-
-}
+    }

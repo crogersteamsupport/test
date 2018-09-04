@@ -517,8 +517,8 @@ Grid.prototype = {
                 self.grid.updateRowCount();
                 self.grid.render();
 
-                //$('.countbubble#'+ self.report.ReportID).text('(' + self.datamodel.data.length + ')');
-                //$('.countbubble').show();
+                $('.countbubble#'+ self.report.ReportID).text('(' + self.datamodel.data.length + ')');
+                $('.countbubble').show();
 
                 hideLoadingIndicator();
             });

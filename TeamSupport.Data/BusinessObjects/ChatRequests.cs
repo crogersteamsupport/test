@@ -60,7 +60,7 @@ AND (cr.TargetUserID IS NULL OR cr.TargetUserID = @UserID)
 			string groupJoinClause = "";
 			string groupWhereClause = "";
 
-            if (groupID != null)
+            if (groupID != null && groupID != 0)
             {
                 groupJoinClause = @"JOIN GroupUsers ON u.UserID = GroupUsers.UserID";
                 groupWhereClause = @"AND GroupUsers.GroupID = @GroupID";

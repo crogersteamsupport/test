@@ -530,7 +530,7 @@ function GetCustomValues() {
             case parent.Ts.CustomFieldType.DateTime:
                 var text = $(this).find('a').text();
                 var value = parent.Ts.Utils.getMsDate(text);
-                field.Value = text == null ? null : value.toUTCString();
+                field.Value = text == 'unassigned' ? null : value.toUTCString();
                 break;
             default:
                 field.Value = $(this).find('input').val();
