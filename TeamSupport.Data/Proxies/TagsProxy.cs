@@ -9,19 +9,6 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(TagProxy))]
-  public class TagProxy
-  {
-    public TagProxy() {}
-    [DataMember] public int TagID { get; set; }
-    [DataMember] public int OrganizationID { get; set; }
-    [DataMember] public string Value { get; set; }
-    [DataMember] public DateTime DateCreated { get; set; }
-    [DataMember] public int CreatorID { get; set; }
-          
-  }
-  
   public partial class Tag : BaseItem
   {
     public TagProxy GetProxy()
@@ -29,7 +16,7 @@ namespace TeamSupport.Data
       TagProxy result = new TagProxy();
 
       result.CreatorID = this.CreatorID;
-      result.Value = (this.Value);
+      result.Value = this.Value;
       result.OrganizationID = this.OrganizationID;
       result.TagID = this.TagID;
        

@@ -9,7 +9,6 @@ using System.Globalization;
 
 namespace TeamSupport.Data
 {
-
   public partial class User : BaseItem
   {
     public UserProxy GetProxy()

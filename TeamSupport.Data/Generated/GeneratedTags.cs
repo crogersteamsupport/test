@@ -34,18 +34,18 @@ namespace TeamSupport.Data
     
 
     
+    public string Value
+    {
+      get { return Row["Value"] != DBNull.Value ? (string)Row["Value"] : null; }
+      set { Row["Value"] = CheckValue("Value", value); }
+    }
+    
 
     
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
       set { Row["CreatorID"] = CheckValue("CreatorID", value); }
-    }
-    
-    public string Value
-    {
-      get { return (string)Row["Value"]; }
-      set { Row["Value"] = CheckValue("Value", value); }
     }
     
     public int OrganizationID
@@ -175,7 +175,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Value", SqlDbType.VarChar, 200);
+		tempParameter = updateCommand.Parameters.Add("Value", SqlDbType.NVarChar, 200);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -204,7 +204,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Value", SqlDbType.VarChar, 200);
+		tempParameter = insertCommand.Parameters.Add("Value", SqlDbType.NVarChar, 200);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

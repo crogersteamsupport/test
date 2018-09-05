@@ -228,7 +228,7 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public WatercoolerLikProxy[] GetLikes(int msgid)
+    public WatercoolerLikeProxy[] GetLikes(int msgid)
     {
         WatercoolerLikes likes = new WatercoolerLikes(TSAuthentication.GetLoginUser());
         likes.LoadByMessageID(msgid);
@@ -332,9 +332,9 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public WatercoolerLikProxy[] AddCommentLike(int MessageID)
+    public WatercoolerLikeProxy[] AddCommentLike(int MessageID)
     {
-        WatercoolerLik wclikes = new WatercoolerLikes(TSAuthentication.GetLoginUser()).AddNewWatercoolerLik();
+        WatercoolerLike wclikes = new WatercoolerLikes(TSAuthentication.GetLoginUser()).AddNewWatercoolerLik();
         wclikes.MessageID = MessageID;
         wclikes.UserID = TSAuthentication.GetLoginUser().UserID;
         wclikes.DateCreated = DateTime.UtcNow;

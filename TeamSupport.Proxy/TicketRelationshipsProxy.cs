@@ -24,5 +24,4 @@ namespace TeamSupport.Data
     [DataMember, Column] public int? ImportFileID { get; set; }
           
   }
-  
 }

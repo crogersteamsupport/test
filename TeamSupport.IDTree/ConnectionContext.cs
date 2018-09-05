@@ -50,6 +50,7 @@ namespace TeamSupport.IDTree
             // DataContext
             _db = new DataContext(_connection);
             //_db.ObjectTrackingEnabled = false;  // use linq read-only
+            //db.DeferredLoadingEnabled = true; // don't use DataLoadOptions
             if (useTransaction)
             {
                 _transaction = _connection.BeginTransaction();

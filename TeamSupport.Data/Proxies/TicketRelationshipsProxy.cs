@@ -8,7 +8,6 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  
   public partial class TicketRelationship : BaseItem
   {
     public TicketRelationshipProxy GetProxy()

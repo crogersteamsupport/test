@@ -8,19 +8,6 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(ForumLogProxy))]
-  public class ForumLogProxy
-  {
-    public ForumLogProxy() {}
-    [DataMember] public int ForumLogID { get; set; }
-    [DataMember] public int TopicID { get; set; }
-    [DataMember] public int UserID { get; set; }
-    [DataMember] public int OrgID { get; set; }
-    [DataMember] public DateTime ViewTime { get; set; }
-          
-  }
-  
   public partial class ForumLog : BaseItem
   {
     public ForumLogProxy GetProxy()

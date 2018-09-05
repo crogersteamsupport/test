@@ -8,18 +8,6 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(UserAssignmentHistoryItemProxy))]
-  public class UserAssignmentHistoryItemProxy
-  {
-    public UserAssignmentHistoryItemProxy() {}
-    [DataMember] public int UserAssignmentHistoryID { get; set; }
-    [DataMember] public int TicketID { get; set; }
-    [DataMember] public int? UserID { get; set; }
-    [DataMember] public DateTime DateAssigned { get; set; }
-          
-  }
-  
   public partial class UserAssignmentHistoryItem : BaseItem
   {
     public UserAssignmentHistoryItemProxy GetProxy()
