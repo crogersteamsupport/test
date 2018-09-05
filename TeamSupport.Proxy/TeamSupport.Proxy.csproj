@@ -49,6 +49,8 @@
     <Compile Include="ActionLinkToSnowProxy.cs" />
     <Compile Include="ActionLinkToTFSProxy.cs" />
     <Compile Include="ActionsProxy.cs" />
+    <Compile Include="AssetAssignmentsViewProxy.cs" />
+    <Compile Include="AssetHistoryViewProxy.cs" />
     <Compile Include="AssetTicketProxy.cs" />
     <Compile Include="ActionsViewProxy.cs" />
     <Compile Include="ActionTypesProxy.cs" />
@@ -96,6 +98,7 @@
     <Compile Include="CustomFieldsViewProxy.cs" />
     <Compile Include="CustomPortalColumnsProxy.cs" />
     <Compile Include="DeflectionLogProxy.cs" />
+    <Compile Include="DeletedIndexItemsProxy.cs" />
     <Compile Include="DeletedTicketsProxy.cs" />
     <Compile Include="EmailActionsProxy.cs" />
     <Compile Include="EMailAlternateInboundProxy.cs" />
@@ -134,6 +137,7 @@
     <Compile Include="OrganizationSettingsProxy.cs" />
     <Compile Include="OrganizationsProxy.cs" />
     <Compile Include="OrganizationsViewProxy.cs" />
+    <Compile Include="PhoneNumbersViewProxy.cs" />
     <Compile Include="PhoneOptionsProxy.cs" />
     <Compile Include="PhoneQueueProxy.cs" />
     <Compile Include="PhoneTypesProxy.cs" />
@@ -179,6 +183,7 @@
     <Compile Include="TagLinksProxy.cs" />
     <Compile Include="TagsProxy.cs" />
     <Compile Include="TaskAssociationsProxy.cs" />
+    <Compile Include="TaskAssociationsViewProxy.cs" />
     <Compile Include="TaskEmailPostHistoryProxy.cs" />
     <Compile Include="TaskEmailPostsProxy.cs" />
     <Compile Include="TaskLogsProxy.cs" />
