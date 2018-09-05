@@ -7,7 +7,7 @@ using System.Data.SqlClient;
 
 namespace TeamSupport.Data
 {
-  
+
   public partial class Organizations
   {
     protected override void BuildFieldMap()
@@ -61,7 +61,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("CultureName", "CultureName", false, false, false);
       _fieldMap.AddMap("CreatorID", "CreatorID", false, false, true);
       _fieldMap.AddMap("ModifierID", "ModifierID", false, false, true);
-      _fieldMap.AddMap("SupportHoursMonth", "SupportHoursMonth", true, true, true);            
+      _fieldMap.AddMap("SupportHoursMonth", "SupportHoursMonth", true, true, true);
       _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
       _fieldMap.AddMap("FontFamily", "FontFamily", false, false, false);
       _fieldMap.AddMap("FontSize", "FontSize", false, false, false);
@@ -76,9 +76,10 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("AutoAssociateCustomerToTicketBasedOnAssetAssignment", "AutoAssociateCustomerToTicketBasedOnAssetAssignment", false, false, false);
       _fieldMap.AddMap("NoAttachmentsInOutboundExcludeProductLine", "NoAttachmentsInOutboundExcludeProductLine", false, false, false);
       _fieldMap.AddMap("UseWatson", "UseWatson", false, false, false);
+      _fieldMap.AddMap("RequireTwoFactor", "RequireTwoFactor", false, false, false);      
       _fieldMap.AddMap("APIRequestMinuteLimit", "APIRequestMinuteLimit", false, false, false);
-            
+
     }
   }
-  
+
 }

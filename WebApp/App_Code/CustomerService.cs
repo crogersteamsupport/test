@@ -1178,6 +1178,41 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public AutocompleteItem[] SearchNotes(string searchString)
+        {
+            Notes notes = new Notes(TSAuthentication.GetLoginUser());
+            notes.SearchNotes(searchString, TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).OrganizationID.ToString());
+            var notesArray = notes.GetNoteProxies();
+
+            List<AutocompleteItem> items = new List<AutocompleteItem>();
+            foreach (NoteProxy n in notesArray)
+            {
+                var organizationName = "";
+                //org
+                switch (n.RefType)
+                {
+                    case ReferenceType.Organizations:
+                        Organizations org = new Organizations(TSAuthentication.GetLoginUser());
+                        org.LoadByOrganizationID(n.RefID);
+                        organizationName = org.FirstOrDefault().Name;
+                        break;
+                    case ReferenceType.Users:
+                        Users user = new Users(TSAuthentication.GetLoginUser());
+                        user.LoadByUserID(n.RefID);
+                        Organizations userorg = new Organizations(TSAuthentication.GetLoginUser());
+                        userorg.LoadByOrganizationID(user.FirstOrDefault().OrganizationID);
+                        organizationName = userorg.FirstOrDefault().Name;
+                        break;
+                }
+
+
+                items.Add(new AutocompleteItem(string.Format("{0} [{1}]", n.Title, organizationName), n.NoteID.ToString(), n));
+            }
+
+            return items.ToArray();
+        }
+
+        [WebMethod]
         public NoteProxy[] LoadNotes(int refID, ReferenceType refType)
         {
             Notes notes = new Notes(TSAuthentication.GetLoginUser());
@@ -1227,6 +1262,7 @@ namespace TSWebServices
                 notes.LoadByReferenceTypeByUserRightsUsers(refType, refID, loginUser.UserID, organizationID, "DateCreated", includeChildren);
             else
                 notes.LoadByReferenceTypeByUserRights(refType, refID, loginUser.UserID, "DateCreated", includeChildren);
+
             var notesProxy = notes.GetNoteProxies();
 
             ActivityTypes activities = new ActivityTypes(TSAuthentication.GetLoginUser());
@@ -1258,7 +1294,10 @@ namespace TSWebServices
             Notes notes = new Notes(TSAuthentication.GetLoginUser());
             notes.LoadByNoteID(noteID);
 
-            return notes[0].GetProxy();
+            var notesProxy = notes[0].GetProxy();
+            notesProxy.Attachments = LoadFiles(notesProxy.NoteID, notesProxy.RefType == ReferenceType.Organizations ? ReferenceType.CompanyActivity : ReferenceType.ContactActivity);
+
+            return notesProxy;
         }
 
         [WebMethod]

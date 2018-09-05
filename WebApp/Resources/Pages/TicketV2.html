@@ -45,12 +45,12 @@
         <!-- HANDLEBARS. -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.runtime.js"></script>
         <script src="/frontend/library/handlebars.js?1513012903" type="text/javascript"></script>
-        <script src="/frontend/handlebars/ticket.js?1531167220" type="text/javascript"></script>
+        <script src="/frontend/handlebars/ticket.js?1532983986" type="text/javascript"></script>
 
         <!-- JAVASCRIPTS. -->
         <script src="/frontend/javascript/core/teamsupport.js?1521130789" type="text/javascript"></script>
-        <script src="/frontend/javascript/features/sentiment.js?1531167221" type="text/javascript"></script>
-        <script src="/frontend/javascript/pages/ticket.js?1531167220" type="text/javascript"></script>
+        <script src="/frontend/javascript/features/sentiment.js?1533650751" type="text/javascript"></script>
+        <script src="/frontend/javascript/pages/ticket.js?1533650751" type="text/javascript"></script>
         <script src="/frontend/javascript/vendors/growthscore.js?1515087127" type="text/javascript"></script>
 
         <!-- CSS. -->
@@ -314,6 +314,13 @@
                     <div class="form-group">
                         <label for="ticket-intro-input">Introduction</label>
                         <textarea class="form-control" id="ticket-intro-input" placeholder="Introduction"></textarea>
+                    </div>
+                    <div class="email-ticket-upload">
+                        <form id="email-file-upload" class="file-upload" action="Upload/Actions/555" method="POST" enctype="multipart/form-data" title="You can drag and drop your attachments here.">
+                            <a id="file-browse" class="ts-link" href="#" title="You can drag and drop your attachments here.">Attach File? Click or Drop Here.</a>
+                            <input id="file-input" type="file" name="file[]" style="opacity:0;">
+                        </form>
+                        <ul class="upload-queue"></ul>
                     </div>
                     <div id="email-success" class="alert alert-success" role="alert" style="display:none;">Your emails have been sent!</div>
                     <div id="email-error" class="alert alert-danger" role="alert" style="display:none;">There was an error sending the ticket email</div>

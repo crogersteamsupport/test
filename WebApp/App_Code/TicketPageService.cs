@@ -343,7 +343,14 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public TimeLineItem EmailTicket(int ticketID, string addresses, string introduction)
+        public TimeLineItem CreateEmailTicketAction(int ticketID, string addresses, string introduction) {
+            string actionText = string.Format("<i>Action added via the Email Ticket button to: {0} </i> <br><br>{1}", addresses, introduction);
+            string logPost = string.Format("{0} sent a email introduction to {1}", TSAuthentication.GetLoginUser().GetUserFullName(), addresses);
+            return LogAction(ticketID, SystemActionType.Email, "Email Introduction", actionText, logPost);
+        }
+
+        [WebMethod]
+        public void EmailTicket(int ticketID, string addresses, string introduction, int actionID)
         {
             addresses = addresses.Length > 200 ? addresses.Substring(0, 200) : addresses;
             EmailPosts posts = new EmailPosts(TSAuthentication.GetLoginUser());
@@ -354,12 +361,9 @@ namespace TSWebServices
             post.Param1 = TSAuthentication.UserID.ToString();
             post.Param2 = ticketID.ToString();
             post.Param3 = addresses;
+            post.Param4 = actionID.ToString();
             post.Text1 = introduction;
             posts.Save();
-
-            string actionText = string.Format("<i>Action added via the Email Ticket button to: {0} </i> <br><br>{1}", addresses, introduction);
-            string logPost = string.Format("{0} sent a email introduction to {1}", TSAuthentication.GetLoginUser().GetUserFullName(), addresses);
-            return LogAction(ticketID, SystemActionType.Email, "Email Introduction", actionText, logPost);
         }
 
         [WebMethod]
@@ -839,6 +843,13 @@ namespace TSWebServices
         [WebMethod]
         public TimeLineItem UpdateAction(ActionProxy proxy)
         {
+            // new action
+            if (TeamSupport.Model.ConnectionContext.Enabled && (proxy.ActionID == -1))
+            { 
+                TeamSupport.Data.Action newAction = TeamSupport.Model.API.InsertAction(TSAuthentication.GetLoginUser(), proxy);
+                return GetActionTimelineItem(newAction);
+            }
+
             TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), proxy.ActionID);
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
 

@@ -3637,6 +3637,21 @@ WHERE t.TicketID = @TicketID
 
             if (info.CategoryID != null && info.CategoryID > -1) ticket.AddCommunityTicket((int)info.CategoryID);
 
+            if(TeamSupport.Model.ConnectionContext.Enabled)
+            {
+                ActionProxy proxy = new ActionProxy()
+                {
+                    Description = info.Description,
+                    IsVisibleOnPortal = info.IsVisibleOnPortal,
+                    TimeSpent = info.TimeSpent,
+                    DateStarted = info.DateStarted
+                };
+
+                LoginUser loginUser = TSAuthentication.GetLoginUser();
+                User userData = Users.GetUser(loginUser, TSAuthentication.UserID);
+                TeamSupport.Model.API.InsertAction(loginUser, proxy, ticket, userData);
+            }
+
             TeamSupport.Data.Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();
             action.ActionTypeID = null;
             action.Name = "Description";
@@ -3783,6 +3798,7 @@ WHERE t.TicketID = @TicketID
 
             return result.ToArray();
         }
+
 
         [WebMethod]
         public void AddNewTicketCustomer(string first, string last, string email, string company, int? organizationID)

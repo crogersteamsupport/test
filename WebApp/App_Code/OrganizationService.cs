@@ -31,8 +31,8 @@ namespace TSWebServices
         public OrganizationService()
         {
 
-            //Uncomment the following line if using designed components 
-            //InitializeComponent(); 
+            //Uncomment the following line if using designed components
+            //InitializeComponent();
         }
 
         [WebMethod]
@@ -1009,6 +1009,16 @@ namespace TSWebServices
 			org.Collection.Save();
 		}
 
+        [WebMethod]
+		public void AdminSetRequireTwoFactor(int orgID, bool value)
+		{
+			Organization org = GetAdminOrgTarget(orgID);
+            LogAdminUserAction(string.Format("set RequireTwoFactor for {0} to {1}", orgID.ToString(), value.ToString()));
+
+            org.RequireTwoFactor = value;
+			org.Collection.Save();
+		}
+
 		public Organization GetAdminOrgTarget(int orgID)
         {
             if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return null;
@@ -1371,7 +1381,7 @@ namespace TSWebServices
                     html.Append(@"<li>
                                 <div class='row'>
                                 <div class='col-xs-12'>
-                                    <strong>Without Product Line:</strong> 
+                                    <strong>Without Product Line:</strong>
                                 </div>
                                 </div>
                                 <ul class='customList-group group-container'>");
@@ -1386,7 +1396,7 @@ namespace TSWebServices
                             html.AppendFormat(@"<li>
                                                 <div class='row'>
                                                 <div class='col-xs-12'>
-                                                    <strong><a class='group' gid='{0}'>{1} ({3})</a></strong> 
+                                                    <strong><a class='group' gid='{0}'>{1} ({3})</a></strong>
                                                     <div>{2}</div>
                                                 </div>
                                                 </div>
@@ -1407,7 +1417,7 @@ namespace TSWebServices
                         html.AppendFormat(@"<li>
                             <div class='row'>
                             <div class='col-xs-12'>
-                                <strong>{0}:</strong> 
+                                <strong>{0}:</strong>
                             </div>
                             </div>
                             <ul class='customList-group group-container'>", productFamily.Name);
@@ -1421,7 +1431,7 @@ namespace TSWebServices
                                 html.AppendFormat(@"<li>
                                             <div class='row'>
                                             <div class='col-xs-12'>
-                                                <strong><a class='group' gid='{0}'>{1} ({3})</a></strong> 
+                                                <strong><a class='group' gid='{0}'>{1} ({3})</a></strong>
                                                 <div>{2}</div>
                                             </div>
                                             </div>
@@ -1442,7 +1452,7 @@ namespace TSWebServices
                     html.AppendFormat(@"<li>
                                         <div class='row'>
                                         <div class='col-xs-12'>
-                                            <strong><a class='group' gid='{0}'>{1} ({3})</a></strong> 
+                                            <strong><a class='group' gid='{0}'>{1} ({3})</a></strong>
                                             <div>{2}</div>
                                         </div>
                                         </div>
@@ -1564,6 +1574,7 @@ namespace TSWebServices
         [WebMethod]
         public CDI_SettingProxy LoadCDISettings(int organizationID)
         {
+            
             CDI_Settings cdi = new CDI_Settings(TSAuthentication.GetLoginUser());
             cdi.LoadByOrganizationID(organizationID);
             if (cdi.Count > 0)
@@ -1817,7 +1828,7 @@ namespace TSWebServices
 			{
 				ExceptionLogs.LogException(loginUser, ioException, "OrganizationService.GetImportPanels", string.Format("OrgId: {0}", loginUser.OrganizationID));
 			}
-            
+
             return JsonConvert.SerializeObject(result);
         }
 
@@ -1855,8 +1866,6 @@ namespace TSWebServices
 
             return results;
         }
-
-
 }
     public class ActivityTypesDropDown
     {

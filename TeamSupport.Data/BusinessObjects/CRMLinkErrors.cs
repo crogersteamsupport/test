@@ -229,7 +229,21 @@ namespace TeamSupport.Data
 															crmLinkError.ErrorMessage,
 															crmLinkError.Orientation.ToLower() == "in" ? " (" + crmLinkError.ErrorCount + ")" : "");
 				actionLogProxy.ActionLogType = crmLinkError.OperationType == "create" ? ActionLogType.Insert : ActionLogType.Update;
-				actionLogProxy.RefType = crmLinkError.ObjectType == "ticket" ? ReferenceType.Tickets : crmLinkError.ObjectType == "action" ? ReferenceType.Actions : crmLinkError.ObjectType == "attachment" ? ReferenceType.Attachments : ReferenceType.Tickets;
+				switch(crmLinkError.ObjectType)
+				{
+					case "ticket":
+						actionLogProxy.RefType = ReferenceType.Tickets;
+						break;
+					case "action":
+						actionLogProxy.RefType = ReferenceType.Actions;
+						break;
+					case "attachment":
+						actionLogProxy.RefType = ReferenceType.Attachments;
+						break;
+					default:
+						actionLogProxy.RefType = ReferenceType.Tickets;
+						break;
+				}
 				actionLogProxy.OrganizationID = crmLinkError.OrganizationID;
 				actionLogProxy.ActionLogID = crmLinkError.CRMLinkErrorID;
 				actionLogProxy.CreatorName = crmLinkError.CRMType + " Integration";

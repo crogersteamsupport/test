@@ -162,7 +162,7 @@ UserPage = function() {
         $('#userEmailNotify').text((user.ReceiveTicketNotifications == true ? 'Yes' : 'No'));
         $('#userSubscribeTickets').text((user.SubscribeToNewTickets == true ? 'Yes' : 'No'));
         $('#userSubscribeActions').text((user.SubscribeToNewActions == true ? 'Yes' : 'No'));
-        $('#userAutoSubscribe').text((user.DoNotAutoSubscribe == true ? 'No' : 'Yes'));
+        $('#userAutoSubscribe').text((user.DoNotAutoSubscribe == true ? 'Yes' : 'No'));
         $('#userGroupNotify').text((user.ReceiveAllGroupNotifications == true ? 'Yes' : 'No'));
         $('#userUnassignedGroupNotify').text((user.ReceiveUnassignedGroupEmails == true ? 'Yes' : 'No'));
         $('#userEmailAfterHours').text((user.OnlyEmailAfterHours == true ? 'Yes' : 'No'));
@@ -652,8 +652,7 @@ UserPage = function() {
             e.preventDefault();
             var item = $(this);
             item.next().show();
-            window.parent.parent.Ts.Services.Users.SetAutoSubscribe(_user.UserID, (item.text() !== 'Yes'),
-                function(result) {
+            window.parent.parent.Ts.Services.Users.SetAutoSubscribe(_user.UserID, (item.text() != 'Yes'), function(result) {
                     window.parent.parent.Ts.System.logAction('User Info - User Auto Subscribe Changed');
                     item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                 },

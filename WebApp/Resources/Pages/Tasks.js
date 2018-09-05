@@ -384,6 +384,16 @@ $(document).ready(function () {
                 iconClass = "fa-user";
                 functionName = 'window.parent.parent.Ts.MainPage.openNewContact(' + association.RefID + '); return false;'
                 break;
+            case 63:
+                associationName = association.Activity;
+                iconClass = "fa-sticky-note";
+                functionName = 'window.parent.parent.Ts.MainPage.openNewCustomerNote(' + association.ActivityRefID + ',' + association.ActivityID + '); return false;'
+                break;
+            case 64:
+                associationName = association.Activity;
+                iconClass = "fa-sticky-note";
+                functionName = 'window.parent.parent.Ts.MainPage.openNewContactNote(' + association.ActivityRefID + ',' + association.ActivityID + '); return false;'
+                break;
             default:
                 functionName = null;
         }
