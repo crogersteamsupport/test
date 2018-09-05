@@ -185,11 +185,12 @@ namespace TeamSupport.Data
                                             LoginUser loginUser,
                                             Dictionary<int, double> businessPausedTimes,
                                             Logs logs = null,
-                                            bool overwritePrevious = false)
+                                            bool overwritePrevious = false,
+											DateTime? startOn = null)
         {
             TimeSpan totalPausedTime = new TimeSpan();
             SlaPausedTimes slaPausedTimes = new SlaPausedTimes(loginUser);
-            slaPausedTimes.LoadByTicketId(ticketId);
+            slaPausedTimes.LoadByTicketId(ticketId, startOn);
 
             foreach (SlaPausedTime slaPausedTime in slaPausedTimes)
             {
