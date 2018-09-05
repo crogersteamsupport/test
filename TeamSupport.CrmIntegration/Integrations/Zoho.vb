@@ -41,45 +41,16 @@ Namespace TeamSupport
         Public Class ZohoCRM
             Inherits Zoho
 
-            Private Const MaxBatchSize = 200
+			Private Const MaxBatchSize = 200
 
-            Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
+			Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
                 MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.ZohoCRM)
             End Sub
 
             Public Overrides Function PerformSync() As Boolean
                 Dim Success As Boolean = False
-
-                'check to make sure we have all the data we need
-                If CRMLinkRow.SecurityToken1 Is Nothing OrElse CRMLinkRow.SecurityToken1 = "" Then
-                  _exception = New IntegrationException("Authentication Token not specified.")
-                ElseIf CRMLinkRow.Password Is Nothing OrElse CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password = "" OrElse CRMLinkRow.Username = "" Then
-                  _exception = New IntegrationException("Username or password not specified.")
-                End If
-
-                If Exception IsNot Nothing Then
-                    Return False
-                End If
-
-                Try
-                    'sync accounts
-                    Success = NewSyncAccounts(AddressOf GetZohoCompanyXML, _
-                                              AddressOf ParseZohoCompanyXML, _
-                                              AddressOf GetZohoPeopleXML, _
-                                              AddressOf ParseZohoPeopleXML, _
-                                              AddressOf GetZohoProductsXML, _
-                                              AddressOf ParseZohoProductsXML,
-                                              AddressOf GetZohoCustomFields)
-
-                    If Success Then 'send ticket data
-                        Success = SendTicketData(AddressOf CreateNote)
-                    End If
-                Catch ex As Exception
-                    Log.Write("exception: " & ex.Message & ": " & ex.StackTrace)
-                    Success = False
-                Finally
-                    'Logout()
-                End Try
+				Dim zohoCRMv2 As ServiceLibrary.ZohoCRM.ZohoCRMv2 = New ServiceLibrary.ZohoCRM.ZohoCRMv2(CRMLinkRow)
+				Success = zohoCRMv2.PerformSync()
 
                 Return Success
             End Function
