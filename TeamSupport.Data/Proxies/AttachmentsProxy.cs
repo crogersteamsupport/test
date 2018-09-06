@@ -16,6 +16,7 @@ namespace TeamSupport.Data
 
     public AttachmentProxy GetProxy()
     {
+      //AttachmentProxy result = AttachmentProxy.ClassFactory((ReferenceType)this.RefType, this.RefID);
       AttachmentProxy result = new AttachmentProxy();
       result.FilePathID = this.FilePathID;
       result.SentToSnow = this.SentToSnow;

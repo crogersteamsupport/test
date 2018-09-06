@@ -37,25 +37,26 @@ namespace TeamSupport.Handlers
             List<UploadResult> result = new List<UploadResult>();
 
             // Action Attachments
-            if (Model.ConnectionContext.IsEnabled && (folder == AttachmentPath.Folder.Actions))
-            {
-                List<AttachmentProxy> attachmentProxies = null;
-                attachmentProxies = ModelAPI.ModelAPI.CreateActionAttachments(TSAuthentication.Ticket, itemID.Value, context);    // ticketID, actionID, actionAttachments
+            //if (IDTree.ConnectionContext.ActionAttachmentsEnabled && (folder == AttachmentPath.Folder.Actions)) // save action attachments
+            //{
+            //    List<AttachmentProxy> attachmentProxies = null;
+            //    attachmentProxies = ModelAPI.Model_API.CreateActionAttachments(itemID.Value, context);    // ticketID, actionID, actionAttachments
 
-                // respond to front end
-                context.Response.Clear();
-                if (attachmentProxies == null)
-                {
-                    context.Response.Write("Invalid attachment.");  // error
-                    context.Response.ContentType = "text/html";
-                    return;
-                }
+            //    // respond to front end
+            //    context.Response.Clear();
+            //    if (attachmentProxies == null)
+            //    {
+            //        context.Response.Write("Invalid attachment.");  // error
+            //        context.Response.ContentType = "text/html";
+            //        return;
+            //    }
 
-                foreach (AttachmentProxy proxy in attachmentProxies)
-                    result.Add(new UploadResult(proxy.FileName, proxy.FileType, proxy.FileSize));
-                context.Response.ContentType = "text/plain";
-                context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
-            }
+            //    foreach (AttachmentProxy proxy in attachmentProxies)
+            //        result.Add(new UploadResult(proxy.FileName, proxy.FileType, proxy.FileSize));
+            //    context.Response.ContentType = "text/plain";
+            //    context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
+            //    return;
+            //}
 
             ReferenceType refType = AttachmentPath.GetFolderReferenceType(folder);
 

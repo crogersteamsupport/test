@@ -8,17 +8,6 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(SystemSettingProxy))]
-  public class SystemSettingProxy
-  {
-    public SystemSettingProxy() {}
-    [DataMember] public int SystemSettingID { get; set; }
-    [DataMember] public string SettingKey { get; set; }
-    [DataMember] public string SettingValue { get; set; }
-          
-  }
-  
   public partial class SystemSetting : BaseItem
   {
     public SystemSettingProxy GetProxy()
