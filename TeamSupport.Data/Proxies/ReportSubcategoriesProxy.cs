@@ -8,18 +8,6 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(ReportSubcategoryProxy))]
-  public class ReportSubcategoryProxy
-  {
-    public ReportSubcategoryProxy() {}
-    [DataMember] public int ReportSubcategoryID { get; set; }
-    [DataMember] public int ReportCategoryTableID { get; set; }
-    [DataMember] public int? ReportTableID { get; set; }
-    [DataMember] public string BaseQuery { get; set; }
-          
-  }
-  
   public partial class ReportSubcategory : BaseItem
   {
     public ReportSubcategoryProxy GetProxy()

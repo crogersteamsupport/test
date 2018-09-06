@@ -2866,7 +2866,7 @@ SELECT
             {
                 note = (Note)Notes.GetNote(TSAuthentication.GetLoginUser(), noteID);
                 string description = String.Format("{0} modified note {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, title);
-                ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, refType, noteID, description);
+                ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, (ReferenceType)refType, noteID, description);
 
                 UserNoteSettings uns = new UserNoteSettings(TSAuthentication.GetLoginUser());
                 uns.LoadByIDType(noteID, refType);
@@ -2908,7 +2908,7 @@ SELECT
                 if (isNew)
                 {
                     string description = String.Format("{0} added note {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, title);
-                    ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, refType, note.NoteID, description);
+                    ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, (ReferenceType)refType, note.NoteID, description);
                 }
 
             }
