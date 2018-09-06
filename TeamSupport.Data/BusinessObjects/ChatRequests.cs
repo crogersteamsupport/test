@@ -148,6 +148,7 @@ ORDER BY cr.DateCreated ASC
                                             AND ((DATEADD(second, @Seconds, cc.LastPing) > GETUTCDATE() OR cc.LastPing IS NULL  OR cr.RequestorType = 0) AND DATEADD(minute, 30, cr.DateCreated) > GETUTCDATE())
 	                                        AND (
 		                                        cr.GroupID IS NULL
+												OR cr.GroupID = 0
 		                                        OR cr.GroupID IN (
 			                                        SELECT GroupID
 			                                        FROM GroupUsers
