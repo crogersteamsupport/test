@@ -103,6 +103,33 @@ namespace TeamSupport.Data
             }
         }
 
+        // extracted from ts-app\WebApp\App_Code\TicketPageService.cs UpdateAction() AND
+        // also extracted from ts-app\webapp\app_code\ticketservice.cs 
+        public static void Create(DataContext db, int organizationID, int userID, int ticketID, ref ActionProxy actionProxy)
+        {
+            Action action = new Actions(new LoginUser(userID, organizationID)).AddNewAction();
+            action.TicketID = ticketID;
+            action.CreatorID = userID;
+            action.Description = actionProxy.Description;
+            action.SystemActionTypeID = actionProxy.SystemActionTypeID;
+            if (!String.IsNullOrEmpty(actionProxy.Name))
+                action.Name = actionProxy.Name;
+
+            // add signature?
+            string signature = db.ExecuteQuery<string>($"SELECT [Signature] FROM Users WITH (NOLOCK) WHERE UserID={userID} AND OrganizationID={organizationID}").FirstOrDefault();
+            if (!string.IsNullOrWhiteSpace(signature) && actionProxy.IsVisibleOnPortal && !actionProxy.IsKnowledgeBase && !actionProxy.Description.Contains(signature))
+                action.Description += "<br/><br/>" + signature;
+
+            action.ActionSource = actionProxy.ActionSource;
+            action.ActionTypeID = actionProxy.ActionTypeID;
+            action.DateStarted = actionProxy.DateStarted;
+            action.TimeSpent = actionProxy.TimeSpent;
+            action.IsKnowledgeBase = actionProxy.IsKnowledgeBase;
+            action.IsVisibleOnPortal = actionProxy.IsVisibleOnPortal;
+            action.Collection.Save();
+            actionProxy = action.GetProxy();
+        }
+
     }
 
     public partial class Actions

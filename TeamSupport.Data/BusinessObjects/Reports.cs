@@ -768,15 +768,8 @@ namespace TeamSupport.Data
                         SELECT 
                             t.TicketID 
                         FROM 
-                            Tickets t WITH (NOLOCK)
-                        WHERE 
-                            t.ProductID IS NULL and t.Organizationid = {1}                         
-                        UNION
-                        SELECT 
-                            t.TicketID 
-                        FROM 
-                            Tickets t WITH (NOLOCK)
-                            LEFT JOIN Products p WITH (NOLOCK)
+                            Tickets t
+                            LEFT JOIN Products p
                                 ON t.ProductID = p.ProductID
                             LEFT JOIN UserRightsProductFamilies urpf
                                 ON p.ProductFamilyID = urpf.ProductFamilyID 

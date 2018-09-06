@@ -1177,11 +1177,11 @@ function updateattachments (message) {
             for (var i = 0; i < tixactivities.length; i++) {
                 if (tixactivities[i].ActivityRefType == 9)
                 {
-                    tixactivitiesstr = tixactivitiesstr + ' ' + tixactivities[i].CreatorName + ' added company activity <a href="#" target="_blank" onclick="mainFrame.Ts.MainPage.openNewCustomerNote(' + tixactivities[i].ActivityRefID + ',' + tixactivities[i].AttachmentID + '); return false;">' + tixactivities[i].Title + '</a><br/>';
+                    tixactivitiesstr = tixactivitiesstr + ' ' + tixactivities[i].CreatorName + ' added company activity <a href="#" target="_blank" onclick="mainFrame.Ts.MainPage.openNewCustomerNote(' + tixactivities[i].ActivityRefID + ',' + tixactivities[i].AttachmentID + '); return false;">' + tixactivities[i].ActivityTitle + '</a><br/>';
                 }
                 else if (tixactivities[i].ActivityRefType == 22)
                 {
-                    tixactivitiesstr = tixactivitiesstr + ' ' + tixactivities[i].CreatorName + ' added contact activity <a href="#" target="_blank" onclick="mainFrame.Ts.MainPage.openNewCustomerNote(' + tixactivities[i].ActivityRefID + ',' + tixactivities[i].AttachmentID + '); return false;">' + tixactivities[i].Title + '</a><br/>';
+                    tixactivitiesstr = tixactivitiesstr + ' ' + tixactivities[i].CreatorName + ' added contact activity <a href="#" target="_blank" onclick="mainFrame.Ts.MainPage.openNewCustomerNote(' + tixactivities[i].ActivityRefID + ',' + tixactivities[i].AttachmentID + '); return false;">' + tixactivities[i].ActivityTitle + '</a><br/>';
                 }
                 
             }
@@ -1935,7 +1935,7 @@ function createCommentContainer(messageid) {
                 });
 
                 commentinfo.Activities = new Array();
-                $('#commentatt:first').find('.activity-queue').find('.ticket-removable-item').each(function () {
+                $(this).parent().parent().find('.activity-queue').find('.ticket-removable-item').each(function () {
                     commentinfo.Activities[commentinfo.Activities.length] = $(this).data('Activity');
                 });
 

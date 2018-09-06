@@ -16,23 +16,23 @@ namespace TeamSupport.JIRA
 	public class JiraClient<TIssueFields> : IJiraClient<TIssueFields> where TIssueFields : IssueFields, new()
 	{
 		private readonly string username;
-		private readonly string password;
+        private readonly string token;
 		private readonly RestClient client;
 		private readonly JsonDeserializer deserializer;
-		public JiraClient(string baseUrl, string username, string password)
+		public JiraClient(string baseUrl, string username, string token)
 		{
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 			this.username = username;
-			this.password = password;
+            this.token = token;
 			deserializer = new JsonDeserializer();
 			client = new RestClient { BaseUrl = new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/") + "rest/api/latest/") };
 		}
 
-		public JiraClient(string baseUrl, string username, string password, string apiPath)
+		public JiraClient(string baseUrl, string username, string token, string apiPath)
 		{
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
             this.username = username;
-			this.password = password;
+            this.token = token;
 			deserializer = new JsonDeserializer();
 			client = new RestClient { BaseUrl = new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/") + "rest/" + apiPath + "/1.0/") };
 		}
@@ -40,7 +40,7 @@ namespace TeamSupport.JIRA
 		private RestRequest CreateRequest(Method method, String path)
 		{
 			var request = new RestRequest { Method = method, Resource = path, RequestFormat = DataFormat.Json };
-			request.AddHeader("Authorization", "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(String.Format("{0}:{1}", username, password))));
+			request.AddHeader("Authorization", "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(String.Format("{0}:{1}", username, token))));
 			return request;
 		}
 

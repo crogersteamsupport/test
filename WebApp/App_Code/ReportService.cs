@@ -632,10 +632,15 @@ namespace TSWebServices
         public bool DeleteFolder(int folderID) {
             ReportFolder folder = ReportFolders.GetReportFolder(TSAuthentication.GetLoginUser(), (int)folderID);
             if (TSAuthentication.IsSystemAdmin || folder.CreatorID == TSAuthentication.UserID) {
-                Reports.UnassignFolder(TSAuthentication.GetLoginUser(), folderID);
-                folder.Delete();
-                folder.Collection.Save();
-                return true;
+                try {
+                    Reports.UnassignFolder(TSAuthentication.GetLoginUser(), folderID);
+                    folder.Delete();
+                    folder.Collection.Save();
+                    return true;
+                }
+                catch (Exception ex) {
+                    return false;
+                }
             } else {
                 return false;
             }

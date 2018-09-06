@@ -657,6 +657,10 @@
       <Project>{a5e5fc71-6b6f-4e57-9bf0-8602f7a707ea}</Project>
       <Name>TeamSupport.JIRA</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TeamSupport.Proxy\TeamSupport.Proxy.csproj">
+      <Project>{8f3f388c-10f5-45d4-9f4c-471236dc14c0}</Project>
+      <Name>TeamSupport.Proxy</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TeamSupport.ServiceLibrary\TeamSupport.ServiceLibrary.csproj">
       <Project>{6AD9D48C-DDBA-4045-BFAA-362A1FCB0AA0}</Project>
       <Name>TeamSupport.ServiceLibrary</Name>

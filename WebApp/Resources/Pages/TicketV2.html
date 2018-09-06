@@ -315,6 +315,13 @@
                         <label for="ticket-intro-input">Introduction</label>
                         <textarea class="form-control" id="ticket-intro-input" placeholder="Introduction"></textarea>
                     </div>
+                    <div class="email-ticket-upload">
+                        <form id="email-file-upload" class="file-upload" action="Upload/Actions/555" method="POST" enctype="multipart/form-data" title="You can drag and drop your attachments here.">
+                            <a id="file-browse" class="ts-link" href="#" title="You can drag and drop your attachments here.">Attach File? Click or Drop Here.</a>
+                            <input id="file-input" type="file" name="file[]" style="opacity:0;">
+                        </form>
+                        <ul class="upload-queue"></ul>
+                    </div>
                     <div id="email-success" class="alert alert-success" role="alert" style="display:none;">Your emails have been sent!</div>
                     <div id="email-error" class="alert alert-danger" role="alert" style="display:none;">There was an error sending the ticket email</div>
                 </div>
