@@ -524,7 +524,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("ExcludedTicketStatusUpdate", SqlDbType.VarChar, 500);
+		tempParameter = updateCommand.Parameters.Add("ExcludedTicketStatusUpdate", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -581,7 +581,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("ExcludedTicketStatusUpdate", SqlDbType.VarChar, 500);
+		tempParameter = insertCommand.Parameters.Add("ExcludedTicketStatusUpdate", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
