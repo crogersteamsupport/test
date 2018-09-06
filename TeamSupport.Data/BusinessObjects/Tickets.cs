@@ -998,7 +998,8 @@ AND ot.TicketID = @TicketID
             emailPost.Save();
         }
 
-        public bool IsSlaPaused(int triggerId, int organizationId)
+		[Obsolete("This is not needed anymore in neither APP or the services, please don't use. Moved to SlaProcessor.cs which is the only place that should use it.")]
+		public bool IsSlaPaused(int triggerId, int organizationId)
         {
             bool isPaused = false;
             TicketStatuses statuses = new TicketStatuses(Collection.LoginUser);
@@ -3162,6 +3163,7 @@ AND u.OrganizationID = @OrganizationID
             }
         }
 
+		[Obsolete("This is not needed anymore in neither APP or the services, please don't use. Moved to SlaProcessor.cs which is the only place that should use it.")]
         public void LoadAllUnnotifiedAndExpiredSla()
         {
             using (SqlCommand command = new SqlCommand())
