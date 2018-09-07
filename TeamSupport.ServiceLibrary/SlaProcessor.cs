@@ -103,12 +103,15 @@ namespace TeamSupport.ServiceLibrary
                                 }
 
                                 Dictionary<int, double> businessPausedTimes = new Dictionary<int, double>();
-                                TimeSpan pausedTimeSpan = SlaTickets.CalculatePausedTime(ticket.TicketID, organization, businessHours, slaTrigger, daysToPause, holidays, LoginUser, businessPausedTimes, Logs);
-                                Logs.WriteEventFormat("Total Paused Time: {0}", pausedTimeSpan.ToString());
+
+								//We need to have two calculations for the paused time, one for the Time To Close and Initial Response which should count the paused time since the Ticket creation
+								//and another one for Last Action where it should only count starting from the last action added
+                                TimeSpan totalPausedTimeSpan = SlaTickets.CalculatePausedTime(ticket.TicketID, organization, businessHours, slaTrigger, daysToPause, holidays, LoginUser, businessPausedTimes, Logs);
+                                Logs.WriteEventFormat("Total Paused Time: {0}", totalPausedTimeSpan.ToString());
 
                                 UpdateBusinessPausedTimes(LoginUser, businessPausedTimes);
 
-                                newSlaViolationTimeClosed = SlaTickets.CalculateSLA(ticket.DateCreatedUtc, businessHours, slaTrigger, slaTrigger.TimeToClose, pausedTimeSpan, daysToPause, holidays);
+                                newSlaViolationTimeClosed = SlaTickets.CalculateSLA(ticket.DateCreatedUtc, businessHours, slaTrigger, slaTrigger.TimeToClose, totalPausedTimeSpan, daysToPause, holidays);
 
                                 if (newSlaViolationTimeClosed != null)
                                 {
@@ -121,7 +124,17 @@ namespace TeamSupport.ServiceLibrary
                                                                                     holidays);
                                 }
 
-                                if (lastActionDateCreated == null)
+								TimeSpan pausedTimeSpanSinceLastAction = SlaTickets.CalculatePausedTime(ticket.TicketID,
+																										organization, businessHours,
+																										slaTrigger,
+																										daysToPause,
+																										holidays,
+																										LoginUser,
+																										businessPausedTimes,
+																										Logs);
+								Logs.WriteEventFormat("Total Paused Time: {0}", pausedTimeSpanSinceLastAction.ToString());
+
+								if (lastActionDateCreated == null)
                                 {
                                     newSlaViolationLastAction = null;
                                     newSlaWarningLastAction = null;
@@ -132,7 +145,7 @@ namespace TeamSupport.ServiceLibrary
                                                                                 businessHours,
                                                                                 slaTrigger,
                                                                                 slaTrigger.TimeLastAction,
-                                                                                pausedTimeSpan,
+																				pausedTimeSpanSinceLastAction,
                                                                                 daysToPause,
                                                                                 holidays);
 
@@ -159,7 +172,7 @@ namespace TeamSupport.ServiceLibrary
                                                                                     businessHours,
                                                                                     slaTrigger,
                                                                                     slaTrigger.TimeInitialResponse,
-                                                                                    pausedTimeSpan,
+																					totalPausedTimeSpan,
                                                                                     daysToPause,
                                                                                     holidays);
 
