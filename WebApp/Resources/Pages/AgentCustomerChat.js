@@ -196,7 +196,8 @@ $(document).ready(function () {
             $(this).addClass('list-group-item-success')
                     .removeClass('list-group-item-info')
                     .append('<span class="fa fa-comments fa-1 activeChatIndicator"></span>');
-			_activeChatID = chat.ChatID;
+                    
+			      _activeChatID = chat.ChatID;
             SetActiveChat(_activeChatID);
         });
 
@@ -239,7 +240,7 @@ $(document).ready(function () {
                 alert("The chat has been accepted already by another agent.");
                 parentEl.remove();
             }
-            
+
         });
     }
 
