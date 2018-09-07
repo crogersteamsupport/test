@@ -8,16 +8,7 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(TSEMailIgnoreListItemProxy))]
-  public class TSEMailIgnoreListItemProxy
-  {
-    public TSEMailIgnoreListItemProxy() {}
-    [DataMember] public int IgnoreID { get; set; }
-    [DataMember] public string FromAddress { get; set; }
-    [DataMember] public string ToAddress { get; set; }
-          
-  }
+
   
   public partial class TSEMailIgnoreListItem : BaseItem
   {

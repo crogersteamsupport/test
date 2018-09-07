@@ -8,27 +8,6 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(SimpleImportFieldsViewItemProxy))]
-  public class SimpleImportFieldsViewItemProxy
-  {
-    public SimpleImportFieldsViewItemProxy() {}
-    [DataMember] public int ImportFieldID { get; set; }
-    [DataMember] public string TableName { get; set; }
-    [DataMember] public string FieldName { get; set; }
-    [DataMember] public string Alias { get; set; }
-    [DataMember] public string DataType { get; set; }
-    [DataMember] public int Size { get; set; }
-    [DataMember] public bool IsVisible { get; set; }
-    [DataMember] public bool IsRequired { get; set; }
-    [DataMember] public string Description { get; set; }
-    [DataMember] public int RefType { get; set; }
-    [DataMember] public int Position { get; set; }
-    [DataMember] public string IsCustom { get; set; }
-    [DataMember] public int? OrganizationID { get; set; }
-          
-  }
-  
   public partial class SimpleImportFieldsViewItem : BaseItem
   {
     public SimpleImportFieldsViewItemProxy GetProxy()

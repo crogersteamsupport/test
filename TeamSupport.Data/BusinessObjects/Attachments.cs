@@ -45,7 +45,7 @@ namespace TeamSupport.Data
         {
             Attachment attachment = (new Attachments(new LoginUser(attachmentProxy.CreatorID, attachmentProxy.OrganizationID))).AddNewAttachment();
             attachment.RefType = ReferenceType.Actions;
-            attachment.RefID = attachmentProxy.RefID;
+            attachment.RefID = ((ActionAttachmentProxy)attachmentProxy).ActionID;
             attachment.OrganizationID = attachmentProxy.OrganizationID;
             attachment.FileName = attachmentProxy.FileName;
             attachment.Path = attachmentProxy.Path;
@@ -85,7 +85,7 @@ namespace TeamSupport.Data
 
     public void LoadByActionID(int actionID, string orderBy = "")
     {
-      LoadByReference(ReferenceType.Actions, actionID, orderBy);
+      LoadByReference((ReferenceType)ReferenceType.Actions, actionID, orderBy);
     }
 
     public void LoadByWatercoolerID(int WaterCoolerID)

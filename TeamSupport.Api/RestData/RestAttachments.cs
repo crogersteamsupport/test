@@ -36,6 +36,8 @@ namespace TeamSupport.Api
 
     public static string GetAttachments(RestCommand command, int actionID, bool orderByDateCreated = false)
     {
+      //AttachmentProxy[] actionAttachments = ModelAPI.ModelAPI.Read<AttachmentProxy[]>(actionID);
+
       Attachments attachments = new Attachments(command.LoginUser);
       if (orderByDateCreated)
       {

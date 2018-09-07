@@ -8,19 +8,6 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(UserTicketStatusProxy))]
-  public class UserTicketStatusProxy
-  {
-    public UserTicketStatusProxy() {}
-    [DataMember] public int UserTicketStatusID { get; set; }
-    [DataMember] public int TicketID { get; set; }
-    [DataMember] public int UserID { get; set; }
-    [DataMember] public bool IsFlagged { get; set; }
-    [DataMember] public DateTime DateRead { get; set; }
-          
-  }
-  
   public partial class UserTicketStatus : BaseItem
   {
     public UserTicketStatusProxy GetProxy()

@@ -17,14 +17,14 @@ namespace TeamSupport.Api
     {
       Note item = Notes.GetNote(command.LoginUser, noteID);
       if (item.RefType != refType && item.RefID != refID) throw new RestException(HttpStatusCode.Unauthorized);
-      if (!DataUtils.IsReferenceValid(command.LoginUser, refType, refID)) throw new RestException(HttpStatusCode.Unauthorized);
+      if (!DataUtils.IsReferenceValid(command.LoginUser, (ReferenceType)refType, refID)) throw new RestException(HttpStatusCode.Unauthorized);
       return item.GetXml("Note", true);
     }
 
 
     public static string GetNotes(RestCommand command, ReferenceType refType, int refID, bool orderByDateCreated = false)
     {
-      if (!DataUtils.IsReferenceValid(command.LoginUser, refType, refID)) throw new RestException(HttpStatusCode.Unauthorized);
+      if (!DataUtils.IsReferenceValid(command.LoginUser, (ReferenceType)refType, refID)) throw new RestException(HttpStatusCode.Unauthorized);
 
       Notes items = new Notes(command.LoginUser);
       if (orderByDateCreated)
@@ -40,7 +40,7 @@ namespace TeamSupport.Api
 
     public static string AddNote(RestCommand command, ReferenceType refType, int refID)
     {
-      if (!DataUtils.IsReferenceValid(command.LoginUser, refType, refID)) throw new RestException(HttpStatusCode.Unauthorized);
+      if (!DataUtils.IsReferenceValid(command.LoginUser, (ReferenceType)refType, refID)) throw new RestException(HttpStatusCode.Unauthorized);
       Notes items = new Notes(command.LoginUser);
       Note item = items.AddNewNote();
       item.ReadFromXml(command.Data, true);
@@ -54,7 +54,7 @@ namespace TeamSupport.Api
     {
       Note item = Notes.GetNote(command.LoginUser, noteID);
       if (item.RefType != refType && item.RefID != refID) throw new RestException(HttpStatusCode.Unauthorized);
-      if (!DataUtils.IsReferenceValid(command.LoginUser, refType, refID)) throw new RestException(HttpStatusCode.Unauthorized);
+      if (!DataUtils.IsReferenceValid(command.LoginUser, (ReferenceType)refType, refID)) throw new RestException(HttpStatusCode.Unauthorized);
       item.Delete();
       item.Collection.Save();
       return "";

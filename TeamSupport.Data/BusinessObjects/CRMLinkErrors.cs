@@ -222,28 +222,28 @@ namespace TeamSupport.Data
 
 			foreach (CRMLinkErrorProxy crmLinkError in GetCRMLinkErrorProxies().ToList())
 			{
-				ActionLogProxy actionLogProxy = new ActionLogProxy();
+                ActionLogProxy actionLogProxy = null;
+                switch (crmLinkError.ObjectType)
+                {
+                    case "ticket":
+                        actionLogProxy = new TicketsActionLogProxy();
+                        break;
+                    case "action":
+                        actionLogProxy = new ActionsActionLogProxy();
+                        break;
+                    default:
+                        actionLogProxy = new TicketsActionLogProxy();
+                        break;
+                }
+
+                
 				actionLogProxy.ModifierID = (int)SystemUser.CRM;
 				actionLogProxy.CreatorID = (int)SystemUser.CRM;
 				actionLogProxy.Description = string.Format("{0}{1}",
 															crmLinkError.ErrorMessage,
 															crmLinkError.Orientation.ToLower() == "in" ? " (" + crmLinkError.ErrorCount + ")" : "");
 				actionLogProxy.ActionLogType = crmLinkError.OperationType == "create" ? ActionLogType.Insert : ActionLogType.Update;
-				switch(crmLinkError.ObjectType)
-				{
-					case "ticket":
-						actionLogProxy.RefType = ReferenceType.Tickets;
-						break;
-					case "action":
-						actionLogProxy.RefType = ReferenceType.Actions;
-						break;
-					case "attachment":
-						actionLogProxy.RefType = ReferenceType.Attachments;
-						break;
-					default:
-						actionLogProxy.RefType = ReferenceType.Tickets;
-						break;
-				}
+
 				actionLogProxy.OrganizationID = crmLinkError.OrganizationID;
 				actionLogProxy.ActionLogID = crmLinkError.CRMLinkErrorID;
 				actionLogProxy.CreatorName = crmLinkError.CRMType + " Integration";
