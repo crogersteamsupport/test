@@ -216,6 +216,7 @@ namespace TSWebServices
                 cdiSetting.AverageActionCountWeight = cdi.AverageActionCountWeight;
                 cdiSetting.AverageSentimentScoreWeight = cdi.AverageSentimentScoreWeight;
                 cdiSetting.AverageSeverityWeight = cdi.AverageSeverityWeight;
+                cdiSetting.AgentRatingsWeight = cdi.AgentRatingsWeight;
                 cdiSetting.Collection.Save();
             }
             else
@@ -223,6 +224,7 @@ namespace TSWebServices
                 cdiSettings.AverageActionCountWeight = cdi.AverageActionCountWeight;
                 cdiSettings.AverageSentimentScoreWeight = cdi.AverageSentimentScoreWeight;
                 cdiSettings.AverageSeverityWeight = cdi.AverageSeverityWeight;
+                cdiSettings.AgentRatingsWeight = cdi.AgentRatingsWeight;
                 cdiSettings.TotalTicketsWeight = cdi.TotalTicketsWeight;
                 cdiSettings.OpenTicketsWeight = cdi.OpenTicketsWeight;
                 cdiSettings.Last30Weight = cdi.Last30Weight;

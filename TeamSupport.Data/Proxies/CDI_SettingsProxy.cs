@@ -27,6 +27,7 @@ namespace TeamSupport.Data
       result.AverageActionCountWeight = this.AverageActionCountWeight;       
       result.AverageSentimentScoreWeight = this.AverageSentimentScoreWeight;
       result.AverageSeverityWeight = this.AverageSeverityWeight;       
+      result.AgentRatingsWeight = this.AgentRatingsWeight;       
       return result;
     }	
   }
