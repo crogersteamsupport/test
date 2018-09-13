@@ -72,13 +72,13 @@ namespace TeamSupport.Data
       set { Row["AvgDaysOpenWeight"] = CheckValue("AvgDaysOpenWeight", value); }
     }
 
-        public float? AvgDaysToCloseWeight
-        {
-            get { return Row["AvgDaysToCloseWeight"] != DBNull.Value ? (float?)Row["AvgDaysToCloseWeight"] : null; }
-            set { Row["AvgDaysToCloseWeight"] = CheckValue("AvgDaysToCloseWeight", value); }
-        }
+    public float? AvgDaysToCloseWeight
+    {
+        get { return Row["AvgDaysToCloseWeight"] != DBNull.Value ? (float?)Row["AvgDaysToCloseWeight"] : null; }
+        set { Row["AvgDaysToCloseWeight"] = CheckValue("AvgDaysToCloseWeight", value); }
+    }
 
-        public int? GreenUpperRange
+    public int? GreenUpperRange
     {
       get { return Row["GreenUpperRange"] != DBNull.Value ? (int?)Row["GreenUpperRange"] : null; }
       set { Row["GreenUpperRange"] = CheckValue("GreenUpperRange", value); }
