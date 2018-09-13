@@ -819,7 +819,7 @@ Namespace TeamSupport
                         updateFieldRequestBody.Append("}")
 
                         Try
-                            Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest", ""), CRMLinkRow.Username, CRMLinkRow.Username, If(String.IsNullOrEmpty(CRMLinkRow.SecurityToken), CRMLinkRow.Password, CRMLinkRow.SecurityToken))
+                            Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest", ""), CRMLinkRow.Username, If(String.IsNullOrEmpty(CRMLinkRow.SecurityToken), CRMLinkRow.Password, CRMLinkRow.SecurityToken))
                             jiraClient.UpdateIssueFieldByParameter(issueId, updateFieldRequestBody.ToString())
                             ClearCrmLinkError(crmLinkError)
                         Catch jiraEx As JiraClientException
@@ -961,7 +961,7 @@ Namespace TeamSupport
                     updateFieldRequestBody.Append("}")
 
                     Try
-                        Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest", ""), CRMLinkRow.Username, CRMLinkRow.Username, If(String.IsNullOrEmpty(CRMLinkRow.SecurityToken), CRMLinkRow.Password, CRMLinkRow.SecurityToken))
+                        Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest", ""), CRMLinkRow.Username, If(String.IsNullOrEmpty(CRMLinkRow.SecurityToken), CRMLinkRow.Password, CRMLinkRow.SecurityToken))
                         jiraClient.UpdateIssueFieldByParameter(issueId, updateFieldRequestBody.ToString())
                         ClearCrmLinkError(crmLinkError)
                     Catch jiraEx As JiraClientException
@@ -1298,7 +1298,7 @@ Namespace TeamSupport
 
                 Try
                     Dim globalId As String = "system=" + domain + "/Ticket.aspx?ticketid=&id=" + ticketID
-                    Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest", ""), CRMLinkRow.Username, CRMLinkRow.Username, If(String.IsNullOrEmpty(CRMLinkRow.SecurityToken), CRMLinkRow.Password, CRMLinkRow.SecurityToken))
+                    Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest", ""), CRMLinkRow.Username, If(String.IsNullOrEmpty(CRMLinkRow.SecurityToken), CRMLinkRow.Password, CRMLinkRow.SecurityToken))
                     Dim remoteLink As RemoteLink = New RemoteLink With {.url = domain + "/Ticket.aspx?ticketid=" + ticketID,
                                                                     .title = creatorName + " Ticket #" + ticketNumber,
                                                                     .summary = DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(ticketName))),
@@ -1389,7 +1389,7 @@ Namespace TeamSupport
                                 issue = GetAPIJObject(_baseURI + "/issue/" + issueKey, "GET", String.Empty)
                             End If
 
-                            Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest", ""), CRMLinkRow.Username, CRMLinkRow.Username, If(String.IsNullOrEmpty(CRMLinkRow.SecurityToken), CRMLinkRow.Password, CRMLinkRow.SecurityToken))
+                            Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest", ""), CRMLinkRow.Username, If(String.IsNullOrEmpty(CRMLinkRow.SecurityToken), CRMLinkRow.Password, CRMLinkRow.SecurityToken))
                             Dim issueRef As IssueRef = New IssueRef With {.id = issue("id"), .key = issueKey}
 
                             body = New StringBuilder()
@@ -1435,7 +1435,7 @@ Namespace TeamSupport
                                     issue = GetAPIJObject(_baseURI + "/issue/" + issueKey, "GET", String.Empty)
                                 End If
 
-                                Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest", ""), CRMLinkRow.Username, CRMLinkRow.Username, If(String.IsNullOrEmpty(CRMLinkRow.SecurityToken), CRMLinkRow.Password, CRMLinkRow.SecurityToken))
+                                Dim jiraClient As JiraClient = New JiraClient(_baseURI.Replace("/rest/api/latest", ""), CRMLinkRow.Username, If(String.IsNullOrEmpty(CRMLinkRow.SecurityToken), CRMLinkRow.Password, CRMLinkRow.SecurityToken))
                                 Dim issueRef As IssueRef = New IssueRef With {.id = issue("id"), .key = issueKey}
 
                                 body = New StringBuilder()
