@@ -89,7 +89,7 @@ namespace TeamSupport.Data.BusinessObjects
                 //AND t.[isvisibleonportal] = 1
                 //AND account.producttype = 2
                 // AND NOT EXISTS (SELECT NULL FROM ActionSentiments ast WHERE a.actionid = ast.actionid);
-                if (!(account.UseWatson && action.IsVisibleOnPortal && t.IsVisibleOnPortal && (account.ProductType == ProductType.Enterprise) && !action.ActionSource.Equals("Import"))) {
+                if (!(account.UseWatson && action.IsVisibleOnPortal && t.IsVisibleOnPortal && (account.ProductType == ProductType.Enterprise))) {
                     return;
                 }
 
