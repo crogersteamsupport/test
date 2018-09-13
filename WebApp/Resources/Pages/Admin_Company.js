@@ -218,7 +218,7 @@ AdminPortal = function () {
               var ticketSentimentweight;
               var actionCountweight;
               var ticketSeverityweight;
-              var agentRatingsweight;
+              var agentRatingsWeight;
 
               // if original five contain a NULL - use defaults
               var useDefaults = (cdi.TotalTicketsWeight == null) || (cdi.Last30Weight == null) ||
@@ -232,7 +232,7 @@ AdminPortal = function () {
                   ticketSentimentweight = '0';
                   actionCountweight = '0';
                   ticketSeverityweight = '0';
-                  agentRatingsweight = '0';
+                  agentRatingsWeight = '0';
               }
               else {
                   // use what is configured
@@ -271,8 +271,8 @@ AdminPortal = function () {
               $('#ticketSeverity-weight').slider('value', ticketSeverityweight);
               $('#ticketSeverity-weight').next().text("Overall Weight: " + (ticketSeverityweight * 10) + "%");
 
-              $('#agentRatings-weight').slider('value', agentRatingsweight);
-              $('#agentRatings-weight').next().text("Overall Weight: " + (agentRatingsweight * 10) + "%");
+              $('#agentRatings-weight').slider('value', agentRatingsWeight);
+              $('#agentRatings-weight').next().text("Overall Weight: " + (agentRatingsWeight * 10) + "%");
 
               var greenlimit = cdi.GreenUpperRange == null ? '70' : cdi.GreenUpperRange;
               $('#cdi-green').slider('value', greenlimit);
