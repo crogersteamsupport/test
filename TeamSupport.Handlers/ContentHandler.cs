@@ -1285,7 +1285,11 @@ namespace TeamSupport.Handlers
             {
             }
 
-            DataTable table = Reports.GetReportTable(report.Collection.LoginUser, report.ReportID, 0, 10000000, sortField, isDesc, true, false);
+            DataTable table;
+            if (type.ToUpper() == "CSV" || type.ToString() == "EXCEL")
+                 table = Reports.GetReportTableForExports(report.Collection.LoginUser, report.ReportID,sortField, isDesc, true, false);
+            else
+                 table = Reports.GetReportTable(report.Collection.LoginUser, report.ReportID, 0, 10000000, sortField, isDesc, true, false);
 
             try
             {

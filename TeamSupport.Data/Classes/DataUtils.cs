@@ -292,7 +292,7 @@ namespace TeamSupport.Data
                     builder.Append("TRY_CAST(NULLIF(RTRIM(CustomValue), '') AS decimal");
                     break;
                 default:
-                    builder.Append("CAST(NULLIF(RTRIM(CustomValue), '') AS varchar(8000)");
+                    builder.Append("CAST(NULLIF(RTRIM(CustomValue), '') AS varchar(1000)");
                     break;
             }
 

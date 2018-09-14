@@ -331,7 +331,38 @@ namespace TeamSupport.Data
                     break;
             }
 
-            AddCommandParameters(command, Collection.LoginUser);
+            AddCommandParametersForExport(command, Collection.LoginUser);
+            command.CommandText = $" /* ReportID: {ReportID.ToString()} OrganizationID: {OrganizationID.ToString()} */ " + command.CommandText;
+        }
+        public void GetCommandForExports(SqlCommand command, bool inlcudeHiddenFields = true, bool isSchemaOnly = false, bool useUserFilter = true, string sortField = null, string sortDir = null)
+        {
+            MigrateToNewReport();
+
+            command.CommandType = CommandType.Text;
+            command.CommandTimeout = SystemSettings.GetReportTimeout();
+         
+            switch (ReportDefType)
+            {
+                case ReportType.Table:
+                    GetTabularSqlForExports(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID, useUserFilter, sortField, sortDir);
+                    break;
+                case ReportType.Chart:
+                    GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, null, false, true);
+                    break;
+                case ReportType.Custom:
+                    GetCustomSqlForExport(command, useUserFilter);
+                    break;
+                case ReportType.Summary:
+                    GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, ReportID, useUserFilter, false);
+                    break;
+                case ReportType.TicketView:
+                    GetTabularSql(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID, useUserFilter, sortField, sortDir);
+                    break;
+                default:
+                    break;
+            }
+
+            AddCommandParametersForExport(command, Collection.LoginUser);
             command.CommandText = $" /* ReportID: {ReportID.ToString()} OrganizationID: {OrganizationID.ToString()} */ " + command.CommandText;
         }
 
@@ -398,6 +429,27 @@ namespace TeamSupport.Data
             }
         }
 
+        private static void AddCommandParametersForExport(SqlCommand command, LoginUser loginUser)
+        {
+            User user = loginUser.GetUser();
+
+            if (command.CommandText.IndexOf("@OrganizationID") > -1)
+            {
+                command.CommandText = command.CommandText.Replace("@OrganizationID", user.OrganizationID.ToString());
+                //command.Parameters.AddWithValue("OrganizationID", user.OrganizationID);
+                command.Parameters.AddWithValue("Self", user.FirstLastName);
+                command.Parameters.AddWithValue("SelfID", user.UserID);
+                command.Parameters.AddWithValue("UserID", user.UserID);
+
+                TimeSpan offset = loginUser.Offset;
+                command.Parameters.AddWithValue("Offset", string.Format("{0}{1:D2}:{2:D2}", offset < TimeSpan.Zero ? "-" : "+", Math.Abs(offset.Hours), Math.Abs(offset.Minutes)));
+            }
+            else
+            {
+                // throw new Exception("Missing OrganizationID parameter in report query.");
+            }
+        }
+
         private void GetCustomSql(SqlCommand command, bool isSchemaOnly, bool useUserFilter)
         {
             if (isSchemaOnly)
@@ -439,6 +491,49 @@ namespace TeamSupport.Data
 
         }
 
+        private void GetCustomSqlForExport(SqlCommand command, bool useUserFilter)
+        {
+            //if (isSchemaOnly)
+            //{
+            //    command.CommandText = string.Format("WITH q AS ({0}) SELECT * FROM q WHERE (0=1)", Query);
+            //    return;
+            //}
+
+            Report report = Reports.GetReport(Collection.LoginUser, ReportID, Collection.LoginUser.UserID);
+            if (report != null && report.Row["Settings"] != DBNull.Value)
+            {
+                try
+                {
+                    UserTabularSettings userFilters = JsonConvert.DeserializeObject<UserTabularSettings>((string)report.Row["Settings"]);
+                    StringBuilder builder = new StringBuilder();
+                    if (userFilters != null && userFilters.Filters != null && userFilters.Filters.Length > 0)
+                    {
+                        GetWhereClause(Collection.LoginUser, command, builder, userFilters.Filters);
+                        builder.Remove(0, 4);
+                        //command.CommandText = string.Format("c AS ({0}), q AS (SELECT * FROM c WHERE {1})", Query, builder.ToString());
+                        command.CommandText = string.Format("WITH c AS ({0}) SELECT * FROM c WHERE {1}", Query, builder.ToString());
+                    }
+                    else
+                    {
+                        //command.CommandText = string.Format("c AS ({0}), q AS (SELECT * FROM c)", Query);
+                        command.CommandText = Query;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ExceptionLogs.LogException(Collection.LoginUser, ex, "Tabular SQL - User filters");
+                    throw;
+                }
+            }
+            else
+            {
+                //command.CommandText = string.Format("c AS ({0}), q AS (SELECT * FROM c)", Query);
+                command.CommandText = Query;
+
+            }
+
+
+        }
         private static void GetTabularSql(LoginUser loginUser, SqlCommand command, TabularReport tabularReport, bool inlcudeHiddenFields, bool isSchemaOnly, int? reportID, bool useUserFilter, string sortField = null, string sortDir = null)
         {
             StringBuilder builder = new StringBuilder();
@@ -482,6 +577,49 @@ namespace TeamSupport.Data
             }
         }
 
+        private static void GetTabularSqlForExports(LoginUser loginUser, SqlCommand command, TabularReport tabularReport, bool inlcudeHiddenFields, bool isSchemaOnly, int? reportID, bool useUserFilter, string sortField = null, string sortDir = null)
+        {
+            StringBuilder builder = new StringBuilder();
+            GetTabluarSelectClause(loginUser, command, builder, tabularReport, inlcudeHiddenFields, isSchemaOnly, sortField, sortDir);
+            if (isSchemaOnly)
+            {
+                command.CommandText = builder.ToString();
+            }
+            else
+            {
+
+                string primaryTableKeyFieldName = null;
+                if (tabularReport.Subcategory == 70)
+                {
+                    primaryTableKeyFieldName = "UserTicketsView.TicketID";
+                }
+
+                GetWhereClauseForExport(loginUser, command, builder, tabularReport.Filters, primaryTableKeyFieldName);
+                if (useUserFilter && reportID != null)
+                {
+                    Report report = Reports.GetReport(loginUser, (int)reportID, loginUser.UserID);
+                    if (report != null && report.Row["Settings"] != DBNull.Value)
+                    {
+                        try
+                        {
+                            UserTabularSettings userFilters = JsonConvert.DeserializeObject<UserTabularSettings>((string)report.Row["Settings"]);
+
+                            if (userFilters != null)
+                            {
+                                GetWhereClauseForExport(loginUser, command, builder, userFilters.Filters);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            ExceptionLogs.LogException(loginUser, ex, "Tabular SQL - User filters");
+                        }
+                    }
+                }
+
+                command.CommandText = builder.ToString();
+
+            }
+        }
         private static void GetPortalTicketsSQL(LoginUser loginUser, SqlCommand command, TabularReport tabularReport, bool inlcudeHiddenFields, bool isSchemaOnly)
         {
             StringBuilder builder = new StringBuilder();
@@ -808,6 +946,11 @@ namespace TeamSupport.Data
             if (filters != null) WriteFilters(loginUser, command, builder, filters, null, primaryTableKeyName);
         }
 
+        private static void GetWhereClauseForExport(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter[] filters, string primaryTableKeyName = null)
+        {
+            if (filters != null) WriteFiltersForExports(loginUser, command, builder, filters, null, primaryTableKeyName);
+        }
+
         private static void WriteFilters(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter[] filters, ReportFilter parentFilter, string primaryTableKeyName = null)
         {
             foreach (ReportFilter filter in filters)
@@ -821,7 +964,33 @@ namespace TeamSupport.Data
             }
         }
 
+        private static void WriteFiltersForExports(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter[] filters, ReportFilter parentFilter, string primaryTableKeyName = null)
+        {
+            foreach (ReportFilter filter in filters)
+            {
+                if (filter.Conditions.Length < 1) continue;
+
+                builder.Append(string.Format(" {0} (", parentFilter == null ? "AND" : parentFilter.Conjunction.ToUpper()));
+                WriteFilterForExport(loginUser, command, builder, filter, primaryTableKeyName);
+                WriteFiltersForExports(loginUser, command, builder, filter.Filters, filter, primaryTableKeyName);
+                builder.Append(")");
+            }
+        }
+
+
         private static void WriteFilter(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter filter, string primaryTableKeyName = null)
+        {
+            for (int i = 0; i < filter.Conditions.Length; i++)
+            {
+                ReportFilterCondition condition = filter.Conditions[i];
+                if (i > 0) builder.Append(string.Format(" {0} ", filter.Conjunction.ToUpper()));
+                builder.Append("(");
+                WriteFilterCondition(loginUser, command, builder, condition, primaryTableKeyName);
+                builder.Append(")");
+            }
+        }
+
+        private static void WriteFilterForExport(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter filter, string primaryTableKeyName = null)
         {
             for (int i = 0; i < filter.Conditions.Length; i++)
             {
@@ -2122,6 +2291,64 @@ namespace TeamSupport.Data
             return result;
         }
 
+        //For exports
+        public static DataTable GetReportTableForExports(LoginUser loginUser, int reportID,  string sortField, bool isDesc, bool useUserFilter, bool includeHiddenFields)
+        {
+            Report report = Reports.GetReport(loginUser, reportID);
+            if (report.IsDisabled || SystemSettings.GetIsReportsDisabled()) return null;
+            DateTime timeStart = DateTime.Now;
+            DataTable result = null;
+            try
+            {
+                if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
+                {
+                    result = GetReportTableAllForExports(loginUser, report, sortField, isDesc, useUserFilter, includeHiddenFields);
+                }
+                else
+                {
+                    result = GetReportTablePageForExports(loginUser, report,sortField, isDesc, useUserFilter, includeHiddenFields);
+                }
+            }
+            catch (Exception)
+            {
+                // try without the sort
+                try
+                {
+                    if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
+                    {
+                        result = GetReportTableAllForExports(loginUser, report, null, isDesc, useUserFilter, includeHiddenFields);
+                    }
+                    else
+                    {
+                        result = GetReportTablePageForExports(loginUser, report,  null, isDesc, useUserFilter, includeHiddenFields);
+                    }
+                }
+                catch (Exception)
+                {
+                    // try without the user filters
+                    if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
+                    {
+                        result = GetReportTableAllForExports(loginUser, report, null, isDesc, false, includeHiddenFields);
+                    }
+                    else
+                    {
+                        result = GetReportTablePageForExports(loginUser, report, null, isDesc, false, includeHiddenFields);
+                    }
+
+                    UserTabularSettings userFilters = JsonConvert.DeserializeObject<UserTabularSettings>((string)report.Row["Settings"]);
+                    userFilters.Filters = null;
+                    report.Row["Settings"] = JsonConvert.SerializeObject(userFilters);
+                    report.Collection.Save();
+                }
+            }
+            report.LastTimeTaken = (int)(DateTime.Now - timeStart).TotalSeconds;
+            report.Collection.Save();
+
+
+            return result;
+        }
+
+
         private static GridResult GetReportDataPage(LoginUser loginUser, Report report, int from, int to, string sortField, bool isDesc, bool useUserFilter)
         {
             DataTable table = GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, true);
@@ -2244,6 +2471,77 @@ WHERE RowNum BETWEEN @From AND @To";
             return table;
         }
 
+        //For Exports
+        private static DataTable GetReportTablePageForExports(LoginUser loginUser, Report report, string sortField, bool isDesc, bool useUserFilter, bool includeHiddenFields)
+        {
+            
+            SqlCommand command = new SqlCommand();
+            string query = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(sortField))
+            {
+                sortField = GetReportColumnNames(loginUser, report.ReportID)[0];
+                isDesc = false;
+            }
+
+            if (includeHiddenFields && report.ReportSubcategoryID == 70)
+            {
+                switch (sortField)
+                {
+                    case "Severity":
+                        sortField = "hiddenSeverityPosition";
+                        break;
+                    case "Status":
+                        sortField = "hiddenStatusPosition";
+                        break;
+                }
+            }          
+
+            if (report.ReportDefType != ReportType.Custom)
+            {
+                report.GetCommandForExports(command, includeHiddenFields, false, useUserFilter, sortField, isDesc ? "DESC" : "ASC");
+            }
+            else
+            {
+               report.GetCommandForExports(command, includeHiddenFields, false, useUserFilter);
+            }
+
+            report.LastSqlExecuted = DataUtils.GetCommandTextSql(command);
+            report.Collection.Save();
+            FixCommandParameters(command);
+
+            DataTable table = new DataTable();
+            using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+            {
+                connection.Open();
+                SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+
+                command.Connection = connection;
+                command.Transaction = transaction;
+                try
+                {
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                    {
+                        adapter.Fill(table);
+                    }
+                    transaction.Commit();
+                    table = DataUtils.DecodeDataTable(table);
+                    table = DataUtils.StripHtmlDataTable(table);
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    ExceptionLogs.LogException(loginUser, ex, "Report Data", DataUtils.GetCommandTextSql(command));
+                    throw;
+                }
+                connection.Close();
+            }
+
+            //On exports it is always false
+            //if (!includeHiddenFields) table.Columns.Remove("RowNum");
+
+            return table;
+        }
         private static GridResult GetReportDataAll(LoginUser loginUser, Report report, string sortField, bool isDesc, bool useUserFilter)
         {
             DataTable table = GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, true);
@@ -2261,6 +2559,47 @@ WHERE RowNum BETWEEN @From AND @To";
             SqlCommand command = new SqlCommand();
 
             report.GetCommand(command, includeHiddenFields, false, useUserFilter);
+            if (command.CommandText.ToLower().IndexOf(" order by ") < 0)
+            {
+                if (string.IsNullOrWhiteSpace(sortField))
+                {
+                    sortField = GetReportColumnNames(loginUser, report.ReportID)[0];
+                    isDesc = false;
+                }
+                command.CommandText = command.CommandText + " ORDER BY [" + sortField + (isDesc ? "] DESC" : "] ASC");
+            }
+
+            report.LastSqlExecuted = DataUtils.GetCommandTextSql(command);
+            report.Collection.Save();
+            FixCommandParameters(command);
+
+            DataTable table = new DataTable();
+            using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+            {
+                connection.Open();
+                command.Connection = connection;
+                using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                {
+                    try
+                    {
+                        adapter.Fill(table);
+                    }
+                    catch (Exception ex)
+                    {
+                        ExceptionLogs.LogException(loginUser, ex, "Report Data");
+                        throw;
+                    }
+                }
+                connection.Close();
+            }
+            return table;
+        }
+
+        private static DataTable GetReportTableAllForExports(LoginUser loginUser, Report report, string sortField, bool isDesc, bool useUserFilter, bool includeHiddenFields)
+        {
+            SqlCommand command = new SqlCommand();
+
+            report.GetCommandForExports(command, includeHiddenFields, false, useUserFilter);
             if (command.CommandText.ToLower().IndexOf(" order by ") < 0)
             {
                 if (string.IsNullOrWhiteSpace(sortField))
