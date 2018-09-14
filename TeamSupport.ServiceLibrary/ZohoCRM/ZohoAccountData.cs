@@ -32,6 +32,12 @@ namespace TeamSupport.ServiceLibrary
 			public string id { get; set; }
 		}
 
+		public class ParentAccount
+		{
+			public string name { get; set; }
+			public string id { get; set; }
+		}
+
 		public class Data
 		{
 			public string id { get; set; }
@@ -70,7 +76,7 @@ namespace TeamSupport.ServiceLibrary
 			public bool Followed { get; set; }
 			[JsonProperty(PropertyName = "$editable")]
 			public bool Editable { get; set; }
-			public string Parent_Account { get; set; }
+			public ParentAccount Parent_Account { get; set; }
 			public string Shipping_Street { get; set; }
 			public string Shipping_City { get; set; }		
 			public string Shipping_Code { get; set; }
