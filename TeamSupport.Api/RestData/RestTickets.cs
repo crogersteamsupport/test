@@ -476,14 +476,16 @@ namespace TeamSupport.Api
             Tickets tickets = new Tickets(command.LoginUser);
             Ticket ticket = tickets.AddNewTicket();
             ticket.OrganizationID = (int)command.Organization.ParentID;
-            ticket.ReadFromXml(command.Data, true);
-            ticket.Collection.Save();
+			ticket.TicketSource = "API";
+			ticket.NeedsIndexing = true;
 			string description = string.Empty;
 			int? contactID = null;
 			int? customerID = null;
 			ticket.FullReadFromXml(command.Data, true, ref description, ref contactID, ref customerID);
+			ticket.Collection.Save();
+			ticket.UpdateCustomFieldsFromXml(command.Data);
 
-            Actions actions = new Actions(command.LoginUser);
+			Actions actions = new Actions(command.LoginUser);
             Data.Action action = actions.AddNewAction();
             action.ActionTypeID = null;
             action.Name = "Description";
@@ -495,7 +497,8 @@ namespace TeamSupport.Api
             actions.Save();
 
             tickets.AddOrganization(command.Organization.OrganizationID, ticket.TicketID);
-            return TicketsView.GetTicketsViewItem(command.LoginUser, ticket.TicketID).GetXml("Ticket", true);
+			UpdateFieldsOfSeparateTable(command, ticket, true);
+			return TicketsView.GetTicketsViewItem(command.LoginUser, ticket.TicketID).GetXml("Ticket", true);
         }
 
         public static string UpdateCustomerTicket(RestCommand command, int ticketID)
@@ -543,7 +546,7 @@ namespace TeamSupport.Api
         /// </summary>
         /// <param name="command">Command received in the request to read and process the data in the request body.</param>
         /// <param name="ticketId">TicketId to update its record.</param>
-        private static void UpdateFieldsOfSeparateTable(RestCommand command, Ticket ticket)
+        private static void UpdateFieldsOfSeparateTable(RestCommand command, Ticket ticket, bool isCustomerTicket = false)
         {
             try
             {
@@ -622,7 +625,7 @@ namespace TeamSupport.Api
                                     {
                                         Tags tag = new Tags(command.LoginUser);
                                         newTag = tag.AddNewTag();
-                                        newTag.OrganizationID = command.Organization.OrganizationID;
+                                        newTag.OrganizationID = isCustomerTicket ? command.Organization.ParentID ?? command.Organization.OrganizationID : command.Organization.OrganizationID;
                                         newTag.Value = tagValue;
                                         tag.Save();
                                     }
