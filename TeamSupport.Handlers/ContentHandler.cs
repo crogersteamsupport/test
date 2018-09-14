@@ -32,7 +32,6 @@ using System.Drawing.Text;
 using System.Collections.Specialized;
 using System.Dynamic;
 using PusherServer;
-using TeamSupport.ModelAPI;
 
 
 namespace TeamSupport.Handlers
@@ -112,80 +111,80 @@ namespace TeamSupport.Handlers
         }
 
 
-		#endregion
+        #endregion
 
-		private void ProcessImages(HttpContext context, string[] segments, int organizationID)
-		{
-			StringBuilder builder = new StringBuilder();
-			for (int i = 2; i < segments.Length; i++)
-			{
-				if (i != 2) builder.Append("\\");
-				builder.Append(segments[i]);
-			}
-			string path = builder.ToString();
-			string fileName = "";
+        private void ProcessImages(HttpContext context, string[] segments, int organizationID)
+        {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 2; i < segments.Length; i++)
+            {
+                if (i != 2) builder.Append("\\");
+                builder.Append(segments[i]);
+            }
+            string path = builder.ToString();
+            string fileName = "";
 
-			if (Path.GetExtension(path) == "")
-			{
-				path = Path.ChangeExtension(path, ".jpg");
-				string imageFile = Path.GetFileName(path);
-				path = Path.GetDirectoryName(path);
-				string imagePath = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
-				if (!Directory.Exists(imagePath)) Directory.CreateDirectory(imagePath);
-				fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
-				if (!File.Exists(fileName))
-				{
-					imagePath = Path.Combine(AttachmentPath.GetDefaultPath(LoginUser.Anonymous, AttachmentPath.Folder.Images), path);
-					fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
-				}
+            if (Path.GetExtension(path) == "")
+            {
+                path = Path.ChangeExtension(path, ".jpg");
+                string imageFile = Path.GetFileName(path);
+                path = Path.GetDirectoryName(path);
+                string imagePath = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
+                if (!Directory.Exists(imagePath)) Directory.CreateDirectory(imagePath);
+                fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
+                if (!File.Exists(fileName))
+                {
+                    imagePath = Path.Combine(AttachmentPath.GetDefaultPath(LoginUser.Anonymous, AttachmentPath.Folder.Images), path);
+                    fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
+                }
 
-			}
-			else
-			{
-				fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
-			}
+            }
+            else
+            {
+                fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
+            }
 
-			if (File.Exists(fileName))
-			{
-				WriteImage(context, fileName);
-			}
+            if (File.Exists(fileName))
+            {
+                WriteImage(context, fileName);
+            }
 
-			//Organization organization = Organizations.GetOrganization(LoginUser.Anonymous, organizationID);
-			//bool isAuthenticated = organizationID == TSAuthentication.OrganizationID;
+            //Organization organization = Organizations.GetOrganization(LoginUser.Anonymous, organizationID);
+            //bool isAuthenticated = organizationID == TSAuthentication.OrganizationID;
 
-			//if (isAuthenticated || organization.AllowUnsecureAttachmentViewing)
-			//{
-			//	if (Path.GetExtension(path) == "")
-			//	{
-			//		path = Path.ChangeExtension(path, ".jpg");
-			//		string imageFile = Path.GetFileName(path);
-			//		path = Path.GetDirectoryName(path);
-			//		string imagePath = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
-			//		if (!Directory.Exists(imagePath)) Directory.CreateDirectory(imagePath);
-			//		fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
-			//		if (!File.Exists(fileName))
-			//		{
-			//			imagePath = Path.Combine(AttachmentPath.GetDefaultPath(LoginUser.Anonymous, AttachmentPath.Folder.Images), path);
-			//			fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
-			//		}
+            //if (isAuthenticated || organization.AllowUnsecureAttachmentViewing)
+            //{
+            //	if (Path.GetExtension(path) == "")
+            //	{
+            //		path = Path.ChangeExtension(path, ".jpg");
+            //		string imageFile = Path.GetFileName(path);
+            //		path = Path.GetDirectoryName(path);
+            //		string imagePath = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
+            //		if (!Directory.Exists(imagePath)) Directory.CreateDirectory(imagePath);
+            //		fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
+            //		if (!File.Exists(fileName))
+            //		{
+            //			imagePath = Path.Combine(AttachmentPath.GetDefaultPath(LoginUser.Anonymous, AttachmentPath.Folder.Images), path);
+            //			fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
+            //		}
 
-			//	}
-			//	else
-			//	{
-			//		fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
-			//	}
+            //	}
+            //	else
+            //	{
+            //		fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
+            //	}
 
-			//	if (File.Exists(fileName))
-			//	{
-			//		WriteImage(context, fileName);
-			//	}
-			//}
-			//else
-			//{
-			//	context.Response.Write("Unauthorized");
-			//	context.Response.ContentType = "text/html";
-			//	return;
-			//}
+            //	if (File.Exists(fileName))
+            //	{
+            //		WriteImage(context, fileName);
+            //	}
+            //}
+            //else
+            //{
+            //	context.Response.Write("Unauthorized");
+            //	context.Response.ContentType = "text/html";
+            //	return;
+            //}
         }
 
         private void ProcessRatingImages(HttpContext context, string[] segments, int organizationID)
@@ -350,7 +349,7 @@ namespace TeamSupport.Handlers
                     evt.Summary = calevent.Title;
                     evt.Description = calevent.Description;
                     evt.IsAllDay = calevent.AllDay;
-                    
+
                     if (calevent.AllDay)
                     {
                         //evt.Start = (iCalDateTime)calevent.StartDateUtc.Date;
@@ -960,12 +959,6 @@ namespace TeamSupport.Handlers
             // the following is a big hack to get it out fast.... Please do not consider robust code.
             int id;
             if (int.TryParse(attachmentID, out id))
-                ProcessAttachmentID(context, browser, id);
-            else
-                ProcessAttachmentString(context, browser, attachmentID);
-        }
-
-        void ProcessAttachmentID(HttpContext context, HttpBrowserCapabilities browser, int id)
             {
                 //if (IDTree.ConnectionContext.ActionAttachmentsEnabled)  // open action attachment by ID
                 //{
@@ -993,7 +986,7 @@ namespace TeamSupport.Handlers
                         user = Users.GetUser(attachment.Collection.LoginUser, userID);
 
 
-                        if (attachment.RefType == AttachmentProxy.References.Actions)
+                        if (attachment.RefType == ReferenceType.Actions)
                         {
                             TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
                             Ticket ticket = Tickets.GetTicket(action.Collection.LoginUser, action.TicketID);
@@ -1058,7 +1051,7 @@ namespace TeamSupport.Handlers
 
             }
 
-            void ProcessAttachmentString(HttpContext context, HttpBrowserCapabilities browser, string attachmentID)
+            else
             {
                 //if (IDTree.ConnectionContext.ActionAttachmentsEnabled)  // open action attachment by Guid
                 //{
@@ -1072,7 +1065,7 @@ namespace TeamSupport.Handlers
                 command.CommandText = "SELECT AttachmentID FROM Attachments WHERE AttachmentGUID=@AttachmentGUID";
                 command.Parameters.AddWithValue("@AttachmentGUID", Guid.Parse(attachmentID));
 
-                int id = SqlExecutor.ExecuteInt(LoginUser.Anonymous, command);
+                id = SqlExecutor.ExecuteInt(LoginUser.Anonymous, command);
 
                 TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, id);
                 Organization organization = Organizations.GetOrganization(attachment.Collection.LoginUser, attachment.OrganizationID);
@@ -1093,7 +1086,7 @@ namespace TeamSupport.Handlers
                         user = Users.GetUser(attachment.Collection.LoginUser, userID);
 
 
-                        if (attachment.RefType == AttachmentProxy.References.Actions)
+                        if (attachment.RefType == ReferenceType.Actions)
                         {
                             TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
                             Ticket ticket = Tickets.GetTicket(action.Collection.LoginUser, action.TicketID);
@@ -1160,6 +1153,9 @@ namespace TeamSupport.Handlers
             }
 
 
+
+
+        }
 
         private void ProcessImportLog(HttpContext context, int importID)
         {
