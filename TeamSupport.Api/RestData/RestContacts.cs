@@ -118,7 +118,7 @@ namespace TeamSupport.Api
       if (organization == null || organization.ParentID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
 
       Tickets tickets = new Tickets(command.LoginUser);
-      tickets.RemoveOrganization(user.UserID, ticket.TicketID);
+	  tickets.RemoveContact(user.UserID, ticket.TicketID);
       return ContactsView.GetContactsViewItem(command.LoginUser, user.UserID).GetXml("Contact", true);
     }
 
