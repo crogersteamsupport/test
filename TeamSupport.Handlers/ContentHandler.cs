@@ -934,6 +934,11 @@ namespace TeamSupport.Handlers
             int id;
             if (int.TryParse(attachmentID, out id))
             {
+                if (Model.ConnectionContext.IsEnabled)
+                {
+                    AttachmentProxy proxy = ModelAPI.ModelAPI.ReadActionAttachment(TSAuthentication.Ticket, id);
+                }
+
                 TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, id);
                 Organization organization = Organizations.GetOrganization(attachment.Collection.LoginUser, attachment.OrganizationID);
                 User user = null;

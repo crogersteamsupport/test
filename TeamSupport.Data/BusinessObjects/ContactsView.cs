@@ -150,7 +150,7 @@ namespace TeamSupport.Data
       }
     }
 
-    public ContactsViewItem FindBySalesForceID(string salesForceID, string organizationSalesForceID)
+         public ContactsViewItem FindBySalesForceID(string salesForceID, string organizationSalesForceID)
     {
       foreach (ContactsViewItem contactsViewItem in this)
       {
