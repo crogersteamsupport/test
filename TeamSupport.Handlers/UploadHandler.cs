@@ -50,8 +50,8 @@ namespace TeamSupport.Handlers
                 AttachmentPath.Folder folder = UploadUtils.GetFolder(context, segments.ToArray());
                 if (folder == AttachmentPath.Folder.None) throw new Exception("Invalid path.");
 
-                ReferenceType refType = AttachmentPath.GetFolderReferenceType(folder);
-                if (refType == ReferenceType.None)
+                AttachmentProxy.References refType = AttachmentPath.GetFolderReferenceType(folder);
+                if (refType == AttachmentProxy.References.None)
                 {
                     SaveFilesOld(context, folder);
                 }

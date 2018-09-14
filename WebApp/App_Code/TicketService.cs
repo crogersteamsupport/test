@@ -3599,7 +3599,7 @@ WHERE t.TicketID = @TicketID
             //}
 
             Attachment attachment = Attachments.GetAttachment(TSAuthentication.GetLoginUser(), attachmentID);
-            if (attachment == null || attachment.RefType != ReferenceType.Actions) return;
+            if (attachment == null || attachment.RefType != AttachmentProxy.References.Actions) return;
             TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
             if (!CanEditAction(action)) return;
             attachment.DeleteFile();

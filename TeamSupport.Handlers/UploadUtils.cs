@@ -58,7 +58,7 @@ namespace TeamSupport.Handlers
             //    return;
             //}
 
-            ReferenceType refType = AttachmentPath.GetFolderReferenceType(folder);
+            AttachmentProxy.References refType = AttachmentPath.GetFolderReferenceType(folder);
 
             string path = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, folder, 3);
             if (itemID != null) path = Path.Combine(path, itemID.ToString());
@@ -72,7 +72,7 @@ namespace TeamSupport.Handlers
                     string fileName = RemoveSpecialCharacters(DataUtils.VerifyUniqueUrlFileName(path, Path.GetFileName(files[i].FileName)));
 
                     files[i].SaveAs(Path.Combine(path, fileName));
-                    if (refType != ReferenceType.None && itemID != null)
+                    if (refType != AttachmentProxy.References.None && itemID != null)
                     {
                         Attachment attachment = (new Attachments(TSAuthentication.GetLoginUser())).AddNewAttachment();
                         attachment.RefType = refType;
@@ -95,7 +95,7 @@ namespace TeamSupport.Handlers
                     {
                         switch (refType)
                         {
-                            case ReferenceType.Imports:
+                            case AttachmentProxy.References.Imports:
                                 //Not saving import till user click on import button saving both imports and mappings
                                 //Import import = (new Imports(TSAuthentication.GetLoginUser())).AddNewImport();
                                 //import.RefType = (ReferenceType)Convert.ToInt32(context.Request.Form["refType"]);

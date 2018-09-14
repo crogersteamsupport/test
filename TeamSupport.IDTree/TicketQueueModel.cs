@@ -32,21 +32,21 @@ namespace TeamSupport.IDTree
             Verify($"SELECT TicketQueueID FROM TicketQueue WITH (NOLOCK) WHERE TicketQueueID={TicketQueueID} AND TicketID={Ticket.TicketID} AND UserID={User.UserID}");
         }
 
-        public static TicketQueueModel[] GetQueuedTicket(TicketModel ticket)
-        {
-            Table<Proxy.TicketQueueProxy> table = ticket.Connection._db.GetTable<Proxy.TicketQueueProxy>();
-            var query = from row in table where row.TicketID == ticket.TicketID select row;
-            Proxy.TicketQueueProxy[] proxies = query.ToArray();
+        //public static TicketQueueModel[] GetQueuedTicket(TicketModel ticket)
+        //{
+        //    Table<Proxy.TicketQueueProxy> table = ticket.Connection._db.GetTable<Proxy.TicketQueueProxy>();
+        //    var query = from row in table where row.TicketID == ticket.TicketID select row;
+        //    Proxy.TicketQueueProxy[] proxies = query.ToArray();
 
-            List<TicketQueueModel> queue = new List<TicketQueueModel>();
-            foreach(Proxy.TicketQueueProxy proxy in proxies)
-            {
-                UserModel user = new UserModel(ticket.Connection, proxy.UserID);
-                if (user.MarkDeleted())
-                    continue;
-                queue.Add(new TicketQueueModel(user, ticket, proxy.TicketQueueID, false));
-            }
-            return queue.ToArray();
-        }
+        //    List<TicketQueueModel> queue = new List<TicketQueueModel>();
+        //    foreach(Proxy.TicketQueueProxy proxy in proxies)
+        //    {
+        //        UserModel user = new UserModel(ticket.Connection, proxy.UserID);
+        //        if (user.MarkDeleted())
+        //            continue;
+        //        queue.Add(new TicketQueueModel(user, ticket, proxy.TicketQueueID, false));
+        //    }
+        //    return queue.ToArray();
+        //}
     }
 }

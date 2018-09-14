@@ -173,7 +173,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
                 else
                 {
                     Attachment attachment = attachments.AddNewAttachment();
-                    attachment.RefType = ReferenceType.UserPhoto;
+                    attachment.RefType = AttachmentProxy.References.UserPhoto;
                     attachment.RefID = _userID;
                     attachment.OrganizationID = _organizationID;
                     attachment.FileName = _userID + "avatar.jpg";

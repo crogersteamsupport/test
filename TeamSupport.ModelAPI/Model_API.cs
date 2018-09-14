@@ -18,6 +18,37 @@ namespace TeamSupport.ModelAPI
     /// <summary> CRUD interface to DataAPI - Create, Read, Update, Delete proxy </summary>
     public static class Model_API
     {
+        public static T GetIDTree<T>(int id) where T : class
+        {
+            try
+            {
+                using (ConnectionContext connection = new ConnectionContext())
+                {
+                    switch (typeof(T).Name)
+                    {
+                        case "ActionAttachmentModel":
+                            return new ActionAttachmentModel(connection, id) as T;
+                    }
+                }
+            }
+            catch (AuthenticationException ex)
+            {
+                // TODO - tell user they don't have permission
+                Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
+            }
+            catch (System.Data.ConstraintException ex)
+            {
+                // TODO - data integrity failure
+                Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
+            }
+            catch (Exception ex)
+            {
+                // TODO - tell user we failed to read
+                Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
+            }
+            return null;
+        }
+
         /// <summary> 
         /// CREATE
         /// </summary>
@@ -166,8 +197,8 @@ namespace TeamSupport.ModelAPI
             catch (Exception ex)
             {
                 // TODO - tell user we failed to read
-                int logid = DataAPI.DataAPI.LogException(connection.Authentication, ex, "Ticket Merge Exception:" + ex.Source);
-                return $"Error merging tickets. Exception #{logid}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.";
+                //int logid = DataAPI.Data_API.LogException(connection.Authentication, ex, "Ticket Merge Exception:" + ex.Source);
+                //return $"Error merging tickets. Exception #{logid}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.";
             }
         }
 
@@ -205,8 +236,8 @@ namespace TeamSupport.ModelAPI
             }
             catch (Exception ex)
             {
-                int logid = DataAPI.DataAPI.LogException(new Proxy.AuthenticationModel(authenticationTicket), ex, "Ticket Merge Exception:" + ex.Source);
-                return $"Error merging tickets. Exception #{logid}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.";
+                //int logid = DataAPI.Data_API.LogException(new Proxy.AuthenticationModel(authenticationTicket), ex, "Ticket Merge Exception:" + ex.Source);
+                //return $"Error merging tickets. Exception #{logid}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.";
             }
         }
 

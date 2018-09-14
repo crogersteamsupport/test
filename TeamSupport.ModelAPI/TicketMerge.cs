@@ -51,7 +51,7 @@ namespace TeamSupport.ModelAPI
         void MergeQueuedTickets()
         {
             // all the instances where this ticket is in a queue
-            TicketQueueModel[] ticketQueues = Source.TicketQueue();
+            //TicketQueueModel[] ticketQueues = Source.TicketQueue();
 
             //foreach(TicketQueueModel ticketQueue in ticketQueues)
             //{

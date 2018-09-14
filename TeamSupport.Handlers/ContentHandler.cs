@@ -32,6 +32,7 @@ using System.Drawing.Text;
 using System.Collections.Specialized;
 using System.Dynamic;
 using PusherServer;
+using TeamSupport.ModelAPI;
 
 
 namespace TeamSupport.Handlers
@@ -959,6 +960,12 @@ namespace TeamSupport.Handlers
             // the following is a big hack to get it out fast.... Please do not consider robust code.
             int id;
             if (int.TryParse(attachmentID, out id))
+                ProcessAttachmentID(context, browser, id);
+            else
+                ProcessAttachmentString(context, browser, attachmentID);
+        }
+
+        void ProcessAttachmentID(HttpContext context, HttpBrowserCapabilities browser, int id)
             {
                 //if (IDTree.ConnectionContext.ActionAttachmentsEnabled)  // open action attachment by ID
                 //{
@@ -986,7 +993,7 @@ namespace TeamSupport.Handlers
                         user = Users.GetUser(attachment.Collection.LoginUser, userID);
 
 
-                        if (attachment.RefType == ReferenceType.Actions)
+                        if (attachment.RefType == AttachmentProxy.References.Actions)
                         {
                             TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
                             Ticket ticket = Tickets.GetTicket(action.Collection.LoginUser, action.TicketID);
@@ -1051,7 +1058,7 @@ namespace TeamSupport.Handlers
 
             }
 
-            else
+            void ProcessAttachmentString(HttpContext context, HttpBrowserCapabilities browser, string attachmentID)
             {
                 //if (IDTree.ConnectionContext.ActionAttachmentsEnabled)  // open action attachment by Guid
                 //{
@@ -1065,7 +1072,7 @@ namespace TeamSupport.Handlers
                 command.CommandText = "SELECT AttachmentID FROM Attachments WHERE AttachmentGUID=@AttachmentGUID";
                 command.Parameters.AddWithValue("@AttachmentGUID", Guid.Parse(attachmentID));
 
-                id = SqlExecutor.ExecuteInt(LoginUser.Anonymous, command);
+                int id = SqlExecutor.ExecuteInt(LoginUser.Anonymous, command);
 
                 TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, id);
                 Organization organization = Organizations.GetOrganization(attachment.Collection.LoginUser, attachment.OrganizationID);
@@ -1086,7 +1093,7 @@ namespace TeamSupport.Handlers
                         user = Users.GetUser(attachment.Collection.LoginUser, userID);
 
 
-                        if (attachment.RefType == ReferenceType.Actions)
+                        if (attachment.RefType == AttachmentProxy.References.Actions)
                         {
                             TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
                             Ticket ticket = Tickets.GetTicket(action.Collection.LoginUser, action.TicketID);
@@ -1153,9 +1160,6 @@ namespace TeamSupport.Handlers
             }
 
 
-
-
-        }
 
         private void ProcessImportLog(HttpContext context, int importID)
         {
