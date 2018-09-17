@@ -42,9 +42,11 @@ namespace TeamSupport.Data
         [DataMember, Column] public bool SentToSnow { get; set; }
         [DataMember, Column] public int? FilePathID { get; set; }
 
+        public const int AttachmentPathIndex = 3;
+
         public static AttachmentProxy ClassFactory(References refType, int refID)
         {
-            switch(refType)
+            switch (refType)
             {
                 case References.Actions: return new ActionAttachmentProxy(refID);
                 case References.Assets: return new AssetAttachmentProxy(refID);
@@ -67,9 +69,6 @@ namespace TeamSupport.Data
             }
         }
 
-
-
-
         public enum References
         {
             None = ReferenceType.None,
@@ -89,8 +88,8 @@ namespace TeamSupport.Data
 
             Imports = ReferenceType.Imports,
         };
-    }
 
+    }
 
     public class ActionAttachmentProxy : AttachmentProxy
     {
@@ -178,4 +177,5 @@ namespace TeamSupport.Data
     {
         public NoneAttachmentProxy(int refID) : base(References.None, refID) { }
     }
+
 }

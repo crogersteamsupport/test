@@ -47,6 +47,9 @@ namespace TeamSupport.Handlers
                     segments.RemoveAt(segments.Count - 1);
                 }
 
+                //TODO - SCOT
+                ModelAPI.AttachmentAPI.CreateAttachments(context, segments, id, _ratingImage);
+
                 AttachmentPath.Folder folder = UploadUtils.GetFolder(context, segments.ToArray());
                 if (folder == AttachmentPath.Folder.None) throw new Exception("Invalid path.");
 

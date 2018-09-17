@@ -39,7 +39,8 @@ namespace TeamSupport.DataAPI
             int creatorID = idNode.Connection.UserID;
 
             string command = String.Empty;
-            switch (typeof(TProxy).Name) // alphabetized list
+            string typeName = tProxy.GetType().Name;
+            switch (typeName) // alphabetized list
             {
                 case "ActionAttachment":
                     {
