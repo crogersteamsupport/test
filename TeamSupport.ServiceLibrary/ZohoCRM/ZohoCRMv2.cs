@@ -13,7 +13,10 @@ namespace TeamSupport.ServiceLibrary.ZohoCRM
 	public class ZohoCRMv2
 	{
 		private const string _zohoCrmAPIv2 = "https://www.zohoapis.com/crm/v2/";
-		protected const int _maxBatchSize = 200;
+		private const int _maxBatchSize = 200;
+		private const string RATELIMIT = "X-RATELIMIT-LIMIT";
+		private const string RATELIMITREMAINING = "X-RATELIMIT-REMAINING";
+		private const string RATELIMITRESET = "X-RATELIMIT-RESET";
 
 		protected CRMLinkTableItem _crmLinkRow;
 		protected CRMLinkTableItem CrmLinkRow
@@ -1308,6 +1311,8 @@ namespace TeamSupport.ServiceLibrary.ZohoCRM
 				{
 					if (request.HaveResponse && response != null)
 					{
+						CheckAPIRequestLimitAndWait(response);
+
 						using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8))
 						{
 							responseText = reader.ReadToEnd();
@@ -1324,26 +1329,80 @@ namespace TeamSupport.ServiceLibrary.ZohoCRM
 			}
 			catch (WebException webEx)
 			{
-				//This is the error returned by ZohoCrm when there are no records to return for that IfModifiedSince value: The remote server returned an error: (304) Not Modified
-				if (webEx.Message.Contains("error") && webEx.Message.Contains("304") && webEx.Message.Contains("Not Modified"))
+				if (webEx.Status == WebExceptionStatus.ProtocolError)
 				{
-					Logs.WriteEvent($"There were no records modified since last sync: {request.IfModifiedSince}");
+					HttpWebResponse response = webEx.Response as HttpWebResponse;
+
+					if (response != null)
+					{
+						//We'll use status code numbers instead of the enum because the 429 returned by ZohoCRM does not exist in the HttpStatusCode enum. :(
+						switch ((int)response.StatusCode)
+						{
+							case 304: // HttpStatusCode.NotModified
+				//This is the error returned by ZohoCrm when there are no records to return for that IfModifiedSince value: The remote server returned an error: (304) Not Modified
+								Logs.WriteEvent($"There were no records modified since last sync: {request.IfModifiedSince}. ZohoCRM error: {webEx.Message}");
+								break;
+							case 429: // Too many requests
+									  //This is the error returned by ZohoCrm when the API Calls per minute has been reached.
+								Logs.WriteEvent($"The maximum API calls per minute to ZohoCRM has been reached, we'll need to wait. ZohoCRM error: {webEx.Message}");
+								WebHeaderCollection headerCollection = response.Headers;
+								String[] remaining = headerCollection.GetValues(RATELIMITREMAINING);
+								String[] reset = headerCollection.GetValues(RATELIMITRESET);
+								String[] limit = headerCollection.GetValues(RATELIMIT);
+								break;
+							default:
+								Logs.WriteException(webEx);
+								break;
+						}
 				}
 				else
 				{
 					Logs.WriteException(webEx);
+					}
+				}
+
 					if (method == "POST")
 					{
 						Logs.WriteEvent($"Body: {postData}");
 					}
 				}
-			}
 			catch (Exception ex)
 			{
 				Logs.WriteException(ex);
 			}
 
 			return responseText;
+		}
+
+		private void CheckAPIRequestLimitAndWait(HttpWebResponse response)
+		{
+			// Get the headers associated with the response.
+			WebHeaderCollection headerCollection = response.Headers;
+			String[] remaining = headerCollection.GetValues(RATELIMITREMAINING);
+			String[] reset = headerCollection.GetValues(RATELIMITRESET);
+			String[] limit = headerCollection.GetValues(RATELIMIT);
+
+			if (remaining.Any())
+			{
+				int remainingCount = int.Parse(remaining[0]);
+
+				if (remainingCount == 1)
+				{
+					//70 secs just in case the remaining header is not there.
+					int resetSeconds = 70;
+
+					if (reset.Any())
+					{
+						DateTime resetTime = new DateTime(1970, 1, 1, 0, 0, 0).AddMilliseconds(long.Parse(reset[0]));
+						TimeSpan wait = resetTime - DateTime.UtcNow;
+						resetSeconds = (int)wait.TotalSeconds;
+					}
+
+					Logs.WriteEvent(string.Format($"Rate Limit of {limit[0]} reached. Sleeping {resetSeconds} seconds until it resets."));
+					System.Threading.Thread.Sleep(resetSeconds * 1000);
+					Logs.WriteEvent("Continuing...");
+				}
+			}
 		}
 
 		private enum ObjectType : byte
