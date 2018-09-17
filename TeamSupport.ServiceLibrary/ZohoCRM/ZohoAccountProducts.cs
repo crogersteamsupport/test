@@ -43,7 +43,7 @@ namespace TeamSupport.ServiceLibrary
 			public int Qty_Ordered { get; set; }
 			public int Qty_in_Stock { get; set; }
 			public ZohoAccountData.CreatedBy Created_By { get; set; }
-			public List<object> Tag { get; set; }
+			public List<ZohoAccountData.Tag> Tag { get; set; }
 			public DateTime? Sales_End_Date { get; set; }
 			public int Unit_Price { get; set; }
 			public bool Taxable { get; set; }
