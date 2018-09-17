@@ -55,7 +55,7 @@ Namespace TeamSupport
 				AddLog("Username is missing and it is required to sync.")
 			ElseIf CRMLinkRow.Password Is Nothing AndAlso CRMLinkRow.SecurityToken Is Nothing Then
 				result = False
-				AddLog("token and password are missing and at least one is required to sync.")
+				AddLog("Token and password are both missing, at least one is required to sync.")
 			Else
 				_encodedCredentials = DataUtils.GetEncodedCredentials(CRMLinkRow.Username, If(String.IsNullOrEmpty(CRMLinkRow.SecurityToken), CRMLinkRow.Password, CRMLinkRow.SecurityToken))
             End If
