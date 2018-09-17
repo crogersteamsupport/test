@@ -50,12 +50,15 @@ Namespace TeamSupport
 				_baseURI = protocol + CRMLinkRow.HostName + "/rest/api/latest"
 			End If
 
-                If CRMLinkRow.Username Is Nothing OrElse (CRMLinkRow.Password Is Nothing OrElse CRMLinkRow.SecurityToken Is Nothing) Then
-                    result = False
-                    AddLog("Username and or token are missing and they are required to sync.")
-                Else
-                    _encodedCredentials = DataUtils.GetEncodedCredentials(CRMLinkRow.Username, If(String.IsNullOrEmpty(CRMLinkRow.SecurityToken), CRMLinkRow.Password, CRMLinkRow.SecurityToken))
-                End If
+			If CRMLinkRow.Username Is Nothing Then
+				result = False
+				AddLog("Username is missing and it is required to sync.")
+			ElseIf CRMLinkRow.Password Is Nothing AndAlso CRMLinkRow.SecurityToken Is Nothing Then
+				result = False
+				AddLog("token and password are missing and at least one is required to sync.")
+			Else
+				_encodedCredentials = DataUtils.GetEncodedCredentials(CRMLinkRow.Username, If(String.IsNullOrEmpty(CRMLinkRow.SecurityToken), CRMLinkRow.Password, CRMLinkRow.SecurityToken))
+            End If
 
 			'Make sure credentials are good
 			If (result) Then
