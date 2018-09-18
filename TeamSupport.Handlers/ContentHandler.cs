@@ -946,7 +946,6 @@ namespace TeamSupport.Handlers
             }
 
                 AttachmentProxy attachment = Model_API.Read<AttachmentProxy>(id);
-                OrganizationProxy organization = Model_API.Read<OrganizationProxy>(attachment.OrganizationID);
                 //User user = null;
                 bool isAuthenticated = attachment.OrganizationID == TSAuthentication.OrganizationID;
 
@@ -963,10 +962,10 @@ namespace TeamSupport.Handlers
                         int userID = int.Parse(authTicket.UserData.Split('|')[0]);
                         UserProxy user = Model_API.Read<UserProxy>(userID);
 
-
-                        if (attachment.RefType == (int)AttachmentProxy.References.Actions)
+                        ActionAttachmentProxy actionAttachment = attachment as ActionAttachmentProxy;
+                        if (actionAttachment != null)
                         {
-                            TeamSupport.Data.ActionProxy action = Model_API.Read<ActionProxy>(attachment.RefID);
+                            ActionProxy action = Model_API.Read<ActionProxy>(actionAttachment.ActionID);
                             TicketProxy ticket = Model_API.Read<TicketProxy>(action.TicketID);
                             if (action.IsVisibleOnPortal)
                             {
@@ -990,8 +989,11 @@ namespace TeamSupport.Handlers
                     }
                 }
 
-            if(fromGuid)
+            if (fromGuid)
+            {
+                OrganizationProxy organization = Model_API.Read<OrganizationProxy>(attachment.OrganizationID);
                 isAuthenticated = isAuthenticated || organization.AllowUnsecureAttachmentViewing;
+            }
 
             if (!isAuthenticated)
                 {

@@ -7,19 +7,102 @@ using System.Web;
 using TeamSupport.Data;
 using TeamSupport.IDTree;
 using System.IO;
+using TeamSupport.DataAPI;
 
 namespace TeamSupport.ModelAPI
 {
     public class AttachmentAPI
     {
+        /// <summary> Create attachment files </summary>
+        public static List<AttachmentProxy> CreateAttachments(HttpContext context, out string _ratingImage)
+        {
+            List<AttachmentProxy> result = new List<AttachmentProxy>();
+            GetPathMap(context, out PathMap pathMap, out int refID, out _ratingImage);
+            try
+            {
+                using (ConnectionContext connection = new ConnectionContext())
+                {
+                    // valid ID to add attachment
+                    IAttachmentParent model = ClassFactory(connection, pathMap._refType, refID);
+                    HttpFileCollection files = context.Request.Files;
+                    for (int i = 0; i < files.Count; i++)
+                    {
+                        if (files[i].ContentLength <= 0)
+                            continue;
+
+                        AttachmentFile attachmentFile = new AttachmentFile(model, files[i]);    // create the file
+                        AttachmentProxy proxy = AttachmentProxy.ClassFactory(pathMap._refType);  // construct the proxy
+                        proxy.RefID = refID;
+                        InitializeProxy(context, connection, attachmentFile, proxy);
+                        DataAPI.Data_API.Create(model.AsIDNode, proxy);  // save proxy to DB
+                        result.Add(proxy);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // TODO - tell user we failed 
+                DataAPI.Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
+            }
+            return result;
+        }
+
+        static IAttachmentParent ClassFactory(ConnectionContext connection, AttachmentProxy.References refType, int refID)
+        {
+            switch (refType)
+            {
+                case AttachmentProxy.References.Actions: return new ActionModel(connection, refID);
+                //case AttachmentProxy.References.Assets: return new AssetModel(connection, refID);
+                //case AttachmentProxy.References.ChatAttachments: return new ChatModel(connection, refID);
+                //case AttachmentProxy.References.CompanyActivity: return new CompanyActivityModel(connection, refID);
+                //case AttachmentProxy.References.ContactActivity: return new ContactActivityModel(connection, refID);
+                //case AttachmentProxy.References.Contacts: return new ContactModel(connection, refID);
+                //case AttachmentProxy.References.CustomerHubLogo: return new CustomerHubLogoModel(connection, refID);
+                //case AttachmentProxy.References.Organizations: return new OrganizationModel(connection, refID);
+                //case AttachmentProxy.References.ProductVersions: return new ProductVersionModel(connection, refID);
+                //case AttachmentProxy.References.Tasks: return new TaskModel(connection, refID);
+                //case AttachmentProxy.References.UserPhoto: return new UserPhotoModel(connection, refID);
+                //case AttachmentProxy.References.Users: return new UserModel(connection, refID);
+                //case AttachmentProxy.References.WaterCooler: return new WaterCoolerModel(connection, refID);
+                //case AttachmentProxy.References.Imports: return new ImportsModel(connection, refID);
+                default:
+                    if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
+                    throw new Exception($"bad ReferenceType {refType}");
+
+            }
+        }
+
+        public static void DeleteActionAttachment(int attachmentID)
+        {
+            try
+            {
+                using (ConnectionContext connection = new ConnectionContext())
+                {
+                    // user have permission to modify this action?
+                    ActionAttachmentModel attachment = new ActionAttachmentModel(connection, attachmentID);
+                    if (!attachment.Action.CanEdit())
+                        return;
+
+                    AttachmentProxy proxy = Data_API.Read<AttachmentProxy>(attachment);
+                    AttachmentFile file = new AttachmentFile(attachment, proxy);
+                    Data_API.Delete(attachment); // remove from database
+                    file.Delete();  // delete file
+                }
+            }
+            catch (Exception ex)
+            {
+                Data_API.LogMessage(ActionLogType.Delete, ReferenceType.Attachments, attachmentID, "Unable to delete attachment", ex);
+            }
+        }
+
+
+        #region PathMap
         public struct PathMap
         {
-            public Folder _folder;
             public string _path;
             public AttachmentProxy.References _refType;
-            public PathMap(Folder folder, string path, AttachmentProxy.References refType)
+            public PathMap(string path, AttachmentProxy.References refType)
             {
-                _folder = folder;
                 _path = path;
                 _refType = refType;
             }
@@ -30,78 +113,79 @@ namespace TeamSupport.ModelAPI
         static AttachmentAPI()
         {
             _pathMap = new PathMap[]{
-                    new PathMap(Folder.Actions,"Actions", AttachmentProxy.References.Actions),
-                    new PathMap(Folder.AgentRating,"AgentRating", AttachmentProxy.References.None),
-                    new PathMap(Folder.AssetAttachments,"AssetAttachments", AttachmentProxy.References.Assets),
-                    new PathMap(Folder.ChatImages,"Images\\Chat", AttachmentProxy.References.None),
-                    new PathMap(Folder.ChatUploads,"ChatAttachments", AttachmentProxy.References.ChatAttachments),
-                    new PathMap(Folder.ChatStyles,"Styles\\Chat", AttachmentProxy.References.None),
-                    new PathMap(Folder.CompanyActivityAttachments,"CustomerActivityAttachments", AttachmentProxy.References.CompanyActivity),
-                    new PathMap(Folder.ContactActivityAttachments,"ContactActivityAttachments", AttachmentProxy.References.ContactActivity),
-                    new PathMap(Folder.ContactImages,"Images\\Avatars\\Contacts", AttachmentProxy.References.None),
-                    new PathMap(Folder.CustomerHubLogo,"Images\\HubLogo", AttachmentProxy.References.CustomerHubLogo),
-                    new PathMap(Folder.Images,"Images", AttachmentProxy.References.None),
-                    new PathMap(Folder.Imports,"Imports", AttachmentProxy.References.Imports),
-                    new PathMap(Folder.ImportLogs,"Imports\\Logs", AttachmentProxy.References.None),
-                    new PathMap(Folder.Organizations,"Organizations", AttachmentProxy.References.Organizations),
-                    new PathMap(Folder.OrganizationAttachments,"OrganizationAttachments", AttachmentProxy.References.Organizations),
-                    new PathMap(Folder.OrganizationsLogo,"Images\\CompanyLogo", AttachmentProxy.References.None),
-                    new PathMap(Folder.Products,"Products", AttachmentProxy.References.ProductVersions),
-                    new PathMap(Folder.ProfileImages,"Images\\Avatars", AttachmentProxy.References.None),
-                    new PathMap(Folder.ScheduledReports,"ScheduledReports", AttachmentProxy.References.None),
-                    new PathMap(Folder.ScheduledReportsLogs,"ScheduledReports\\Logs", AttachmentProxy.References.None),
-                    new PathMap(Folder.Styles,"Styles", AttachmentProxy.References.None),
-                    new PathMap(Folder.Tasks,"Tasks", AttachmentProxy.References.Tasks),
-                    new PathMap(Folder.TempImages,"Images\\Temp", AttachmentProxy.References.None),
-                    new PathMap(Folder.TicketTypeImages,"Images\\TicketTypes", AttachmentProxy.References.None),
-                    new PathMap(Folder.UserAttachments,"UserAttachments", AttachmentProxy.References.Users),
-                    new PathMap(Folder.WaterCooler,"WaterCooler", AttachmentProxy.References.WaterCooler),
+                    new PathMap("Actions", AttachmentProxy.References.Actions),
+                    new PathMap("AgentRating", AttachmentProxy.References.None),
+                    new PathMap("AssetAttachments", AttachmentProxy.References.Assets),
+                    new PathMap("Images\\Chat", AttachmentProxy.References.None),
+                    new PathMap("ChatAttachments", AttachmentProxy.References.ChatAttachments),
+                    new PathMap("Styles\\Chat", AttachmentProxy.References.None),
+                    new PathMap("CustomerActivityAttachments", AttachmentProxy.References.CompanyActivity),
+                    new PathMap("ContactActivityAttachments", AttachmentProxy.References.ContactActivity),
+                    new PathMap("Images\\Avatars\\Contacts", AttachmentProxy.References.None),
+                    new PathMap("Images\\HubLogo", AttachmentProxy.References.CustomerHubLogo),
+                    new PathMap("Images", AttachmentProxy.References.None),
+                    new PathMap("Imports", AttachmentProxy.References.Imports),
+                    new PathMap("Imports\\Logs", AttachmentProxy.References.None),
+                    new PathMap("Organizations", AttachmentProxy.References.Organizations),
+                    new PathMap("OrganizationAttachments", AttachmentProxy.References.Organizations),
+                    new PathMap("Images\\CompanyLogo", AttachmentProxy.References.None),
+                    new PathMap("Products", AttachmentProxy.References.ProductVersions),
+                    new PathMap("Images\\Avatars", AttachmentProxy.References.None),
+                    new PathMap("ScheduledReports", AttachmentProxy.References.None),
+                    new PathMap("ScheduledReports\\Logs", AttachmentProxy.References.None),
+                    new PathMap("Styles", AttachmentProxy.References.None),
+                    new PathMap("Tasks", AttachmentProxy.References.Tasks),
+                    new PathMap("Images\\Temp", AttachmentProxy.References.None),
+                    new PathMap("Images\\TicketTypes", AttachmentProxy.References.None),
+                    new PathMap("UserAttachments", AttachmentProxy.References.Users),
+                    new PathMap("WaterCooler", AttachmentProxy.References.WaterCooler),
             };
         }
 
-        public static void CreateAttachments(HttpContext context, List<string> segments, int refID, string _ratingImage = "")
+        /// <summary> ...\Upload\Actions\55582993 </summary>
+        static void GetPathMap(HttpContext context, out PathMap pathMap, out int id, out string ratingImage)
         {
-            PathMap pathMap = GetPathMap(segments);
-            try
-            {
-                using (ConnectionContext connection = new ConnectionContext())
-                {
-                    // valid ID to add attachment
-                    IAttachmentModel model = ClassFactory(connection, pathMap._refType, refID);
-                    HttpFileCollection files = context.Request.Files;
-                    for (int i = 0; i < files.Count; i++)
-                    {
-                        if (files[i].ContentLength <= 0)
-                            continue;
+            List<string> segments = new List<string>();
+            foreach (string segment in context.Request.Url.Segments)
+                segments.Add(segment.ToLower().Trim().Replace("/", ""));
 
-                        AttachmentFile attachmentFile = new AttachmentFile(model, files[i]);    // create the file
-                        AttachmentProxy proxy = AttachmentProxy.ClassFactory(pathMap._refType, refID);  // construct the proxy
-                        InitializeProxy(context, connection, attachmentFile, proxy);
-                        DataAPI.Data_API.Create(model.XX, proxy);  // save proxy to DB
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // TODO - tell user we failed 
-                DataAPI.Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
-            }
-        }
+            // id
+            if (!int.TryParse(segments[segments.Count - 1], out id))
+                throw new Exception($"Bad attachment id {segments[segments.Count - 1]}");
+            segments.RemoveAt(segments.Count - 1);
 
-        private static PathMap GetPathMap(List<string> segments)
-        {
+            // _ratingImage
+            if (segments[segments.Count - 1] == "ratingpositive" || segments[segments.Count - 1] == "ratingneutral" || segments[segments.Count - 1] == "ratingnegative")
+            {
+                ratingImage = segments[segments.Count - 1];
+                segments.RemoveAt(segments.Count - 1);
+            }
+            else
+                ratingImage = "";
+
+            // pathMap
             string path = null;
+            bool pathStart = false;
             foreach (string segment in segments)
             {
-                if (path == null)
-                    path = segment.Trim().ToLower();
-                else
-                    path += '\\' + segment.Trim().ToLower();
+                switch (segment)
+                {
+                    case "upload":
+                    case "chatupload":
+                        pathStart = true;
+                        break;
+                    default:
+                        if(!pathStart)
+                            break;
+                        if (path == null)
+                            path = segment;
+                        else
+                            path += '\\' + segment;
+                        break;
+                }
             }
-            PathMap pathMap = _pathMap.Where(p => path == p._path.ToLower()).First(); // throw if not found
-            return pathMap;
+            pathMap = _pathMap.Where(p => path == p._path.ToLower()).First(); // throw if not found
         }
-
 
         private static void InitializeProxy(HttpContext context, ConnectionContext connection, AttachmentFile attachmentFile, AttachmentProxy proxy)
         {
@@ -128,62 +212,7 @@ namespace TeamSupport.ModelAPI
             proxy.DateCreated = proxy.DateModified = DateTime.UtcNow;
         }
 
-        static IAttachmentModel ClassFactory(ConnectionContext connection, AttachmentProxy.References refType, int refID)
-        {
-            switch(refType)
-            {
-                case AttachmentProxy.References.Actions: return new ActionModel(connection, refID);
-                //case AttachmentProxy.References.Assets: return new AssetModel(connection, refID);
-                //case AttachmentProxy.References.ChatAttachments: return new ChatModel(connection, refID);
-                //case AttachmentProxy.References.CompanyActivity: return new CompanyActivityModel(connection, refID);
-                //case AttachmentProxy.References.ContactActivity: return new ContactActivityModel(connection, refID);
-                //case AttachmentProxy.References.Contacts: return new ContactModel(connection, refID);
-                //case AttachmentProxy.References.CustomerHubLogo: return new CustomerHubLogoModel(connection, refID);
-                //case AttachmentProxy.References.Organizations: return new OrganizationModel(connection, refID);
-                //case AttachmentProxy.References.ProductVersions: return new ProductVersionModel(connection, refID);
-                //case AttachmentProxy.References.Tasks: return new TaskModel(connection, refID);
-                //case AttachmentProxy.References.UserPhoto: return new UserPhotoModel(connection, refID);
-                //case AttachmentProxy.References.Users: return new UserModel(connection, refID);
-                //case AttachmentProxy.References.WaterCooler: return new WaterCoolerModel(connection, refID);
-                //case AttachmentProxy.References.Imports: return new ImportsModel(connection, refID);
-                default:
-                    if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
-                    throw new Exception($"bad ReferenceType {refType}");
-
-            }
-
-        }
-
-        public enum Folder
-        {
-            None,
-            Images,
-            Styles,
-            ChatImages,
-            ChatStyles,
-            TicketTypeImages,
-            Products,
-            Actions,
-            Organizations,
-            ProfileImages,
-            WaterCooler,
-            OrganizationAttachments,
-            UserAttachments,
-            AgentRating,
-            AssetAttachments,
-            Imports,
-            OrganizationsLogo,
-            ContactImages,
-            ImportLogs,
-            TempImages,
-            CustomerHubLogo,
-            ScheduledReports,
-            ScheduledReportsLogs,
-            ChatUploads,
-            Tasks,
-            CompanyActivityAttachments,
-            ContactActivityAttachments
-        };
+        #endregion
 
     }
 }

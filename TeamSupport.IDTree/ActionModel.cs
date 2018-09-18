@@ -15,7 +15,7 @@ namespace TeamSupport.IDTree
     /// <summary>
     /// Wrapper for Valid ActionID
     /// </summary>
-    public class ActionModel : IDNode, IAttachmentModel
+    public class ActionModel : IDNode, IAttachmentParent
     {
         public enum Folder
         {

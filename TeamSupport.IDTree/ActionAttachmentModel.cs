@@ -13,10 +13,10 @@ using System.Web.Security;
 
 namespace TeamSupport.IDTree
 {
-    public interface IAttachmentModel
+    public interface IAttachmentParent
     {
         string AttachmentPath { get; }
-        IDNode XX { get; }
+        IDNode AsIDNode { get; }
     }
 
     /// <summary> Action Attachments </summary>
@@ -42,9 +42,6 @@ namespace TeamSupport.IDTree
             ActionAttachmentID = actionAttachmentID;
             int actionID = GetActionID(connection._db, ActionAttachmentID);
             Action = new ActionModel(Connection, actionID);
-
-            TicketModel ticket = Action.Ticket;
-            OrganizationModel organization = ticket.Organization;
             Verify();
         }
 
@@ -53,11 +50,11 @@ namespace TeamSupport.IDTree
             TicketModel ticket = Action.Ticket;
             OrganizationModel organization = ticket.Organization;
             Verify($"SELECT AttachmentID FROM Attachments WITH (NOLOCK) " +
-                $"WHERE ActionAttachmentID={ActionAttachmentID} AND OrganizationID={organization.OrganizationID} AND RefID={Action.ActionID} AND RefType=0");
+                $"WHERE AttachmentID={ActionAttachmentID} AND OrganizationID={organization.OrganizationID} AND RefID={Action.ActionID} AND RefType=0");
         }
         public static int GetActionID(DataContext db, int attachmentID)
         {
-            return db.ExecuteQuery<int>($"SELECT ActionID FROM ActionAttachments WITH(NOLOCK) WHERE ActionAttachmentID = {attachmentID}").Min();
+            return db.ExecuteQuery<int>($"SELECT RefID FROM Attachments WITH(NOLOCK) WHERE AttachmentID = {attachmentID}").Min();
         }
 
     }

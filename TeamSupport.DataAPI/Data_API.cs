@@ -44,12 +44,11 @@ namespace TeamSupport.DataAPI
                 case "ActionAttachmentProxy":
                     {
                         ActionModel action = idNode as ActionModel;
-                        AttachmentProxy proxy = tProxy as AttachmentProxy;
+                        ActionAttachmentProxy proxy = tProxy as ActionAttachmentProxy;
                         proxy.DateCreated = proxy.DateModified = DateTime.UtcNow;
                         proxy.CreatorID = proxy.ModifierID = idNode.Connection.UserID;
-                        proxy.RefID = action.ActionID;
+                        proxy.ActionID = action.ActionID;
                         proxy.OrganizationID = action.Connection.OrganizationID;
-                        proxy.Path = "\\path...";
 
                         Table<AttachmentProxy> table = idNode.Connection._db.GetTable<AttachmentProxy>();
                         table.InsertOnSubmit(proxy);
@@ -188,11 +187,11 @@ namespace TeamSupport.DataAPI
                         tProxy = ticket.ExecuteQuery<ActionProxy>(query).ToArray() as TProxy;
                     }
                     break;
-                case "AttachmentProxy": // action attachment (organization attachments?)
+                case "AttachmentProxy": // attachment
                     {
                         ActionAttachmentModel attachment = (ActionAttachmentModel)node;
-                        string query = SelectActionAttachmentProxy + $"WHERE ActionAttachmentID = {attachment.ActionAttachmentID}";
-                        tProxy = attachment.ExecuteQuery<AttachmentProxy>(query).First() as TProxy;
+                        Table<AttachmentProxy> table = attachment.Connection._db.GetTable<AttachmentProxy>();
+                        tProxy = table.Where(a => a.AttachmentID == attachment.ActionAttachmentID).First() as TProxy;
                     }
                     break;
                 case "AttachmentProxy[]": // action attachments

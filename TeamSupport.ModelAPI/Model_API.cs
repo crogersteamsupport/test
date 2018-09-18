@@ -284,61 +284,8 @@ namespace TeamSupport.ModelAPI
 
 
         #region ActionAttachments
-        /// <summary> Create Action Attachments </summary>
-        //public static List<AttachmentProxy> CreateActionAttachments(int actionID, HttpContext context)
-        //{
-        //    List<AttachmentProxy> results = new List<AttachmentProxy>();
-        //    try
-        //    {
-        //        using (ConnectionContext connection = new ConnectionContext())
-        //        {
-        //            ActionModel actionModel = new ActionModel(connection, actionID);
-        //            HttpFileCollection files = context.Request.Files;
-        //            for (int i = 0; i < files.Count; i++)   // foreach returns strings?
-        //            {
-        //                // create the file
-        //                if (files[i].ContentLength == 0)
-        //                    continue;
-        //                AttachmentFile attachmentFile = new AttachmentFile(actionModel, files[i]);
-
-        //                // send proxy to DB
-        //                AttachmentProxy attachmentProxy = attachmentFile.AsAttachmentProxy(context.Request, actionModel);
-        //                Data_API.Create(actionModel, attachmentProxy);
-        //                results.Add(attachmentProxy);
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Data_API.LogMessage(ActionLogType.Insert, ReferenceType.Actions, actionID, "Unable to save attachments on action", ex);
-        //    }
-        //    return results;
-        //}
 
         /// <summary> Delete Action Attachment /// </summary>
-        public static void DeleteActionAttachment(int attachmentID)
-        {
-            try
-            {
-                using (ConnectionContext connection = new ConnectionContext())
-                {
-                    // user have permission to modify this action?
-                    ActionAttachmentModel attachment = new ActionAttachmentModel(connection, attachmentID);
-                    if (!attachment.Action.CanEdit())
-                        return;
-
-                    AttachmentProxy proxy = Data_API.Read<AttachmentProxy>(attachment);
-                    AttachmentFile file = new AttachmentFile(attachment, proxy);
-                    Data_API.Delete(attachment); // remove from database
-                    file.Delete();  // delete file
-                }
-            }
-            catch (Exception ex)
-            {
-                Data_API.LogMessage(ActionLogType.Delete, ReferenceType.Attachments, attachmentID, "Unable to delete attachment", ex);
-            }
-        }
-
         /// <summary> Create Action Attachments </summary>
         public static void ReadActionAttachmentsForTicket(int ticketID, ActionAttachmentsByTicketID ticketActionAttachments, out AttachmentProxy[] attachments)
         {

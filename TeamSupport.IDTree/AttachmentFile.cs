@@ -19,7 +19,7 @@ namespace TeamSupport.IDTree
         public string ContentType { get; private set; }
 
         /// <summary> New file </summary>
-        public AttachmentFile(IAttachmentModel model, HttpPostedFile postedFile)
+        public AttachmentFile(IAttachmentParent model, HttpPostedFile postedFile)
         {
             string attachmentPath = model.AttachmentPath;
             FileName = VerifyFileName(attachmentPath, postedFile.FileName);

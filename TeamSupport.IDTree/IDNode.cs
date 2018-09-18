@@ -17,7 +17,7 @@ namespace TeamSupport.IDTree
             Connection = request;
         }
 
-        public IDNode XX { get { return this; } }
+        public IDNode AsIDNode { get { return this; } }
 
         protected IDNode(IDNode node) //: this(node.Request)
         {

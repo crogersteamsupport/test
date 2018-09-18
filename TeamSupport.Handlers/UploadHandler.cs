@@ -33,6 +33,18 @@ namespace TeamSupport.Handlers
             context.Response.ContentType = "text/html";
             try
             {
+                if (IDTree.ConnectionContext.ActionAttachmentsEnabled)
+                {
+                    List<AttachmentProxy> proxies = ModelAPI.AttachmentAPI.CreateAttachments(context, out _ratingImage);    // SCOT
+                    context.Response.Clear();
+                    context.Response.ContentType = "text/plain";
+                    List<UploadResult> result = new List<UploadResult>();
+                    foreach (AttachmentProxy attachment in proxies)
+                        result.Add(new UploadResult(attachment.FileName, attachment.FileType, attachment.FileSize, attachment.AttachmentID));
+                    context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
+                    return;
+                }
+
                 List<string> segments = UploadUtils.GetUrlSegments(context);
                 int id;
                 if (int.TryParse(segments[segments.Count - 1], out id))
@@ -47,8 +59,6 @@ namespace TeamSupport.Handlers
                     segments.RemoveAt(segments.Count - 1);
                 }
 
-                //TODO - SCOT
-                ModelAPI.AttachmentAPI.CreateAttachments(context, segments, id, _ratingImage);
 
                 AttachmentPath.Folder folder = UploadUtils.GetFolder(context, segments.ToArray());
                 if (folder == AttachmentPath.Folder.None) throw new Exception("Invalid path.");
