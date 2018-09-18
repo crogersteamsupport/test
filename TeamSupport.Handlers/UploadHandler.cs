@@ -35,7 +35,7 @@ namespace TeamSupport.Handlers
             {
                 if (IDTree.ConnectionContext.ActionAttachmentsEnabled)
                 {
-                    List<AttachmentProxy> proxies = ModelAPI.AttachmentAPI.CreateAttachments(context, out _ratingImage);    // SCOT
+                    List<AttachmentProxy> proxies = ModelAPI.AttachmentAPI.CreateAttachments(context, out _ratingImage);
                     context.Response.Clear();
                     context.Response.ContentType = "text/plain";
                     List<UploadResult> result = new List<UploadResult>();

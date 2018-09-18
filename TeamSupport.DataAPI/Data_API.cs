@@ -34,8 +34,10 @@ namespace TeamSupport.DataAPI
         {
             IDNode result = null;
             string modification = $", CreatorID={idNode.Connection.UserID}, DateCreated={ToSql(DateTime.UtcNow)}";
+
             string now = ToSql(DateTime.UtcNow);
             int creatorID = idNode.Connection.UserID;
+
             string command = String.Empty;
 
             string typeName = tProxy.GetType().Name;
@@ -187,7 +189,6 @@ namespace TeamSupport.DataAPI
                         tProxy = ticket.ExecuteQuery<ActionProxy>(query).ToArray() as TProxy;
                     }
                     break;
-
                 case "ReminderProxy":
                     {
                         TicketReminderModel reminder = (TicketReminderModel)node;

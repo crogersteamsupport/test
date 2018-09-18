@@ -17,37 +17,6 @@ namespace TeamSupport.IDTree
     /// </summary>
     public class ActionModel : IDNode, IAttachmentParent
     {
-        public enum Folder
-        {
-            None,
-            Images,
-            Styles,
-            ChatImages,
-            ChatStyles,
-            TicketTypeImages,
-            Products,
-            Actions,
-            Organizations,
-            ProfileImages,
-            WaterCooler,
-            OrganizationAttachments,
-            UserAttachments,
-            AgentRating,
-            AssetAttachments,
-            Imports,
-            OrganizationsLogo,
-            ContactImages,
-            ImportLogs,
-            TempImages,
-            CustomerHubLogo,
-            ScheduledReports,
-            ScheduledReportsLogs,
-            ChatUploads,
-            Tasks,
-            CompanyActivityAttachments,
-            ContactActivityAttachments
-        };
-
         public TicketModel Ticket { get; private set; }
         public int ActionID { get; private set; }
 
@@ -98,7 +67,7 @@ namespace TeamSupport.IDTree
         public bool CanEdit() { return Connection.CanEdit() || (Connection.User.UserID == CreatorID()); }
 
         public const int ActionPathIndex = 3;
-        public string AttachmentPath    //IAttachmentModel
+        public string AttachmentPath
         {
             get
             {

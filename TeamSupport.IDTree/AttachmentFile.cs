@@ -55,44 +55,6 @@ namespace TeamSupport.IDTree
             File.Delete(filePath);
         }
 
-        //public Data.AttachmentProxy AsAttachmentProxy(HttpRequest request, ActionModel actionModel)
-        //{
-        //    string description = request.Form["description"];
-        //    if (description != null)
-        //        description = description.Replace("\n", "<br />");
-
-        //    int? productFamilyID = null;
-        //    string tmp = request.Form["productFamilyID"];
-        //    if ((tmp != null) && !tmp.Equals("-1"))
-        //        productFamilyID = Int32.Parse(tmp);
-
-        //    DateTime now = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
-        //    UserModel user = actionModel.Ticket.Connection.User;
-        //    Data.AttachmentProxy proxy = new Data.ActionAttachmentProxy(actionModel.ActionID)
-        //    {
-        //        FilePathID = ActionModel.ActionPathIndex,
-        //        //SentToSnow = ,
-        //        //SentToTFS = ,
-        //        ProductFamilyID = productFamilyID,
-        //        //SentToJira = ,
-        //        //RefID = actionModel.ActionID,
-        //        //RefType = Data.AttachmentType.Actions,
-        //        ModifierID = user.UserID,
-        //        CreatorID = user.UserID,
-        //        Description = description,
-        //        Path = FilePath,
-        //        FileSize = ContentLength,
-        //        FileType = ContentType,
-        //        FileName = FileName,
-        //        OrganizationID = actionModel.Ticket.Organization.OrganizationID,
-        //        //AttachmentID = this.AttachmentID,
-        //        //CreatorName = Action.Ticket.User.CreatorName(),
-        //        DateCreated = now,
-        //        DateModified = now
-        //    };
-        //    return proxy;
-        //}
-
         static string VerifyFileName(string directory, string text)
         {
             string fileName = Path.GetFileName(text);

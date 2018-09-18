@@ -13,10 +13,11 @@ using System.Web.Security;
 
 namespace TeamSupport.IDTree
 {
+    // interface to model class that supports attachments 
     public interface IAttachmentParent
     {
         string AttachmentPath { get; }
-        IDNode AsIDNode { get; }
+        IDNode AsIDNode { get; }    // back door to map class to IDNode at compile time
     }
 
     /// <summary> Action Attachments </summary>
