@@ -121,10 +121,10 @@ namespace TeamSupport.ModelAPI
                             //t = DataAPI.DataAPI.Read<T>(new TicketNode(connection, id));
                             break;
                         case "AttachmentProxy":
-                            t = AttachmentAPI.Read<T>(new ActionAttachmentModel(connection, id));
+                            t = Data_API.Read<T>(new ActionAttachmentModel(connection, id));
                             break;
                         case "AttachmentProxy[]":
-                            t = AttachmentAPI.Read<T>(new ActionModel(connection, id));
+                            t = Data_API.Read<T>(new ActionModel(connection, id));
                             break;
                         case "CustomValueProxy":
                             t = Data_API.Read<T>(new TicketModel(connection, id));
@@ -285,6 +285,7 @@ namespace TeamSupport.ModelAPI
 
         #region ActionAttachments
 
+
         /// <summary> Delete Action Attachment /// </summary>
         /// <summary> Create Action Attachments </summary>
         public static void ReadActionAttachmentsForTicket(int ticketID, ActionAttachmentsByTicketID ticketActionAttachments, out AttachmentProxy[] attachments)
@@ -295,7 +296,7 @@ namespace TeamSupport.ModelAPI
                 using (ConnectionContext connection = new ConnectionContext())
                 {
                     TicketModel ticketModel = connection.Ticket(ticketID);
-                    Data_API.ReadActionAttachmentsForTicket(ticketModel, ticketActionAttachments, out attachments);
+                    AttachmentAPI.ReadActionAttachmentsForTicket(ticketModel, ticketActionAttachments, out attachments);
                 }
             }
             catch (Exception ex)

@@ -49,43 +49,6 @@ namespace TeamSupport.ModelAPI
             return result;
         }
 
-        public static TProxy Read<TProxy>(IDNode node) where TProxy : class
-        {
-            TProxy tProxy = default(TProxy);
-            try
-            {
-                using (ConnectionContext connection = new ConnectionContext())
-                {
-                    switch (typeof(TProxy).Name) // alphabetized list
-                    {
-                        case "AttachmentProxy": // read all attachment types
-                            {
-                                ActionAttachmentModel attachment = (ActionAttachmentModel)node;
-                                Table<AttachmentProxy> table = attachment.Connection._db.GetTable<AttachmentProxy>();
-                                tProxy = table.Where(a => a.AttachmentID == attachment.ActionAttachmentID).First() as TProxy;
-                            }
-                            break;
-                        case "AttachmentProxy[]": // action attachments
-                            {
-                                ActionModel action = (ActionModel)node;
-                                Table<AttachmentProxy> table = node.Connection._db.GetTable<AttachmentProxy>();
-                                tProxy = table.Where(a => a.RefID == action.ActionID && a.RefType == AttachmentProxy.References.Actions).ToArray() as TProxy;
-                            }
-                            break;
-                        default:
-                            if (Debugger.IsAttached) Debugger.Break();
-                            break;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                int logid = Data_API.LogException(new Proxy.AuthenticationModel(), ex, "Attachment Read Exception:" + ex.Source);
-            }
-            return tProxy;
-        }
-
-
         static IAttachmentParent ClassFactory(ConnectionContext connection, AttachmentProxy.References refType, int refID)
         {
             switch (refType)
@@ -133,6 +96,45 @@ namespace TeamSupport.ModelAPI
                 Data_API.LogMessage(ActionLogType.Delete, ReferenceType.Attachments, attachmentID, "Unable to delete attachment", ex);
             }
         }
+
+        // load action attachments into attachment proxy
+        const string SelectActionAttachmentProxy = "SELECT a.*, a.ActionAttachmentID as AttachmentID, a.ActionAttachmentGUID as AttachmentGUID, (u.FirstName + ' ' + u.LastName) AS CreatorName, a.ActionID as RefID " +
+            "FROM ActionAttachments a LEFT JOIN Users u ON u.UserID = a.CreatorID ";
+
+        /// <summary> Read most recent filenames for this ticket </summary>
+        public static void ReadActionAttachmentsForTicket(TicketModel ticketModel, ActionAttachmentsByTicketID ticketActionAttachments, out AttachmentProxy[] mostRecentByFilename)
+        {
+            switch (ticketActionAttachments)
+            {
+                case ActionAttachmentsByTicketID.ByFilename:
+                    {
+                        DataContext db = ticketModel.Connection._db;
+                        Table<ActionProxy> actionTable = db.GetTable<ActionProxy>();
+                        int[] actionID = (from a in actionTable where a.TicketID == ticketModel.TicketID select a.ActionID).ToArray();
+
+                        Table<AttachmentProxy> attachmentTable = db.GetTable<AttachmentProxy>();
+                        AttachmentProxy[] allAttachments = attachmentTable.Where(a => actionID.Contains(a.RefID)).ToArray();
+                        List<AttachmentProxy> tmp = new List<AttachmentProxy>();
+                        foreach (AttachmentProxy attachment in allAttachments)
+                        {
+                            if (!tmp.Exists(a => a.FileName == attachment.FileName))
+                                tmp.Add(attachment);
+                        }
+                        mostRecentByFilename = tmp.ToArray();
+                    }
+                    break;
+                case ActionAttachmentsByTicketID.KnowledgeBase:
+                    {
+                        string query = SelectActionAttachmentProxy + $"JOIN Actions ac ON a.ActionID = ac.ActionID WHERE ac.TicketID = {ticketModel.TicketID} AND ac.IsKnowledgeBase = 1";
+                        mostRecentByFilename = ticketModel.ExecuteQuery<AttachmentProxy>(query).ToArray();
+                    }
+                    break;
+                default:
+                    mostRecentByFilename = null;
+                    break;
+            }
+        }
+
 
 
         #region PathMap
