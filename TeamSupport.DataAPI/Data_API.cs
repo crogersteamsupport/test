@@ -41,7 +41,7 @@ namespace TeamSupport.DataAPI
             string typeName = tProxy.GetType().Name;
             switch (typeName) // alphabetized list
             {
-                case "ActionAttachmentProxy":
+                case "ActionAttachmentProxy":   // create action attachment
                     {
                         ActionModel action = idNode as ActionModel;
                         ActionAttachmentProxy proxy = tProxy as ActionAttachmentProxy;
@@ -187,20 +187,7 @@ namespace TeamSupport.DataAPI
                         tProxy = ticket.ExecuteQuery<ActionProxy>(query).ToArray() as TProxy;
                     }
                     break;
-                case "AttachmentProxy": // attachment
-                    {
-                        ActionAttachmentModel attachment = (ActionAttachmentModel)node;
-                        Table<AttachmentProxy> table = attachment.Connection._db.GetTable<AttachmentProxy>();
-                        tProxy = table.Where(a => a.AttachmentID == attachment.ActionAttachmentID).First() as TProxy;
-                    }
-                    break;
-                case "AttachmentProxy[]": // action attachments
-                    {
-                        ActionModel action = (ActionModel)node;
-                        string query = SelectActionAttachmentProxy + $"WHERE ActionID = {action.ActionID}";
-                        tProxy = action.ExecuteQuery<AttachmentProxy>(query).ToArray() as TProxy;
-                    }
-                    break;
+
                 case "ReminderProxy":
                     {
                         TicketReminderModel reminder = (TicketReminderModel)node;
@@ -439,8 +426,12 @@ namespace TeamSupport.DataAPI
             {
                 case ActionAttachmentsByTicketID.ByFilename:
                     {
-                        string query = SelectActionAttachmentProxy + $"WHERE ActionID IN (SELECT ActionID FROM Actions WHERE TicketID = {ticketModel.TicketID}) ORDER BY DateCreated DESC";
-                        AttachmentProxy[] allAttachments = ticketModel.ExecuteQuery<AttachmentProxy>(query).ToArray();
+                        DataContext db = ticketModel.Connection._db;
+                        Table<ActionProxy> actionTable = db.GetTable<ActionProxy>();
+                        int[] actionID = (from a in actionTable where a.TicketID == ticketModel.TicketID select a.ActionID).ToArray();
+
+                        Table<AttachmentProxy> attachmentTable = db.GetTable<AttachmentProxy>();
+                        AttachmentProxy[] allAttachments = attachmentTable.Where(a => actionID.Contains(a.RefID)).ToArray();
                         List<AttachmentProxy> tmp = new List<AttachmentProxy>();
                         foreach (AttachmentProxy attachment in allAttachments)
                         {

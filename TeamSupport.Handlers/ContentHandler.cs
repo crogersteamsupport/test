@@ -945,7 +945,8 @@ namespace TeamSupport.Handlers
                 fromGuid = true;
             }
 
-                AttachmentProxy attachment = Model_API.Read<AttachmentProxy>(id);
+                AttachmentProxy attachment = Model_API.Read<AttachmentProxy>(id);   // ConnectionContext.ActionAttachmentsEnabled
+
                 //User user = null;
                 bool isAuthenticated = attachment.OrganizationID == TSAuthentication.OrganizationID;
 

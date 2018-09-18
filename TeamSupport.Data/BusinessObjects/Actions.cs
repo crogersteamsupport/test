@@ -14,6 +14,7 @@ namespace TeamSupport.Data
 {
     public partial class Action
     {
+        [Obsolete("Use ModelAPI", false)]
         public Attachments GetAttachments()
         {
             Attachments attachments = new Attachments(BaseCollection.LoginUser);

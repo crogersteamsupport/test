@@ -41,6 +41,7 @@ namespace TeamSupport.Handlers
                     List<UploadResult> result = new List<UploadResult>();
                     foreach (AttachmentProxy attachment in proxies)
                         result.Add(new UploadResult(attachment.FileName, attachment.FileType, attachment.FileSize, attachment.AttachmentID));
+                    context.Response.ContentType = "text/html";
                     context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
                     return;
                 }

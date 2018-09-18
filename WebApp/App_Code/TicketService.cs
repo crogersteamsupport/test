@@ -27,6 +27,7 @@ using System.Diagnostics;
 using OpenTokSDK;
 using Jira = TeamSupport.JIRA;
 using NR = NewRelic.Api;
+using TeamSupport.ModelAPI;
 
 namespace TSWebServices
 {
@@ -3158,11 +3159,11 @@ WHERE t.TicketID = @TicketID
             UsersViewItem creator = UsersView.GetUsersViewItem(loginUser, action.CreatorID);
             if (creator != null) actionInfo.Creator = new UserInfo(creator);
 
-            //if (TeamSupport.IDTree.ConnectionContext.ActionAttachmentsEnabled)  // Read action attachments
-            //{
-            //    actionInfo.Attachments = Model_API.Read<AttachmentProxy[]>(action.ActionID);
-            //}
-            //else
+            if (TeamSupport.IDTree.ConnectionContext.ActionAttachmentsEnabled)  // Read action attachments
+            {
+                actionInfo.Attachments = Model_API.Read<AttachmentProxy[]>(action.ActionID);
+            }
+            else
                 actionInfo.Attachments = action.GetAttachments().GetAttachmentProxies();
             return actionInfo;
         }

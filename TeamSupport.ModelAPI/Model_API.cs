@@ -121,10 +121,10 @@ namespace TeamSupport.ModelAPI
                             //t = DataAPI.DataAPI.Read<T>(new TicketNode(connection, id));
                             break;
                         case "AttachmentProxy":
-                            t = Data_API.Read<T>(new ActionAttachmentModel(connection, id));
+                            t = AttachmentAPI.Read<T>(new ActionAttachmentModel(connection, id));
                             break;
                         case "AttachmentProxy[]":
-                            t = Data_API.Read<T>(new ActionModel(connection, id));
+                            t = AttachmentAPI.Read<T>(new ActionModel(connection, id));
                             break;
                         case "CustomValueProxy":
                             t = Data_API.Read<T>(new TicketModel(connection, id));

@@ -8,6 +8,8 @@ using TeamSupport.Data;
 using TeamSupport.IDTree;
 using System.IO;
 using TeamSupport.DataAPI;
+using System.Diagnostics;
+using System.Data.Linq;
 
 namespace TeamSupport.ModelAPI
 {
@@ -46,6 +48,43 @@ namespace TeamSupport.ModelAPI
             }
             return result;
         }
+
+        public static TProxy Read<TProxy>(IDNode node) where TProxy : class
+        {
+            TProxy tProxy = default(TProxy);
+            try
+            {
+                using (ConnectionContext connection = new ConnectionContext())
+                {
+                    switch (typeof(TProxy).Name) // alphabetized list
+                    {
+                        case "AttachmentProxy": // read all attachment types
+                            {
+                                ActionAttachmentModel attachment = (ActionAttachmentModel)node;
+                                Table<AttachmentProxy> table = attachment.Connection._db.GetTable<AttachmentProxy>();
+                                tProxy = table.Where(a => a.AttachmentID == attachment.ActionAttachmentID).First() as TProxy;
+                            }
+                            break;
+                        case "AttachmentProxy[]": // action attachments
+                            {
+                                ActionModel action = (ActionModel)node;
+                                Table<AttachmentProxy> table = node.Connection._db.GetTable<AttachmentProxy>();
+                                tProxy = table.Where(a => a.RefID == action.ActionID && a.RefType == AttachmentProxy.References.Actions).ToArray() as TProxy;
+                            }
+                            break;
+                        default:
+                            if (Debugger.IsAttached) Debugger.Break();
+                            break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                int logid = Data_API.LogException(new Proxy.AuthenticationModel(), ex, "Attachment Read Exception:" + ex.Source);
+            }
+            return tProxy;
+        }
+
 
         static IAttachmentParent ClassFactory(ConnectionContext connection, AttachmentProxy.References refType, int refID)
         {
