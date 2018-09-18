@@ -34,14 +34,28 @@ namespace TeamSupport.DataAPI
         {
             IDNode result = null;
             string modification = $", CreatorID={idNode.Connection.UserID}, DateCreated={ToSql(DateTime.UtcNow)}";
-
             string now = ToSql(DateTime.UtcNow);
             int creatorID = idNode.Connection.UserID;
-
             string command = String.Empty;
+
             string typeName = tProxy.GetType().Name;
             switch (typeName) // alphabetized list
             {
+                case "ActionAttachmentProxy":
+                    {
+                        ActionModel action = idNode as ActionModel;
+                        AttachmentProxy proxy = tProxy as AttachmentProxy;
+                        proxy.DateCreated = proxy.DateModified = DateTime.UtcNow;
+                        proxy.CreatorID = proxy.ModifierID = idNode.Connection.UserID;
+                        proxy.RefID = action.ActionID;
+                        proxy.OrganizationID = action.Connection.OrganizationID;
+                        proxy.Path = "\\path...";
+
+                        Table<AttachmentProxy> table = idNode.Connection._db.GetTable<AttachmentProxy>();
+                        table.InsertOnSubmit(proxy);
+                        idNode.Connection._db.SubmitChanges();
+                    }
+                    break;
                 case "ActionAttachment":
                     {
                         ActionModel model = (ActionModel)idNode;

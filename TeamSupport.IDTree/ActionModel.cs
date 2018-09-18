@@ -15,7 +15,7 @@ namespace TeamSupport.IDTree
     /// <summary>
     /// Wrapper for Valid ActionID
     /// </summary>
-    public class ActionModel : IDNode
+    public class ActionModel : IDNode, IAttachmentModel
     {
         public enum Folder
         {
@@ -98,7 +98,7 @@ namespace TeamSupport.IDTree
         public bool CanEdit() { return Connection.CanEdit() || (Connection.User.UserID == CreatorID()); }
 
         public const int ActionPathIndex = 3;
-        public override string AttachmentPath
+        public string AttachmentPath    //IAttachmentModel
         {
             get
             {

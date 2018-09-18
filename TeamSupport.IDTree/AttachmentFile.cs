@@ -19,10 +19,11 @@ namespace TeamSupport.IDTree
         public string ContentType { get; private set; }
 
         /// <summary> New file </summary>
-        public AttachmentFile(IDNode model, HttpPostedFile postedFile)
+        public AttachmentFile(IAttachmentModel model, HttpPostedFile postedFile)
         {
-            FileName = VerifyFileName(model.AttachmentPath, postedFile.FileName);
-            FilePath = Path.Combine(model.AttachmentPath, FileName);
+            string attachmentPath = model.AttachmentPath;
+            FileName = VerifyFileName(attachmentPath, postedFile.FileName);
+            FilePath = Path.Combine(attachmentPath, FileName);
             ContentType = postedFile.ContentType;
             ContentLength = postedFile.ContentLength;
             postedFile.SaveAs(FilePath);    // write file to disk

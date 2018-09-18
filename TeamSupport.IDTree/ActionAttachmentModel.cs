@@ -13,11 +13,18 @@ using System.Web.Security;
 
 namespace TeamSupport.IDTree
 {
+    public interface IAttachmentModel
+    {
+        string AttachmentPath { get; }
+        IDNode XX { get; }
+    }
+
     /// <summary> Action Attachments </summary>
     public class ActionAttachmentModel : IDNode
     {
         public ActionModel Action { get; private set; }
         public int ActionAttachmentID { get; private set; }
+        public string AttachmentPath { get { return Action.AttachmentPath; } }
 
         public AttachmentFile File { get; private set; }
 

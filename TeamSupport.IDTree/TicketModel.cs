@@ -40,7 +40,7 @@ namespace TeamSupport.IDTree
         /// <summary> bottom up - existing action </summary>
         public TicketModel(ConnectionContext connection, int ticketID) : base(connection)
         {
-            Organization = new OrganizationModel(connection, connection.Organization.OrganizationID);
+            Organization = connection.Organization;
             TicketID = ticketID;
             Verify();
         }

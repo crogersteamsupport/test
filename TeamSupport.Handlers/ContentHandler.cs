@@ -964,7 +964,7 @@ namespace TeamSupport.Handlers
                         UserProxy user = Model_API.Read<UserProxy>(userID);
 
 
-                        if (attachment.RefType == AttachmentProxy.References.Actions)
+                        if (attachment.RefType == (int)AttachmentProxy.References.Actions)
                         {
                             TeamSupport.Data.ActionProxy action = Model_API.Read<ActionProxy>(attachment.RefID);
                             TicketProxy ticket = Model_API.Read<TicketProxy>(action.TicketID);

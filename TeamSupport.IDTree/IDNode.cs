@@ -17,6 +17,8 @@ namespace TeamSupport.IDTree
             Connection = request;
         }
 
+        public IDNode XX { get { return this; } }
+
         protected IDNode(IDNode node) //: this(node.Request)
         {
             Connection = node.Connection;
@@ -47,7 +49,6 @@ namespace TeamSupport.IDTree
             throw new System.Data.ConstraintException(String.Format($"{query} not found")); // error - a join of the records to authentication just doesn't add up
         }
 
-        public virtual string AttachmentPath { get { return null; } }
 
     }
 }

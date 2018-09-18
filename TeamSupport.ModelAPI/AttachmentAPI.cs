@@ -24,12 +24,12 @@ namespace TeamSupport.ModelAPI
                 _refType = refType;
             }
         }
-        static readonly PathMap[] _stuff;
+        static readonly PathMap[] _pathMap;
 
         /// <summary> From AttachmentPath </summary>
         static AttachmentAPI()
         {
-            _stuff = new PathMap[]{
+            _pathMap = new PathMap[]{
                     new PathMap(Folder.Actions,"Actions", AttachmentProxy.References.Actions),
                     new PathMap(Folder.AgentRating,"AgentRating", AttachmentProxy.References.None),
                     new PathMap(Folder.AssetAttachments,"AssetAttachments", AttachmentProxy.References.Assets),
@@ -61,73 +61,74 @@ namespace TeamSupport.ModelAPI
 
         public static void CreateAttachments(HttpContext context, List<string> segments, int refID, string _ratingImage = "")
         {
-            string path = null;
-            foreach (string segment in segments)
-            {
-                if (path == null)
-                    path = segment;
-                else
-                    path += '\\' + segment.Trim().ToLower();
-            }
-            PathMap pathMap = _stuff.Where(p => path == p._path.ToLower()).First(); // throw if not found
-
-            Create(pathMap, context, refID);
-        }
-
-        static void Create(PathMap pathMap, HttpContext context, int refID)
-        {
+            PathMap pathMap = GetPathMap(segments);
             try
             {
                 using (ConnectionContext connection = new ConnectionContext())
                 {
                     // valid ID to add attachment
-                    IDNode model = ClassFactory(connection, pathMap._refType, refID);
+                    IAttachmentModel model = ClassFactory(connection, pathMap._refType, refID);
                     HttpFileCollection files = context.Request.Files;
                     for (int i = 0; i < files.Count; i++)
                     {
                         if (files[i].ContentLength <= 0)
                             continue;
 
-                        AttachmentFile attachmentFile = new AttachmentFile(model, files[i]);
-                        AttachmentProxy proxy = AttachmentProxy.ClassFactory(pathMap._refType, refID);
-                        {
-                            // context
-                            string tmp = context.Request.Form["description"];
-                            if (tmp != null)
-                                proxy.Description = tmp.Replace("\n", "<br />");
-
-                            tmp = context.Request.Form["productFamilyID"];
-                            if ((tmp != null) && !tmp.Equals("-1"))
-                                proxy.ProductFamilyID = Int32.Parse(tmp);
-                            proxy.FilePathID = AttachmentProxy.AttachmentPathIndex;
-
-                            // file
-                            proxy.Path = attachmentFile.FilePath;
-                            proxy.FileSize = attachmentFile.ContentLength;
-                            proxy.FileType = attachmentFile.ContentType;
-                            proxy.FileName = attachmentFile.FileName;
-
-                            // authentication
-                            proxy.OrganizationID = connection.OrganizationID;
-                            proxy.ModifierID = connection.UserID;
-                            proxy.CreatorID = connection.UserID;
-                            DateTime now = DateTime.UtcNow;
-                            proxy.DateCreated = now;
-                            proxy.DateModified = now;
-                        }
-
-                        DataAPI.Data_API.Create(model, proxy);
+                        AttachmentFile attachmentFile = new AttachmentFile(model, files[i]);    // create the file
+                        AttachmentProxy proxy = AttachmentProxy.ClassFactory(pathMap._refType, refID);  // construct the proxy
+                        InitializeProxy(context, connection, attachmentFile, proxy);
+                        DataAPI.Data_API.Create(model.XX, proxy);  // save proxy to DB
                     }
                 }
             }
             catch (Exception ex)
             {
-                // TODO - tell user we failed to read
-                //Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
+                // TODO - tell user we failed 
+                DataAPI.Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
             }
         }
 
-        static IDNode ClassFactory(ConnectionContext connection, AttachmentProxy.References refType, int refID)
+        private static PathMap GetPathMap(List<string> segments)
+        {
+            string path = null;
+            foreach (string segment in segments)
+            {
+                if (path == null)
+                    path = segment.Trim().ToLower();
+                else
+                    path += '\\' + segment.Trim().ToLower();
+            }
+            PathMap pathMap = _pathMap.Where(p => path == p._path.ToLower()).First(); // throw if not found
+            return pathMap;
+        }
+
+
+        private static void InitializeProxy(HttpContext context, ConnectionContext connection, AttachmentFile attachmentFile, AttachmentProxy proxy)
+        {
+            // context
+            string tmp = context.Request.Form["description"];
+            if (tmp != null)
+                proxy.Description = tmp.Replace("\n", "<br />");
+
+            tmp = context.Request.Form["productFamilyID"];
+            if ((tmp != null) && !tmp.Equals("-1"))
+                proxy.ProductFamilyID = Int32.Parse(tmp);
+            proxy.FilePathID = AttachmentProxy.AttachmentPathIndex;
+
+            // file
+            proxy.Path = attachmentFile.FilePath;
+            proxy.FileSize = attachmentFile.ContentLength;
+            proxy.FileType = attachmentFile.ContentType;
+            proxy.FileName = attachmentFile.FileName;
+
+            // authentication
+            proxy.OrganizationID = connection.OrganizationID;
+            proxy.ModifierID = connection.UserID;
+            proxy.CreatorID = connection.UserID;
+            proxy.DateCreated = proxy.DateModified = DateTime.UtcNow;
+        }
+
+        static IAttachmentModel ClassFactory(ConnectionContext connection, AttachmentProxy.References refType, int refID)
         {
             switch(refType)
             {

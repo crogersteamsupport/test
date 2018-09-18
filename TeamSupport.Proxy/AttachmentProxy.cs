@@ -12,6 +12,8 @@ namespace TeamSupport.Data
 
     [DataContract(Namespace = "http://teamsupport.com/")]
     [KnownType(typeof(AttachmentProxy))]
+    [Table(Name = "Attachments")]
+    [InheritanceMapping(Code = AttachmentProxy.References.Actions, Type = typeof(ActionAttachmentProxy), IsDefault = true)]
     public abstract class AttachmentProxy
     {
         public AttachmentProxy() { }
@@ -21,7 +23,8 @@ namespace TeamSupport.Data
             RefID = RefID;
         }
 
-        [DataMember, Column] public int AttachmentID { get; set; }
+        [DataMember, Column(DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true)]
+        public int AttachmentID { get; set; }
         [DataMember, Column] public int OrganizationID { get; set; }
         [DataMember, Column] public string FileName { get; set; }
         [DataMember, Column] public string FileType { get; set; }
@@ -32,12 +35,12 @@ namespace TeamSupport.Data
         [DataMember, Column] public DateTime DateModified { get; set; }
         [DataMember, Column] public int CreatorID { get; set; }
         [DataMember, Column] public int ModifierID { get; set; }
-        [DataMember, Column] public References RefType { get; private set; }
+        [DataMember, Column(IsDiscriminator = true)] public References RefType { get; set; }
         [DataMember, Column] public int RefID { get; set; }
-        [DataMember, Column] public string CreatorName { get; set; }
+        [DataMember] public string CreatorName { get; set; }
         [DataMember, Column] public bool SentToJira { get; set; }
         [DataMember, Column] public int? ProductFamilyID { get; set; }
-        [DataMember, Column] public string ProductFamily { get; set; }
+        [DataMember] public string ProductFamily { get; set; }
         [DataMember, Column] public bool SentToTFS { get; set; }
         [DataMember, Column] public bool SentToSnow { get; set; }
         [DataMember, Column] public int? FilePathID { get; set; }
@@ -93,6 +96,7 @@ namespace TeamSupport.Data
 
     public class ActionAttachmentProxy : AttachmentProxy
     {
+        public ActionAttachmentProxy() { }
         public ActionAttachmentProxy(int refID) : base(References.Actions, refID) { }
         public int ActionID { get { return RefID; } }
     }
