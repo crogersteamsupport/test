@@ -608,9 +608,8 @@ namespace TeamSupport.Handlers
 			bool isVerified = false;
 			string reCaptchaResponse = GetValueString(values["g-recaptcha-response"]);
 			string googleReCaptchaUrl = "https://www.google.com/recaptcha/api/siteverify";
-			string postData = "{\"secret\": \"6LcSHHEUAAAAAMy4q1FWe65Pfm72pVU1k74RvK7W\", \"response\": \"" + reCaptchaResponse + "\"}";
-
-			googleReCaptchaUrl += "?secret=6LcSHHEUAAAAAMy4q1FWe65Pfm72pVU1k74RvK7W&response=" + reCaptchaResponse;
+			string googleReCaptchaSecret = System.Web.Configuration.WebConfigurationManager.AppSettings["GoogleReCaptchaSecret"];
+			googleReCaptchaUrl += "?secret=" + googleReCaptchaSecret + "&response=" + reCaptchaResponse;
 
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(googleReCaptchaUrl);
 			request.Method = "GET";

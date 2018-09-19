@@ -17,13 +17,14 @@ jQuery(document).ready(function () {
     }
 
     jQuery('#submit').click(function (e) {
+		var reCaptchaResponse = window.grecaptcha.getResponse();
         validateCompany();
         validateEmail();
         validateName();
         validatePassword();
         validateConfirm();
 
-        if (jQuery('.form-group.has-error').length > 0) {
+		if (jQuery('.form-group.has-error').length > 0 || reCaptchaResponse == '') {
             e.preventDefault();
             return;
         }
