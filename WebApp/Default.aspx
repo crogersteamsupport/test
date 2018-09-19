@@ -122,6 +122,7 @@
                 <asp:ServiceReference Path="~/Services/TaskService.asmx" />
                 <asp:ServiceReference Path="~/Services/DispatchService.asmx" />
                 <asp:ServiceReference Path="~/Services/WatsonTickets.asmx" />
+                <asp:ServiceReference Path="~/Services/Deflector.asmx" />
             </services>
             <scripts>
                 <asp:ScriptReference Path="/frontend/library/json2.js" />
