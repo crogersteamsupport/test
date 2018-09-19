@@ -112,10 +112,19 @@ namespace TeamSupport.ModelAPI
                                 file.Delete();
                             }
                             break;
+                        case AttachmentProxy.References.Tasks:
+                            {
+                                TaskAttachmentProxy proxy = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, attachmentID) as TaskAttachmentProxy;
+                                TaskModel model = new TaskModel(connection, proxy.TaskID);
+                                Data_API.Delete(new TaskAttachmentModel(model, attachmentID));
+                                AttachmentFile file = new AttachmentFile(model, proxy as AttachmentProxy);
+                                file.Delete();
+                            }
+                            break;
                         case AttachmentProxy.References.None:   // see WebApp\App_Code\PrivateServices.cs
                             {
                                 // find out what kind of proxy this is?
-                                AttachmentProxy proxy = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, attachmentID) as ActionAttachmentProxy;
+                                AttachmentProxy proxy = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, attachmentID);
                                 if ((proxy != null) && (proxy.RefType != AttachmentProxy.References.None))
                                     DeleteAttachment(proxy.RefType, attachmentID);
                             }

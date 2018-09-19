@@ -27,6 +27,18 @@ namespace TeamSupport.DataAPI
         static string ToSql(DateTime dateTime) { return dateTime.ToString("yyyy-MM-dd HH:mm:ss.fff"); }
         static char ToSql(bool value) { return value ? '1' : '0'; }
 
+        static void CreateAttachment(IDNode idNode, AttachmentProxy proxy, int refID)
+        {
+            proxy.DateCreated = proxy.DateModified = DateTime.UtcNow;
+            proxy.CreatorID = proxy.ModifierID = idNode.Connection.UserID;
+            proxy.RefID = refID;
+            proxy.OrganizationID = idNode.Connection.OrganizationID;
+
+            Table<AttachmentProxy> table = idNode.Connection._db.GetTable<AttachmentProxy>();
+            table.InsertOnSubmit(proxy);
+            idNode.Connection._db.SubmitChanges();
+        }
+
         /// <summary>
         /// CREATE - create proxy child for model parent
         /// </summary>
@@ -45,16 +57,10 @@ namespace TeamSupport.DataAPI
             {
                 case "ActionAttachmentProxy":   // create action attachment
                     {
-                        ActionModel action = idNode as ActionModel;
+                        ActionModel model = idNode as ActionModel;
                         ActionAttachmentProxy proxy = tProxy as ActionAttachmentProxy;
-                        proxy.DateCreated = proxy.DateModified = DateTime.UtcNow;
-                        proxy.CreatorID = proxy.ModifierID = idNode.Connection.UserID;
-                        proxy.ActionID = action.ActionID;
-                        proxy.OrganizationID = action.Connection.OrganizationID;
-
-                        Table<AttachmentProxy> table = idNode.Connection._db.GetTable<AttachmentProxy>();
-                        table.InsertOnSubmit(proxy);
-                        idNode.Connection._db.SubmitChanges();
+                        CreateAttachment(idNode, proxy, model.ActionID);
+                        result = new ActionAttachmentModel(model, proxy.AttachmentID);    // disable Verify?
                     }
                     break;
                 case "ActionProxy":
@@ -109,15 +115,10 @@ namespace TeamSupport.DataAPI
                     break;
                 case "TaskAttachmentProxy":
                     {
-                        AttachmentProxy proxy = tProxy as AttachmentProxy;
-                        proxy.DateCreated = proxy.DateModified = DateTime.UtcNow;
-                        proxy.CreatorID = proxy.ModifierID = idNode.Connection.UserID;
-                        proxy.RefID = (idNode as TaskModel).TaskID;
-                        proxy.OrganizationID = idNode.Connection.OrganizationID;
-
-                        Table<AttachmentProxy> table = idNode.Connection._db.GetTable<AttachmentProxy>();
-                        table.InsertOnSubmit(proxy);
-                        idNode.Connection._db.SubmitChanges();
+                        TaskModel model = idNode as TaskModel;
+                        TaskAttachmentProxy proxy = tProxy as TaskAttachmentProxy;
+                        CreateAttachment(idNode, proxy, model.TaskID);
+                        result = new TaskAttachmentModel(model, proxy.AttachmentID);    // disable Verify?
                     }
                     break;
                 case "TicketProxy":
@@ -382,8 +383,10 @@ namespace TeamSupport.DataAPI
             switch (node.GetType().Name) // alphabetized list
             {
                 case "ActionAttachmentModel":
+                case "TaskAttachmentModel":
+                case "ContactAttachmentModel":
                     {
-                        ActionAttachmentModel model = (ActionAttachmentModel)node;
+                        AttachmentModel model = (AttachmentModel)node;
                         command = $"DELETE FROM Attachments WHERE AttachmentID = {model.AttachmentID}";
                     }
                     break;

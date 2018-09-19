@@ -182,6 +182,7 @@ namespace TeamSupport.Data
     public class TaskAttachmentProxy : AttachmentProxy
     {
         public TaskAttachmentProxy() : base(References.Tasks) { }
+        public int TaskID { get { return RefID; } }
     }
 
 
