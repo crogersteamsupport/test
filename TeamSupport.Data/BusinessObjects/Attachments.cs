@@ -315,6 +315,7 @@ order by o.Name, a.DateCreated desc
       }
     }
 
+    [Obsolete("Use ModelAPI", true)]
     public static void DeleteAttachmentAndFile(LoginUser loginUser, int attachmentID)
     {
       Attachment attachment = GetAttachment(loginUser, attachmentID);

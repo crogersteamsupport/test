@@ -3595,7 +3595,7 @@ WHERE t.TicketID = @TicketID
         {
             if (TeamSupport.IDTree.ConnectionContext.ActionAttachmentsEnabled)  // delete action attachment
             {
-                TeamSupport.ModelAPI.AttachmentAPI.DeleteActionAttachment(attachmentID);
+                AttachmentAPI.DeleteAttachment(AttachmentProxy.References.Actions, attachmentID);
                 return;
             }
 

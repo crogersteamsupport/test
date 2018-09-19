@@ -22,8 +22,14 @@ namespace TeamSupport.ModelAPI
             try
             {
                 GetPathMap(context, out PathMap pathMap, out int refID, out _ratingImage);
-                if (pathMap._refType != AttachmentProxy.References.Actions)    // SCOT only support ActionAttachments
-                    return null;
+                switch (pathMap._refType)
+                {
+                    case AttachmentProxy.References.Actions:    // Action attachments
+                    case AttachmentProxy.References.Tasks:  // Task attachments
+                        break;
+                    default:
+                        return null;
+                }
 
                 using (ConnectionContext connection = new ConnectionContext())
                 {
@@ -66,7 +72,7 @@ namespace TeamSupport.ModelAPI
                 //case AttachmentProxy.References.CustomerHubLogo: return new CustomerHubLogoModel(connection, refID);
                 //case AttachmentProxy.References.Organizations: return new OrganizationModel(connection, refID);
                 //case AttachmentProxy.References.ProductVersions: return new ProductVersionModel(connection, refID);
-                //case AttachmentProxy.References.Tasks: return new TaskModel(connection, refID);
+                case AttachmentProxy.References.Tasks: return new TaskModel(connection.Organization, refID);
                 //case AttachmentProxy.References.UserPhoto: return new UserPhotoModel(connection, refID);
                 //case AttachmentProxy.References.Users: return new UserModel(connection, refID);
                 //case AttachmentProxy.References.WaterCooler: return new WaterCoolerModel(connection, refID);
@@ -78,21 +84,46 @@ namespace TeamSupport.ModelAPI
             }
         }
 
-        public static void DeleteActionAttachment(int attachmentID)
+        public static void DeleteAttachment(AttachmentProxy.References refType, int attachmentID)
         {
             try
             {
                 using (ConnectionContext connection = new ConnectionContext())
                 {
-                    // user have permission to modify this action?
-                    ActionAttachmentModel attachment = new ActionAttachmentModel(connection, attachmentID);
-                    if (!attachment.Action.CanEdit())
-                        return;
-
-                    AttachmentProxy proxy = Data_API.Read<AttachmentProxy>(attachment);
-                    AttachmentFile file = new AttachmentFile(attachment, proxy);
-                    Data_API.Delete(attachment); // remove from database
-                    file.Delete();  // delete file
+                    switch (refType)
+                    {
+                        case AttachmentProxy.References.Assets:
+                            {
+                                AssetAttachmentProxy proxy = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, attachmentID) as AssetAttachmentProxy;
+                                AssetModel model = new AssetModel(connection, proxy.AssetID);
+                                Data_API.Delete(new AssetAttachmentModel(model, attachmentID));
+                                AttachmentFile file = new AttachmentFile(model, proxy as AttachmentProxy);
+                                file.Delete();
+                            }
+                            break;
+                        case AttachmentProxy.References.Actions:
+                            {
+                                ActionAttachmentProxy proxy = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, attachmentID) as ActionAttachmentProxy;
+                                ActionModel model = new ActionModel(connection, proxy.ActionID);
+                                if (!model.CanEdit())
+                                    return;
+                                Data_API.Delete(new ActionAttachmentModel(model, attachmentID));
+                                AttachmentFile file = new AttachmentFile(model, proxy as AttachmentProxy);
+                                file.Delete();
+                            }
+                            break;
+                        case AttachmentProxy.References.None:   // see WebApp\App_Code\PrivateServices.cs
+                            {
+                                // find out what kind of proxy this is?
+                                AttachmentProxy proxy = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, attachmentID) as ActionAttachmentProxy;
+                                if ((proxy != null) && (proxy.RefType != AttachmentProxy.References.None))
+                                    DeleteAttachment(proxy.RefType, attachmentID);
+                            }
+                            break;
+                        default:
+                            if (Debugger.IsAttached) Debugger.Break();
+                            throw new Exception($"unrecognized RefType {refType} in DeleteAttachment");
+                    }
                 }
             }
             catch (Exception ex)

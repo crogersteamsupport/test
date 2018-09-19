@@ -30,13 +30,13 @@ namespace TeamSupport.IDTree
         }
 
         /// <summary> Existing file </summary>
-        public AttachmentFile(ActionAttachmentModel attachment, Data.AttachmentProxy proxy)
+        public AttachmentFile(IAttachmentParent attachment, Data.AttachmentProxy proxy)
         {
             FileInfo file = new FileInfo(proxy.Path);
             DirectoryInfo dir = file.Directory;
             string dirName = file.Directory.ToString();
-            if (!dirName.Equals(attachment.Action.AttachmentPath))
-                throw new Exception($"File path {file.Directory.Name} != {attachment.Action.AttachmentPath}");
+            if (!dirName.Equals(attachment.AttachmentPath))
+                throw new Exception($"File path {file.Directory.Name} != {attachment.AttachmentPath}");
 
             FileName = proxy.FileName;
             FilePath = proxy.Path;

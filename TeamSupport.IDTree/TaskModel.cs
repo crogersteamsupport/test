@@ -3,41 +3,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace TeamSupport.IDTree
 {
-    public class TaskModel : IDNode
+    public class TaskModel : IDNode, IAttachmentParent
     {
-        public TaskAssociationModel TaskAssociation { get; private set; }
+        OrganizationModel Organization;
         public int TaskID { get; private set; }
 
-        public TaskModel(TaskAssociationModel taskAssociation, int taskID, bool verify) : base(taskAssociation)
+        public TaskModel(OrganizationModel organization, int taskID) : base(organization)
         {
-            TaskAssociation = taskAssociation;
-            if (verify)
-                Verify();
+            Organization = organization;
+            TaskID = taskID;
+            Verify();
         }
 
-        public TaskModel(TaskAssociationModel task, int taskID) : this(task, taskID, true)
+        public TaskModel(ConnectionContext connection, int taskID) : base(connection)
         {
+            Organization = connection.Organization;
+            TaskID = taskID;
+            Verify();
         }
-
-        /// <summary> bottom up  - existing task </summary>
-        //public TaskModel(ConnectionContext connection, int taskID) : base(connection)
-        //{
-        //    TaskID = taskID;
-        //    int ticketID = Connection._db.ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {taskID}").Min();
-        //    }
-
-        //    Ticket = new TicketModel(Connection, ticketID);
-        //    Verify();
-        //}
 
         public override void Verify()
         {
-            //Verify($"SELECT TaskID FROM Tasks WITH (NOLOCK) WHERE TaskID={TaskID} AND OrganizationID={Ticket.Connection.OrganizationID}");
+            Verify($"SELECT TaskID FROM Tasks WITH (NOLOCK) WHERE TaskID={TaskID} AND OrganizationID={Organization.OrganizationID}");
         }
 
-
+        // C:\TSData\Organizations\1078\Tasks\57269\file.txt
+        public string AttachmentPath
+        {
+            get
+            {
+                string path = Organization.AttachmentPath(ActionModel.ActionPathIndex);
+                path = Path.Combine(path, "Tasks");   // see static AttachmentAPI()
+                path = Path.Combine(path, TaskID.ToString());
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+                return path;
+            }
+        }
     }
+
 }

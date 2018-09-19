@@ -107,6 +107,19 @@ namespace TeamSupport.DataAPI
                                 $"SELECT 17, {model.TicketID}, {proxy.UserID}, '{now}','{now}', {creatorID}, {creatorID} ";
                     }
                     break;
+                case "TaskAttachmentProxy":
+                    {
+                        AttachmentProxy proxy = tProxy as AttachmentProxy;
+                        proxy.DateCreated = proxy.DateModified = DateTime.UtcNow;
+                        proxy.CreatorID = proxy.ModifierID = idNode.Connection.UserID;
+                        proxy.RefID = (idNode as TaskModel).TaskID;
+                        proxy.OrganizationID = idNode.Connection.OrganizationID;
+
+                        Table<AttachmentProxy> table = idNode.Connection._db.GetTable<AttachmentProxy>();
+                        table.InsertOnSubmit(proxy);
+                        idNode.Connection._db.SubmitChanges();
+                    }
+                    break;
                 case "TicketProxy":
                     {
                         UserModel model = (UserModel)idNode;
@@ -146,6 +159,28 @@ namespace TeamSupport.DataAPI
             return result;
         }
 
+        /// <summary>
+        /// Read a row from a RefType table and get back the type safe proxy
+        /// </summary>
+        public static TProxy ReadRefTypeProxy<TProxy>(ConnectionContext connection, int id) where TProxy : class
+        {
+            TProxy tProxy = default(TProxy);
+            switch (typeof(TProxy).Name) // alphabetized list
+            {
+                case "AttachmentProxy": // action
+                    {
+                        Table<AttachmentProxy> table = connection._db.GetTable<AttachmentProxy>();
+                        tProxy = table.Where(a => a.AttachmentID == id).First() as TProxy;
+                    }
+                    break;
+                default:
+                    if (Debugger.IsAttached) Debugger.Break();
+                    break;
+            }
+            return tProxy;
+        }
+
+
         /// <summary> 
         /// READ - read proxy given a model 
         /// </summary>
@@ -179,9 +214,9 @@ namespace TeamSupport.DataAPI
                     break;
                 case "AttachmentProxy": // read all attachment types
                     {
-                        ActionAttachmentModel attachment = (ActionAttachmentModel)node;
+                        AttachmentModel attachment = (AttachmentModel)node;
                         Table<AttachmentProxy> table = attachment.Connection._db.GetTable<AttachmentProxy>();
-                        tProxy = table.Where(a => a.AttachmentID == attachment.ActionAttachmentID).First() as TProxy;
+                        tProxy = table.Where(a => a.AttachmentID == attachment.AttachmentID).First() as TProxy;
                     }
                     break;
                 case "AttachmentProxy[]": // action attachments
@@ -349,7 +384,7 @@ namespace TeamSupport.DataAPI
                 case "ActionAttachmentModel":
                     {
                         ActionAttachmentModel model = (ActionAttachmentModel)node;
-                        command = $"DELETE FROM Attachments WHERE AttachmentID = {model.ActionAttachmentID}";
+                        command = $"DELETE FROM Attachments WHERE AttachmentID = {model.AttachmentID}";
                     }
                     break;
                 case "AssetTicketModel":

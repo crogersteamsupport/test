@@ -153,6 +153,7 @@ namespace TeamSupport.Api
       }
     }
 
+    [Obsolete("Use ModelAPI", true)]
     public static string DeleteAttachment(RestCommand command, int assetID, int attachmentID)
     {
       Asset asset = Assets.GetAsset(command.LoginUser, assetID);
