@@ -72,7 +72,7 @@ namespace TeamSupport.IDTree
         public OrganizationTicketModel[] OrganizationTickets() { return OrganizationTicketModel.GetOrganizationTickets(this); }
         public TicketReminderModel[] Reminders() { return TicketReminderModel.GetTicketReminders(this); }
         public SubscriptionModel[] Subscriptions() { return SubscriptionModel.GetSubscriptions(this); }
-        public TaskAssociationModel[] TaskAssociations() { return TaskAssociationModel.GetTaskAssociations(this); }
+        //public TaskAssociationModel[] TaskAssociations() { return TaskAssociationModel.GetTaskAssociations(this); }
         //public TicketQueueModel[] TicketQueue() { return TicketQueueModel.GetQueuedTicket(this); }
 
 

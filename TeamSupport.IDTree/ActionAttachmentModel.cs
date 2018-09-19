@@ -20,14 +20,23 @@ namespace TeamSupport.IDTree
         IDNode AsIDNode { get; }    // back door to map class to IDNode at compile time
     }
 
+    public abstract class AttachmentModel : IDNode
+    {
+        public AttachmentModel(IDNode node) : this(node.Connection) { }
+        public AttachmentModel(ConnectionContext connection) : base(connection)
+        {
+        }
+
+        public int ActionAttachmentID { get; protected set; }
+        public AttachmentFile File { get; protected set; }
+    }
+
     /// <summary> Action Attachments </summary>
-    public class ActionAttachmentModel : IDNode
+    public class ActionAttachmentModel : AttachmentModel
     {
         public ActionModel Action { get; private set; }
-        public int ActionAttachmentID { get; private set; }
         public string AttachmentPath { get { return Action.AttachmentPath; } }
 
-        public AttachmentFile File { get; private set; }
 
         /// <summary> top down - Load existing action attachment /// </summary>
         public ActionAttachmentModel(ActionModel action, int actionAttachmentID) : base(action)

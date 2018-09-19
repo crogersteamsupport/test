@@ -897,7 +897,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
 
 							switch (taskAssociationSource.RefType)
 							{
-								case (int)ReferenceType.Tickets:
+								case TaskAssociationProxy.References.Tickets:
 									//Tickets newOrgTickets = new Tickets(loginUser);
 									//newOrgTickets.LoadByOrganizationID(organization.OrganizationID);
 
@@ -906,7 +906,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
 										refId = tktDests[0].TicketID;
 									}
 									break;
-								case (int)ReferenceType.Organizations:
+								case TaskAssociationProxy.References.Organizations:
 									if (compDsts.Any())
 									{
 										refId = compDsts[0].OrganizationID;

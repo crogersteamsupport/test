@@ -9,6 +9,19 @@ using System.Data.Linq.Mapping;
 
 namespace TeamSupport.Data
 {
+    //Actions
+    //Assets
+    //ChatAttachments
+    //CompanyActivity
+    //ContactActivity
+    //Contacts
+    //CustomerHubLogo
+    //Organizations
+    //ProductVersions
+    //Tasks
+    //UserPhoto
+    //Users
+    //WaterCooler
 
     [DataContract(Namespace = "http://teamsupport.com/")]
     [KnownType(typeof(AttachmentProxy))]
@@ -22,6 +35,7 @@ namespace TeamSupport.Data
     [InheritanceMapping(Code = References.CustomerHubLogo, Type = typeof(CustomerHubLogoAttachmentProxy))]
     [InheritanceMapping(Code = References.Organizations, Type = typeof(OrganizationAttachmentProxy))]
     [InheritanceMapping(Code = References.ProductVersions, Type = typeof(ProductVersionAttachmentProxy))]
+    [InheritanceMapping(Code = References.Tasks, Type = typeof(TaskAttachmentProxy))]
     [InheritanceMapping(Code = References.UserPhoto, Type = typeof(UserPhotoAttachmentProxy))]
     [InheritanceMapping(Code = References.Users, Type = typeof(UserAttachmentProxy))]
     [InheritanceMapping(Code = References.WaterCooler, Type = typeof(WaterCoolerAttachmentProxy))]
@@ -164,7 +178,6 @@ namespace TeamSupport.Data
     {
         public ProductVersionAttachmentProxy() : base(References.ProductVersions) { }
     }
-
 
     public class TaskAttachmentProxy : AttachmentProxy
     {

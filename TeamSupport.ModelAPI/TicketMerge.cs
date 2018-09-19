@@ -237,10 +237,10 @@ namespace TeamSupport.ModelAPI
 
         void MergeTaskAssociations()
         {
-            TaskAssociationModel[] taskAssociations = Source.TaskAssociations();
-            UpdateArguments args = new UpdateArguments("RefID", Destination.TicketID);
-            foreach (TaskAssociationModel task in taskAssociations)
-                Data_API.Update(Destination, args);
+            //TaskAssociationModel[] taskAssociations = Source.TaskAssociations();
+            //UpdateArguments args = new UpdateArguments("RefID", Destination.TicketID);
+            //foreach (TaskAssociationModel task in taskAssociations)
+            //    Data_API.Update(Destination, args);
         }
 
         public void Merge()

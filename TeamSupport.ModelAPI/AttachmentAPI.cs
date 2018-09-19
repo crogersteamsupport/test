@@ -19,9 +19,12 @@ namespace TeamSupport.ModelAPI
         public static List<AttachmentProxy> CreateAttachments(HttpContext context, out string _ratingImage)
         {
             List<AttachmentProxy> result = new List<AttachmentProxy>();
-            GetPathMap(context, out PathMap pathMap, out int refID, out _ratingImage);
             try
             {
+                GetPathMap(context, out PathMap pathMap, out int refID, out _ratingImage);
+                if (pathMap._refType != AttachmentProxy.References.Actions)    // SCOT only support ActionAttachments
+                    return null;
+
                 using (ConnectionContext connection = new ConnectionContext())
                 {
                     // valid ID to add attachment
@@ -36,15 +39,16 @@ namespace TeamSupport.ModelAPI
                         AttachmentProxy proxy = AttachmentProxy.ClassFactory(pathMap._refType);  // construct the proxy
                         proxy.RefID = refID;
                         InitializeProxy(context, connection, attachmentFile, proxy);
-                        DataAPI.Data_API.Create(model.AsIDNode, proxy);  // save proxy to DB
+                        Data_API.Create(model.AsIDNode, proxy);  // save proxy to DB
                         result.Add(proxy);
                     }
                 }
             }
             catch (Exception ex)
             {
+                _ratingImage = null;
                 // TODO - tell user we failed 
-                DataAPI.Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
+                Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
             }
             return result;
         }
@@ -136,6 +140,26 @@ namespace TeamSupport.ModelAPI
         }
 
 
+        ///// <summary> Read most recent filenames for this ticket </summary>
+        //public static void ReadActionAttachmentsByFilenameAndTicket(TicketModel ticketModel, out AttachmentProxy[] mostRecentByFilename)
+        //{
+        //    string query = SelectActionAttachmentProxy + $"WHERE ActionID IN (SELECT ActionID FROM Actions WHERE TicketID = {ticketModel.TicketID}) ORDER BY DateCreated DESC";
+        //    AttachmentProxy[] allAttachments = ticketModel.ExecuteQuery<AttachmentProxy>(query).ToArray();
+        //    List<AttachmentProxy> tmp = new List<AttachmentProxy>();
+        //    foreach (AttachmentProxy attachment in allAttachments)
+        //    {
+        //        if (!tmp.Exists(a => a.FileName == attachment.FileName))
+        //            tmp.Add(attachment);
+        //    }
+        //    mostRecentByFilename = tmp.ToArray();
+        //}
+
+        ///// <summary> Read most recent filenames for this ticket </summary>
+        //public static void ReadKBActionAttachmentsByTicket(TicketModel ticketModel, out AttachmentProxy[] mostRecentByFilename)
+        //{
+        //    string query = SelectActionAttachmentProxy + $"JOIN Actions ac ON a.ActionID = ac.ActionID WHERE ac.TicketID = {ticketModel.TicketID} AND ac.IsKnowledgeBase = 1";
+        //    mostRecentByFilename = ticketModel.ExecuteQuery<AttachmentProxy>(query).ToArray();
+        //}
 
         #region PathMap
         public struct PathMap

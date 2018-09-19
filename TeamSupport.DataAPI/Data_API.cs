@@ -415,34 +415,6 @@ namespace TeamSupport.DataAPI
         //}
 
 
-        #region ActionAttachments
-
-
-
-
-        ///// <summary> Read most recent filenames for this ticket </summary>
-        //public static void ReadActionAttachmentsByFilenameAndTicket(TicketModel ticketModel, out AttachmentProxy[] mostRecentByFilename)
-        //{
-        //    string query = SelectActionAttachmentProxy + $"WHERE ActionID IN (SELECT ActionID FROM Actions WHERE TicketID = {ticketModel.TicketID}) ORDER BY DateCreated DESC";
-        //    AttachmentProxy[] allAttachments = ticketModel.ExecuteQuery<AttachmentProxy>(query).ToArray();
-        //    List<AttachmentProxy> tmp = new List<AttachmentProxy>();
-        //    foreach (AttachmentProxy attachment in allAttachments)
-        //    {
-        //        if (!tmp.Exists(a => a.FileName == attachment.FileName))
-        //            tmp.Add(attachment);
-        //    }
-        //    mostRecentByFilename = tmp.ToArray();
-        //}
-
-        ///// <summary> Read most recent filenames for this ticket </summary>
-        //public static void ReadKBActionAttachmentsByTicket(TicketModel ticketModel, out AttachmentProxy[] mostRecentByFilename)
-        //{
-        //    string query = SelectActionAttachmentProxy + $"JOIN Actions ac ON a.ActionID = ac.ActionID WHERE ac.TicketID = {ticketModel.TicketID} AND ac.IsKnowledgeBase = 1";
-        //    mostRecentByFilename = ticketModel.ExecuteQuery<AttachmentProxy>(query).ToArray();
-        //}
-
-        #endregion
-
 
         #region Log
         /// <summary> Log Message </summary>

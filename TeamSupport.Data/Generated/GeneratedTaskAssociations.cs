@@ -37,9 +37,9 @@ namespace TeamSupport.Data
       set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
-    public int RefType
+    public TaskAssociationProxy.References RefType
     {
-      get { return (int)Row["RefType"]; }
+      get { return (TaskAssociationProxy.References)Row["RefType"]; }
       set { Row["RefType"] = CheckValue("RefType", value); }
     }
     
@@ -125,17 +125,17 @@ namespace TeamSupport.Data
 
     #region Public Methods
 
-    public TaskAssociationProxy[] GetTaskAssociationProxies()
-    {
-      List<TaskAssociationProxy> list = new List<TaskAssociationProxy>();
+    //public TaskAssociationProxy[] GetTaskAssociationProxies()
+    //{
+    //  List<TaskAssociationProxy> list = new List<TaskAssociationProxy>();
 
-      foreach (TaskAssociation item in this)
-      {
-        list.Add(item.GetProxy()); 
-      }
+    //  foreach (TaskAssociation item in this)
+    //  {
+    //    list.Add(item.GetProxy()); 
+    //  }
 
-      return list.ToArray();
-    }	
+    //  return list.ToArray();
+    //}	
 	
     public virtual void DeleteFromDB(int taskID)
     {

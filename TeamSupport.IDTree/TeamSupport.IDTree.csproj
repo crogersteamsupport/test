@@ -51,6 +51,7 @@
     <Compile Include="AssetModel.cs" />
     <Compile Include="AssetTicketModel.cs" />
     <Compile Include="AttachmentFile.cs" />
+    <Compile Include="TaskModel.cs" />
     <Compile Include="TicketQueueModel.cs" />
     <Compile Include="TSDataTable.cs" />
     <Compile Include="TicketRelationshipModel.cs" />
@@ -67,7 +68,6 @@
     <Compile Include="TagLinkModel.cs" />
     <Compile Include="TagModel.cs" />
     <Compile Include="TaskAssociationModel.cs" />
-    <Compile Include="TicketTaskModel.cs" />
     <Compile Include="TicketModel.cs" />
   </ItemGroup>
   <ItemGroup>

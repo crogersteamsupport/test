@@ -6,16 +6,28 @@ using System.Threading.Tasks;
 
 namespace TeamSupport.IDTree
 {
-    public class TaskAssociationModel : IDNode
+    public abstract class TaskAssociationModel : IDNode
     {
-        public TicketModel Ticket { get; private set; }
-        public TaskNode Task { get; private set; }
+        public TaskModel Task { get; protected set; }
+        public int TaskAssociationID { get; protected set; }
 
-        public TaskAssociationModel(TicketModel ticket, TaskNode taskID) : this(ticket, taskID, true)
+        public TaskAssociationModel(IDNode node) : base(node)
         {
+
         }
 
-        private TaskAssociationModel(TicketModel ticket, TaskNode task, bool verify) : base(ticket)
+        private TaskAssociationModel(TaskModel task, int taskAssociationID) : base(task)
+        {
+            Task = task;
+            TaskAssociationID = taskAssociationID;
+        }
+    }
+
+    class TicketTaskAssociationModel : TaskAssociationModel
+    { 
+        public TicketModel Ticket { get; private set; }
+
+        private TicketTaskAssociationModel(TicketModel ticket, TaskModel task, int taskAssociationID, bool verify) : base(task)
         {
             Ticket = ticket;
             Task = task;
@@ -23,14 +35,18 @@ namespace TeamSupport.IDTree
                 Verify();
         }
 
-        public static TaskAssociationModel[] GetTaskAssociations(TicketModel ticket)
+        public TicketTaskAssociationModel(TicketModel ticket, TaskModel task, int taskAssociationID) : this(ticket, task, taskAssociationID, true)
         {
-            int[] taskAssociationIDs = IDReader.Read(TicketChild.TaskAssociations, ticket);
-            TaskAssociationModel[] taskAssociationModels = new TaskAssociationModel[taskAssociationIDs.Length];
-            for (int i = 0; i < taskAssociationIDs.Length; ++i)
-                taskAssociationModels[i] = new TaskAssociationModel(ticket, new TaskNode(ticket.Organization, taskAssociationIDs[i]), false);
-            return taskAssociationModels;
         }
+
+        //public static TaskAssociationModel[] GetTaskAssociations(TicketModel ticket)
+        //{
+        //    int[] taskAssociationIDs = IDReader.Read(TicketChild.TaskAssociations, ticket);
+        //    TaskAssociationModel[] taskAssociationModels = new TaskAssociationModel[taskAssociationIDs.Length];
+        //    for (int i = 0; i < taskAssociationIDs.Length; ++i)
+        //        taskAssociationModels[i] = new TaskAssociationModel(ticket, new TaskNode(ticket.Organization, taskAssociationIDs[i]), false);
+        //    return taskAssociationModels;
+        //}
 
         public override void Verify()
         {
