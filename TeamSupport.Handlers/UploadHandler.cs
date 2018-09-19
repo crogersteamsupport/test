@@ -36,14 +36,17 @@ namespace TeamSupport.Handlers
                 if (IDTree.ConnectionContext.ActionAttachmentsEnabled)
                 {
                     List<AttachmentProxy> proxies = ModelAPI.AttachmentAPI.CreateAttachments(context, out _ratingImage);
-                    context.Response.Clear();
-                    context.Response.ContentType = "text/plain";
-                    List<UploadResult> result = new List<UploadResult>();
-                    foreach (AttachmentProxy attachment in proxies)
-                        result.Add(new UploadResult(attachment.FileName, attachment.FileType, attachment.FileSize, attachment.AttachmentID));
-                    context.Response.ContentType = "text/html";
-                    context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
-                    return;
+                    if (proxies != null)    // SCOT fall through if not supported by RefType infrastructure
+                    {
+                        context.Response.Clear();
+                        context.Response.ContentType = "text/plain";
+                        List<UploadResult> result = new List<UploadResult>();
+                        foreach (AttachmentProxy attachment in proxies)
+                            result.Add(new UploadResult(attachment.FileName, attachment.FileType, attachment.FileSize, attachment.AttachmentID));
+                        context.Response.ContentType = "text/html";
+                        context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
+                        return;
+                    }
                 }
 
                 List<string> segments = UploadUtils.GetUrlSegments(context);

@@ -22,6 +22,9 @@ namespace TeamSupport.ModelAPI
             GetPathMap(context, out PathMap pathMap, out int refID, out _ratingImage);
             try
             {
+                if (pathMap._refType != AttachmentProxy.References.Actions)    // SCOT only support ActionAttachments
+                    return null;
+
                 using (ConnectionContext connection = new ConnectionContext())
                 {
                     // valid ID to add attachment
