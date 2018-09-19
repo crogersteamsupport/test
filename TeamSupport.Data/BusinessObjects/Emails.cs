@@ -164,7 +164,58 @@ WHERE EmailID IN (
     
     }
 
-    public static void UnlockAll(LoginUser loginUser)
+        public static bool IsTrialEmailOverLimit(LoginUser loginUser, int organizationID)
+        {
+            if (!GetIsTrialLimited(loginUser, organizationID)) return false;
+            int maxEmails = Emails.GetMaxEmailsForTrial(loginUser, organizationID);
+            int count = Emails.GetSentCount(loginUser, organizationID);
+            return maxEmails >= count;
+        }
+
+        public static bool GetIsTrialLimited(LoginUser loginUser, int organizationID)
+        {
+            return OrganizationSettings.ReadString(loginUser, organizationID, "Emails_TrialLimited", "1") == "1";
+        }
+
+        public static int GetMaxEmailsForTrial(LoginUser loginUser, int organizationID)
+        {
+            int maxEmails = 5;
+            int.TryParse(OrganizationSettings.ReadString(loginUser, organizationID, "Emails_MaxForTrial", "5"), out maxEmails);
+            return maxEmails;
+        }
+
+        public static void SetMaxEmailsForTrial(LoginUser loginUser, int organizationID, int value)
+        {
+            OrganizationSettings.WriteString(loginUser, "Emails_MaxForTrial", value.ToString());
+        }
+
+        public static void SetTrialLimited(LoginUser loginUser, int organizationID, bool value)
+        {
+            OrganizationSettings.WriteString(loginUser, "Emails_TrialLimited", value ? "1" : "0");
+        }
+
+        public static int GetSentCount(LoginUser loginUser, int organizationID)
+        {
+            Emails emails = new Emails(loginUser);
+            object o;
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+SELECT COUNT(*) FROM Emails 
+WHERE IsWaiting = 0 
+AND OrganizationID = @OrganizationID 
+";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", organizationID);
+                o = command.ExecuteScalar();
+            }
+
+            if (o == null || o == DBNull.Value) return 0;
+            return (int)o;
+        }
+
+        public static void UnlockAll(LoginUser loginUser)
     {
       Emails emails = new Emails(loginUser);
 
