@@ -85,10 +85,12 @@ namespace TeamSupport.Handlers
                                 NameValueCollection values = HttpUtility.ParseQueryString(requestContent);
                                 try
                                 {
+									if (IsReCaptchaVerified(values))
+									{
                                     User user = ProcessSignUp(context, values);
                                     string url = string.Format("{0}://{1}/{2}?userid={3}", context.Request.UrlReferrer.Scheme, context.Request.UrlReferrer.Host, GetValueString(values["success"]), user.UserID.ToString());
                                     context.Response.Redirect(url, false);
-
+									}
                                 }
                                 catch (Exception ex)
                                 {
@@ -600,6 +602,38 @@ namespace TeamSupport.Handlers
             }
             return result;
         }
+
+		private bool IsReCaptchaVerified(NameValueCollection values)
+		{
+			bool isVerified = false;
+			string reCaptchaResponse = GetValueString(values["g-recaptcha-response"]);
+			string googleReCaptchaUrl = "https://www.google.com/recaptcha/api/siteverify";
+			string postData = "{\"secret\": \"6LcSHHEUAAAAAMy4q1FWe65Pfm72pVU1k74RvK7W\", \"response\": \"" + reCaptchaResponse + "\"}";
+
+			googleReCaptchaUrl += "?secret=6LcSHHEUAAAAAMy4q1FWe65Pfm72pVU1k74RvK7W&response=" + reCaptchaResponse;
+
+			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(googleReCaptchaUrl);
+			request.Method = "GET";
+			request.KeepAlive = false;
+			request.ContentType = "application/json";
+
+			using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+			{
+				if (request.HaveResponse && response != null)
+				{
+					using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8))
+					{
+						string responseText = reader.ReadToEnd();
+						dynamic responseObject = JObject.Parse(responseText);
+						string success = responseObject.success;
+						isVerified = bool.Parse(success);
+					}
+				}
+			}
+
+			return isVerified;
+		}
+
         public class MarketingCookie
         {
             public string Source { get; set; }
