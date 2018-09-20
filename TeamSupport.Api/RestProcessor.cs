@@ -430,8 +430,11 @@ namespace TeamSupport.Api
                     case "/assets/{id}/tickets/{id}/": data = RestAssets.DeleteTicketAsset(_command, GetId(1), GetId(3)); break;
                     case "/assets/{id}/attachments/{id}/":
                         {
-                            ModelAPI.AttachmentAPI.DeleteAttachment(AttachmentProxy.References.Assets, GetId(3));
+                            int attachmentID = GetId(3);
+                            ModelAPI.AttachmentAPI.DeleteAttachment(AttachmentProxy.References.Assets, attachmentID, GetId(1));
                             //data = RestAttachments.DeleteAttachment(_command, GetId(1), GetId(3));
+                            Attachment attachment = Attachments.GetAttachment(_command.LoginUser, attachmentID);
+                            data = attachment.Collection.GetXml("Attachments", "Attachment", true, _command.Filters);
                         }
                         break;
                     case "/users/{id}/": RestUsers.DeleteUser(_command, GetId(1)); break;

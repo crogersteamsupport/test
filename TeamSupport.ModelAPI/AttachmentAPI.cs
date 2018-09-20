@@ -22,10 +22,19 @@ namespace TeamSupport.ModelAPI
             try
             {
                 GetPathMap(context, out PathMap pathMap, out int refID, out _ratingImage);
+                switch (pathMap._refType)
+                {
+                    case AttachmentProxy.References.Actions:    // Action attachments
+                    case AttachmentProxy.References.Tasks:  // Task attachments
+                        break;
+                    default:
+                        return null;
+                }
+
                 using (ConnectionContext connection = new ConnectionContext())
                 {
                     // valid ID to add attachment
-                    IAttachmentDestination model = ClassFactory(connection, pathMap._refType, refID);
+                    IAttachedTo model = ClassFactory(connection, pathMap._refType, refID);
                     HttpFileCollection files = context.Request.Files;
                     for (int i = 0; i < files.Count; i++)
                     {
@@ -36,7 +45,7 @@ namespace TeamSupport.ModelAPI
                         AttachmentProxy proxy = AttachmentProxy.ClassFactory(pathMap._refType);  // construct the proxy
                         proxy.RefID = refID;
                         InitializeProxy(context, connection, attachmentFile, proxy);
-                        Data_API.Create((model as IDNode), proxy);  // save proxy to DB
+                        Data_API.Create(model as IDNode, proxy);  // save proxy to DB
                         result.Add(proxy);
                     }
                 }
@@ -50,7 +59,7 @@ namespace TeamSupport.ModelAPI
             return result;
         }
 
-        static IAttachmentDestination ClassFactory(ConnectionContext connection, AttachmentProxy.References refType, int refID)
+        static IAttachedTo ClassFactory(ConnectionContext connection, AttachmentProxy.References refType, int refID)
         {
             switch (refType)
             {
@@ -69,61 +78,50 @@ namespace TeamSupport.ModelAPI
                 //case AttachmentProxy.References.WaterCooler: return new WaterCoolerModel(connection, refID);
                 //case AttachmentProxy.References.Imports: return new ImportsModel(connection, refID);
                 default:
-                    if (Debugger.IsAttached) Debugger.Break();
+                    if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
                     throw new Exception($"bad ReferenceType {refType}");
 
             }
         }
 
-        public static void DeleteAttachment(AttachmentProxy.References refType, int attachmentID)
+        public static void DeleteAttachment(AttachmentProxy.References refType, int attachmentID, int? attachmentDestinationID = null)
         {
             try
             {
                 using (ConnectionContext connection = new ConnectionContext())
                 {
+                    // validate args
+                    AttachmentProxy proxy = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, attachmentID);
+                    IAttachedTo model = null;
+                    if (refType == AttachmentProxy.References.None)
+                        refType = proxy.RefType;
+
+                    if(!attachmentDestinationID.HasValue)
+                        attachmentDestinationID = proxy.RefID;
+
+                    // type safe construction
                     switch (refType)
                     {
                         case AttachmentProxy.References.Assets:
-                            {
-                                AssetAttachmentProxy proxy = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, attachmentID) as AssetAttachmentProxy;
-                                AssetModel model = new AssetModel(connection, proxy.AssetID);
-                                Data_API.Delete(new AttachmentModel(model, attachmentID));
-                                AttachmentFile file = new AttachmentFile(model, proxy as AttachmentProxy);
-                                file.Delete();
-                            }
+                            model = new AssetModel(connection, attachmentDestinationID.Value);
                             break;
                         case AttachmentProxy.References.Actions:
-                            {
-                                ActionAttachmentProxy proxy = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, attachmentID) as ActionAttachmentProxy;
-                                ActionModel model = new ActionModel(connection, proxy.ActionID);
-                                if (!model.CanEdit())
-                                    return;
-                                Data_API.Delete(new AttachmentModel(model, attachmentID));
-                                AttachmentFile file = new AttachmentFile(model, proxy as AttachmentProxy);
-                                file.Delete();
-                            }
+                            model = new ActionModel(connection, attachmentDestinationID.Value);
+                            if (!(model as ActionModel).CanEdit())
+                                return;
                             break;
                         case AttachmentProxy.References.Tasks:
-                            {
-                                TaskAttachmentProxy proxy = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, attachmentID) as TaskAttachmentProxy;
-                                TaskModel model = new TaskModel(connection, proxy.TaskID);
-                                Data_API.Delete(new AttachmentModel(model, attachmentID));
-                                AttachmentFile file = new AttachmentFile(model, proxy as AttachmentProxy);
-                                file.Delete();
-                            }
-                            break;
-                        case AttachmentProxy.References.None:   // see WebApp\App_Code\PrivateServices.cs
-                            {
-                                // find out what kind of proxy this is?
-                                AttachmentProxy proxy = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, attachmentID);
-                                if ((proxy != null) && (proxy.RefType != AttachmentProxy.References.None))
-                                    DeleteAttachment(proxy.RefType, attachmentID);
-                            }
+                            model = new TaskModel(connection, attachmentDestinationID.Value);
                             break;
                         default:
                             if (Debugger.IsAttached) Debugger.Break();
                             throw new Exception($"unrecognized RefType {refType} in DeleteAttachment");
                     }
+
+                    // do the delete
+                    Data_API.Delete(new AttachmentModel(model, attachmentID));
+                    AttachmentFile file = new AttachmentFile(model, proxy);
+                    file.Delete();
                 }
             }
             catch (Exception ex)
