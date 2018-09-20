@@ -49,6 +49,7 @@ namespace TeamSupport.Handlers
                     }
                 }
 
+                if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
                 List<string> segments = UploadUtils.GetUrlSegments(context);
                 int id;
                 if (int.TryParse(segments[segments.Count - 1], out id))

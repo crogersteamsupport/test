@@ -55,7 +55,7 @@ namespace TeamSupport.ModelAPI
             switch (refType)
             {
                 case AttachmentProxy.References.Actions: return new ActionModel(connection, refID);
-                //case AttachmentProxy.References.Assets: return new AssetModel(connection, refID);
+                case AttachmentProxy.References.Assets: return new AssetModel(connection, refID);
                 //case AttachmentProxy.References.ChatAttachments: return new ChatModel(connection, refID);
                 //case AttachmentProxy.References.CompanyActivity: return new CompanyActivityModel(connection, refID);
                 //case AttachmentProxy.References.ContactActivity: return new ContactActivityModel(connection, refID);

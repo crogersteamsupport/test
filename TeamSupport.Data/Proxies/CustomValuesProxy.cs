@@ -52,6 +52,7 @@ namespace TeamSupport.Data
                 case References.Tickets: return new ActionsCustomValueProxy();
                 case References.Contacts: return new ActionsCustomValueProxy();
                 case References.Assets: return new ActionsCustomValueProxy();
+                case References.Products: return new ProductCustomValueProxy();
                 default: throw new Exception("Invalid CustomValueProxy Reference Type");
             }
         }
@@ -62,7 +63,8 @@ namespace TeamSupport.Data
             Organizations = ReferenceType.Organizations,
             Tickets = ReferenceType.Tickets,
             Contacts = ReferenceType.Contacts,
-            Assets = ReferenceType.Assets
+            Assets = ReferenceType.Assets,
+            Products = ReferenceType.Products
         }
     }
 
@@ -91,6 +93,11 @@ namespace TeamSupport.Data
     public class AssetsCustomValueProxy : CustomValueProxy
     {
         public AssetsCustomValueProxy() : base(ReferenceType.Assets) { }
+    }
+
+    public class ProductCustomValueProxy : CustomValueProxy
+    {
+        public ProductCustomValueProxy() : base(ReferenceType.Products) { }
     }
 
     public partial class CustomValue : BaseItem

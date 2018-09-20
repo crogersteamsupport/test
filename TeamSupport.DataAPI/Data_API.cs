@@ -89,6 +89,14 @@ namespace TeamSupport.DataAPI
                         result = new ActionModel(model, proxy.ActionID);    // how to bypass Verify?
                     }
                     break;
+                case "AssetAttachmentProxy":   // create asset attachment
+                    {
+                        AssetModel model = idNode as AssetModel;
+                        AssetAttachmentProxy proxy = tProxy as AssetAttachmentProxy;
+                        CreateAttachment(idNode, proxy, model.AssetID);
+                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
+                    }
+                    break;
                 case "ContactProxy":
                     {
                         TicketModel model = (TicketModel)idNode;
