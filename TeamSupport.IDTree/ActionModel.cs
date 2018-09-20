@@ -15,7 +15,7 @@ namespace TeamSupport.IDTree
     /// <summary>
     /// Wrapper for Valid ActionID
     /// </summary>
-    public class ActionModel : IDNode
+    public class ActionModel : IDNode, IAttachedTo
     {
         public TicketModel Ticket { get; private set; }
         public int ActionID { get; private set; }
@@ -56,12 +56,6 @@ namespace TeamSupport.IDTree
         public ActionProxy ActionProxy()
         {
             return ExecuteQuery<ActionProxy>($"SELECT * FROM Actions WHERE ActionID={ActionID}").First();
-        }
-
-        /// <summary> existing action attachment </summary>
-        public ActionAttachmentModel ActionAttachment(int actionAttachmentID)
-        {
-            return new ActionAttachmentModel(this, actionAttachmentID);
         }
 
         public bool CanEdit() { return Connection.CanEdit() || (Connection.User.UserID == CreatorID()); }

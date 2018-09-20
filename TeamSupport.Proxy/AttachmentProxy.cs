@@ -9,19 +9,48 @@ using System.Data.Linq.Mapping;
 
 namespace TeamSupport.Data
 {
+    //Actions
+    //Assets
+    //ChatAttachments
+    //CompanyActivity
+    //ContactActivity
+    //Contacts
+    //CustomerHubLogo
+    //Organizations
+    //ProductVersions
+    //Tasks
+    //UserPhoto
+    //Users
+    //WaterCooler
 
     [DataContract(Namespace = "http://teamsupport.com/")]
     [KnownType(typeof(AttachmentProxy))]
-    public class AttachmentProxy
+    [Table(Name = "Attachments")]
+    [InheritanceMapping(Code = References.Actions, Type = typeof(ActionAttachmentProxy), IsDefault = true)]
+    [InheritanceMapping(Code = References.Assets, Type = typeof(AssetAttachmentProxy))]
+    [InheritanceMapping(Code = References.ChatAttachments, Type = typeof(ChatAttachmentProxy))]
+    [InheritanceMapping(Code = References.CompanyActivity, Type = typeof(CompanyActivityAttachmentProxy))]
+    [InheritanceMapping(Code = References.ContactActivity, Type = typeof(ContactActivityAttachmentProxy))]
+    [InheritanceMapping(Code = References.Contacts, Type = typeof(ContactAttachmentProxy))]
+    [InheritanceMapping(Code = References.CustomerHubLogo, Type = typeof(CustomerHubLogoAttachmentProxy))]
+    [InheritanceMapping(Code = References.Organizations, Type = typeof(OrganizationAttachmentProxy))]
+    [InheritanceMapping(Code = References.ProductVersions, Type = typeof(ProductVersionAttachmentProxy))]
+    [InheritanceMapping(Code = References.Tasks, Type = typeof(TaskAttachmentProxy))]
+    [InheritanceMapping(Code = References.UserPhoto, Type = typeof(UserPhotoAttachmentProxy))]
+    [InheritanceMapping(Code = References.Users, Type = typeof(UserAttachmentProxy))]
+    [InheritanceMapping(Code = References.WaterCooler, Type = typeof(WaterCoolerAttachmentProxy))]
+    [InheritanceMapping(Code = References.Imports, Type = typeof(ImportsAttachmentProxy))]
+    [InheritanceMapping(Code = References.None, Type = typeof(NoneAttachmentProxy))]
+    public abstract class AttachmentProxy
     {
         public AttachmentProxy() { }
-        protected AttachmentProxy(ReferenceType type, int refID)
+        protected AttachmentProxy(References type)
         {
             RefType = type;
-            RefID = RefID;
         }
 
-        [DataMember, Column] public int AttachmentID { get; set; }
+        [DataMember, Column(DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true)]
+        public int AttachmentID { get; set; }
         [DataMember, Column] public int OrganizationID { get; set; }
         [DataMember, Column] public string FileName { get; set; }
         [DataMember, Column] public string FileType { get; set; }
@@ -32,131 +61,150 @@ namespace TeamSupport.Data
         [DataMember, Column] public DateTime DateModified { get; set; }
         [DataMember, Column] public int CreatorID { get; set; }
         [DataMember, Column] public int ModifierID { get; set; }
-        [DataMember, Column] public ReferenceType RefType { get; set; }
+        [DataMember, Column(IsDiscriminator = true)] public References RefType { get; protected set; }
         [DataMember, Column] public int RefID { get; set; }
-        [DataMember, Column] public string CreatorName { get; set; }
+        [DataMember] public string CreatorName { get; set; }
         [DataMember, Column] public bool SentToJira { get; set; }
         [DataMember, Column] public int? ProductFamilyID { get; set; }
-        [DataMember, Column] public string ProductFamily { get; set; }
+        [DataMember] public string ProductFamily { get; set; }
         [DataMember, Column] public bool SentToTFS { get; set; }
         [DataMember, Column] public bool SentToSnow { get; set; }
         [DataMember, Column] public int? FilePathID { get; set; }
 
-        public static AttachmentProxy ClassFactory(ReferenceType type, int refID)
+        public const int AttachmentPathIndex = 3;
+
+        public static AttachmentProxy ClassFactory(References refType)
         {
-            switch(type)
+            switch (refType)
             {
-                case ReferenceType.Actions: return new ActionAttachmentProxy(refID);
-                case ReferenceType.Assets: return new AssetAttachmentProxy(refID);
-                case ReferenceType.ChatAttachments: return new ChatAttachmentProxy(refID);
-                case ReferenceType.CompanyActivity: return new CompanyActivityAttachmentProxy(refID);
-                case ReferenceType.ContactActivity: return new ContactActivityAttachmentProxy(refID);
-                case ReferenceType.Contacts: return new ContactAttachmentProxy(refID);
-                case ReferenceType.CustomerHubLogo: return new CustomerHubLogoAttachmentProxy(refID);
-                case ReferenceType.Organizations: return new OrganizationAttachmentProxy(refID);
-                case ReferenceType.ProductVersions: return new ProductVersionAttachmentProxy(refID);
-                case ReferenceType.Tasks: return new TaskAttachmentProxy(refID);
-                case ReferenceType.UserPhoto: return new UserPhotoAttachmentProxy(refID);
-                case ReferenceType.Users: return new UserAttachmentProxy(refID);
-                case ReferenceType.WaterCooler: return new WaterCoolerAttachmentProxy(refID);
-                default: throw new Exception("bad ReferenceType");
+                case References.Actions: return new ActionAttachmentProxy();
+                case References.Assets: return new AssetAttachmentProxy();
+                case References.ChatAttachments: return new ChatAttachmentProxy();
+                case References.CompanyActivity: return new CompanyActivityAttachmentProxy();
+                case References.ContactActivity: return new ContactActivityAttachmentProxy();
+                case References.Contacts: return new ContactAttachmentProxy();
+                case References.CustomerHubLogo: return new CustomerHubLogoAttachmentProxy();
+                case References.Organizations: return new OrganizationAttachmentProxy();
+                case References.ProductVersions: return new ProductVersionAttachmentProxy();
+                case References.Tasks: return new TaskAttachmentProxy();
+                case References.UserPhoto: return new UserPhotoAttachmentProxy();
+                case References.Users: return new UserAttachmentProxy();
+                case References.WaterCooler: return new WaterCoolerAttachmentProxy();
+                case References.Imports: return new ImportsAttachmentProxy();
+                case References.None: return new NoneAttachmentProxy();
+                default:
+                    if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
+                    throw new Exception($"bad ReferenceType {refType}");
             }
         }
 
         public enum References
         {
+            None = ReferenceType.None,
             Actions = ReferenceType.Actions,
-            Organizations = ReferenceType.Organizations,
-            ProductVersions = ReferenceType.ProductVersions,
-            Users = ReferenceType.Users,
-            Contacts = ReferenceType.Contacts,
             Assets = ReferenceType.Assets,
-            UserPhoto = ReferenceType.UserPhoto,
-            WaterCooler = ReferenceType.WaterCooler,
-            CustomerHubLogo = ReferenceType.CustomerHubLogo,
             ChatAttachments = ReferenceType.ChatAttachments,
-            Tasks = ReferenceType.Tasks,
             CompanyActivity = ReferenceType.CompanyActivity,
             ContactActivity = ReferenceType.ContactActivity,
-        };
-    }
+            Contacts = ReferenceType.Contacts,
+            CustomerHubLogo = ReferenceType.CustomerHubLogo,
+            Organizations = ReferenceType.Organizations,
+            ProductVersions = ReferenceType.ProductVersions,
+            Tasks = ReferenceType.Tasks,
+            UserPhoto = ReferenceType.UserPhoto,
+            Users = ReferenceType.Users,
+            WaterCooler = ReferenceType.WaterCooler,
 
+            Imports = ReferenceType.Imports,
+        };
+
+    }
 
     public class ActionAttachmentProxy : AttachmentProxy
     {
-        public ActionAttachmentProxy(int refID) : base(ReferenceType.Actions, refID) { }
-        public int ActionID { get { return RefID; } }
+        public ActionAttachmentProxy() : base(References.Actions) { }
+        public int ActionID { get { return RefID; } set { RefID = value; } }
     }
 
     public class OrganizationAttachmentProxy : AttachmentProxy
     {
-        public OrganizationAttachmentProxy(int refID) : base(ReferenceType.Organizations, refID) { }
+        public OrganizationAttachmentProxy() : base(References.Organizations) { }
         //public int OrganizationID { get { return RefID; } }   // Hides base class OrganizationID?
     }
 
     public class ContactAttachmentProxy : AttachmentProxy
     {
-        public ContactAttachmentProxy(int refID) : base(ReferenceType.Contacts, refID) { }
+        public ContactAttachmentProxy() : base(References.Contacts) { }
         public int UserID { get { return RefID; } }
     }
 
     public class WaterCoolerAttachmentProxy : AttachmentProxy
     {
-        public WaterCoolerAttachmentProxy(int refID) : base(ReferenceType.WaterCooler, refID) { }
+        public WaterCoolerAttachmentProxy() : base(References.WaterCooler) { }
         public int MessageID { get { return RefID; } }
     }
 
     public class AssetAttachmentProxy : AttachmentProxy
     {
-        public AssetAttachmentProxy(int refID) : base(ReferenceType.Assets, refID) { }
+        public AssetAttachmentProxy() : base(References.Assets) { }
         public int AssetID { get { return RefID; } }
     }
 
     public class ChatAttachmentProxy : AttachmentProxy
     {
-        public ChatAttachmentProxy(int refID) : base(ReferenceType.ChatAttachments, refID) { }
+        public ChatAttachmentProxy() : base(References.ChatAttachments) { }
         public int ChatID { get { return RefID; } }
     }
 
     public class CompanyActivityAttachmentProxy : AttachmentProxy
     {
-        public CompanyActivityAttachmentProxy(int refID) : base(ReferenceType.CompanyActivity, refID) { }
+        public CompanyActivityAttachmentProxy() : base(References.CompanyActivity) { }
     }
 
 
     public class ContactActivityAttachmentProxy : AttachmentProxy
     {
-        public ContactActivityAttachmentProxy(int refID) : base(ReferenceType.ContactActivity, refID) { }
+        public ContactActivityAttachmentProxy() : base(References.ContactActivity) { }
     }
 
 
     public class CustomerHubLogoAttachmentProxy : AttachmentProxy
     {
-        public CustomerHubLogoAttachmentProxy(int refID) : base(ReferenceType.CustomerHubLogo, refID) { }
+        public CustomerHubLogoAttachmentProxy() : base(References.CustomerHubLogo) { }
     }
 
 
     public class ProductVersionAttachmentProxy : AttachmentProxy
     {
-        public ProductVersionAttachmentProxy(int refID) : base(ReferenceType.ProductVersions, refID) { }
+        public ProductVersionAttachmentProxy() : base(References.ProductVersions) { }
     }
-
 
     public class TaskAttachmentProxy : AttachmentProxy
     {
-        public TaskAttachmentProxy(int refID) : base(ReferenceType.Tasks, refID) { }
+        public TaskAttachmentProxy() : base(References.Tasks) { }
+        public int TaskID { get { return RefID; } }
     }
 
 
     public class UserPhotoAttachmentProxy : AttachmentProxy
     {
-        public UserPhotoAttachmentProxy(int refID) : base(ReferenceType.UserPhoto, refID) { }
+        public UserPhotoAttachmentProxy() : base(References.UserPhoto) { }
     }
 
 
     public class UserAttachmentProxy : AttachmentProxy
     {
-        public UserAttachmentProxy(int refID) : base(ReferenceType.Users, refID) { }
+        public UserAttachmentProxy() : base(References.Users) { }
+    }
+
+    public class ImportsAttachmentProxy : AttachmentProxy
+    {
+        public ImportsAttachmentProxy() : base(References.Imports) { }
+    }
+
+    public class NoneAttachmentProxy : AttachmentProxy
+    {
+        public NoneAttachmentProxy() : base(References.None) { }
     }
 
 }

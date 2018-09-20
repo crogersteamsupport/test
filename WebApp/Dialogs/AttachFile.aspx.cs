@@ -18,7 +18,7 @@ using System.IO;
 public partial class Dialogs_AttachFile : BaseDialogPage
 {
   private int _refID = -1;
-  private ReferenceType _refType;
+  private AttachmentProxy.References _refType;
 
   protected override void OnLoad(EventArgs e)
   {
@@ -27,7 +27,7 @@ public partial class Dialogs_AttachFile : BaseDialogPage
     _manager.AjaxSettings.Clear();
 
     _refID = int.Parse(Request["RefID"]);
-    _refType = (ReferenceType)int.Parse(Request["RefType"]);
+    _refType = (AttachmentProxy.References)int.Parse(Request["RefType"]);
 
   }
 
@@ -67,7 +67,7 @@ public partial class Dialogs_AttachFile : BaseDialogPage
 
     switch (_refType)
     {
-      case ReferenceType.Organizations:
+      case AttachmentProxy.References.Organizations:
         folderName = "OrganizationAttachments";
         break;
       default:

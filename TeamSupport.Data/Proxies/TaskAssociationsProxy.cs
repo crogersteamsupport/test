@@ -13,9 +13,9 @@ namespace TeamSupport.Data
   {
     public TaskAssociationProxy GetProxy()
     {
-      TaskAssociationProxy result = new TaskAssociationProxy();
+      TaskAssociationProxy result = new TaskAssociationProxy(RefType);
       result.CreatorID = this.CreatorID;
-      result.RefType = this.RefType;
+      //result.RefType = this.;
       result.RefID = this.RefID;
       result.TaskID = this.TaskID;
        

@@ -61,10 +61,6 @@
       <Project>{8f3f388c-10f5-45d4-9f4c-471236dc14c0}</Project>
       <Name>TeamSupport.Proxy</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TeamSupport.WebUtils\TeamSupport.WebUtils.csproj">
-      <Project>{7beb5c4f-414e-4660-904c-6407a3bc3acf}</Project>
-      <Name>TeamSupport.WebUtils</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

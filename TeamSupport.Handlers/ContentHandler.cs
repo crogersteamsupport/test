@@ -32,6 +32,8 @@ using System.Drawing.Text;
 using System.Collections.Specialized;
 using System.Dynamic;
 using PusherServer;
+using TeamSupport.ModelAPI;
+using TeamSupport.IDTree;
 
 
 namespace TeamSupport.Handlers
@@ -923,32 +925,6 @@ namespace TeamSupport.Handlers
             return newImage;
         }
 
-        private void OpenActionAttachment(HttpContext context, HttpBrowserCapabilities browser, AttachmentProxy proxy)
-        {
-            if (!File.Exists(proxy.Path))
-            {
-                context.Response.Write("Invalid attachment.");
-                context.Response.ContentType = "text/html";
-                return;
-            }
-
-            string openType = "inline";
-            string fileType = proxy.FileType;
-            if (browser.Browser == "IE")
-            {
-                string lower = fileType.ToLower();
-                if (lower.IndexOf("audio") > -1)
-                    openType = "attachment";
-                else if (lower.IndexOf("-zip") > -1 || lower.IndexOf("/zip") > -1 || lower.IndexOf("zip-") > -1)
-                    fileType = "application/octet-stream";
-            }
-
-            context.Response.AddHeader("Content-Disposition", openType + "; filename=\"" + proxy.FileName + "\"");
-            context.Response.AddHeader("Content-Length", proxy.FileSize.ToString());
-            context.Response.ContentType = fileType;
-            context.Response.WriteFile(proxy.Path);
-        }
-
         private void ProcessAttachment(HttpContext context, string attachmentID)
         {
             //http://127.0.0.1/tsdev/dc/attachments/7401
@@ -958,124 +934,26 @@ namespace TeamSupport.Handlers
             if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
             // the following is a big hack to get it out fast.... Please do not consider robust code.
             int id;
-            if (int.TryParse(attachmentID, out id))
+            bool fromGuid = false;
+            if (!int.TryParse(attachmentID, out id))
             {
-                //if (IDTree.ConnectionContext.ActionAttachmentsEnabled)  // open action attachment by ID
-                //{
-                //    AttachmentProxy proxy = ModelAPI.Model_API.Read<AttachmentProxy>(id);
-                //    OpenActionAttachment(context, browser, proxy);
-                //    return;
-                //}
-
-                TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, id);
-                Organization organization = Organizations.GetOrganization(attachment.Collection.LoginUser, attachment.OrganizationID);
-                User user = null;
-                bool isAuthenticated = attachment.OrganizationID == TSAuthentication.OrganizationID;
-
-
-                if (isAuthenticated)
-                {
-                    user = Users.GetUser(attachment.Collection.LoginUser, TSAuthentication.UserID);
-                }
-                else
-                {
-                    try
-                    {
-                        FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(context.Request.Cookies["Portal_Session"].Value);
-                        int userID = int.Parse(authTicket.UserData.Split('|')[0]);
-                        user = Users.GetUser(attachment.Collection.LoginUser, userID);
-
-
-                        if (attachment.RefType == ReferenceType.Actions)
-                        {
-                            TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
-                            Ticket ticket = Tickets.GetTicket(action.Collection.LoginUser, action.TicketID);
-                            if (action.IsVisibleOnPortal)
-                            {
-                                if (ticket.IsVisibleOnPortal)
-                                {
-                                    Organizations organizations = new Organizations(attachment.Collection.LoginUser);
-                                    organizations.LoadByTicketID(ticket.TicketID);
-                                    isAuthenticated = organizations.FindByOrganizationID(user.OrganizationID) != null;
-                                }
-                            }
-
-                            if (!isAuthenticated)
-                            {
-                                isAuthenticated = ticket.IsKnowledgeBase && ticket.IsVisibleOnPortal && action.IsKnowledgeBase && action.IsVisibleOnPortal;
-                            }
-                        }
-
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
-
-                if (!isAuthenticated)
-                {
-                    context.Response.Write("Unauthorized");
-                    context.Response.ContentType = "text/html";
-                    return;
-                }
-
-                if (!File.Exists(attachment.Path))
-                {
-                    context.Response.Write("Invalid attachment.");
-                    context.Response.ContentType = "text/html";
-                    return;
-                }
-
-                string openType = "inline";
-                string fileType = attachment.FileType;
-
-                if (browser.Browser == "IE")
-                {
-                    if (attachment.FileType.ToLower().IndexOf("audio") > -1)
-                    {
-                        openType = "attachment";
-                    }
-                    else if (attachment.FileType.ToLower().IndexOf("-zip") > -1 ||
-                                attachment.FileType.ToLower().IndexOf("/zip") > -1 ||
-                                attachment.FileType.ToLower().IndexOf("zip-") > -1)
-                    {
-                        fileType = "application/octet-stream";
-                    }
-                }
-
-                context.Response.AddHeader("Content-Disposition", openType + "; filename=\"" + attachment.FileName + "\"");
-                context.Response.AddHeader("Content-Length", attachment.FileSize.ToString());
-                context.Response.ContentType = fileType;
-                context.Response.WriteFile(attachment.Path);
-
-
-            }
-
-            else
-            {
-                //if (IDTree.ConnectionContext.ActionAttachmentsEnabled)  // open action attachment by Guid
-                //{
-                //    int idFromGuid = ModelAPI.Model_API.AttachmentIDFromGUID(Guid.Parse(attachmentID));
-                //    AttachmentProxy proxy = ModelAPI.Model_API.Read<AttachmentProxy>(idFromGuid);
-                //    OpenActionAttachment(context, browser, proxy);
-                //    return;
-                //}
-
                 SqlCommand command = new SqlCommand();
                 command.CommandText = "SELECT AttachmentID FROM Attachments WHERE AttachmentGUID=@AttachmentGUID";
                 command.Parameters.AddWithValue("@AttachmentGUID", Guid.Parse(attachmentID));
 
                 id = SqlExecutor.ExecuteInt(LoginUser.Anonymous, command);
+                fromGuid = true;
+            }
 
-                TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, id);
-                Organization organization = Organizations.GetOrganization(attachment.Collection.LoginUser, attachment.OrganizationID);
-                User user = null;
+                AttachmentProxy attachment = Model_API.Read<AttachmentProxy>(id);   // ConnectionContext.ActionAttachmentsEnabled
+
+                //User user = null;
                 bool isAuthenticated = attachment.OrganizationID == TSAuthentication.OrganizationID;
 
 
                 if (isAuthenticated)
                 {
-                    user = Users.GetUser(attachment.Collection.LoginUser, TSAuthentication.UserID);
+                    //user = Users.GetUser(attachment.Collection.LoginUser, TSAuthentication.UserID);
                 }
                 else
                 {
@@ -1083,20 +961,20 @@ namespace TeamSupport.Handlers
                     {
                         FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(context.Request.Cookies["Portal_Session"].Value);
                         int userID = int.Parse(authTicket.UserData.Split('|')[0]);
-                        user = Users.GetUser(attachment.Collection.LoginUser, userID);
+                        UserProxy user = Model_API.Read<UserProxy>(userID);
 
-
-                        if (attachment.RefType == ReferenceType.Actions)
+                        ActionAttachmentProxy actionAttachment = attachment as ActionAttachmentProxy;
+                        if (actionAttachment != null)
                         {
-                            TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
-                            Ticket ticket = Tickets.GetTicket(action.Collection.LoginUser, action.TicketID);
+                            ActionProxy action = Model_API.Read<ActionProxy>(actionAttachment.ActionID);
+                            TicketProxy ticket = Model_API.Read<TicketProxy>(action.TicketID);
                             if (action.IsVisibleOnPortal)
                             {
                                 if (ticket.IsVisibleOnPortal)
                                 {
-                                    Organizations organizations = new Organizations(attachment.Collection.LoginUser);
-                                    organizations.LoadByTicketID(ticket.TicketID);
-                                    isAuthenticated = organizations.FindByOrganizationID(user.OrganizationID) != null;
+                                    TicketModel ticketModel = Model_API.GetIDTree<TicketModel>(ticket.TicketID);
+                                    OrganizationTicketModel[] orgs = OrganizationTicketModel.GetOrganizationTickets(ticketModel);
+                                    isAuthenticated = orgs.Where(o => o.Organization.OrganizationID == user.OrganizationID).Any();
                                 }
                             }
 
@@ -1112,9 +990,13 @@ namespace TeamSupport.Handlers
                     }
                 }
 
+            if (fromGuid)
+            {
+                OrganizationProxy organization = Model_API.Read<OrganizationProxy>(attachment.OrganizationID);
                 isAuthenticated = isAuthenticated || organization.AllowUnsecureAttachmentViewing;
+            }
 
-                if (!isAuthenticated)
+            if (!isAuthenticated)
                 {
                     context.Response.Write("Unauthorized");
                     context.Response.ContentType = "text/html";
@@ -1149,12 +1031,6 @@ namespace TeamSupport.Handlers
                 context.Response.AddHeader("Content-Length", attachment.FileSize.ToString());
                 context.Response.ContentType = fileType;
                 context.Response.WriteFile(attachment.Path);
-
-            }
-
-
-
-
         }
 
         private void ProcessImportLog(HttpContext context, int importID)

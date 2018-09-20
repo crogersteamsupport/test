@@ -27,6 +27,18 @@ namespace TeamSupport.DataAPI
         static string ToSql(DateTime dateTime) { return dateTime.ToString("yyyy-MM-dd HH:mm:ss.fff"); }
         static char ToSql(bool value) { return value ? '1' : '0'; }
 
+        static void CreateAttachment(IDNode idNode, AttachmentProxy proxy, int refID)
+        {
+            proxy.DateCreated = proxy.DateModified = DateTime.UtcNow;
+            proxy.CreatorID = proxy.ModifierID = idNode.Connection.UserID;
+            proxy.RefID = refID;
+            proxy.OrganizationID = idNode.Connection.OrganizationID;
+
+            Table<AttachmentProxy> table = idNode.Connection._db.GetTable<AttachmentProxy>();
+            table.InsertOnSubmit(proxy);
+            idNode.Connection._db.SubmitChanges();
+        }
+
         /// <summary>
         /// CREATE - create proxy child for model parent
         /// </summary>
@@ -39,18 +51,16 @@ namespace TeamSupport.DataAPI
             int creatorID = idNode.Connection.UserID;
 
             string command = String.Empty;
-            switch (typeof(TProxy).Name) // alphabetized list
+
+            string typeName = tProxy.GetType().Name;
+            switch (typeName) // alphabetized list
             {
-                case "ActionAttachment":
+                case "ActionAttachmentProxy":   // create action attachment
                     {
-                        ActionModel model = (ActionModel)idNode;
-                        AttachmentProxy proxy = tProxy as AttachmentProxy;
-                        string query = "SET Context_Info 0x55555; " +
-                            "INSERT INTO ActionAttachments(OrganizationID, FileName, FileType, FileSize, Path, DateCreated, DateModified, CreatorID, ModifierID, ActionID, SentToJira, SentToTFS, SentToSnow, FilePathID) " +
-                            $"VALUES({model.Connection.Organization.OrganizationID}, {{0}}, {{1}}, {proxy.FileSize}, {{2}}, '{ToSql(proxy.DateCreated)}', '{ToSql(proxy.DateModified)}', {proxy.CreatorID}, {proxy.ModifierID}, {model.ActionID}, {ToSql(proxy.SentToJira)}, {ToSql(proxy.SentToTFS)}, {ToSql(proxy.SentToSnow)}, {proxy.FilePathID})" +
-                            "SELECT SCOPE_IDENTITY()";
-                        decimal value = model.ExecuteQuery<decimal>(query, proxy.FileName, proxy.FileType, proxy.Path).Min();
-                        proxy.AttachmentID = Decimal.ToInt32(value);
+                        ActionModel model = idNode as ActionModel;
+                        ActionAttachmentProxy proxy = tProxy as ActionAttachmentProxy;
+                        CreateAttachment(idNode, proxy, model.ActionID);
+                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
                     }
                     break;
                 case "ActionProxy":
@@ -103,6 +113,14 @@ namespace TeamSupport.DataAPI
                                 $"SELECT 17, {model.TicketID}, {proxy.UserID}, '{now}','{now}', {creatorID}, {creatorID} ";
                     }
                     break;
+                case "TaskAttachmentProxy":
+                    {
+                        TaskModel model = idNode as TaskModel;
+                        TaskAttachmentProxy proxy = tProxy as TaskAttachmentProxy;
+                        CreateAttachment(idNode, proxy, model.TaskID);
+                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
+                    }
+                    break;
                 case "TicketProxy":
                     {
                         UserModel model = (UserModel)idNode;
@@ -142,6 +160,46 @@ namespace TeamSupport.DataAPI
             return result;
         }
 
+        /// <summary>
+        /// Read a row from a RefType table and get back the type safe proxy
+        /// </summary>
+        public static TProxy ReadRefTypeProxy<TProxy>(ConnectionContext connection, int id) where TProxy : class
+        {
+            TProxy tProxy = default(TProxy);
+            switch (typeof(TProxy).Name) // alphabetized list
+            {
+                case "AttachmentProxy": // action
+                    {
+                        Table<AttachmentProxy> table = connection._db.GetTable<AttachmentProxy>();
+                        tProxy = table.Where(a => a.AttachmentID == id).First() as TProxy;
+                    }
+                    break;
+                default:
+                    if (Debugger.IsAttached) Debugger.Break();
+                    break;
+            }
+            return tProxy;
+        }
+
+        public static TProxy ReadDiscrimator<TProxy>(ConnectionContext connection, int id) where TProxy : class
+        {
+            TProxy tProxy = default(TProxy);
+            switch (typeof(TProxy).Name) // alphabetized list
+            {
+
+                case "AttachmentProxy": // read all attachment types
+                    {
+                        Table<AttachmentProxy> table = connection._db.GetTable<AttachmentProxy>();
+                        tProxy = table.Where(a => a.AttachmentID == id).First() as TProxy;
+                    }
+                    break;
+                default:
+                    if (Debugger.IsAttached) Debugger.Break();
+                    break;
+            }
+            return tProxy;
+        }
+
         /// <summary> 
         /// READ - read proxy given a model 
         /// </summary>
@@ -173,18 +231,18 @@ namespace TeamSupport.DataAPI
                         tProxy = ticket.ExecuteQuery<ActionProxy>(query).ToArray() as TProxy;
                     }
                     break;
-                case "AttachmentProxy": // action attachment (organization attachments?)
+                case "AttachmentProxy": // read all attachment types
                     {
-                        ActionAttachmentModel attachment = (ActionAttachmentModel)node;
-                        string query = SelectActionAttachmentProxy + $"WHERE ActionAttachmentID = {attachment.ActionAttachmentID}";
-                        tProxy = attachment.ExecuteQuery<AttachmentProxy>(query).First() as TProxy;
+                        AttachmentModel attachment = (AttachmentModel)node;
+                        Table<AttachmentProxy> table = attachment.Connection._db.GetTable<AttachmentProxy>();
+                        tProxy = table.Where(a => a.AttachmentID == attachment.AttachmentID).First() as TProxy;
                     }
                     break;
                 case "AttachmentProxy[]": // action attachments
                     {
                         ActionModel action = (ActionModel)node;
-                        string query = SelectActionAttachmentProxy + $"WHERE ActionID = {action.ActionID}";
-                        tProxy = action.ExecuteQuery<AttachmentProxy>(query).ToArray() as TProxy;
+                        Table<AttachmentProxy> table = node.Connection._db.GetTable<AttachmentProxy>();
+                        tProxy = table.Where(a => a.RefID == action.ActionID && a.RefType == AttachmentProxy.References.Actions).ToArray() as TProxy;
                     }
                     break;
                 case "ReminderProxy":
@@ -342,49 +400,49 @@ namespace TeamSupport.DataAPI
             string command = String.Empty;
             switch (node.GetType().Name) // alphabetized list
             {
-                case "ActionAttachmentNode":
+                case "AttachmentModel":
                     {
-                        ActionAttachmentModel model = (ActionAttachmentModel)node;
-                        command = $"DELETE FROM ActionAttachments WHERE ActionAttachmentID = {model.ActionAttachmentID}";
+                        AttachmentModel model = (AttachmentModel)node;
+                        command = $"DELETE FROM Attachments WHERE AttachmentID = {model.AttachmentID}";
                     }
                     break;
-                case "AssetTicketNode":
+                case "AssetTicketModel":
                     {
                         AssetTicketModel model = (AssetTicketModel)node;
                         //command = $"DELETE FROM AssetTickets WHERE TicketID = {model.AssetID} AND AssetID = {model.AssetID}";
                     }
                     break;
-                case "UserTicketNode":
+                case "UserTicketModel":
                     {
                         UserTicketModel model = (UserTicketModel)node;
                         //command = $"DELETE FROM UserTickets Where TicketID={model.Ticket.TicketID} AND UserId = {model.UserID}";
                     }
                     break;
-                case "OrganizationTicketNode":
+                case "OrganizationTicketModel":
                     {
                         OrganizationTicketModel model = (OrganizationTicketModel)node;
                         command = $"DELETE FROM OrganizationTickets WHERE TicketID={model.Ticket.TicketID} AND OrganizationId = {model.Organization.OrganizationID}";
                     }
                     break;
-                case "TagLinkNode":
+                case "TagLinkModel":
                     {
                         TagLinkModel model = (TagLinkModel)node;
                         command = $"DELETE FROM TagLinks WHERE TagLinkID={model.TagLinkID}";
                     }
                     break;
-                case "TicketNode":
+                case "TicketModel":
                     {
                         TicketModel model = (TicketModel)node;
                         command = $"DELETE FROM Tickets WHERE TicketID={model.TicketID}";
                     }
                     break;
-                case "TicketRelationshipNode":
+                case "TicketRelationshipModel":
                     {
                         TicketRelationshipModel model = (TicketRelationshipModel)node;
                         command = $"DELETE FROM TicketRelationships WHERE TicketID={model.TicketRelationshipID}";
                     }
                     break;
-                case "SubscriptionNode":
+                case "SubscriptionModel":
                     {
                         SubscriptionModel model = (SubscriptionModel)node;
                         command = $"DELETE FROM Subscriptions WHERE RefType=17 AND RefID={model.Ticket.TicketID} AND UserID={model.User.UserID}";
@@ -410,67 +468,6 @@ namespace TeamSupport.DataAPI
         //    return $"{fullName.FirstName} {fullName.LastName}";
         //}
 
-
-        #region ActionAttachments
-
-
-        // load action attachments into attachment proxy
-        const string SelectActionAttachmentProxy = "SELECT a.*, a.ActionAttachmentID as AttachmentID, a.ActionAttachmentGUID as AttachmentGUID, (u.FirstName + ' ' + u.LastName) AS CreatorName, a.ActionID as RefID " +
-            "FROM ActionAttachments a LEFT JOIN Users u ON u.UserID = a.CreatorID ";
-
-        /// <summary> Read most recent filenames for this ticket </summary>
-        public static void ReadActionAttachmentsForTicket(TicketModel ticketModel, ActionAttachmentsByTicketID ticketActionAttachments, out AttachmentProxy[] mostRecentByFilename)
-        {
-            switch (ticketActionAttachments)
-            {
-                case ActionAttachmentsByTicketID.ByFilename:
-                    {
-                        string query = SelectActionAttachmentProxy + $"WHERE ActionID IN (SELECT ActionID FROM Actions WHERE TicketID = {ticketModel.TicketID}) ORDER BY DateCreated DESC";
-                        AttachmentProxy[] allAttachments = ticketModel.ExecuteQuery<AttachmentProxy>(query).ToArray();
-                        List<AttachmentProxy> tmp = new List<AttachmentProxy>();
-                        foreach (AttachmentProxy attachment in allAttachments)
-                        {
-                            if (!tmp.Exists(a => a.FileName == attachment.FileName))
-                                tmp.Add(attachment);
-                        }
-                        mostRecentByFilename = tmp.ToArray();
-                    }
-                    break;
-                case ActionAttachmentsByTicketID.KnowledgeBase:
-                    {
-                        string query = SelectActionAttachmentProxy + $"JOIN Actions ac ON a.ActionID = ac.ActionID WHERE ac.TicketID = {ticketModel.TicketID} AND ac.IsKnowledgeBase = 1";
-                        mostRecentByFilename = ticketModel.ExecuteQuery<AttachmentProxy>(query).ToArray();
-                    }
-                    break;
-                default:
-                    mostRecentByFilename = null;
-                    break;
-            }
-        }
-
-
-        ///// <summary> Read most recent filenames for this ticket </summary>
-        //public static void ReadActionAttachmentsByFilenameAndTicket(TicketModel ticketModel, out AttachmentProxy[] mostRecentByFilename)
-        //{
-        //    string query = SelectActionAttachmentProxy + $"WHERE ActionID IN (SELECT ActionID FROM Actions WHERE TicketID = {ticketModel.TicketID}) ORDER BY DateCreated DESC";
-        //    AttachmentProxy[] allAttachments = ticketModel.ExecuteQuery<AttachmentProxy>(query).ToArray();
-        //    List<AttachmentProxy> tmp = new List<AttachmentProxy>();
-        //    foreach (AttachmentProxy attachment in allAttachments)
-        //    {
-        //        if (!tmp.Exists(a => a.FileName == attachment.FileName))
-        //            tmp.Add(attachment);
-        //    }
-        //    mostRecentByFilename = tmp.ToArray();
-        //}
-
-        ///// <summary> Read most recent filenames for this ticket </summary>
-        //public static void ReadKBActionAttachmentsByTicket(TicketModel ticketModel, out AttachmentProxy[] mostRecentByFilename)
-        //{
-        //    string query = SelectActionAttachmentProxy + $"JOIN Actions ac ON a.ActionID = ac.ActionID WHERE ac.TicketID = {ticketModel.TicketID} AND ac.IsKnowledgeBase = 1";
-        //    mostRecentByFilename = ticketModel.ExecuteQuery<AttachmentProxy>(query).ToArray();
-        //}
-
-        #endregion
 
 
         #region Log

@@ -27,6 +27,7 @@ using System.Diagnostics;
 using OpenTokSDK;
 using Jira = TeamSupport.JIRA;
 using NR = NewRelic.Api;
+using TeamSupport.ModelAPI;
 
 namespace TSWebServices
 {
@@ -3158,11 +3159,11 @@ WHERE t.TicketID = @TicketID
             UsersViewItem creator = UsersView.GetUsersViewItem(loginUser, action.CreatorID);
             if (creator != null) actionInfo.Creator = new UserInfo(creator);
 
-            //if (TeamSupport.IDTree.ConnectionContext.ActionAttachmentsEnabled)  // Read action attachments
-            //{
-            //    actionInfo.Attachments = Model_API.Read<AttachmentProxy[]>(action.ActionID);
-            //}
-            //else
+            if (TeamSupport.IDTree.ConnectionContext.ActionAttachmentsEnabled)  // Read action attachments
+            {
+                actionInfo.Attachments = Model_API.Read<AttachmentProxy[]>(action.ActionID);
+            }
+            else
                 actionInfo.Attachments = action.GetAttachments().GetAttachmentProxies();
             return actionInfo;
         }
@@ -3592,14 +3593,14 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public void DeleteAttachment(int attachmentID)
         {
-            //if (TeamSupport.IDTree.ConnectionContext.ActionAttachmentsEnabled)  // delete action attachment
-            //{
-            //    Model_API.DeleteActionAttachment(attachmentID);
-            //    return;
-            //}
+            if (TeamSupport.IDTree.ConnectionContext.ActionAttachmentsEnabled)  // delete action attachment
+            {
+                AttachmentAPI.DeleteAttachment(AttachmentProxy.References.None, attachmentID);
+                return;
+            }
 
             Attachment attachment = Attachments.GetAttachment(TSAuthentication.GetLoginUser(), attachmentID);
-            if (attachment == null || attachment.RefType != ReferenceType.Actions) return;
+            if (attachment == null || attachment.RefType != AttachmentProxy.References.Actions) return;
             TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
             if (!CanEditAction(action)) return;
             attachment.DeleteFile();
