@@ -38,6 +38,12 @@ namespace TeamSupport.ServiceLibrary
 			public string id { get; set; }
 		}
 
+		public class Tag
+		{
+			public string name { get; set; }
+			public string id { get; set; }
+		}
+
 		public class Data
 		{
 			public string id { get; set; }
@@ -82,7 +88,7 @@ namespace TeamSupport.ServiceLibrary
 			public string Shipping_Code { get; set; }
 			public string Shipping_State { get; set; }
 			public string Shipping_Country { get; set; }
-			public List<object> Tag { get; set; }
+			public List<Tag> Tag { get; set; }
 			public CreatedBy Created_By { get; set; }
 			public string Fax { get; set; }
 			public int Annual_Revenue { get; set; }
