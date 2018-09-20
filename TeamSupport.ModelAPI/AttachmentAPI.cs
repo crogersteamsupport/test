@@ -34,7 +34,7 @@ namespace TeamSupport.ModelAPI
                 using (ConnectionContext connection = new ConnectionContext())
                 {
                     // valid ID to add attachment
-                    IAttachedTo model = ClassFactory(connection, pathMap._refType, refID);
+                    IAttachmentDestination model = ClassFactory(connection, pathMap._refType, refID);
                     HttpFileCollection files = context.Request.Files;
                     for (int i = 0; i < files.Count; i++)
                     {
@@ -45,7 +45,7 @@ namespace TeamSupport.ModelAPI
                         AttachmentProxy proxy = AttachmentProxy.ClassFactory(pathMap._refType);  // construct the proxy
                         proxy.RefID = refID;
                         InitializeProxy(context, connection, attachmentFile, proxy);
-                        Data_API.Create(model.AsIDNode, proxy);  // save proxy to DB
+                        Data_API.Create((model as IDNode), proxy);  // save proxy to DB
                         result.Add(proxy);
                     }
                 }
@@ -59,7 +59,7 @@ namespace TeamSupport.ModelAPI
             return result;
         }
 
-        static IAttachedTo ClassFactory(ConnectionContext connection, AttachmentProxy.References refType, int refID)
+        static IAttachmentDestination ClassFactory(ConnectionContext connection, AttachmentProxy.References refType, int refID)
         {
             switch (refType)
             {
@@ -96,7 +96,7 @@ namespace TeamSupport.ModelAPI
                             {
                                 AssetAttachmentProxy proxy = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, attachmentID) as AssetAttachmentProxy;
                                 AssetModel model = new AssetModel(connection, proxy.AssetID);
-                                Data_API.Delete(new AssetAttachmentModel(model, attachmentID));
+                                Data_API.Delete(new AttachmentModel(model, attachmentID));
                                 AttachmentFile file = new AttachmentFile(model, proxy as AttachmentProxy);
                                 file.Delete();
                             }
@@ -107,7 +107,7 @@ namespace TeamSupport.ModelAPI
                                 ActionModel model = new ActionModel(connection, proxy.ActionID);
                                 if (!model.CanEdit())
                                     return;
-                                Data_API.Delete(new ActionAttachmentModel(model, attachmentID));
+                                Data_API.Delete(new AttachmentModel(model, attachmentID));
                                 AttachmentFile file = new AttachmentFile(model, proxy as AttachmentProxy);
                                 file.Delete();
                             }
@@ -116,7 +116,7 @@ namespace TeamSupport.ModelAPI
                             {
                                 TaskAttachmentProxy proxy = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, attachmentID) as TaskAttachmentProxy;
                                 TaskModel model = new TaskModel(connection, proxy.TaskID);
-                                Data_API.Delete(new TaskAttachmentModel(model, attachmentID));
+                                Data_API.Delete(new AttachmentModel(model, attachmentID));
                                 AttachmentFile file = new AttachmentFile(model, proxy as AttachmentProxy);
                                 file.Delete();
                             }

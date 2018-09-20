@@ -26,8 +26,8 @@ namespace TeamSupport.ModelAPI
                 {
                     switch (typeof(T).Name)
                     {
-                        case "ActionAttachmentModel":
-                            return new ActionAttachmentModel(connection, id) as T;
+                        case "TicketModel":
+                            return new TicketModel(connection, id) as T;
                     }
                 }
             }
@@ -121,7 +121,7 @@ namespace TeamSupport.ModelAPI
                             //t = DataAPI.DataAPI.Read<T>(new TicketNode(connection, id));
                             break;
                         case "AttachmentProxy":
-                            t = Data_API.Read<T>(new ActionAttachmentModel(connection, id));
+                            t = Data_API.ReadDiscrimator<AttachmentProxy>(connection, id) as T;
                             break;
                         case "AttachmentProxy[]":
                             t = Data_API.Read<T>(new ActionModel(connection, id));
@@ -205,41 +205,41 @@ namespace TeamSupport.ModelAPI
         /// <summary> 
         /// DELETE
         /// </summary>
-        public static void Delete<T>(T proxy)
-        {
-            try
-            {
-                using (ConnectionContext connection = new ConnectionContext())
-                {
-                    switch (typeof(T).Name)
-                    {
-                        case "ActionProxy":
-                            ActionProxy actionProxy = proxy as ActionProxy;
-                            Data_API.Delete(new ActionModel(connection, actionProxy.ActionID));
-                            break;
-                        case "AttachmentProxy":
-                            AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
-                            Data_API.Delete(new ActionAttachmentModel(connection, attachmentProxy.AttachmentID));
-                            break;
-                    }
-                }
-            }
-            catch (AuthenticationException ex)
-            {
-                // TODO - tell user they don't have permission
-                Data_API.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
-            }
-            catch (System.Data.ConstraintException ex)
-            {
-                // TODO - data integrity failure
-                Data_API.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
-            }
-            catch (Exception ex)
-            {
-                //int logid = DataAPI.Data_API.LogException(new Proxy.AuthenticationModel(authenticationTicket), ex, "Ticket Merge Exception:" + ex.Source);
-                //return $"Error merging tickets. Exception #{logid}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.";
-            }
-        }
+        //public static void Delete<T>(T proxy)
+        //{
+        //    try
+        //    {
+        //        using (ConnectionContext connection = new ConnectionContext())
+        //        {
+        //            switch (typeof(T).Name)
+        //            {
+        //                case "ActionProxy":
+        //                    ActionProxy actionProxy = proxy as ActionProxy;
+        //                    Data_API.Delete(new ActionModel(connection, actionProxy.ActionID));
+        //                    break;
+        //                case "AttachmentProxy":
+        //                    AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
+        //                    Data_API.Delete(new AttachmentModel(connection, attachmentProxy.AttachmentID));
+        //                    break;
+        //            }
+        //        }
+        //    }
+        //    catch (AuthenticationException ex)
+        //    {
+        //        // TODO - tell user they don't have permission
+        //        Data_API.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
+        //    }
+        //    catch (System.Data.ConstraintException ex)
+        //    {
+        //        // TODO - data integrity failure
+        //        Data_API.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        //int logid = DataAPI.Data_API.LogException(new Proxy.AuthenticationModel(authenticationTicket), ex, "Ticket Merge Exception:" + ex.Source);
+        //        //return $"Error merging tickets. Exception #{logid}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.";
+        //    }
+        //}
 
 
         /// <summary> ??? </summary>

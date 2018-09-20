@@ -18,8 +18,6 @@ namespace TeamSupport.IDTree
             Connection = request;
         }
 
-        public IDNode AsIDNode { get { return this; } }
-
         protected IDNode(IDNode node) //: this(node.Request)
         {
             Connection = node.Connection;
@@ -50,7 +48,7 @@ namespace TeamSupport.IDTree
             throw new System.Data.ConstraintException(String.Format($"{query} not found")); // error - a join of the records to authentication just doesn't add up
         }
 
-        public static IAttachedTo GetModel<T>(ConnectionContext connection, T proxy) where T : class
+        public static IAttachmentDestination GetModel<T>(ConnectionContext connection, T proxy) where T : class
         {
             switch (proxy.GetType().Name)
             {

@@ -60,7 +60,7 @@ namespace TeamSupport.DataAPI
                         ActionModel model = idNode as ActionModel;
                         ActionAttachmentProxy proxy = tProxy as ActionAttachmentProxy;
                         CreateAttachment(idNode, proxy, model.ActionID);
-                        result = new ActionAttachmentModel(model, proxy.AttachmentID);    // disable Verify?
+                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
                     }
                     break;
                 case "ActionProxy":
@@ -118,7 +118,7 @@ namespace TeamSupport.DataAPI
                         TaskModel model = idNode as TaskModel;
                         TaskAttachmentProxy proxy = tProxy as TaskAttachmentProxy;
                         CreateAttachment(idNode, proxy, model.TaskID);
-                        result = new TaskAttachmentModel(model, proxy.AttachmentID);    // disable Verify?
+                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
                     }
                     break;
                 case "TicketProxy":
@@ -181,6 +181,24 @@ namespace TeamSupport.DataAPI
             return tProxy;
         }
 
+        public static TProxy ReadDiscrimator<TProxy>(ConnectionContext connection, int id) where TProxy : class
+        {
+            TProxy tProxy = default(TProxy);
+            switch (typeof(TProxy).Name) // alphabetized list
+            {
+
+                case "AttachmentProxy": // read all attachment types
+                    {
+                        Table<AttachmentProxy> table = connection._db.GetTable<AttachmentProxy>();
+                        tProxy = table.Where(a => a.AttachmentID == id).First() as TProxy;
+                    }
+                    break;
+                default:
+                    if (Debugger.IsAttached) Debugger.Break();
+                    break;
+            }
+            return tProxy;
+        }
 
         /// <summary> 
         /// READ - read proxy given a model 
@@ -382,9 +400,7 @@ namespace TeamSupport.DataAPI
             string command = String.Empty;
             switch (node.GetType().Name) // alphabetized list
             {
-                case "ActionAttachmentModel":
-                case "TaskAttachmentModel":
-                case "ContactAttachmentModel":
+                case "AttachmentModel":
                     {
                         AttachmentModel model = (AttachmentModel)node;
                         command = $"DELETE FROM Attachments WHERE AttachmentID = {model.AttachmentID}";

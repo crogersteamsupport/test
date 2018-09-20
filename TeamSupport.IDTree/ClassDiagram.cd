@@ -3,7 +3,7 @@
   <Class Name="TeamSupport.IDTree.ActionModel" Collapsed="true">
     <Position X="15" Y="5.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ACAAACAAIAAgAQACgAAAAAAAAAgAAAAQAICAAAAQAAA=</HashCode>
+      <HashCode>ACAAACAAIAAgAQACgAAAAAAAAAAAAAAQAICAAAAQAAA=</HashCode>
       <FileName>ActionModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -12,7 +12,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="TeamSupport.IDTree.AssetModel" Collapsed="true">
-    <Position X="11.25" Y="10" Width="1.5" />
+    <Position X="6.25" Y="8.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ACAAAAAAAAAAAQAAAAACAABAAAAAAAAAAAAAAAAAIAA=</HashCode>
       <FileName>AssetModel.cs</FileName>
@@ -23,7 +23,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="TeamSupport.IDTree.AssetTicketModel" Collapsed="true">
-    <Position X="11.25" Y="8.25" Width="1.5" />
+    <Position X="12.5" Y="8.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAQACQAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
       <FileName>AssetTicketModel.cs</FileName>
@@ -34,7 +34,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.IDTree.AttachmentFile" Collapsed="true">
-    <Position X="20" Y="4.5" Width="1.5" />
+    <Position X="18.75" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAACIAAAAAAAAAAAEAABABAABQAABAAAA=</HashCode>
       <FileName>AttachmentFile.cs</FileName>
@@ -77,7 +77,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="TeamSupport.IDTree.OrganizationTicketModel" Collapsed="true">
-    <Position X="7.5" Y="3.25" Width="2" />
+    <Position X="9.25" Y="5.25" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAQACAAAAAAAAAAAAAAAAAAIAAAAAIAA=</HashCode>
       <FileName>OrganizationTicketModel.cs</FileName>
@@ -88,7 +88,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.IDTree.SubscriptionModel" Collapsed="true">
-    <Position X="13.5" Y="0.5" Width="1.5" />
+    <Position X="13.5" Y="0.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAABAAAAAAAAAQACBAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>SubscriptionModel.cs</FileName>
@@ -99,7 +99,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.IDTree.TagLinkModel" Collapsed="true">
-    <Position X="9.25" Y="5.5" Width="1.5" />
+    <Position X="11" Y="6.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAgAUACAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>TagLinkModel.cs</FileName>
@@ -110,7 +110,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.IDTree.TagModel" Collapsed="true">
-    <Position X="9.25" Y="6.75" Width="1.5" />
+    <Position X="7.5" Y="6.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAQAAAAAAAAAAAAAAAQAAAAAAAAAAIAA=</HashCode>
       <FileName>TagModel.cs</FileName>
@@ -120,14 +120,15 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.IDTree.TaskAssociationModel" Collapsed="true">
-    <Position X="15" Y="7.5" Width="1.75" />
+    <Position X="17" Y="7.5" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAEAAAAAAQAAAAAAAAAAAAAAAAAAAEAAAAAAAAA=</HashCode>
       <FileName>TaskAssociationModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="Task" />
     </ShowAsAssociation>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="TeamSupport.IDTree.TicketModel">
     <Position X="12.25" Y="4.25" Width="1.5" />
@@ -200,65 +201,29 @@
     <TypeIdentifier />
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="TeamSupport.IDTree.TicketTaskAssociationModel" Collapsed="true">
-    <Position X="13.25" Y="9" Width="2.25" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAQACAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>TaskAssociationModel.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Ticket" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="TeamSupport.IDTree.AttachmentModelT" Collapsed="true">
-    <Position X="17.5" Y="4.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>ACAAAAAAAAAAAQAAAAAAIAAAAAAEQAAAAAAAAACAAAA=</HashCode>
-      <FileName>AttachmentModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="TeamSupport.IDTree.TaskModel" Collapsed="true">
-    <Position X="18" Y="7.5" Width="1.5" />
+    <Position X="17" Y="5.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ACAAAAAAAAAAAQAAAAAAAAAAAAgAAAAAAAAAAAAAIAA=</HashCode>
       <FileName>TaskModel.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="TeamSupport.IDTree.ActionAttachmentModel" Collapsed="true">
-    <Position X="17.25" Y="5.75" Width="2" />
+  <Class Name="TeamSupport.IDTree.AttachmentModel" Collapsed="true">
+    <Position X="16.5" Y="3.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ACAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAIAAQ=</HashCode>
+      <HashCode>AAAAAAAAAAAAAQAAAAAAIAAAAAAEQAAAAAAAAAAAAAA=</HashCode>
       <FileName>AttachmentModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Property Name="Action" />
+      <Property Name="AttachedTo" />
+      <Property Name="File" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="TeamSupport.IDTree.TaskAttachmentModel" Collapsed="true">
-    <Position X="19.75" Y="5.75" Width="2" />
+  <Interface Name="TeamSupport.IDTree.IAttachmentDestination">
+    <Position X="16.25" Y="2" Width="2" />
     <TypeIdentifier>
-      <HashCode>ACAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAEAAAAAAAAA=</HashCode>
-      <FileName>AttachmentModel.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Task" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="TeamSupport.IDTree.AssetAttachmentModel" Collapsed="true">
-    <Position X="22.25" Y="5.75" Width="2" />
-    <TypeIdentifier>
-      <HashCode>ACAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
-      <FileName>AttachmentModel.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Asset" />
-    </ShowAsAssociation>
-  </Class>
-  <Interface Name="TeamSupport.IDTree.IAttachedTo" Collapsed="true">
-    <Position X="17.5" Y="3.5" Width="1.75" />
-    <TypeIdentifier>
-      <HashCode>ACAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>ACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>AttachmentModel.cs</FileName>
     </TypeIdentifier>
   </Interface>
