@@ -119,25 +119,25 @@ namespace TeamSupport.Data
     partial void AfterRowDelete(int taskID);    
 
     partial void BeforeDBDelete(int taskID);
-    partial void AfterDBDelete(int taskID);    
+    partial void AfterDBDelete(int taskID);
 
-    #endregion
+        #endregion
 
-    #region Public Methods
+        #region Public Methods
 
-    //public TaskAssociationProxy[] GetTaskAssociationProxies()
-    //{
-    //  List<TaskAssociationProxy> list = new List<TaskAssociationProxy>();
+        public TaskAssociationProxy[] GetTaskAssociationProxies()
+        {
+            List<TaskAssociationProxy> list = new List<TaskAssociationProxy>();
 
-    //  foreach (TaskAssociation item in this)
-    //  {
-    //    list.Add(item.GetProxy()); 
-    //  }
+            foreach (TaskAssociation item in this)
+            {
+                list.Add(item.GetProxy());
+            }
 
-    //  return list.ToArray();
-    //}	
-	
-    public virtual void DeleteFromDB(int taskID)
+            return list.ToArray();
+        }
+
+        public virtual void DeleteFromDB(int taskID)
     {
         SqlCommand deleteCommand = new SqlCommand();
         deleteCommand.CommandType = CommandType.Text;
