@@ -22,15 +22,6 @@ namespace TeamSupport.ModelAPI
             try
             {
                 GetPathMap(context, out PathMap pathMap, out int refID, out _ratingImage);
-                switch (pathMap._refType)
-                {
-                    case AttachmentProxy.References.Actions:    // Action attachments
-                    case AttachmentProxy.References.Tasks:  // Task attachments
-                        break;
-                    default:
-                        return null;
-                }
-
                 using (ConnectionContext connection = new ConnectionContext())
                 {
                     // valid ID to add attachment
@@ -78,7 +69,7 @@ namespace TeamSupport.ModelAPI
                 //case AttachmentProxy.References.WaterCooler: return new WaterCoolerModel(connection, refID);
                 //case AttachmentProxy.References.Imports: return new ImportsModel(connection, refID);
                 default:
-                    if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
+                    if (Debugger.IsAttached) Debugger.Break();
                     throw new Exception($"bad ReferenceType {refType}");
 
             }
