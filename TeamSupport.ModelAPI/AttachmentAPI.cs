@@ -104,6 +104,9 @@ namespace TeamSupport.ModelAPI
                         case AttachmentProxy.References.Tasks:
                             model = new TaskModel(connection, attachmentDestinationID.Value);
                             break;
+                        case AttachmentProxy.References.Organizations:
+                            model = new OrganizationModel(connection, attachmentDestinationID.Value);
+                            break;
                         default:
                             if (Debugger.IsAttached) Debugger.Break();
                             throw new Exception($"unrecognized RefType {refType} in DeleteAttachment");
