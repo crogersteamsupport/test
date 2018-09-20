@@ -14,11 +14,34 @@ using System.Web.Security;
 namespace TeamSupport.IDTree
 {
     // interface to model class that supports attachments 
-    public interface IAttachmentParent
+    public interface IAttachedTo
     {
         string AttachmentPath { get; }
         IDNode AsIDNode { get; }    // back door to map class to IDNode at compile time
+        //int ID { get; }
+    }
 
+    public class AttachmentModelT : IDNode
+    {
+        public IAttachedTo AttachedTo { get; protected set; }  // Action, Contact, Asset, Task... (from RefType)
+        public int AttachmentID { get; protected set; }
+        public AttachmentFile File { get; protected set; }
+
+        public AttachmentModelT(IAttachedTo attachedTo, int attachmentID) : base(attachedTo.AsIDNode.Connection)
+        {
+            AttachedTo = attachedTo;
+            AttachmentID = attachmentID;
+        }
+
+        public string AttachmentPath { get { return AttachedTo.AttachmentPath; } }
+        public override void Verify()
+        {
+            Verify($"SELECT AttachmentID FROM Attachments WITH (NOLOCK) WHERE AttachmentID={AttachmentID} AND OrganizationID={Connection.OrganizationID}");
+        }
+        protected static int AttachmentParentID(ConnectionContext connection, int attachmentID)
+        {
+            return connection._db.ExecuteQuery<int>($"SELECT RefID FROM Attachments WITH(NOLOCK) WHERE AttachmentID = {attachmentID} AND OrganizationID={connection.OrganizationID}").Min();
+        }
     }
 
     /// <summary>
@@ -26,7 +49,11 @@ namespace TeamSupport.IDTree
     /// </summary>
     public abstract class AttachmentModel : IDNode
     {
-        public AttachmentModel(IAttachmentParent attachedTo, int id) : this(attachedTo.AsIDNode.Connection, id)
+        public IAttachedTo AttachedTo { get; protected set; }  // what are we attached to?
+        public int AttachmentID { get; protected set; }
+        public AttachmentFile File { get; protected set; }
+
+        public AttachmentModel(IAttachedTo attachedTo, int id) : this(attachedTo.AsIDNode.Connection, id)
         {
             AttachmentID = id;
             AttachedTo = attachedTo;
@@ -35,13 +62,10 @@ namespace TeamSupport.IDTree
         public AttachmentModel(ConnectionContext connection, int id) : base(connection)
         {
         }
-
-        public int AttachmentID { get; protected set; }
-        public AttachmentFile File { get; protected set; }
-        public IAttachmentParent AttachedTo { get; protected set; }  // what are we attached to?
     }
 
-    /// <summary> Action Attachments </summary>
+
+    /// <summary> Action Attachments</summary>
     public class ActionAttachmentModel : AttachmentModel
     {
         public ActionModel Action { get; private set; }
@@ -79,7 +103,7 @@ namespace TeamSupport.IDTree
 
     }
 
-    /// <summary> Task Attachments </summary>
+    /// <summary> Task Attachments</summary>
     public class TaskAttachmentModel : AttachmentModel
     {
         public TaskModel Task { get; private set; }
@@ -110,6 +134,9 @@ namespace TeamSupport.IDTree
         {
         }
     }
+
+
+
 
 }
 

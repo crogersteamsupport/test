@@ -7,7 +7,7 @@ using System.IO;
 
 namespace TeamSupport.IDTree
 {
-    public class AssetModel : IDNode, IAttachmentParent
+    public class AssetModel : IDNode, IAttachedTo
     {
         public OrganizationModel Organization { get; private set; }
         public int AssetID { get; private set; }
@@ -25,6 +25,11 @@ namespace TeamSupport.IDTree
         public override void Verify()
         {
             Verify($"SELECT AssetID FROM Assets WITH (NOLOCK) WHERE AssetID={AssetID} AND OrganizationID={Organization.OrganizationID}");
+        }
+
+        public IAttachedTo ClassFactory(ConnectionContext connection, int id)
+        {
+            return new AssetModel(connection, id);
         }
 
         public string AttachmentPath

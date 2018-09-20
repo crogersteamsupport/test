@@ -34,7 +34,7 @@ namespace TeamSupport.ModelAPI
                 using (ConnectionContext connection = new ConnectionContext())
                 {
                     // valid ID to add attachment
-                    IAttachmentParent model = ClassFactory(connection, pathMap._refType, refID);
+                    IAttachedTo model = ClassFactory(connection, pathMap._refType, refID);
                     HttpFileCollection files = context.Request.Files;
                     for (int i = 0; i < files.Count; i++)
                     {
@@ -59,7 +59,7 @@ namespace TeamSupport.ModelAPI
             return result;
         }
 
-        static IAttachmentParent ClassFactory(ConnectionContext connection, AttachmentProxy.References refType, int refID)
+        static IAttachedTo ClassFactory(ConnectionContext connection, AttachmentProxy.References refType, int refID)
         {
             switch (refType)
             {

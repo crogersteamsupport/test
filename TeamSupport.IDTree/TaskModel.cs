@@ -7,7 +7,7 @@ using System.IO;
 
 namespace TeamSupport.IDTree
 {
-    public class TaskModel : IDNode, IAttachmentParent
+    public class TaskModel : IDNode, IAttachedTo
     {
         OrganizationModel Organization;
         public int TaskID { get; private set; }

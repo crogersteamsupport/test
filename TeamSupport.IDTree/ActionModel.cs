@@ -15,7 +15,7 @@ namespace TeamSupport.IDTree
     /// <summary>
     /// Wrapper for Valid ActionID
     /// </summary>
-    public class ActionModel : IDNode, IAttachmentParent
+    public class ActionModel : IDNode, IAttachedTo
     {
         public TicketModel Ticket { get; private set; }
         public int ActionID { get; private set; }
