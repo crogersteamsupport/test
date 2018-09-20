@@ -32,7 +32,7 @@ namespace TeamSupport.IDTree
         }
 
         // C:\TSData\Organizations\1078\Tasks\57269\file.txt
-        public string AttachmentPath
+        string IAttachedTo.AttachmentPath
         {
             get
             {

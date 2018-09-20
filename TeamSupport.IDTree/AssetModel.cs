@@ -32,7 +32,7 @@ namespace TeamSupport.IDTree
             return new AssetModel(connection, id);
         }
 
-        public string AttachmentPath
+        string IAttachedTo.AttachmentPath
         {
             get
             {

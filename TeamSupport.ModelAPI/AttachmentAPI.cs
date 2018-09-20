@@ -22,15 +22,6 @@ namespace TeamSupport.ModelAPI
             try
             {
                 GetPathMap(context, out PathMap pathMap, out int refID, out _ratingImage);
-                switch (pathMap._refType)
-                {
-                    case AttachmentProxy.References.Actions:    // Action attachments
-                    case AttachmentProxy.References.Tasks:  // Task attachments
-                        break;
-                    default:
-                        return null;
-                }
-
                 using (ConnectionContext connection = new ConnectionContext())
                 {
                     // valid ID to add attachment
@@ -70,7 +61,7 @@ namespace TeamSupport.ModelAPI
                 //case AttachmentProxy.References.ContactActivity: return new ContactActivityModel(connection, refID);
                 //case AttachmentProxy.References.Contacts: return new ContactModel(connection, refID);
                 //case AttachmentProxy.References.CustomerHubLogo: return new CustomerHubLogoModel(connection, refID);
-                //case AttachmentProxy.References.Organizations: return new OrganizationModel(connection, refID);
+                case AttachmentProxy.References.Organizations: return new OrganizationModel(connection, refID);
                 //case AttachmentProxy.References.ProductVersions: return new ProductVersionModel(connection, refID);
                 case AttachmentProxy.References.Tasks: return new TaskModel(connection.Organization, refID);
                 //case AttachmentProxy.References.UserPhoto: return new UserPhotoModel(connection, refID);

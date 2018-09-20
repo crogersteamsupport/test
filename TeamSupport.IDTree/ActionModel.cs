@@ -61,7 +61,7 @@ namespace TeamSupport.IDTree
         public bool CanEdit() { return Connection.CanEdit() || (Connection.User.UserID == CreatorID()); }
 
         public const int ActionPathIndex = 3;
-        public string AttachmentPath
+        string IAttachedTo.AttachmentPath
         {
             get
             {

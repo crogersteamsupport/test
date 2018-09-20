@@ -105,6 +105,15 @@ namespace TeamSupport.DataAPI
                             $"SELECT {model.TicketID}, {proxy.OrganizationID}, '{now}', {creatorID}, '{now}', {creatorID}";
                     }
                     break;
+                case "OrganizationAttachmentProxy":
+                    {
+                        OrganizationModel model = idNode as OrganizationModel;
+                        OrganizationAttachmentProxy proxy = tProxy as OrganizationAttachmentProxy;
+                        CreateAttachment(idNode, proxy, model.OrganizationID);
+                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
+                    }
+                    break;
+
                 case "SubscriptionProxy":
                     {
                         TicketModel model = (TicketModel)idNode;
