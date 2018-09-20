@@ -12,7 +12,7 @@ namespace TeamSupport.Data
     [KnownType(typeof(CustomValueProxy))]
     public class CustomValueProxy
     {
-        public CustomValueProxy(ReferenceType referenceType) { }
+        public CustomValueProxy(References referenceType) { }
         [DataMember] public int? CustomValueID { get; set; }
         [DataMember] public int CustomFieldID { get; set; }
         [DataMember] public int? RefID { get; set; }
@@ -46,60 +46,95 @@ namespace TeamSupport.Data
         {
             switch (refType)
             {
-                case References.Actions: return new ActionsCustomValueProxy();
-                case References.OrganizationProducts: return new ActionsCustomValueProxy();
-                case References.Organizations: return new ActionsCustomValueProxy();
-                case References.Tickets: return new ActionsCustomValueProxy();
-                case References.Contacts: return new ActionsCustomValueProxy();
-                case References.Assets: return new ActionsCustomValueProxy();
+                case References.Assets: return new AssetCustomValueProxy();
+                case References.Contacts: return new ContactCustomValueProxy();
+                case References.None: return new NoneCustomValueProxy();
+                case References.OrganizationProducts: return new OrganizationProductCustomValueProxy();
+                case References.Organizations: return new OrganizationCustomValueProxy();
+                case References.ProductFamilies: return new ProductFamilyCustomValueProxy();
                 case References.Products: return new ProductCustomValueProxy();
-                default: throw new Exception("Invalid CustomValueProxy Reference Type");
+                case References.ProductVersions: return new ProductVersionCustomValueProxy();
+                case References.Tickets: return new TicketCustomValueProxy();
+                case References.UserProducts: return new UserProductCustomValueProxy();
+                case References.Users: return new UserCustomValueProxy();
+                default:
+                    if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
+                    throw new Exception("Invalid CustomValueProxy Reference Type");
             }
         }
+
         public enum References
         {
-            Actions = ReferenceType.Actions,
+            Assets = ReferenceType.Assets,
+            Contacts = ReferenceType.Contacts,
+            None = ReferenceType.None,
             OrganizationProducts = ReferenceType.OrganizationProducts,
             Organizations = ReferenceType.Organizations,
+            ProductFamilies = ReferenceType.ProductFamilies,
+            Products = ReferenceType.Products,
+            ProductVersions = ReferenceType.ProductVersions,
             Tickets = ReferenceType.Tickets,
-            Contacts = ReferenceType.Contacts,
-            Assets = ReferenceType.Assets,
-            Products = ReferenceType.Products
+            UserProducts = ReferenceType.UserProducts,
+            Users = ReferenceType.Users
         }
     }
 
+    public class AssetCustomValueProxy : CustomValueProxy
+    {
+        public AssetCustomValueProxy() : base(References.Assets) { }
+        //public int AssetID { get { return RefID; } set { RefID = value; } }
+    }
 
+    public class ContactCustomValueProxy : CustomValueProxy
+    {
+        public ContactCustomValueProxy() : base(References.Contacts) { }
+    }
 
-    public class ActionsCustomValueProxy : CustomValueProxy
+    public class NoneCustomValueProxy : CustomValueProxy
     {
-        public ActionsCustomValueProxy() : base(ReferenceType.Actions){}
+        public NoneCustomValueProxy() : base(References.None) { }
     }
-    public class OrganizationProductsCustomValueProxy : CustomValueProxy
+
+    public class OrganizationProductCustomValueProxy : CustomValueProxy
     {
-        public OrganizationProductsCustomValueProxy() : base(ReferenceType.OrganizationProducts) { }
+        public OrganizationProductCustomValueProxy() : base(References.OrganizationProducts) { }
     }
-    public class OrganizationsCustomValueProxy : CustomValueProxy
+
+    public class OrganizationCustomValueProxy : CustomValueProxy
     {
-        public OrganizationsCustomValueProxy() : base(ReferenceType.Organizations) { }
+        public OrganizationCustomValueProxy() : base(References.Organizations) { }
     }
-    public class TicketsCustomValueProxy : CustomValueProxy
+
+    public class ProductFamilyCustomValueProxy : CustomValueProxy
     {
-        public TicketsCustomValueProxy() : base(ReferenceType.Tickets) { }
-    }
-    public class ContactsCustomValueProxy : CustomValueProxy
-    {
-        public ContactsCustomValueProxy() : base(ReferenceType.Contacts) { }
-    }
-    public class AssetsCustomValueProxy : CustomValueProxy
-    {
-        public AssetsCustomValueProxy() : base(ReferenceType.Assets) { }
+        public ProductFamilyCustomValueProxy() : base(References.ProductFamilies) { }
     }
 
     public class ProductCustomValueProxy : CustomValueProxy
     {
-        public ProductCustomValueProxy() : base(ReferenceType.Products) { }
+        public ProductCustomValueProxy() : base(References.Products) { }
     }
 
+    public class ProductVersionCustomValueProxy : CustomValueProxy
+    {
+        public ProductVersionCustomValueProxy() : base(References.ProductVersions) { }
+    }
+
+    public class TicketCustomValueProxy : CustomValueProxy
+    {
+        public TicketCustomValueProxy() : base(References.Tickets) { }
+    }
+
+    public class UserProductCustomValueProxy : CustomValueProxy
+    {
+        public UserProductCustomValueProxy() : base(References.UserProducts) { }
+    }
+
+    public class UserCustomValueProxy : CustomValueProxy
+    {
+        public UserCustomValueProxy() : base(References.Users) { }
+    }
+  
     public partial class CustomValue : BaseItem
     {
         public CustomValueProxy GetProxy()

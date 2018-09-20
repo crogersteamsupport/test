@@ -65,7 +65,7 @@ namespace TeamSupport.ModelAPI
                 //case AttachmentProxy.References.ProductVersions: return new ProductVersionModel(connection, refID);
                 case AttachmentProxy.References.Tasks: return new TaskModel(connection.Organization, refID);
                 //case AttachmentProxy.References.UserPhoto: return new UserPhotoModel(connection, refID);
-                //case AttachmentProxy.References.Users: return new UserModel(connection, refID);
+                case AttachmentProxy.References.Users: return new UserModel(connection, refID);
                 //case AttachmentProxy.References.WaterCooler: return new WaterCoolerModel(connection, refID);
                 //case AttachmentProxy.References.Imports: return new ImportsModel(connection, refID);
                 default:
@@ -93,20 +93,43 @@ namespace TeamSupport.ModelAPI
                     // type safe construction
                     switch (refType)
                     {
-                        case AttachmentProxy.References.Assets:
-                            model = new AssetModel(connection, attachmentDestinationID.Value);
-                            break;
                         case AttachmentProxy.References.Actions:
                             model = new ActionModel(connection, attachmentDestinationID.Value);
                             if (!(model as ActionModel).CanEdit())
                                 return;
                             break;
-                        case AttachmentProxy.References.Tasks:
-                            model = new TaskModel(connection, attachmentDestinationID.Value);
+                        case AttachmentProxy.References.Assets:
+                            model = new AssetModel(connection, attachmentDestinationID.Value);
                             break;
+                        //case AttachmentProxy.References.ChatAttachments:
+                        //    break;
+                        //case AttachmentProxy.References.CompanyActivity:
+                        //    break;
+                        //case AttachmentProxy.References.ContactActivity:
+                        //    break;
+                        //case AttachmentProxy.References.Contacts:
+                        //    break;
+                        //case AttachmentProxy.References.CustomerHubLogo:
+                        //    break;
+                        //case AttachmentProxy.References.Imports:
+                        //    break;
+                        //case AttachmentProxy.References.None:
+                        //    break;
                         case AttachmentProxy.References.Organizations:
                             model = new OrganizationModel(connection, attachmentDestinationID.Value);
                             break;
+                        //case AttachmentProxy.References.ProductVersions:
+                        //    break;
+                        case AttachmentProxy.References.Tasks:
+                            model = new TaskModel(connection, attachmentDestinationID.Value);
+                            break;
+                        //case AttachmentProxy.References.UserPhoto:
+                        //    break;
+                        case AttachmentProxy.References.Users:
+                            model = new UserModel(connection, attachmentDestinationID.Value);
+                            break;
+                        //case AttachmentProxy.References.WaterCooler:
+                        //    break;
                         default:
                             if (Debugger.IsAttached) Debugger.Break();
                             throw new Exception($"unrecognized RefType {refType} in DeleteAttachment");

@@ -166,6 +166,15 @@ namespace TeamSupport.DataAPI
                         result = new TicketModel(model.Organization, proxy.TicketID);    // how to bypass Verify? - move to UserModel?
                     }
                     break;
+                case "UserAttachmentProxy":   // create action attachment
+                    {
+                        UserModel model = idNode as UserModel;
+                        UserAttachmentProxy proxy = tProxy as UserAttachmentProxy;
+                        CreateAttachment(idNode, proxy, model.UserID);
+                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
+                    }
+                    break;
+
                 default:
                     if (Debugger.IsAttached) Debugger.Break();
                     break;
