@@ -34,6 +34,7 @@ namespace TeamSupport.IDTree
             {
                 string path = Connection.Organization.AttachmentPath;
                 path = Path.Combine(path, "Products");   // see AttachmentPath.GetFolderName(AttachmentPath.Folder.Actions);
+                path = Path.Combine(path, ProductVersionID.ToString());
                 if (!Directory.Exists(path))
                     Directory.CreateDirectory(path);
                 return path;

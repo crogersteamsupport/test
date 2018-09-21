@@ -118,8 +118,9 @@ namespace TeamSupport.ModelAPI
                         case AttachmentProxy.References.Organizations:
                             model = new OrganizationModel(connection, attachmentDestinationID.Value);
                             break;
-                        //case AttachmentProxy.References.ProductVersions:
-                        //    break;
+                        case AttachmentProxy.References.ProductVersions:
+                            model = new ProductVersionModel(connection, attachmentDestinationID.Value);
+                            break;
                         case AttachmentProxy.References.Tasks:
                             model = new TaskModel(connection, attachmentDestinationID.Value);
                             break;
