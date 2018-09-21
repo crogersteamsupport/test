@@ -29,15 +29,15 @@ namespace TeamSupport.IDTree
             NoteID = noteID;
         }
 
-        public NoteModel(ConnectionContext connection, int noteID) : base(connection)
-        {
-            NoteID = noteID;
+        //public NoteModel(ConnectionContext connection, int noteID) : base(connection)
+        //{
+        //    NoteID = noteID;
 
-            //int id = ExecuteQuery<int>($"SELECT RefID FROM Notes WITH (NOLOCK) WHERE NoteID={noteID}").Min();
-            //int refType = ExecuteQuery<int>($"SELECT RefType FROM Notes WITH (NOLOCK) WHERE NoteID={noteID}").Min();
-            //Ticket = new TicketModel(Connection, ticketID);
-            Verify();
-        }
+        //    //int id = ExecuteQuery<int>($"SELECT RefID FROM Notes WITH (NOLOCK) WHERE NoteID={noteID}").Min();
+        //    //int refType = ExecuteQuery<int>($"SELECT RefType FROM Notes WITH (NOLOCK) WHERE NoteID={noteID}").Min();
+        //    //Ticket = new TicketModel(Connection, ticketID);
+        //    Verify();
+        //}
 
         public override void Verify()
         {

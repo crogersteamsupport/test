@@ -88,7 +88,7 @@ namespace TeamSupport.ModelAPI
             }
         }
 
-        public static void DeleteAttachment(AttachmentProxy.References refType, int attachmentID, int? attachmentDestinationID = null)
+        public static void DeleteAttachment(AttachmentProxy.References refType, int attachmentID, int? destinationID = null)
         {
             try
             {
@@ -100,26 +100,34 @@ namespace TeamSupport.ModelAPI
                     if (refType == AttachmentProxy.References.None)
                         refType = proxy.RefType;
 
-                    if(!attachmentDestinationID.HasValue)
-                        attachmentDestinationID = proxy.RefID;
+                    if(!destinationID.HasValue)
+                        destinationID = proxy.RefID;
 
                     // type safe construction
                     switch (refType)
                     {
                         case AttachmentProxy.References.Actions:
-                            model = new ActionModel(connection, attachmentDestinationID.Value);
+                            model = new ActionModel(connection, destinationID.Value);
                             if (!(model as ActionModel).CanEdit())
                                 return;
                             break;
                         case AttachmentProxy.References.Assets:
-                            model = new AssetModel(connection, attachmentDestinationID.Value);
+                            model = new AssetModel(connection, destinationID.Value);
                             break;
                         //case AttachmentProxy.References.ChatAttachments:
                         //    break;
-                        //case AttachmentProxy.References.CompanyActivity:
-                        //    break;
-                        //case AttachmentProxy.References.ContactActivity:
-                        //    break;
+                        case AttachmentProxy.References.CompanyActivity:
+                            {
+                                int organizationID = connection._db.ExecuteQuery<int>($"Select RefID from Notes WITH (NOLOCK) WHERE NoteID = {destinationID.Value}").Min();
+                                model  = new NoteModel(new OrganizationModel(connection, organizationID), destinationID.Value);
+                            }
+                            break;
+                        case AttachmentProxy.References.ContactActivity:
+                            {
+                                int userID = connection._db.ExecuteQuery<int>($"Select RefID from Notes WITH (NOLOCK) WHERE NoteID = {destinationID.Value}").Min();
+                                model  = new NoteModel(new UserModel(connection, userID), destinationID.Value);
+                            }
+                            break;
                         //case AttachmentProxy.References.Contacts:
                         //    break;
                         //case AttachmentProxy.References.CustomerHubLogo:
@@ -129,18 +137,18 @@ namespace TeamSupport.ModelAPI
                         //case AttachmentProxy.References.None:
                         //    break;
                         case AttachmentProxy.References.Organizations:
-                            model = new OrganizationModel(connection, attachmentDestinationID.Value);
+                            model = new OrganizationModel(connection, destinationID.Value);
                             break;
                         case AttachmentProxy.References.ProductVersions:
-                            model = new ProductVersionModel(connection, attachmentDestinationID.Value);
+                            model = new ProductVersionModel(connection, destinationID.Value);
                             break;
                         case AttachmentProxy.References.Tasks:
-                            model = new TaskModel(connection, attachmentDestinationID.Value);
+                            model = new TaskModel(connection, destinationID.Value);
                             break;
                         //case AttachmentProxy.References.UserPhoto:
                         //    break;
                         case AttachmentProxy.References.Users:
-                            model = new UserModel(connection, attachmentDestinationID.Value);
+                            model = new UserModel(connection, destinationID.Value);
                             break;
                         //case AttachmentProxy.References.WaterCooler:
                         //    break;

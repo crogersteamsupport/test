@@ -695,9 +695,10 @@ namespace TeamSupport.Services
             //if (!UserSession.CurrentUser.IsSystemAdmin) return;
             try
             {
+                AttachmentProxy proxy = ModelAPI.Model_API.Read<AttachmentProxy>(attachmentID);
                 ModelAPI.AttachmentAPI.DeleteAttachment(AttachmentProxy.References.None, attachmentID);
                 //Attachments.DeleteAttachmentAndFile(UserSession.LoginUser, attachmentID);
-                string description = String.Format("{0} deleted attachment {1}", UserSession.CurrentUser.FirstLastName, Attachments.GetAttachment(UserSession.LoginUser, attachmentID).FileName);
+                string description = String.Format("{0} deleted attachment {1}", UserSession.CurrentUser.FirstLastName, proxy.FileName);
                 ActionLogs.AddActionLog(UserSession.LoginUser, ActionLogType.Delete, ReferenceType.Attachments, attachmentID, description);
             }
             catch (Exception ex)
