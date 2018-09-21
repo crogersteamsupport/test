@@ -394,7 +394,7 @@ namespace TeamSupport.ServiceLibrary.ZohoCRM
 			Uri zohoUri = new Uri(_zohoCrmAPIv2 + apiUrl);
 			string responseText = MakeHttpRequest(zohoUri);
 
-			Logs.WriteEvent("The GetZohoAccountData method has been executed.");
+			Logs.WriteEvent("The GetProductData method has been executed.");
 
 			return responseText;
 		}
@@ -1345,10 +1345,9 @@ namespace TeamSupport.ServiceLibrary.ZohoCRM
 							case 429: // Too many requests
 									  //This is the error returned by ZohoCrm when the API Calls per minute has been reached.
 								Logs.WriteEvent($"The maximum API calls per minute to ZohoCRM has been reached, we'll need to wait. ZohoCRM error: {webEx.Message}");
-								WebHeaderCollection headerCollection = response.Headers;
-								String[] remaining = headerCollection.GetValues(RATELIMITREMAINING);
-								String[] reset = headerCollection.GetValues(RATELIMITRESET);
-								String[] limit = headerCollection.GetValues(RATELIMIT);
+								CheckAPIRequestLimitAndWait(response);
+								//Try again
+								MakeHttpRequest(uri, method, postData);
 								break;
 							default:
 								Logs.WriteException(webEx);
@@ -1388,6 +1387,10 @@ namespace TeamSupport.ServiceLibrary.ZohoCRM
 
 				if (remainingCount == 1)
 				{
+					Logs.WriteEventFormat("Remaining Count: {0}", remainingCount);
+					Logs.WriteEventFormat("Reset: {0}", reset[0]);
+					Logs.WriteEventFormat("Limit: {0}", limit[0]);
+
 					//70 secs just in case the remaining header is not there.
 					int resetSeconds = 70;
 

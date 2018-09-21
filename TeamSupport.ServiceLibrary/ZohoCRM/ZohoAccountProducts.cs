@@ -13,7 +13,7 @@ namespace TeamSupport.ServiceLibrary
 			public string Description { get; set; }
 			public string Product_Category { get; set; }
 			public string Product_Code { get; set; }
-			public int Qty_in_Demand { get; set; }
+			public int? Qty_in_Demand { get; set; }
 			public ZohoAccountData.Owner Owner { get; set; }
 			[JsonProperty(PropertyName = "$currency_symbol")]
 			public string Currency_Symbol { get; set; }
@@ -32,7 +32,7 @@ namespace TeamSupport.ServiceLibrary
 			public ZohoAccountData.Approval Approval { get; set; }
 			public DateTime Modified_Time { get; set; }
 			public DateTime Created_Time { get; set; }
-			public int Commission_Rate { get; set; }
+			public int? Commission_Rate { get; set; }
 			[JsonProperty(PropertyName = "$followed")]
 			public bool Followed { get; set; }
 			public object Handler { get; set; }
@@ -40,14 +40,14 @@ namespace TeamSupport.ServiceLibrary
 			public bool Editable { get; set; }
 			public DateTime? Support_Start_Date { get; set; }
 			public string Usage_Unit { get; set; }
-			public int Qty_Ordered { get; set; }
-			public int Qty_in_Stock { get; set; }
+			public int? Qty_Ordered { get; set; }
+			public int? Qty_in_Stock { get; set; }
 			public ZohoAccountData.CreatedBy Created_By { get; set; }
 			public List<ZohoAccountData.Tag> Tag { get; set; }
 			public DateTime? Sales_End_Date { get; set; }
-			public int Unit_Price { get; set; }
+			public decimal? Unit_Price { get; set; }
 			public bool Taxable { get; set; }
-			public int Reorder_Level { get; set; }
+			public int? Reorder_Level { get; set; }
 		}
 
 		public class Product
