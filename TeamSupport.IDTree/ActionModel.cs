@@ -59,7 +59,7 @@ namespace TeamSupport.IDTree
         {
             get
             {
-                string path = Ticket.Organization.AttachmentPath;
+                string path = Connection.Organization.AttachmentPath;
                 path = Path.Combine(path, "Actions");   // see AttachmentPath.GetFolderName(AttachmentPath.Folder.Actions);
                 path = Path.Combine(path, ActionID.ToString());
                 if (!Directory.Exists(path))

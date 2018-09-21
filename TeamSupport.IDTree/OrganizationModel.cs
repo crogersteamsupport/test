@@ -14,7 +14,7 @@ namespace TeamSupport.IDTree
     /// <summary>
     /// Wrapper for valid OrganizationID
     /// </summary>
-    public class OrganizationModel : IDNode, IAttachmentDestination, ITaskAssociation
+    public class OrganizationModel : IDNode, IAttachmentDestination, ITaskAssociation, INoteDestination
     {
         public int OrganizationID { get; private set; }
 

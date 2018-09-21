@@ -18,7 +18,7 @@ namespace TeamSupport.ModelAPI
         /// <summary> Create attachment files </summary>
         public static List<AttachmentProxy> CreateAttachments(HttpContext context, out string _ratingImage)
         {
-            List<AttachmentProxy> result = new List<AttachmentProxy>();
+            List<AttachmentProxy> result = null;
             try
             {
                 GetPathMap(context, out PathMap pathMap, out int refID, out _ratingImage);
@@ -27,6 +27,7 @@ namespace TeamSupport.ModelAPI
                     // valid ID to add attachment
                     IAttachmentDestination model = ClassFactory(connection, pathMap._refType, refID);
                     HttpFileCollection files = context.Request.Files;
+                    result = new List<AttachmentProxy>();
                     for (int i = 0; i < files.Count; i++)
                     {
                         if (files[i].ContentLength <= 0)
@@ -57,8 +58,20 @@ namespace TeamSupport.ModelAPI
                 case AttachmentProxy.References.Actions: return new ActionModel(connection, refID);
                 case AttachmentProxy.References.Assets: return new AssetModel(connection, refID);
                 //case AttachmentProxy.References.ChatAttachments: return new ChatModel(connection, refID);
-                //case AttachmentProxy.References.CompanyActivity: return new CompanyActivityModel(connection, refID);
-                //case AttachmentProxy.References.ContactActivity: return new ContactActivityModel(connection, refID);
+
+                case AttachmentProxy.References.CompanyActivity:
+                    {
+                        // Attachment => Note => Organization
+                        int organizationID = connection._db.ExecuteQuery<int>($"Select RefID from Notes WITH (NOLOCK) WHERE NoteID = {refID}").Min();
+                        return new NoteModel(new OrganizationModel(connection, organizationID), refID);
+                    }
+                case AttachmentProxy.References.ContactActivity:
+                    {
+                        // Attachment => Note => User
+                        int userID = connection._db.ExecuteQuery<int>($"Select RefID from Notes WITH (NOLOCK) WHERE NoteID = {refID}").Min();
+                        return new NoteModel(new UserModel(connection, userID), refID);
+                    }
+
                 //case AttachmentProxy.References.Contacts: return new ContactModel(connection, refID);
                 //case AttachmentProxy.References.CustomerHubLogo: return new CustomerHubLogoModel(connection, refID);
                 case AttachmentProxy.References.Organizations: return new OrganizationModel(connection, refID);

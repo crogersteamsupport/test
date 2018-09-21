@@ -20,9 +20,7 @@ namespace TeamSupport.IDTree
         //IDNode AsIDNode { get; }    // back door to map class to IDNode at compile time
     }
 
-    /// <summary>
-    /// Base class for Attachments
-    /// </summary>
+
     public class AttachmentModel : IDNode
     {
         // hard coded index into FilePaths table ???
@@ -43,11 +41,6 @@ namespace TeamSupport.IDTree
             // also check if AttachedTo is valid?
             Verify($"SELECT AttachmentID FROM Attachments WITH (NOLOCK) WHERE AttachmentID={AttachmentID} AND OrganizationID={Connection.OrganizationID}");
         }
-
-        public AttachmentModel(ConnectionContext connection, int id) : base(connection)
-        {
-        }
-
     }
 
 }

@@ -8,7 +8,7 @@ using System.IO;
 
 namespace TeamSupport.IDTree
 {
-    public class UserModel : IDNode, IAttachmentDestination, ITaskAssociation
+    public class UserModel : IDNode, IAttachmentDestination, ITaskAssociation, INoteDestination
     {
         public OrganizationModel Organization { get; private set; }
         public int UserID { get; private set; }

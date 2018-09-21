@@ -97,6 +97,22 @@ namespace TeamSupport.DataAPI
                         result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
                     }
                     break;
+                case "CompanyActivityAttachmentProxy":
+                    {
+                        NoteModel model = idNode as NoteModel;
+                        CompanyActivityAttachmentProxy proxy = tProxy as CompanyActivityAttachmentProxy;
+                        CreateAttachment(idNode, proxy, model.NoteID);
+                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
+                    }
+                    break;
+                case "ContactActivity":
+                    {
+                        NoteModel model = idNode as NoteModel;
+                        ContactActivityAttachmentProxy proxy = tProxy as ContactActivityAttachmentProxy;
+                        CreateAttachment(idNode, proxy, model.NoteID);
+                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
+                    }
+                    break;
                 case "ContactProxy":
                     {
                         TicketModel model = (TicketModel)idNode;
