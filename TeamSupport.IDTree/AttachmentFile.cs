@@ -19,7 +19,7 @@ namespace TeamSupport.IDTree
         public string ContentType { get; private set; }
 
         /// <summary> New file </summary>
-        public AttachmentFile(IAttachedTo model, HttpPostedFile postedFile)
+        public AttachmentFile(IAttachmentDestination model, HttpPostedFile postedFile)
         {
             string attachmentPath = model.AttachmentPath;
             FileName = VerifyFileName(attachmentPath, postedFile.FileName);
@@ -30,7 +30,7 @@ namespace TeamSupport.IDTree
         }
 
         /// <summary> Existing file </summary>
-        public AttachmentFile(IAttachedTo attachment, Data.AttachmentProxy proxy)
+        public AttachmentFile(IAttachmentDestination attachment, Data.AttachmentProxy proxy)
         {
             FileInfo file = new FileInfo(proxy.Path);
             DirectoryInfo dir = file.Directory;

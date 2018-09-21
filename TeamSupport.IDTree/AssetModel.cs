@@ -7,7 +7,7 @@ using System.IO;
 
 namespace TeamSupport.IDTree
 {
-    public class AssetModel : IDNode, IAttachedTo
+    public class AssetModel : IDNode, IAttachmentDestination
     {
         public OrganizationModel Organization { get; private set; }
         public int AssetID { get; private set; }
@@ -27,16 +27,16 @@ namespace TeamSupport.IDTree
             Verify($"SELECT AssetID FROM Assets WITH (NOLOCK) WHERE AssetID={AssetID} AND OrganizationID={Organization.OrganizationID}");
         }
 
-        public IAttachedTo ClassFactory(ConnectionContext connection, int id)
+        public IAttachmentDestination ClassFactory(ConnectionContext connection, int id)
         {
             return new AssetModel(connection, id);
         }
 
-        string IAttachedTo.AttachmentPath
+        string IAttachmentDestination.AttachmentPath
         {
             get
             {
-                string path = Organization.AttachmentPath(ActionModel.ActionPathIndex);
+                string path = Organization.AttachmentPath;
                 path = Path.Combine(path, "AssetAttachments");   // see static AttachmentAPI()
                 path = Path.Combine(path, AssetID.ToString());
                 if (!Directory.Exists(path))

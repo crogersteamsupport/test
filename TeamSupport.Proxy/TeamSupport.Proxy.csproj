@@ -65,7 +65,6 @@
     <Compile Include="AssetsViewProxy.cs" />
     <Compile Include="AttachmentDownloadsProxy.cs" />
     <Compile Include="AttachmentProxy.cs" />
-    <Compile Include="AuthenticationModel.cs" />
     <Compile Include="BackdoorLoginsProxy.cs" />
     <Compile Include="BillingInfoProxy.cs" />
     <Compile Include="CalendarEventsProxy.cs" />

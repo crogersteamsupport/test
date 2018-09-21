@@ -15,15 +15,10 @@ namespace TeamSupport.IDTree
     /// <summary>
     /// Wrapper for Valid ActionID
     /// </summary>
-    public class ActionModel : IDNode, IAttachedTo
+    public class ActionModel : IDNode, IAttachmentDestination
     {
         public TicketModel Ticket { get; private set; }
         public int ActionID { get; private set; }
-
-        public static int GetTicketID(DataContext db, int actionID)
-        {
-            return db.ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {actionID}").Min();
-        }
 
         /// <summary> top down - existing action </summary>
         public ActionModel(TicketModel ticket, int actionID) : this(ticket, actionID, true)
@@ -42,30 +37,29 @@ namespace TeamSupport.IDTree
         public ActionModel(ConnectionContext connection, int actionID) : base(connection)
         {
             ActionID = actionID;
-            int ticketID = GetTicketID(Connection._db, actionID);
+            int ticketID = ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {actionID}").Min();
             Ticket = new TicketModel(Connection, ticketID);
             Verify();
         }
 
-        public override bool Equals(object o)
-        {
-            ActionModel rhs = o as ActionModel;
-            return (Connection == rhs.Connection) && (Ticket == rhs.Ticket) && (ActionID == rhs.ActionID);
-        }
+        //public override bool Equals(object o)
+        //{
+        //    ActionModel rhs = o as ActionModel;
+        //    return (Connection == rhs.Connection) && (Ticket == rhs.Ticket) && (ActionID == rhs.ActionID);
+        //}
 
-        public ActionProxy ActionProxy()
-        {
-            return ExecuteQuery<ActionProxy>($"SELECT * FROM Actions WHERE ActionID={ActionID}").First();
-        }
+        //public ActionProxy ActionProxy()
+        //{
+        //    return ExecuteQuery<ActionProxy>($"SELECT * FROM Actions WHERE ActionID={ActionID}").First();
+        //}
 
         public bool CanEdit() { return Connection.CanEdit() || (Connection.User.UserID == CreatorID()); }
 
-        public const int ActionPathIndex = 3;
-        string IAttachedTo.AttachmentPath
+        string IAttachmentDestination.AttachmentPath
         {
             get
             {
-                string path = Ticket.Organization.AttachmentPath(ActionPathIndex);
+                string path = Ticket.Organization.AttachmentPath;
                 path = Path.Combine(path, "Actions");   // see AttachmentPath.GetFolderName(AttachmentPath.Folder.Actions);
                 path = Path.Combine(path, ActionID.ToString());
                 if (!Directory.Exists(path))
@@ -84,10 +78,10 @@ namespace TeamSupport.IDTree
             return ExecuteQuery<int>($"SELECT CreatorID FROM Actions WITH (NOLOCK) WHERE ActionID={ActionID}").Min();
         }
 
-        public int TicketID()
-        {
-            return ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {ActionID}").Min();
-        }
+        //public int TicketID()
+        //{
+        //    return ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {ActionID}").Min();
+        //}
 
         public static ActionModel[] GetActions(TicketModel ticket)
         {

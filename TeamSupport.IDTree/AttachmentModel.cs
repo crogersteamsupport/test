@@ -14,7 +14,7 @@ using System.Web.Security;
 namespace TeamSupport.IDTree
 {
     // interface to model class that supports attachments 
-    public interface IAttachedTo
+    public interface IAttachmentDestination
     {
         string AttachmentPath { get; }
         //IDNode AsIDNode { get; }    // back door to map class to IDNode at compile time
@@ -25,11 +25,14 @@ namespace TeamSupport.IDTree
     /// </summary>
     public class AttachmentModel : IDNode
     {
-        public IAttachedTo AttachedTo { get; protected set; }  // what are we attached to?
+        // hard coded index into FilePaths table ???
+        public const int AttachmentPathIndex = 3;
+
+        public IAttachmentDestination AttachedTo { get; protected set; }  // what are we attached to?
         public int AttachmentID { get; protected set; }
         public AttachmentFile File { get; protected set; }
 
-        public AttachmentModel(IAttachedTo attachedTo, int id) : base((attachedTo as IDNode).Connection)
+        public AttachmentModel(IAttachmentDestination attachedTo, int id) : base((attachedTo as IDNode).Connection)
         {
             AttachmentID = id;
             AttachedTo = attachedTo;
@@ -44,8 +47,6 @@ namespace TeamSupport.IDTree
         public AttachmentModel(ConnectionContext connection, int id) : base(connection)
         {
         }
-
-        //public string AttachmentPath { get { return AttachedTo.AttachmentPath; } }
 
     }
 

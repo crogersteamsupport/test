@@ -7,7 +7,8 @@ using System.IO;
 
 namespace TeamSupport.IDTree
 {
-    public class TaskModel : IDNode, IAttachedTo
+
+    public class TaskModel : IDNode, IAttachmentDestination
     {
         OrganizationModel Organization;
         public int TaskID { get; private set; }
@@ -32,11 +33,11 @@ namespace TeamSupport.IDTree
         }
 
         // C:\TSData\Organizations\1078\Tasks\57269\file.txt
-        string IAttachedTo.AttachmentPath
+        string IAttachmentDestination.AttachmentPath
         {
             get
             {
-                string path = Organization.AttachmentPath(ActionModel.ActionPathIndex);
+                string path = Organization.AttachmentPath;
                 path = Path.Combine(path, "Tasks");   // see static AttachmentAPI()
                 path = Path.Combine(path, TaskID.ToString());
                 if (!Directory.Exists(path))

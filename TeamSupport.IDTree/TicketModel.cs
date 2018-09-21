@@ -13,7 +13,7 @@ namespace TeamSupport.IDTree
     /// <summary>
     /// Wrapper for valid TicketID
     /// </summary>
-    public class TicketModel : IDNode
+    public class TicketModel : IDNode, ITaskAssociation
     {
         public OrganizationModel Organization { get; private set; }
         public int TicketID { get; private set; }

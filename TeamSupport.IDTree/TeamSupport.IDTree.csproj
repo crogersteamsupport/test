@@ -51,6 +51,9 @@
     <Compile Include="AssetModel.cs" />
     <Compile Include="AssetTicketModel.cs" />
     <Compile Include="AttachmentFile.cs" />
+    <Compile Include="AuthenticationModel.cs" />
+    <Compile Include="ProductModel.cs" />
+    <Compile Include="ProductVersionModel.cs" />
     <Compile Include="TaskModel.cs" />
     <Compile Include="TicketQueueModel.cs" />
     <Compile Include="TSDataTable.cs" />

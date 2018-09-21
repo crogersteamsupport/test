@@ -9,13 +9,13 @@ using System.Web.Configuration;
 using System.Web;
 using System.Security.Authentication;
 
-namespace TeamSupport.Proxy
+namespace TeamSupport.IDTree
 {
     public class AuthenticationModel
     {
         string[] _userData;
 
-        //public FormsAuthenticationTicket AuthenticationTicket { get; private set; }
+        public FormsAuthenticationTicket AuthenticationTicket { get; private set; }
         public int UserID { get { return int.Parse(_userData[0]); } }
         public int OrganizationID { get { return int.Parse(_userData[1]); } }
         public bool IsBackdoor { get { return (_userData[2] == "1"); } }
@@ -28,7 +28,7 @@ namespace TeamSupport.Proxy
             // Authentication from HttpContext
             if ((HttpContext.Current.User == null) || !(HttpContext.Current.User.Identity is FormsIdentity))
                 throw new AuthenticationException("Authentication error - No user identity");
-            FormsAuthenticationTicket AuthenticationTicket = (HttpContext.Current.User.Identity as FormsIdentity).Ticket;
+            AuthenticationTicket = (HttpContext.Current.User.Identity as FormsIdentity).Ticket;
 
             // Extract custom user data
             _userData = AuthenticationTicket.UserData.Split('|');

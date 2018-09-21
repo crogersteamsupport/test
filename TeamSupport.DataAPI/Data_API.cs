@@ -121,7 +121,14 @@ namespace TeamSupport.DataAPI
                         result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
                     }
                     break;
-
+                case "ProductVersionAttachmentProxy":
+                    {
+                        ProductVersionModel model = idNode as ProductVersionModel;
+                        ProductVersionAttachmentProxy proxy = tProxy as ProductVersionAttachmentProxy;
+                        CreateAttachment(idNode, proxy, model.ProductVersionID);
+                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
+                    }
+                    break;
                 case "SubscriptionProxy":
                     {
                         TicketModel model = (TicketModel)idNode;

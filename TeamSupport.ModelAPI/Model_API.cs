@@ -157,7 +157,7 @@ namespace TeamSupport.ModelAPI
             }
             catch (Exception ex)
             {
-                int logid = Data_API.LogException(new Proxy.AuthenticationModel(), ex, "Ticket Merge Exception:" + ex.Source);
+                int logid = Data_API.LogException(new IDTree.AuthenticationModel(), ex, "Ticket Merge Exception:" + ex.Source);
             }
             return t;
         }
@@ -276,7 +276,7 @@ namespace TeamSupport.ModelAPI
             }
             catch (Exception ex)
             {
-                int logid = Data_API.LogException(new Proxy.AuthenticationModel(), ex, "Ticket Merge Exception:" + ex.Source);
+                int logid = Data_API.LogException(new IDTree.AuthenticationModel(), ex, "Ticket Merge Exception:" + ex.Source);
                 return $"Error merging tickets. Exception #{logid}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.";
             }
         }

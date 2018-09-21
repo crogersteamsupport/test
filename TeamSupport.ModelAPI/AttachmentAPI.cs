@@ -25,7 +25,7 @@ namespace TeamSupport.ModelAPI
                 using (ConnectionContext connection = new ConnectionContext())
                 {
                     // valid ID to add attachment
-                    IAttachedTo model = ClassFactory(connection, pathMap._refType, refID);
+                    IAttachmentDestination model = ClassFactory(connection, pathMap._refType, refID);
                     HttpFileCollection files = context.Request.Files;
                     for (int i = 0; i < files.Count; i++)
                     {
@@ -50,7 +50,7 @@ namespace TeamSupport.ModelAPI
             return result;
         }
 
-        static IAttachedTo ClassFactory(ConnectionContext connection, AttachmentProxy.References refType, int refID)
+        static IAttachmentDestination ClassFactory(ConnectionContext connection, AttachmentProxy.References refType, int refID)
         {
             switch (refType)
             {
@@ -62,7 +62,7 @@ namespace TeamSupport.ModelAPI
                 //case AttachmentProxy.References.Contacts: return new ContactModel(connection, refID);
                 //case AttachmentProxy.References.CustomerHubLogo: return new CustomerHubLogoModel(connection, refID);
                 case AttachmentProxy.References.Organizations: return new OrganizationModel(connection, refID);
-                //case AttachmentProxy.References.ProductVersions: return new ProductVersionModel(connection, refID);
+                case AttachmentProxy.References.ProductVersions: return new ProductVersionModel(connection, refID);
                 case AttachmentProxy.References.Tasks: return new TaskModel(connection.Organization, refID);
                 //case AttachmentProxy.References.UserPhoto: return new UserPhotoModel(connection, refID);
                 case AttachmentProxy.References.Users: return new UserModel(connection, refID);
@@ -83,7 +83,7 @@ namespace TeamSupport.ModelAPI
                 {
                     // validate args
                     AttachmentProxy proxy = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, attachmentID);
-                    IAttachedTo model = null;
+                    IAttachmentDestination model = null;
                     if (refType == AttachmentProxy.References.None)
                         refType = proxy.RefType;
 

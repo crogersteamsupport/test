@@ -8,7 +8,7 @@ using System.IO;
 
 namespace TeamSupport.IDTree
 {
-    public class UserModel : IDNode, IAttachedTo
+    public class UserModel : IDNode, IAttachmentDestination, ITaskAssociation
     {
         public OrganizationModel Organization { get; private set; }
         public int UserID { get; private set; }
@@ -53,11 +53,11 @@ namespace TeamSupport.IDTree
             return ExecuteQuery<bool>($"SELECT MarkDeleted FROM Users WITH (NOLOCK) WHERE UserID={UserID}").First();
         }
 
-        string IAttachedTo.AttachmentPath
+        string IAttachmentDestination.AttachmentPath
         {
             get
             {
-                string path = Connection.Organization.AttachmentPath(ActionModel.ActionPathIndex);
+                string path = Connection.Organization.AttachmentPath;
                 path = Path.Combine(path, "UserAttachments");   // see AttachmentPath.GetFolderName(AttachmentPath.Folder.Actions);
                 path = Path.Combine(path, UserID.ToString());
                 if (!Directory.Exists(path))

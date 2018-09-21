@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 
 namespace TeamSupport.IDTree
 {
-    public interface ITaskDestination
+    // interface to model class that supports attachments 
+    public interface ITaskAssociation
     {
-
     }
 
-    public class TaskAssociationModel : IDNode, ITaskDestination
+
+    public class TaskAssociationModel : IDNode//, IAttachmentDestination
     {
+        public ITaskAssociation TaskAssociation { get; protected set; }  // what are we assigned to?
         public TaskModel Task { get; protected set; }
         public int TaskAssociationID { get; protected set; }
 
