@@ -300,7 +300,7 @@ namespace TeamSupport.Handlers
             }
             string path = builder.ToString();
 
-            TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, Int32.Parse(path));
+            AttachmentProxy attachment = Model_API.Read<AttachmentProxy>(Int32.Parse(path));
 
             path = attachment.FileName;
 
@@ -1497,7 +1497,7 @@ namespace TeamSupport.Handlers
         {
             HttpBrowserCapabilities browser = context.Request.Browser;
             if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
-            TeamSupport.Data.Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, attachmentID);
+            AttachmentProxy attachment = Model_API.Read<AttachmentProxy>(attachmentID);
 
             string attachmentPath = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ChatUploads, (int)attachment.FilePathID);
             attachmentPath += "\\" + chatID;

@@ -3593,19 +3593,7 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public void DeleteAttachment(int attachmentID)
         {
-            if (TeamSupport.IDTree.ConnectionContext.ActionAttachmentsEnabled)  // delete action attachment
-            {
-                AttachmentAPI.DeleteAttachment(AttachmentProxy.References.None, attachmentID);
-                return;
-            }
-
-            Attachment attachment = Attachments.GetAttachment(TSAuthentication.GetLoginUser(), attachmentID);
-            if (attachment == null || attachment.RefType != AttachmentProxy.References.Actions) return;
-            TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
-            if (!CanEditAction(action)) return;
-            attachment.DeleteFile();
-            attachment.Delete();
-            attachment.Collection.Save();
+            AttachmentAPI.DeleteAttachment(AttachmentProxy.References.Actions, attachmentID);
         }
 
         [WebMethod]

@@ -16,7 +16,7 @@ namespace TeamSupport.Api
   {
     public static string GetAttachment(RestCommand command, int attachmentID)
     {
-      Attachment attachment = Attachments.GetAttachment(command.LoginUser, attachmentID);
+      AttachmentProxy attachment = ModelAPI.Model_API.Read<AttachmentProxy>(attachmentID);
       if (attachment.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
       if (!File.Exists(attachment.Path))
       {

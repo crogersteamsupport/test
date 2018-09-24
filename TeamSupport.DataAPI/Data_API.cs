@@ -105,7 +105,7 @@ namespace TeamSupport.DataAPI
                         result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
                     }
                     break;
-                case "ContactActivity":
+                case "ContactActivityAttachmentProxy":
                     {
                         NoteModel model = idNode as NoteModel;
                         ContactActivityAttachmentProxy proxy = tProxy as ContactActivityAttachmentProxy;

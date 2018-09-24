@@ -58,7 +58,8 @@ namespace TeamSupport.Data
         }
     }
 
-  public partial class Attachments
+    [Obsolete("Use ModelAPI", false)]
+    public partial class Attachments
   {
 
     public void LoadByAttachmentGUID(Guid attachmentGUID)

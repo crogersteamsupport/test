@@ -697,7 +697,6 @@ namespace TeamSupport.Services
             {
                 AttachmentProxy proxy = ModelAPI.Model_API.Read<AttachmentProxy>(attachmentID);
                 ModelAPI.AttachmentAPI.DeleteAttachment(AttachmentProxy.References.None, attachmentID);
-                //Attachments.DeleteAttachmentAndFile(UserSession.LoginUser, attachmentID);
                 string description = String.Format("{0} deleted attachment {1}", UserSession.CurrentUser.FirstLastName, proxy.FileName);
                 ActionLogs.AddActionLog(UserSession.LoginUser, ActionLogType.Delete, ReferenceType.Attachments, attachmentID, description);
             }
@@ -779,6 +778,8 @@ namespace TeamSupport.Services
         {
             Note note = Notes.GetNote(UserSession.LoginUser, noteID);
             if (note.CreatorID != UserSession.CurrentUser.UserID && !UserSession.CurrentUser.IsSystemAdmin) return;
+
+            // delete attachments which point to this Note (Activity)
 
             string description = String.Format("{0} deleted note {1} ", UserSession.CurrentUser.FirstLastName, note.Title);
             ActionLogs.AddActionLog(UserSession.LoginUser, ActionLogType.Delete, ReferenceType.Notes, noteID, description);
