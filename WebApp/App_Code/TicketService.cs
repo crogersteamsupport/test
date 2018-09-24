@@ -512,8 +512,8 @@ namespace TSWebServices
                 command.Connection = connection;
                 connection.Open();
                 using (SqlDataAdapter adapter = new SqlDataAdapter(command))
-                {                   
-                    adapter.Fill(table);     
+                {
+                    adapter.Fill(table);
                 }
             }
 
@@ -528,13 +528,13 @@ namespace TSWebServices
 
                 resultItems.Add(resultItem);
             }
-        
+
 
             result.Items = resultItems.ToArray();
             return result;
-        
+
         }
-        
+
         [WebMethod]
         public TicketTypeProxy[] GetTicketTypes()
         {
@@ -1300,6 +1300,10 @@ namespace TSWebServices
             if (!CanEditTicket(ticket)) return value;
             ticket.IsKnowledgeBase = value;
             ticket.Collection.Save();
+            if (ticket.IsKnowledgeBase) {
+                // TSWebServices.Deflector.ProcessUpsert(json);
+            }
+
             return ticket.IsKnowledgeBase;
         }
 
@@ -3760,7 +3764,7 @@ WHERE t.TicketID = @TicketID
 							{
 								customValue.Value = customDate.ToShortDateString();
 							}
-							
+
 							break;
 						default:
                         customValue.Value = field.Value.ToString();
@@ -4026,7 +4030,7 @@ WHERE t.TicketID = @TicketID
                 log.Collection.Save();
 
                 errLocation = string.Format("Error merging ticket actions. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-            }                    
+            }
 
             try
             {
@@ -4089,7 +4093,7 @@ WHERE t.TicketID = @TicketID
             }
             return messages;
         }
-       
+
         public void MergeContacts(int losingTicketID, int winningTicketID, Ticket ticket)
         {
             List<TicketCustomer> customers = new List<TicketCustomer>();
@@ -4116,7 +4120,7 @@ WHERE t.TicketID = @TicketID
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
             return;
         }
-       
+
         public void MergeTags(int losingTicketID, int winningTicketID, Ticket ticket)
         {
             Tags tags = new Tags(TSAuthentication.GetLoginUser());
@@ -4127,7 +4131,7 @@ WHERE t.TicketID = @TicketID
                 RemoveTag(losingTicketID, tag.TagID);
                 AddTag(winningTicketID, tag.Value);
             }
-        }              
+        }
 
         public void MergeSubscribers(int losingTicketID, int winningTicketID, Ticket ticket)
         {
@@ -4143,7 +4147,7 @@ WHERE t.TicketID = @TicketID
             string description = "Merged '" + losingticket.TicketNumber + "' Subscribers";
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
 
-        }        
+        }
 
         public void MergeQueres(int losingTicketID, int winningTicketID, Ticket ticket)
         {
@@ -4159,7 +4163,7 @@ WHERE t.TicketID = @TicketID
             Ticket losingticket = (Ticket)Tickets.GetTicket(TSAuthentication.GetLoginUser(), losingTicketID);
             string description = "Merged '" + ticket.TicketNumber + "' Queuers";
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
-        }               
+        }
 
         private TicketLinkToJiraItemProxy GetLinkToJira(int ticketID)
         {
@@ -4675,7 +4679,7 @@ WHERE t.TicketID = @TicketID
 
     }
 
-   
+
 
 
     [DataContract]

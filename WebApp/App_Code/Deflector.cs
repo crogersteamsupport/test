@@ -36,6 +36,23 @@ namespace TSWebServices {
             return CheckDeflectorAPI(tag);
         }
 
+        public string IndexDeflector (string json) {
+            string responseText    = null;
+            string PingUrl         = "http://localhost:64871/api/deflector/index";
+        	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
+        	request.Method         = "POST";
+        	request.KeepAlive      = false;
+        	request.ContentType    = "application/json";
+        	using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+                if (request.HaveResponse && response != null) {
+   					using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
+   					    responseText = reader.ReadToEnd();
+   					}
+   				}
+   			}
+   			return responseText;
+   		}
+
         [WebMethod]
         public string HydrateOrganization (int organizationID) {
             var results = new List<string>();
