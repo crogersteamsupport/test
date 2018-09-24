@@ -266,6 +266,7 @@
     <Compile Include="BusinessObjects\CustomPortalColumns.cs" />
     <Compile Include="BusinessObjects\CustomValues.cs" />
     <Compile Include="BusinessObjects\DeflectionLog.cs" />
+    <Compile Include="BusinessObjects\Deflector.cs" />
     <Compile Include="BusinessObjects\DeletedIndexItems.cs" />
     <Compile Include="BusinessObjects\DeletedTickets.cs" />
     <Compile Include="BusinessObjects\EMailActions.cs" />
