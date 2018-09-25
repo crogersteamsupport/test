@@ -56,9 +56,9 @@ namespace TeamSupport.ServiceLibrary
 			public string Currency_Symbol { get; set; }
 			public string Account_Type { get; set; }
 			public object Rating { get; set; }
-			public int SIC_Code { get; set; }
+			public int? SIC_Code { get; set; }
 			public object Website { get; set; }
-			public int Employees { get; set; }
+			public int? Employees { get; set; }
 			public DateTime Last_Activity_Time { get; set; }
 			public string Industry { get; set; }
 			public ModifiedBy Modified_By { get; set; }
@@ -91,7 +91,7 @@ namespace TeamSupport.ServiceLibrary
 			public List<Tag> Tag { get; set; }
 			public CreatedBy Created_By { get; set; }
 			public string Fax { get; set; }
-			public int Annual_Revenue { get; set; }
+			public decimal? Annual_Revenue { get; set; }
 		}
 
 		public class Info
