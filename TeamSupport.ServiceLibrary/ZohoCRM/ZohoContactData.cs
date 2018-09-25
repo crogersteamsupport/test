@@ -60,7 +60,7 @@ namespace TeamSupport.ServiceLibrary
 			[JsonProperty(PropertyName = "$editable")]
 			public bool Editable { get; set; }
 			public string Lead_Source { get; set; }
-			public List<string> Tag { get; set; }
+			public List<ZohoAccountData.Tag> Tag { get; set; }
 			public ZohoAccountData.CreatedBy Created_By { get; set; }
 			[JsonProperty(PropertyName = "Phone Ext")]
 			public string TenmastExtension { get; set; }
