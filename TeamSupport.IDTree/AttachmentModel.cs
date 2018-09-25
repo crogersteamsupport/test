@@ -36,6 +36,18 @@ namespace TeamSupport.IDTree
             AttachedTo = attachedTo;
         }
 
+        public AttachmentModel(ConnectionContext connection, AttachmentProxy attachment) : base(connection)
+        {
+            AttachmentID = attachment.AttachmentID;
+            switch(attachment.GetType().Name)
+            {
+                case "UserPhotoAttachmentProxy":
+                    UserPhotoAttachmentProxy proxy = attachment as UserPhotoAttachmentProxy;
+                    AttachedTo = new UserModel(connection, proxy.RefID);
+                    break;
+            }
+        }
+
         public override void Verify()
         {
             // also check if AttachedTo is valid?

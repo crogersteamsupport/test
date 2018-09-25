@@ -17,6 +17,7 @@ namespace TeamSupport.DataAPI
         public void Append(string name, int value) { PrivateAppend(name, value.ToString()); }
         public void Append(string name, DateTime value) { PrivateAppend(name, ToSql(value)); }
         public void Append(string name, bool value) { Append(name, ToSql(value)); }
+        public void Append(string name, string value) { PrivateAppend(name, '\'' + value + '\''); }
 
         public UpdateArguments(string name, int value)
         {

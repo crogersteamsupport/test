@@ -51,7 +51,12 @@ namespace TeamSupport.ModelAPI
             return result;
         }
 
-        static IAttachmentDestination ClassFactory(ConnectionContext connection, AttachmentProxy.References refType, int refID)
+        public static IAttachmentDestination ClassFactory(ConnectionContext connection, AttachmentProxy proxy)
+        {
+            return ClassFactory(connection, proxy.RefType, proxy.RefID);
+        }
+
+        private static IAttachmentDestination ClassFactory(ConnectionContext connection, AttachmentProxy.References refType, int refID)
         {
             switch (refType)
             {
@@ -77,8 +82,11 @@ namespace TeamSupport.ModelAPI
                 case AttachmentProxy.References.Organizations: return new OrganizationModel(connection, refID);
                 case AttachmentProxy.References.ProductVersions: return new ProductVersionModel(connection, refID);
                 case AttachmentProxy.References.Tasks: return new TaskModel(connection.Organization, refID);
-                //case AttachmentProxy.References.UserPhoto: return new UserPhotoModel(connection, refID);
-                case AttachmentProxy.References.Users: return new UserModel(connection, refID);
+
+                case AttachmentProxy.References.UserPhoto:
+                case AttachmentProxy.References.Users:
+                    return new UserModel(connection, refID);
+
                 case AttachmentProxy.References.WaterCooler: return new WatercoolerMsgModel(connection, refID);
                 //case AttachmentProxy.References.Imports: return new ImportsModel(connection, refID);
                 default:
@@ -145,8 +153,7 @@ namespace TeamSupport.ModelAPI
                         case AttachmentProxy.References.Tasks:
                             model = new TaskModel(connection, destinationID.Value);
                             break;
-                        //case AttachmentProxy.References.UserPhoto:
-                        //    break;
+                        case AttachmentProxy.References.UserPhoto:
                         case AttachmentProxy.References.Users:
                             model = new UserModel(connection, destinationID.Value);
                             break;

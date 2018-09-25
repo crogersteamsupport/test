@@ -197,6 +197,14 @@ namespace TeamSupport.DataAPI
                         result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
                     }
                     break;
+                case "UserPhotoAttachmentProxy":   // create action attachment
+                    {
+                        UserModel model = idNode as UserModel;
+                        UserPhotoAttachmentProxy proxy = tProxy as UserPhotoAttachmentProxy;
+                        CreateAttachment(idNode, proxy, model.UserID);
+                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
+                    }
+                    break;
                 case "WatercoolerMsgAttachmentProxy":   // create action attachment
                     {
                         WatercoolerMsgModel model = idNode as WatercoolerMsgModel;
@@ -215,6 +223,24 @@ namespace TeamSupport.DataAPI
             //    idNode.ExecuteCommand(command);
             // TODO - log
             return result;
+        }
+
+        public static TProxy ReadByRefID<TProxy>(ConnectionContext connection, int id) where TProxy : class
+        {
+            TProxy tProxy = default(TProxy);
+            switch (typeof(TProxy).Name) // alphabetized list
+            {
+                case "UserPhotoAttachmentProxy": // action
+                    {
+                        Table<AttachmentProxy> table = connection._db.GetTable<AttachmentProxy>();
+                        tProxy = table.Where(a => (a.RefID == id) && (a.RefType == AttachmentProxy.References.UserPhoto)).First() as TProxy;
+                    }
+                    break;
+                default:
+                    if (Debugger.IsAttached) Debugger.Break();
+                    break;
+            }
+            return tProxy;
         }
 
         /// <summary>
@@ -356,6 +382,10 @@ namespace TeamSupport.DataAPI
                 case "ActionNode":
                     id = ((ActionModel)node).ActionID;
                     command = $"UPDATE Actions WITH(ROWLOCK) SET {args.ToString()} WHERE ActionID={id}";
+                    break;
+                case "AttachmentModel":
+                    id = ((AttachmentModel)node).AttachmentID;
+                    command = $"UPDATE Attachments WITH(ROWLOCK) SET {args.ToString()} WHERE AttachmentID={id}";
                     break;
                 case "TagLinkNode":
                     id = ((TagLinkModel)node).TagLinkID; command = $"UPDATE TagLinks WITH(ROWLOCK) SET {args.ToString()} WHERE TagLinkID={id} AND RefType=17";

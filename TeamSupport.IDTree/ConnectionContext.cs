@@ -67,7 +67,14 @@ namespace TeamSupport.IDTree
 
         public TicketModel Ticket(int ticketID) { return new TicketModel(Organization, ticketID); }
 
-        public bool CanEdit() { return Authentication.IsSystemAdmin || User.AllowUserToEditAnyAction(); }
+        public bool CanEdit()
+        {
+            // user in organization or child of organization?
+            //Organization organization = (Organization)Organizations.GetOrganization(UserSession.LoginUser, _organizationID);
+            //if (organization.OrganizationID != UserSession.LoginUser.OrganizationID && organization.ParentID != UserSession.LoginUser.OrganizationID)
+
+            return Authentication.IsSystemAdmin || User.AllowUserToEditAnyAction();
+        }
 
         public string AttachmentPath(int id)
         {

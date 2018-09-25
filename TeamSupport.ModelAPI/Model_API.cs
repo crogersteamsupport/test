@@ -28,6 +28,9 @@ namespace TeamSupport.ModelAPI
                     {
                         case "TicketModel":
                             return new TicketModel(connection, id) as T;
+                        default:
+                            if (Debugger.IsAttached) Debugger.Break();
+                            break;
                     }
                 }
             }
@@ -61,13 +64,20 @@ namespace TeamSupport.ModelAPI
                     switch (typeof(T).Name)
                     {
                         case "ActionProxy":
-                            ActionProxy actionProxy = proxy as ActionProxy;
-                            Data_API.Create(connection.Ticket(actionProxy.TicketID), actionProxy);
+                            {
+                                ActionProxy actionProxy = proxy as ActionProxy;
+                                Data_API.Create(connection.Ticket(actionProxy.TicketID), actionProxy);
+                            }
                             break;
                         case "AttachmentProxy":
-                            AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
-                            ActionModel actionModel = new ActionModel(connection, ((ActionAttachmentProxy)attachmentProxy).ActionID);
-                            Data_API.Create(actionModel, attachmentProxy);
+                            {
+                                AttachmentProxy attachment = proxy as AttachmentProxy;
+                                IAttachmentDestination model = AttachmentAPI.ClassFactory(connection, attachment);
+                                Data_API.Create(model as IDNode, attachment);
+                            }
+                            break;
+                        default:
+                            if (Debugger.IsAttached) Debugger.Break();
                             break;
                     }
                 }
@@ -87,6 +97,31 @@ namespace TeamSupport.ModelAPI
                 // TODO - tell user we failed to read
                 Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
             }
+        }
+
+        public static T ReadByRefID<T>(int id) where T : class
+        {
+            T t = null;
+            try
+            {
+                using (ConnectionContext connection = new ConnectionContext())
+                {
+                    switch(typeof(T).Name) // alphabetized list
+                    {
+                        case "UserPhotoAttachmentProxy":
+                            t = Data_API.ReadByRefID<UserPhotoAttachmentProxy>(connection, id) as T;
+                            break;
+                        default:
+                            if (Debugger.IsAttached) Debugger.Break();
+                            break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                int logid = Data_API.LogException(new IDTree.AuthenticationModel(), ex, "ReadByRefID Exception" + ex.Source);
+            }
+            return t;
         }
 
         /// <summary>
@@ -179,7 +214,14 @@ namespace TeamSupport.ModelAPI
                             break;
                         case "AttachmentProxy":
                             AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
-                            //DataAPI.DataAPI.Update(new ActionAttachment(connection, attachmentProxy.AttachmentID), attachmentProxy);
+                            UpdateArguments args = new UpdateArguments();
+                            args.Append("FileName", attachmentProxy.FileName);
+                            args.Append("Path", attachmentProxy.Path);
+                            args.Append("FilePathID", attachmentProxy.FilePathID.Value);
+                            Data_API.Update(new AttachmentModel(connection, attachmentProxy), args);
+                            break;
+                        default:
+                            if (Debugger.IsAttached) Debugger.Break();
                             break;
                     }
                 }
