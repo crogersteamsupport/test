@@ -314,7 +314,7 @@ namespace TSWebServices
         public string AddUserUploadMessage(string channelName, int chatID, int attachmentID, int userID)
         {
             Chat chat = GetChat(chatID);
-            Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, attachmentID);
+            AttachmentProxy attachment = TeamSupport.ModelAPI.Model_API.Read<AttachmentProxy>(attachmentID);
             string attachmentHTML = "";
 
             if (attachment.FileType.StartsWith("image/"))
@@ -531,7 +531,7 @@ namespace TSWebServices
         public string AddAgentUploadtMessage(string channelName, int chatID, int attachmentID)
         {
             Chat chat = GetChat(chatID);
-            Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, attachmentID);
+            AttachmentProxy attachment = TeamSupport.ModelAPI.Model_API.Read<AttachmentProxy>(attachmentID);
             string attachmentHTML = "";
 
             if (attachment.FileType.StartsWith("image/"))

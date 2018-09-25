@@ -16,7 +16,7 @@ namespace TeamSupport.Api
   {
     public static string GetAttachment(RestCommand command, int attachmentID)
     {
-      Attachment attachment = Attachments.GetAttachment(command.LoginUser, attachmentID);
+      AttachmentProxy attachment = ModelAPI.Model_API.Read<AttachmentProxy>(attachmentID);
       if (attachment.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
       if (!File.Exists(attachment.Path))
       {
@@ -70,7 +70,7 @@ namespace TeamSupport.Api
           files[0].SaveAs(Path.Combine(path, fileName));
 
           Attachment attachment = (new Attachments(command.LoginUser)).AddNewAttachment();
-          attachment.RefType = ReferenceType.Actions;
+          attachment.RefType = AttachmentProxy.References.Actions;
           attachment.RefID = (int)actionID;
           attachment.OrganizationID = command.Organization.OrganizationID;
           attachment.FileName = fileName;
@@ -131,7 +131,7 @@ namespace TeamSupport.Api
           files[0].SaveAs(Path.Combine(path, fileName));
 
           Attachment attachment = (new Attachments(command.LoginUser)).AddNewAttachment();
-          attachment.RefType = ReferenceType.Assets;
+          attachment.RefType = AttachmentProxy.References.Assets;
           attachment.RefID = (int)assetID;
           attachment.OrganizationID = command.Organization.OrganizationID;
           attachment.FileName = fileName;
@@ -153,6 +153,7 @@ namespace TeamSupport.Api
       }
     }
 
+    [Obsolete("Use ModelAPI", true)]
     public static string DeleteAttachment(RestCommand command, int assetID, int attachmentID)
     {
       Asset asset = Assets.GetAsset(command.LoginUser, assetID);

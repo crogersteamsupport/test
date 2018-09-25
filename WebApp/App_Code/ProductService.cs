@@ -185,11 +185,7 @@ namespace TSWebServices
         [WebMethod]
         public void DeleteAttachment(int attachmentID)
         {
-            Attachment attachment = Attachments.GetAttachment(TSAuthentication.GetLoginUser(), attachmentID);
-            ProductVersionsViewItem version = ProductVersionsView.GetProductVersionsViewItem(attachment.Collection.LoginUser, attachment.RefID);
-            if (version.OrganizationID != TSAuthentication.OrganizationID) return;
-            attachment.Delete();
-            attachment.Collection.Save();
+            TeamSupport.ModelAPI.AttachmentAPI.DeleteAttachment(AttachmentProxy.References.ProductVersions, attachmentID);
         }
 
         [WebMethod]

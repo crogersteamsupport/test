@@ -5,12 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Data.Linq;
+using TeamSupport.Data;
 
 namespace TeamSupport.IDTree
 {
     public abstract class IDNode
     {
-        public ConnectionContext Connection { get; private set; }
+        public ConnectionContext Connection { get; protected set; }
         
         protected IDNode(ConnectionContext request)
         {
@@ -45,6 +46,24 @@ namespace TeamSupport.IDTree
                 Debugger.Break();   // ID is wrong - fix the code!
             }
             throw new System.Data.ConstraintException(String.Format($"{query} not found")); // error - a join of the records to authentication just doesn't add up
+        }
+
+        public static IAttachmentDestination GetModel<T>(ConnectionContext connection, T proxy) where T : class
+        {
+            switch (proxy.GetType().Name)
+            {
+                case "ActionAttachmentProxy":
+                    {
+                        ActionAttachmentProxy attachment = proxy as ActionAttachmentProxy;
+                        return new ActionModel(connection, attachment.RefID);
+                    }
+                case "TaskAttachmentProxy":
+                    {
+                        TaskAttachmentProxy attachment = proxy as TaskAttachmentProxy;
+                        return new TaskModel(connection, attachment.RefID);
+                    }
+            }
+            return null;
         }
 
     }

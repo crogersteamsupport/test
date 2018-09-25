@@ -36,29 +36,7 @@ namespace TeamSupport.Handlers
         {
             List<UploadResult> result = new List<UploadResult>();
 
-            // Action Attachments
-            //if (IDTree.ConnectionContext.ActionAttachmentsEnabled && (folder == AttachmentPath.Folder.Actions)) // save action attachments
-            //{
-            //    List<AttachmentProxy> attachmentProxies = null;
-            //    attachmentProxies = ModelAPI.Model_API.CreateActionAttachments(itemID.Value, context);    // ticketID, actionID, actionAttachments
-
-            //    // respond to front end
-            //    context.Response.Clear();
-            //    if (attachmentProxies == null)
-            //    {
-            //        context.Response.Write("Invalid attachment.");  // error
-            //        context.Response.ContentType = "text/html";
-            //        return;
-            //    }
-
-            //    foreach (AttachmentProxy proxy in attachmentProxies)
-            //        result.Add(new UploadResult(proxy.FileName, proxy.FileType, proxy.FileSize));
-            //    context.Response.ContentType = "text/plain";
-            //    context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
-            //    return;
-            //}
-
-            ReferenceType refType = AttachmentPath.GetFolderReferenceType(folder);
+            AttachmentProxy.References refType = AttachmentPath.GetFolderReferenceType(folder);
 
             string path = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, folder, 3);
             if (itemID != null) path = Path.Combine(path, itemID.ToString());
@@ -72,7 +50,7 @@ namespace TeamSupport.Handlers
                     string fileName = RemoveSpecialCharacters(DataUtils.VerifyUniqueUrlFileName(path, Path.GetFileName(files[i].FileName)));
 
                     files[i].SaveAs(Path.Combine(path, fileName));
-                    if (refType != ReferenceType.None && itemID != null)
+                    if (refType != AttachmentProxy.References.None && itemID != null)
                     {
                         Attachment attachment = (new Attachments(TSAuthentication.GetLoginUser())).AddNewAttachment();
                         attachment.RefType = refType;
@@ -95,7 +73,7 @@ namespace TeamSupport.Handlers
                     {
                         switch (refType)
                         {
-                            case ReferenceType.Imports:
+                            case AttachmentProxy.References.Imports:
                                 //Not saving import till user click on import button saving both imports and mappings
                                 //Import import = (new Imports(TSAuthentication.GetLoginUser())).AddNewImport();
                                 //import.RefType = (ReferenceType)Convert.ToInt32(context.Request.Form["refType"]);

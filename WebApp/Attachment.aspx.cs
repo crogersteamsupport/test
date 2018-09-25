@@ -16,12 +16,12 @@ using System.IO;
 
 public partial class Attachment : System.Web.UI.Page
 {
-  private TeamSupport.Data.Attachment _attachment;
-  
+  private AttachmentProxy _attachment;
+
   protected void Page_Load(object sender, EventArgs e)
   {
     int attachmentID = Request["AttachmentID"] == null ? -1 : int.Parse(Request["AttachmentID"]);
-    _attachment = (TeamSupport.Data.Attachment)Attachments.GetAttachment(UserSession.LoginUser, attachmentID);
+    _attachment = TeamSupport.ModelAPI.Model_API.Read<AttachmentProxy>(attachmentID);
 
     if (_attachment == null)
     {

@@ -1857,13 +1857,15 @@ $(document).ready(function () {
                         .text(note.Attachments[i].FileName)
                         .appendTo(div);
 
+                    var attachmentID = note.Attachments[i].AttachmentID;
+
                     $('<i>')
                         .addClass('fa fa-trash-o')
                         .appendTo(div)
                         .click(function (e) {
                             if (confirm("Are you sure you want to delete this file attachment")) {
                                 _mainFrame.Ts.System.logAction('Customer Detail - Delete Note File Attachment');
-                                parent.privateServices.DeleteAttachment(note.Attachments[i].AttachmentID, function (e) {
+                                parent.privateServices.DeleteAttachment(attachmentID, function (e) {
                                     div.remove();
                                 });
                             }

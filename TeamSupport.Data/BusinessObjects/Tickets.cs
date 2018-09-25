@@ -971,7 +971,7 @@ AND ot.TicketID = @TicketID
                     newTaskAssociation.RefType = cloningTaskAssociation.RefType;
                     newTaskAssociation.CreatorID = cloningTaskAssociation.CreatorID;
                     newTaskAssociation.DateCreated = cloningTaskAssociation.DateCreatedUtc;
-                    if (cloningTaskAssociation.RefType == (int)ReferenceType.Tickets && cloningTaskAssociation.RefID == this.TicketID)
+                    if (cloningTaskAssociation.RefType == TaskAssociationProxy.References.Tickets && cloningTaskAssociation.RefID == this.TicketID)
                     {
                         newTaskAssociation.RefID = cloneTicketId;
                     }

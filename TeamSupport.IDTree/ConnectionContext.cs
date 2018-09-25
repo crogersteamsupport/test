@@ -19,7 +19,7 @@ namespace TeamSupport.IDTree
     /// </summary>
     public class ConnectionContext : IDisposable
     {
-        const bool _actionAttachments = false;
+        const bool _actionAttachments = true;
         public static bool ActionAttachmentsEnabled { get { return _actionAttachments; } }
 
         public AuthenticationModel Authentication { get; private set; }
@@ -67,7 +67,14 @@ namespace TeamSupport.IDTree
 
         public TicketModel Ticket(int ticketID) { return new TicketModel(Organization, ticketID); }
 
-        public bool CanEdit() { return Authentication.IsSystemAdmin || User.AllowUserToEditAnyAction(); }
+        public bool CanEdit()
+        {
+            // user in organization or child of organization?
+            //Organization organization = (Organization)Organizations.GetOrganization(UserSession.LoginUser, _organizationID);
+            //if (organization.OrganizationID != UserSession.LoginUser.OrganizationID && organization.ParentID != UserSession.LoginUser.OrganizationID)
+
+            return Authentication.IsSystemAdmin || User.AllowUserToEditAnyAction();
+        }
 
         public string AttachmentPath(int id)
         {

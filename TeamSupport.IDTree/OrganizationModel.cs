@@ -14,7 +14,7 @@ namespace TeamSupport.IDTree
     /// <summary>
     /// Wrapper for valid OrganizationID
     /// </summary>
-    public class OrganizationModel : IDNode
+    public class OrganizationModel : IDNode, IAttachmentDestination, ITaskAssociation, INoteDestination
     {
         public int OrganizationID { get; private set; }
 
@@ -42,7 +42,12 @@ namespace TeamSupport.IDTree
             return new OrganizationModel(Connection, parentID.Value);
         }
 
-        public string AttachmentPath(int id)
+        public string AttachmentPath
+        {
+            get { return AttachmentPathx(AttachmentModel.AttachmentPathIndex); }
+        }
+
+        string AttachmentPathx(int id)
         {
             string path = Connection.AttachmentPath(id);
             path = Path.Combine(Path.Combine(path, "Organizations"), OrganizationID.ToString());

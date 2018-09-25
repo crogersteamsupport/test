@@ -1837,7 +1837,7 @@ AND a.OrganizationID = @OrganizationID
 
         private void ImportAttachment(DataRow row, string sourceFile, Attachments attachments, Actions actions, Tickets tickets, Organizations customers)
         {
-            ReferenceType refType = ReferenceType.None;
+            AttachmentProxy.References refType = AttachmentProxy.References.None;
             int id = -1;
             _currentRow = row;
 
@@ -1864,7 +1864,7 @@ AND a.OrganizationID = @OrganizationID
                     _log.AppendError(row, "Attachment skipped due to action description does not exist.");
                     return;
                 }
-                refType = ReferenceType.Actions;
+                refType = AttachmentProxy.References.Actions;
                 id = action.ActionID;
             }
             else if (row["ReferenceObject"].ToString().ToLower().IndexOf("action") > -1)
@@ -1875,7 +1875,7 @@ AND a.OrganizationID = @OrganizationID
                     _log.AppendError(row, "Attachment skipped due to action does not exist.");
                     return;
                 }
-                refType = ReferenceType.Actions;
+                refType = AttachmentProxy.References.Actions;
                 id = action.ActionID;
             }
             else if (row["ReferenceObject"].ToString().ToLower().IndexOf("customer") > -1)
@@ -1887,7 +1887,7 @@ AND a.OrganizationID = @OrganizationID
                     _log.AppendError(row, "Attachment skipped due to customer does not exist.");
                     return;
                 }
-                refType = ReferenceType.Organizations;
+                refType = AttachmentProxy.References.Organizations;
                 id = customer.OrganizationID;
             }
             else
