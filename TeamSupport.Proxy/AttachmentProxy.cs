@@ -38,7 +38,7 @@ namespace TeamSupport.Data
     [InheritanceMapping(Code = References.Tasks, Type = typeof(TaskAttachmentProxy))]
     [InheritanceMapping(Code = References.UserPhoto, Type = typeof(UserPhotoAttachmentProxy))]
     [InheritanceMapping(Code = References.Users, Type = typeof(UserAttachmentProxy))]
-    [InheritanceMapping(Code = References.WaterCooler, Type = typeof(WaterCoolerAttachmentProxy))]
+    [InheritanceMapping(Code = References.WaterCooler, Type = typeof(WatercoolerMsgAttachmentProxy))]
     [InheritanceMapping(Code = References.Imports, Type = typeof(ImportsAttachmentProxy))]
     [InheritanceMapping(Code = References.None, Type = typeof(NoneAttachmentProxy))]
     public abstract class AttachmentProxy
@@ -89,7 +89,7 @@ namespace TeamSupport.Data
                 case References.Tasks: return new TaskAttachmentProxy();
                 case References.UserPhoto: return new UserPhotoAttachmentProxy();
                 case References.Users: return new UserAttachmentProxy();
-                case References.WaterCooler: return new WaterCoolerAttachmentProxy();
+                case References.WaterCooler: return new WatercoolerMsgAttachmentProxy();
                 case References.Imports: return new ImportsAttachmentProxy();
                 case References.None: return new NoneAttachmentProxy();
                 default:
@@ -138,9 +138,9 @@ namespace TeamSupport.Data
         public int UserID { get { return RefID; } }
     }
 
-    public class WaterCoolerAttachmentProxy : AttachmentProxy
+    public class WatercoolerMsgAttachmentProxy : AttachmentProxy
     {
-        public WaterCoolerAttachmentProxy() : base(References.WaterCooler) { }
+        public WatercoolerMsgAttachmentProxy() : base(References.WaterCooler) { }
         public int MessageID { get { return RefID; } }
     }
 

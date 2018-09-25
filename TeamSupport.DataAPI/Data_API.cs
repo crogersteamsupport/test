@@ -197,6 +197,14 @@ namespace TeamSupport.DataAPI
                         result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
                     }
                     break;
+                case "WatercoolerMsgAttachmentProxy":   // create action attachment
+                    {
+                        WatercoolerMsgModel model = idNode as WatercoolerMsgModel;
+                        WatercoolerMsgAttachmentProxy proxy = tProxy as WatercoolerMsgAttachmentProxy;
+                        CreateAttachment(idNode, proxy, model.MessageID);
+                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
+                    }
+                    break;
 
                 default:
                     if (Debugger.IsAttached) Debugger.Break();
@@ -218,25 +226,6 @@ namespace TeamSupport.DataAPI
             switch (typeof(TProxy).Name) // alphabetized list
             {
                 case "AttachmentProxy": // action
-                    {
-                        Table<AttachmentProxy> table = connection._db.GetTable<AttachmentProxy>();
-                        tProxy = table.Where(a => a.AttachmentID == id).First() as TProxy;
-                    }
-                    break;
-                default:
-                    if (Debugger.IsAttached) Debugger.Break();
-                    break;
-            }
-            return tProxy;
-        }
-
-        public static TProxy ReadDiscrimator<TProxy>(ConnectionContext connection, int id) where TProxy : class
-        {
-            TProxy tProxy = default(TProxy);
-            switch (typeof(TProxy).Name) // alphabetized list
-            {
-
-                case "AttachmentProxy": // read all attachment types
                     {
                         Table<AttachmentProxy> table = connection._db.GetTable<AttachmentProxy>();
                         tProxy = table.Where(a => a.AttachmentID == id).First() as TProxy;

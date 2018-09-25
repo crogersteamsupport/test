@@ -73,6 +73,7 @@
     <Compile Include="TagModel.cs" />
     <Compile Include="TaskAssociationModel.cs" />
     <Compile Include="TicketModel.cs" />
+    <Compile Include="WatercoolerMsgModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

@@ -121,7 +121,7 @@ namespace TeamSupport.ModelAPI
                             //t = DataAPI.DataAPI.Read<T>(new TicketNode(connection, id));
                             break;
                         case "AttachmentProxy":
-                            t = Data_API.ReadDiscrimator<AttachmentProxy>(connection, id) as T;
+                            t = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, id) as T;
                             break;
                         case "AttachmentProxy[]":
                             t = Data_API.Read<T>(new ActionModel(connection, id));

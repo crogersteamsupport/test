@@ -79,7 +79,7 @@ namespace TeamSupport.ModelAPI
                 case AttachmentProxy.References.Tasks: return new TaskModel(connection.Organization, refID);
                 //case AttachmentProxy.References.UserPhoto: return new UserPhotoModel(connection, refID);
                 case AttachmentProxy.References.Users: return new UserModel(connection, refID);
-                //case AttachmentProxy.References.WaterCooler: return new WaterCoolerModel(connection, refID);
+                case AttachmentProxy.References.WaterCooler: return new WatercoolerMsgModel(connection, refID);
                 //case AttachmentProxy.References.Imports: return new ImportsModel(connection, refID);
                 default:
                     if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
@@ -150,8 +150,9 @@ namespace TeamSupport.ModelAPI
                         case AttachmentProxy.References.Users:
                             model = new UserModel(connection, destinationID.Value);
                             break;
-                        //case AttachmentProxy.References.WaterCooler:
-                        //    break;
+                        case AttachmentProxy.References.WaterCooler:
+                            model = new WatercoolerMsgModel(connection, destinationID.Value);
+                            break;
                         default:
                             if (Debugger.IsAttached) Debugger.Break();
                             throw new Exception($"unrecognized RefType {refType} in DeleteAttachment");
