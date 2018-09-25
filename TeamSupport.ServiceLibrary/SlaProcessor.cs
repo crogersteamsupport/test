@@ -129,7 +129,9 @@ namespace TeamSupport.ServiceLibrary
 																										holidays,
 																										LoginUser,
 																										businessPausedTimes,
-																										Logs);
+																										Logs,
+																										false,
+																										lastActionDateCreated.Value);
 								Logs.WriteEventFormat("Total Paused Time: {0}", pausedTimeSpanSinceLastAction.ToString());
 
 								if (lastActionDateCreated == null)

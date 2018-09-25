@@ -16,12 +16,13 @@ namespace TeamSupport.Data
 				if (startOn != null)
 				{
 					sql += " AND PausedOn > @startOn";
+					command.Parameters.AddWithValue("@startOn", startOn);
 				}
 
 				command.CommandText = sql;
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@ticketId", ticketId);
-				command.Parameters.AddWithValue("@startOn", startOn);
+				
 				Fill(command);
             }
         }
