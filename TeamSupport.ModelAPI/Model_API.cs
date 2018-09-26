@@ -82,16 +82,6 @@ namespace TeamSupport.ModelAPI
                     }
                 }
             }
-            catch (AuthenticationException ex)
-            {
-                // TODO - tell user they don't have permission
-                Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
-            }
-            catch (System.Data.ConstraintException ex)
-            {
-                // TODO - data integrity failure
-                Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
-            }
             catch (Exception ex)
             {
                 // TODO - tell user we failed to read
@@ -99,7 +89,7 @@ namespace TeamSupport.ModelAPI
             }
         }
 
-        public static T ReadByRefID<T>(int id) where T : class
+        public static T ReadRefTypeProxyByRefID<T>(int id) where T : class
         {
             T t = null;
             try
@@ -109,7 +99,7 @@ namespace TeamSupport.ModelAPI
                     switch(typeof(T).Name) // alphabetized list
                     {
                         case "UserPhotoAttachmentProxy":
-                            t = Data_API.ReadByRefID<UserPhotoAttachmentProxy>(connection, id) as T;
+                            t = Data_API.ReadRefTypeProxyByRefID<UserPhotoAttachmentProxy>(connection, id) as T;
                             break;
                         default:
                             if (Debugger.IsAttached) Debugger.Break();
@@ -129,12 +119,12 @@ namespace TeamSupport.ModelAPI
         /// </summary>
         public static T Read<T>(int id) where T : class
         {
-            T t = null;
+            T t = default(T);
             try
             {
                 using (ConnectionContext connection = new ConnectionContext())
                 {
-                    switch(typeof(T).Name) // alphabetized list
+                    switch (typeof(T).Name) // alphabetized list
                     {
                         case "ActionProxy":
                             {
@@ -156,7 +146,7 @@ namespace TeamSupport.ModelAPI
                             //t = DataAPI.DataAPI.Read<T>(new TicketNode(connection, id));
                             break;
                         case "AttachmentProxy":
-                            t = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, id) as T;
+                            t = Data_API.ReadRefTypeProxyByID<AttachmentProxy>(connection, id) as T;
                             break;
                         case "AttachmentProxy[]":
                             t = Data_API.Read<T>(new ActionModel(connection, id));
@@ -179,16 +169,6 @@ namespace TeamSupport.ModelAPI
                             break;
                     }
                 }
-            }
-            catch (AuthenticationException ex)
-            {
-                // TODO - tell user they don't have permission
-                Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, id, "choke", ex);
-            }
-            catch (System.Data.ConstraintException ex)
-            {
-                // TODO - data integrity failure
-                Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, id, "choke", ex);
             }
             catch (Exception ex)
             {
@@ -225,16 +205,6 @@ namespace TeamSupport.ModelAPI
                             break;
                     }
                 }
-            }
-            catch (AuthenticationException ex)
-            {
-                // TODO - tell user they don't have permission
-                Data_API.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
-            }
-            catch (System.Data.ConstraintException ex)
-            {
-                // TODO - data integrity failure
-                Data_API.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
             }
             catch (Exception ex)
             {
@@ -328,8 +298,6 @@ namespace TeamSupport.ModelAPI
         #region ActionAttachments
 
 
-        /// <summary> Delete Action Attachment /// </summary>
-        /// <summary> Create Action Attachments </summary>
         public static void ReadActionAttachmentsForTicket(int ticketID, ActionAttachmentsByTicketID ticketActionAttachments, out AttachmentProxy[] attachments)
         {
             attachments = null;

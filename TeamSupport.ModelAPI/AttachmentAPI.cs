@@ -103,7 +103,7 @@ namespace TeamSupport.ModelAPI
                 using (ConnectionContext connection = new ConnectionContext())
                 {
                     // validate args
-                    AttachmentProxy proxy = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, attachmentID);
+                    AttachmentProxy proxy = Data_API.ReadRefTypeProxyByID<AttachmentProxy>(connection, attachmentID);
                     IAttachmentDestination model = null;
                     if (refType == AttachmentProxy.References.None)
                         refType = proxy.RefType;

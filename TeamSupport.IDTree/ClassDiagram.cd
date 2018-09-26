@@ -52,10 +52,10 @@
     <ShowAsAssociation>
       <Field Name="_connection" />
       <Field Name="_transaction" />
+      <Property Name="Authentication" />
       <Property Name="_db" />
       <Property Name="Organization" />
       <Property Name="User" />
-      <Property Name="Authentication" />
     </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
@@ -162,6 +162,11 @@
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
+    <AssociationLine Name="Organization" Type="TeamSupport.IDTree.OrganizationModel">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.04" Y="0.719" />
+      </MemberNameLabel>
+    </AssociationLine>
     <TypeIdentifier>
       <HashCode>EAAAIAAAAAAAgQAAAAAAAAgAAAAAAAAAAAAgAAAAIAA=</HashCode>
       <FileName>UserModel.cs</FileName>
@@ -173,6 +178,11 @@
   </Class>
   <Class Name="TeamSupport.IDTree.UserTicketModel" Collapsed="true">
     <Position X="12.75" Y="2.5" Width="1.5" />
+    <AssociationLine Name="Ticket" Type="TeamSupport.IDTree.TicketModel">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.717" Y="0.228" />
+      </MemberNameLabel>
+    </AssociationLine>
     <TypeIdentifier>
       <HashCode>AAABAAAAAAAAAQACAAAAAAAACAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>UserTicketModel.cs</FileName>

@@ -158,7 +158,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
 
                 File.Delete(source);
 
-                AttachmentProxy proxy = TeamSupport.ModelAPI.Model_API.ReadByRefID<UserPhotoAttachmentProxy>(_userID);
+                AttachmentProxy proxy = TeamSupport.ModelAPI.Model_API.ReadRefTypeProxyByRefID<UserPhotoAttachmentProxy>(_userID);
                 if (proxy != null)
                 {
                     proxy.FileName = _userID + "avatar.jpg";
