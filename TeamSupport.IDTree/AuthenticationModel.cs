@@ -42,7 +42,9 @@ namespace TeamSupport.IDTree
                 _userData = new string[] { "0", "0", "0", "0", "0" };
                 string[] segments = HttpContext.Current.Request.Url.Segments;
                 string organizationIDstring = segments[segments.Length - 2].ToLower().Trim().Replace("/", "");
-                OrganizationID = int.Parse(organizationIDstring);  // second to last in URL is OrganizationID
+                int organizationID = 0;
+                if (int.TryParse(organizationIDstring, out organizationID))  // second to last in URL is OrganizationID
+                    OrganizationID = organizationID;
             }
 
             // Connection string
