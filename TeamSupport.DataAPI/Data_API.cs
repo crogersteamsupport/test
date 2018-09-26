@@ -97,6 +97,14 @@ namespace TeamSupport.DataAPI
                         result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
                     }
                     break;
+                case "ChatAttachmentProxy":   // create asset attachment
+                    {
+                        ChatModel model = idNode as ChatModel;
+                        ChatAttachmentProxy proxy = tProxy as ChatAttachmentProxy;
+                        CreateAttachment(idNode, proxy, model.ChatID);
+                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
+                    }
+                    break;
                 case "CompanyActivityAttachmentProxy":
                     {
                         NoteModel model = idNode as NoteModel;

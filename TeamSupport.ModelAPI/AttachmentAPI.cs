@@ -57,7 +57,7 @@ namespace TeamSupport.ModelAPI
             {
                 case AttachmentProxy.References.Actions: return new ActionModel(connection, refID);
                 case AttachmentProxy.References.Assets: return new AssetModel(connection, refID);
-                //case AttachmentProxy.References.ChatAttachments: return new ChatModel(connection, refID);
+                case AttachmentProxy.References.ChatAttachments: return new ChatModel(connection, refID);
 
                 case AttachmentProxy.References.CompanyActivity:
                     {
@@ -307,6 +307,10 @@ namespace TeamSupport.ModelAPI
                     case "upload":
                     case "chatupload":
                         pathStart = true;
+                        break;
+                    case "chatattachments":
+                        path = segment;
+                        pathStart = false;
                         break;
                     default:
                         if(!pathStart)
