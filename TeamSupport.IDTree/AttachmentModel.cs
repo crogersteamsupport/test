@@ -39,10 +39,9 @@ namespace TeamSupport.IDTree
         public AttachmentModel(ConnectionContext connection, AttachmentProxy attachment) : base(connection)
         {
             AttachmentID = attachment.AttachmentID;
-            switch(attachment.GetType().Name)
+            switch(attachment)
             {
-                case "UserPhotoAttachmentProxy":
-                    UserPhotoAttachmentProxy proxy = attachment as UserPhotoAttachmentProxy;
+                case UserPhotoAttachmentProxy proxy:
                     AttachedTo = new UserModel(connection, proxy.RefID);
                     break;
             }

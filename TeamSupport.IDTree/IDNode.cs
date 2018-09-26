@@ -50,18 +50,12 @@ namespace TeamSupport.IDTree
 
         public static IAttachmentDestination GetModel<T>(ConnectionContext connection, T proxy) where T : class
         {
-            switch (proxy.GetType().Name)
+            switch (proxy)
             {
-                case "ActionAttachmentProxy":
-                    {
-                        ActionAttachmentProxy attachment = proxy as ActionAttachmentProxy;
-                        return new ActionModel(connection, attachment.RefID);
-                    }
-                case "TaskAttachmentProxy":
-                    {
-                        TaskAttachmentProxy attachment = proxy as TaskAttachmentProxy;
-                        return new TaskModel(connection, attachment.RefID);
-                    }
+                case ActionAttachmentProxy attachment:
+                    return new ActionModel(connection, attachment.RefID);
+                case TaskAttachmentProxy attachment:
+                    return new TaskModel(connection, attachment.RefID);
             }
             return null;
         }
