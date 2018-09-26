@@ -52,11 +52,25 @@ namespace TeamSupport.IDTree
         {
             return ExecuteQuery<bool>($"SELECT MarkDeleted FROM Users WITH (NOLOCK) WHERE UserID={UserID}").First();
         }
+        //string IAttachmentDestination.AttachmentPath
+        //{
+        //    get
+        //    {
+        //        // References.Users - C:\TSData\Organizations\1078\Images\Avatars\4787299avatar.jpg
+        //        string path = Connection.Organization.AttachmentPath;
+        //        path = Path.Combine(path, "Images\\Avatars");   // see AttachmentPath.GetFolderName(AttachmentPath.Folder.Actions);
+        //        //path = Path.Combine(path, UserID.ToString() + "avatar.jpg");
+        //        if (!Directory.Exists(path))
+        //            Directory.CreateDirectory(path);
+        //        return path;
+        //    }
+        //}
 
         string IAttachmentDestination.AttachmentPath
         {
             get
             {
+                // References.UserPhoto
                 string path = Connection.Organization.AttachmentPath;
                 path = Path.Combine(path, "UserAttachments");   // see AttachmentPath.GetFolderName(AttachmentPath.Folder.Actions);
                 path = Path.Combine(path, UserID.ToString());

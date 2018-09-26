@@ -28,6 +28,9 @@ namespace TeamSupport.ModelAPI
                     {
                         case "TicketModel":
                             return new TicketModel(connection, id) as T;
+                        default:
+                            if (Debugger.IsAttached) Debugger.Break();
+                            break;
                     }
                 }
             }
@@ -59,28 +62,26 @@ namespace TeamSupport.ModelAPI
                 using (ConnectionContext connection = new ConnectionContext())
                 {
                     switch (typeof(T).Name)
+
                     {
                         case "ActionProxy":
-                            ActionProxy actionProxy = proxy as ActionProxy;
-                            Data_API.Create(connection.Ticket(actionProxy.TicketID), actionProxy);
+                            {
+                                ActionProxy actionProxy = proxy as ActionProxy;
+                                Data_API.Create(connection.Ticket(actionProxy.TicketID), actionProxy);
+                            }
                             break;
                         case "AttachmentProxy":
-                            AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
-                            ActionModel actionModel = new ActionModel(connection, ((ActionAttachmentProxy)attachmentProxy).ActionID);
-                            Data_API.Create(actionModel, attachmentProxy);
+                            {
+                                AttachmentProxy attachment = proxy as AttachmentProxy;
+                                IAttachmentDestination model = AttachmentAPI.ClassFactory(connection, attachment);
+                                Data_API.Create(model as IDNode, attachment);
+                            }
+                            break;
+                        default:
+                            if (Debugger.IsAttached) Debugger.Break();
                             break;
                     }
                 }
-            }
-            catch (AuthenticationException ex)
-            {
-                // TODO - tell user they don't have permission
-                Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
-            }
-            catch (System.Data.ConstraintException ex)
-            {
-                // TODO - data integrity failure
-                Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
             }
             catch (Exception ex)
             {
@@ -89,10 +90,7 @@ namespace TeamSupport.ModelAPI
             }
         }
 
-        /// <summary>
-        /// READ - read the proxy corresponding to the ID 
-        /// </summary>
-        public static T Read<T>(int id) where T : class
+        public static T ReadRefTypeProxyByRefID<T>(int id) where T : class
         {
             T t = null;
             try
@@ -100,6 +98,34 @@ namespace TeamSupport.ModelAPI
                 using (ConnectionContext connection = new ConnectionContext())
                 {
                     switch(typeof(T).Name) // alphabetized list
+                    {
+                        case "UserPhotoAttachmentProxy":
+                            t = Data_API.ReadRefTypeProxyByRefID<UserPhotoAttachmentProxy>(connection, id) as T;
+                            break;
+                        default:
+                            if (Debugger.IsAttached) Debugger.Break();
+                            break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                int logid = Data_API.LogException(new IDTree.AuthenticationModel(), ex, "ReadByRefID Exception" + ex.Source);
+            }
+            return t;
+        }
+
+        /// <summary>
+        /// READ - read the proxy corresponding to the ID 
+        /// </summary>
+        public static T Read<T>(int id) where T : class
+        {
+            T t = default(T);
+            try
+            {
+                using (ConnectionContext connection = new ConnectionContext())
+                {
+                    switch (typeof(T).Name) // alphabetized list
                     {
                         case "ActionProxy":
                             {
@@ -121,14 +147,14 @@ namespace TeamSupport.ModelAPI
                             //t = DataAPI.DataAPI.Read<T>(new TicketNode(connection, id));
                             break;
                         case "AttachmentProxy":
-                            t = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, id) as T;
+                            t = Data_API.ReadRefTypeProxyByID<AttachmentProxy>(connection, id) as T;
                             break;
                         case "AttachmentProxy[]":
                             t = Data_API.Read<T>(new ActionModel(connection, id));
                             break;
-                        case "CustomValueProxy":
-                            t = Data_API.Read<T>(new TicketModel(connection, id));
-                            break;
+                        //case CustomValueProxy proxy:
+                        //    t = Data_API.Read<T>(new TicketModel(connection, id));
+                        //    break;
                         case "TicketProxy":
                             t = Data_API.Read<T>(new TicketModel(connection, id));
                             break;
@@ -144,16 +170,6 @@ namespace TeamSupport.ModelAPI
                             break;
                     }
                 }
-            }
-            catch (AuthenticationException ex)
-            {
-                // TODO - tell user they don't have permission
-                Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, id, "choke", ex);
-            }
-            catch (System.Data.ConstraintException ex)
-            {
-                // TODO - data integrity failure
-                Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, id, "choke", ex);
             }
             catch (Exception ex)
             {
@@ -179,20 +195,17 @@ namespace TeamSupport.ModelAPI
                             break;
                         case "AttachmentProxy":
                             AttachmentProxy attachmentProxy = proxy as AttachmentProxy;
-                            //DataAPI.DataAPI.Update(new ActionAttachment(connection, attachmentProxy.AttachmentID), attachmentProxy);
+                            UpdateArguments args = new UpdateArguments();
+                            args.Append("FileName", attachmentProxy.FileName);
+                            args.Append("Path", attachmentProxy.Path);
+                            args.Append("FilePathID", attachmentProxy.FilePathID.Value);
+                            Data_API.Update(new AttachmentModel(connection, attachmentProxy), args);
+                            break;
+                        default:
+                            if (Debugger.IsAttached) Debugger.Break();
                             break;
                     }
                 }
-            }
-            catch (AuthenticationException ex)
-            {
-                // TODO - tell user they don't have permission
-                Data_API.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
-            }
-            catch (System.Data.ConstraintException ex)
-            {
-                // TODO - data integrity failure
-                Data_API.LogMessage(ActionLogType.Delete, ReferenceType.None, 0, "choke", ex);
             }
             catch (Exception ex)
             {
@@ -286,8 +299,6 @@ namespace TeamSupport.ModelAPI
         #region ActionAttachments
 
 
-        /// <summary> Delete Action Attachment /// </summary>
-        /// <summary> Create Action Attachments </summary>
         public static void ReadActionAttachmentsForTicket(int ticketID, ActionAttachmentsByTicketID ticketActionAttachments, out AttachmentProxy[] attachments)
         {
             attachments = null;

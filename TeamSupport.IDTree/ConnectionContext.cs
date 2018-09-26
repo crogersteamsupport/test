@@ -67,39 +67,46 @@ namespace TeamSupport.IDTree
 
         public TicketModel Ticket(int ticketID) { return new TicketModel(Organization, ticketID); }
 
-        public bool CanEdit() { return Authentication.IsSystemAdmin || User.AllowUserToEditAnyAction(); }
+        public bool CanEdit()
+        {
+            // user in organization or child of organization?
+            //Organization organization = (Organization)Organizations.GetOrganization(UserSession.LoginUser, _organizationID);
+            //if (organization.OrganizationID != UserSession.LoginUser.OrganizationID && organization.ParentID != UserSession.LoginUser.OrganizationID)
+
+            return Authentication.IsSystemAdmin || User.AllowUserToEditAnyAction();
+        }
 
         public string AttachmentPath(int id)
         {
             return _db.ExecuteQuery<string>($"SELECT Value FROM FilePaths WITH(NOLOCK) WHERE ID = {id}").FirstOrDefault();
         }
 
-        public DataRowCollection GetRowCollection(string query, params object[] args)
-        {
-            using (DataTable _table = new DataTable())
-            using (SqlCommand _command = new SqlCommand())
-            {
-                _command.Connection = _connection;
-                _command.Transaction = _transaction;
-                _command.CommandText = query;
-                _command.CommandType = CommandType.Text;
+        //public DataRowCollection GetRowCollection(string query, params object[] args)
+        //{
+        //    using (DataTable _table = new DataTable())
+        //    using (SqlCommand _command = new SqlCommand())
+        //    {
+        //        _command.Connection = _connection;
+        //        _command.Transaction = _transaction;
+        //        _command.CommandText = query;
+        //        _command.CommandType = CommandType.Text;
 
-                // parameters
-                for (int i = 0; i < args.Length; ++i)
-                {
-                    SqlParameter parameter = new SqlParameter($"@t{i}", _typeMap[args[i].GetType()]);
-                    parameter.Value = args[i];
-                    _command.Parameters.Add(parameter);
-                }
+        //        // parameters
+        //        for (int i = 0; i < args.Length; ++i)
+        //        {
+        //            SqlParameter parameter = new SqlParameter($"@t{i}", _typeMap[args[i].GetType()]);
+        //            parameter.Value = args[i];
+        //            _command.Parameters.Add(parameter);
+        //        }
 
-                using (SqlDataAdapter _adapter = new SqlDataAdapter(_command))
-                {
-                    _adapter.FillSchema(_table, SchemaType.Source);
-                    _adapter.Fill(_table);
-                }
-                return _table.Rows;
-            }
-        }
+        //        using (SqlDataAdapter _adapter = new SqlDataAdapter(_command))
+        //        {
+        //            _adapter.FillSchema(_table, SchemaType.Source);
+        //            _adapter.Fill(_table);
+        //        }
+        //        return _table.Rows;
+        //    }
+        //}
 
         public void Dispose()
         {
@@ -122,46 +129,46 @@ namespace TeamSupport.IDTree
                 _connection.Dispose();
         }
 
-        static Dictionary<Type, DbType> _typeMap;
-        static ConnectionContext()
-        {
-            _typeMap = new Dictionary<Type, DbType>();
-            _typeMap[typeof(byte)] = DbType.Byte;
-            _typeMap[typeof(sbyte)] = DbType.SByte;
-            _typeMap[typeof(short)] = DbType.Int16;
-            _typeMap[typeof(ushort)] = DbType.UInt16;
-            _typeMap[typeof(int)] = DbType.Int32;
-            _typeMap[typeof(uint)] = DbType.UInt32;
-            _typeMap[typeof(long)] = DbType.Int64;
-            _typeMap[typeof(ulong)] = DbType.UInt64;
-            _typeMap[typeof(float)] = DbType.Single;
-            _typeMap[typeof(double)] = DbType.Double;
-            _typeMap[typeof(decimal)] = DbType.Decimal;
-            _typeMap[typeof(bool)] = DbType.Boolean;
-            _typeMap[typeof(string)] = DbType.String;
-            _typeMap[typeof(char)] = DbType.StringFixedLength;
-            _typeMap[typeof(Guid)] = DbType.Guid;
-            _typeMap[typeof(DateTime)] = DbType.DateTime;
-            _typeMap[typeof(DateTimeOffset)] = DbType.DateTimeOffset;
-            _typeMap[typeof(byte[])] = DbType.Binary;
-            _typeMap[typeof(byte?)] = DbType.Byte;
-            _typeMap[typeof(sbyte?)] = DbType.SByte;
-            _typeMap[typeof(short?)] = DbType.Int16;
-            _typeMap[typeof(ushort?)] = DbType.UInt16;
-            _typeMap[typeof(int?)] = DbType.Int32;
-            _typeMap[typeof(uint?)] = DbType.UInt32;
-            _typeMap[typeof(long?)] = DbType.Int64;
-            _typeMap[typeof(ulong?)] = DbType.UInt64;
-            _typeMap[typeof(float?)] = DbType.Single;
-            _typeMap[typeof(double?)] = DbType.Double;
-            _typeMap[typeof(decimal?)] = DbType.Decimal;
-            _typeMap[typeof(bool?)] = DbType.Boolean;
-            _typeMap[typeof(char?)] = DbType.StringFixedLength;
-            _typeMap[typeof(Guid?)] = DbType.Guid;
-            _typeMap[typeof(DateTime?)] = DbType.DateTime;
-            _typeMap[typeof(DateTimeOffset?)] = DbType.DateTimeOffset;
-            _typeMap[typeof(System.Data.Linq.Binary)] = DbType.Binary;
-        }
+        //static Dictionary<Type, DbType> _typeMap;
+        //static ConnectionContext()
+        //{
+        //    _typeMap = new Dictionary<Type, DbType>();
+        //    _typeMap[typeof(byte)] = DbType.Byte;
+        //    _typeMap[typeof(sbyte)] = DbType.SByte;
+        //    _typeMap[typeof(short)] = DbType.Int16;
+        //    _typeMap[typeof(ushort)] = DbType.UInt16;
+        //    _typeMap[typeof(int)] = DbType.Int32;
+        //    _typeMap[typeof(uint)] = DbType.UInt32;
+        //    _typeMap[typeof(long)] = DbType.Int64;
+        //    _typeMap[typeof(ulong)] = DbType.UInt64;
+        //    _typeMap[typeof(float)] = DbType.Single;
+        //    _typeMap[typeof(double)] = DbType.Double;
+        //    _typeMap[typeof(decimal)] = DbType.Decimal;
+        //    _typeMap[typeof(bool)] = DbType.Boolean;
+        //    _typeMap[typeof(string)] = DbType.String;
+        //    _typeMap[typeof(char)] = DbType.StringFixedLength;
+        //    _typeMap[typeof(Guid)] = DbType.Guid;
+        //    _typeMap[typeof(DateTime)] = DbType.DateTime;
+        //    _typeMap[typeof(DateTimeOffset)] = DbType.DateTimeOffset;
+        //    _typeMap[typeof(byte[])] = DbType.Binary;
+        //    _typeMap[typeof(byte?)] = DbType.Byte;
+        //    _typeMap[typeof(sbyte?)] = DbType.SByte;
+        //    _typeMap[typeof(short?)] = DbType.Int16;
+        //    _typeMap[typeof(ushort?)] = DbType.UInt16;
+        //    _typeMap[typeof(int?)] = DbType.Int32;
+        //    _typeMap[typeof(uint?)] = DbType.UInt32;
+        //    _typeMap[typeof(long?)] = DbType.Int64;
+        //    _typeMap[typeof(ulong?)] = DbType.UInt64;
+        //    _typeMap[typeof(float?)] = DbType.Single;
+        //    _typeMap[typeof(double?)] = DbType.Double;
+        //    _typeMap[typeof(decimal?)] = DbType.Decimal;
+        //    _typeMap[typeof(bool?)] = DbType.Boolean;
+        //    _typeMap[typeof(char?)] = DbType.StringFixedLength;
+        //    _typeMap[typeof(Guid?)] = DbType.Guid;
+        //    _typeMap[typeof(DateTime?)] = DbType.DateTime;
+        //    _typeMap[typeof(DateTimeOffset?)] = DbType.DateTimeOffset;
+        //    _typeMap[typeof(System.Data.Linq.Binary)] = DbType.Binary;
+        //}
 
     }
 }

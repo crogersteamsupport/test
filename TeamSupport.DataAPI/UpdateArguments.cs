@@ -8,8 +8,8 @@ namespace TeamSupport.DataAPI
 {
     public class UpdateArguments
     {
-        static string ToSql(DateTime dateTime) { return dateTime.ToString("yyyy-MM-dd HH:mm:ss.fff"); }
-        static char ToSql(bool value) { return value ? '1' : '0'; }
+        public static string ToSql(DateTime dateTime) { return dateTime.ToString("yyyy-MM-dd HH:mm:ss.fff"); }
+        public static char ToSql(bool value) { return value ? '1' : '0'; }
 
         public string Args { get; private set; }
 
@@ -17,6 +17,7 @@ namespace TeamSupport.DataAPI
         public void Append(string name, int value) { PrivateAppend(name, value.ToString()); }
         public void Append(string name, DateTime value) { PrivateAppend(name, ToSql(value)); }
         public void Append(string name, bool value) { Append(name, ToSql(value)); }
+        public void Append(string name, string value) { PrivateAppend(name, '\'' + value + '\''); }
 
         public UpdateArguments(string name, int value)
         {

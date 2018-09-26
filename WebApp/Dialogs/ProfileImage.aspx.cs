@@ -155,35 +155,28 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
                     throw;
                 }
 
-                Attachments attachments = new Attachments(UserSession.LoginUser);
-                ////string directory = TSUtils.GetAttachmentPath("Actions", actionID);
-
-                Attachments att = new Attachments(TSAuthentication.GetLoginUser());
-                att.LoadByReference(ReferenceType.UserPhoto, _userID);
 
                 File.Delete(source);
 
-                if (att.Count > 0)
+                AttachmentProxy proxy = TeamSupport.ModelAPI.Model_API.ReadRefTypeProxyByRefID<UserPhotoAttachmentProxy>(_userID);
+                if (proxy != null)
                 {
-                    att[0].FileName = _userID + "avatar.jpg";
-                    att[0].Path = path + '\\' + _userID + "avatar.jpg";
-                    att[0].FilePathID = 3;
-                    att.Save();
+                    proxy.FileName = _userID + "avatar.jpg";
+                    proxy.Path = path + '\\' + _userID + "avatar.jpg";
+                    proxy.FilePathID = 3;
+                    TeamSupport.ModelAPI.Model_API.Update(proxy);
                 }
                 else
                 {
-                    Attachment attachment = attachments.AddNewAttachment();
-                    attachment.RefType = AttachmentProxy.References.UserPhoto;
-                    attachment.RefID = _userID;
-                    attachment.OrganizationID = _organizationID;
-                    attachment.FileName = _userID + "avatar.jpg";
-                    attachment.Path = path + '\\' + _userID + "avatar.jpg";
-                    attachment.FilePathID = 3;
-                    attachment.FileType = "image/jpeg";
-                    attachment.FileSize = -1;
-
-                    attachments.Save();
-
+                    proxy = AttachmentProxy.ClassFactory(AttachmentProxy.References.UserPhoto);
+                    proxy.RefID = _userID;
+                    proxy.OrganizationID = _organizationID;
+                    proxy.FileName = _userID + "avatar.jpg";
+                    proxy.Path = path + '\\' + _userID + "avatar.jpg";
+                    proxy.FilePathID = 3;
+                    proxy.FileType = "image/jpeg";
+                    proxy.FileSize = -1;
+                    TeamSupport.ModelAPI.Model_API.Create(proxy);
                 }
             }
         }
