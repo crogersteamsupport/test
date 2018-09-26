@@ -234,6 +234,7 @@ namespace TeamSupport.DataAPI
             {
                 case "AttachmentProxy": // action
                     {
+                        // exact match for AttachmentID - returns type-safe proxy (ActionAttachmentProxy, AssetAttachmentProxy...)
                         Table<AttachmentProxy> table = connection._db.GetTable<AttachmentProxy>();
                         tProxy = table.Where(a => a.AttachmentID == id).First() as TProxy;
                     }
@@ -277,17 +278,19 @@ namespace TeamSupport.DataAPI
                     }
                     break;
                 case "AttachmentProxy": // read all attachment types
-                    {
-                        AttachmentModel attachment = (AttachmentModel)node;
-                        Table<AttachmentProxy> table = attachment.Connection._db.GetTable<AttachmentProxy>();
-                        tProxy = table.Where(a => a.AttachmentID == attachment.AttachmentID).First() as TProxy;
-                    }
+                    tProxy = ReadRefTypeProxyByID<TProxy>(node.Connection, (node as AttachmentModel).AttachmentID);
                     break;
                 case "AttachmentProxy[]": // action attachments
+                    switch(node)
                     {
-                        ActionModel action = (ActionModel)node;
-                        Table<AttachmentProxy> table = node.Connection._db.GetTable<AttachmentProxy>();
-                        tProxy = table.Where(a => a.RefID == action.ActionID && a.RefType == AttachmentProxy.References.Actions).ToArray() as TProxy;
+                        case ActionModel model:
+                            Table<AttachmentProxy> table = node.Connection._db.GetTable<AttachmentProxy>();
+                            tProxy = table.Where(a => a.RefID == model.ActionID && a.RefType == AttachmentProxy.References.Actions).ToArray() as TProxy;
+                            break;
+                        case null:
+                        default:
+                            if (Debugger.IsAttached) Debugger.Break();
+                            break;
                     }
                     break;
                 case "ReminderProxy":
