@@ -64,7 +64,7 @@ namespace TSWebServices {
         [WebMethod]
         public string HydrateOrganization (int organizationID) {
             string response = TeamSupport.Data.Deflector.GetOrganizationIndeces(TSAuthentication.GetLoginUser(), organizationID);
-            var x = HydrateDeflector(response);
+            HydrateDeflector(response);
             // string output = JsonConvert.SerializeObject(response);
             return response;
         }
