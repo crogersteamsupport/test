@@ -44,7 +44,14 @@ namespace TSWebServices {
         	request.Method         = "POST";
         	request.KeepAlive      = false;
         	request.ContentType    = "application/json";
-        	using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+
+            using (var streamWriter = new StreamWriter(request.GetRequestStream()))
+            {   streamWriter.Write(json);
+                streamWriter.Flush();
+                streamWriter.Close();
+            }
+
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
                 if (request.HaveResponse && response != null) {
    					using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
    					    responseText = reader.ReadToEnd();
@@ -57,7 +64,7 @@ namespace TSWebServices {
         [WebMethod]
         public string HydrateOrganization (int organizationID) {
             string response = TeamSupport.Data.Deflector.GetOrganizationIndeces(TSAuthentication.GetLoginUser(), organizationID);
-            //var x = HydrateDeflector(response);
+            var x = HydrateDeflector(response);
             // string output = JsonConvert.SerializeObject(response);
             return response;
         }
@@ -76,12 +83,20 @@ namespace TSWebServices {
 
         private string HydrateDeflector (string json) {
             string responseText    = null;
-            string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/bulkindex";
+            string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/index/bulkindex";
         	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
         	request.Method         = "POST";
         	request.KeepAlive      = false;
         	request.ContentType    = "application/json";
-        	using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+
+            using (var streamWriter = new StreamWriter(request.GetRequestStream()))
+            {
+                streamWriter.Write(json);
+                streamWriter.Flush();
+                streamWriter.Close();
+            }
+
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
                 if (request.HaveResponse && response != null) {
    					using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
    					    responseText = reader.ReadToEnd();

@@ -76,7 +76,7 @@ namespace TeamSupport.Data
                         command.CommandText += "INNER JOIN dbo.TagLinks AS TagLinks WITH (NOLOCK) ON TagLinks.RefType = 17 AND TagLinks.RefID = Tickets.TicketID ";
                         command.CommandText += "INNER JOIN dbo.Tags AS Tags WITH (NOLOCK) ON Tags.TagID = TagLinks.TagID ";
                         command.CommandText += "WHERE tickets.organizationID = @organizationID and tickets.IsKnowledgeBase = 1 ";
-                        command.CommandText += "FOR JSON Auto";
+                        command.CommandText += "FOR JSON PATH";
 
                         command.Parameters.AddWithValue("@organizationID", organizationID);
                         connection.Open();
