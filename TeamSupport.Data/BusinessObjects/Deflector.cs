@@ -15,8 +15,54 @@ namespace TeamSupport.Data
 
     public partial class Deflector
     {
+        public static List<string> GetPodIndeces(LoginUser loginUser) {
+            List<string> jsonResultList = new List<string>();
+            List<int> OrganizationList = GetActiveOrganizationList(loginUser);
 
-        public static string PullOrganization(LoginUser loginUser, int organizationID)
+            foreach (int organizationID in OrganizationList) {
+                jsonResultList.Add(GetOrganizationIndeces(loginUser, organizationID));
+            };
+
+            return jsonResultList;
+        }
+
+        private static List<int> GetActiveOrganizationList(LoginUser loginUser)
+        {
+            List<int> result = new List<int>();
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+                {
+                    using (SqlCommand command = new SqlCommand())
+                    {
+                        command.Connection = connection;
+                        command.CommandType = CommandType.Text;
+                        command.CommandText = "SELECT OrganizationID FROM dbo.Organizations WITH (NOLOCK)";
+                        command.CommandText += "WHERE IsActive = 1 and ParentID = 1";
+                        connection.Open();
+
+                        using (SqlDataReader dr = command.ExecuteReader())
+                        {
+                            var orgTable = new DataTable();
+                            orgTable.Load(dr);
+
+                            foreach (DataRow row in orgTable.Rows)
+                            {
+                                result.Add((int)row[0]);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                result = null;
+            }
+
+            return result;
+        }
+
+        public static string GetOrganizationIndeces(LoginUser loginUser, int organizationID)
         {
             try
             {
@@ -26,9 +72,9 @@ namespace TeamSupport.Data
                     {
                         command.Connection = connection;
                         command.CommandType = CommandType.Text;
-                        command.CommandText = "SELECT tickets.TicketID, tickets.Name, tickets.OrganizationID, tickets.ProductID, tickets.IsVisibleOnPortal, tags.Value FROM dbo.tickets AS Tickets ";
-                        command.CommandText += "INNER JOIN dbo.TagLinks AS TagLinks ON TagLinks.RefType = 17 AND TagLinks.RefID = Tickets.TicketID ";
-                        command.CommandText += "INNER JOIN dbo.Tags AS Tags ON Tags.TagID = TagLinks.TagID ";
+                        command.CommandText = " SELECT tickets.TicketID, tickets.Name, tickets.OrganizationID, tickets.ProductID, tickets.IsVisibleOnPortal, tags.Value FROM dbo.tickets AS Tickets WITH (NOLOCK)";
+                        command.CommandText += "INNER JOIN dbo.TagLinks AS TagLinks WITH (NOLOCK) ON TagLinks.RefType = 17 AND TagLinks.RefID = Tickets.TicketID ";
+                        command.CommandText += "INNER JOIN dbo.Tags AS Tags WITH (NOLOCK) ON Tags.TagID = TagLinks.TagID ";
                         command.CommandText += "WHERE tickets.organizationID = @organizationID and tickets.IsKnowledgeBase = 1 ";
                         command.CommandText += "FOR JSON Auto";
 

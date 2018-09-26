@@ -23,6 +23,7 @@ using System.Net;
 using System.IO;
 using System.Dynamic;
 using System.Text.RegularExpressions;
+using System.Configuration;
 
 namespace TSWebServices {
 
@@ -38,7 +39,7 @@ namespace TSWebServices {
 
         public string IndexDeflector (string json) {
             string responseText    = null;
-            string PingUrl         = "http://localhost:64871/api/deflector/index";
+            string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/index";
         	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
         	request.Method         = "POST";
         	request.KeepAlive      = false;
@@ -55,15 +56,27 @@ namespace TSWebServices {
 
         [WebMethod]
         public string HydrateOrganization (int organizationID) {
-            var results = new List<string>();
-            string response = TeamSupport.Data.Deflector.PullOrganization(TSAuthentication.GetLoginUser(), organizationID);
+            string response = TeamSupport.Data.Deflector.GetOrganizationIndeces(TSAuthentication.GetLoginUser(), organizationID);
+            //var x = HydrateDeflector(response);
             // string output = JsonConvert.SerializeObject(response);
             return response;
         }
 
+        [WebMethod]
+        public string HydratePod() {
+            List<String> indeceses = TeamSupport.Data.Deflector.GetPodIndeces(TSAuthentication.GetLoginUser());
+
+            foreach (string index in indeceses)
+            {
+                HydrateDeflector(index);
+            }
+
+            return null;
+        }
+
         private string HydrateDeflector (string json) {
             string responseText    = null;
-            string PingUrl         = "http://localhost:64871/api/deflector/bulkindex";
+            string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/bulkindex";
         	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
         	request.Method         = "POST";
         	request.KeepAlive      = false;
