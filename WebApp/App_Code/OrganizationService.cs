@@ -19,6 +19,7 @@ using System.IO;
 using Newtonsoft.Json;
 using LumenWorks.Framework.IO.Csv;
 using System.Linq;
+using System.Dynamic;
 
 namespace TSWebServices
 {
@@ -879,6 +880,33 @@ namespace TSWebServices
             Organization org = GetAdminOrgTarget(orgID);
             org.UserSeats = count;
             org.Collection.Save();
+        }
+
+        [WebMethod]
+        public void AdminSetEmailTrialMax(int orgID, int max)
+        {
+            VerifyAccountAdmin();
+            LogAdminUserAction(string.Format("set trial email max for {0} to {1}", orgID.ToString(), max.ToString()));
+            Emails.SetMaxEmailsForTrial(TSAuthentication.GetLoginUser(), orgID, max);
+        }
+
+        [WebMethod]
+        public bool AdminToggleEmailTrialLimit(int orgID)
+        {
+            VerifyAccountAdmin();
+            bool value = Emails.GetIsTrialLimited(TSAuthentication.GetLoginUser(), orgID);
+            LogAdminUserAction(string.Format("set trial email limit for {0} to {1}", orgID.ToString(), value.ToString()));
+            Emails.SetTrialLimited(TSAuthentication.GetLoginUser(), orgID, !value);
+            return !value;
+        }
+
+        [WebMethod]
+        public string AdminGetTrialEmailData(int orgID)
+        {
+            dynamic result = new ExpandoObject();
+            result.max = Emails.GetMaxEmailsForTrial(TSAuthentication.GetLoginUser(), orgID);
+            result.isLimited = Emails.GetIsTrialLimited(TSAuthentication.GetLoginUser(), orgID);
+            return JsonConvert.SerializeObject(result);
         }
 
         [WebMethod]
