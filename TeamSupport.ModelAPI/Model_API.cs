@@ -62,6 +62,7 @@ namespace TeamSupport.ModelAPI
                 using (ConnectionContext connection = new ConnectionContext())
                 {
                     switch (typeof(T).Name)
+
                     {
                         case "ActionProxy":
                             {
@@ -151,9 +152,9 @@ namespace TeamSupport.ModelAPI
                         case "AttachmentProxy[]":
                             t = Data_API.Read<T>(new ActionModel(connection, id));
                             break;
-                        case "CustomValueProxy":
-                            t = Data_API.Read<T>(new TicketModel(connection, id));
-                            break;
+                        //case CustomValueProxy proxy:
+                        //    t = Data_API.Read<T>(new TicketModel(connection, id));
+                        //    break;
                         case "TicketProxy":
                             t = Data_API.Read<T>(new TicketModel(connection, id));
                             break;

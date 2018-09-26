@@ -43,7 +43,7 @@ namespace TeamSupport.DataAPI
         /// </summary>
         public static IDNode Create<TProxy>(IDNode idNode, TProxy tProxy) where TProxy : class
         {
-            string modification = $", CreatorID={idNode.Connection.UserID}, DateCreated={ToSql(DateTime.UtcNow)}";
+            string modification = $", CreatorID={idNode.Connection.UserID}, DateCreated={UpdateArguments.ToSql(DateTime.UtcNow)}";
             string now = UpdateArguments.ToSql(DateTime.UtcNow);
             int creatorID = idNode.Connection.UserID;
             string command = String.Empty;
