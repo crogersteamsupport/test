@@ -54,6 +54,7 @@ namespace TeamSupport.ServiceLibrary.ZohoCRM
 			if (IsValid() && SyncAccounts())
 			{
 				SendTicketData();
+				isSuccess = true;
 			}
 
 			return isSuccess;
@@ -140,6 +141,7 @@ namespace TeamSupport.ServiceLibrary.ZohoCRM
 				else
 				{
 					Logs.WriteEvent("No recently updated accounts to sync.");
+					isSuccess = true;
 				}
 			}
 			catch (Exception ex)
