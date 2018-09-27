@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Data.Linq;
+using TeamSupport.CDI.linq;
+using System.Configuration;
 
 namespace TeamSupport.CDI
 {
@@ -93,9 +95,77 @@ namespace TeamSupport.CDI
         /// against sql-injection attackes. Thus use a hard-coded update here...
         /// </summary>
         /// <param name="db"></param>
-        public void Save(DataContext db)
+        public void Save(DataContext db, Table<OrganizationSentiment> table)
         {
+            // dbo.Organizations
             db.ExecuteCommand(linq.Organization.RawUpdateQuery(_rawMetrics, _organizationAnalysis.OrganizationID));
+            SaveOrganizationSentiment(db, table);
+        }
+
+        enum DBChangeType
+        {
+            NONE,
+            DELETE,
+            UPDATE,
+            INSERT,
+        };
+
+        DBChangeType GetQueryType(double? score, out OrganizationSentiment organizationSentiment)
+        {
+            if (OrganizationSentiment.TryPop(_organizationAnalysis.OrganizationID, out organizationSentiment))
+            {
+                if (!score.HasValue)
+                    return DBChangeType.DELETE;
+                else if (Math.Floor(score.Value) != Math.Floor(organizationSentiment.OrganizationSentimentScore))
+                    return DBChangeType.UPDATE;
+            }
+            else if (score.HasValue)
+                return DBChangeType.INSERT;
+
+            return DBChangeType.NONE;
+        }
+
+        static int OrganizationSentimentMonths = Int32.Parse(ConfigurationManager.AppSettings.Get("OrganizationSentimentMonths"));
+        void SaveOrganizationSentiment(DataContext db, Table<OrganizationSentiment> table)
+        {
+            // Ticket Sentiments by month
+            List<Metrics> metrics = _organizationAnalysis.Intervals;    // each instance of Metrics = 1 month of data
+            if (metrics.Count > OrganizationSentimentMonths)
+                metrics = _organizationAnalysis.Intervals.GetRange(_organizationAnalysis.Intervals.Count - OrganizationSentimentMonths, OrganizationSentimentMonths);
+            metrics = metrics.Where(m => m._averageSentimentScore.HasValue).ToList();
+
+            // average score
+            double? score = null;
+            int ticketCount = metrics.Sum(m => m._closedCount);
+            if ((metrics.Count > 0) && (ticketCount > 0))
+                score = metrics.Sum(m => m._averageSentimentScore * m._closedCount) / ticketCount; ;    // ticket sentiment based on closed tickets
+
+            // save to dbo
+            OrganizationSentiment organizationSentiment;
+            DBChangeType queryType = GetQueryType(score, out organizationSentiment);
+            switch (queryType)
+            {
+                case DBChangeType.DELETE:   // DELETE
+                    db.ExecuteCommand(String.Format(@"DELETE FROM [OrganizationSentiments] WHERE [OrganizationID] = {0}", _organizationAnalysis.OrganizationID));
+                    break;
+                case DBChangeType.UPDATE:   // UPDATE
+                    db.ExecuteCommand(String.Format(@"UPDATE OrganizationSentiments SET OrganizationSentimentScore = {0}, TicketSentimentCount = {1} WHERE IsAgent=0 AND OrganizationID = {2}",
+                        score.Value,
+                        ticketCount,
+                        _organizationAnalysis.OrganizationID));
+                    break;
+                case DBChangeType.INSERT:   // INSERT
+                    table.InsertOnSubmit(new OrganizationSentiment()
+                    {
+                        OrganizationID = _organizationAnalysis.OrganizationID,
+                        IsAgent = false,
+                        OrganizationSentimentScore = score.Value,
+                        TicketSentimentCount = ticketCount
+                    });
+                    break;
+                default:    // NONE
+                    break;
+            }
         }
 
         public void Save(Table<linq.CustDistHistory> table)

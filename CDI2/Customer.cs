@@ -175,10 +175,10 @@ namespace TeamSupport.CDI
                 client.Write();
         }
 
-        public void Save(DataContext db)
+        public void Save(DataContext db, Table<OrganizationSentiment> table)
         {
             foreach (Client client in _clients)
-                client.Save(db);
+                client.Save(db, table);
         }
 
         public void Save(Table<CustDistHistory> table)
