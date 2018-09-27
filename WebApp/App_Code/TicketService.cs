@@ -512,8 +512,8 @@ namespace TSWebServices
                 command.Connection = connection;
                 connection.Open();
                 using (SqlDataAdapter adapter = new SqlDataAdapter(command))
-                {                   
-                    adapter.Fill(table);     
+                {
+                    adapter.Fill(table);
                 }
             }
 
@@ -528,13 +528,13 @@ namespace TSWebServices
 
                 resultItems.Add(resultItem);
             }
-        
+
 
             result.Items = resultItems.ToArray();
             return result;
-        
+
         }
-        
+
         [WebMethod]
         public TicketTypeProxy[] GetTicketTypes()
         {
@@ -3212,8 +3212,7 @@ WHERE t.TicketID = @TicketID
             value = value.Trim();
             if (value == "") return null;
             Tag tag = Tags.GetTag(ticket.Collection.LoginUser, value);
-            if (tag == null)
-            {
+            if (tag == null) {
                 Tags tags = new Tags(ticket.Collection.LoginUser);
                 tag = tags.AddNewTag();
                 tag.OrganizationID = TSAuthentication.OrganizationID;
@@ -3222,16 +3221,29 @@ WHERE t.TicketID = @TicketID
             }
 
             TagLink link = TagLinks.GetTagLink(ticket.Collection.LoginUser, ReferenceType.Tickets, ticketID, tag.TagID);
-            if (link == null)
-            {
+            if (link == null) {
                 TagLinks links = new TagLinks(ticket.Collection.LoginUser);
                 link = links.AddNewTagLink();
                 link.RefType = ReferenceType.Tickets;
                 link.RefID = ticketID;
                 link.TagID = tag.TagID;
                 links.Save();
-
                 ticket.Collection.AddTags(tag, ticketID);
+            }
+
+            // DEFLECTOR.
+            if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase) {
+                var item = new DeflectorItem {
+                    TicketID = ticket.TicketID,
+                    Name = ticket.Name,
+                    OrganizationID = ticket.OrganizationID,
+                    ProductID = ticket.ProductID,
+                    TagID = tag.TagID,
+                    Value = tag.Value
+                };
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
+                Deflector resp = new Deflector();
+                resp.IndexDeflector(json);
             }
 
             return GetTicketTags(ticketID);
@@ -3248,8 +3260,7 @@ WHERE t.TicketID = @TicketID
             int count = tag.GetLinkCount();
             link.Delete();
             link.Collection.Save();
-            if (count < 2)
-            {
+            if (count < 2) {
                 tag.Delete();
                 tag.Collection.Save();
             }
@@ -3760,7 +3771,7 @@ WHERE t.TicketID = @TicketID
 							{
 								customValue.Value = customDate.ToShortDateString();
 							}
-							
+
 							break;
 						default:
                         customValue.Value = field.Value.ToString();
@@ -4026,7 +4037,7 @@ WHERE t.TicketID = @TicketID
                 log.Collection.Save();
 
                 errLocation = string.Format("Error merging ticket actions. Exception #{0}. Please report this to TeamSupport by either emailing support@teamsupport.com, or clicking Help/Support Hub in the upper right of your account.", log.ExceptionLogID);
-            }                    
+            }
 
             try
             {
@@ -4089,7 +4100,7 @@ WHERE t.TicketID = @TicketID
             }
             return messages;
         }
-       
+
         public void MergeContacts(int losingTicketID, int winningTicketID, Ticket ticket)
         {
             List<TicketCustomer> customers = new List<TicketCustomer>();
@@ -4116,7 +4127,7 @@ WHERE t.TicketID = @TicketID
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
             return;
         }
-       
+
         public void MergeTags(int losingTicketID, int winningTicketID, Ticket ticket)
         {
             Tags tags = new Tags(TSAuthentication.GetLoginUser());
@@ -4127,7 +4138,7 @@ WHERE t.TicketID = @TicketID
                 RemoveTag(losingTicketID, tag.TagID);
                 AddTag(winningTicketID, tag.Value);
             }
-        }              
+        }
 
         public void MergeSubscribers(int losingTicketID, int winningTicketID, Ticket ticket)
         {
@@ -4143,7 +4154,7 @@ WHERE t.TicketID = @TicketID
             string description = "Merged '" + losingticket.TicketNumber + "' Subscribers";
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
 
-        }        
+        }
 
         public void MergeQueres(int losingTicketID, int winningTicketID, Ticket ticket)
         {
@@ -4159,7 +4170,7 @@ WHERE t.TicketID = @TicketID
             Ticket losingticket = (Ticket)Tickets.GetTicket(TSAuthentication.GetLoginUser(), losingTicketID);
             string description = "Merged '" + ticket.TicketNumber + "' Queuers";
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
-        }               
+        }
 
         private TicketLinkToJiraItemProxy GetLinkToJira(int ticketID)
         {
@@ -4675,7 +4686,7 @@ WHERE t.TicketID = @TicketID
 
     }
 
-   
+
 
 
     [DataContract]
@@ -4956,5 +4967,21 @@ WHERE t.TicketID = @TicketID
         public string Tags { get; set; }
         [DataMember]
         public string KBCategory { get; set; }
+    }
+
+    [DataContract]
+    public class DeflectorItem {
+        [DataMember]
+        public int TicketID { get; set; }
+        [DataMember]
+        public string Name { get; set; }
+        [DataMember]
+        public int OrganizationID { get; set; }
+        [DataMember]
+        public int? ProductID { get; set; }
+        [DataMember]
+        public int TagID { get; set; }
+        [DataMember]
+        public string Value { get; set; }
     }
 }
