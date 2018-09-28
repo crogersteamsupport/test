@@ -24,6 +24,8 @@ using System.IO;
 using System.Dynamic;
 using System.Text.RegularExpressions;
 using System.Configuration;
+using System.Threading.Tasks;
+using System.Runtime;
 
 namespace TSWebServices {
 
@@ -61,9 +63,18 @@ namespace TSWebServices {
    			return responseText;
    		}
 
+        //[WebMethod]
+        //public async Task<string> GetDeflections(string text)
+        //{
+        //    var deflectionResult = await GetDeflectionsAPIAsync(text);
+
+        //    return deflectionResult;
+        //}
+
         [WebMethod]
         public string HydrateOrganization (int organizationID) {
             string response = TeamSupport.Data.Deflector.GetOrganizationIndeces(TSAuthentication.GetLoginUser(), organizationID);
+
             HydrateDeflector(response);
             // string output = JsonConvert.SerializeObject(response);
             return response;
@@ -75,7 +86,14 @@ namespace TSWebServices {
 
             foreach (string index in indeceses)
             {
-                HydrateDeflector(index);
+                try
+                {
+
+                    HydrateDeflector(index);
+                }
+                catch (Exception e) {
+
+                }
             }
 
             return null;
@@ -86,6 +104,7 @@ namespace TSWebServices {
             string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/index/bulkindex";
         	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
         	request.Method         = "POST";
+            request.Timeout = 600000;
         	request.KeepAlive      = false;
         	request.ContentType    = "application/json";
 
@@ -105,6 +124,38 @@ namespace TSWebServices {
    			}
    			return responseText;
    		}
+
+        //private async Task<string> GetDeflectionsAPIAsync(string text) {
+        //    string responseText = null;
+        //    string PingUrl = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/get/" + text;
+        //    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
+        //    request.Method = "GET";
+        //    request.KeepAlive = false;
+        //    request.ContentType = "application/json";
+
+        //    using (WebResponse response = await request.GetResponseAsync()) {
+        //        if (request.HaveResponse && response != null)
+        //        {
+        //            using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8))
+        //            {
+        //                return reader.ReadToEnd();
+        //            }
+        //        }
+        //        else {
+        //            return "error";
+        //        }
+        //    }
+        //}
+
+        //[WebMethod]
+        //public async Task<string> GetDeflections(string text)
+        //{
+        //    var deflectionResult = await GetDeflectionsAPIAsync(text);
+
+        //    return deflectionResult;
+        //}
+
+
 
         private string CheckDeflectorAPI(string tag) {
             string responseText    = null;

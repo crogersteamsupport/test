@@ -72,10 +72,10 @@ namespace TeamSupport.Data
                     {
                         command.Connection = connection;
                         command.CommandType = CommandType.Text;
-                        command.CommandText = " SELECT tickets.TicketID, tickets.Name, tickets.OrganizationID, tickets.ProductID, tickets.IsVisibleOnPortal, tags.Value FROM dbo.tickets AS Tickets WITH (NOLOCK)";
+                        command.CommandText =  "SELECT tickets.TicketID, tickets.Name, tickets.OrganizationID, tickets.ProductID, tickets.IsVisibleOnPortal, tags.Value FROM dbo.tickets AS Tickets WITH (NOLOCK)";
                         command.CommandText += "INNER JOIN dbo.TagLinks AS TagLinks WITH (NOLOCK) ON TagLinks.RefType = 17 AND TagLinks.RefID = Tickets.TicketID ";
                         command.CommandText += "INNER JOIN dbo.Tags AS Tags WITH (NOLOCK) ON Tags.TagID = TagLinks.TagID ";
-                        command.CommandText += "WHERE tickets.organizationID = @organizationID and tickets.IsKnowledgeBase = 1 ";
+                        command.CommandText += "WHERE tickets.organizationID = @organizationID and tickets.IsKnowledgeBase = 1 and tickets.IsVisibleOnPortal = 1";
                         command.CommandText += "FOR JSON PATH";
 
                         command.Parameters.AddWithValue("@organizationID", organizationID);
