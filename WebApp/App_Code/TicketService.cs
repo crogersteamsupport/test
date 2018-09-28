@@ -3265,6 +3265,10 @@ WHERE t.TicketID = @TicketID
                 tag.Collection.Save();
             }
 
+            // DEFLECTOR
+            Deflector resp = new Deflector();
+            resp.DeleteDeflector(ticket.OrganizationID, tag.Value);
+
             return GetTicketTags(ticketID);
         }
 

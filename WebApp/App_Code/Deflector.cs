@@ -45,8 +45,7 @@ namespace TSWebServices {
         	request.KeepAlive      = false;
         	request.ContentType    = "application/json";
 
-            using (var streamWriter = new StreamWriter(request.GetRequestStream()))
-            {
+            using (var streamWriter = new StreamWriter(request.GetRequestStream())) {
                 streamWriter.Write(json);
                 streamWriter.Flush();
                 streamWriter.Close();
@@ -74,8 +73,7 @@ namespace TSWebServices {
         public string HydratePod() {
             List<String> indeceses = TeamSupport.Data.Deflector.GetPodIndeces(TSAuthentication.GetLoginUser());
 
-            foreach (string index in indeceses)
-            {
+            foreach (string index in indeceses) {
                 HydrateDeflector(index);
             }
 
@@ -90,12 +88,29 @@ namespace TSWebServices {
         	request.KeepAlive      = false;
         	request.ContentType    = "application/json";
 
-            using (var streamWriter = new StreamWriter(request.GetRequestStream()))
-            {
+            using (var streamWriter = new StreamWriter(request.GetRequestStream())) {
                 streamWriter.Write(json);
                 streamWriter.Flush();
                 streamWriter.Close();
             }
+
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+                if (request.HaveResponse && response != null) {
+   					using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
+   					    responseText = reader.ReadToEnd();
+   					}
+   				}
+   			}
+   			return responseText;
+   		}
+
+        public string DeleteDeflector (int organizationID, string value) {
+            string responseText    = null;
+            string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/organization/" + organizationID + "/tag/" + value;
+        	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
+        	request.Method         = "DELETE";
+        	request.KeepAlive      = false;
+        	request.ContentType    = "application/json";
 
             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
                 if (request.HaveResponse && response != null) {
@@ -118,8 +133,6 @@ namespace TSWebServices {
                 if (request.HaveResponse && response != null) {
    					using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
    					    responseText = reader.ReadToEnd();
-                        // dynamic responseObject = JObject.Parse(responseText);
-                        // string success = responseObject.success;
    					}
    				}
    			}
