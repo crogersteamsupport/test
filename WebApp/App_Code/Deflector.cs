@@ -155,6 +155,27 @@ namespace TSWebServices {
         //    return deflectionResult;
         //}
 
+        public string DeleteDeflector(int organizationID, string value)
+        {
+            string responseText = null;
+            string PingUrl = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/organization/" + organizationID + "/tag/" + value;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
+            request.Method = "DELETE";
+            request.KeepAlive = false;
+            request.ContentType = "application/json";
+
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            {
+                if (request.HaveResponse && response != null)
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8))
+                    {
+                        responseText = reader.ReadToEnd();
+                    }
+                }
+            }
+            return responseText;
+        }
 
 
         private string CheckDeflectorAPI(string tag) {

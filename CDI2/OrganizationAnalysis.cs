@@ -15,7 +15,7 @@ namespace TeamSupport.CDI
     {
         Metrics CalculateRawMetrics();
         void InvokeCDIStrategy(MetricPercentiles clientPercentiles, linq.CDI_Settings weights);
-        void Save(DataContext db);
+        void Save(DataContext db, Table<linq.OrganizationSentiment> table);
         void Save(Table<linq.CustDistHistory> table);
         int? CDI { get; }
 

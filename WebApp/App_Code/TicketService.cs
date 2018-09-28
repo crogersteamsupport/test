@@ -3216,8 +3216,7 @@ WHERE t.TicketID = @TicketID
             value = value.Trim();
             if (value == "") return null;
             Tag tag = Tags.GetTag(ticket.Collection.LoginUser, value);
-            if (tag == null)
-            {
+            if (tag == null) {
                 Tags tags = new Tags(ticket.Collection.LoginUser);
                 tag = tags.AddNewTag();
                 tag.OrganizationID = TSAuthentication.OrganizationID;
@@ -3226,16 +3225,29 @@ WHERE t.TicketID = @TicketID
             }
 
             TagLink link = TagLinks.GetTagLink(ticket.Collection.LoginUser, ReferenceType.Tickets, ticketID, tag.TagID);
-            if (link == null)
-            {
+            if (link == null) {
                 TagLinks links = new TagLinks(ticket.Collection.LoginUser);
                 link = links.AddNewTagLink();
                 link.RefType = ReferenceType.Tickets;
                 link.RefID = ticketID;
                 link.TagID = tag.TagID;
                 links.Save();
-
                 ticket.Collection.AddTags(tag, ticketID);
+            }
+
+            // DEFLECTOR.
+            if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase) {
+                var item = new DeflectorItem {
+                    TicketID = ticket.TicketID,
+                    Name = ticket.Name,
+                    OrganizationID = ticket.OrganizationID,
+                    ProductID = ticket.ProductID,
+                    TagID = tag.TagID,
+                    Value = tag.Value
+                };
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
+                Deflector resp = new Deflector();
+                resp.IndexDeflector(json);
             }
 
             return GetTicketTags(ticketID);
@@ -3252,11 +3264,14 @@ WHERE t.TicketID = @TicketID
             int count = tag.GetLinkCount();
             link.Delete();
             link.Collection.Save();
-            if (count < 2)
-            {
+            if (count < 2) {
                 tag.Delete();
                 tag.Collection.Save();
             }
+
+            // DEFLECTOR
+            Deflector resp = new Deflector();
+            resp.DeleteDeflector(ticket.OrganizationID, tag.Value);
 
             return GetTicketTags(ticketID);
         }
@@ -4960,5 +4975,21 @@ WHERE t.TicketID = @TicketID
         public string Tags { get; set; }
         [DataMember]
         public string KBCategory { get; set; }
+    }
+
+    [DataContract]
+    public class DeflectorItem {
+        [DataMember]
+        public int TicketID { get; set; }
+        [DataMember]
+        public string Name { get; set; }
+        [DataMember]
+        public int OrganizationID { get; set; }
+        [DataMember]
+        public int? ProductID { get; set; }
+        [DataMember]
+        public int TagID { get; set; }
+        [DataMember]
+        public string Value { get; set; }
     }
 }

@@ -70,6 +70,7 @@
     <Compile Include="linq\CDI_Settings.cs" />
     <Compile Include="linq\CustDistHistory.cs" />
     <Compile Include="linq\Organization.cs" />
+    <Compile Include="linq\OrganizationSentiment.cs" />
     <Compile Include="linq\OrganizationTicket.cs" />
     <Compile Include="linq\TicketSeverity.cs" />
     <Compile Include="OptimalWeighting.cs" />
@@ -93,7 +94,9 @@
     <Compile Include="WatsonActionSize.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

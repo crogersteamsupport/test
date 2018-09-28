@@ -90,9 +90,9 @@ namespace TeamSupport.CDI
         /// Thus use a hard-coded update
         /// </summary>
         /// <param name="db"></param>
-        public void Save(DataContext db)
+        public void Save(DataContext db, Table<linq.OrganizationSentiment> table)
         {
-            _iCdiStrategy.Save(db);
+            _iCdiStrategy.Save(db, table);
         }
 
         /// <summary>
