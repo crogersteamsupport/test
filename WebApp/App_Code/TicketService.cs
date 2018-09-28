@@ -701,27 +701,35 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public int RenameTag(int tagID, string name)
-        {
-            int result = tagID;
-            if (!TSAuthentication.IsSystemAdmin) return result;
-            Tags tags = new Tags(TSAuthentication.GetLoginUser());
-            Tag tag = Tags.GetTag(tags.LoginUser, tagID);
-            tags.LoadByValue(TSAuthentication.OrganizationID, name);
-            if (tags.Count > 0 && tag.TagID != tags[0].TagID)
-            {
-                TagLinks links = new TagLinks(tags.LoginUser);
-                links.ReplaceTags(tag.TagID, tags[0].TagID);
-                tag.Delete();
-                tag.Collection.Save();
-                result = tags[0].TagID;
+        public int RenameTag (int TagId, string Value) {
+            int Result = TagId;
+            if (!TSAuthentication.IsSystemAdmin) {
+                return Result;
             }
-            else
-            {
-                tag.Value = name;
-                tag.Collection.Save();
+            Tags Tags = new Tags(TSAuthentication.GetLoginUser());
+            Tag Tag = Tags.GetTag(Tags.LoginUser, TagId);
+            Tags.LoadByValue(TSAuthentication.OrganizationID, Value);
+
+            // MERGE TAG.
+            if (Tags.Count > 0 && Tag.TagID != Tags[0].TagID) {
+                TagLinks Links = new TagLinks(Tags.LoginUser);
+                Links.ReplaceTags(Tag.TagID, Tags[0].TagID);
+                Tag.Delete();
+                Tag.Collection.Save();
+                Result = Tags[0].TagID;
             }
-            return result;
+
+            // RENAME TAG.
+            else {
+                Tag.Value =Value;
+                Tag.Collection.Save();
+            }
+
+            // DEFLECTOR.
+            Deflector Deflection = new Deflector();
+            Deflection.RenameTag(TSAuthentication.OrganizationID, TagId, Value);
+
+            return Result;
         }
 
         [WebMethod]
