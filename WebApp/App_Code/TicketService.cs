@@ -701,10 +701,10 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public int RenameTag (int TagId, string Value) {
+        public string RenameTag (int TagId, string Value) {
             int Result = TagId;
             if (!TSAuthentication.IsSystemAdmin) {
-                return Result;
+                // return Result;
             }
             Tags Tags = new Tags(TSAuthentication.GetLoginUser());
             Tag Tag = Tags.GetTag(Tags.LoginUser, TagId);
@@ -727,9 +727,10 @@ namespace TSWebServices
 
             // DEFLECTOR.
             Deflector Deflection = new Deflector();
-            Deflection.RenameTag(TSAuthentication.OrganizationID, TagId, Value);
+            string test = Deflection.RenameTag(TSAuthentication.OrganizationID, TagId, Value);
 
-            return Result;
+            // return Result;
+            return test;
         }
 
         [WebMethod]
