@@ -107,35 +107,38 @@ namespace TSWebServices {
    			return ResponseText;
    		}
 
-        //private async Task<string> GetDeflectionsAPIAsync(string text) {
-        //    string ResponseText = null;
-        //    string PingUrl = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/get/" + text;
-        //    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
-        //    request.Method = "GET";
-        //    request.KeepAlive = false;
-        //    request.ContentType = "application/json";
+        private async Task<string> GetDeflectionsAPIAsync(int organization, string phrase)
+        {
+            string responseText = null;
+            string PingUrl = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/fetch/" + organization + "/" + phrase;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
+            request.Method = "GET";
+            request.KeepAlive = false;
+            request.ContentType = "application/json";
 
-        //    using (WebResponse response = await request.GetResponseAsync()) {
-        //        if (request.HaveResponse && response != null)
-        //        {
-        //            using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8))
-        //            {
-        //                return reader.ReadToEnd();
-        //            }
-        //        }
-        //        else {
-        //            return "error";
-        //        }
-        //    }
-        //}
+            using (WebResponse response = await request.GetResponseAsync())
+            {
+                if (request.HaveResponse && response != null)
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8))
+                    {
+                        return reader.ReadToEnd();
+                    }
+                }
+                else
+                {
+                    return "error";
+                }
+            }
+        }
 
-        //[WebMethod]
-        //public async Task<string> GetDeflections(string text)
-        //{
-        //    var deflectionResult = await GetDeflectionsAPIAsync(text);
+        [WebMethod]
+        public async Task<string> GetDeflections(int organization, string phrase)
+        {
+            var deflectionResult = await GetDeflectionsAPIAsync(organization, phrase);
 
-        //    return deflectionResult;
-        //}
+            return deflectionResult;
+        }
 
         public string DeleteDeflector(int organizationID, string value) {
             string ResponseText = null;
@@ -178,11 +181,11 @@ namespace TSWebServices {
             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
                 if (request.HaveResponse && response != null) {
                     using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
-                        ResponseText = reader.ReadToEnd();
+                        responseText = reader.ReadToEnd();
                     }
                 }
             }
-            return ResponseText;
+            return responseText;
         }
 
         private string CheckDeflectorAPI(string tag) {
