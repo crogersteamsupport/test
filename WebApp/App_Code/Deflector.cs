@@ -63,14 +63,6 @@ namespace TSWebServices {
    			return responseText;
    		}
 
-        //[WebMethod]
-        //public async Task<string> GetDeflections(string text)
-        //{
-        //    var deflectionResult = await GetDeflectionsAPIAsync(text);
-
-        //    return deflectionResult;
-        //}
-
         [WebMethod]
         public string HydrateOrganization (int organizationID) {
             string response = TeamSupport.Data.Deflector.GetOrganizationIndeces(TSAuthentication.GetLoginUser(), organizationID);
