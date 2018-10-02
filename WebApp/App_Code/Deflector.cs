@@ -41,7 +41,7 @@ namespace TSWebServices {
 
         public string IndexDeflector (string json) {
             string ResponseText    = null;
-            string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/index";
+            string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/index/index";
         	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
         	request.Method         = "POST";
         	request.KeepAlive      = false;
