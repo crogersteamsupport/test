@@ -181,12 +181,44 @@ namespace TSWebServices {
             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
                 if (request.HaveResponse && response != null) {
                     using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
-                        responseText = reader.ReadToEnd();
+                        ResponseText = reader.ReadToEnd();
                     }
                 }
             }
-            return responseText;
+            return ResponseText;
         }
+
+        public string MergeTag (int OrganizationId, int TagId, string Value) {
+            var item = new DeflectorItem {
+                OrganizationID = OrganizationId,
+                TagID = TagId,
+                Value = Value
+            };
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
+            string ResponseText    = null;
+            string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/update/organization/" + OrganizationId + "/tag/" + TagId + "/merge";
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
+            request.Method         = "POST";
+            request.KeepAlive      = false;
+            request.ContentType    = "application/json";
+
+            using (var streamWriter = new StreamWriter(request.GetRequestStream())) {
+                streamWriter.Write(json);
+                streamWriter.Flush();
+                streamWriter.Close();
+            }
+
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+                if (request.HaveResponse && response != null) {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
+                        ResponseText = reader.ReadToEnd();
+                    }
+                }
+            }
+            return ResponseText;
+        }
+
 
         private string CheckDeflectorAPI(string tag) {
             string ResponseText    = null;
