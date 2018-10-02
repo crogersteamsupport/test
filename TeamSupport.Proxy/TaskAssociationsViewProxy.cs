@@ -12,6 +12,7 @@ namespace TeamSupport.Data
     [KnownType(typeof(TaskAssociationsViewItemProxy))]
     public abstract class TaskAssociationsViewItemProxy
     {
+        public TaskAssociationsViewItemProxy() { }
         public TaskAssociationsViewItemProxy(ReferenceType referenceType) { }
         [DataMember] public int TaskID { get; set; }
         [DataMember] public int RefID { get; set; }

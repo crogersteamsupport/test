@@ -12,6 +12,7 @@ namespace TeamSupport.Data
     [KnownType(typeof(CustomValueProxy))]
     public class CustomValueProxy
     {
+        public CustomValueProxy() { }
         public CustomValueProxy(ReferenceType referenceType) { }
         [DataMember] public int? CustomValueID { get; set; }
         [DataMember] public int CustomFieldID { get; set; }

@@ -12,6 +12,7 @@ namespace TeamSupport.Data
     [KnownType(typeof(AddressProxy))]
     public abstract class AddressProxy
     {
+        public AddressProxy() { }
         public AddressProxy(ReferenceType referenceType) { }
         [DataMember] public int AddressID { get; set; }
         [DataMember] public int RefID { get; set; }

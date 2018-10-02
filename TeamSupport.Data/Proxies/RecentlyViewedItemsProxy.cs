@@ -12,6 +12,7 @@ namespace TeamSupport.Data
     [KnownType(typeof(RecentlyViewedItemProxy))]
     public abstract class RecentlyViewedItemProxy
     {
+        public RecentlyViewedItemProxy() { }
         public RecentlyViewedItemProxy(ReferenceType referenceType) { }
         [DataMember] public int UserID { get; set; }
         [DataMember] protected References RefType { get; set; }

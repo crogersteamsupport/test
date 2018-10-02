@@ -13,6 +13,7 @@ namespace TeamSupport.Data
     [KnownType(typeof(WatercoolerAttachmentProxy))]
     public class WatercoolerAttachmentProxy
     {
+        public WatercoolerAttachmentProxy() { }
         public WatercoolerAttachmentProxy(ReferenceType referenceType) { }
         [DataMember]
         public int MessageID { get; set; }
