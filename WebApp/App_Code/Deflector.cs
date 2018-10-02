@@ -40,8 +40,8 @@ namespace TSWebServices {
         }
 
         public string IndexDeflector (string json) {
-            string responseText    = null;
-            string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/index";
+            string ResponseText    = null;
+            string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/index/index";
         	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
         	request.Method         = "POST";
         	request.KeepAlive      = false;
@@ -56,11 +56,11 @@ namespace TSWebServices {
             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
                 if (request.HaveResponse && response != null) {
    					using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
-   					    responseText = reader.ReadToEnd();
+   					    ResponseText = reader.ReadToEnd();
    					}
    				}
    			}
-   			return responseText;
+   			return ResponseText;
    		}
 
         [WebMethod]
@@ -83,7 +83,7 @@ namespace TSWebServices {
         }
 
         private string HydrateDeflector (string json) {
-            string responseText    = null;
+            string ResponseText    = null;
             string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/index/bulkindex";
         	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
         	request.Method         = "POST";
@@ -100,11 +100,11 @@ namespace TSWebServices {
             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
                 if (request.HaveResponse && response != null) {
    					using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
-   					    responseText = reader.ReadToEnd();
+   					    ResponseText = reader.ReadToEnd();
    					}
    				}
    			}
-   			return responseText;
+   			return ResponseText;
    		}
 
         private async Task<string> GetDeflectionsAPIAsync(int organization, string phrase)
@@ -141,7 +141,7 @@ namespace TSWebServices {
         }
 
         public string DeleteDeflector(int organizationID, string value) {
-            string responseText = null;
+            string ResponseText = null;
             string PingUrl = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/organization/" + organizationID + "/tag/" + value;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
             request.Method = "DELETE";
@@ -150,11 +150,11 @@ namespace TSWebServices {
             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
                 if (request.HaveResponse && response != null) {
                     using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
-                        responseText = reader.ReadToEnd();
+                        ResponseText = reader.ReadToEnd();
                     }
                 }
             }
-            return responseText;
+            return ResponseText;
         }
 
         public string RenameTag (int OrganizationId, int TagId, string Value) {
@@ -163,10 +163,10 @@ namespace TSWebServices {
                 TagID = TagId,
                 Value = Value
             };
-            var json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
+            string ResponseText    = null;
+            string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/update/organization/" + OrganizationId + "/tag/" + TagId + "/rename";
 
-            string responseText    = null;
-            string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + OrganizationId + "/tag/rename/" + TagId;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
             request.Method         = "POST";
             request.KeepAlive      = false;
@@ -181,15 +181,47 @@ namespace TSWebServices {
             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
                 if (request.HaveResponse && response != null) {
                     using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
-                        responseText = reader.ReadToEnd();
+                        ResponseText = reader.ReadToEnd();
                     }
                 }
             }
-            return responseText;
+            return ResponseText;
         }
 
+        public string MergeTag (int OrganizationId, int TagId, string Value) {
+            var item = new DeflectorItem {
+                OrganizationID = OrganizationId,
+                TagID = TagId,
+                Value = Value
+            };
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
+            string ResponseText    = null;
+            string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/update/organization/" + OrganizationId + "/tag/" + TagId + "/merge";
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
+            request.Method         = "POST";
+            request.KeepAlive      = false;
+            request.ContentType    = "application/json";
+
+            using (var streamWriter = new StreamWriter(request.GetRequestStream())) {
+                streamWriter.Write(json);
+                streamWriter.Flush();
+                streamWriter.Close();
+            }
+
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+                if (request.HaveResponse && response != null) {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
+                        ResponseText = reader.ReadToEnd();
+                    }
+                }
+            }
+            return ResponseText;
+        }
+
+
         private string CheckDeflectorAPI(string tag) {
-            string responseText    = null;
+            string ResponseText    = null;
             string PingUrl         = "http://localhost:64871/api/deflector/check";
         	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
         	request.Method         = "GET";
@@ -198,13 +230,13 @@ namespace TSWebServices {
         	using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
                 if (request.HaveResponse && response != null) {
    					using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
-   					    responseText = reader.ReadToEnd();
-                        // dynamic responseObject = JObject.Parse(responseText);
+   					    ResponseText = reader.ReadToEnd();
+                        // dynamic responseObject = JObject.Parse(ResponseText);
                         // string success = responseObject.success;
    					}
    				}
    			}
-   			return responseText;
+   			return ResponseText;
    		}
 
         [DataContract]

@@ -704,7 +704,7 @@ namespace TSWebServices
         public int RenameTag (int TagId, string Value) {
             int Result = TagId;
             if (!TSAuthentication.IsSystemAdmin) {
-                return Result;
+                // return Result;
             }
             Tags Tags = new Tags(TSAuthentication.GetLoginUser());
             Tag Tag = Tags.GetTag(Tags.LoginUser, TagId);
@@ -717,17 +717,21 @@ namespace TSWebServices
                 Tag.Delete();
                 Tag.Collection.Save();
                 Result = Tags[0].TagID;
+
+                // DEFLECTOR.
+                Deflector Deflection = new Deflector();
+                string test = Deflection.MergeTag(TSAuthentication.OrganizationID, TagId, Value);
             }
 
             // RENAME TAG.
             else {
                 Tag.Value =Value;
                 Tag.Collection.Save();
-            }
 
-            // DEFLECTOR.
-            Deflector Deflection = new Deflector();
-            Deflection.RenameTag(TSAuthentication.OrganizationID, TagId, Value);
+                // DEFLECTOR.
+                Deflector Deflection = new Deflector();
+                string test = Deflection.RenameTag(TSAuthentication.OrganizationID, TagId, Value);
+            }
 
             return Result;
         }
