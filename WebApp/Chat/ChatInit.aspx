@@ -54,6 +54,7 @@
     <script src="/frontend/library/jquery-1.11.0.min.js" type="text/javascript"></script>
     <script src="/frontend/library/jquery.placeholder.js" type="text/javascript"></script>
     <script src="/frontend/library/bootstrap3.min.js" type="text/javascript"></script>
+
     <script src="../vcr/1_9_0/Js/Ts/ts.utils.js"></script>
     <script src="../vcr/1_9_0/Pages/CustomerChatInit.js"></script>
 </html>
