@@ -575,12 +575,6 @@ Ts.Pages.Main.prototype = {
 
             Ts.Services.Settings.ReadUserSetting('main-menu-selected', defaultMenuItem, function (selectedID) {
                 var selectedItem = self.MainMenu.getByID(selectedID);
-                if (selectedItem == null) {
-                    self.MainMenu.getByIndex(0).select();
-                } else {
-                    selectedItem.select();
-                }
-
 
                 var ticketID = Ts.Utils.getQueryValue('ticketid');
                 if (ticketID) {
@@ -648,6 +642,13 @@ Ts.Pages.Main.prototype = {
                 var taskID = Ts.Utils.getQueryValue('taskID');
                 if (taskID) {
                     self.openNewTask(taskID);
+                }
+
+                if (selectedItem == null) {
+                    self.MainMenu.getByIndex(0).select();
+                } else {
+                    if (window.location.search == "")
+                        selectedItem.select();
                 }
 
             });
