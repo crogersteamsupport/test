@@ -12,6 +12,7 @@ namespace TeamSupport.Data
     [KnownType(typeof(PhoneNumberProxy))]
     public abstract class PhoneNumberProxy
     {
+        public PhoneNumberProxy() { }
         public PhoneNumberProxy(ReferenceType referenceType) { }
         [DataMember] public int PhoneID { get; set; }
         [DataMember] public int? PhoneTypeID { get; set; }

@@ -12,6 +12,7 @@ namespace TeamSupport.Data
     [KnownType(typeof(EmailAddressProxy))]
     public abstract class EmailAddressProxy
     {
+        public EmailAddressProxy() { }
         public EmailAddressProxy(ReferenceType referenceType) { }
         [DataMember] public int Id { get; set; }
         [DataMember] public int RefID { get; set; }

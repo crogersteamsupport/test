@@ -14,6 +14,7 @@ namespace TeamSupport.Data
     public abstract class CustomFieldCategoryProxy
     {
 
+        public CustomFieldCategoryProxy() { }
         public CustomFieldCategoryProxy(ReferenceType referenceType) { }
         [DataMember] public int CustomFieldCategoryID { get; set; }
         [DataMember] public int OrganizationID { get; set; }

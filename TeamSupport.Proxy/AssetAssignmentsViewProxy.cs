@@ -12,6 +12,7 @@ namespace TeamSupport.Data
     [KnownType(typeof(AssetAssignmentsViewItemProxy))]
     public class AssetAssignmentsViewItemProxy
     {
+        public AssetAssignmentsViewItemProxy() { }
         public AssetAssignmentsViewItemProxy(ReferenceType referenceType) { }
         [DataMember] public int AssetAssignmentsID { get; set; }
         [DataMember] public int HistoryID { get; set; }
