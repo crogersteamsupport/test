@@ -5,3 +5,12 @@ $(document).on('click', '.action-hydrate-deflector', function(e) {
         console.log(result);
     });
 });
+
+function GetDeflectionResults(organizationID, phrase) {
+    debugger;
+    window.parent.Ts.Services.Deflector.GetDeflections(organizationID, phrase, function (result) {
+        console.log(result);
+    });
+}
+
+

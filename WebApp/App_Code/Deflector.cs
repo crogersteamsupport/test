@@ -107,7 +107,7 @@ namespace TSWebServices {
    			return ResponseText;
    		}
 
-        private async Task<string> GetDeflectionsAPIAsync(int organization, string phrase)
+        private async Task<string> FetchDeflections(int organization, string phrase)
         {
             string responseText = null;
             string PingUrl = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/fetch/" + organization + "/" + phrase;
@@ -132,13 +132,6 @@ namespace TSWebServices {
             }
         }
 
-        [WebMethod]
-        public async Task<string> GetDeflections(int organization, string phrase)
-        {
-            var deflectionResult = await GetDeflectionsAPIAsync(organization, phrase);
-
-            return deflectionResult;
-        }
 
         public string DeleteDeflector(int organizationID, string value) {
             string ResponseText = null;

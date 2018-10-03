@@ -9,13 +9,17 @@
     <link href="../vcr/1_9_0/Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
     <link href="../vcr/1_9_0/Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
     <link href="../vcr/1_9_0/Pages/CustomerChatInit.css" rel="stylesheet" />
-
 </head>
 <body>
     <div class="panel panel-default chatRequestForm" style="display:none;">
         <div class="panel-heading">Welcome to our live chat!</div>
         <div class="panel-body">
-            <form id="newChatForm" class="container">
+            <form id="newChatForm" class="container" runat="server">
+                <asp:ScriptManager ID="ScriptManager1" runat="server" ScriptMode="Release" EnableScriptGlobalization="True">
+                    <services>
+                        <asp:ServiceReference Path="~/Services/Deflector.asmx" />
+                    </services>
+                </asp:ScriptManager>
                 <div class="row">
                     <div class="col-xs-9 col-sm-10 col-md-11">
                         <div class="alert alert-info chatOfflineWarning" role="alert">
@@ -44,17 +48,31 @@
                         <textarea class="form-control" id="userIssue" rows="5"></textarea>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-default" style="margin-top:10px;">Submit</button>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="list-group" id="deflection-results" style="margin-top: 20px;"></div>
+                        <%--<a ng-click="ShowKBDeflection(Result)" class="list-group-item" ng-repeat="Result in DeflectionResults">{{Result.Article.Name}}</a>--%>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                    <button type="submit" class="btn btn-default" style="margin-top:10px;">Submit</button>
+                        </div>
+                </div>
             </form>
         </div>
     </div>
 </body>
+    
     <%-- JS --%>
     <script src="https://js.pusher.com/3.1/pusher.min.js"></script>
     <script src="/frontend/library/jquery-1.11.0.min.js" type="text/javascript"></script>
     <script src="/frontend/library/jquery.placeholder.js" type="text/javascript"></script>
     <script src="/frontend/library/bootstrap3.min.js" type="text/javascript"></script>
-
+    
+    <script src="/frontend/javascript/features/deflector.js?9" type="text/javascript"></script>
+<%--    <script src="../vcr/1_9_0/Js/ts/ts.system.js"></script>--%>
+<%--    <script src="../vcr/1_9_0/Js/ts/ts.pages.main.js?1513637540"></script>--%>
     <script src="../vcr/1_9_0/Js/Ts/ts.utils.js"></script>
     <script src="../vcr/1_9_0/Pages/CustomerChatInit.js"></script>
 </html>
