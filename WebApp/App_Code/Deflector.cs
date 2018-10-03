@@ -144,10 +144,10 @@ namespace TSWebServices {
         [WebMethod]
         public async Task<string> GetDeflections(int organization, string phrase) {
             try {
-                var deflectionResult = await GetDeflectionsAPIAsync(organization, phrase);
-                return deflectionResult;
-            } catch (Exception e) {
-                return e.Message;
+                return await GetDeflectionsAPIAsync(organization, phrase);
+            } catch (Exception ex) {
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
+                return null;
             }
 
         }
