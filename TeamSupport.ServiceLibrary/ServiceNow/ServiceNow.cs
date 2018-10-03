@@ -658,7 +658,7 @@ namespace TeamSupport.ServiceLibrary
                             _log.Write("Created comment/work_note in ServiceNow for the action");
                             _log.ClearCrmLinkError(action.ActionID.ToString(), string.Empty, _crmErrors);
 
-                            result = TeamSupport.Data.Quarantine.ServiceQ.UpdloadAttachments(_loginUser, action, encodedCredentials, result, appId, _crmLinkItem.HostName);
+                            result = TeamSupport.Data.Quarantine.ServiceQ.UpdloadAttachments(_loginUser, _crmErrors, _log, action, encodedCredentials, result, appId, _crmLinkItem.HostName);
                         }
                     }
 					else

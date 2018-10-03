@@ -107,7 +107,7 @@ namespace TeamSupport.ServiceLibrary
 
                     foreach (TaskAssociation taskAssociation in taskAssociations)
                     {
-                        if (taskAssociation.RefType == (int)ReferenceType.Tickets)
+                        if (taskAssociation.RefType == TaskAssociationProxy.References.Tickets)
                         {
                             TeamSupport.Data.Action taskAction = (new Actions(LoginUser)).AddNewAction();
                             taskAction.ActionTypeID = null;

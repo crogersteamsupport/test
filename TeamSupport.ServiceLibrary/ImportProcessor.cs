@@ -36,7 +36,7 @@ namespace TeamSupport.ServiceLibrary
                 if (!imports.IsEmpty)
                 {
                     _importUser = new Data.LoginUser(LoginUser.ConnectionString, -5, imports[0].OrganizationID, null);
-                    string path = AttachmentPath.GetPath(_importUser, imports[0].OrganizationID, AttachmentPath.Folder.ImportLogs, 3);
+                    string path = TeamSupport.Data.Quarantine.ServiceQ.GetAttachmentPath14(_importUser, imports[0].OrganizationID);
                     //string logPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Logs");
                     //logPath = Path.Combine(logPath, imports[0].OrganizationID.ToString());
                     _importLog = new ImportLog(path, imports[0].ImportID);
@@ -74,7 +74,7 @@ namespace TeamSupport.ServiceLibrary
             Logs.WriteData(import.Row);
 
             //string csvFile = "U:\\Development\\Imports\\TestFiles\test.csv"; // Path.Combine(path, import.FileName);
-            string csvFile = Path.Combine(AttachmentPath.GetPath(_importUser, import.OrganizationID, AttachmentPath.Folder.Imports, import.FilePathID), import.FileName);
+            string csvFile = TeamSupport.Data.Quarantine.ServiceQ.GetAttachmentPath15(_importUser, import.OrganizationID, import.FilePathID, import.FileName);
             _organizationID = import.OrganizationID;
 
             try

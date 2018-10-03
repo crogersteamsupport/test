@@ -42,21 +42,11 @@ namespace TeamSupport.ServiceLibrary
                 }
                 else
                 {
-                  resultMessage = string.Format("Image saved: {0}", savePath);
+                    resultMessage = string.Format("Image saved: {0}", savePath);
 
-                  Attachments attachments = new Attachments(user);
-                  Attachment attachment = attachments.AddNewAttachment();
-                  attachment.RefType = refType;
-                  attachment.RefID = user.UserID;
-                  attachment.OrganizationID = organizationId;
-                  attachment.FileName = Path.GetFileName(savePath);
-                  attachment.Path = savePath;
-                  attachment.FileType = string.IsNullOrEmpty(httpWebResponse.ContentType) ? "application/octet-stream" : httpWebResponse.ContentType;
-                  attachment.FileSize = httpWebResponse.ContentLength;
-                  //attachment.FilePathID = 3;
-                  attachments.Save();
+                    TeamSupport.Data.Quarantine.ServiceQ.CreateAttachment(savePath, organizationId, (AttachmentProxy.References)refType, user, httpWebResponse);
                 }
-              }
+            }
               else
               {
                 resultMessage = "The image was not downloaded, but no error was thrown.";
@@ -73,7 +63,8 @@ namespace TeamSupport.ServiceLibrary
       return imageDownloaded != null;
     }
 
-    public static string MakeHttpWebRequest(string requestUrl, string apiKey, TeamSupport.Data.Logs log, Settings settings, string apiCallCountKey, ref int currentApiCallCount)
+
+        public static string MakeHttpWebRequest(string requestUrl, string apiKey, TeamSupport.Data.Logs log, Settings settings, string apiCallCountKey, ref int currentApiCallCount)
     {
       string responseText = string.Empty;
       HttpWebRequest request = WebRequest.Create(requestUrl) as HttpWebRequest;

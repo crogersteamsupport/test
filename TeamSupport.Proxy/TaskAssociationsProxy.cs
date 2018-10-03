@@ -14,6 +14,7 @@ namespace TeamSupport.Data
   [Table(Name = "TaskAssociations")]
   public class TaskAssociationProxy
   {
+    public TaskAssociationProxy() { }
     public TaskAssociationProxy(References refType) { RefType = refType; }
     [DataMember, Column] public int TaskID { get; set; }
     [DataMember, Column] public int RefID { get; set; }
