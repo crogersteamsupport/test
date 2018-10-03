@@ -47,42 +47,6 @@ namespace TeamSupport.Data.Quarantine
                 WriteImage(context, fileName);
             }
 
-            //Organization organization = Organizations.GetOrganization(LoginUser.Anonymous, organizationID);
-            //bool isAuthenticated = organizationID == TSAuthentication.OrganizationID;
-
-            //if (isAuthenticated || organization.AllowUnsecureAttachmentViewing)
-            //{
-            //	if (Path.GetExtension(path) == "")
-            //	{
-            //		path = Path.ChangeExtension(path, ".jpg");
-            //		string imageFile = Path.GetFileName(path);
-            //		path = Path.GetDirectoryName(path);
-            //		string imagePath = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
-            //		if (!Directory.Exists(imagePath)) Directory.CreateDirectory(imagePath);
-            //		fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
-            //		if (!File.Exists(fileName))
-            //		{
-            //			imagePath = Path.Combine(AttachmentPath.GetDefaultPath(LoginUser.Anonymous, AttachmentPath.Folder.Images), path);
-            //			fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
-            //		}
-
-            //	}
-            //	else
-            //	{
-            //		fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
-            //	}
-
-            //	if (File.Exists(fileName))
-            //	{
-            //		WriteImage(context, fileName);
-            //	}
-            //}
-            //else
-            //{
-            //	context.Response.Write("Unauthorized");
-            //	context.Response.ContentType = "text/html";
-            //	return;
-            //}
         }
 
         private static void WriteImage(HttpContext context, string fileName)

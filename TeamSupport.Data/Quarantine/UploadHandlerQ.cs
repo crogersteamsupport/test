@@ -30,14 +30,14 @@ namespace TeamSupport.Data.Quarantine
             if (folder == AttachmentPath.Folder.None) throw new Exception("Invalid path.");
 
             AttachmentProxy.References refType = AttachmentPath.GetFolderReferenceType(folder);
-            //if (refType == AttachmentProxy.References.None)
+            if (refType == AttachmentProxy.References.None)
             {
                 SaveFilesOld(loginUser, organizationID, _id, _ratingImage, context, folder);
             }
-            //else
-            //{
-            //    UploadUtils.SaveFiles(context, folder, TSAuthentication.OrganizationID, _id);
-            //}
+            else
+            {
+                SaveFiles(loginUser, context, folder, organizationID, _id);
+            }
 
         }
         private static AttachmentPath.Folder GetFolder(HttpContext context, string[] segments)
@@ -62,7 +62,7 @@ namespace TeamSupport.Data.Quarantine
             {
                 if (files[i].ContentLength > 0)
                 {
-                    string fileName = RemoveSpecialCharacters(DataUtils.VerifyUniqueUrlFileName(path, Path.GetFileName(files[i].FileName)));
+                    string fileName = TeamSupport.Handlers.UploadUtils.RemoveSpecialCharacters(DataUtils.VerifyUniqueUrlFileName(path, Path.GetFileName(files[i].FileName)));
                     if (builder.Length > 0) builder.Append(",");
                     builder.Append(fileName);
 
@@ -118,9 +118,66 @@ namespace TeamSupport.Data.Quarantine
             context.Response.Write(builder.ToString());
         }
 
-        public static string RemoveSpecialCharacters(string text)
+        static void SaveFiles(LoginUser loginUser, HttpContext context, AttachmentPath.Folder folder, int organizationID, int? itemID)
         {
-            return Path.GetInvalidFileNameChars().Aggregate(text, (current, c) => current.Replace(c.ToString(), "_"));
+            List<TeamSupport.Handlers.UploadResult> result = new List<TeamSupport.Handlers.UploadResult>();
+
+            AttachmentProxy.References refType = AttachmentPath.GetFolderReferenceType(folder);
+
+            string path = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, folder, 3);
+            if (itemID != null) path = Path.Combine(path, itemID.ToString());
+            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+            HttpFileCollection files = context.Request.Files;
+
+            for (int i = 0; i < files.Count; i++)
+            {
+                if (files[i].ContentLength > 0)
+                {
+                    string fileName = TeamSupport.Handlers.UploadUtils.RemoveSpecialCharacters(DataUtils.VerifyUniqueUrlFileName(path, Path.GetFileName(files[i].FileName)));
+
+                    files[i].SaveAs(Path.Combine(path, fileName));
+                    if (refType != AttachmentProxy.References.None && itemID != null)
+                    {
+                        Attachment attachment = (new Attachments(loginUser)).AddNewAttachment();
+                        attachment.RefType = refType;
+                        attachment.RefID = (int)itemID;
+                        attachment.OrganizationID = organizationID;
+                        attachment.FileName = fileName;
+                        attachment.Path = Path.Combine(path, fileName);
+                        attachment.FileType = files[i].ContentType;
+                        attachment.FileSize = files[i].ContentLength;
+                        attachment.FilePathID = 3;
+                        if (context.Request.Form["description"] != null)
+                            attachment.Description = context.Request.Form["description"].Replace("\n", "<br />");
+                        if (context.Request.Form["productFamilyID"] != null && context.Request.Form["productFamilyID"] != "-1")
+                            attachment.ProductFamilyID = Int32.Parse(context.Request.Form["productFamilyID"]);
+
+                        attachment.Collection.Save();
+                        result.Add(new TeamSupport.Handlers.UploadResult(fileName, attachment.FileType, attachment.FileSize, attachment.AttachmentID));
+                    }
+                    else
+                    {
+                        switch (refType)
+                        {
+                            case AttachmentProxy.References.Imports:
+                                //Not saving import till user click on import button saving both imports and mappings
+                                //Import import = (new Imports(TSAuthentication.GetLoginUser())).AddNewImport();
+                                //import.RefType = (ReferenceType)Convert.ToInt32(context.Request.Form["refType"]);
+                                //import.FileName = fileName;
+                                //import.OrganizationID = TSAuthentication.OrganizationID;
+                                //import.Collection.Save();
+                                result.Add(new TeamSupport.Handlers.UploadResult(fileName, files[i].ContentType, files[i].ContentLength));
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
+            context.Response.Clear();
+            context.Response.ContentType = "text/plain";
+            context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
         }
+
     }
 }
