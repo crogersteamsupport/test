@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 namespace TeamSupport.Data
 {
   [Serializable]
-  internal partial class Attachment : BaseItem
+  partial class Attachment : BaseItem
   {
     private Attachments _attachments;
     

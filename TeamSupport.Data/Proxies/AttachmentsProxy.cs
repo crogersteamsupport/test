@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 namespace TeamSupport.Data
 {
   
-  internal partial class Attachment : BaseItem
+  partial class Attachment : BaseItem
   {
     // class AttachmentProxy moved to class library TeamSupport.Proxy
 

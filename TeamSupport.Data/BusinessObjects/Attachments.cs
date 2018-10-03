@@ -8,7 +8,7 @@ using System.IO;
 
 namespace TeamSupport.Data
 {
-  internal partial class Attachment 
+  partial class Attachment 
   {
     public string CreatorName
     {

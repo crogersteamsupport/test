@@ -211,6 +211,12 @@ namespace TeamSupport.Data.Quarantine
             //temppath + "\\" + ImageResizer.Util.PathUtils.RemoveQueryString(img1.Value).Replace('/','\\');
         }
 
+        public static object GetAttachmentsDataSource(LoginUser loginUser, ReferenceType _refType, int _refID)
+        {
+            Attachments attachments = new Attachments(loginUser);
+            attachments.LoadByReference(_refType, _refID);
+            return attachments;
+        }
 
         /*
  TeamSupport.Data.Quarantine.WebAppQ.
