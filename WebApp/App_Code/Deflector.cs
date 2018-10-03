@@ -107,7 +107,7 @@ namespace TSWebServices {
    			return ResponseText;
    		}
 
-        private async Task<string> FetchDeflections(int organization, string phrase)
+        private async Task<string> FetchDeflectionsAsync(int organization, string phrase)
         {
             string responseText = null;
             string PingUrl = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/fetch/" + organization + "/" + phrase;
@@ -132,6 +132,20 @@ namespace TSWebServices {
             }
         }
 
+        [WebMethod]
+        public async Task<string> GetDeflections(int organization, string phrase)
+        {
+            try
+            {
+                return await FetchDeflectionsAsync(organization, phrase);
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
+                return null;
+            }
+
+        }
 
         public string DeleteDeflector(int organizationID, string value) {
             string ResponseText = null;
@@ -148,6 +162,48 @@ namespace TSWebServices {
                 }
             }
             return ResponseText;
+        }
+
+        public string DeleteTag(int OrganizationId, string Value)
+        {
+            var item = new DeflectorItem
+            {
+                OrganizationID = OrganizationId,
+                Value = Value
+            };
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
+            string ResponseText = null;
+            string PingUrl = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/delete/organization/" + OrganizationId + "/tag/" + Value;
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
+            request.Method = "DELETE";
+            request.KeepAlive = false;
+            request.ContentType = "application/json";
+
+            using (var streamWriter = new StreamWriter(request.GetRequestStream()))
+            {
+                streamWriter.Write(json);
+                streamWriter.Flush();
+                streamWriter.Close();
+            }
+            try
+            {
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    if (request.HaveResponse && response != null)
+                    {
+                        using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8))
+                        {
+                            ResponseText = reader.ReadToEnd();
+                        }
+                    }
+                }
+                return ResponseText;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
         }
 
         public string RenameTag (int OrganizationId, int TagId, string Value) {
