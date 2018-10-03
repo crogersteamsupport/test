@@ -219,6 +219,35 @@ namespace TSWebServices {
             return ResponseText;
         }
 
+        public string DeleteTag (int OrganizationId, string Value) {
+            var item = new DeflectorItem {
+                OrganizationID = OrganizationId,
+                Value = Value
+            };
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
+            string ResponseText    = null;
+            string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/delete/organization/" + OrganizationId + "/tag/" + Value;
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
+            request.Method         = "DELETE";
+            request.KeepAlive      = false;
+            request.ContentType    = "application/json";
+
+            using (var streamWriter = new StreamWriter(request.GetRequestStream())) {
+                streamWriter.Write(json);
+                streamWriter.Flush();
+                streamWriter.Close();
+            }
+
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+                if (request.HaveResponse && response != null) {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
+                        ResponseText = reader.ReadToEnd();
+                    }
+                }
+            }
+            return ResponseText;
+        }
 
         private string CheckDeflectorAPI(string tag) {
             string ResponseText    = null;

@@ -692,12 +692,18 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public void DeleteTag(int tagID)
-        {
-            if (!TSAuthentication.IsSystemAdmin) return;
-            Tag tag = Tags.GetTag(TSAuthentication.GetLoginUser(), tagID);
-            tag.Delete();
-            tag.Collection.Save();
+        public void DeleteTag(int tagID) {
+            if (!TSAuthentication.IsSystemAdmin) {
+                return;
+            } else {
+                Tag tag = Tags.GetTag(TSAuthentication.GetLoginUser(), tagID);
+                tag.Delete();
+                tag.Collection.Save();
+
+                // DEFLECTOR.
+                Deflector Deflection = new Deflector();
+                string test = Deflection.DeleteTag(TSAuthentication.OrganizationID, tag.Value);
+            }
         }
 
         [WebMethod]
