@@ -33,10 +33,9 @@ namespace TeamSupport.Handlers
             context.Response.ContentType = "text/html";
             try
             {
-                if (IDTree.ConnectionContext.ActionAttachmentsEnabled)
                 {
                     List<AttachmentProxy> proxies = ModelAPI.AttachmentAPI.CreateAttachments(context, out _ratingImage);
-                    if (proxies != null)    // SCOT fall through if not supported by RefType infrastructure
+                    //if (proxies != null)    // SCOT fall through if not supported by RefType infrastructure
                     {
                         context.Response.Clear();
                         context.Response.ContentType = "text/plain";

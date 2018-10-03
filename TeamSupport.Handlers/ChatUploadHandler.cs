@@ -31,10 +31,9 @@ namespace TeamSupport.Handlers
             try
             {
 
-                //if (IDTree.ConnectionContext.ActionAttachmentsEnabled)
                 {
                     List<AttachmentProxy> proxies = ModelAPI.AttachmentAPI.CreateAttachments(context, out _result);
-                    if (proxies != null)    // SCOT fall through if not supported by RefType infrastructure
+                    //if (proxies != null)    // SCOT fall through if not supported by RefType infrastructure
                     {
                         context.Response.Clear();
                         context.Response.ContentType = "text/plain";
@@ -46,22 +45,6 @@ namespace TeamSupport.Handlers
                         return;
                     }
                 }
-
-                //List<string> segments = UploadUtils.GetUrlSegments(context, "chatupload");
-                //int chatID = int.Parse(segments[segments.Count - 1]);
-                //segments.RemoveAt(segments.Count - 1);
-
-                //int orgID = int.Parse(segments[segments.Count - 1]);
-                //segments.RemoveAt(segments.Count - 1);
-
-                //Chat chat = Chats.GetChat(LoginUser.Anonymous, chatID);
-                //if (chat.OrganizationID != orgID) throw new Exception("Invalid ID");
-
-                //AttachmentPath.Folder folder = UploadUtils.GetFolder(context, segments.ToArray());
-                //if (folder == AttachmentPath.Folder.None) throw new Exception("Invalid path.");
-
-                //AttachmentProxy.References refType = AttachmentPath.GetFolderReferenceType(folder);
-                //UploadUtils.SaveFiles(context, folder, orgID, chatID);
 
             }
             catch (Exception ex)

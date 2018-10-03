@@ -90,14 +90,12 @@ namespace TSWebServices
             info.CustomValues = ticketService.GetParentCustomValues(ticket.TicketID);
             info.Subscribers = GetSubscribers(ticket);
             info.Queuers = GetQueuers(ticket);
-            if (ConnectionContext.ActionAttachmentsEnabled)    // append action attachments for ticket by filename
             {
                 AttachmentProxy[] results;
                 Model_API.ReadActionAttachmentsForTicket(ticket.TicketID, ActionAttachmentsByTicketID.ByFilename, out results);
                 info.Attachments = results;
             }
-            else
-                info.Attachments = GetAttachments(ticket);
+
 
             TaskService taskService = new TaskService();
             info.Tasks = taskService.GetTasksByTicketID(info.Ticket.TicketID);
@@ -278,15 +276,10 @@ namespace TSWebServices
                     timeLineItem.item          = viewItem.GetProxy();
                     timeLineItem.item.Message  = SanitizeMessage(timeLineItem.item.Message, loginUser);
 
-                    if (ConnectionContext.ActionAttachmentsEnabled) // read action attachments
                     {
                         timeLineItem.Attachments = Model_API.Read<AttachmentProxy[]>(viewItem.RefID);
                     }
-                    else
-                    {
-                        AttachmentProxy[] proxies = TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentProxies6(viewItem.RefID, loginUser);
-                        timeLineItem.Attachments = proxies;
-                    }
+
                     timeLineItems.Add(timeLineItem);
                 } else {
                     TimeLineItem wcItem = new TimeLineItem();
@@ -1769,16 +1762,9 @@ namespace TSWebServices
                 }
             }
 
-            if (ConnectionContext.ActionAttachmentsEnabled)    // read action attachments
             {
                 int actionID = item.item.RefID;
                 item.Attachments = Model_API.Read<AttachmentProxy[]>(actionID);
-            }
-            else
-            {
-                //Attachments attachments = new Attachments(loginUser);
-                //attachments.LoadByActionID(item.item.RefID);
-                item.Attachments = GetActionAttachments(action.ActionID, loginUser);
             }
 
             return item;
@@ -1813,12 +1799,9 @@ namespace TSWebServices
         private AttachmentProxy[] GetActionAttachments(int actionID, LoginUser loginUser)
         {
             // Read action attachments
-            if (ConnectionContext.ActionAttachmentsEnabled)    // read action attachments
             {
                 return Model_API.Read<AttachmentProxy[]>(actionID);
             }
-
-            return TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentProxies8(actionID, loginUser);
         }
 
 
@@ -1863,7 +1846,6 @@ namespace TSWebServices
 
         private void CopyInsertedKBAttachments(int actionID, int insertedKBTicketID)
         {
-            if (ConnectionContext.ActionAttachmentsEnabled)    // clone Knowledge Base action attachments from entire ticket to single action
             {
                 AttachmentProxy[] results;
                 Model_API.ReadActionAttachmentsForTicket(insertedKBTicketID, ActionAttachmentsByTicketID.KnowledgeBase, out results);
@@ -1884,8 +1866,6 @@ namespace TSWebServices
                 return;
             }
 
-            LoginUser loginUser = TSAuthentication.GetLoginUser();
-            TeamSupport.Data.Quarantine.WebAppQ.CopyInsertedKBAttachments1(actionID, insertedKBTicketID, loginUser);
         }
 
     }

@@ -64,6 +64,7 @@ namespace TeamSupport.Api
         return TeamSupport.Data.Quarantine.RestAttachmentsQ.DeleteAttachment(command, assetID, attachmentID);
     }
 
+    // add a layer to get at Attachments.GetXML
     public static string GetAttachmentsAsXML(RestCommand _command, int attachmentID)
     {
         return TeamSupport.Data.Quarantine.RestAttachmentsQ.GetAttachmentsAsXML(_command, attachmentID);

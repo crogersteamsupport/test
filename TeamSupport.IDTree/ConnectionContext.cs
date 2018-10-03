@@ -19,9 +19,6 @@ namespace TeamSupport.IDTree
     /// </summary>
     public class ConnectionContext : IDisposable
     {
-        const bool _actionAttachments = true;
-        public static bool ActionAttachmentsEnabled { get { return _actionAttachments; } }
-
         public AuthenticationModel Authentication { get; private set; }
         public SqlConnection _connection;
         SqlTransaction _transaction;
