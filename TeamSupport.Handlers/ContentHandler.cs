@@ -333,10 +333,7 @@ namespace TeamSupport.Handlers
             int userID = int.Parse(segments[2]);
             int size = int.Parse(segments[3]);
             string cacheFileName = "";
-            string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "Avatars\\" + organizationID.ToString());
-            if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
-
-            cacheFileName = Path.Combine(cachePath, userID.ToString() + "-" + size.ToString() + ".jpg");
+            cacheFileName = TeamSupport.Data.Quarantine.ContentHandlerQ.GetCacheFileName(organizationID, userID, size);
             // found the last cache
             if (File.Exists(cacheFileName))
             {
@@ -355,18 +352,9 @@ namespace TeamSupport.Handlers
             }
 
             //New image, check if one has been uploaded
-            Attachments attachments = new Attachments(LoginUser.Anonymous);
-            attachments.LoadByReference(ReferenceType.UserPhoto, userID);
-            StringBuilder path = new StringBuilder();
-            if (attachments.Count > 0)
-            {
-                path.Append(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages, (int)attachments[0].FilePathID));
-            }
-            else
-            {
-                path.Append(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages));
-            }
-            string originalFileName = AttachmentPath.GetImageFileName(path.ToString(), userID.ToString() + "avatar");
+            string originalFileName;
+            originalFileName = TeamSupport.Data.Quarantine.ContentHandlerQ.OrignalFileName(organizationID, userID);
+
             if (File.Exists(originalFileName))
             {
                 // original image, resize, make circle, cache it
@@ -395,7 +383,6 @@ namespace TeamSupport.Handlers
             return;
 
         }
-
 
 
         private void ProcessInitialAvatar(HttpContext context, string[] segments, int organizationID)
@@ -404,12 +391,10 @@ namespace TeamSupport.Handlers
 
             string initial = segments[2].ToUpper();
             int size = int.Parse(segments[3]);
+
             string cacheFileName = "";
-            string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "Initials");
-            if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
+            cacheFileName = TeamSupport.Data.Quarantine.ContentHandlerQ.GetCacheFileName1(initial, size);
 
-
-            cacheFileName = Path.Combine(cachePath, initial + "-" + size.ToString() + ".jpg");
             // found the last cache
             if (File.Exists(cacheFileName))
             {
@@ -426,16 +411,14 @@ namespace TeamSupport.Handlers
 
         }
 
+
         private void ProcessHubLogo(HttpContext context, string[] segments, int organizationID)
         {
 
             int userID = int.Parse(segments[2]);
             int size = int.Parse(segments[3]);
             string cacheFileName = "";
-            string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "HubLogo\\" + organizationID.ToString());
-            if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
-
-            cacheFileName = Path.Combine(cachePath, userID.ToString() + "-" + size.ToString() + ".jpg");
+            cacheFileName = TeamSupport.Data.Quarantine.ContentHandlerQ.GetCacheFileName2(organizationID, userID, size);
             // found the last cache
             if (File.Exists(cacheFileName))
             {
@@ -444,7 +427,7 @@ namespace TeamSupport.Handlers
             }
 
             //New image, check if one has been uploaded
-            string originalFileName = AttachmentPath.GetImageFileName(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages), userID.ToString() + "avatar");
+            string originalFileName = TeamSupport.Data.Quarantine.ContentHandlerQ.OriginalFileName1(organizationID, userID);
             if (File.Exists(originalFileName))
             {
                 // original image, resize, make circle, cache it
@@ -474,6 +457,8 @@ namespace TeamSupport.Handlers
 
         }
 
+
+
         //https://app.ts.com/dc/{OrganizationID}/CompanyLogo/{orgIdLogo}/{Size}/{page}
         private void ProcessCompanyLogo(HttpContext context, string[] segments, int organizationID)
         {
@@ -481,12 +466,8 @@ namespace TeamSupport.Handlers
             int size = int.Parse(segments[3]);
             string type = segments.Length == 5 ? segments[4] : string.Empty;
             string cacheFileName = "";
-            string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "CompanyLogo\\" + organizationID.ToString());
-            bool isIndexPage = !string.IsNullOrEmpty(type) && type.ToLower() == "index";
-
-            if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
-
-            cacheFileName = Path.Combine(cachePath, string.Format("{0}-{1}{2}.jpg", logoOrganizationId.ToString(), size.ToString(), string.IsNullOrEmpty(type) ? "" : "-" + type));
+            bool isIndexPage;
+            cacheFileName = TeamSupport.Data.Quarantine.ContentHandlerQ.GetChacheFileName3(organizationID, logoOrganizationId, size, type, out isIndexPage);
 
             // found the last cache
             if (File.Exists(cacheFileName))
@@ -496,7 +477,7 @@ namespace TeamSupport.Handlers
             }
 
             //New image, check if one has been uploaded
-            string originalFileName = AttachmentPath.GetImageFileName(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.OrganizationsLogo), logoOrganizationId.ToString());
+            string originalFileName = TeamSupport.Data.Quarantine.ContentHandlerQ.OriginalFileName2(organizationID, logoOrganizationId);
 
             if (File.Exists(originalFileName))
             {
@@ -543,6 +524,8 @@ namespace TeamSupport.Handlers
             return;
         }
 
+
+
         //https://app.ts.com/dc/{OrganizationID}/contactavatar/{userId}/{Size}/{page}
         private void ProcessContactAvatar(HttpContext context, string[] segments, int organizationID)
         {
@@ -551,12 +534,8 @@ namespace TeamSupport.Handlers
             int size = int.Parse(segments[3]);
             string type = segments.Length == 5 ? segments[4] : string.Empty;
             string cacheFileName = "";
-            string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "Avatars\\" + organizationParentId.ToString() + "\\Contacts\\");
-            bool isIndexPage = !string.IsNullOrEmpty(type) && type.ToLower() == "index";
-
-            if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
-
-            cacheFileName = Path.Combine(cachePath, string.Format("{0}-{1}{2}.jpg", userId.ToString(), size.ToString(), string.IsNullOrEmpty(type) ? "" : "-" + type));
+            bool isIndexPage;
+            cacheFileName = TeamSupport.Data.Quarantine.ContentHandlerQ.GetCacheFileName4(organizationParentId, userId, size, type, out isIndexPage);
 
             // found the last cache
             if (File.Exists(cacheFileName))
@@ -566,7 +545,7 @@ namespace TeamSupport.Handlers
             }
 
             //New image, check if one has been uploaded
-            string originalFileName = AttachmentPath.GetImageFileName(AttachmentPath.GetPath(LoginUser.Anonymous, organizationParentId, AttachmentPath.Folder.ContactImages), userId.ToString() + "avatar");
+            string originalFileName = TeamSupport.Data.Quarantine.ContentHandlerQ.OriginalFileName3(organizationParentId, userId);
 
             if (File.Exists(originalFileName))
             {
@@ -596,6 +575,7 @@ namespace TeamSupport.Handlers
 
             return;
         }
+
 
         private static Color GetInitialColor(string initial)
         {
@@ -924,9 +904,8 @@ namespace TeamSupport.Handlers
                 return;
             }
 
-            string logPath = AttachmentPath.GetPath(import.Collection.LoginUser, import.OrganizationID, AttachmentPath.Folder.ImportLogs, import.FilePathID);
-            string fileName = import.ImportID.ToString() + ".txt";
-            logPath = Path.Combine(logPath, fileName);
+            string logPath, fileName;
+            TeamSupport.Data.Quarantine.ContentHandlerQ.GetLogPath(import, out logPath, out fileName);
 
             if (!File.Exists(logPath))
             {
@@ -953,6 +932,7 @@ namespace TeamSupport.Handlers
             context.Response.ContentType = fileType;
             context.Response.WriteFile(logPath);
         }
+
 
         private void ProcessTicketExport(HttpContext context)
         {
@@ -1340,9 +1320,8 @@ namespace TeamSupport.Handlers
                 return;
             }
 
-            string logPath = AttachmentPath.GetPath(scheduledReport.Collection.LoginUser, scheduledReport.OrganizationId, AttachmentPath.Folder.ScheduledReportsLogs, scheduledReport.FilePathID);
-            string fileName = scheduledReport.Id.ToString() + ".txt";
-            logPath = Path.Combine(logPath, fileName);
+            string logPath, fileName;
+            TeamSupport.Data.Quarantine.ContentHandlerQ.GetLogPath1(scheduledReport, out logPath, out fileName);
 
             if (!File.Exists(logPath))
             {
@@ -1366,10 +1345,7 @@ namespace TeamSupport.Handlers
             if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
             AttachmentProxy attachment = Model_API.Read<AttachmentProxy>(attachmentID);
 
-            string attachmentPath = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ChatUploads, (int)attachment.FilePathID);
-            attachmentPath += "\\" + chatID;
-
-            attachmentPath = Path.Combine(attachmentPath, attachment.FileName);
+            string attachmentPath = TeamSupport.Data.Quarantine.ContentHandlerQ.GetAttachmentPath(organizationID, chatID, attachment);
 
             if (!File.Exists(attachmentPath))
             {

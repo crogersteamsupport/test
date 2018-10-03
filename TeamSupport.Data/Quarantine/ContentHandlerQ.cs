@@ -205,6 +205,133 @@ namespace TeamSupport.Data.Quarantine
             if (File.Exists(fileName)) WriteImage(context, fileName);
         }
 
+        public static string GetCacheFileName(int organizationID, int userID, int size)
+        {
+            string cacheFileName;
+            {
+                string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "Avatars\\" + organizationID.ToString());
+                if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
+
+                cacheFileName = Path.Combine(cachePath, userID.ToString() + "-" + size.ToString() + ".jpg");
+            }
+
+            return cacheFileName;
+        }
+
+        public static string GetCacheFileName1(string initial, int size)
+        {
+            string cacheFileName;
+            {
+                string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "Initials");
+                if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
+                cacheFileName = Path.Combine(cachePath, initial + "-" + size.ToString() + ".jpg");
+            }
+
+            return cacheFileName;
+        }
+
+        public static string GetCacheFileName2(int organizationID, int userID, int size)
+        {
+            string cacheFileName;
+            {
+
+                string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "HubLogo\\" + organizationID.ToString());
+                if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
+
+                cacheFileName = Path.Combine(cachePath, userID.ToString() + "-" + size.ToString() + ".jpg");
+            }
+
+            return cacheFileName;
+        }
+
+        public static string GetChacheFileName3(int organizationID, int logoOrganizationId, int size, string type, out bool isIndexPage)
+        {
+            string cacheFileName;
+            {
+                string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "CompanyLogo\\" + organizationID.ToString());
+                isIndexPage = !string.IsNullOrEmpty(type) && type.ToLower() == "index";
+
+                if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
+
+                cacheFileName = Path.Combine(cachePath, string.Format("{0}-{1}{2}.jpg", logoOrganizationId.ToString(), size.ToString(), string.IsNullOrEmpty(type) ? "" : "-" + type));
+            }
+
+            return cacheFileName;
+        }
+
+        public static string GetCacheFileName4(int organizationParentId, int userId, int size, string type, out bool isIndexPage)
+        {
+            string cacheFileName;
+            {
+                string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "Avatars\\" + organizationParentId.ToString() + "\\Contacts\\");
+                isIndexPage = !string.IsNullOrEmpty(type) && type.ToLower() == "index";
+
+                if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
+
+                cacheFileName = Path.Combine(cachePath, string.Format("{0}-{1}{2}.jpg", userId.ToString(), size.ToString(), string.IsNullOrEmpty(type) ? "" : "-" + type));
+            }
+
+            return cacheFileName;
+        }
+
+        public static string OrignalFileName(int organizationID, int userID)
+        {
+            string originalFileName;
+            {
+                Attachments attachments = new Attachments(LoginUser.Anonymous);
+                attachments.LoadByReference(ReferenceType.UserPhoto, userID);
+                StringBuilder path = new StringBuilder();
+                if (attachments.Count > 0)
+                {
+                    path.Append(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages, (int)attachments[0].FilePathID));
+                }
+                else
+                {
+                    path.Append(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages));
+                }
+                originalFileName = AttachmentPath.GetImageFileName(path.ToString(), userID.ToString() + "avatar");
+            }
+
+            return originalFileName;
+        }
+
+        public static string OriginalFileName1(int organizationID, int userID)
+        {
+            return AttachmentPath.GetImageFileName(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages), userID.ToString() + "avatar");
+        }
+
+        public static string OriginalFileName2(int organizationID, int logoOrganizationId)
+        {
+            return AttachmentPath.GetImageFileName(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.OrganizationsLogo), logoOrganizationId.ToString());
+        }
+
+        public static string OriginalFileName3(int organizationParentId, int userId)
+        {
+            return AttachmentPath.GetImageFileName(AttachmentPath.GetPath(LoginUser.Anonymous, organizationParentId, AttachmentPath.Folder.ContactImages), userId.ToString() + "avatar");
+        }
+
+        public static void GetLogPath(Import import, out string logPath, out string fileName)
+        {
+            logPath = AttachmentPath.GetPath(import.Collection.LoginUser, import.OrganizationID, AttachmentPath.Folder.ImportLogs, import.FilePathID);
+            fileName = import.ImportID.ToString() + ".txt";
+            logPath = Path.Combine(logPath, fileName);
+        }
+
+        public static void GetLogPath1(ScheduledReport scheduledReport, out string logPath, out string fileName)
+        {
+            logPath = AttachmentPath.GetPath(scheduledReport.Collection.LoginUser, scheduledReport.OrganizationId, AttachmentPath.Folder.ScheduledReportsLogs, scheduledReport.FilePathID);
+            fileName = scheduledReport.Id.ToString() + ".txt";
+            logPath = Path.Combine(logPath, fileName);
+        }
+
+        public static string GetAttachmentPath(int organizationID, int chatID, AttachmentProxy attachment)
+        {
+            string attachmentPath = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ChatUploads, (int)attachment.FilePathID);
+            attachmentPath += "\\" + chatID;
+
+            attachmentPath = Path.Combine(attachmentPath, attachment.FileName);
+            return attachmentPath;
+        }
 
     }
 }
