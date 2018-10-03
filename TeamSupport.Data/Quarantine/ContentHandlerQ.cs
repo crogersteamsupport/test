@@ -220,57 +220,39 @@ namespace TeamSupport.Data.Quarantine
 
         public static string GetCacheFileName1(string initial, int size)
         {
-            string cacheFileName;
-            {
-                string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "Initials");
-                if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
-                cacheFileName = Path.Combine(cachePath, initial + "-" + size.ToString() + ".jpg");
-            }
-
+            string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "Initials");
+            if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
+            string cacheFileName = Path.Combine(cachePath, initial + "-" + size.ToString() + ".jpg");
             return cacheFileName;
         }
 
         public static string GetCacheFileName2(int organizationID, int userID, int size)
         {
-            string cacheFileName;
-            {
-
-                string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "HubLogo\\" + organizationID.ToString());
-                if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
-
-                cacheFileName = Path.Combine(cachePath, userID.ToString() + "-" + size.ToString() + ".jpg");
-            }
-
+            string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "HubLogo\\" + organizationID.ToString());
+            if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
+            string cacheFileName = Path.Combine(cachePath, userID.ToString() + "-" + size.ToString() + ".jpg");
             return cacheFileName;
         }
 
         public static string GetChacheFileName3(int organizationID, int logoOrganizationId, int size, string type, out bool isIndexPage)
         {
-            string cacheFileName;
-            {
-                string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "CompanyLogo\\" + organizationID.ToString());
-                isIndexPage = !string.IsNullOrEmpty(type) && type.ToLower() == "index";
+            string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "CompanyLogo\\" + organizationID.ToString());
+            isIndexPage = !string.IsNullOrEmpty(type) && type.ToLower() == "index";
 
-                if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
+            if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
 
-                cacheFileName = Path.Combine(cachePath, string.Format("{0}-{1}{2}.jpg", logoOrganizationId.ToString(), size.ToString(), string.IsNullOrEmpty(type) ? "" : "-" + type));
-            }
-
+            string cacheFileName = Path.Combine(cachePath, string.Format("{0}-{1}{2}.jpg", logoOrganizationId.ToString(), size.ToString(), string.IsNullOrEmpty(type) ? "" : "-" + type));
             return cacheFileName;
         }
 
         public static string GetCacheFileName4(int organizationParentId, int userId, int size, string type, out bool isIndexPage)
         {
-            string cacheFileName;
-            {
-                string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "Avatars\\" + organizationParentId.ToString() + "\\Contacts\\");
-                isIndexPage = !string.IsNullOrEmpty(type) && type.ToLower() == "index";
+            string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "Avatars\\" + organizationParentId.ToString() + "\\Contacts\\");
+            isIndexPage = !string.IsNullOrEmpty(type) && type.ToLower() == "index";
 
-                if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
+            if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
 
-                cacheFileName = Path.Combine(cachePath, string.Format("{0}-{1}{2}.jpg", userId.ToString(), size.ToString(), string.IsNullOrEmpty(type) ? "" : "-" + type));
-            }
-
+            string cacheFileName = Path.Combine(cachePath, string.Format("{0}-{1}{2}.jpg", userId.ToString(), size.ToString(), string.IsNullOrEmpty(type) ? "" : "-" + type));
             return cacheFileName;
         }
 
