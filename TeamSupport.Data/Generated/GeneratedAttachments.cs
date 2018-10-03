@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 namespace TeamSupport.Data
 {
   [Serializable]
-  public partial class Attachment : BaseItem
+  internal partial class Attachment : BaseItem
   {
     private Attachments _attachments;
     
@@ -167,7 +167,7 @@ namespace TeamSupport.Data
     
   }
 
-  public partial class Attachments : BaseCollection, IEnumerable<Attachment>
+  internal partial class Attachments : BaseCollection, IEnumerable<Attachment>
   {
     public Attachments(LoginUser loginUser): base (loginUser)
     {
@@ -601,7 +601,7 @@ namespace TeamSupport.Data
       return null;
     }
 
-    public virtual Attachment AddNewAttachment()
+    internal virtual Attachment AddNewAttachment()
     {
       if (Table.Columns.Count < 1) LoadColumns("Attachments");
       DataRow row = Table.NewRow();

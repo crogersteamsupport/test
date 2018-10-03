@@ -433,8 +433,7 @@ namespace TeamSupport.Api
                             int attachmentID = GetId(3);
                             ModelAPI.AttachmentAPI.DeleteAttachment(AttachmentProxy.References.Assets, attachmentID, GetId(1));
                             //data = RestAttachments.DeleteAttachment(_command, GetId(1), GetId(3));
-                            Attachment attachment = Attachments.GetAttachment(_command.LoginUser, attachmentID);
-                            data = attachment.Collection.GetXml("Attachments", "Attachment", true, _command.Filters);
+                            data = RestAttachments.GetAttachmentsAsXML(_command, attachmentID);
                         }
                         break;
                     case "/users/{id}/": RestUsers.DeleteUser(_command, GetId(1)); break;

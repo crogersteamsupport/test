@@ -6,8 +6,7 @@ using System.IO;
 
 namespace TeamSupport.Data
 {
-
-  public class AttachmentPath
+  internal class AttachmentPath
   {
     public enum Folder
     {

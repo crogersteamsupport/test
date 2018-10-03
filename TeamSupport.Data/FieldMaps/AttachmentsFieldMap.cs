@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 namespace TeamSupport.Data
 {
   
-  public partial class Attachments
+  internal partial class Attachments
   {
     protected override void BuildFieldMap()
     {

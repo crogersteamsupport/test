@@ -14,7 +14,7 @@ using TeamSupport.Data;
 using TeamSupport.WebUtils;
 using System.IO;
 
-public partial class Attachment : System.Web.UI.Page
+internal partial class Attachment : System.Web.UI.Page
 {
   private AttachmentProxy _attachment;
 

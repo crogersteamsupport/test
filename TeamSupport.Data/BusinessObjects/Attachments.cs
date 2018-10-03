@@ -8,7 +8,7 @@ using System.IO;
 
 namespace TeamSupport.Data
 {
-  public partial class Attachment 
+  internal partial class Attachment 
   {
     public string CreatorName
     {
@@ -58,8 +58,7 @@ namespace TeamSupport.Data
         }
     }
 
-    [Obsolete("Use ModelAPI", false)]
-    public partial class Attachments
+    internal partial class Attachments
   {
 
     public void LoadByAttachmentGUID(Guid attachmentGUID)
@@ -316,7 +315,6 @@ order by o.Name, a.DateCreated desc
       }
     }
 
-    [Obsolete("Use ModelAPI", true)]
     public static void DeleteAttachmentAndFile(LoginUser loginUser, int attachmentID)
     {
       Attachment attachment = GetAttachment(loginUser, attachmentID);

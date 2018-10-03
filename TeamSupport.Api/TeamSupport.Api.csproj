@@ -133,7 +133,6 @@
   <ItemGroup>
     <Compile Include="RestCommandHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RestCommand.cs" />
     <Compile Include="RestCommandModule.cs" />
     <Compile Include="RestData\RestActionLogs.cs" />
     <Compile Include="RestData\RestActions.cs" />
@@ -161,7 +160,6 @@
     <Compile Include="RestData\RestUsers.cs" />
     <Compile Include="RestData\RestVersions.cs" />
     <Compile Include="RestData\RestWikiArticles.cs" />
-    <Compile Include="RestException.cs" />
     <Compile Include="RestProcessor.cs" />
     <Compile Include="RestXmlWriter.cs" />
   </ItemGroup>

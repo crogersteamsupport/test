@@ -77,7 +77,10 @@ public partial class Dialogs_AttachFile : BaseDialogPage
 
     foreach (UploadedFile file in ulFile.UploadedFiles)
     {
-      string directory = TSUtils.GetAttachmentPath(folderName, _refID, 3);
+      string root = TeamSupport.ModelAPI.AttachmentAPI.GetOrganizationAttachmentPath();
+      string directory =  Path.Combine(Path.Combine(root, folderName), _refID.ToString()) + "\\";
+      //string directory = TSUtils.GetAttachmentPath(folderName, _refID, 3);
+
       string fileName = file.GetName();
 	  fileName = Path.GetFileName(fileName);
       fileName = DataUtils.VerifyUniqueFileName(directory, fileName);

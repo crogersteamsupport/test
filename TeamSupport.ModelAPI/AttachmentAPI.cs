@@ -216,6 +216,21 @@ namespace TeamSupport.ModelAPI
             }
         }
 
+        public static string GetOrganizationAttachmentPath()
+        {
+            try
+            {
+                using (ConnectionContext connection = new ConnectionContext())
+                {
+                    return connection.Organization.AttachmentPath;
+                }
+            }
+            catch (Exception ex)
+            {
+                Data_API.LogMessage(ActionLogType.Delete, ReferenceType.Attachments, 0, "Unable to find organization attachment path", ex);
+            }
+            return String.Empty;
+        }
 
         ///// <summary> Read most recent filenames for this ticket </summary>
         //public static void ReadActionAttachmentsByFilenameAndTicket(TicketModel ticketModel, out AttachmentProxy[] mostRecentByFilename)
