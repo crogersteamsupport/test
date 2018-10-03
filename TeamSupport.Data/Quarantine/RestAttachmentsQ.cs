@@ -13,7 +13,7 @@ using TeamSupport.Api;
 namespace TeamSupport.Data.Quarantine
 {
   
-  public class RestAttachmentsQ
+  public static class RestAttachmentsQ
   {
 
     public static string GetAttachments(RestCommand command, int actionID, bool orderByDateCreated = false)

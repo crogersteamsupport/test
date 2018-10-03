@@ -306,7 +306,7 @@ namespace TeamSupport.Data.Quarantine
             logPath = Path.Combine(logPath, fileName);
         }
 
-        public static string GetAttachmentPath(int organizationID, int chatID, AttachmentProxy attachment)
+        public static string GetAttachmentPath3(int organizationID, int chatID, AttachmentProxy attachment)
         {
             string attachmentPath = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ChatUploads, (int)attachment.FilePathID);
             attachmentPath += "\\" + chatID;

@@ -195,10 +195,9 @@ namespace TSWebServices
         [WebMethod]
         public AttachmentProxy[] GetAttachments(int reminderID)
         {
-            Attachments attachments = new Attachments(TSAuthentication.GetLoginUser());
-            attachments.LoadByReference(ReferenceType.Tasks, reminderID);
-            return attachments.GetAttachmentProxies();
+            return TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentProxies5(reminderID, TSAuthentication.GetLoginUser());
         }
+
 
         [WebMethod]
         public TaskAssociationsViewItemProxy[] LoadAssociations(int taskID)

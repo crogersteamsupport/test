@@ -177,10 +177,9 @@ namespace TSWebServices
         [WebMethod]
         public AttachmentProxy[] GetAttachments(int versionID)
         {
-            Attachments attachments = new Attachments(TSAuthentication.GetLoginUser());
-            attachments.LoadByReference(ReferenceType.ProductVersions, versionID);
-            return attachments.GetAttachmentProxies();
+            return TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentProxies4(versionID, TSAuthentication.GetLoginUser());
         }
+
 
         [WebMethod]
         public void DeleteAttachment(int attachmentID)

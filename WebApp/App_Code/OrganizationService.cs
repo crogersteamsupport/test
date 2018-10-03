@@ -1792,44 +1792,44 @@ namespace TSWebServices
             SimpleImportFieldsView simpleImportFieldsView = new SimpleImportFieldsView(loginUser);
             simpleImportFieldsView.LoadByRefType(refType);
             result.ImportFields = simpleImportFieldsView.GetSimpleImportFieldsViewItemProxies();
-			uploadedFileName = Path.GetFileName(uploadedFileName);
+            uploadedFileName = Path.GetFileName(uploadedFileName);
 
-            string csvFile = Path.Combine(AttachmentPath.GetPath(loginUser, loginUser.OrganizationID, AttachmentPath.Folder.Imports, 3), uploadedFileName);
+            string csvFile = TeamSupport.Data.Quarantine.WebAppQ.GetCsvFile(uploadedFileName, loginUser);
 
-			try
-			{
-            using (CsvReader csv = new CsvReader(new StreamReader(csvFile), true))
+            try
             {
-                string[] headers = csv.GetFieldHeaders();
-                result.ImportFieldMap = new ImportFieldMap[headers.Length];
-
-                while (csv.ReadNextRecord())
+                using (CsvReader csv = new CsvReader(new StreamReader(csvFile), true))
                 {
-                    for (int i = 0; i < headers.Length; i++)
+                    string[] headers = csv.GetFieldHeaders();
+                    result.ImportFieldMap = new ImportFieldMap[headers.Length];
+
+                    while (csv.ReadNextRecord())
                     {
-                        result.ImportFieldMap[i] = new ImportFieldMap();
-                        result.ImportFieldMap[i].SourceName = headers[i];
-                        result.ImportFieldMap[i].ExampleValue = csv[i];
-                        if (!string.IsNullOrEmpty(headers[i].Trim()))
+                        for (int i = 0; i < headers.Length; i++)
                         {
-                            foreach (ImportFieldsViewItem field in importFieldsView)
+                            result.ImportFieldMap[i] = new ImportFieldMap();
+                            result.ImportFieldMap[i].SourceName = headers[i];
+                            result.ImportFieldMap[i].ExampleValue = csv[i];
+                            if (!string.IsNullOrEmpty(headers[i].Trim()))
                             {
-                                if (field.SourceName != null && field.SourceName.Trim().ToLower() == headers[i].Trim().ToLower())
+                                foreach (ImportFieldsViewItem field in importFieldsView)
                                 {
-                                    result.ImportFieldMap[i].ImportFieldID = field.ImportFieldID;
-                                    break;
+                                    if (field.SourceName != null && field.SourceName.Trim().ToLower() == headers[i].Trim().ToLower())
+                                    {
+                                        result.ImportFieldMap[i].ImportFieldID = field.ImportFieldID;
+                                        break;
+                                    }
                                 }
                             }
                         }
+                        break;
                     }
-                    break;
                 }
             }
-			}
-			catch (IOException ioException)
-			{
-				ExceptionLogs.LogException(loginUser, ioException, "OrganizationService.GetImportPanels", string.Format("OrgId: {0}", loginUser.OrganizationID));
-			}
+            catch (IOException ioException)
+            {
+                ExceptionLogs.LogException(loginUser, ioException, "OrganizationService.GetImportPanels", string.Format("OrgId: {0}", loginUser.OrganizationID));
+            }
 
             return JsonConvert.SerializeObject(result);
         }

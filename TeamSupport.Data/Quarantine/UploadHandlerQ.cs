@@ -8,7 +8,7 @@ using System.IO;
 
 namespace TeamSupport.Data.Quarantine
 {
-    public class UploadHandlerQ
+    public static class UploadHandlerQ
     {
         public static void ProcessRequest(LoginUser loginUser, int organizationID, HttpContext context, int? _id, string _ratingImage, List<string> segments)
         {

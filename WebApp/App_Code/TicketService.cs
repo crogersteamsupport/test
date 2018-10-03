@@ -3159,12 +3159,12 @@ WHERE t.TicketID = @TicketID
             UsersViewItem creator = UsersView.GetUsersViewItem(loginUser, action.CreatorID);
             if (creator != null) actionInfo.Creator = new UserInfo(creator);
 
-            if (TeamSupport.IDTree.ConnectionContext.ActionAttachmentsEnabled)  // Read action attachments
+            //if (TeamSupport.IDTree.ConnectionContext.ActionAttachmentsEnabled)  // Read action attachments
             {
                 actionInfo.Attachments = Model_API.Read<AttachmentProxy[]>(action.ActionID);
             }
-            else
-                actionInfo.Attachments = action.GetAttachments().GetAttachmentProxies();
+            //else
+            //    actionInfo.Attachments = action.GetAttachments().GetAttachmentProxies();
             return actionInfo;
         }
 
@@ -3869,7 +3869,7 @@ WHERE t.TicketID = @TicketID
             {
 
                 String temppath = HttpContext.Current.Request.PhysicalApplicationPath + "images\\";
-                string path = AttachmentPath.GetPath(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID, AttachmentPath.Folder.Images);
+                string path = TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentPath2(TSAuthentication.OrganizationID, TSAuthentication.GetLoginUser());
                 string filename = Guid.NewGuid().ToString();
 
                 if (source.StartsWith("data:image/png;base64,"))

@@ -284,9 +284,8 @@ namespace TSWebServices
                     }
                     else
                     {
-                        Attachments attachments = new Attachments(loginUser);
-                        attachments.LoadByActionID(viewItem.RefID);
-                        timeLineItem.Attachments = attachments.GetAttachmentProxies();
+                        AttachmentProxy[] proxies = TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentProxies6(viewItem.RefID, loginUser);
+                        timeLineItem.Attachments = proxies;
                     }
                     timeLineItems.Add(timeLineItem);
                 } else {
@@ -332,6 +331,7 @@ namespace TSWebServices
             }
             return timeLineItems.ToArray();
         }
+
 
         [WebMethod]
         public TimeLineItem RequestUpdate(int ticketID)
@@ -1708,10 +1708,10 @@ namespace TSWebServices
 
         private AttachmentProxy[] GetAttachments(TicketsViewItem ticket)
         {
-            Attachments attach = new Attachments(ticket.Collection.LoginUser);
-            attach.LoadByTicketId(ticket.TicketID);
+            AttachmentProxy[] proxies = TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentProxies7(ticket.TicketID, ticket.Collection.LoginUser);
+
             List<AttachmentProxy> result = new List<AttachmentProxy>();
-            foreach (AttachmentProxy attachment in attach.GetAttachmentProxies())
+            foreach (AttachmentProxy attachment in proxies)
             {
                 if (!result.Exists(a => a.FileName == attachment.FileName))
                     result.Add(attachment);
@@ -1719,6 +1719,7 @@ namespace TSWebServices
 
             return result.ToArray();
         }
+
 
         private TimeLineItem GetActionTimelineItem(TeamSupport.Data.Action action)
         {
@@ -1775,8 +1776,8 @@ namespace TSWebServices
             }
             else
             {
-                Attachments attachments = new Attachments(loginUser);
-                attachments.LoadByActionID(item.item.RefID);
+                //Attachments attachments = new Attachments(loginUser);
+                //attachments.LoadByActionID(item.item.RefID);
                 item.Attachments = GetActionAttachments(action.ActionID, loginUser);
             }
 
@@ -1817,10 +1818,9 @@ namespace TSWebServices
                 return Model_API.Read<AttachmentProxy[]>(actionID);
             }
 
-            Attachments attachments = new Attachments(loginUser);
-            attachments.LoadByActionID(actionID);
-            return attachments.GetAttachmentProxies();
+            return TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentProxies8(actionID, loginUser);
         }
+
 
         private void addWCAttachment(int messageID, int attachmentID, WaterCoolerAttachmentType attachmentType)
         {
@@ -1885,47 +1885,7 @@ namespace TSWebServices
             }
 
             LoginUser loginUser = TSAuthentication.GetLoginUser();
-            Attachments attachments = new Attachments(loginUser);
-            attachments.LoadKBByTicketID(insertedKBTicketID);
-            if (attachments.Count > 0)
-            {
-                Attachments clonedAttachments = new Attachments(loginUser);
-                foreach (Attachment attachment in attachments)
-                {
-                    Attachment clonedAttachment = clonedAttachments.AddNewAttachment();
-                    clonedAttachment.OrganizationID = attachment.OrganizationID;
-                    clonedAttachment.FileType = attachment.FileType;
-                    clonedAttachment.FileSize = attachment.FileSize;
-                    clonedAttachment.Description = attachment.Description;
-                    clonedAttachment.DateCreated = attachment.DateCreatedUtc;
-                    clonedAttachment.DateModified = attachment.DateModifiedUtc;
-                    clonedAttachment.CreatorID = attachment.CreatorID;
-                    clonedAttachment.ModifierID = attachment.ModifierID;
-                    clonedAttachment.RefType = attachment.RefType;
-                    clonedAttachment.SentToJira = attachment.SentToJira;
-                    clonedAttachment.ProductFamilyID = attachment.ProductFamilyID;
-                    clonedAttachment.FileName = attachment.FileName;
-                    clonedAttachment.RefID = actionID;
-                    clonedAttachment.FilePathID = attachment.FilePathID;
-
-                    string originalAttachmentRefID = attachment.RefID.ToString();
-                    string clonedActionAttachmentPath = attachment.Path.Substring(0, attachment.Path.IndexOf(@"\Actions\") + @"\Actions\".Length)
-                                                        + actionID.ToString()
-                                                        + attachment.Path.Substring(attachment.Path.IndexOf(originalAttachmentRefID) + originalAttachmentRefID.Length);
-
-                    if (!Directory.Exists(Path.GetDirectoryName(clonedActionAttachmentPath)))
-                    {
-                        Directory.CreateDirectory(Path.GetDirectoryName(clonedActionAttachmentPath));
-                    }
-
-                    clonedAttachment.Path = clonedActionAttachmentPath;
-
-                    File.Copy(attachment.Path, clonedAttachment.Path);
-
-                }
-                clonedAttachments.BulkSave();
-
-            }
+            TeamSupport.Data.Quarantine.WebAppQ.CopyInsertedKBAttachments1(actionID, insertedKBTicketID, loginUser);
         }
 
     }

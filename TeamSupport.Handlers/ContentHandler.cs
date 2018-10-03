@@ -1345,7 +1345,7 @@ namespace TeamSupport.Handlers
             if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
             AttachmentProxy attachment = Model_API.Read<AttachmentProxy>(attachmentID);
 
-            string attachmentPath = TeamSupport.Data.Quarantine.ContentHandlerQ.GetAttachmentPath(organizationID, chatID, attachment);
+            string attachmentPath = TeamSupport.Data.Quarantine.ContentHandlerQ.GetAttachmentPath3(organizationID, chatID, attachment);
 
             if (!File.Exists(attachmentPath))
             {
