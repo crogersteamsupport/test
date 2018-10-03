@@ -1036,6 +1036,8 @@
     <Compile Include="Quarantine\RestAttachmentsQ.cs" />
     <Compile Include="Quarantine\RestCommand.cs" />
     <Compile Include="Quarantine\RestException.cs" />
+    <Compile Include="Quarantine\ServiceLog.cs" />
+    <Compile Include="Quarantine\ServiceQ.cs" />
     <Compile Include="Quarantine\UploadHandlerQ.cs" />
     <Compile Include="Quarantine\UploadUtils.cs" />
     <Compile Include="Quarantine\WebAppQ.cs" />
