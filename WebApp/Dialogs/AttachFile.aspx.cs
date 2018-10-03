@@ -61,7 +61,6 @@ public partial class Dialogs_AttachFile : BaseDialogPage
     }
     */
 
-    Attachments attachments = new Attachments(UserSession.LoginUser);
 
     string folderName = "Unknown";
 
@@ -76,32 +75,20 @@ public partial class Dialogs_AttachFile : BaseDialogPage
     }
 
     foreach (UploadedFile file in ulFile.UploadedFiles)
-    {
-      string root = TeamSupport.ModelAPI.AttachmentAPI.GetOrganizationAttachmentPath();
-      string directory =  Path.Combine(Path.Combine(root, folderName), _refID.ToString()) + "\\";
-      //string directory = TSUtils.GetAttachmentPath(folderName, _refID, 3);
+        {
+            string root = TeamSupport.ModelAPI.AttachmentAPI.GetOrganizationAttachmentPath();
+            string directory = Path.Combine(Path.Combine(root, folderName), _refID.ToString()) + "\\";
+            //string directory = TSUtils.GetAttachmentPath(folderName, _refID, 3);
 
-      string fileName = file.GetName();
-	  fileName = Path.GetFileName(fileName);
-      fileName = DataUtils.VerifyUniqueFileName(directory, fileName);
+            string fileName = file.GetName();
+            fileName = Path.GetFileName(fileName);
+            fileName = DataUtils.VerifyUniqueFileName(directory, fileName);
 
-      Attachment attachment = attachments.AddNewAttachment();
-      attachment.RefType = _refType;
-      attachment.RefID = _refID;
-      attachment.OrganizationID = UserSession.LoginUser.OrganizationID;
-      attachment.FileName = fileName;
-      //attachment.Path = Path.Combine(directory, fileName);
-      attachment.FilePathID = 3;
-      attachment.FileType = string.IsNullOrEmpty(file.ContentType) ? "application/octet-stream" : file.ContentType;
-      attachment.FileSize = file.ContentLength;
-      attachment.Description = textDescription.Text;
+            string path = TeamSupport.Data.Quarantine.WebAppQ.SaveAttachment(UserSession.LoginUser, file.ContentType, file.ContentLength, directory, fileName, _refType, _refID, textDescription.Text);
+            file.SaveAs(path, true);
+        }
 
-      Directory.CreateDirectory(directory);
-      file.SaveAs(attachment.Path, true);
-      attachments.Save();
-    }
-
-    return true;
+        return true;
   }
 
 }

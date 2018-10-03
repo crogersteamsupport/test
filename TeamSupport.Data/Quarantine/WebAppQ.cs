@@ -150,6 +150,68 @@ namespace TeamSupport.Data.Quarantine
             return attachments.GetAttachmentProxies();
         }
 
+        public static string SaveAttachment(LoginUser loginUser, string contentType, long contentLength, string directory, string fileName, AttachmentProxy.References _refType, int _refID, string description)
+        {
+            Attachments attachments = new Attachments(loginUser);
+
+            Attachment attachment = attachments.AddNewAttachment();
+            attachment.RefType = _refType;
+            attachment.RefID = _refID;
+            attachment.OrganizationID = loginUser.OrganizationID;
+            attachment.FileName = fileName;
+            //attachment.Path = Path.Combine(directory, fileName);
+            attachment.FilePathID = 3;
+            attachment.FileType = string.IsNullOrEmpty(contentType) ? "application/octet-stream" : contentType;
+            attachment.FileSize = contentLength;
+            attachment.Description = description;
+
+            Directory.CreateDirectory(directory);
+            attachments.Save();
+            return attachment.Path;
+        }
+
+        public static string GetAttachmentPath5(LoginUser loginUser)
+        {
+            return AttachmentPath.GetPath(loginUser, loginUser.OrganizationID, AttachmentPath.Folder.ChatImages);
+        }
+
+        public static void DeleteAttachment(string path, string fileName)
+        {
+            AttachmentPath.DeleteFile(path, fileName);
+        }
+
+        public static string GetAttachmentPath6(LoginUser loginUser)
+        {
+            return AttachmentPath.GetPath(loginUser, loginUser.OrganizationID, AttachmentPath.Folder.Images);
+        }
+
+        public static string GetAttachmentPath7(LoginUser loginUser, string fileName)
+        {
+            return Path.Combine(AttachmentPath.GetPath(loginUser, loginUser.OrganizationID, AttachmentPath.Folder.TempImages, 3), fileName);
+        }
+
+        public static string GetImageCachePath1(int organizationID)
+        {
+            return Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "Avatars\\" + organizationID.ToString());
+        }
+
+        public static string[] GetFiles(LoginUser loginUser)
+        {
+            return Directory.GetFiles(AttachmentPath.GetPath(loginUser, loginUser.OrganizationID, AttachmentPath.Folder.TicketTypeImages), "*.*", SearchOption.TopDirectoryOnly);
+        }
+
+        public static string GetAttachmentPath8(LoginUser loginUser)
+        {
+            return AttachmentPath.GetPath(loginUser, loginUser.OrganizationID, AttachmentPath.Folder.ProfileImages, 3);
+        }
+
+        public static string GetAttachmentPath9(LoginUser loginUser, string workingImage)
+        {
+            return Path.Combine(AttachmentPath.GetPath(loginUser, loginUser.OrganizationID, AttachmentPath.Folder.TempImages, 3), workingImage);
+            //temppath + "\\" + ImageResizer.Util.PathUtils.RemoveQueryString(img1.Value).Replace('/','\\');
+        }
+
+
         /*
  TeamSupport.Data.Quarantine.WebAppQ.
  */

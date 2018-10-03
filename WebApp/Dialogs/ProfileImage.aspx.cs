@@ -69,7 +69,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
         Boolean FileSaved = false;
 
         //String path = HttpContext.Current.Request.PhysicalApplicationPath + "images\\tempupload\\";
-        string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages, 3);
+        //string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages, 3);
         string fileName = "tmpavatar" + Upload.FileName.Replace(" ",string.Empty);
 		  uploadedFileName = fileName;
 		  string testpath = "";
@@ -91,8 +91,9 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
         {
             try
             {
-				    testpath = Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages, 3), fileName);
-                Upload.PostedFile.SaveAs(Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages, 3), fileName));
+                //testpath = Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages, 3), fileName);
+                string path = TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentPath7(UserSession.LoginUser, fileName);
+                Upload.PostedFile.SaveAs(path);
                 FileSaved = true;
             }
             catch (Exception ex)
@@ -118,32 +119,33 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
         }
     }
 
+
     private void RemoveCachedImages(int organizationID, int userID)
     {
-      string cachePath = Path.Combine(AttachmentPath.GetImageCachePath(LoginUser.Anonymous), "Avatars\\" + organizationID.ToString());
-      if (Directory.Exists(cachePath))
-      {
-        string pattern = userID.ToString() + "-*.*";
-        string[] files = Directory.GetFiles(cachePath, pattern, SearchOption.TopDirectoryOnly);
-        foreach (String file in files)
+        string cachePath = TeamSupport.Data.Quarantine.WebAppQ.GetImageCachePath1(organizationID);
+        if (Directory.Exists(cachePath))
         {
-          File.Delete(file);
+            string pattern = userID.ToString() + "-*.*";
+            string[] files = Directory.GetFiles(cachePath, pattern, SearchOption.TopDirectoryOnly);
+            foreach (String file in files)
+            {
+                File.Delete(file);
+            }
         }
-      }
     }
 
     public override bool Save()
     {
         try
         {
-            String temppath = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages, 3);//HttpContext.Current.Request.PhysicalApplicationPath + "images\\";
-            string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages, 3);
+            //String temppath = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages, 3);//HttpContext.Current.Request.PhysicalApplicationPath + "images\\";
+            string path = TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentPath8(UserSession.LoginUser);
             RemoveCachedImages(UserSession.LoginUser.OrganizationID, _userID);
 
             if (img1.Value != "")
             {
                 img1.Value = img1.Value.Replace(".ashx", "");
-                string source = Path.Combine(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TempImages, 3), Session["WorkingImage"].ToString());//temppath + "\\" + ImageResizer.Util.PathUtils.RemoveQueryString(img1.Value).Replace('/','\\');
+                string source = TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentPath9(UserSession.LoginUser, Session["WorkingImage"].ToString());
                 string dest = path + '\\' + _userID + "avatar.jpg";
                 try
                 {

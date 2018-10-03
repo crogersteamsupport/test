@@ -67,7 +67,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
         Boolean FileSaved = false;
 
         //String path = HttpContext.Current.Request.PhysicalApplicationPath + "images\\tempupload\\";
-        string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages);
+        //string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ProfileImages);
 
         //if (Upload.HasFile)
         //{
@@ -116,7 +116,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
     public override bool Save()
     {
         String temppath = HttpContext.Current.Request.PhysicalApplicationPath + "images\\";
-        string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.Images);
+        string path = TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentPath6(UserSession.LoginUser);
 
         if (img1.Value != "")
         {

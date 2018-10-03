@@ -73,12 +73,12 @@ public partial class Dialogs_ChatProperties : BaseDialogPage
 
     public override bool Save()
     {
-        string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.ChatImages);
+        string path = TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentPath5(UserSession.LoginUser);
         if (upAvailable.UploadedFiles.Count > 0)
         {
             string fileName = Path.Combine(path, "chat_available.png");
             fileName = Path.ChangeExtension(fileName, Path.GetExtension(upAvailable.UploadedFiles[0].FileName));
-            AttachmentPath.DeleteFile(path, fileName);
+            TeamSupport.Data.Quarantine.WebAppQ.DeleteAttachment(path, fileName);
             upAvailable.UploadedFiles[0].SaveAs(fileName, true);
         }
 
@@ -86,7 +86,7 @@ public partial class Dialogs_ChatProperties : BaseDialogPage
         {
             string fileName = Path.Combine(path, "chat_unavailable.png");
             fileName = Path.ChangeExtension(fileName, Path.GetExtension(upUnavailable.UploadedFiles[0].FileName));
-            AttachmentPath.DeleteFile(path, fileName);
+            TeamSupport.Data.Quarantine.WebAppQ.DeleteAttachment(path, fileName);
             upUnavailable.UploadedFiles[0].SaveAs(fileName, true);
         }
 
@@ -94,7 +94,7 @@ public partial class Dialogs_ChatProperties : BaseDialogPage
         {
             string fileName = Path.Combine(path, "chat_logo.png");
             fileName = Path.ChangeExtension(fileName, Path.GetExtension(upLogo.UploadedFiles[0].FileName));
-            AttachmentPath.DeleteFile(path, fileName);
+            TeamSupport.Data.Quarantine.WebAppQ.DeleteAttachment(path, fileName);
             upLogo.UploadedFiles[0].SaveAs(fileName, true);
         }
 
@@ -106,8 +106,5 @@ public partial class Dialogs_ChatProperties : BaseDialogPage
 
         return true;
     }
-
-
-
 
 }
