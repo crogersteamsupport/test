@@ -149,7 +149,7 @@ namespace TSWebServices {
 
         public string DeleteDeflector(int organizationID, string value) {
             string ResponseText = null;
-            string PingUrl = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/organization/" + organizationID + "/tag/" + value;
+            string PingUrl = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/delete/organization/" + organizationID + "/tag/" + value;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
             request.Method = "DELETE";
             request.KeepAlive = false;
