@@ -616,8 +616,9 @@ namespace TeamSupport.Services
                 if (ticket.OrganizationID != UserSession.LoginUser.OrganizationID) {
                     return;
                 } else {
-                    Deflector Deflection = new Deflector();
-                    Deflection.UnpopulateTicket(ticket.TicketID);
+                    TSWebServices.DeflectorService deflectorService = new TSWebServices.DeflectorService();
+                    deflectorService.DeleteTicket(ticket.TicketID);
+
                     ticket.Delete();
                     ticket.Collection.Save();
                 }

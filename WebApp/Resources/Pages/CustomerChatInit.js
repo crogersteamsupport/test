@@ -75,7 +75,7 @@ $(document).ready(function () {
 });
 
 function SetupDeflectionListener(organizationID) {
-    var deflector = new TSWebServices.Deflector();
+    var deflector = new TSWebServices.DeflectorService();
     var returnURL = Ts.Utils.getQueryValue("ReturnURL", window);
 
     if (returnURL) {
@@ -96,7 +96,8 @@ function SetupDeflectionListener(organizationID) {
     function doneTyping() {
         $('#deflection-results').html('');
         if ($input.val()) {
-            deflector.GetDeflections(organizationID, $input.val(), function (result) {
+            deflector.FetchDeflections(organizationID, $input.val(), function (result) {
+                debugger;
                 var deflectionResults = JSON.parse(result.Result);
                 if (deflectionResults.length > 0) {
                     $('#deflection-results').append('<h4>Suggested Solutions</h4>');

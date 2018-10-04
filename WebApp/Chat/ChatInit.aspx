@@ -17,7 +17,7 @@
             <form id="newChatForm" class="container" runat="server">
                 <asp:ScriptManager ID="ScriptManager1" runat="server" ScriptMode="Release" EnableScriptGlobalization="True">
                     <services>
-                        <asp:ServiceReference Path="~/Services/Deflector.asmx" />
+                        <asp:ServiceReference Path="~/Services/DeflectorService.asmx" />
                     </services>
                 </asp:ScriptManager>
                 <div class="row">

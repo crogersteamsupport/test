@@ -8,7 +8,7 @@ $(document).on('click', '.action-hydrate-deflector', function(e) {
 
 function GetDeflectionResults(organizationID, phrase) {
     debugger;
-    window.parent.Ts.Services.Deflector.GetDeflections(organizationID, phrase, function (result) {
+    window.parent.Ts.Services.Deflector.FetchDeflections(organizationID, phrase, function (result) {
         console.log(result);
     });
 }

@@ -702,7 +702,7 @@ namespace TSWebServices
                 tag.Collection.Save();
 
                 // DEFLECTOR.
-                Deflector Deflection = new Deflector();
+                DeflectorService Deflection = new DeflectorService();
                 Deflection.DeleteTag(TSAuthentication.OrganizationID, tagValue);
             }
         }
@@ -726,8 +726,8 @@ namespace TSWebServices
                 Result = Tags[0].TagID;
 
                 // DEFLECTOR.
-                Deflector Deflection = new Deflector();
-                string test = Deflection.MergeTag(TSAuthentication.OrganizationID, TagId, Value);
+                DeflectorService Deflection = new DeflectorService();
+                //Deflection.MergeTag(TSAuthentication.OrganizationID, TagId, Value);
             }
 
             // RENAME TAG.
@@ -736,8 +736,8 @@ namespace TSWebServices
                 Tag.Collection.Save();
 
                 // DEFLECTOR.
-                Deflector Deflection = new Deflector();
-                string test = Deflection.RenameTag(TSAuthentication.OrganizationID, TagId, Value);
+                DeflectorService Deflection = new DeflectorService();
+                //Deflection.RenameTag(TSAuthentication.OrganizationID, TagId, Value);
             }
 
             return Result;
@@ -1306,11 +1306,11 @@ namespace TSWebServices
             ticket.Collection.Save();
 
             // DEFLECTOR.
-            Deflector Deflection = new Deflector();
+            DeflectorService Deflection = new DeflectorService();
             if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase) {
-                Deflection.PopulateTicket(ticket.TicketID);
+                Deflection.IndexTicket(ticket.TicketID);
             } else {
-                Deflection.UnpopulateTicket(ticket.TicketID);
+                Deflection.DeleteTicket(ticket.TicketID);
             }
 
             return ticket.IsVisibleOnPortal;
@@ -1330,11 +1330,11 @@ namespace TSWebServices
             ticket.Collection.Save();
             
             // DEFLECTOR.
-            Deflector Deflection = new Deflector();
+            DeflectorService Deflection = new DeflectorService();
             if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase) {
-                Deflection.PopulateTicket(ticket.TicketID);
+                Deflection.IndexTicket(ticket.TicketID);
             } else {
-                Deflection.UnpopulateTicket(ticket.TicketID);
+                Deflection.DeleteTicket(ticket.TicketID);
             }
 
             return ticket.IsKnowledgeBase;
@@ -3279,7 +3279,7 @@ WHERE t.TicketID = @TicketID
                     Value = tag.Value
                 };
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
-                Deflector resp = new Deflector();
+                DeflectorService resp = new DeflectorService();
                 resp.IndexDeflector(json);
             }
 
@@ -3304,7 +3304,7 @@ WHERE t.TicketID = @TicketID
             }
 
             // DEFLECTOR
-            Deflector resp = new Deflector();
+            DeflectorService resp = new DeflectorService();
             resp.DeleteDeflector(ticket.OrganizationID, tagValue);
 
             return GetTicketTags(ticketID);

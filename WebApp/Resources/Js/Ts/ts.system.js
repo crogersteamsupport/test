@@ -143,7 +143,7 @@ var _startDate = new Date();
         Ts.Services.WatsonTickets.set_defaultSucceededCallback(defaultSucceededCallback);
         Ts.Services.WatsonTickets.set_defaultFailedCallback(defaultFailedCallback);
 
-        Ts.Services.Deflector = new TSWebServices.Deflector();
+        Ts.Services.Deflector = new TSWebServices.DeflectorService();
         Ts.Services.Deflector.set_defaultSucceededCallback(defaultSucceededCallback);
         Ts.Services.Deflector.set_defaultFailedCallback(defaultFailedCallback);
 

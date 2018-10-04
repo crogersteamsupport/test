@@ -32,14 +32,128 @@ namespace TSWebServices {
     [ScriptService]
     [WebService(Namespace = "http://teamsupport.com/")]
     [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
-    public class Deflector : System.Web.Services.WebService {
+    public class DeflectorService : System.Web.Services.WebService {
 
         [WebMethod]
-        public string TestDeflectorAPI(string tag) {
-            return CheckDeflectorAPI(tag);
+        public async Task<string> TestDeflectorAPI(string tag) {
+            try
+            {
+                return await TestDeflectorAPIAsync(tag);
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
+                return null;
+            }
         }
 
-        public string IndexDeflector (string json) {
+        [WebMethod]
+        public async Task<string> FetchDeflections(int organization, string phrase)
+        {
+            try
+            {
+                return await FetchDeflectionsAsync(organization, phrase);
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
+                return null;
+            }
+
+        }
+
+        public async Task<string> IndexDeflector(string deflectorIndex)
+        {
+            try
+            {
+                return await IndexDeflectorAsync(deflectorIndex);
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
+                return null;
+            }
+        }
+
+        public async Task<string> IndexTicket(int ticketID)
+        {
+            Ticket Ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+            Tags Tags = new Tags(TSAuthentication.GetLoginUser());
+            Tags.LoadByReference(ReferenceType.Tickets, ticketID);
+            DeflectorService Deflection = new DeflectorService();
+
+            List<DeflectorItem> deflectorIndexList = new List<DeflectorItem>();
+
+            foreach (var Tag in Tags)
+            {
+                deflectorIndexList.Add(new DeflectorItem
+                {
+                    OrganizationID = Ticket.OrganizationID,
+                    TagID = Tag.TagID,
+                    Value = Tag.Value,
+                    ProductID = Ticket.ProductID
+                });
+                
+            }
+
+            try
+            {
+                return await Deflection.BulkIndexDeflectorAsync(Newtonsoft.Json.JsonConvert.SerializeObject(deflectorIndexList));
+            }
+            catch (Exception ex){
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
+                return null;
+            }
+        }
+
+        [WebMethod]
+        public async Task<string> HydrateOrganization(int organizationID)
+        {
+            string response = TeamSupport.Data.Deflector.GetOrganizationIndeces(TSAuthentication.GetLoginUser(), organizationID);
+
+            try
+            {
+                return await BulkIndexDeflectorAsync(response);
+            }
+            catch (Exception ex) {
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
+                return null;
+            }
+        }
+
+        [WebMethod]
+        public async Task<string> HydratePod()
+        {
+            List<String> indeceses = TeamSupport.Data.Deflector.GetPodIndeces(TSAuthentication.GetLoginUser());
+            foreach (string index in indeceses)
+            {
+                try
+                {
+                    await BulkIndexDeflectorAsync(index);
+                }
+                catch (Exception ex)
+                {
+                    ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        public async Task<string> DeleteTicket(int ticketID)
+        {
+            Ticket Ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+            Tags Tags = new Tags(TSAuthentication.GetLoginUser());
+            Tags.LoadByReference(ReferenceType.Tickets, ticketID);
+            DeflectorService Deflection = new DeflectorService();
+            foreach (var Tag in Tags)
+            {
+                await Deflection.DeleteDeflector(Ticket.OrganizationID, Tag.Value);
+            }
+            return null;
+        }
+
+        private async Task<string> IndexDeflectorAsync(string json) {
             string ResponseText    = null;
             string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/index/index";
         	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
@@ -53,7 +167,7 @@ namespace TSWebServices {
                 streamWriter.Close();
             }
 
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+            using (WebResponse response = await request.GetResponseAsync()) {
                 if (request.HaveResponse && response != null) {
    					using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
    					    ResponseText = reader.ReadToEnd();
@@ -63,31 +177,12 @@ namespace TSWebServices {
    			return ResponseText;
    		}
 
-        [WebMethod]
-        public string HydrateOrganization (int organizationID) {
-            string response = TeamSupport.Data.Deflector.GetOrganizationIndeces(TSAuthentication.GetLoginUser(), organizationID);
-            HydrateDeflector(response);
-            return response;
-        }
-
-        [WebMethod]
-        public string HydratePod() {
-            List<String> indeceses = TeamSupport.Data.Deflector.GetPodIndeces(TSAuthentication.GetLoginUser());
-            foreach (string index in indeceses) {
-                try {
-                    HydrateDeflector(index);
-                } catch (Exception e) {
-                }
-            }
-            return null;
-        }
-
-        private string HydrateDeflector (string json) {
+        private async Task<string> BulkIndexDeflectorAsync(string json) {
             string ResponseText    = null;
             string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/index/bulkindex";
         	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
         	request.Method         = "POST";
-            request.Timeout        = 600000;
+            request.Timeout        = 800000;
         	request.KeepAlive      = false;
         	request.ContentType    = "application/json";
 
@@ -97,7 +192,7 @@ namespace TSWebServices {
                 streamWriter.Close();
             }
 
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+            using (WebResponse response = await request.GetResponseAsync()) {
                 if (request.HaveResponse && response != null) {
    					using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
    					    ResponseText = reader.ReadToEnd();
@@ -107,7 +202,7 @@ namespace TSWebServices {
    			return ResponseText;
    		}
 
-        private async Task<string> GetDeflectionsAPIAsync(int organization, string phrase) {
+        private async Task<string> FetchDeflectionsAsync(int organization, string phrase) {
             string PingUrl = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/fetch/" + organization + "/" + phrase;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
             request.Method = "GET";
@@ -130,29 +225,14 @@ namespace TSWebServices {
             }
         }
 
-        [WebMethod]
-        public async Task<string> GetDeflections(int organization, string phrase)
-        {
-            try
-            {
-                return await FetchDeflectionsAsync(organization, phrase);
-            }
-            catch (Exception ex)
-            {
-                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
-                return null;
-            }
-
-        }
-
-        public string DeleteDeflector(int organizationID, string value) {
+        public async Task<string> DeleteDeflector(int organizationID, string value) {
             string ResponseText = null;
             string PingUrl = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/delete/organization/" + organizationID + "/tag/" + value;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
             request.Method = "DELETE";
             request.KeepAlive = false;
             request.ContentType = "application/json";
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+            using (WebResponse response = await request.GetResponseAsync()) {
                 if (request.HaveResponse && response != null) {
                     using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
                         ResponseText = reader.ReadToEnd();
@@ -162,7 +242,7 @@ namespace TSWebServices {
             return ResponseText;
         }
 
-        public string DeleteTag(int OrganizationId, string Value)
+        public async Task<string> DeleteTag(int OrganizationId, string Value)
         {
             var item = new DeflectorItem
             {
@@ -186,7 +266,7 @@ namespace TSWebServices {
             }
             try
             {
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (WebResponse response = await request.GetResponseAsync())
                 {
                     if (request.HaveResponse && response != null)
                     {
@@ -204,13 +284,7 @@ namespace TSWebServices {
             }
         }
 
-        public string RenameTag (int OrganizationId, int TagId, string Value) {
-            var item = new DeflectorItem {
-                OrganizationID = OrganizationId,
-                TagID = TagId,
-                Value = Value
-            };
-            string json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
+        private async Task<string> RenameTag(string jsonUpdate) {
             string ResponseText    = null;
             string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/update/organization/" + OrganizationId + "/tag/" + TagId + "/rename";
 
@@ -220,12 +294,12 @@ namespace TSWebServices {
             request.ContentType    = "application/json";
 
             using (var streamWriter = new StreamWriter(request.GetRequestStream())) {
-                streamWriter.Write(json);
+                streamWriter.Write(jsonUpdate);
                 streamWriter.Flush();
                 streamWriter.Close();
             }
 
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+            using (WebResponse response = await request.GetResponseAsync()) {
                 if (request.HaveResponse && response != null) {
                     using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
                         ResponseText = reader.ReadToEnd();
@@ -235,84 +309,59 @@ namespace TSWebServices {
             return ResponseText;
         }
 
-        public string MergeTag (int OrganizationId, int TagId, string Value) {
-            var item = new DeflectorItem {
-                OrganizationID = OrganizationId,
-                TagID = TagId,
-                Value = Value
-            };
-            string json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
-            string ResponseText    = null;
-            string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/update/organization/" + OrganizationId + "/tag/" + TagId + "/merge";
-
+        private async Task<string> TestDeflectorAPIAsync(string tag)
+        {
+            string ResponseText = null;
+            string PingUrl = "http://localhost:64871/api/deflector/check";
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
-            request.Method         = "POST";
-            request.KeepAlive      = false;
-            request.ContentType    = "application/json";
-
-            using (var streamWriter = new StreamWriter(request.GetRequestStream())) {
-                streamWriter.Write(json);
-                streamWriter.Flush();
-                streamWriter.Close();
-            }
-
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-                if (request.HaveResponse && response != null) {
-                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
+            request.Method = "GET";
+            request.KeepAlive = false;
+            request.ContentType = "application/json";
+            using (WebResponse response = await request.GetResponseAsync())
+            {
+                if (request.HaveResponse && response != null)
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8))
+                    {
                         ResponseText = reader.ReadToEnd();
-                    }
-                }
-            }
-            return ResponseText;
-        }
-
-        public string PopulateTicket (int ticketID) {
-            Ticket Ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
-            Tags Tags = new Tags(TSAuthentication.GetLoginUser());
-            Tags.LoadByReference(ReferenceType.Tickets, ticketID);
-            Deflector Deflection = new Deflector();
-            foreach (var Tag in Tags) {
-                var item = new DeflectorItem {
-                    OrganizationID = Ticket.OrganizationID,
-                    TagID = Tag.TagID,
-                    Value = Tag.Value,
-                    ProductID = Ticket.ProductID
-                };
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
-                Deflection.IndexDeflector(json);
-            }
-            return null;
-        }
-
-        public string UnpopulateTicket (int ticketID) {
-            Ticket Ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
-            Tags Tags = new Tags(TSAuthentication.GetLoginUser());
-            Tags.LoadByReference(ReferenceType.Tickets, ticketID);
-            Deflector Deflection = new Deflector();
-            foreach (var Tag in Tags) {
-                Deflection.DeleteDeflector(Ticket.OrganizationID, Tag.Value);
-            }
-            return null;
-        }
-
-        private string CheckDeflectorAPI(string tag) {
-            string ResponseText    = null;
-            string PingUrl         = "http://localhost:64871/api/deflector/check";
-        	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
-        	request.Method         = "GET";
-        	request.KeepAlive      = false;
-        	request.ContentType    = "application/json";
-        	using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-                if (request.HaveResponse && response != null) {
-   					using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
-   					    ResponseText = reader.ReadToEnd();
                         // dynamic responseObject = JObject.Parse(ResponseText);
                         // string success = responseObject.success;
-   					}
-   				}
-   			}
-   			return ResponseText;
-   		}
+                    }
+                }
+            }
+            return ResponseText;
+        }
+
+        //private async Task<string> MergeTag (int OrganizationId, int TagId, string Value) {
+        //    var item = new DeflectorItem {
+        //        OrganizationID = OrganizationId,
+        //        TagID = TagId,
+        //        Value = Value
+        //    };
+        //    string json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
+        //    string ResponseText    = null;
+        //    string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/update/organization/" + OrganizationId + "/tag/" + TagId + "/merge";
+
+        //    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
+        //    request.Method         = "POST";
+        //    request.KeepAlive      = false;
+        //    request.ContentType    = "application/json";
+
+        //    using (var streamWriter = new StreamWriter(request.GetRequestStream())) {
+        //        streamWriter.Write(json);
+        //        streamWriter.Flush();
+        //        streamWriter.Close();
+        //    }
+
+        //    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+        //        if (request.HaveResponse && response != null) {
+        //            using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
+        //                ResponseText = reader.ReadToEnd();
+        //            }
+        //        }
+        //    }
+        //    return ResponseText;
+        //}
 
         [DataContract]
         public class DeflectorItem {
