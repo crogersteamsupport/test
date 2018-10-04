@@ -284,30 +284,30 @@ namespace TSWebServices {
             }
         }
 
-        private async Task<string> RenameTag(string jsonUpdate) {
-            string ResponseText    = null;
-            string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/update/organization/" + OrganizationId + "/tag/" + TagId + "/rename";
+        //private async Task<string> RenameTag(string jsonUpdate) {
+        //    string ResponseText    = null;
+        //    string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/update/organization/" + OrganizationId + "/tag/" + TagId + "/rename";
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
-            request.Method         = "POST";
-            request.KeepAlive      = false;
-            request.ContentType    = "application/json";
+        //    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
+        //    request.Method         = "POST";
+        //    request.KeepAlive      = false;
+        //    request.ContentType    = "application/json";
 
-            using (var streamWriter = new StreamWriter(request.GetRequestStream())) {
-                streamWriter.Write(jsonUpdate);
-                streamWriter.Flush();
-                streamWriter.Close();
-            }
+        //    using (var streamWriter = new StreamWriter(request.GetRequestStream())) {
+        //        streamWriter.Write(jsonUpdate);
+        //        streamWriter.Flush();
+        //        streamWriter.Close();
+        //    }
 
-            using (WebResponse response = await request.GetResponseAsync()) {
-                if (request.HaveResponse && response != null) {
-                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
-                        ResponseText = reader.ReadToEnd();
-                    }
-                }
-            }
-            return ResponseText;
-        }
+        //    using (WebResponse response = await request.GetResponseAsync()) {
+        //        if (request.HaveResponse && response != null) {
+        //            using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
+        //                ResponseText = reader.ReadToEnd();
+        //            }
+        //        }
+        //    }
+        //    return ResponseText;
+        //}
 
         private async Task<string> TestDeflectorAPIAsync(string tag)
         {
