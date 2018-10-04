@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using Twilio;
 
 namespace TeamSupport.Messaging
@@ -39,6 +40,7 @@ namespace TeamSupport.Messaging
 			{
 				try
 				{
+					ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 					var twilio = new TwilioRestClient(_accountSid, _authToken);
 					var message = twilio.SendMessage(_teamSupportTwilioNumber, DestinationNumber, SMSText);
 
