@@ -107,9 +107,7 @@ namespace TSWebServices {
    			return ResponseText;
    		}
 
-        private async Task<string> FetchDeflectionsAsync(int organization, string phrase)
-        {
-            string responseText = null;
+        private async Task<string> GetDeflectionsAPIAsync(int organization, string phrase) {
             string PingUrl = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/fetch/" + organization + "/" + phrase;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
             request.Method = "GET";
@@ -268,6 +266,34 @@ namespace TSWebServices {
             return ResponseText;
         }
 
+        public string PopulateTicket (int ticketID) {
+            Ticket Ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+            Tags Tags = new Tags(TSAuthentication.GetLoginUser());
+            Tags.LoadByReference(ReferenceType.Tickets, ticketID);
+            Deflector Deflection = new Deflector();
+            foreach (var Tag in Tags) {
+                var item = new DeflectorItem {
+                    OrganizationID = Ticket.OrganizationID,
+                    TagID = Tag.TagID,
+                    Value = Tag.Value,
+                    ProductID = Ticket.ProductID
+                };
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
+                Deflection.IndexDeflector(json);
+            }
+            return null;
+        }
+
+        public string UnpopulateTicket (int ticketID) {
+            Ticket Ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+            Tags Tags = new Tags(TSAuthentication.GetLoginUser());
+            Tags.LoadByReference(ReferenceType.Tickets, ticketID);
+            Deflector Deflection = new Deflector();
+            foreach (var Tag in Tags) {
+                Deflection.DeleteDeflector(Ticket.OrganizationID, Tag.Value);
+            }
+            return null;
+        }
 
         private string CheckDeflectorAPI(string tag) {
             string ResponseText    = null;
