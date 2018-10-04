@@ -345,9 +345,9 @@ Namespace TeamSupport
 
 							'Check if Ticket Description Action has Attachment
 							If (attachmentEnabled AndAlso actionDescriptionId > 0) Then
-                                Dim actionDescriptionAttachment As Data.AttachmentProxy = TeamSupport.Data.Quarantine.ServiceQ.GetAttachmentX(User, actionDescriptionId)
-                                'The Action Description should always be 1, if for any reason this is not the case call: Actions.GetActionPosition(User, actionDescriptionId)
-                                Dim actionPosition As Integer = 1
+								Dim actionDescriptionAttachment As Data.AttachmentProxy = TeamSupport.Data.Quarantine.ServiceQ.GetAttachmentProxy(User, actionDescriptionId)
+								'The Action Description should always be 1, if for any reason this is not the case call: Actions.GetActionPosition(User, actionDescriptionId)
+								Dim actionPosition As Integer = 1
 								PushAttachments(actionDescriptionId, ticket.TicketNumber, workItem, attachmentFileSizeLimit, actionPosition)
 							End If
 
@@ -811,9 +811,9 @@ Namespace TeamSupport
 			ByVal fileSizeLimit As Integer,
 			ByVal actionPosition As Integer)
 
-                Dim attachments As AttachmentProxy() = TeamSupport.Data.Quarantine.ServiceQ.LoadForTFS(User, actionID)
+				Dim attachments As AttachmentProxy() = TeamSupport.Data.Quarantine.ServiceQ.LoadForTFS(User, actionID)
 
-                Dim crmLinkAttachmentErrors As CRMLinkErrors = New CRMLinkErrors(User)
+				Dim crmLinkAttachmentErrors As CRMLinkErrors = New CRMLinkErrors(User)
 				crmLinkAttachmentErrors.LoadByOperationAndObjectIds(CRMLinkRow.OrganizationID,
 																CRMLinkRow.CRMType,
 																GetDescription(Orientation.OutToJira),
@@ -918,7 +918,7 @@ Namespace TeamSupport
 
             End Sub
 
-			Private Sub PushActionsAsComments(
+            Private Sub PushActionsAsComments(
 				ByVal ticketID As Integer,
 				ByVal ticketNumber As Integer,
 				ByVal workItem As WorkItem,

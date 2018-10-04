@@ -130,22 +130,6 @@ namespace TeamSupport.Data.Quarantine
 
             return hostName + path;
         }
-
-        public static void CreateAttachment(string savePath, int organizationId, AttachmentProxy.References refType, LoginUser user, HttpWebResponse httpWebResponse)
-        {
-            Attachments attachments = new Attachments(user);
-            Attachment attachment = attachments.AddNewAttachment();
-            attachment.RefType = refType;
-            attachment.RefID = user.UserID;
-            attachment.OrganizationID = organizationId;
-            attachment.FileName = Path.GetFileName(savePath);
-            attachment.Path = savePath;
-            attachment.FileType = string.IsNullOrEmpty(httpWebResponse.ContentType) ? "application/octet-stream" : httpWebResponse.ContentType;
-            attachment.FileSize = httpWebResponse.ContentLength;
-            //attachment.FilePathID = 3;
-            attachments.Save();
-        }
-
         public static string GetAttachmentPath10(LoginUser loginUser, int parentID)
         {
             return AttachmentPath.GetPath(loginUser, parentID, AttachmentPath.Folder.OrganizationsLogo);
@@ -242,15 +226,9 @@ namespace TeamSupport.Data.Quarantine
             }
         }
 
-        public static AttachmentProxy GetAttachmentX(LoginUser user, int actionDescriptionId)
+        public static AttachmentProxy GetAttachmentProxy(LoginUser user, int actionDescriptionId)
         {
             return Attachments.GetAttachment(user, actionDescriptionId).GetProxy();
-        }
-
-        public static List<string> GetAttachmentIDs(LoginUser loginUser)
-        {
-            Attachments attachments = new Attachments(loginUser);
-            return attachments.Select(p => p.AttachmentID.ToString()).ToList();
         }
 
         public static void SetAttachmentSentToJira(LoginUser loginUser, int attachmentID)
@@ -279,6 +257,22 @@ namespace TeamSupport.Data.Quarantine
             Attachments attachments = new Attachments(user);
             attachments.LoadForTFS(actionID);
             return attachments.GetAttachmentProxies();
+        }
+
+
+        public static void CreateAttachment(string savePath, int organizationId, AttachmentProxy.References refType, LoginUser user, HttpWebResponse httpWebResponse)
+        {
+            Attachments attachments = new Attachments(user);
+            Attachment attachment = attachments.AddNewAttachment();
+            attachment.RefType = refType;
+            attachment.RefID = user.UserID;
+            attachment.OrganizationID = organizationId;
+            attachment.FileName = Path.GetFileName(savePath);
+            attachment.Path = savePath;
+            attachment.FileType = string.IsNullOrEmpty(httpWebResponse.ContentType) ? "application/octet-stream" : httpWebResponse.ContentType;
+            attachment.FileSize = httpWebResponse.ContentLength;
+            //attachment.FilePathID = 3;
+            attachments.Save();
         }
 
         /*
