@@ -3293,6 +3293,7 @@ WHERE t.TicketID = @TicketID
             if (!CanEditTicket(ticket)) return null;
             TagLink link = TagLinks.GetTagLink(TSAuthentication.GetLoginUser(), ReferenceType.Tickets, ticketID, tagID);
             Tag tag = Tags.GetTag(TSAuthentication.GetLoginUser(), tagID);
+            string tagValue = tag.Value;
             ticket.Collection.RemoveTags(tag, ticketID);
             int count = tag.GetLinkCount();
             link.Delete();
@@ -3304,7 +3305,7 @@ WHERE t.TicketID = @TicketID
 
             // DEFLECTOR
             Deflector resp = new Deflector();
-            resp.DeleteDeflector(ticket.OrganizationID, tag.Value);
+            resp.DeleteDeflector(ticket.OrganizationID, tagValue);
 
             return GetTicketTags(ticketID);
         }
