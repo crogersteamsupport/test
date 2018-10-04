@@ -1303,6 +1303,15 @@ namespace TSWebServices
             if (!CanEditTicket(ticket)) return value;
             ticket.IsVisibleOnPortal = value;
             ticket.Collection.Save();
+
+            // DEFLECTOR.
+            Deflector Deflection = new Deflector();
+            if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase) {
+                Deflection.PopulateTicket(ticket.TicketID);
+            } else {
+                Deflection.UnpopulateTicket(ticket.TicketID);
+            }
+
             return ticket.IsVisibleOnPortal;
         }
 
@@ -1318,8 +1327,13 @@ namespace TSWebServices
             if (!CanEditTicket(ticket)) return value;
             ticket.IsKnowledgeBase = value;
             ticket.Collection.Save();
-            if (ticket.IsKnowledgeBase) {
-                // TSWebServices.Deflector.ProcessUpsert(json);
+            
+            // DEFLECTOR.
+            Deflector Deflection = new Deflector();
+            if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase) {
+                Deflection.PopulateTicket(ticket.TicketID);
+            } else {
+                Deflection.UnpopulateTicket(ticket.TicketID);
             }
 
             return ticket.IsKnowledgeBase;
