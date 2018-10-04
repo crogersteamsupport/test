@@ -9,19 +9,6 @@ using System.Data.Linq.Mapping;
 
 namespace TeamSupport.Data
 {
-    //Actions
-    //Assets
-    //ChatAttachments
-    //CompanyActivity
-    //ContactActivity
-    //Contacts
-    //CustomerHubLogo
-    //Organizations
-    //ProductVersions
-    //Tasks
-    //UserPhoto
-    //Users
-    //WaterCooler
 
     [DataContract(Namespace = "http://teamsupport.com/")]
     [KnownType(typeof(AttachmentProxy))]

@@ -46,7 +46,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>ACQBgEBAACAAAASCAgAAAAgAAAAAEAAAAACBAAAAJAA=</HashCode>
+      <HashCode>ACABgEAAACAAAAQCAAAAAAgAAAAAEAAAAACBAAAAJAA=</HashCode>
       <FileName>ConnectionContext.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -240,7 +240,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="TeamSupport.IDTree.ProductVersionModel" Collapsed="true">
-    <Position X="5.75" Y="9" Width="1.5" />
+    <Position X="5.75" Y="9" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAACAAAAAAAAAQAAAAAAAAAAgAAAAAAAAAAgAAAAAAA=</HashCode>
       <FileName>ProductVersionModel.cs</FileName>
@@ -253,12 +253,58 @@
   <Class Name="TeamSupport.IDTree.AuthenticationModel" Collapsed="true">
     <Position X="4" Y="0.5" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAACgAAAAAAEAAAAQAAgIAAAAAAAACCABAAAAAAA=</HashCode>
+      <HashCode>AAAAAACgAAAAAAEAAAAQAAgIAAAAAAAgCCABAAAAAAA=</HashCode>
       <FileName>AuthenticationModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="AuthenticationTicket" />
     </ShowAsAssociation>
+  </Class>
+  <Class Name="TeamSupport.IDTree.ChatModel" Collapsed="true">
+    <Position X="5.25" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAoAAAAAAQ=</HashCode>
+      <FileName>ChatModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TeamSupport.IDTree.NoteModel" Collapsed="true">
+    <Position X="9.75" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BCAAAAAAAAAAAQAAAAAAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NoteModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TeamSupport.IDTree.TicketQueueModel" Collapsed="true">
+    <Position X="7.5" Y="10.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAYACAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TicketQueueModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TeamSupport.IDTree.TicketRelationshipModel" Collapsed="true">
+    <Position X="2.5" Y="10.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQACAAAAAAAAAAAAQAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TicketRelationshipModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TeamSupport.IDTree.TSDataTable" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="16" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgEAAACAAAASCAAAAAAAAAAAAAAAAAAAAAQAABAA=</HashCode>
+      <FileName>TSDataTable.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="TeamSupport.IDTree.WatercoolerMsgModel" Collapsed="true">
+    <Position X="11.75" Y="10.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAEAAAgAAAAIAA=</HashCode>
+      <FileName>WatercoolerMsgModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Interface Name="TeamSupport.IDTree.IAttachmentDestination">
     <Position X="17" Y="2" Width="2" />
@@ -273,6 +319,13 @@
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>TaskAssociationModel.cs</FileName>
       <NewMemberFileName>TaskModel.cs</NewMemberFileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="TeamSupport.IDTree.INoteDestination" Collapsed="true">
+    <Position X="14" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NoteModel.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Font Name="Segoe UI" Size="9" />

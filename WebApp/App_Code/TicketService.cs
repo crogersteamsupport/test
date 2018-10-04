@@ -3159,9 +3159,7 @@ WHERE t.TicketID = @TicketID
             UsersViewItem creator = UsersView.GetUsersViewItem(loginUser, action.CreatorID);
             if (creator != null) actionInfo.Creator = new UserInfo(creator);
 
-            {
-                actionInfo.Attachments = Model_API.Read<AttachmentProxy[]>(action.ActionID);
-            }
+            actionInfo.Attachments = Model_API.Read<AttachmentProxy[]>(action.ActionID);
 
             return actionInfo;
         }

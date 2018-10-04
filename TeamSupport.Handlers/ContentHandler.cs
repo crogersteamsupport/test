@@ -800,6 +800,7 @@ namespace TeamSupport.Handlers
 
                 if (isAuthenticated)
                 {
+                    // not used
                     //user = Users.GetUser(attachment.Collection.LoginUser, TSAuthentication.UserID);
                 }
                 else
@@ -837,6 +838,7 @@ namespace TeamSupport.Handlers
                     }
                 }
 
+            // only check AllowUnsecureAttachmentViewing if it was set aboveF//if (proxies != null) 
             if (fromGuid)
             {
                 OrganizationProxy organization = Model_API.Read<OrganizationProxy>(attachment.OrganizationID);
