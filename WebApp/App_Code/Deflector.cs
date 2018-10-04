@@ -53,29 +53,21 @@ namespace TSWebServices {
                 streamWriter.Close();
             }
 
-            try {
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-                    if (request.HaveResponse && response != null) {
-   		    			using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
-   			    		    ResponseText = reader.ReadToEnd();
-   				    	}
-   				    }
-   			    }
-      			return ResponseText;
-            } catch (Exception e) {
-                return e.Message;
-            }
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+                if (request.HaveResponse && response != null) {
+   					using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
+   					    ResponseText = reader.ReadToEnd();
+   					}
+   				}
+   			}
+   			return ResponseText;
    		}
 
         [WebMethod]
         public string HydrateOrganization (int organizationID) {
             string response = TeamSupport.Data.Deflector.GetOrganizationIndeces(TSAuthentication.GetLoginUser(), organizationID);
-            try {
-                HydrateDeflector(response);
-                return response;
-            } catch (Exception e) {
-                return e.Message;
-            }
+            HydrateDeflector(response);
+            return response;
         }
 
         [WebMethod]
@@ -105,18 +97,14 @@ namespace TSWebServices {
                 streamWriter.Close();
             }
 
-            try {
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-                    if (request.HaveResponse && response != null) {
-   		      			using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
-   			    		    ResponseText = reader.ReadToEnd();
-   				    	}
-   				    }
-   			    }
-                return ResponseText;
-            } catch (Exception e) {
-                return e.Message;
-            }
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+                if (request.HaveResponse && response != null) {
+   					using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
+   					    ResponseText = reader.ReadToEnd();
+   					}
+   				}
+   			}
+   			return ResponseText;
    		}
 
         private async Task<string> GetDeflectionsAPIAsync(int organization, string phrase) {
@@ -125,52 +113,95 @@ namespace TSWebServices {
             request.Method = "GET";
             request.KeepAlive = false;
             request.ContentType = "application/json";
-            try {
-                using (WebResponse response = await request.GetResponseAsync()) {
-                    if (request.HaveResponse && response != null) {
-                        using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
-                            return reader.ReadToEnd();
-                        }
-                    } else {
-                        return "error";
+
+            using (WebResponse response = await request.GetResponseAsync())
+            {
+                if (request.HaveResponse && response != null)
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8))
+                    {
+                        return reader.ReadToEnd();
                     }
                 }
-            } catch (Exception e) {
-                return e.Message;
+                else
+                {
+                    return "error";
+                }
             }
         }
 
         [WebMethod]
-        public async Task<string> GetDeflections(int organization, string phrase) {
-            try {
-                var deflectionResult = await GetDeflectionsAPIAsync(organization, phrase);
-                return deflectionResult;
-            } catch (Exception e) {
-                return e.Message;
+        public async Task<string> GetDeflections(int organization, string phrase)
+        {
+            try
+            {
+                return await FetchDeflectionsAsync(organization, phrase);
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
+                return null;
             }
 
         }
 
         public string DeleteDeflector(int organizationID, string value) {
+            string ResponseText = null;
             string PingUrl = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/organization/" + organizationID + "/tag/" + value;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
             request.Method = "DELETE";
             request.KeepAlive = false;
             request.ContentType = "application/json";
-            try {
-                string ResponseText = null;
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-                    if (request.HaveResponse && response != null) {
-                        using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+                if (request.HaveResponse && response != null) {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
+                        ResponseText = reader.ReadToEnd();
+                    }
+                }
+            }
+            return ResponseText;
+        }
+
+        public string DeleteTag(int OrganizationId, string Value)
+        {
+            var item = new DeflectorItem
+            {
+                OrganizationID = OrganizationId,
+                Value = Value
+            };
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
+            string ResponseText = null;
+            string PingUrl = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/delete/organization/" + OrganizationId + "/tag/" + Value;
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
+            request.Method = "DELETE";
+            request.KeepAlive = false;
+            request.ContentType = "application/json";
+
+            using (var streamWriter = new StreamWriter(request.GetRequestStream()))
+            {
+                streamWriter.Write(json);
+                streamWriter.Flush();
+                streamWriter.Close();
+            }
+            try
+            {
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    if (request.HaveResponse && response != null)
+                    {
+                        using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8))
+                        {
                             ResponseText = reader.ReadToEnd();
                         }
                     }
                 }
                 return ResponseText;
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 return e.Message;
             }
-
         }
 
         public string RenameTag (int OrganizationId, int TagId, string Value) {
@@ -194,18 +225,14 @@ namespace TSWebServices {
                 streamWriter.Close();
             }
 
-            try {
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-                    if (request.HaveResponse && response != null) {
-                        using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
-                            ResponseText = reader.ReadToEnd();
-                        }
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+                if (request.HaveResponse && response != null) {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
+                        ResponseText = reader.ReadToEnd();
                     }
                 }
-                return ResponseText;
-            } catch (Exception e) {
-                return e.Message;
             }
+            return ResponseText;
         }
 
         public string MergeTag (int OrganizationId, int TagId, string Value) {
@@ -229,51 +256,14 @@ namespace TSWebServices {
                 streamWriter.Close();
             }
 
-            try {
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-                    if (request.HaveResponse && response != null) {
-                        using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
-                            ResponseText = reader.ReadToEnd();
-                        }
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+                if (request.HaveResponse && response != null) {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
+                        ResponseText = reader.ReadToEnd();
                     }
                 }
-                return ResponseText;
-            } catch (Exception e) {
-                return e.Message;
             }
-        }
-
-        public string DeleteTag (int OrganizationId, string Value) {
-            var item = new DeflectorItem {
-                OrganizationID = OrganizationId,
-                Value = Value
-            };
-            string json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
-            string ResponseText    = null;
-            string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/delete/organization/" + OrganizationId + "/tag/" + Value;
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
-            request.Method         = "DELETE";
-            request.KeepAlive      = false;
-            request.ContentType    = "application/json";
-
-            using (var streamWriter = new StreamWriter(request.GetRequestStream())) {
-                streamWriter.Write(json);
-                streamWriter.Flush();
-                streamWriter.Close();
-            }
-            try {
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-                    if (request.HaveResponse && response != null) {
-                        using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
-                            ResponseText = reader.ReadToEnd();
-                        }
-                    }
-                }
-                return ResponseText;
-            } catch (Exception e) {
-                return e.Message;
-            }
+            return ResponseText;
         }
 
         public string PopulateTicket (int ticketID) {
@@ -312,18 +302,16 @@ namespace TSWebServices {
         	request.Method         = "GET";
         	request.KeepAlive      = false;
         	request.ContentType    = "application/json";
-            try {
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-                    if (request.HaveResponse && response != null) {
-   					    using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
-   					        ResponseText = reader.ReadToEnd();
-   					    }
-      				}
-     			}
-   	    		return ResponseText;
-            } catch (Exception e) {
-                return e.Message;
-            }
+        	using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+                if (request.HaveResponse && response != null) {
+   					using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
+   					    ResponseText = reader.ReadToEnd();
+                        // dynamic responseObject = JObject.Parse(ResponseText);
+                        // string success = responseObject.success;
+   					}
+   				}
+   			}
+   			return ResponseText;
    		}
 
         [DataContract]

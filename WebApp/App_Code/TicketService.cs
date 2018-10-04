@@ -697,12 +697,13 @@ namespace TSWebServices
                 return;
             } else {
                 Tag tag = Tags.GetTag(TSAuthentication.GetLoginUser(), tagID);
+                string tagValue = tag.Value;
                 tag.Delete();
                 tag.Collection.Save();
 
                 // DEFLECTOR.
                 Deflector Deflection = new Deflector();
-                string test = Deflection.DeleteTag(TSAuthentication.OrganizationID, tag.Value);
+                Deflection.DeleteTag(TSAuthentication.OrganizationID, tagValue);
             }
         }
 

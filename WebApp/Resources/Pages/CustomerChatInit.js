@@ -74,11 +74,48 @@ $(document).ready(function () {
     }
 });
 
+function SetupDeflectionListener(organizationID) {
+    var deflector = new TSWebServices.Deflector();
+    var returnURL = Ts.Utils.getQueryValue("ReturnURL", window);
+
+    if (returnURL) {
+        var typingTimer;
+        var doneTypingInterval = 1000;  //time in ms
+        var $input = $('#userIssue');
+
+        $input.on('keyup', function () {
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(doneTyping, doneTypingInterval);
+        });
+
+        $input.on('keydown', function () {
+            clearTimeout(typingTimer);
+        });
+    }
+
+    function doneTyping() {
+        $('#deflection-results').html('');
+        if ($input.val()) {
+            deflector.GetDeflections(organizationID, $input.val(), function (result) {
+                var deflectionResults = JSON.parse(result.Result);
+                if (deflectionResults.length > 0) {
+                    $('#deflection-results').append('<h4>Suggested Solutions</h4>');
+                }
+
+                for (x = 0; x < deflectionResults.length; x++) {
+                    $('#deflection-results').append('<a target="_blank" class="list-group-item" href="' + returnURL + '/knowledgeBase/' + deflectionResults[x].TicketId + '">' + deflectionResults[x].Name +'</a>');
+                }
+            });
+        }
+    }
+}
+
 function GetChatSettings(chatID) {
     var chatObject = { chatGuid: chatID };
 
     IssueAjaxRequest("GetClientChatPropertiesByChatGUID", chatObject,
     function (result) {
+
         if (!chatOffline) {
             $('.panel-heading').text(result.ChatIntro);
         }
@@ -86,7 +123,9 @@ function GetChatSettings(chatID) {
         $("input:text:visible:first").focus();
 		
 		var imageUrl = '/dc/' + result.OrganizationID + '/chat/logo';
-		$('.chat-logo').css('background-image', 'url(' + imageUrl + ')');
+        $('.chat-logo').css('background-image', 'url(' + imageUrl + ')');
+
+        SetupDeflectionListener(result.OrganizationID);
     },
     function (error) {
 
