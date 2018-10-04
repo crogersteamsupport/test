@@ -266,6 +266,41 @@ namespace TSWebServices {
             return ResponseText;
         }
 
+
+        public string ChangeProduct (int OrganizationId, int TagId, string Value) {
+            var item = new DeflectorItem {
+                TicketID =
+                OrganizationID = OrganizationId,
+                TagID = TagId,
+                Value = Value
+            };
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
+            string ResponseText    = null;
+            string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/update/organization/" + OrganizationId + "/tag/" + TagId + "/merge";
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
+            request.Method         = "POST";
+            request.KeepAlive      = false;
+            request.ContentType    = "application/json";
+
+            using (var streamWriter = new StreamWriter(request.GetRequestStream())) {
+                streamWriter.Write(json);
+                streamWriter.Flush();
+                streamWriter.Close();
+            }
+
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+                if (request.HaveResponse && response != null) {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
+                        ResponseText = reader.ReadToEnd();
+                    }
+                }
+            }
+            return ResponseText;
+        }
+
+
+
         public string PopulateTicket (int ticketID) {
             Ticket Ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
             Tags Tags = new Tags(TSAuthentication.GetLoginUser());
@@ -273,6 +308,8 @@ namespace TSWebServices {
             Deflector Deflection = new Deflector();
             foreach (var Tag in Tags) {
                 var item = new DeflectorItem {
+                    TicketID = Ticket.TicketID,
+                    Name = Ticket.Name,
                     OrganizationID = Ticket.OrganizationID,
                     TagID = Tag.TagID,
                     Value = Tag.Value,

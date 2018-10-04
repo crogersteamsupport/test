@@ -1328,7 +1328,7 @@ namespace TSWebServices
             if (!CanEditTicket(ticket)) return value;
             ticket.IsKnowledgeBase = value;
             ticket.Collection.Save();
-            
+
             // DEFLECTOR.
             Deflector Deflection = new Deflector();
             if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase) {
@@ -1619,20 +1619,32 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public AutocompleteItem SetProduct(int ticketID, int? productID)
-        {
+        public AutocompleteItem SetProduct(int ticketID, int? productID) {
             Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
-            if (!CanEditTicket(ticket)) return null;
+            if (!CanEditTicket(ticket)) {
+                return null;
+            } else {
+                Product product = productID != null ? Products.GetProduct(TSAuthentication.GetLoginUser(), (int)productID) : null;
+                if (productID == ticket.ProductID) {
+                    return null;
+                } else if (product != null && product.OrganizationID != TSAuthentication.OrganizationID) {
+                    return null;
+                } else {
+                    if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase) {
+                        //Deflection.PopulateTicket(ticket.TicketID);
+                    }
 
-            Product product = productID != null ? Products.GetProduct(TSAuthentication.GetLoginUser(), (int)productID) : null;
-            if (productID == ticket.ProductID) return null;
-            if (product != null && product.OrganizationID != TSAuthentication.OrganizationID) return null;
-            ticket.ProductID = productID;
-            ticket.ReportedVersionID = null;
-            ticket.SolvedVersionID = null;
-            ticket.Collection.Save();
-            if (product != null) return new AutocompleteItem(product.Name, product.ProductID.ToString(), product.ProductFamilyID);
-            return new AutocompleteItem(null, null);
+                    ticket.ProductID = productID;
+                    ticket.ReportedVersionID = null;
+                    ticket.SolvedVersionID = null;
+                    ticket.Collection.Save();
+                    if (product != null) {
+                        return new AutocompleteItem(product.Name, product.ProductID.ToString(), product.ProductFamilyID);
+                    } else {
+                        return new AutocompleteItem(null, null);
+                    }
+                }
+            }
         }
 
         [WebMethod]
