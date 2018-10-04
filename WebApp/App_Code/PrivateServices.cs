@@ -67,8 +67,8 @@ namespace TeamSupport.Services
         public PrivateServices()
         {
 
-            //Uncomment the following line if using designed components 
-            //InitializeComponent(); 
+            //Uncomment the following line if using designed components
+            //InitializeComponent();
         }
 
         [WebMethod]
@@ -609,11 +609,19 @@ namespace TeamSupport.Services
         [WebMethod]
         public void DeleteTicket(int ticketID)
         {
-            if (!UserSession.CurrentUser.IsSystemAdmin) return;
-            Ticket ticket = Tickets.GetTicket(UserSession.LoginUser, ticketID);
-            if (ticket.OrganizationID != UserSession.LoginUser.OrganizationID) return;
-            ticket.Delete();
-            ticket.Collection.Save();
+            if (!UserSession.CurrentUser.IsSystemAdmin) {
+                return;
+            } else {
+                Ticket ticket = Tickets.GetTicket(UserSession.LoginUser, ticketID);
+                if (ticket.OrganizationID != UserSession.LoginUser.OrganizationID) {
+                    return;
+                } else {
+                    Deflector Deflection = new Deflector();
+                    Deflection.UnpopulateTicket(ticket.TicketID);
+                    ticket.Delete();
+                    ticket.Collection.Save();
+                }
+            }
         }
 
         [WebMethod]
