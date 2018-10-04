@@ -565,17 +565,10 @@ namespace TeamSupport.ServiceLibrary
 
 				List<string> fileNames = new List<string>();
 
-				if (CanIncludeAttachments(ticket, actions, ticketOrganization))
-				{
-					Attachments attachments = actions[0].GetAttachments();
-					foreach (Data.Attachment attachment in attachments)
-					{
-						fileNames.Add(attachment.Path);
-						Logs.WriteEventFormat("Adding Attachment   AttachmentID:{0}, ActionID:{1}, Path:{2}", attachment.AttachmentID.ToString(), actions[0].ActionID.ToString(), attachment.Path);
-					}
-				}
+                if (CanIncludeAttachments(ticket, actions, ticketOrganization))
+                    TeamSupport.Data.Quarantine.ServiceQ.AddAttachmentFileNames2(actions, fileNames, Logs);
 
-				string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
+                string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
 
 				if (ticket.UserID != null && oldUserID != null)
 				{
@@ -644,7 +637,7 @@ namespace TeamSupport.ServiceLibrary
 
 		}
 
-		private void AddMessageInternalTicketModified(Ticket ticket, int? oldUserID, int? oldGroupID, bool isNew, int? oldTicketStatusID, int? oldTicketSeverityID, bool includeActions, string modifierName, int modifierID, Organization ticketOrganization)
+        private void AddMessageInternalTicketModified(Ticket ticket, int? oldUserID, int? oldGroupID, bool isNew, int? oldTicketStatusID, int? oldTicketSeverityID, bool includeActions, string modifierName, int modifierID, Organization ticketOrganization)
 		{
 			try
 			{
@@ -687,16 +680,10 @@ namespace TeamSupport.ServiceLibrary
 					Actions actions = new Actions(LoginUser);
 					actions.LoadLatestByTicket(ticket.TicketID, false);
 
-					if (CanIncludeAttachments(ticket, actions, ticketOrganization))
-					{
-						Attachments attachments = actions[0].GetAttachments();
-						foreach (Data.Attachment attachment in attachments)
-						{
-							fileNames.Add(attachment.Path);
-						}
-					}
+                    if (CanIncludeAttachments(ticket, actions, ticketOrganization))
+                        TeamSupport.Data.Quarantine.ServiceQ.AddAttachmentFileNames3(fileNames, actions);
 
-					foreach (Data.Action item in actions)
+                    foreach (Data.Action item in actions)
 					{
 						if (!item.IsVisibleOnPortal)
 						{
@@ -722,7 +709,7 @@ namespace TeamSupport.ServiceLibrary
 			}
 		}
 
-		private bool IsModifierTSUser(int modifierID)
+        private bool IsModifierTSUser(int modifierID)
 		{
 			bool result = false;
 			User modifier = Users.GetUser(LoginUser, modifierID);
@@ -862,17 +849,9 @@ namespace TeamSupport.ServiceLibrary
 					Actions actions = new Actions(LoginUser);
 					actions.LoadLatestByTicket(ticket.TicketID, true);
 
-					if (CanIncludeAttachments(ticket, actions, ticketOrganization))
-					{
-						Attachments attachments = actions[0].GetAttachments();
-
-						foreach (Data.Attachment attachment in attachments)
-						{
-							fileNames.Add(attachment.Path);
-							Logs.WriteEvent(string.Format("Adding Attachment   AttachmentID:{0}, ActionID:{1}, Path:{2}", attachment.AttachmentID.ToString(), actions[0].ActionID.ToString(), attachment.Path));
-						}
-					}
-				}
+                    if (CanIncludeAttachments(ticket, actions, ticketOrganization))
+                        TeamSupport.Data.Quarantine.ServiceQ.AddAttachmentFileNames1(fileNames, actions, Logs);
+                }
 
 				MailMessage message = null;
 				string messageType;
@@ -996,7 +975,7 @@ namespace TeamSupport.ServiceLibrary
 			}
 		}
 
-		private void ProcessTicketUpdateRequest(int ticketID, int modifierID)
+        private void ProcessTicketUpdateRequest(int ticketID, int modifierID)
 		{
 			Ticket ticket = Tickets.GetTicket(LoginUser, ticketID);
 			try
@@ -1078,82 +1057,64 @@ namespace TeamSupport.ServiceLibrary
 		}
 
 		private void ProcessTicketSendEmail(int userID, int ticketID, string addresses, string introduction, int actionID)
-		{
-			Ticket ticket = Tickets.GetTicket(LoginUser, ticketID);
-			User sender = Users.GetUser(LoginUser, userID);
+        {
+            Ticket ticket = Tickets.GetTicket(LoginUser, ticketID);
+            User sender = Users.GetUser(LoginUser, userID);
 
-			if (ticket == null || sender == null || ticket.OrganizationID != sender.OrganizationID) return;
-			LoginUser loginUser = new LoginUser(LoginUser.ConnectionString, sender.UserID, sender.OrganizationID, null);
+            if (ticket == null || sender == null || ticket.OrganizationID != sender.OrganizationID) return;
+            LoginUser loginUser = new LoginUser(LoginUser.ConnectionString, sender.UserID, sender.OrganizationID, null);
 
-			Actions actions = new Actions(LoginUser);
-			actions.LoadByTicketID(ticket.TicketID);
+            Actions actions = new Actions(LoginUser);
+            actions.LoadByTicketID(ticket.TicketID);
 
-			List<string> fileNames = new List<string>();
-
-            Attachments attachmentsHelper = new Attachments(LoginUser);
-            attachmentsHelper.LoadByActionID(actionID);
-
-            //specific logic for including attachments a user has added via the send email lightbox
-            foreach (Data.Attachment attachment in attachmentsHelper)
-            {
-                fileNames.Add(attachment.Path);
-                Logs.WriteEventFormat("Adding Attachment   AttachmentID:{0}, ActionID:{1}, Path:{2}", attachment.AttachmentID.ToString(), actions[0].ActionID.ToString(), attachment.Path);
-            }
+            List<string> fileNames = TeamSupport.Data.Quarantine.ServiceQ.GetAtachmentFileNames(LoginUser, actionID, actions, Logs);
 
             Organizations organization = new Organizations(LoginUser);
-			organization.LoadByOrganizationID(ticket.OrganizationID);
-			bool includeAttachments = true;
+            organization.LoadByOrganizationID(ticket.OrganizationID);
+            bool includeAttachments = true;
 
-			if (organization != null && organization.Count > 0)
-			{
-				includeAttachments = CanIncludeAttachments(ticket, actions, organization[0]);
-			}
+            if (organization != null && organization.Count > 0)
+            {
+                includeAttachments = CanIncludeAttachments(ticket, actions, organization[0]);
+            }
 
-			foreach (Data.Action action in actions)
-			{
-				if (!action.IsVisibleOnPortal) continue;
+            foreach (Data.Action action in actions)
+            {
+                if (!action.IsVisibleOnPortal) continue;
 
-				if (includeAttachments)
-				{
-					Attachments attachments = action.GetAttachments();
+                if (includeAttachments)
+                    TeamSupport.Data.Quarantine.ServiceQ.AddFileNames(actions, fileNames, action, Logs);
+            }
 
-					foreach (Data.Attachment attachment in attachments)
-					{
-						fileNames.Add(attachment.Path);
-						Logs.WriteEventFormat("Adding Attachment   AttachmentID:{0}, ActionID:{1}, Path:{2}", attachment.AttachmentID.ToString(), actions[0].ActionID.ToString(), attachment.Path);
-					}
-				}
-			}
+            char split = ';';
+            if (addresses.IndexOf(';') < 0) split = ',';
 
-			char split = ';';
-			if (addresses.IndexOf(';') < 0) split = ',';
+            string[] list = addresses.Split(split);
 
-			string[] list = addresses.Split(split);
+            foreach (string item in list)
+            {
+                try
+                {
+                    MailMessage message = EmailTemplates.GetTicketSendEmail(LoginUser, sender.GetUserView(), ticket.GetTicketView(), item.Trim(), introduction);
+                    message.To.Add(GetMailAddress(item.Trim()));
+                    message.Subject = message.Subject;
 
-			foreach (string item in list)
-			{
-				try
-				{
-					MailMessage message = EmailTemplates.GetTicketSendEmail(LoginUser, sender.GetUserView(), ticket.GetTicketView(), item.Trim(), introduction);
-					message.To.Add(GetMailAddress(item.Trim()));
-					message.Subject = message.Subject;
+                    foreach (MailAddress mailAddress in message.To)
+                    {
+                        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, "Ticket email sent to " + mailAddress.Address);
+                    }
 
-					foreach (MailAddress mailAddress in message.To)
-					{
-						ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, "Ticket email sent to " + mailAddress.Address);
-					}
+                    string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
+                    AddMessage(sender.OrganizationID, "Ticket Email [" + ticket.TicketNumber.ToString() + "] to " + item, message, emailReplyToAddress, fileNames.ToArray());
+                }
+                catch (Exception ex)
+                {
+                    ExceptionLogs.LogException(loginUser, ex, "Email Processor", "Email Ticket");
+                }
+            }
+        }
 
-					string emailReplyToAddress = GetEmailReplyToAddress(LoginUser, ticket);
-					AddMessage(sender.OrganizationID, "Ticket Email [" + ticket.TicketNumber.ToString() + "] to " + item, message, emailReplyToAddress, fileNames.ToArray());
-				}
-				catch (Exception ex)
-				{
-					ExceptionLogs.LogException(loginUser, ex, "Email Processor", "Email Ticket");
-				}
-			}
-		}
-
-		private void AddMessageNewTicket(Ticket ticket, User modifier, Organization ticketOrganization)
+        private void AddMessageNewTicket(Ticket ticket, User modifier, Organization ticketOrganization)
 		{
 			if (string.IsNullOrEmpty(ticket.TicketSource))
 			{

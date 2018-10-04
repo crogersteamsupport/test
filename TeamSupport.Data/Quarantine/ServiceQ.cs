@@ -185,7 +185,101 @@ namespace TeamSupport.Data.Quarantine
         {
             return AttachmentPath.GetPath(loginUser, organizationId, AttachmentPath.Folder.ScheduledReports, 3);
         }
+        public static List<string> GetAtachmentFileNames(LoginUser loginUser, int actionID, Actions actions, TeamSupport.Data.Logs log)
+        {
+            List<string> fileNames = new List<string>();
 
+            Attachments attachmentsHelper = new Attachments(loginUser);
+            attachmentsHelper.LoadByActionID(actionID);
+
+            //specific logic for including attachments a user has added via the send email lightbox
+            foreach (Data.Attachment attachment in attachmentsHelper)
+            {
+                fileNames.Add(attachment.Path);
+                log.WriteEventFormat("Adding Attachment   AttachmentID:{0}, ActionID:{1}, Path:{2}", attachment.AttachmentID.ToString(), actions[0].ActionID.ToString(), attachment.Path);
+            }
+
+            return fileNames;
+        }
+
+        public static void AddFileNames(Actions actions, List<string> fileNames, Data.Action action, Logs log)
+        {
+            Attachments attachments = action.GetAttachments();
+
+            foreach (Data.Attachment attachment in attachments)
+            {
+                fileNames.Add(attachment.Path);
+                log.WriteEventFormat("Adding Attachment   AttachmentID:{0}, ActionID:{1}, Path:{2}", attachment.AttachmentID.ToString(), actions[0].ActionID.ToString(), attachment.Path);
+            }
+        }
+        public static void AddAttachmentFileNames1(List<string> fileNames, Actions actions, Logs log)
+        {
+            Attachments attachments = actions[0].GetAttachments();
+
+            foreach (Data.Attachment attachment in attachments)
+            {
+                fileNames.Add(attachment.Path);
+                log.WriteEvent(string.Format("Adding Attachment   AttachmentID:{0}, ActionID:{1}, Path:{2}", attachment.AttachmentID.ToString(), actions[0].ActionID.ToString(), attachment.Path));
+            }
+        }
+
+        public static void AddAttachmentFileNames2(Actions actions, List<string> fileNames, Logs log)
+        {
+            Attachments attachments = actions[0].GetAttachments();
+            foreach (Data.Attachment attachment in attachments)
+            {
+                fileNames.Add(attachment.Path);
+                log.WriteEventFormat("Adding Attachment   AttachmentID:{0}, ActionID:{1}, Path:{2}", attachment.AttachmentID.ToString(), actions[0].ActionID.ToString(), attachment.Path);
+            }
+        }
+
+        public static void AddAttachmentFileNames3(List<string> fileNames, Actions actions)
+        {
+            Attachments attachments = actions[0].GetAttachments();
+            foreach (Data.Attachment attachment in attachments)
+            {
+                fileNames.Add(attachment.Path);
+            }
+        }
+
+        public static AttachmentProxy GetAttachmentX(LoginUser user, int actionDescriptionId)
+        {
+            return Attachments.GetAttachment(user, actionDescriptionId).GetProxy();
+        }
+
+        public static List<string> GetAttachmentIDs(LoginUser loginUser)
+        {
+            Attachments attachments = new Attachments(loginUser);
+            return attachments.Select(p => p.AttachmentID.ToString()).ToList();
+        }
+
+        public static void SetAttachmentSentToJira(LoginUser loginUser, int attachmentID)
+        {
+            Attachment attachment = Attachments.GetAttachment(loginUser, attachmentID);
+            attachment.SentToJira = true;
+            attachment.Collection.Save();
+        }
+
+        public static void SetAttachmentSentToTFS(LoginUser loginUser, int attachmentID)
+        {
+            Attachment attachment = Attachments.GetAttachment(loginUser, attachmentID);
+            attachment.SentToTFS = true;
+            attachment.Collection.Save();
+        }
+
+        public static AttachmentProxy[] LoadForJira(LoginUser user, int actionID)
+        {
+            Attachments attachments = new Attachments(user);
+            attachments.LoadForJira(actionID);
+            return attachments.GetAttachmentProxies();
+        }
+
+        public static AttachmentProxy[] LoadForTFS(LoginUser user, int actionID)
+        {
+            Attachments attachments = new Attachments(user);
+            attachments.LoadForTFS(actionID);
+            return attachments.GetAttachmentProxies();
+        }
 
         /*
 TeamSupport.Data.Quarantine.ServiceQ.
