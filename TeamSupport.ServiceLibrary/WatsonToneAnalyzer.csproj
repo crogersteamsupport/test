@@ -84,7 +84,6 @@
     <Compile Include="linq\ActionSentimentScore.cs" />
     <Compile Include="ActionsToAnalyzer.cs" />
     <Compile Include="linq\ActionToAnalyze.cs" />
-    <Compile Include="linq\OrganizationSentiment.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>

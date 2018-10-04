@@ -136,6 +136,22 @@ namespace TeamSupport.ServiceLibrary
                 return;
             }
 
+
+            // if trial org
+            if (organization.UserSeats == 100 && organization.DateCreated.AddDays(30) > DateTime.UtcNow)
+            {
+                if (Emails.IsTrialEmailOverLimit(LoginUser, organization.OrganizationID))
+                {
+                    email.IsSuccess = true;
+                    email.IsWaiting = false;
+                    email.Body = "";
+                    email.DateSent = DateTime.UtcNow;
+                    email.LastFailedReason = "Organization has gone over the trial email limits.";
+                    email.Collection.Save();
+                    return;
+                }
+            }
+
             try
             {
                 email.Attempts = email.Attempts + 1;

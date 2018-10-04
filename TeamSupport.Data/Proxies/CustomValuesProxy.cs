@@ -14,6 +14,8 @@ namespace TeamSupport.Data
     {
         public CustomValueProxy() { }
         public CustomValueProxy(References referenceType) { }
+
+
         [DataMember] public int? CustomValueID { get; set; }
         [DataMember] public int CustomFieldID { get; set; }
         [DataMember] public int? RefID { get; set; }

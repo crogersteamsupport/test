@@ -12,6 +12,7 @@ namespace TeamSupport.Data
     [KnownType(typeof(ActionLogProxy))]
     public abstract class ActionLogProxy
     {
+        public ActionLogProxy() { }
         public ActionLogProxy(ReferenceType referenceType) { }
         [DataMember] public int ActionLogID { get; set; }
         [DataMember] public int? OrganizationID { get; set; }

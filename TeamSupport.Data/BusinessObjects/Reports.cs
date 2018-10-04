@@ -813,7 +813,7 @@ namespace TeamSupport.Data
 
             if (isSchemaOnly) builder.Append(" AND (0=1)");
         }
-
+        
         private static void UseTicketRights(LoginUser loginUser, int subCAtID, ReportTables tables, SqlCommand command, StringBuilder builder)
         {
             ReportSubcategory subCat = ReportSubcategories.GetReportSubcategory(loginUser, subCAtID);
@@ -2545,7 +2545,9 @@ WHERE RowNum BETWEEN @From AND @To";
             }
 
             //On exports it is always false
-            //if (!includeHiddenFields) table.Columns.Remove("RowNum");
+            //if (!includeHiddenFields) 
+            if (table.Columns.Contains("RowNum"))
+                table.Columns.Remove("RowNum");
 
             return table;
         }
