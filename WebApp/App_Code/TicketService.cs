@@ -1343,12 +1343,21 @@ namespace TSWebServices
         [WebMethod]
         public string SetTicketName(int ticketID, string name)
         {
-            if (name.Trim() == "") name = "[Untitled Ticket]";
+            if (name.Trim() == "") {
+                name = "[Untitled Ticket]";
+            }
             Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
-            if (!CanEditTicket(ticket)) return name;
-            ticket.Name = name;// HttpUtility.HtmlEncode(name);
-            ticket.Collection.Save();
-            return ticket.Name;
+            if (!CanEditTicket(ticket)) {
+                return name;
+            } else {
+                if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase) {
+                    Deflector Deflection = new Deflector();
+                    Deflection.IndexTicket(ticket.TicketID);
+                }
+                ticket.Name = name;// HttpUtility.HtmlEncode(name);
+                ticket.Collection.Save();
+                return ticket.Name;
+            }
         }
 
         [WebMethod]
