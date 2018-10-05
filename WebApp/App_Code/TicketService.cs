@@ -1631,7 +1631,8 @@ namespace TSWebServices
                     return null;
                 } else {
                     if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase) {
-                        //Deflection.PopulateTicket(ticket.TicketID);
+                        Deflector Deflection = new Deflector();
+                        Deflection.IndexTicket(ticket.TicketID);
                     }
 
                     ticket.ProductID = productID;
