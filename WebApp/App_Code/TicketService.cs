@@ -1350,12 +1350,15 @@ namespace TSWebServices
             if (!CanEditTicket(ticket)) {
                 return name;
             } else {
-                if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase) {
-                    Deflector Deflection = new Deflector();
-                    Deflection.IndexTicket(ticket.TicketID);
-                }
                 ticket.Name = name;// HttpUtility.HtmlEncode(name);
                 ticket.Collection.Save();
+
+                if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase)
+                {
+                    DeflectorService Deflection = new DeflectorService();
+                    Deflection.IndexTicket(ticket.TicketID);
+                }
+
                 return ticket.Name;
             }
         }
@@ -1639,15 +1642,17 @@ namespace TSWebServices
                 } else if (product != null && product.OrganizationID != TSAuthentication.OrganizationID) {
                     return null;
                 } else {
-                    if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase) {
-                        Deflector Deflection = new Deflector();
-                        Deflection.IndexTicket(ticket.TicketID);
-                    }
-
                     ticket.ProductID = productID;
                     ticket.ReportedVersionID = null;
                     ticket.SolvedVersionID = null;
                     ticket.Collection.Save();
+
+                    if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase)
+                    {
+                        DeflectorService Deflection = new DeflectorService();
+                        Deflection.IndexTicket(ticket.TicketID);
+                    }
+
                     if (product != null) {
                         return new AutocompleteItem(product.Name, product.ProductID.ToString(), product.ProductFamilyID);
                     } else {
