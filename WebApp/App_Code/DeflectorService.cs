@@ -134,21 +134,35 @@ namespace TSWebServices {
                 catch (Exception ex)
                 {
                     ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
-                    return null;
                 }
             }
+
             return null;
         }
 
         public async Task<string> DeleteTicket(int ticketID)
         {
-            Ticket Ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
-            Tags Tags = new Tags(TSAuthentication.GetLoginUser());
-            Tags.LoadByReference(ReferenceType.Tickets, ticketID);
-            DeflectorService Deflection = new DeflectorService();
-            foreach (var Tag in Tags)
+
+            try
             {
-                await Deflection.DeleteDeflector(Ticket.OrganizationID, Tag.Value);
+                await DeleteTicketAsync(ticketID);
+            }
+            catch (Exception ex) {
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
+            }
+            return null;
+        }
+
+        public async Task<string> DeleteTag(int organizationID, string value)
+        {
+
+            try
+            {
+                await DeleteTagAsync(organizationID, value);
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
             }
             return null;
         }
@@ -225,9 +239,9 @@ namespace TSWebServices {
             }
         }
 
-        public async Task<string> DeleteDeflector(int organizationID, string value) {
+        public async Task<string> DeleteTicketAsync(int ticketID) {
             string ResponseText = null;
-            string PingUrl = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/delete/organization/" + organizationID + "/tag/" + value;
+            string PingUrl = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/delete/ticket/" + ticketID;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
             request.Method = "DELETE";
             request.KeepAlive = false;
@@ -242,16 +256,16 @@ namespace TSWebServices {
             return ResponseText;
         }
 
-        public async Task<string> DeleteTag(int OrganizationId, string Value)
+        public async Task<string> DeleteTagAsync(int organizationID, string value)
         {
             var item = new DeflectorItem
             {
-                OrganizationID = OrganizationId,
-                Value = Value
+                OrganizationID = organizationID,
+                Value = value
             };
             string json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
             string ResponseText = null;
-            string PingUrl = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/delete/organization/" + OrganizationId + "/tag/" + Value;
+            string PingUrl = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/delete/organization/" + organizationID + "/tag/" + value;
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
             request.Method = "DELETE";

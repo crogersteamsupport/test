@@ -3295,19 +3295,27 @@ WHERE t.TicketID = @TicketID
                 ticket.Collection.AddTags(tag, ticketID);
             }
 
-            // DEFLECTOR.
-            if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase) {
-                var item = new DeflectorItem {
-                    TicketID = ticket.TicketID,
-                    Name = ticket.Name,
-                    OrganizationID = ticket.OrganizationID,
-                    ProductID = ticket.ProductID,
-                    TagID = tag.TagID,
-                    Value = tag.Value
-                };
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
-                DeflectorService resp = new DeflectorService();
-                resp.IndexDeflector(json);
+            try
+            {
+                // DEFLECTOR.
+                if (ticket.IsVisibleOnPortal && ticket.IsKnowledgeBase)
+                {
+                    var item = new DeflectorItem
+                    {
+                        TicketID = ticket.TicketID,
+                        Name = ticket.Name,
+                        OrganizationID = ticket.OrganizationID,
+                        ProductID = ticket.ProductID,
+                        TagID = tag.TagID,
+                        Value = tag.Value
+                    };
+                    var json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
+                    DeflectorService Deflection = new DeflectorService();
+                    Deflection.IndexDeflector(json);
+                }
+            }
+            catch (Exception e) {
+
             }
 
             return GetTicketTags(ticketID);
@@ -3331,8 +3339,8 @@ WHERE t.TicketID = @TicketID
             }
 
             // DEFLECTOR
-            DeflectorService resp = new DeflectorService();
-            resp.DeleteDeflector(ticket.OrganizationID, tagValue);
+            DeflectorService Deflection = new DeflectorService();
+            Deflection.DeleteTag(ticket.OrganizationID, tagValue);
 
             return GetTicketTags(ticketID);
         }
