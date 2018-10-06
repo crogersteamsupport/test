@@ -15,8 +15,6 @@ Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "TeamSupport.CrmIntegration"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.JIRA", "TeamSupport.JIRA\TeamSupport.JIRA.csproj", "{A5E5FC71-6B6F-4E57-9BF0-8602F7A707EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.Proxy", "TeamSupport.Proxy\TeamSupport.Proxy.csproj", "{8F3F388C-10F5-45D4-9F4C-471236DC14C0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,22 +123,6 @@ Global
 		{A5E5FC71-6B6F-4E57-9BF0-8602F7A707EA}.Release|x64.Build.0 = Release|Any CPU
 		{A5E5FC71-6B6F-4E57-9BF0-8602F7A707EA}.Release|x86.ActiveCfg = Release|Any CPU
 		{A5E5FC71-6B6F-4E57-9BF0-8602F7A707EA}.Release|x86.Build.0 = Release|Any CPU
-		{8F3F388C-10F5-45D4-9F4C-471236DC14C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8F3F388C-10F5-45D4-9F4C-471236DC14C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8F3F388C-10F5-45D4-9F4C-471236DC14C0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{8F3F388C-10F5-45D4-9F4C-471236DC14C0}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{8F3F388C-10F5-45D4-9F4C-471236DC14C0}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{8F3F388C-10F5-45D4-9F4C-471236DC14C0}.Debug|x64.Build.0 = Debug|Any CPU
-		{8F3F388C-10F5-45D4-9F4C-471236DC14C0}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8F3F388C-10F5-45D4-9F4C-471236DC14C0}.Debug|x86.Build.0 = Debug|Any CPU
-		{8F3F388C-10F5-45D4-9F4C-471236DC14C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8F3F388C-10F5-45D4-9F4C-471236DC14C0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8F3F388C-10F5-45D4-9F4C-471236DC14C0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{8F3F388C-10F5-45D4-9F4C-471236DC14C0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{8F3F388C-10F5-45D4-9F4C-471236DC14C0}.Release|x64.ActiveCfg = Release|Any CPU
-		{8F3F388C-10F5-45D4-9F4C-471236DC14C0}.Release|x64.Build.0 = Release|Any CPU
-		{8F3F388C-10F5-45D4-9F4C-471236DC14C0}.Release|x86.ActiveCfg = Release|Any CPU
-		{8F3F388C-10F5-45D4-9F4C-471236DC14C0}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
