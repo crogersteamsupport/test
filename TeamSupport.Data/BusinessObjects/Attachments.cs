@@ -45,7 +45,7 @@ namespace TeamSupport.Data
         {
             Attachment attachment = (new Attachments(new LoginUser(attachmentProxy.CreatorID, attachmentProxy.OrganizationID))).AddNewAttachment();
             attachment.RefType = ReferenceType.Actions;
-            attachment.RefID = ((ActionAttachmentProxy)attachmentProxy).ActionID;
+            attachment.RefID = attachmentProxy.AttachmentID;
             attachment.OrganizationID = attachmentProxy.OrganizationID;
             attachment.FileName = attachmentProxy.FileName;
             attachment.Path = attachmentProxy.Path;

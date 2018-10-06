@@ -8,6 +8,17 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
+  [DataContract(Namespace="http://teamsupport.com/")]
+  [KnownType(typeof(ForumTicketProxy))]
+  public class ForumTicketProxy
+  {
+    public ForumTicketProxy() {}
+    [DataMember] public int TicketID { get; set; }
+    [DataMember] public int? ForumCategory { get; set; }
+    [DataMember] public int? ViewCount { get; set; }
+          
+  }
+  
   public partial class ForumTicket : BaseItem
   {
     public ForumTicketProxy GetProxy()

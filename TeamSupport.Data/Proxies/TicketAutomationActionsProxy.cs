@@ -8,6 +8,19 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
+  [DataContract(Namespace="http://teamsupport.com/")]
+  [KnownType(typeof(TicketAutomationActionProxy))]
+  public class TicketAutomationActionProxy
+  {
+    public TicketAutomationActionProxy() {}
+    [DataMember] public int TicketActionID { get; set; }
+    [DataMember] public int TriggerID { get; set; }
+    [DataMember] public int ActionID { get; set; }
+    [DataMember] public string ActionValue { get; set; }
+    [DataMember] public string ActionValue2 { get; set; }
+          
+  }
+  
   public partial class TicketAutomationAction : BaseItem
   {
     public TicketAutomationActionProxy GetProxy()

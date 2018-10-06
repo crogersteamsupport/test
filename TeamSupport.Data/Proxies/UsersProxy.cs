@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
-using System.Xml.Serialization;
 using System.Runtime.Serialization;
 using System.Globalization;
 
@@ -21,7 +20,7 @@ namespace TeamSupport.Data
     [DataMember] public string MiddleName { get; set; }
     [DataMember] public string LastName { get; set; }
     [DataMember] public string Title { get; set; }
-    [XmlIgnore] public string CryptedPassword { get; set; }
+    [DataMember] public string CryptedPassword { get; set; }
     [DataMember] public bool IsActive { get; set; }
     [DataMember] public bool MarkDeleted { get; set; }
     [DataMember] public string TimeZoneID { get; set; }

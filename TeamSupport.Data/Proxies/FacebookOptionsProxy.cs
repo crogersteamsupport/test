@@ -8,6 +8,17 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
+  [DataContract(Namespace="http://teamsupport.com/")]
+  [KnownType(typeof(FacebookOptionProxy))]
+  public class FacebookOptionProxy
+  {
+    public FacebookOptionProxy() {}
+    [DataMember] public int OrganizationID { get; set; }
+    [DataMember] public bool DisplayArticles { get; set; }
+    [DataMember] public bool DisplayKB { get; set; }
+          
+  }
+  
   public partial class FacebookOption : BaseItem
   {
     public FacebookOptionProxy GetProxy()

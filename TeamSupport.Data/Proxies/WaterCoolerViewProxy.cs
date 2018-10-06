@@ -10,6 +10,24 @@ using HtmlAgilityPack;
 
 namespace TeamSupport.Data
 {
+  [DataContract(Namespace="http://teamsupport.com/")]
+  [KnownType(typeof(WaterCoolerViewItemProxy))]
+  public class WaterCoolerViewItemProxy
+  {
+    public WaterCoolerViewItemProxy() {}
+    [DataMember] public int MessageID { get; set; }
+    [DataMember] public int UserID { get; set; }
+    [DataMember] public int OrganizationID { get; set; }
+    [DataMember] public string TimeStamp { get; set; }
+    [DataMember] public string Message { get; set; }
+    [DataMember] public int? MessageParent { get; set; }
+    [DataMember] public bool IsDeleted { get; set; }
+    [DataMember] public DateTime LastModified { get; set; }
+    [DataMember] public string UserName { get; set; }     
+    [DataMember] public bool NeedsIndexing { get; set; }
+          
+  }
+  
   public partial class WaterCoolerViewItem : BaseItem
   {
     public WaterCoolerViewItemProxy GetProxy()
