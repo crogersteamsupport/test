@@ -88,6 +88,8 @@ namespace TSWebServices {
             {
                 deflectorIndexList.Add(new DeflectorItem
                 {
+                    TicketID = Ticket.TicketID,
+                    Name = Ticket.Name,
                     OrganizationID = Ticket.OrganizationID,
                     TagID = Tag.TagID,
                     Value = Tag.Value,
@@ -145,7 +147,7 @@ namespace TSWebServices {
 
             try
             {
-                await DeleteTicketAsync(ticketID);
+                return await DeleteTicketAsync(ticketID);
             }
             catch (Exception ex) {
                 ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
@@ -158,7 +160,7 @@ namespace TSWebServices {
 
             try
             {
-                await DeleteTagAsync(organizationID, value);
+                return await DeleteTagAsync(organizationID, value);
             }
             catch (Exception ex)
             {
@@ -167,7 +169,7 @@ namespace TSWebServices {
             return null;
         }
 
-        private async Task<string> IndexDeflectorAsync(string json) {
+        private async Task<string> IndexDeflectorAsync(string deflectionIndex) {
             string ResponseText    = null;
             string PingUrl         = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/index/index";
         	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
@@ -175,20 +177,31 @@ namespace TSWebServices {
         	request.KeepAlive      = false;
         	request.ContentType    = "application/json";
 
-            using (var streamWriter = new StreamWriter(request.GetRequestStream())) {
-                streamWriter.Write(json);
-                streamWriter.Flush();
-                streamWriter.Close();
+            try
+            {
+                using (var streamWriter = new StreamWriter(request.GetRequestStream()))
+                {
+                    streamWriter.Write(deflectionIndex);
+                    streamWriter.Flush();
+                    streamWriter.Close();
+                }
+
+                using (WebResponse response = request.GetResponse())
+                {
+                    if (request.HaveResponse && response != null)
+                    {
+                        using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8))
+                        {
+                            ResponseText = reader.ReadToEnd();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex) {
+
             }
 
-            using (WebResponse response = await request.GetResponseAsync()) {
-                if (request.HaveResponse && response != null) {
-   					using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
-   					    ResponseText = reader.ReadToEnd();
-   					}
-   				}
-   			}
-   			return ResponseText;
+               return ResponseText;
    		}
 
         private async Task<string> BulkIndexDeflectorAsync(string json) {
@@ -206,7 +219,7 @@ namespace TSWebServices {
                 streamWriter.Close();
             }
 
-            using (WebResponse response = await request.GetResponseAsync()) {
+            using (WebResponse response = request.GetResponse()) {
                 if (request.HaveResponse && response != null) {
    					using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
    					    ResponseText = reader.ReadToEnd();
@@ -223,7 +236,7 @@ namespace TSWebServices {
             request.KeepAlive = false;
             request.ContentType = "application/json";
 
-            using (WebResponse response = await request.GetResponseAsync())
+            using (WebResponse response = request.GetResponse())
             {
                 if (request.HaveResponse && response != null)
                 {
@@ -246,7 +259,7 @@ namespace TSWebServices {
             request.Method = "DELETE";
             request.KeepAlive = false;
             request.ContentType = "application/json";
-            using (WebResponse response = await request.GetResponseAsync()) {
+            using (WebResponse response = request.GetResponse()) {
                 if (request.HaveResponse && response != null) {
                     using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
                         ResponseText = reader.ReadToEnd();
@@ -280,7 +293,7 @@ namespace TSWebServices {
             }
             try
             {
-                using (WebResponse response = await request.GetResponseAsync())
+                using (WebResponse response = request.GetResponse())
                 {
                     if (request.HaveResponse && response != null)
                     {
@@ -313,7 +326,7 @@ namespace TSWebServices {
         //        streamWriter.Close();
         //    }
 
-        //    using (WebResponse response = await request.GetResponseAsync()) {
+        //    using (WebResponse response = request.GetResponse()) {
         //        if (request.HaveResponse && response != null) {
         //            using (StreamReader reader = new StreamReader(response.GetResponseStream(), ASCIIEncoding.UTF8)) {
         //                ResponseText = reader.ReadToEnd();
@@ -331,7 +344,7 @@ namespace TSWebServices {
             request.Method = "GET";
             request.KeepAlive = false;
             request.ContentType = "application/json";
-            using (WebResponse response = await request.GetResponseAsync())
+            using (WebResponse response = request.GetResponse())
             {
                 if (request.HaveResponse && response != null)
                 {

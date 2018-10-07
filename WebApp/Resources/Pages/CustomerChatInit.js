@@ -80,7 +80,7 @@ function SetupDeflectionListener(organizationID) {
 
     if (returnURL) {
         var typingTimer;
-        var doneTypingInterval = 1000;  //time in ms
+        var doneTypingInterval = 500;  //time in ms
         var $input = $('#userIssue');
 
         $input.on('keyup', function () {
