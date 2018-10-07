@@ -26,6 +26,7 @@ namespace TeamSupport.Data
     [DataMember] public float? AverageActionCountWeight { get; set; }  
     [DataMember] public float? AverageSentimentScoreWeight { get; set; }  
     [DataMember] public float? AverageSeverityWeight { get; set; }  
+    [DataMember] public float? AgentRatingsWeight { get; set; }  
   }
   
   public partial class CDI_Setting : BaseItem

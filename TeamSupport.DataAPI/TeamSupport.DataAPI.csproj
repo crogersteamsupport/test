@@ -43,18 +43,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataAPI.cs" />
+    <Compile Include="Data_API.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TicketAPI.cs" />
+    <Compile Include="UpdateArguments.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TeamSupport.Data\TeamSupport.Data.csproj">
       <Project>{1943ac11-1f2d-4b85-9f0f-4d67284814be}</Project>
       <Name>TeamSupport.Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TeamSupport.Model\TeamSupport.Model.csproj">
+    <ProjectReference Include="..\TeamSupport.IDTree\TeamSupport.IDTree.csproj">
       <Project>{11c7d899-bcaa-408f-8b85-35593ab7e617}</Project>
-      <Name>TeamSupport.Model</Name>
+      <Name>TeamSupport.IDTree</Name>
     </ProjectReference>
     <ProjectReference Include="..\TeamSupport.Proxy\TeamSupport.Proxy.csproj">
       <Project>{8f3f388c-10f5-45d4-9f4c-471236dc14c0}</Project>

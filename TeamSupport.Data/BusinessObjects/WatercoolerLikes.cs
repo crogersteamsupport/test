@@ -7,7 +7,7 @@ using System.Data.SqlClient;
 
 namespace TeamSupport.Data
 {
-  public partial class WatercoolerLik
+  public partial class WatercoolerLike
   {
   }
   

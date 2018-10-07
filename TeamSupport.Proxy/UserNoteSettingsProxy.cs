@@ -1,0 +1,57 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Data;
+using System.Data.SqlClient;
+using System.Runtime.Serialization;
+
+namespace TeamSupport.Data
+{
+    [DataContract(Namespace = "http://teamsupport.com/")]
+    [KnownType(typeof(UserNoteSettingProxy))]
+    public abstract class UserNoteSettingProxy
+    {
+        public UserNoteSettingProxy(ReferenceType referenceType) { }
+        [DataMember] public int UserID { get; set; }
+        [DataMember] public int RefID { get; set; }
+        [DataMember] protected References RefType { get; set; }
+        [DataMember] public bool IsDismissed { get; set; }
+        [DataMember] public bool IsSnoozed { get; set; }
+        [DataMember] public DateTime SnoozeTime { get; set; }
+
+        public static UserNoteSettingProxy ClassFactory(References refType)
+        {
+            switch (refType)
+            {
+                case References.Users:
+                    return new UserUserNoteSetting();
+                case References.Organizations:
+                    return new OrganizationsUserNoteSetting();
+                default: throw new Exception("Invalid UserNoteSetting Reference Type");
+            }
+        }
+        public enum References
+        {
+            Organizations = ReferenceType.Organizations,
+            Contacts = ReferenceType.Contacts,
+            Users = ReferenceType.Users
+        }
+    }
+
+    public class UserUserNoteSetting : UserNoteSettingProxy
+    {
+        public UserUserNoteSetting() : base(ReferenceType.Users)
+        {
+
+        }
+    }
+
+    public class OrganizationsUserNoteSetting : UserNoteSettingProxy
+    {
+        public OrganizationsUserNoteSetting() : base(ReferenceType.Organizations)
+        {
+
+        }
+    }
+}

@@ -22,27 +22,27 @@ namespace TeamSupport.CDI.linq
         [Column(Storage = "_organizationID", DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true, UpdateCheck = UpdateCheck.Never)]
         public int OrganizationID { get { return _organizationID; } }
 
-        [Column(UpdateCheck = UpdateCheck.Never)]
+        [Column]
         public int? ParentID;
         //[Column]
         //public string Name;   // slows it down
-        [Column(UpdateCheck = UpdateCheck.Never)]
+        [Column]
         public bool IsActive;
 
         // CDI fields
-        [Column(UpdateCheck = UpdateCheck.Never)]
+        [Column]
         public int TotalTicketsCreated;
-        [Column(UpdateCheck = UpdateCheck.Never)]
+        [Column]
         public int TicketsOpen;
-        [Column(UpdateCheck = UpdateCheck.Never)]
+        [Column]
         public int CreatedLast30;
-        [Column(UpdateCheck = UpdateCheck.Never)]
+        [Column]
         public int AvgTimeOpen;
-        [Column(UpdateCheck = UpdateCheck.Never)]
+        [Column]
         public int AvgTimeToClose;
-        [Column(UpdateCheck = UpdateCheck.Never)]
+        [Column]
         public int CustDisIndex;
-        [Column(UpdateCheck = UpdateCheck.Never)]
+        [Column]
         public int? CustDistIndexTrend; // Trending upwards (1 bad),  Trending down (-1 good), the same(0)
 #pragma warning restore CS0649
 

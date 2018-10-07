@@ -570,6 +570,7 @@
     <Compile Include="Classes\BaseCollection.cs" />
     <Compile Include="Classes\DataUtils.cs" />
     <Compile Include="Classes\EmailHtml.cs" />
+    <Compile Include="Classes\Enums.cs" />
     <Compile Include="Classes\IDataCache.cs" />
     <Compile Include="Classes\LoginUser.cs" />
     <Compile Include="Classes\FieldMap.cs" />
@@ -828,7 +829,6 @@
     <Compile Include="Generated\GeneratedWikiHistoryCollection.cs" />
     <Compile Include="Proxies\ActionLinkToSnowProxy.cs" />
     <Compile Include="Proxies\ActionLinkToTFSProxy.cs" />
-    <Compile Include="Proxies\ActionsProxy.cs" />
     <Compile Include="Proxies\ActivityTypesProxy.cs" />
     <Compile Include="Proxies\BackdoorLoginsProxy.cs" />
     <Compile Include="Proxies\CalendarEventsProxy.cs" />
@@ -887,6 +887,7 @@
     <Compile Include="Proxies\ActionLinkToJiraProxy.cs" />
     <Compile Include="Proxies\ActionLogsProxy.cs" />
     <Compile Include="Proxies\ActionLogsViewProxy.cs" />
+    <Compile Include="Proxies\ActionsProxy.cs" />
     <Compile Include="Proxies\ActionsViewProxy.cs" />
     <Compile Include="Proxies\ActionTypesProxy.cs" />
     <Compile Include="Proxies\AddressesProxy.cs" />
@@ -1064,16 +1065,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\Debug\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\TeamSupport.Model\TeamSupport.Model.csproj">
-      <Project>{11c7d899-bcaa-408f-8b85-35593ab7e617}</Project>
-      <Name>TeamSupport.Model</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TeamSupport.Proxy\TeamSupport.Proxy.csproj">
-      <Project>{8f3f388c-10f5-45d4-9f4c-471236dc14c0}</Project>
-      <Name>TeamSupport.Proxy</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

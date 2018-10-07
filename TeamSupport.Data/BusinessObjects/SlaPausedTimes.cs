@@ -7,14 +7,23 @@ namespace TeamSupport.Data
 {
     public partial class SlaPausedTimes
     {
-        public void LoadByTicketId(int ticketId)
+        public void LoadByTicketId(int ticketId, DateTime? startOn = null)
         {
             using (SqlCommand command = new SqlCommand())
             {
-                command.CommandText = @"SELECT * FROM SlaPausedTimes WHERE TicketId = @ticketId AND ResumedOn IS NOT NULL";
+				string sql = @"SELECT * FROM SlaPausedTimes WITH(NOLOCK) WHERE TicketId = @ticketId AND ResumedOn IS NOT NULL";
+
+				if (startOn != null)
+				{
+					sql += " AND PausedOn > @startOn";
+					command.Parameters.AddWithValue("@startOn", startOn);
+				}
+
+				command.CommandText = sql;
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@ticketId", ticketId);
-                Fill(command);
+				
+				Fill(command);
             }
         }
 

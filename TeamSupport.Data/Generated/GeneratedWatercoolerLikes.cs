@@ -8,11 +8,11 @@ using System.Data.SqlClient;
 namespace TeamSupport.Data
 {
   [Serializable]
-  public partial class WatercoolerLik : BaseItem
+  public partial class WatercoolerLike : BaseItem
   {
     private WatercoolerLikes _watercoolerLikes;
     
-    public WatercoolerLik(DataRow row, WatercoolerLikes watercoolerLikes): base(row, watercoolerLikes)
+    public WatercoolerLike(DataRow row, WatercoolerLikes watercoolerLikes): base(row, watercoolerLikes)
     {
       _watercoolerLikes = watercoolerLikes;
     }
@@ -69,7 +69,7 @@ namespace TeamSupport.Data
     
   }
 
-  public partial class WatercoolerLikes : BaseCollection, IEnumerable<WatercoolerLik>
+  public partial class WatercoolerLikes : BaseCollection, IEnumerable<WatercoolerLike>
   {
     public WatercoolerLikes(LoginUser loginUser): base (loginUser)
     {
@@ -89,9 +89,9 @@ namespace TeamSupport.Data
 
 
 
-    public WatercoolerLik this[int index]
+    public WatercoolerLike this[int index]
     {
-      get { return new WatercoolerLik(Table.Rows[index], this); }
+      get { return new WatercoolerLike(Table.Rows[index], this); }
     }
     
 
@@ -99,10 +99,10 @@ namespace TeamSupport.Data
 
     #region Protected Members
     
-    partial void BeforeRowInsert(WatercoolerLik watercoolerLik);
-    partial void AfterRowInsert(WatercoolerLik watercoolerLik);
-    partial void BeforeRowEdit(WatercoolerLik watercoolerLik);
-    partial void AfterRowEdit(WatercoolerLik watercoolerLik);
+    partial void BeforeRowInsert(WatercoolerLike watercoolerLik);
+    partial void AfterRowInsert(WatercoolerLike watercoolerLik);
+    partial void BeforeRowEdit(WatercoolerLike watercoolerLik);
+    partial void AfterRowEdit(WatercoolerLike watercoolerLik);
     partial void BeforeRowDelete(int messageID);
     partial void AfterRowDelete(int messageID);    
 
@@ -117,7 +117,7 @@ namespace TeamSupport.Data
     {
       List<WatercoolerLikProxy> list = new List<WatercoolerLikProxy>();
 
-      foreach (WatercoolerLik item in this)
+      foreach (WatercoolerLike item in this)
       {
         list.Add(item.GetProxy()); 
       }
@@ -214,7 +214,7 @@ namespace TeamSupport.Data
 
 		try
 		{
-		  foreach (WatercoolerLik watercoolerLik in this)
+		  foreach (WatercoolerLike watercoolerLik in this)
 		  {
 			if (watercoolerLik.Row.RowState == DataRowState.Added)
 			{
@@ -275,7 +275,7 @@ namespace TeamSupport.Data
     public void BulkSave()
     {
 
-      foreach (WatercoolerLik watercoolerLik in this)
+      foreach (WatercoolerLike watercoolerLik in this)
       {
         if (watercoolerLik.Row.Table.Columns.Contains("CreatorID") && (int)watercoolerLik.Row["CreatorID"] == 0) watercoolerLik.Row["CreatorID"] = LoginUser.UserID;
         if (watercoolerLik.Row.Table.Columns.Contains("ModifierID")) watercoolerLik.Row["ModifierID"] = LoginUser.UserID;
@@ -291,9 +291,9 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-    public WatercoolerLik FindByMessageID(int messageID)
+    public WatercoolerLike FindByMessageID(int messageID)
     {
-      foreach (WatercoolerLik watercoolerLik in this)
+      foreach (WatercoolerLike watercoolerLik in this)
       {
         if (watercoolerLik.MessageID == messageID)
         {
@@ -303,12 +303,12 @@ namespace TeamSupport.Data
       return null;
     }
 
-    public virtual WatercoolerLik AddNewWatercoolerLik()
+    public virtual WatercoolerLike AddNewWatercoolerLik()
     {
       if (Table.Columns.Count < 1) LoadColumns("WatercoolerLikes");
       DataRow row = Table.NewRow();
       Table.Rows.Add(row);
-      return new WatercoolerLik(row, this);
+      return new WatercoolerLike(row, this);
     }
     
     public virtual void LoadByMessageID(int messageID)
@@ -322,7 +322,7 @@ namespace TeamSupport.Data
       }
     }
     
-    public static WatercoolerLik GetWatercoolerLik(LoginUser loginUser, int messageID)
+    public static WatercoolerLike GetWatercoolerLik(LoginUser loginUser, int messageID)
     {
       WatercoolerLikes watercoolerLikes = new WatercoolerLikes(loginUser);
       watercoolerLikes.LoadByMessageID(messageID);
@@ -339,11 +339,11 @@ namespace TeamSupport.Data
 
     #region IEnumerable<WatercoolerLik> Members
 
-    public IEnumerator<WatercoolerLik> GetEnumerator()
+    public IEnumerator<WatercoolerLike> GetEnumerator()
     {
       foreach (DataRow row in Table.Rows)
       {
-        yield return new WatercoolerLik(row, this);
+        yield return new WatercoolerLike(row, this);
       }
     }
 

@@ -334,7 +334,7 @@ namespace TSWebServices
     [WebMethod]
     public WatercoolerLikProxy[] AddCommentLike(int MessageID)
     {
-        WatercoolerLik wclikes = new WatercoolerLikes(TSAuthentication.GetLoginUser()).AddNewWatercoolerLik();
+        WatercoolerLike wclikes = new WatercoolerLikes(TSAuthentication.GetLoginUser()).AddNewWatercoolerLik();
         wclikes.MessageID = MessageID;
         wclikes.UserID = TSAuthentication.GetLoginUser().UserID;
         wclikes.DateCreated = DateTime.UtcNow;

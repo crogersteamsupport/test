@@ -196,7 +196,7 @@ $(document).ready(function () {
             $(this).addClass('list-group-item-success')
                     .removeClass('list-group-item-info')
                     .append('<span class="fa fa-comments fa-1 activeChatIndicator"></span>');
-                    
+
 			      _activeChatID = chat.ChatID;
             SetActiveChat(_activeChatID);
         });

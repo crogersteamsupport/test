@@ -20,7 +20,7 @@ namespace TeamSupport.Data
           
   }
   
-  public partial class WatercoolerLik : BaseItem
+  public partial class WatercoolerLike : BaseItem
   {
     public WatercoolerLikProxy GetProxy()
     {

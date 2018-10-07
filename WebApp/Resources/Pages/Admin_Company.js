@@ -154,6 +154,7 @@ AdminPortal = function () {
     _cdiOption.AverageActionCountWeight = $('#actionCount-weight').slider('value') * .1;
     _cdiOption.AverageSentimentScoreWeight = $('#ticketSentiment-weight').slider('value') * .1;
     _cdiOption.AverageSeverityWeight = $('#ticketSeverity-weight').slider('value') * .1;
+    _cdiOption.AgentRatingsWeight = $('#agentRatings-weight').slider('value') * .1;
     _cdiOption.GreenUpperRange = $("#cdi-green").slider('value');
     _cdiOption.YellowUpperRange = $("#cdi-yellow").slider('value');
 
@@ -217,6 +218,7 @@ AdminPortal = function () {
               var ticketSentimentweight;
               var actionCountweight;
               var ticketSeverityweight;
+              var agentRatingsWeight;
 
               // if original five contain a NULL - use defaults
               var useDefaults = (cdi.TotalTicketsWeight == null) || (cdi.Last30Weight == null) ||
@@ -230,6 +232,7 @@ AdminPortal = function () {
                   ticketSentimentweight = '0';
                   actionCountweight = '0';
                   ticketSeverityweight = '0';
+                  agentRatingsWeight = '0';
               }
               else {
                   // use what is configured
@@ -241,6 +244,7 @@ AdminPortal = function () {
                   ticketSentimentweight = cdi.AverageSentimentScoreWeight == null ? '0' : cdi.AverageSentimentScoreWeight * 10;
                   actionCountweight = cdi.AverageActionCountWeight == null ? '0' : cdi.AverageActionCountWeight * 10;
                   ticketSeverityweight = cdi.AverageSeverityWeight == null ? '0' : cdi.AverageSeverityWeight * 10;
+                  agentRatingsWeight = cdi.AgentRatingsWeight == null ? '0' : cdi.AgentRatingsWeight * 10;
               }
 
               $('#ttw-slider').slider('value', ttwvalue);
@@ -266,6 +270,9 @@ AdminPortal = function () {
 
               $('#ticketSeverity-weight').slider('value', ticketSeverityweight);
               $('#ticketSeverity-weight').next().text("Overall Weight: " + (ticketSeverityweight * 10) + "%");
+
+              $('#agentRatings-weight').slider('value', agentRatingsWeight);
+              $('#agentRatings-weight').next().text("Overall Weight: " + (agentRatingsWeight * 10) + "%");
 
               var greenlimit = cdi.GreenUpperRange == null ? '70' : cdi.GreenUpperRange;
               $('#cdi-green').slider('value', greenlimit);
