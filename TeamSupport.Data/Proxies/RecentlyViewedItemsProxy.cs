@@ -10,11 +10,11 @@ namespace TeamSupport.Data
 {
     [DataContract(Namespace = "http://teamsupport.com/")]
     [KnownType(typeof(RecentlyViewedItemProxy))]
-    public abstract class RecentlyViewedItemProxy
+  public class RecentlyViewedItemProxy
     {
-        public RecentlyViewedItemProxy(ReferenceType referenceType) { }
+    public RecentlyViewedItemProxy() {}
         [DataMember] public int UserID { get; set; }
-        [DataMember] protected References RefType { get; set; }
+    [DataMember] public int RefType { get; set; }
         [DataMember] public int RefID { get; set; }
         [DataMember] public DateTime DateViewed { get; set; }
 

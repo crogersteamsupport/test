@@ -5,22 +5,19 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using System.Data.Linq.Mapping;
 
 namespace TeamSupport.Data
 {
   [DataContract(Namespace="http://teamsupport.com/")]
   [KnownType(typeof(TaskAssociationProxy))]
-  [Table(Name = "TaskAssociations")]
   public class TaskAssociationProxy
   {
     public TaskAssociationProxy() { }
-    public TaskAssociationProxy(References refType) { RefType = refType; }
-    [DataMember, Column] public int TaskID { get; set; }
-    [DataMember, Column] public int RefID { get; set; }
-    [DataMember, Column] public References RefType { get; private set; }
-    [DataMember, Column] public int CreatorID { get; set; }
-    [DataMember, Column] public DateTime DateCreated { get; set; }
+    [DataMember] public int TaskID { get; set; }
+    [DataMember] public int RefID { get; set; }
+    [DataMember] public int RefType { get; set; }
+    [DataMember] public int CreatorID { get; set; }
+    [DataMember] public DateTime DateCreated { get; set; }
           
         public static TaskAssociationProxy ClassFactory(References refType)
         {

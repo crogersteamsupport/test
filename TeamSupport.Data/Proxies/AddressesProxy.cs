@@ -10,12 +10,12 @@ namespace TeamSupport.Data
 {
     [DataContract(Namespace = "http://teamsupport.com/")]
     [KnownType(typeof(AddressProxy))]
-    public abstract class AddressProxy
+  public class AddressProxy
     {
-        public AddressProxy(ReferenceType referenceType) { }
+    public AddressProxy() {}
         [DataMember] public int AddressID { get; set; }
         [DataMember] public int RefID { get; set; }
-        [DataMember] protected References RefType { get; set; }
+    [DataMember] public ReferenceType RefType { get; set; }
         [DataMember] public string Description { get; set; }
         [DataMember] public string Addr1 { get; set; }
         [DataMember] public string Addr2 { get; set; }

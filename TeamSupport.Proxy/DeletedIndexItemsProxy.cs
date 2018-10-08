@@ -12,10 +12,10 @@ namespace TeamSupport.Data
     [KnownType(typeof(DeletedIndexItemProxy))]
     public class DeletedIndexItemProxy
     {
-        public DeletedIndexItemProxy(ReferenceType referenceType) { }
+    public DeletedIndexItemProxy() {}
         [DataMember] public int DeletedIndexID { get; set; }
         [DataMember] public int RefID { get; set; }
-        [DataMember] protected References RefType { get; set; }
+    [DataMember] public ReferenceType RefType { get; set; }
         [DataMember] public DateTime DateDeleted { get; set; }
 
         public static DeletedIndexItemProxy ClassFactory(References refType)

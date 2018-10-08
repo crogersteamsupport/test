@@ -10,12 +10,12 @@ namespace TeamSupport.Data
 {
     [DataContract(Namespace = "http://teamsupport.com/")]
     [KnownType(typeof(TaskAssociationsViewItemProxy))]
-    public abstract class TaskAssociationsViewItemProxy
+  public class TaskAssociationsViewItemProxy
     {
-        public TaskAssociationsViewItemProxy(ReferenceType referenceType) { }
+    public TaskAssociationsViewItemProxy() {}
         [DataMember] public int TaskID { get; set; }
         [DataMember] public int RefID { get; set; }
-        [DataMember] protected References RefType { get; set; }
+    [DataMember] public int RefType { get; set; }
         [DataMember] public int? TicketNumber { get; set; }
         [DataMember] public string TicketName { get; set; }
         [DataMember] public string User { get; set; }

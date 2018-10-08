@@ -13,7 +13,6 @@ namespace TeamSupport.Data
     public class CustomValueProxy
     {
         public CustomValueProxy() { }
-        public CustomValueProxy(References referenceType) { }
         [DataMember] public int? CustomValueID { get; set; }
         [DataMember] public int CustomFieldID { get; set; }
         [DataMember] public int? RefID { get; set; }
@@ -31,7 +30,7 @@ namespace TeamSupport.Data
         [DataMember] public CustomFieldType FieldType { get; set; }
         [DataMember] public string Name { get; set; }
         [DataMember] public string Description { get; set; }
-        [DataMember] protected References RefType { get; set; }
+    [DataMember] public ReferenceType RefType { get; set; }
         [DataMember] public int? AuxID { get; set; }
         [DataMember] public int Position { get; set; }
         [DataMember] public bool IsVisibleOnPortal { get; set; }

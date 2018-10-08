@@ -10,12 +10,12 @@ namespace TeamSupport.Data
 {
     [DataContract(Namespace = "http://teamsupport.com/")]
     [KnownType(typeof(ActionLogProxy))]
-    public abstract class ActionLogProxy
+  public class ActionLogProxy
     {
-        public ActionLogProxy(ReferenceType referenceType) { }
+    public ActionLogProxy() {}
         [DataMember] public int ActionLogID { get; set; }
         [DataMember] public int? OrganizationID { get; set; }
-        [DataMember] protected References RefType { get; set; }
+    [DataMember] public ReferenceType RefType { get; set; }
         [DataMember] public int RefID { get; set; }
         [DataMember] public ActionLogType ActionLogType { get; set; }
         [DataMember] public string Description { get; set; }
@@ -248,12 +248,13 @@ namespace TeamSupport.Data
     {
         public ActionLogProxy GetProxy()
         {
-            ActionLogProxy result = ActionLogProxy.ClassFactory((ActionLogProxy.References)this.RefType);
+      ActionLogProxy result = new ActionLogProxy();
             result.ModifierID = this.ModifierID;
             result.CreatorID = this.CreatorID;
             result.Description = this.Description;
             result.ActionLogType = this.ActionLogType;
             result.RefID = this.RefID;
+      result.RefType = this.RefType;
             result.OrganizationID = this.OrganizationID;
             result.ActionLogID = this.ActionLogID;
             result.CreatorName = this.CreatorName;

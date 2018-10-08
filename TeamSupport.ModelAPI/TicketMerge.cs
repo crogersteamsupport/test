@@ -10,7 +10,9 @@ using TeamSupport.DataAPI;
 
 namespace TeamSupport.ModelAPI
 {
-    /// <summary> Raquel writes awesome code </summary>
+    /// <summary>
+    /// prototype code for ticket merge
+    /// </summary>
     class TicketMerge
     {
         public ConnectionContext Connection { get; private set; }

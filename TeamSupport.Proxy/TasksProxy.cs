@@ -5,51 +5,49 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using System.Data.Linq.Mapping;
 
 namespace TeamSupport.Data
 {
     [DataContract(Namespace = "http://teamsupport.com/")]
     [KnownType(typeof(TaskProxy))]
-    [Table(Name = "Tasks")]
     public class TaskProxy
     {
         public TaskProxy() { }
-        [DataMember, Column]
+        [DataMember]
         public int TaskID { get; set; }
-        [DataMember, Column]
+        [DataMember]
         public int OrganizationID { get; set; }
-        [DataMember, Column]
+        [DataMember]
         public string Name { get; set; }
-        [DataMember, Column]
+        [DataMember]
         public string Description { get; set; }
-        [DataMember, Column]
+        [DataMember]
         public DateTime? DueDate { get; set; }
-        [DataMember, Column]
+        [DataMember]
         public int? UserID { get; set; }
-        [DataMember, Column]
+        [DataMember]
         public bool IsComplete { get; set; }
-        [DataMember, Column]
+        [DataMember]
         public DateTime? DateCompleted { get; set; }
-        [DataMember, Column]
+        [DataMember]
         public string CompletionComment { get; set; }
-        [DataMember, Column]
+        [DataMember]
         public int? ParentID { get; set; }
-        [DataMember, Column]
+        [DataMember]
         public int CreatorID { get; set; }
-        [DataMember, Column]
+        [DataMember]
         public DateTime DateCreated { get; set; }
-        [DataMember, Column]
+        [DataMember]
         public int ModifierID { get; set; }
-        [DataMember, Column]
+        [DataMember]
         public DateTime DateModified { get; set; }
-        [DataMember, Column]
+        [DataMember]
         public int? ReminderID { get; set; }
-        [DataMember, Column]
+        [DataMember]
         public bool IsDismissed { get; set; }
-        [DataMember, Column]
+        [DataMember]
         public DateTime? ReminderDueDate { get; set; }
-        [DataMember, Column]
+        [DataMember]
         public bool NeedsIndexing { get; set; }
 
     }

@@ -12,7 +12,7 @@ namespace TeamSupport.Data
     [KnownType(typeof(AssetHistoryViewItemProxy))]
     public class AssetHistoryViewItemProxy
     {
-        public AssetHistoryViewItemProxy(ReferenceType referenceType) { }
+    public AssetHistoryViewItemProxy() {}
         [DataMember] public int HistoryID { get; set; }
         [DataMember] public int AssetID { get; set; }
         [DataMember] public int OrganizationID { get; set; }
@@ -29,7 +29,7 @@ namespace TeamSupport.Data
         [DataMember] public DateTime? DateCreated { get; set; }
         [DataMember] public int? Actor { get; set; }
         [DataMember] public string ActorName { get; set; }
-        [DataMember] protected References RefType { get; set; }
+    [DataMember] public int? RefType { get; set; }
         [DataMember] public DateTime? DateModified { get; set; }
         [DataMember] public int? ModifierID { get; set; }
         [DataMember] public string ModifierName { get; set; }

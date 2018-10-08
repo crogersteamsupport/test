@@ -13,17 +13,17 @@ using System.Web.Security;
 
 namespace TeamSupport.IDTree
 {
-    // interface to model class that supports attachments 
+    /// <summary> interface to model class that supports attachments </summary>
     public interface IAttachmentDestination
     {
         string AttachmentPath { get; }
-        //IDNode AsIDNode { get; }    // back door to map class to IDNode at compile time
     }
 
 
+    /// <summary> Model to verify AttachmetID </summary>
     public class AttachmentModel : IDNode
     {
-        // hard coded index into FilePaths table ???
+        // hard coded index into FilePaths table
         public const int AttachmentPathIndex = 3;
 
         public IAttachmentDestination AttachedTo { get; protected set; }  // what are we attached to?

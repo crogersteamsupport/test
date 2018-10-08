@@ -24,40 +24,22 @@ namespace TeamSupport.DataAPI
     /// </summary>
     public static class Data_API
     {
-        /// <summary> default ToString() doesn't work in some cases </summary>
-
-        static void CreateAttachment(IDNode idNode, AttachmentProxy proxy, int refID)
-        {
-            proxy.DateCreated = proxy.DateModified = DateTime.UtcNow;
-            proxy.CreatorID = proxy.ModifierID = idNode.Connection.UserID;
-            proxy.RefID = refID;
-            proxy.OrganizationID = idNode.Connection.OrganizationID;
-
-            Table<AttachmentProxy> table = idNode.Connection._db.GetTable<AttachmentProxy>();
-            table.InsertOnSubmit(proxy);
-            idNode.Connection._db.SubmitChanges();
-        }
-
         /// <summary>
         /// CREATE - create proxy child for model parent
         /// </summary>
         public static IDNode Create<TProxy>(IDNode idNode, TProxy tProxy) where TProxy : class
         {
+            IDNode result = null;
+            if (TryCreateAttachment(idNode as IAttachmentDestination, tProxy as AttachmentProxy, out result))
+                return result;
+
             string modification = $", CreatorID={idNode.Connection.UserID}, DateCreated={UpdateArguments.ToSql(DateTime.UtcNow)}";
             string now = UpdateArguments.ToSql(DateTime.UtcNow);
             int creatorID = idNode.Connection.UserID;
             string command = String.Empty;
 
-            IDNode result = null;
             switch (tProxy) // alphabetized list
             {
-                case ActionAttachmentProxy proxy:   // create action attachment
-                    {
-                        ActionModel model = idNode as ActionModel;
-                        CreateAttachment(idNode, proxy, model.ActionID);
-                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
-                    }
-                    break;
                 case ActionProxy proxy:
                     {
                         TicketModel model = (TicketModel)idNode;
@@ -83,34 +65,6 @@ namespace TeamSupport.DataAPI
                         result = new ActionModel(model, proxy.ActionID);    // how to bypass Verify?
                     }
                     break;
-                case AssetAttachmentProxy proxy:   // create asset attachment
-                    {
-                        AssetModel model = idNode as AssetModel;
-                        CreateAttachment(idNode, proxy, model.AssetID);
-                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
-                    }
-                    break;
-                case ChatAttachmentProxy proxy:   // create asset attachment
-                    {
-                        ChatModel model = idNode as ChatModel;
-                        CreateAttachment(idNode, proxy, model.ChatID);
-                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
-                    }
-                    break;
-                case CompanyActivityAttachmentProxy proxy:
-                    {
-                        NoteModel model = idNode as NoteModel;
-                        CreateAttachment(idNode, proxy, model.NoteID);
-                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
-                    }
-                    break;
-                case ContactActivityAttachmentProxy proxy:
-                    {
-                        NoteModel model = idNode as NoteModel;
-                        CreateAttachment(idNode, proxy, model.NoteID);
-                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
-                    }
-                    break;
                 case ContactProxy proxy:
                     {
                         TicketModel model = (TicketModel)idNode;
@@ -125,32 +79,11 @@ namespace TeamSupport.DataAPI
                             $"SELECT {model.TicketID}, {proxy.OrganizationID}, '{now}', {creatorID}, '{now}', {creatorID}";
                     }
                     break;
-                case OrganizationAttachmentProxy proxy:
-                    {
-                        OrganizationModel model = idNode as OrganizationModel;
-                        CreateAttachment(idNode, proxy, model.OrganizationID);
-                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
-                    }
-                    break;
-                case ProductVersionAttachmentProxy proxy:
-                    {
-                        ProductVersionModel model = idNode as ProductVersionModel;
-                        CreateAttachment(idNode, proxy, model.ProductVersionID);
-                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
-                    }
-                    break;
                 case SubscriptionProxy proxy:
                     {
                         TicketModel model = (TicketModel)idNode;
                         command = $"INSERT INTO Subscriptions (RefType, RefID, UserID, DateCreated, DateModified, CreatorID, ModifierID)" +
                                 $"SELECT 17, {model.TicketID}, {proxy.UserID}, '{now}','{now}', {creatorID}, {creatorID} ";
-                    }
-                    break;
-                case TaskAttachmentProxy proxy:
-                    {
-                        TaskModel model = idNode as TaskModel;
-                        CreateAttachment(idNode, proxy, model.TaskID);
-                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
                     }
                     break;
                 case TicketProxy proxy:
@@ -180,27 +113,6 @@ namespace TeamSupport.DataAPI
                         result = new TicketModel(model.Organization, proxy.TicketID);    // how to bypass Verify? - move to UserModel?
                     }
                     break;
-                case UserAttachmentProxy proxy:   // create action attachment
-                    {
-                        UserModel model = idNode as UserModel;
-                        CreateAttachment(idNode, proxy, model.UserID);
-                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
-                    }
-                    break;
-                case UserPhotoAttachmentProxy proxy:   // create action attachment
-                    {
-                        UserModel model = idNode as UserModel;
-                        CreateAttachment(idNode, proxy, model.UserID);
-                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
-                    }
-                    break;
-                case WatercoolerMsgAttachmentProxy proxy:   // create action attachment
-                    {
-                        WatercoolerMsgModel model = idNode as WatercoolerMsgModel;
-                        CreateAttachment(idNode, proxy, model.MessageID);
-                        result = new AttachmentModel(model, proxy.AttachmentID);    // disable Verify?
-                    }
-                    break;
                 case null:
                 default:
                     if (Debugger.IsAttached) Debugger.Break();
@@ -212,6 +124,69 @@ namespace TeamSupport.DataAPI
             // TODO - log
             return result;
         }
+
+        private static bool TryCreateAttachment(IAttachmentDestination attachedTo, AttachmentProxy tProxy, out IDNode result)
+        {
+            if ((attachedTo == null) || (tProxy == null))
+            {
+                result = null;
+                return false;
+            }
+
+            IDNode idNode = attachedTo as IDNode;
+            tProxy.DateCreated = tProxy.DateModified = DateTime.UtcNow;
+            tProxy.CreatorID = tProxy.ModifierID = idNode.Connection.UserID;
+            tProxy.OrganizationID = idNode.Connection.OrganizationID;
+
+            switch (tProxy) // alphabetized list
+            {
+                case ActionAttachmentProxy proxy:   // create action attachment
+                    proxy.RefID = (idNode as ActionModel).ActionID;
+                    break;
+                case AssetAttachmentProxy proxy:   // create asset attachment
+                    proxy.RefID = (idNode as AssetModel).AssetID;
+                    break;
+                case ChatAttachmentProxy proxy:   // create asset attachment
+                    proxy.RefID = (idNode as ChatModel).ChatID;
+                    break;
+                case CompanyActivityAttachmentProxy proxy:
+                    proxy.RefID = (idNode as NoteModel).NoteID;
+                    break;
+                case ContactActivityAttachmentProxy proxy:
+                    proxy.RefID = (idNode as NoteModel).NoteID;
+                    break;
+                case OrganizationAttachmentProxy proxy:
+                    proxy.RefID = (idNode as OrganizationModel).OrganizationID;
+                    break;
+                case ProductVersionAttachmentProxy proxy:
+                    proxy.RefID = (idNode as ProductVersionModel).ProductVersionID;
+                    break;
+                case TaskAttachmentProxy proxy:
+                    proxy.RefID = (idNode as TaskModel).TaskID;
+                    break;
+                case UserAttachmentProxy proxy:   // create action attachment
+                    proxy.RefID = (idNode as UserModel).UserID;
+                    break;
+                case UserPhotoAttachmentProxy proxy:   // create action attachment
+                    proxy.RefID = (idNode as UserModel).UserID;
+                    break;
+                case WatercoolerMsgAttachmentProxy proxy:   // create action attachment
+                    proxy.RefID = (idNode as WatercoolerMsgModel).MessageID;
+                    break;
+                case null:
+                default:
+                    if (Debugger.IsAttached) Debugger.Break();
+                    break;
+            }
+
+            Table<AttachmentProxy> table = idNode.Connection._db.GetTable<AttachmentProxy>();
+            table.InsertOnSubmit(tProxy);
+            idNode.Connection._db.SubmitChanges();
+
+            result = new AttachmentModel(attachedTo, tProxy.AttachmentID);    // disable Verify?
+            return true;
+        }
+
 
         public static TProxy ReadRefTypeProxyByRefID<TProxy>(ConnectionContext connection, int id) where TProxy : class
         {
@@ -287,10 +262,10 @@ namespace TeamSupport.DataAPI
                 case "AttachmentProxy": // read all attachment types
                     tProxy = ReadRefTypeProxyByID<TProxy>(node.Connection, (node as AttachmentModel).AttachmentID);
                     break;
-                case "AttachmentProxy[]": // action attachments
+                case "AttachmentProxy[]":
                     switch(node)
                     {
-                        case ActionModel model:
+                        case ActionModel model: // action attachments
                             Table<AttachmentProxy> table = node.Connection._db.GetTable<AttachmentProxy>();
                             tProxy = table.Where(a => a.RefID == model.ActionID && a.RefType == AttachmentProxy.References.Actions).ToArray() as TProxy;
                             break;

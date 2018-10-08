@@ -10,12 +10,12 @@ namespace TeamSupport.Data
 {
     [DataContract(Namespace = "http://teamsupport.com/")]
     [KnownType(typeof(EmailAddressProxy))]
-    public abstract class EmailAddressProxy
+  public class EmailAddressProxy
     {
-        public EmailAddressProxy(ReferenceType referenceType) { }
+    public EmailAddressProxy() {}
         [DataMember] public int Id { get; set; }
         [DataMember] public int RefID { get; set; }
-        [DataMember] protected References RefType { get; set; }
+    [DataMember] public int RefType { get; set; }
         [DataMember] public string Email { get; set; }
         [DataMember] public DateTime DateCreated { get; set; }
         [DataMember] public DateTime DateModified { get; set; }

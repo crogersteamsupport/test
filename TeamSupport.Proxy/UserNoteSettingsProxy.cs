@@ -10,12 +10,12 @@ namespace TeamSupport.Data
 {
     [DataContract(Namespace = "http://teamsupport.com/")]
     [KnownType(typeof(UserNoteSettingProxy))]
-    public abstract class UserNoteSettingProxy
+  public class UserNoteSettingProxy
     {
-        public UserNoteSettingProxy(ReferenceType referenceType) { }
+    public UserNoteSettingProxy() {}
         [DataMember] public int UserID { get; set; }
         [DataMember] public int RefID { get; set; }
-        [DataMember] protected References RefType { get; set; }
+    [DataMember] public ReferenceType RefType { get; set; }
         [DataMember] public bool IsDismissed { get; set; }
         [DataMember] public bool IsSnoozed { get; set; }
         [DataMember] public DateTime SnoozeTime { get; set; }

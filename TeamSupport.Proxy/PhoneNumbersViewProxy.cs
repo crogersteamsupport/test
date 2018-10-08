@@ -12,11 +12,11 @@ namespace TeamSupport.Data
     [KnownType(typeof(PhoneNumbersViewItemProxy))]
     public class PhoneNumbersViewItemProxy
     {
-        public PhoneNumbersViewItemProxy(ReferenceType referenceType) { }
+    public PhoneNumbersViewItemProxy() {}
         [DataMember] public int PhoneID { get; set; }
         [DataMember] public int? PhoneTypeID { get; set; }
         [DataMember] public int RefID { get; set; }
-        [DataMember] protected References RefType { get; set; }
+    [DataMember] public ReferenceType RefType { get; set; }
         [DataMember] public string PhoneNumber { get; set; }
         [DataMember] public string FormattedPhoneNumber { get; set; }
         [DataMember] public string Extension { get; set; }

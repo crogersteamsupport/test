@@ -10,13 +10,13 @@ namespace TeamSupport.Data
 {
     [DataContract(Namespace = "http://teamsupport.com/")]
     [KnownType(typeof(PhoneNumberProxy))]
-    public abstract class PhoneNumberProxy
+  public class PhoneNumberProxy
     {
-        public PhoneNumberProxy(ReferenceType referenceType) { }
+    public PhoneNumberProxy() {}
         [DataMember] public int PhoneID { get; set; }
         [DataMember] public int? PhoneTypeID { get; set; }
         [DataMember] public int RefID { get; set; }
-        [DataMember] protected References RefType { get; set; }
+    [DataMember] public ReferenceType RefType { get; set; }
         [DataMember] public string Number { get; set; }
         [DataMember] public string Extension { get; set; }
         [DataMember] public string OtherTypeName { get; set; }

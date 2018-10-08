@@ -820,8 +820,8 @@ namespace TeamSupport.Handlers
                             {
                                 if (ticket.IsVisibleOnPortal)
                                 {
-                                    TicketModel ticketModel = Model_API.GetIDTree<TicketModel>(ticket.TicketID);
-                                    OrganizationTicketModel[] orgs = OrganizationTicketModel.GetOrganizationTickets(ticketModel);
+                                    // find all the contact organizations associated with a ticket
+                                    OrganizationTicketModel[] orgs = Model_API.GetOrganizationTickets(ticket.TicketID);
                                     isAuthenticated = orgs.Where(o => o.Organization.OrganizationID == user.OrganizationID).Any();
                                 }
                             }

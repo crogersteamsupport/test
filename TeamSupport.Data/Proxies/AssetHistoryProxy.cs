@@ -10,9 +10,9 @@ namespace TeamSupport.Data
 {
     [DataContract(Namespace = "http://teamsupport.com/")]
     [KnownType(typeof(AssetHistoryItemProxy))]
-    public abstract class AssetHistoryItemProxy
+  public class AssetHistoryItemProxy
     {
-        public AssetHistoryItemProxy(ReferenceType referenceType) { }
+    public AssetHistoryItemProxy() {}
         [DataMember] public int HistoryID { get; set; }
         [DataMember] public int AssetID { get; set; }
         [DataMember] public int OrganizationID { get; set; }
@@ -26,7 +26,7 @@ namespace TeamSupport.Data
         [DataMember] public string Comments { get; set; }
         [DataMember] public DateTime? DateCreated { get; set; }
         [DataMember] public int? Actor { get; set; }
-        [DataMember] protected References RefType { get; set; }
+    [DataMember] public int? RefType { get; set; }
         [DataMember] public DateTime? DateModified { get; set; }
         [DataMember] public int? ModifierID { get; set; }
         [DataMember] public int? ShippedFromRefType { get; set; }

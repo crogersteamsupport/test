@@ -12,13 +12,13 @@ namespace TeamSupport.Data
     [KnownType(typeof(CustomFieldProxy))]
     public class CustomFieldProxy
     {
-        public CustomFieldProxy(ReferenceType referenceType) { }
+    public CustomFieldProxy() {}
         [DataMember] public int CustomFieldID { get; set; }
         [DataMember] public int OrganizationID { get; set; }
         [DataMember] public int? CustomFieldCategoryID { get; set; }
         [DataMember] public string Name { get; set; }
         [DataMember] public string ApiFieldName { get; set; }
-        [DataMember] protected References RefType { get; set; }
+    [DataMember] public ReferenceType RefType { get; set; }
         [DataMember] public CustomFieldType FieldType { get; set; }
         [DataMember] public int AuxID { get; set; }
         [DataMember] public int Position { get; set; }
@@ -27,6 +27,12 @@ namespace TeamSupport.Data
         [DataMember] public bool? IsVisibleOnPortal { get; set; }
         [DataMember] public bool IsFirstIndexSelect { get; set; }
         [DataMember] public bool IsRequired { get; set; }
+    /*
+    [DataMember] public DateTime DateCreated { get; set; }
+    [DataMember] public DateTime DateModified { get; set; }
+    [DataMember] public int CreatorID { get; set; }
+    [DataMember] public int ModifierID { get; set; }
+    */      
         [DataMember] public bool IsRequiredToClose { get; set; }
         [DataMember] public string Mask { get; set; }
         [DataMember] public int? ParentCustomFieldID { get; set; }
