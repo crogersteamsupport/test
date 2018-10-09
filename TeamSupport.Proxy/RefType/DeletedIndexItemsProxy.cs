@@ -12,9 +12,9 @@ namespace TeamSupport.Data
     [KnownType(typeof(DeletedIndexItemProxy))]
     public class DeletedIndexItemProxy
     {
-    public DeletedIndexItemProxy() {}
-        public DeletedIndexItemProxy(References refType) { RefType = (ReferenceType)refType; }
-
+        public DeletedIndexItemProxy() { }
+        public DeletedIndexItemProxy(ReferenceType referenceType) { }
+        public DeletedIndexItemProxy(References refType) : this((ReferenceType)refType) { }
         [DataMember] public int DeletedIndexID { get; set; }
         [DataMember] public int RefID { get; set; }
     [DataMember] public ReferenceType RefType { get; set; }

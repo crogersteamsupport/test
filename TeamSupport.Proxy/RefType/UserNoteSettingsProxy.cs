@@ -12,9 +12,9 @@ namespace TeamSupport.Data
     [KnownType(typeof(UserNoteSettingProxy))]
   public class UserNoteSettingProxy
     {
-    public UserNoteSettingProxy() {}
-        public UserNoteSettingProxy(References refType) { RefType = (ReferenceType)refType; }
-
+        public UserNoteSettingProxy() { }
+        public UserNoteSettingProxy(References refType) : this((ReferenceType) refType) { }
+        public UserNoteSettingProxy(ReferenceType referenceType) { }
         [DataMember] public int UserID { get; set; }
         [DataMember] public int RefID { get; set; }
     [DataMember] public ReferenceType RefType { get; set; }

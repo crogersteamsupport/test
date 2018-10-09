@@ -40,7 +40,6 @@ namespace TeamSupport.Data
       result.IsRequiredToClose = this.IsRequiredToClose;
       result.Mask = this.Mask;
       result.CustomFieldCategoryID = this.CustomFieldCategoryID;
-
 	  switch (this.FieldType)
       {
 				case CustomFieldType.DateTime:

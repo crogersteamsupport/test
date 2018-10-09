@@ -12,8 +12,9 @@ namespace TeamSupport.Data
     [KnownType(typeof(AssetHistoryViewItemProxy))]
     public class AssetHistoryViewItemProxy
     {
-    public AssetHistoryViewItemProxy() {}
-        public AssetHistoryViewItemProxy(References refType) { RefType = (int)refType; }
+        public AssetHistoryViewItemProxy() { }
+        public AssetHistoryViewItemProxy(ReferenceType referenceType) { }
+        public AssetHistoryViewItemProxy(References refType) : this((ReferenceType)refType) { }
         [DataMember] public int HistoryID { get; set; }
         [DataMember] public int AssetID { get; set; }
         [DataMember] public int OrganizationID { get; set; }
