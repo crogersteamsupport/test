@@ -2,7 +2,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TeamSupport.IDTree;
 using TeamSupport.Data;
-using TeamSupport.Proxy;
 using TeamSupport.DataAPI;
 using TeamSupport.ModelAPI;
 using System.Configuration;

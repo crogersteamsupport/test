@@ -8,17 +8,6 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(DeletedIndexItemProxy))]
-  public class DeletedIndexItemProxy
-  {
-    public DeletedIndexItemProxy() {}
-    [DataMember] public int DeletedIndexID { get; set; }
-    [DataMember] public int RefID { get; set; }
-    [DataMember] public ReferenceType RefType { get; set; }
-    [DataMember] public DateTime DateDeleted { get; set; }
-          
-  }
   
   public partial class DeletedIndexItem : BaseItem
   {

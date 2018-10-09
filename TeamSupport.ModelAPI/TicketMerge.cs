@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamSupport.Data;
 using TeamSupport.IDTree;
-using TeamSupport.Proxy;
 using TeamSupport.DataAPI;
 
 namespace TeamSupport.ModelAPI

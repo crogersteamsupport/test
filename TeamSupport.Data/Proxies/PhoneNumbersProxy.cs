@@ -8,26 +8,6 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(PhoneNumberProxy))]
-  public class PhoneNumberProxy
-  {
-    public PhoneNumberProxy() {}
-    [DataMember] public int PhoneID { get; set; }
-    [DataMember] public int? PhoneTypeID { get; set; }
-    [DataMember] public int RefID { get; set; }
-    [DataMember] public ReferenceType RefType { get; set; }
-    [DataMember] public string Number { get; set; }
-    [DataMember] public string Extension { get; set; }
-    [DataMember] public string OtherTypeName { get; set; }
-    [DataMember] public DateTime DateCreated { get; set; }
-    [DataMember] public DateTime DateModified { get; set; }
-    [DataMember] public int CreatorID { get; set; }
-    [DataMember] public int ModifierID { get; set; }
-    [DataMember] public string PhoneTypeName { get; set; }
-    [DataMember] public int? ImportFileID { get; set; }
-          
-  }
   
   public partial class PhoneNumber : BaseItem
   {

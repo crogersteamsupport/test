@@ -8,31 +8,6 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(AddressProxy))]
-  public class AddressProxy
-  {
-    public AddressProxy() {}
-    [DataMember] public int AddressID { get; set; }
-    [DataMember] public int RefID { get; set; }
-    [DataMember] public ReferenceType RefType { get; set; }
-    [DataMember] public string Description { get; set; }
-    [DataMember] public string Addr1 { get; set; }
-    [DataMember] public string Addr2 { get; set; }
-    [DataMember] public string Addr3 { get; set; }
-    [DataMember] public string City { get; set; }
-    [DataMember] public string State { get; set; }
-    [DataMember] public string Zip { get; set; }
-    [DataMember] public string Country { get; set; }
-    [DataMember] public string Comment { get; set; }
-    [DataMember] public DateTime DateCreated { get; set; }
-    [DataMember] public DateTime DateModified { get; set; }
-    [DataMember] public int CreatorID { get; set; }
-    [DataMember] public int ModifierID { get; set; }
-    [DataMember] public string MapLink { get; set; }
-    [DataMember] public int? ImportFileID { get; set; }
-          
-  }
   
   public partial class Address : BaseItem
   {

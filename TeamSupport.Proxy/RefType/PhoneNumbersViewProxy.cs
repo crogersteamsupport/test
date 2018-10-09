@@ -13,6 +13,7 @@ namespace TeamSupport.Data
     public class PhoneNumbersViewItemProxy
     {
     public PhoneNumbersViewItemProxy() {}
+    public PhoneNumbersViewItemProxy(References refType) { RefType = (ReferenceType)refType; }
         [DataMember] public int PhoneID { get; set; }
         [DataMember] public int? PhoneTypeID { get; set; }
         [DataMember] public int RefID { get; set; }
@@ -50,20 +51,20 @@ namespace TeamSupport.Data
 
     internal class OrganizationsPhoneNumbersViewItemProxy : PhoneNumbersViewItemProxy
     {
-        public OrganizationsPhoneNumbersViewItemProxy() : base(ReferenceType.Organizations)
+        public OrganizationsPhoneNumbersViewItemProxy() : base(References.Organizations)
         {
         }
     }
     internal class ContactsPhoneNumbersViewItemProxy : PhoneNumbersViewItemProxy
     {
-        public ContactsPhoneNumbersViewItemProxy() : base(ReferenceType.Contacts)
+        public ContactsPhoneNumbersViewItemProxy() : base(References.Contacts)
         {
         }
     }
 
     internal class UsersPhoneNumbersViewItemProxy : PhoneNumbersViewItemProxy
     {
-        public UsersPhoneNumbersViewItemProxy() : base(ReferenceType.Users)
+        public UsersPhoneNumbersViewItemProxy() : base(References.Users)
         {
         }
     }

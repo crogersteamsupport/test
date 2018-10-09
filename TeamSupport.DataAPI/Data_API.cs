@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Linq;
 using System.IO;
-using TeamSupport.Proxy;
 using System.Web.Security;
 using System.Diagnostics;
 using TeamSupport.Data;

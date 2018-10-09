@@ -8,26 +8,6 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(TaskAssociationsViewItemProxy))]
-  public class TaskAssociationsViewItemProxy
-  {
-    public TaskAssociationsViewItemProxy() {}
-    [DataMember] public int TaskID { get; set; }
-    [DataMember] public int RefID { get; set; }
-    [DataMember] public int RefType { get; set; }
-    [DataMember] public int? TicketNumber { get; set; }
-    [DataMember] public string TicketName { get; set; }
-    [DataMember] public string User { get; set; }
-    [DataMember] public string Company { get; set; }
-    [DataMember] public string Group { get; set; }
-    [DataMember] public string Product { get; set; }
-    [DataMember] public string Contact { get; set; }
-    [DataMember] public string Activity { get; set; }
-    [DataMember] public int ActivityID { get; set; }
-    [DataMember] public int ActivityRefID { get; set; }
-          
-  }
   
   public partial class TaskAssociationsViewItem : BaseItem
   {

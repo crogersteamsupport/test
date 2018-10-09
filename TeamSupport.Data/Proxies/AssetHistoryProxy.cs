@@ -8,31 +8,6 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(AssetHistoryItemProxy))]
-  public class AssetHistoryItemProxy
-  {
-    public AssetHistoryItemProxy() {}
-    [DataMember] public int HistoryID { get; set; }
-    [DataMember] public int AssetID { get; set; }
-    [DataMember] public int OrganizationID { get; set; }
-    [DataMember] public DateTime? ActionTime { get; set; }
-    [DataMember] public string ActionDescription { get; set; }
-    [DataMember] public int? ShippedFrom { get; set; }
-    [DataMember] public int? ShippedTo { get; set; }
-    [DataMember] public string TrackingNumber { get; set; }
-    [DataMember] public string ShippingMethod { get; set; }
-    [DataMember] public string ReferenceNum { get; set; }
-    [DataMember] public string Comments { get; set; }
-    [DataMember] public DateTime? DateCreated { get; set; }
-    [DataMember] public int? Actor { get; set; }
-    [DataMember] public int? RefType { get; set; }
-    [DataMember] public DateTime? DateModified { get; set; }
-    [DataMember] public int? ModifierID { get; set; }
-    [DataMember] public int? ShippedFromRefType { get; set; }
-    [DataMember] public int? ImportFileID { get; set; }
-          
-  }
   
   public partial class AssetHistoryItem : BaseItem
   {

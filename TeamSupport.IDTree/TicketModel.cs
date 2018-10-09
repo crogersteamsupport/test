@@ -45,15 +45,15 @@ namespace TeamSupport.IDTree
             Verify();
         }
 
-        //public TicketProxy TicketProxy()
-        //{
-        //    return ExecuteQuery<TicketProxy>($"SELECT * FROM Tickets WHERE TicketID={TicketID}").First();
-        //}
+        public TicketProxy TicketProxy()
+        {
+            return ExecuteQuery<TicketProxy>($"SELECT * FROM Tickets WHERE TicketID={TicketID}").First();
+        }
 
-        //public ActionProxy[] ActionProxies()
-        //{
-        //    return ExecuteQuery<ActionProxy>($"SELECT * FROM Actions WHERE TicketID={TicketID}").ToArray();
-        //}
+        public ActionProxy[] ActionProxies()
+        {
+            return ExecuteQuery<ActionProxy>($"SELECT * FROM Actions WHERE TicketID={TicketID}").ToArray();
+        }
 
         public override void Verify()
         {

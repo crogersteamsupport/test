@@ -13,6 +13,7 @@ namespace TeamSupport.Data
   public class TaskAssociationProxy
   {
     public TaskAssociationProxy() { }
+    public TaskAssociationProxy(References refType) { RefType = (int)refType; }
     [DataMember] public int TaskID { get; set; }
     [DataMember] public int RefID { get; set; }
     [DataMember] public int RefType { get; set; }

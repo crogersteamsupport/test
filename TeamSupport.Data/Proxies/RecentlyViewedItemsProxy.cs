@@ -8,17 +8,6 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(RecentlyViewedItemProxy))]
-  public class RecentlyViewedItemProxy
-  {
-    public RecentlyViewedItemProxy() {}
-    [DataMember] public int UserID { get; set; }
-    [DataMember] public int RefType { get; set; }
-    [DataMember] public int RefID { get; set; }
-    [DataMember] public DateTime DateViewed { get; set; }
-          
-  }
   
   public partial class RecentlyViewedItem : BaseItem
   {

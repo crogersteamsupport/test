@@ -571,7 +571,6 @@
     <Compile Include="Classes\BaseCollection.cs" />
     <Compile Include="Classes\DataUtils.cs" />
     <Compile Include="Classes\EmailHtml.cs" />
-    <Compile Include="Classes\Enums.cs" />
     <Compile Include="Classes\IDataCache.cs" />
     <Compile Include="Classes\LoginUser.cs" />
     <Compile Include="Classes\FieldMap.cs" />
@@ -831,6 +830,7 @@
     <Compile Include="Proxies\ActionLinkToSnowProxy.cs" />
     <Compile Include="Proxies\ActionLinkToTFSProxy.cs" />
     <Compile Include="Proxies\ActivityTypesProxy.cs" />
+    <Compile Include="Proxies\AttachmentsProxy.cs" />
     <Compile Include="Proxies\BackdoorLoginsProxy.cs" />
     <Compile Include="Proxies\CalendarEventsProxy.cs" />
     <Compile Include="Proxies\CalendarRefProxy.cs" />

@@ -13,6 +13,8 @@ namespace TeamSupport.Data
   public class UserNoteSettingProxy
     {
     public UserNoteSettingProxy() {}
+        public UserNoteSettingProxy(References refType) { RefType = (ReferenceType)refType; }
+
         [DataMember] public int UserID { get; set; }
         [DataMember] public int RefID { get; set; }
     [DataMember] public ReferenceType RefType { get; set; }
@@ -41,7 +43,7 @@ namespace TeamSupport.Data
 
     public class UserUserNoteSetting : UserNoteSettingProxy
     {
-        public UserUserNoteSetting() : base(ReferenceType.Users)
+        public UserUserNoteSetting() : base(References.Users)
         {
 
         }
@@ -49,7 +51,7 @@ namespace TeamSupport.Data
 
     public class OrganizationsUserNoteSetting : UserNoteSettingProxy
     {
-        public OrganizationsUserNoteSetting() : base(ReferenceType.Organizations)
+        public OrganizationsUserNoteSetting() : base(References.Organizations)
         {
 
         }

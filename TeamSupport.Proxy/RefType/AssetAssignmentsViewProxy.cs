@@ -9,10 +9,12 @@ using System.Runtime.Serialization;
 namespace TeamSupport.Data
 {
     [DataContract(Namespace = "http://teamsupport.com/")]
-    [KnownType(typeof(AssetHistoryViewItemProxy))]
-    public class AssetHistoryViewItemProxy
+    [KnownType(typeof(AssetAssignmentsViewItemProxy))]
+    public class AssetAssignmentsViewItemProxy
     {
-    public AssetHistoryViewItemProxy() {}
+        public AssetAssignmentsViewItemProxy() { }
+        public AssetAssignmentsViewItemProxy(ReferenceType referenceType) { }
+        [DataMember] public int AssetAssignmentsID { get; set; }
         [DataMember] public int HistoryID { get; set; }
         [DataMember] public int AssetID { get; set; }
         [DataMember] public int OrganizationID { get; set; }
@@ -35,41 +37,32 @@ namespace TeamSupport.Data
         [DataMember] public string ModifierName { get; set; }
         [DataMember] public int? ShippedFromRefType { get; set; }
 
-        public static AssetHistoryViewItemProxy ClassFactory(References refType)
+        public static AssetAssignmentsViewItemProxy ClassFactory(References refType)
         {
             switch (refType)
             {
-                case References.Contacts: return new ContactsAssetHistoryViewItemProxy();
-                case References.Notes: return new NotesAssetHistoryViewItemProxy();
-                case References.Organizations: return new OrganizationsAssetHistoryViewItemProxy();
-                default: throw new Exception("Invalid AssetHistoryViewItem Reference Type");
+                case References.Organizations: return new OrganizationsAssetAssignmentsViewItemProxy();
+                case References.Contacts: return new ContactsAssetAssignmentsViewItemProxy();
+                default: throw new Exception("Invalid AssetAssignmentsViewItem Reference Type");
             }
         }
         public enum References
         {
             Organizations = ReferenceType.Organizations,
             Contacts = ReferenceType.Contacts,
-            Notes = ReferenceType.Notes,
         }
+
     }
 
-    internal class OrganizationsAssetHistoryViewItemProxy : AssetHistoryViewItemProxy
+    internal class OrganizationsAssetAssignmentsViewItemProxy : AssetAssignmentsViewItemProxy
     {
-        public OrganizationsAssetHistoryViewItemProxy() : base(ReferenceType.Organizations)
+        public OrganizationsAssetAssignmentsViewItemProxy() : base(ReferenceType.Organizations)
         {
         }
     }
-
-    internal class NotesAssetHistoryViewItemProxy : AssetHistoryViewItemProxy
+    internal class ContactsAssetAssignmentsViewItemProxy : AssetAssignmentsViewItemProxy
     {
-        public NotesAssetHistoryViewItemProxy() : base(ReferenceType.Notes)
-        {
-        }
-    }
-
-    internal class ContactsAssetHistoryViewItemProxy : AssetHistoryViewItemProxy
-    {
-        public ContactsAssetHistoryViewItemProxy() : base(ReferenceType.Contacts)
+        public ContactsAssetAssignmentsViewItemProxy() : base(ReferenceType.Contacts)
         {
         }
     }
