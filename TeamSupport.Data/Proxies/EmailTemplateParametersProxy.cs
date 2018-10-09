@@ -8,6 +8,18 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
+  [DataContract(Namespace="http://teamsupport.com/")]
+  [KnownType(typeof(EmailTemplateParameterProxy))]
+  public class EmailTemplateParameterProxy
+  {
+    public EmailTemplateParameterProxy() {}
+    [DataMember] public int EmailTemplateParameterID { get; set; }
+    [DataMember] public int EmailTemplateID { get; set; }
+    [DataMember] public string Name { get; set; }
+    [DataMember] public string Description { get; set; }
+          
+  }
+  
   public partial class EmailTemplateParameter : BaseItem
   {
     public EmailTemplateParameterProxy GetProxy()

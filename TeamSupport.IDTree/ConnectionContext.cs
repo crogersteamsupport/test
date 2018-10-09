@@ -8,7 +8,6 @@ using System.Data.Linq;
 using System.IO;
 using System.Diagnostics;
 using System.Web.Security;
-using TeamSupport.Proxy;
 using System.Data;
 
 namespace TeamSupport.IDTree

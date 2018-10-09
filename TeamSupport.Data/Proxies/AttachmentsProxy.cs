@@ -8,12 +8,9 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  
+ 
   partial class Attachment : BaseItem
   {
-    // class AttachmentProxy moved to class library TeamSupport.Proxy
-
-
     public AttachmentProxy GetProxy()
     {
       AttachmentProxy result = AttachmentProxy.ClassFactory(this.RefType);

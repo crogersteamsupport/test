@@ -33,10 +33,10 @@ namespace TeamSupport.IDTree
         }
 
         // slow :(
-        public UserProxy UserProxy()
-        {
-            return ExecuteQuery<UserProxy>($"SELECT * FROM Users WHERE UserID={UserID}").First();
-        }
+        //public UserProxy UserProxy()
+        //{
+        //    return ExecuteQuery<UserProxy>($"SELECT * FROM Users WHERE UserID={UserID}").First();
+        //}
 
         public override void Verify()
         {

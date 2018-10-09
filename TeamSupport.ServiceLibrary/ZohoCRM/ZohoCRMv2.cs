@@ -42,6 +42,7 @@ namespace TeamSupport.ServiceLibrary.ZohoCRM
 
 		public ZohoCRMv2(CRMLinkTableItem crmLinkTableItem)
 		{
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 			_loginUser = crmLinkTableItem.Collection.LoginUser;
 			_crmLinkRow = crmLinkTableItem;
 			_logs = new Logs(IntegrationType.ZohoCRM, CrmLinkRow.OrganizationID);
@@ -54,6 +55,7 @@ namespace TeamSupport.ServiceLibrary.ZohoCRM
 			if (IsValid() && SyncAccounts())
 			{
 				SendTicketData();
+				isSuccess = true;
 			}
 
 			return isSuccess;
@@ -140,6 +142,7 @@ namespace TeamSupport.ServiceLibrary.ZohoCRM
 				else
 				{
 					Logs.WriteEvent("No recently updated accounts to sync.");
+					isSuccess = true;
 				}
 			}
 			catch (Exception ex)

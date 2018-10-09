@@ -225,9 +225,8 @@ namespace TSWebServices
         return TeamSupport.Data.Quarantine.WebAppQ.GetAttachmentProxies9(msgid, TSAuthentication.GetLoginUser());
     }
 
-
-        [WebMethod]
-    public WatercoolerLikeProxy[] GetLikes(int msgid)
+    [WebMethod]
+    public WatercoolerLikProxy[] GetLikes(int msgid)
     {
         WatercoolerLikes likes = new WatercoolerLikes(TSAuthentication.GetLoginUser());
         likes.LoadByMessageID(msgid);
@@ -331,7 +330,7 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public WatercoolerLikeProxy[] AddCommentLike(int MessageID)
+    public WatercoolerLikProxy[] AddCommentLike(int MessageID)
     {
         WatercoolerLike wclikes = new WatercoolerLikes(TSAuthentication.GetLoginUser()).AddNewWatercoolerLik();
         wclikes.MessageID = MessageID;

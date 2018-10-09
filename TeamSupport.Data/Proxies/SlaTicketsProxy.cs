@@ -8,6 +8,19 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
+  [DataContract(Namespace="http://teamsupport.com/")]
+  [KnownType(typeof(SlaTicketProxy))]
+  public class SlaTicketProxy
+  {
+    public SlaTicketProxy() {}
+    [DataMember] public int TicketId { get; set; }
+    [DataMember] public int SlaTriggerId { get; set; }
+    [DataMember] public bool IsPending { get; set; }
+    [DataMember] public DateTime DateCreated { get; set; }
+    [DataMember] public DateTime DateModified { get; set; }
+          
+  }
+  
   public partial class SlaTicket : BaseItem
   {
     public SlaTicketProxy GetProxy()

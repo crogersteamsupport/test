@@ -79,11 +79,13 @@
                         appendProperty('Storage Used', size + ' MB');
                     });
                     top.Ts.Services.Organizations.AdminGetEncryptData(orgID, function (value) {
-
                         appendProperty('Use Encrypted Data', '<a href="#" class="action-toggle-encrypt">' + value.toString() + '</a>');
                     });
-
-
+                    top.Ts.Services.Organizations.AdminGetTrialEmailData(orgID, function (value) {
+                        data = JSON.parse(value);
+                        appendProperty('Trial Email Max', '<a href="#" class="action-set-trialemail">' + data.max.toString() + '</a>');
+                        appendProperty('Trial Email Limit Enabled', '<a href="#" class="action-toggle-trialemail">' + data.isLimited.toString() + '</a>');
+                    });
 
 					appendProperty('Use Watson', '<a href="#" class="action-toggle-watson">' + org.UseWatson.toString() + '</a>');
 
@@ -139,9 +141,30 @@
 			    top.Ts.Services.Organizations.AdminToggleEncryptData(org.OrganizationID, function (value) {
 			        item.text(value.toString());
 			    });
-
 			});
 
+
+			$('.org-props').on('click', '.action-set-trialemail', function (e) {
+			    e.preventDefault();
+			    var org = $('.org-info').data('o');
+			    var item = $(this);
+
+			    var num = prompt("What is the maximum amout of emails allowed for this trial user?", 5);
+			    if (num != null) {
+			        top.Ts.Services.Organizations.AdminSetEmailTrialMax(org.OrganizationID, num, function () {
+			            item.text(num.toString());
+			        });
+			    }
+			});
+
+			$('.org-props').on('click', '.action-toggle-trialemail', function (e) {
+			    e.preventDefault();
+			    var org = $('.org-info').data('o');
+			    var item = $(this);
+			    top.Ts.Services.Organizations.AdminToggleEmailTrialLimit(org.OrganizationID, function (value) {
+			        item.text(value.toString());
+			    });
+			});
 
             function showUsers(org) {
                 top.Ts.Services.Users.AdminGetUsers(org.OrganizationID, function (users) {
@@ -276,8 +299,6 @@
                     });
                 }
             });
-
-
 
             $('.action-delete').click(function (e) {
                 e.preventDefault();

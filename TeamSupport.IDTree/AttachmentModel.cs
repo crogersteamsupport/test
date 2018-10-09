@@ -7,7 +7,6 @@ using System.Data.Linq;
 using System.IO;
 using System.Web;
 using System.Diagnostics;
-using TeamSupport.Proxy;
 using TeamSupport.Data;
 using System.Web.Security;
 

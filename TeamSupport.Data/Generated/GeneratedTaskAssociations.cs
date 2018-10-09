@@ -37,9 +37,9 @@ namespace TeamSupport.Data
       set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
-    public TaskAssociationProxy.References RefType
+    public int RefType
     {
-      get { return (TaskAssociationProxy.References)Row["RefType"]; }
+      get { return (int)Row["RefType"]; }
       set { Row["RefType"] = CheckValue("RefType", value); }
     }
     

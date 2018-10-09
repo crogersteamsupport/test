@@ -571,6 +571,7 @@
     <Compile Include="Classes\BaseCollection.cs" />
     <Compile Include="Classes\DataUtils.cs" />
     <Compile Include="Classes\EmailHtml.cs" />
+    <Compile Include="Classes\Enums.cs" />
     <Compile Include="Classes\IDataCache.cs" />
     <Compile Include="Classes\LoginUser.cs" />
     <Compile Include="Classes\FieldMap.cs" />
@@ -829,7 +830,6 @@
     <Compile Include="Generated\GeneratedWikiHistoryCollection.cs" />
     <Compile Include="Proxies\ActionLinkToSnowProxy.cs" />
     <Compile Include="Proxies\ActionLinkToTFSProxy.cs" />
-    <Compile Include="Proxies\ActionsProxy.cs" />
     <Compile Include="Proxies\ActivityTypesProxy.cs" />
     <Compile Include="Proxies\BackdoorLoginsProxy.cs" />
     <Compile Include="Proxies\CalendarEventsProxy.cs" />
@@ -888,6 +888,7 @@
     <Compile Include="Proxies\ActionLinkToJiraProxy.cs" />
     <Compile Include="Proxies\ActionLogsProxy.cs" />
     <Compile Include="Proxies\ActionLogsViewProxy.cs" />
+    <Compile Include="Proxies\ActionsProxy.cs" />
     <Compile Include="Proxies\ActionsViewProxy.cs" />
     <Compile Include="Proxies\ActionTypesProxy.cs" />
     <Compile Include="Proxies\AddressesProxy.cs" />
@@ -903,7 +904,6 @@
     <Compile Include="Proxies\AssetsProxy.cs" />
     <Compile Include="Proxies\AssetsViewProxy.cs" />
     <Compile Include="Proxies\AttachmentDownloadsProxy.cs" />
-    <Compile Include="Proxies\AttachmentsProxy.cs" />
     <Compile Include="Proxies\BillingInfoProxy.cs" />
     <Compile Include="Proxies\CDI_SettingsProxy.cs" />
     <Compile Include="Proxies\ChatClientsProxy.cs" />
@@ -944,6 +944,7 @@
     <Compile Include="Proxies\InvoicesProxy.cs" />
     <Compile Include="Proxies\KBStatsProxy.cs" />
     <Compile Include="Proxies\KnowledgeBaseCategoriesProxy.cs" />
+    <Compile Include="Proxies\KnowledgeBaseCategoryTicketsProxy.cs" />
     <Compile Include="Proxies\LoginAttemptsProxy.cs" />
     <Compile Include="Proxies\LoginHistoryProxy.cs" />
     <Compile Include="Proxies\MiscellaneousLogProxy.cs" />

@@ -8,6 +8,16 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
+  [DataContract(Namespace="http://teamsupport.com/")]
+  [KnownType(typeof(FilePathProxy))]
+  public class FilePathProxy
+  {
+    public FilePathProxy() {}
+    [DataMember] public int ID { get; set; }
+    [DataMember] public string Value { get; set; }
+          
+  }
+  
   public partial class FilePath : BaseItem
   {
     public FilePathProxy GetProxy()

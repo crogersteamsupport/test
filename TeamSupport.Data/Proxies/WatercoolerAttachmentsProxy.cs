@@ -42,77 +42,15 @@ namespace TeamSupport.Data
         public string ActivityTitle { get; set; }
         [DataMember]
         public int ActivityRefID { get; set; }
-
-        public static WatercoolerAttachmentProxy ClassFactory(References refType)
-        {
-            switch (refType)
-            {
-                case References.Ticket: return new TicketWatercoolerAttachmentProxy();
-                case References.Product: return new ProductWatercoolerAttachmentProxy();
-                case References.Company: return new CompanyWatercoolerAttachmentProxy();
-                case References.User: return new UserWatercoolerAttachmentProxy();
-                case References.Group: return new GroupWatercoolerAttachmentProxy();
-                case References.Activities: return new ActivitiesWatercoolerAttachmentProxy();
-
-
-                default: throw new Exception("Invalid WatercoolerAttachment Reference Type");
-            }
-        }
-
-        public enum References
-        {
-            Ticket = WaterCoolerAttachmentType.Ticket,
-            Product = WaterCoolerAttachmentType.Product,
-            Company = WaterCoolerAttachmentType.Company,
-            User = WaterCoolerAttachmentType.User,
-            Group = WaterCoolerAttachmentType.Group,
-            Activities = WaterCoolerAttachmentType.Activities
-        }
-
     }
 
-    public class TicketWatercoolerAttachmentProxy : WatercoolerAttachmentProxy
-    {
-        public TicketWatercoolerAttachmentProxy() : base(ReferenceType.Users)
-        {
-        }
-    }
-    public class ProductWatercoolerAttachmentProxy : WatercoolerAttachmentProxy
-    {
-        public ProductWatercoolerAttachmentProxy() : base(ReferenceType.Users)
-        {
-        }
-    }
-    public class CompanyWatercoolerAttachmentProxy : WatercoolerAttachmentProxy
-    {
-        public CompanyWatercoolerAttachmentProxy() : base(ReferenceType.Users)
-        {
-        }
-    }
-    public class UserWatercoolerAttachmentProxy : WatercoolerAttachmentProxy
-    {
-        public UserWatercoolerAttachmentProxy() : base(ReferenceType.Users)
-        {
-        }
-    }
-    public class GroupWatercoolerAttachmentProxy : WatercoolerAttachmentProxy
-    {
-        public GroupWatercoolerAttachmentProxy() : base(ReferenceType.Users)
-        {
-        }
-    }
-    public class ActivitiesWatercoolerAttachmentProxy : WatercoolerAttachmentProxy
-    {
-        public ActivitiesWatercoolerAttachmentProxy() : base(ReferenceType.Users)
-        {
-        }
-    }
     public partial class WatercoolerAttachment : BaseItem
     {
         public WatercoolerAttachmentProxy GetProxy()
         {
-            WatercoolerAttachmentProxy result = WatercoolerAttachmentProxy.ClassFactory((WatercoolerAttachmentProxy.References)this.RefType);
+            WatercoolerAttachmentProxy result = new WatercoolerAttachmentProxy();
             result.CreatorID = this.CreatorID;
+            result.RefType = this.RefType;
             result.AttachmentID = this.AttachmentID;
             result.MessageID = this.MessageID;
 

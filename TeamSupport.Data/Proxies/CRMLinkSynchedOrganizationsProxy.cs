@@ -8,6 +8,17 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
+  [DataContract(Namespace="http://teamsupport.com/")]
+  [KnownType(typeof(CRMLinkSynchedOrganizationProxy))]
+  public class CRMLinkSynchedOrganizationProxy
+  {
+    public CRMLinkSynchedOrganizationProxy() {}
+    [DataMember] public int CRMLinkSynchedOrganizationsID { get; set; }
+    [DataMember] public int CRMLinkTableID { get; set; }
+    [DataMember] public string OrganizationCRMID { get; set; }
+          
+  }
+  
   public partial class CRMLinkSynchedOrganization : BaseItem
   {
     public CRMLinkSynchedOrganizationProxy GetProxy()
