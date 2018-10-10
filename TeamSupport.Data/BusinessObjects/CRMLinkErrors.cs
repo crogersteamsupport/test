@@ -127,19 +127,30 @@ namespace TeamSupport.Data
 
 		public void LoadByOperationAndObjectIds(int organizationID, string CRMType, string orientation, string objectType, List<string> objectIds, bool? isCleared = null)
 		{
-			string sql = @"SELECT * 
+			bool hasObjectIds = objectIds != null && objectIds.Any();
+			string sqlXML = @"DECLARE @strString varchar(max)
+				DECLARE @x XML
+				SET @strString = '{0}'
+				SELECT @x = CAST('<A>'+ REPLACE(@strString,',','</A><A>')+ '</A>' AS XML)";
+			string sqlXMLJoin = @"JOIN @x.nodes('/A') AS x(t)
+				ON CRMLinkErrors.ObjectID = t.value('.', 'int')";
+
+			sqlXML = hasObjectIds ? string.Format(sqlXML, string.Join(", ", objectIds.Select(p => p).ToArray())) : "";
+			sqlXMLJoin = hasObjectIds ? sqlXMLJoin : "";
+
+			string sql = @"{0}
+			SELECT CRMLinkErrors.*
 			FROM 
-				CRMLinkErrors
+				CRMLinkErrors WITH(NOLOCK)
+				{1}
 			WHERE 
 				OrganizationID = @OrganizationID
 				AND CRMType = @CRMType
 				AND Orientation = @Orientation
 				AND ObjectType = @ObjectType
-				{0}
-				{1}";
+				{2}";
 
-			sql = string.Format(sql, objectIds != null && objectIds.Any() && objectIds.Count > 0 ? string.Format(" AND ObjectID IN ({0}) ", string.Join(", ", objectIds.Select(p => string.Format("'{0}'", p)).ToArray())) : "",
-										isCleared != null ? " AND IsCleared = @isCleared " : string.Empty);
+			sql = string.Format(sql, sqlXML, sqlXMLJoin, isCleared != null ? " AND IsCleared = @isCleared " : string.Empty);
 
 			using (SqlCommand command = new SqlCommand())
 			{
