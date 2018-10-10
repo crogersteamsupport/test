@@ -22,7 +22,7 @@ namespace TeamSupport.Data
     [DataMember, Column] public string MiddleName { get; set; }
     [DataMember, Column] public string LastName { get; set; }
     [DataMember, Column] public string Title { get; set; }
-    [DataMember, Column] public string CryptedPassword { get; set; }
+    [XmlIgnore, Column] public string CryptedPassword { get; set; }
     [DataMember, Column] public bool IsActive { get; set; }
     [DataMember, Column] public bool MarkDeleted { get; set; }
     [DataMember, Column] public string TimeZoneID { get; set; }
