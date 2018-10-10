@@ -1119,9 +1119,11 @@ namespace TSWebServices
                             return;
                         } else {
                             DeflectorService deflectorService = new DeflectorService();
-                            deflectorService.DeleteTicket(ticket.TicketID);
+                            
                             ticket.Delete();
                             ticket.Collection.Save();
+
+                            deflectorService.DeleteTicket(ticket.TicketID);
                         }
                     }
                 }
