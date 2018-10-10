@@ -1115,12 +1115,11 @@ namespace TSWebServices
                     if (!UserSession.CurrentUser.IsSystemAdmin) {
                         return;
                     } else {
-                        Ticket ticket = Tickets.GetTicket(UserSession.LoginUser, ticketID);
                         if (ticket.OrganizationID != UserSession.LoginUser.OrganizationID) {
                             return;
                         } else {
-                            Deflector Deflection = new Deflector();
-                            Deflection.UnpopulateTicket(ticket.TicketID);
+                            DeflectorService deflectorService = new DeflectorService();
+                            deflectorService.DeleteTicket(ticket.TicketID);
                             ticket.Delete();
                             ticket.Collection.Save();
                         }
