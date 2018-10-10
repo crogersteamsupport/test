@@ -48,18 +48,54 @@ namespace TSWebServices {
         }
 
         [WebMethod]
-        public async Task<string> FetchDeflections(int organization, string phrase)
+        public async Task<string> FetchDeflections(int organization, string phrase, int? customerHubID)
         {
             try
             {
+                //if (customerHubID != null) {
+                //   GetHubProductsList((int)customerHubID);
+                //}
+
+                //Step 1: Check for the CustomerHubID
+                //Step 2: Look up the hub 
+                //Step 4: Check for the product line and lookup products
+                //Step 5: Check the hub setting for product association flag
+
+                //List<int> products = new List<int>();
+                //Get product list from the hub to match against and ship with an optional array
                 return await FetchDeflectionsAsync(organization, phrase);
             }
             catch (Exception ex)
             {
                 ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
-                return null;
+                return "[]";
             }
 
+        }
+
+        public string GetHubDeflectionProductsList(int customerHubID) {
+            string result = "";
+
+            //use the customer hub to enforce product line association - for the record I think this is a bad idea
+            CustomerHubs hubHelper = new CustomerHubs(LoginUser.Anonymous);
+            hubHelper.LoadByCustomerHubID((int)customerHubID);
+
+            CustomerHubFeatureSettings hubFeatureSettingsHelper = new CustomerHubFeatureSettings(LoginUser.Anonymous);
+            hubFeatureSettingsHelper.LoadByCustomerHubID(customerHubID);
+
+            if (hubHelper.Any() && hubHelper[0].ProductFamilyID != null && hubFeatureSettingsHelper[0].EnableAnonymousProductAssociation)
+            {
+                Products productHelper = new Products(LoginUser.Anonymous);
+                productHelper.LoadByProductFamilyID((int)hubHelper[0].ProductFamilyID);
+            }
+
+            //if (hubHelper.Any() && hubHelper[0].ProductFamilyID != null)
+            //{
+            //    Products productHelper = new Products(LoginUser.Anonymous);
+            //    productHelper.LoadByProductFamilyID((int)hubHelper[0].ProductFamilyID);
+            //}
+
+            return result;
         }
 
         public async Task<string> IndexDeflector(string deflectorIndex)
