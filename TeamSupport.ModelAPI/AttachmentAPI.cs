@@ -89,7 +89,6 @@ namespace TeamSupport.ModelAPI
                     return new UserModel(connection, refID);
 
                 case AttachmentProxy.References.WaterCooler: return new WatercoolerMsgModel(connection, refID);
-                //case AttachmentProxy.References.Imports: return new ImportsModel(connection, refID);
                 default:
                     if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
                     throw new Exception($"bad ReferenceType {refType}");
@@ -97,73 +96,74 @@ namespace TeamSupport.ModelAPI
             }
         }
 
-        public static void DeleteAttachment(AttachmentProxy.References refType, int attachmentID, int? destinationID = null)
+        public static string DeleteAttachment(int attachmentID, AttachmentProxy.References verifyRefType, int? verifyRefID = null)
         {
+            string result = null;
             try
             {
                 using (ConnectionContext connection = new ConnectionContext())
                 {
                     // validate args
-                    AttachmentProxy proxy = Data_API.ReadRefTypeProxyByID<AttachmentProxy>(connection, attachmentID);
-                    IAttachmentDestination model = null;
-                    if (refType == AttachmentProxy.References.None)
-                        refType = proxy.RefType;
+                    AttachmentProxy proxy = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, attachmentID);
+                    result = proxy.FileName;
 
-                    if(!destinationID.HasValue)
-                        destinationID = proxy.RefID;
+                    if (verifyRefType == AttachmentProxy.References.None) // support delete no matter the type?
+                        verifyRefType = proxy.RefType;
+
+                    if(!verifyRefID.HasValue) // if no explicit refID provided, use the proxy
+                        verifyRefID = proxy.RefID;
 
                     // type safe construction
-                    switch (refType)
+                    IAttachmentDestination model = null;
+                    switch (verifyRefType)
                     {
                         case AttachmentProxy.References.Actions:
-                            model = new ActionModel(connection, destinationID.Value);
-                            if (!(model as ActionModel).CanEdit())
-                                return;
+                            model = new ActionModel(connection, verifyRefID.Value);
+                            if (!(model as ActionModel).CanEdit())  // is user authorized to do the delete?
+                                return null;
                             break;
                         case AttachmentProxy.References.Assets:
-                            model = new AssetModel(connection, destinationID.Value);
+                            model = new AssetModel(connection, verifyRefID.Value);
                             break;
                         //case AttachmentProxy.References.ChatAttachments:
                         //    break;
                         case AttachmentProxy.References.CompanyActivity:
                             {
-                                int organizationID = connection._db.ExecuteQuery<int>($"Select RefID from Notes WITH (NOLOCK) WHERE NoteID = {destinationID.Value}").Min();
-                                model  = new NoteModel(new OrganizationModel(connection, organizationID), destinationID.Value);
+                                int organizationID = connection._db.ExecuteQuery<int>($"Select RefID from Notes WITH (NOLOCK) WHERE NoteID = {verifyRefID.Value}").Min();
+                                model  = new NoteModel(new OrganizationModel(connection, organizationID), verifyRefID.Value);
                             }
                             break;
                         case AttachmentProxy.References.ContactActivity:
                             {
-                                int userID = connection._db.ExecuteQuery<int>($"Select RefID from Notes WITH (NOLOCK) WHERE NoteID = {destinationID.Value}").Min();
-                                model  = new NoteModel(new UserModel(connection, userID), destinationID.Value);
+                                int userID = connection._db.ExecuteQuery<int>($"Select RefID from Notes WITH (NOLOCK) WHERE NoteID = {verifyRefID.Value}").Min();
+                                model  = new NoteModel(new UserModel(connection, userID), verifyRefID.Value);
                             }
                             break;
                         //case AttachmentProxy.References.Contacts:
                         //    break;
                         //case AttachmentProxy.References.CustomerHubLogo:
                         //    break;
-                        //case AttachmentProxy.References.Imports:
-                        //    break;
                         //case AttachmentProxy.References.None:
                         //    break;
                         case AttachmentProxy.References.Organizations:
-                            model = new OrganizationModel(connection, destinationID.Value);
+                            model = new OrganizationModel(connection, verifyRefID.Value);
                             break;
                         case AttachmentProxy.References.ProductVersions:
-                            model = new ProductVersionModel(connection, destinationID.Value);
+                            model = new ProductVersionModel(connection, verifyRefID.Value);
                             break;
                         case AttachmentProxy.References.Tasks:
-                            model = new TaskModel(connection, destinationID.Value);
+                            model = new TaskModel(connection, verifyRefID.Value);
                             break;
                         case AttachmentProxy.References.UserPhoto:
                         case AttachmentProxy.References.Users:
-                            model = new UserModel(connection, destinationID.Value);
+                            model = new UserModel(connection, verifyRefID.Value);
                             break;
                         case AttachmentProxy.References.WaterCooler:
-                            model = new WatercoolerMsgModel(connection, destinationID.Value);
+                            model = new WatercoolerMsgModel(connection, verifyRefID.Value);
                             break;
                         default:
                             if (Debugger.IsAttached) Debugger.Break();
-                            throw new Exception($"unrecognized RefType {refType} in DeleteAttachment");
+                            throw new Exception($"unrecognized RefType {verifyRefType} in DeleteAttachment");
                     }
 
                     // do the delete
@@ -176,6 +176,7 @@ namespace TeamSupport.ModelAPI
             {
                 Data_API.LogMessage(ActionLogType.Delete, ReferenceType.Attachments, attachmentID, "Unable to delete attachment", ex);
             }
+            return result;
         }
 
         // load action attachments into attachment proxy
@@ -281,7 +282,7 @@ namespace TeamSupport.ModelAPI
                     new PathMap("Images\\Avatars\\Contacts", AttachmentProxy.References.None),
                     new PathMap("Images\\HubLogo", AttachmentProxy.References.CustomerHubLogo),
                     new PathMap("Images", AttachmentProxy.References.None),
-                    new PathMap("Imports", AttachmentProxy.References.Imports),
+                    new PathMap("Imports", AttachmentProxy.References.None),
                     new PathMap("Imports\\Logs", AttachmentProxy.References.None),
                     new PathMap("Organizations", AttachmentProxy.References.Organizations),
                     new PathMap("OrganizationAttachments", AttachmentProxy.References.Organizations),

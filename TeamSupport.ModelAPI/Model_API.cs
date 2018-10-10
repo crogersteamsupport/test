@@ -96,7 +96,8 @@ namespace TeamSupport.ModelAPI
             }
             catch (Exception ex)
             {
-                int logid = Data_API.LogException(new IDTree.AuthenticationModel(), ex, "ReadByRefID Exception" + ex.Source);
+                // we use this method to check if it exists
+                //int logid = Data_API.LogException(new IDTree.AuthenticationModel(), ex, "ReadByRefID Exception" + ex.Source);
             }
             return t;
         }
@@ -133,7 +134,7 @@ namespace TeamSupport.ModelAPI
                             //t = DataAPI.DataAPI.Read<T>(new TicketNode(connection, id));
                             break;
                         case "AttachmentProxy":
-                            t = Data_API.ReadRefTypeProxyByID<AttachmentProxy>(connection, id) as T;
+                            t = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, id) as T;
                             break;
                         case "AttachmentProxy[]":
                             t = Data_API.Read<T>(new ActionModel(connection, id));

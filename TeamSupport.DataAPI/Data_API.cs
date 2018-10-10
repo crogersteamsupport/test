@@ -208,7 +208,7 @@ namespace TeamSupport.DataAPI
         /// <summary>
         /// Read a row from a RefType table and get back the type safe proxy
         /// </summary>
-        public static TProxy ReadRefTypeProxyByID<TProxy>(ConnectionContext connection, int id) where TProxy : class
+        public static TProxy ReadRefTypeProxy<TProxy>(ConnectionContext connection, int id) where TProxy : class
         {
             TProxy tProxy = default(TProxy);
             switch (typeof(TProxy).Name) // alphabetized list
@@ -259,7 +259,7 @@ namespace TeamSupport.DataAPI
                     }
                     break;
                 case "AttachmentProxy": // read all attachment types
-                    tProxy = ReadRefTypeProxyByID<TProxy>(node.Connection, (node as AttachmentModel).AttachmentID);
+                    tProxy = ReadRefTypeProxy<TProxy>(node.Connection, (node as AttachmentModel).AttachmentID);
                     break;
                 case "AttachmentProxy[]":
                     switch(node)
@@ -375,19 +375,11 @@ namespace TeamSupport.DataAPI
         /// DELETE - delete a model </summary>
         public static void Delete(IDNode node)
         {
-            int modifierID = node.Connection.UserID;
-
             string command = String.Empty;
             switch (node) // alphabetized list
             {
                 case AttachmentModel model:
                     command = $"DELETE FROM Attachments WHERE AttachmentID = {model.AttachmentID}";
-                    break;
-                case AssetTicketModel model:
-                    //command = $"DELETE FROM AssetTickets WHERE TicketID = {model.AssetID} AND AssetID = {model.AssetID}";
-                    break;
-                case UserTicketModel model:
-                    //command = $"DELETE FROM UserTickets Where TicketID={model.Ticket.TicketID} AND UserId = {model.UserID}";
                     break;
                 case OrganizationTicketModel model:
                     command = $"DELETE FROM OrganizationTickets WHERE TicketID={model.Ticket.TicketID} AND OrganizationId = {model.Organization.OrganizationID}";

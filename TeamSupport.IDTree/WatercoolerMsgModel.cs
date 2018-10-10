@@ -11,6 +11,7 @@ namespace TeamSupport.IDTree
     {
         OrganizationModel Organization;
         public int MessageID { get; private set; }
+        int IAttachmentDestination.RefID => MessageID;
 
         public WatercoolerMsgModel(OrganizationModel organization, int messageID) : base(organization)
         {

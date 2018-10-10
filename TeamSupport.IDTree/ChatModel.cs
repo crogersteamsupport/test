@@ -11,6 +11,7 @@ namespace TeamSupport.IDTree
     {
         ChatModel chat;
         public int ChatID { get; private set; }
+        int IAttachmentDestination.RefID => ChatID;
 
         public ChatModel(ChatModel action, int chatID) : base(action)
         {

@@ -12,6 +12,7 @@ namespace TeamSupport.IDTree
 
         public ProductModel Product { get; private set; }
         public int ProductVersionID { get; private set; }
+        int IAttachmentDestination.RefID => ProductVersionID;
 
         public ProductVersionModel(ProductModel product, int productVersionID) : base(product)
         {

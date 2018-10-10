@@ -33,12 +33,14 @@ namespace TeamSupport.IDTree
             // Authentication from HttpContext
             if (AuthenticatedUser)
             {
+                // use HttpContext on thread
                 AuthenticationTicket = (HttpContext.Current.User.Identity as FormsIdentity).Ticket;
                 _userData = AuthenticationTicket.UserData.Split('|');
                 OrganizationID = int.Parse(_userData[1]);
             }
             else
             {
+                // support anonymous user from URL
                 _userData = new string[] { "0", "0", "0", "0", "0" };
                 string[] segments = HttpContext.Current.Request.Url.Segments;
                 string organizationIDstring = segments[segments.Length - 2].ToLower().Trim().Replace("/", "");

@@ -12,6 +12,7 @@ namespace TeamSupport.IDTree
     {
         OrganizationModel Organization;
         public int TaskID { get; private set; }
+        int IAttachmentDestination.RefID => TaskID;
 
         public TaskModel(OrganizationModel organization, int taskID) : base(organization)
         {

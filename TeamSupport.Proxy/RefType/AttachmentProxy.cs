@@ -26,7 +26,6 @@ namespace TeamSupport.Data
     [InheritanceMapping(Code = References.UserPhoto, Type = typeof(UserPhotoAttachmentProxy))]
     [InheritanceMapping(Code = References.Users, Type = typeof(UserAttachmentProxy))]
     [InheritanceMapping(Code = References.WaterCooler, Type = typeof(WatercoolerMsgAttachmentProxy))]
-    [InheritanceMapping(Code = References.Imports, Type = typeof(ImportsAttachmentProxy))]
     public abstract class AttachmentProxy
     {
         public AttachmentProxy() { }
@@ -76,7 +75,6 @@ namespace TeamSupport.Data
                 case References.UserPhoto: return new UserPhotoAttachmentProxy();
                 case References.Users: return new UserAttachmentProxy();
                 case References.WaterCooler: return new WatercoolerMsgAttachmentProxy();
-                case References.Imports: return new ImportsAttachmentProxy();
                 default:
                     if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
                     throw new Exception($"bad ReferenceType {refType}");
@@ -99,8 +97,6 @@ namespace TeamSupport.Data
             UserPhoto = ReferenceType.UserPhoto,
             Users = ReferenceType.Users,
             WaterCooler = ReferenceType.WaterCooler,
-
-            Imports = ReferenceType.Imports,
         };
 
     }
@@ -180,11 +176,6 @@ namespace TeamSupport.Data
     public class UserAttachmentProxy : AttachmentProxy
     {
         public UserAttachmentProxy() : base(References.Users) { }
-    }
-
-    public class ImportsAttachmentProxy : AttachmentProxy
-    {
-        public ImportsAttachmentProxy() : base(References.Imports) { }
     }
 
 }

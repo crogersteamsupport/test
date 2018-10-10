@@ -15,6 +15,7 @@ namespace TeamSupport.IDTree
     public class OrganizationModel : IDNode, IAttachmentDestination, ITaskAssociation, INoteDestination
     {
         public int OrganizationID { get; private set; }
+        int IAttachmentDestination.RefID => OrganizationID;
 
         /// <summary> OrganizationID and UserID come from ConnectionContext.Authentication </summary>
         public OrganizationModel(ConnectionContext connection) : this(connection, connection.Authentication.OrganizationID, false)

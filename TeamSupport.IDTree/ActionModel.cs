@@ -19,13 +19,14 @@ namespace TeamSupport.IDTree
     {
         public TicketModel Ticket { get; private set; }
         public int ActionID { get; private set; }
+        int IAttachmentDestination.RefID => ActionID;
 
         /// <summary> top down - existing action </summary>
         public ActionModel(TicketModel ticket, int actionID) : this(ticket, actionID, true)
         {
         }
 
-        public ActionModel(TicketModel ticket, int actionID, bool verify) : base(ticket)
+        private ActionModel(TicketModel ticket, int actionID, bool verify) : base(ticket)
         {
             Ticket = ticket;
             ActionID = actionID;
@@ -39,7 +40,6 @@ namespace TeamSupport.IDTree
             ActionID = actionID;
             int ticketID = ExecuteQuery<int>($"SELECT TicketID FROM Actions WITH (NOLOCK) WHERE ActionID = {actionID}").Min();
             Ticket = new TicketModel(Connection, ticketID);
-            Verify();
         }
 
         //public override bool Equals(object o)
@@ -70,7 +70,7 @@ namespace TeamSupport.IDTree
 
         public override void Verify()
         {
-            //Verify($"SELECT ActionID FROM Actions WITH (NOLOCK) WHERE ActionID={ActionID} AND TicketID={Ticket.TicketID}");
+            Verify($"SELECT ActionID FROM Actions WITH (NOLOCK) WHERE ActionID={ActionID} AND TicketID={Ticket.TicketID}");
         }
 
         public int CreatorID()

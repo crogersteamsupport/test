@@ -431,7 +431,7 @@ namespace TeamSupport.Api
                     case "/assets/{id}/attachments/{id}/":
                         {
                             int attachmentID = GetId(3);
-                            ModelAPI.AttachmentAPI.DeleteAttachment(AttachmentProxy.References.Assets, attachmentID, GetId(1));
+                            ModelAPI.AttachmentAPI.DeleteAttachment(attachmentID, AttachmentProxy.References.Assets, GetId(1));
                             //data = RestAttachments.DeleteAttachment(_command, GetId(1), GetId(3));
                             data = RestAttachments.GetAttachmentsAsXML(_command, attachmentID);
                         }

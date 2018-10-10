@@ -159,15 +159,6 @@ namespace TeamSupport.Data.Quarantine
                     {
                         switch (refType)
                         {
-                            case AttachmentProxy.References.Imports:
-                                //Not saving import till user click on import button saving both imports and mappings
-                                //Import import = (new Imports(TSAuthentication.GetLoginUser())).AddNewImport();
-                                //import.RefType = (ReferenceType)Convert.ToInt32(context.Request.Form["refType"]);
-                                //import.FileName = fileName;
-                                //import.OrganizationID = TSAuthentication.OrganizationID;
-                                //import.Collection.Save();
-                                result.Add(new TeamSupport.Handlers.UploadResult(fileName, files[i].ContentType, files[i].ContentLength));
-                                break;
                             default:
                                 break;
                         }

@@ -184,7 +184,7 @@ namespace TSWebServices
         [WebMethod]
         public void DeleteAttachment(int attachmentID)
         {
-            TeamSupport.ModelAPI.AttachmentAPI.DeleteAttachment(AttachmentProxy.References.ProductVersions, attachmentID);
+            TeamSupport.ModelAPI.AttachmentAPI.DeleteAttachment(attachmentID, AttachmentProxy.References.ProductVersions);
         }
 
         [WebMethod]

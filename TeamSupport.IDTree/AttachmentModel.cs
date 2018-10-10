@@ -16,6 +16,7 @@ namespace TeamSupport.IDTree
     public interface IAttachmentDestination
     {
         string AttachmentPath { get; }
+        int RefID { get; }
     }
 
 
@@ -33,6 +34,7 @@ namespace TeamSupport.IDTree
         {
             AttachmentID = id;
             AttachedTo = attachedTo;
+            Verify();
         }
 
         public AttachmentModel(ConnectionContext connection, AttachmentProxy attachment) : base(connection)
@@ -49,7 +51,7 @@ namespace TeamSupport.IDTree
         public override void Verify()
         {
             // also check if AttachedTo is valid?
-            Verify($"SELECT AttachmentID FROM Attachments WITH (NOLOCK) WHERE AttachmentID={AttachmentID} AND OrganizationID={Connection.OrganizationID}");
+            Verify($"SELECT AttachmentID FROM Attachments WITH (NOLOCK) WHERE AttachmentID={AttachmentID} AND RefID={AttachedTo.RefID}");
         }
     }
 

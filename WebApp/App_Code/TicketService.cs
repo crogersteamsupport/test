@@ -3589,7 +3589,7 @@ WHERE t.TicketID = @TicketID
         [WebMethod]
         public void DeleteAttachment(int attachmentID)
         {
-            AttachmentAPI.DeleteAttachment(AttachmentProxy.References.Actions, attachmentID);
+            AttachmentAPI.DeleteAttachment(attachmentID, AttachmentProxy.References.Actions);
         }
 
         [WebMethod]

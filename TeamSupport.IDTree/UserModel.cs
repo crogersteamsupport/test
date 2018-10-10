@@ -12,6 +12,7 @@ namespace TeamSupport.IDTree
     {
         public OrganizationModel Organization { get; private set; }
         public int UserID { get; private set; }
+        int IAttachmentDestination.RefID => UserID;
 
         public UserModel(ConnectionContext connection) : this(connection.Organization, connection.Authentication.UserID, false)
         {
