@@ -23,9 +23,7 @@
                 <div>Welcome to our live chat!</div>
             </div>
             <div cla="flex">
-                <div class="alert alert-info chatOfflineWarning" role="alert" style="display:none;">
-                    Our live chat is not available at this time. Please submit a ticket request in the form below, and a member of our team will follow up with you as soon as possible.<br />Thank you!
-                </div>
+                <div class="alert alert-info chatOfflineWarning" role="alert" style="display:none;">Our live chat is not available at this time. Please submit a ticket request in the form below, and a member of our team will follow up with you as soon as possible. Thank you for your patience.</div>
             </div>
         </div>
 
@@ -37,14 +35,14 @@
                 </services>
             </asp:ScriptManager>
 
-            <div class="flexbox" style="width:100%;">
-                <div class="flex1" style="padding:5px;">
-                    <div>
+            <div class="flexbox" style="max-width:100%;width:100%;">
+                <div class="flex1">
+                    <div style="padding:10px;">
                         <input type="text" id="userFirstName" placeholder="First Name" style="width:100%;">
                     </div>
                 </div>
                 <div class="flex1">
-                    <div style="padding:5px;">
+                    <div style="padding:10px;">
                         <input type="text" id="userLastName" placeholder="Last Name" style="width:100%;">
                     </div>
                 </div>
@@ -52,18 +50,18 @@
 
             <div class="flexbox column" style="width:100%;">
                 <div class="flex">
-                    <div style="padding:5px;">
+                    <div style="padding:10px;">
                         <input type="text" id="userEmail" placeholder="Email Address" style="width:100%;">
                     </div>
                 </div>
                 <div class="flex">
-                    <div style="padding:5px;">
+                    <div style="padding:10px;">
                         <textarea id="userIssue" rows="5" placeholder="How can we help you?" style="width:100%;"></textarea>
                     </div>
                 </div>
             </div>
 
-            <div class="flexbox column" style="width:100%;">
+            <div id="deflection-box" class="flexbox column" style="width:100%;">
                 <div class="flex">
                     <div>
                         <div class="list-group" id="deflection-results" style="margin-top:20px;"></div>
@@ -71,10 +69,10 @@
                 </div>
             </div>
 
-            <div class="flexbox column" style="max-width:100%;padding:5px;">
+            <div class="flexbox column" style="max-width:100%;">
                 <div class="flex">
-                    <div style="text-align:right;">
-                        <button type="submit" class="btn btn-default" style="margin-top:10px;">Submit New Ticket</button>
+                    <div style="text-align:right;padding:15px;">
+                        <button type="submit">SUBMIT NEW TICKET</button>
                     </div>
                 </div>
             </div>

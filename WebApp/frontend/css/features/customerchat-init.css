@@ -8,6 +8,18 @@ div {
     font-family:verdana;
 }
 
+div.alert {
+    margin:10px;
+    padding:10px;
+    background-color:#d9edf7;
+    border-radius:5px;
+    font-size:11px;
+    font-family:verdana;
+    line-height:20px;
+}
+
+
+
 input,
 select {
     font-family:'Open Sans', sans-serif;
@@ -28,7 +40,7 @@ select {
     border-top:0px;
     border-left:0px;
     border-right:0px;
-    border-bottom:2px solid rgba(0,0,0,0.1);
+    border-bottom:2px solid #31708f;
 }
 
 select {
@@ -38,15 +50,18 @@ select {
 
 textarea {
     font-family:'Open Sans', sans-serif;
-    border-radius:0px !important;
+    border-radius:5px 5px 0px 0px !important;
     resize:vertical;
     overflow:hidden;
     box-sizing:border-box;
     padding:6px;
     font-size:13px;
-    border:0px solid rgba(0,0,0,0.1);
+    border-top:0px;
+    border-left:0px;
+    border-right:0px;
+    border-bottom:2px solid #31708f;
     width:100%;
-    background-color:#f4f6f8;
+    background-color:#d9edf7;
     -webkit-box-shadow:none;
     -webkit-appearance:none;
     box-shadow:none;
@@ -67,11 +82,11 @@ select:-webkit-autofill:focus {
     -webkit-text-fill-color:black !important;
 }
 
-::placeholder               { color:rgba(0,0,0,0.3); }
-::-webkit-input-placeholder { color:rgba(0,0,0,0.3); }
-::-moz-placeholder          { color:rgba(0,0,0,0.3); }
-:-moz-placeholder           { color:rgba(0,0,0,0.3); }
-:-ms-input-placeholder      { color:rgba(0,0,0,0.3); }
+::placeholder               { color:rgba(0,0,0,0.7); }
+::-webkit-input-placeholder { color:rgba(0,0,0,0.7); }
+::-moz-placeholder          { color:rgba(0,0,0,0.7); }
+:-moz-placeholder           { color:rgba(0,0,0,0.7); }
+:-ms-input-placeholder      { color:rgba(0,0,0,0.7); }
 
 .placecenter::placeholder               { text-align:center; }
 .placecenter::-webkit-input-placeholder { text-align:center }
@@ -80,8 +95,15 @@ select:-webkit-autofill:focus {
 .placecenter:-ms-input-placeholder      { text-align:center }
 
 button {
-    background-color:#f4f6f8;
+    background-color:#31708f;
     padding:5px 10px;
     border:0px;
     text-align:right;
+    color:white;
+    font-weight:bold;
+}
+
+
+#deflection-box {
+    background-color:#d9edf7;
 }
