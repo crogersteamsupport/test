@@ -148,7 +148,7 @@ Ts.Pages.Main.prototype = {
 
         $('.menu-help-chat').click(function (e) {
             e.preventDefault();
-            var url = 'https://app.teamsupport.com/Chat/ChatInit.aspx?uid=22bd89b8-5162-4509-8b0d-f209a0aa6ee9';
+            var url = 'https://app.teamsupport.com/Chat/Chat.aspx?uid=22bd89b8-5162-4509-8b0d-f209a0aa6ee9';
             var fname = mainFrame.Ts.System.User.FirstName;
             var lname = mainFrame.Ts.System.User.LastName;
             var email = mainFrame.Ts.System.User.Email;
