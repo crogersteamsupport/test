@@ -21,12 +21,28 @@ namespace TeamSupport.Service
  
     static void Main(string[] args)
     {
-      ServiceBase.Run(new Program());
+        if (!Environment.UserInteractive)
+        {
+            ServiceBase.Run(new Program());   // running as a service
+        }
+        else
+        {
+            // run from console
+            Program service = new Program("TSCustomerInsights");
+            service.OnStart(null);
+
+            for (int i = 0; i < 1000; ++i)
+                Thread.Sleep(1000);
+
+            service.OnStop();
+        }
     }
 
-    public Program()  
+    public Program(string serviceName = null)  
     {
-      this.ServiceName = ConfigurationManager.AppSettings["ServiceName"];
+        if(serviceName == null)
+                serviceName = ConfigurationManager.AppSettings["ServiceName"];
+      this.ServiceName = serviceName;
     }
 
     private ServiceThread GetServiceThread()

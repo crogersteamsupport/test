@@ -33,6 +33,12 @@ namespace TeamSupport.ServiceLibrary
 	private bool	_noMoreRemainingContactCalls = false;
 	private bool	_noMoreRemainingCompanyCalls = false;
 
+    public CustomerInsightsProcessor()
+    {
+        if (Environment.UserInteractive)
+            Run();
+    }
+
     public override void Run()
     {
       try
