@@ -16,6 +16,7 @@ namespace TeamSupport.IDTree
     {
         public INoteDestination NoteDestination { get; private set; }
         public int NoteID { get; private set; }
+        int IAttachmentDestination.RefID => NoteID;
 
         //public NoteModel(IAttachmentDestination attachedTo, int id) : base((attachedTo as IDNode).Connection)
         //{

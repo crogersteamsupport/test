@@ -345,32 +345,32 @@ namespace TSWebServices
 
             foreach (int ticketID in info.Tickets)
             {
-                AddAssociation(newTask.TaskID, ticketID, TaskAssociationProxy.References.Tickets);
+                AddAssociation(newTask.TaskID, ticketID, (int)ReferenceType.Tickets);
             }
 
             foreach (int productID in info.Products)
             {
-                AddAssociation(newTask.TaskID, productID, TaskAssociationProxy.References.Products);
+                AddAssociation(newTask.TaskID, productID, (int)ReferenceType.Products);
             }
 
             foreach (int CompanyID in info.Company)
             {
-                AddAssociation(newTask.TaskID, CompanyID, TaskAssociationProxy.References.Organizations);
+                AddAssociation(newTask.TaskID, CompanyID, (int)ReferenceType.Organizations);
             }
 
             foreach (int UserID in info.Contacts)
             {
-                AddAssociation(newTask.TaskID, UserID, TaskAssociationProxy.References.Contacts);
+                AddAssociation(newTask.TaskID, UserID, (int)ReferenceType.Contacts);
             }
 
             foreach (int groupID in info.Groups)
             {
-                AddAssociation(newTask.TaskID, groupID, TaskAssociationProxy.References.Groups);
+                AddAssociation(newTask.TaskID, groupID, (int)ReferenceType.Groups);
             }
 
             foreach (int UserID in info.User)
             {
-                AddAssociation(newTask.TaskID, UserID, TaskAssociationProxy.References.Users);
+                AddAssociation(newTask.TaskID, UserID, (int)ReferenceType.Users);
             }
 
             foreach (int ActivityID in info.Activities)
@@ -383,11 +383,11 @@ namespace TSWebServices
                     var note = notes[0];
                     if(note.RefType == ReferenceType.Organizations)
                     {
-                        AddAssociation(newTask.TaskID, ActivityID, TaskAssociationProxy.References.CompanyActivity);
+                        AddAssociation(newTask.TaskID, ActivityID, (int)ReferenceType.CompanyActivity);
                     }
                     else if (note.RefType == ReferenceType.Users)
                     {
-                        AddAssociation(newTask.TaskID, ActivityID, TaskAssociationProxy.References.ContactActivity);
+                        AddAssociation(newTask.TaskID, ActivityID, (int)ReferenceType.ContactActivity);
                     }
                 }
             }
@@ -729,7 +729,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public bool AddAssociation(int taskID, int refID, TaskAssociationProxy.References refType)
+        public bool AddAssociation(int taskID, int refID, int refType)
         {
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             try
@@ -750,13 +750,13 @@ namespace TSWebServices
                     SendModifiedNotification(loginUser.UserID, task.TaskID);
                 }
 
-                if (refType == TaskAssociationProxy.References.Contacts)
+                if (refType == (int)ReferenceType.Contacts)
                 {
                     TeamSupport.Data.User user = Users.GetUser(loginUser, refID);
                     taskAssociation = (new TaskAssociations(loginUser).AddNewTaskAssociation());
                     taskAssociation.TaskID = taskID;
                     taskAssociation.RefID = user.OrganizationID;
-                    taskAssociation.RefType = TaskAssociationProxy.References.Organizations;
+                    taskAssociation.RefType = (int)ReferenceType.Organizations;
                     taskAssociation.DateCreated = DateTime.UtcNow;
                     taskAssociation.CreatorID = loginUser.UserID;
                     try

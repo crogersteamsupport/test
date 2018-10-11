@@ -33,27 +33,18 @@ namespace TeamSupport.Handlers
             context.Response.ContentType = "text/html";
             try
             {
-                {
-                    List<AttachmentProxy> proxies = ModelAPI.AttachmentAPI.CreateAttachments(context, out _ratingImage);
-                    //if (proxies != null)    // SCOT fall through if not supported by RefType infrastructure
-                    {
-                        context.Response.Clear();
-                        context.Response.ContentType = "text/plain";
-                        List<UploadResult> result = new List<UploadResult>();
-                        foreach (AttachmentProxy attachment in proxies)
-                            result.Add(new UploadResult(attachment.FileName, attachment.FileType, attachment.FileSize, attachment.AttachmentID));
-                        context.Response.ContentType = "text/html";
-                        context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
-                        return;
-                    }
-                }
+                context.Response.Clear();
+                context.Response.ContentType = "text/plain";
+                List<UploadResult> result = new List<UploadResult>();
+                List<AttachmentProxy> proxies = ModelAPI.AttachmentAPI.CreateAttachments(context, out _ratingImage);
+                foreach (AttachmentProxy attachment in proxies)
+                    result.Add(new UploadResult(attachment.FileName, attachment.FileType, attachment.FileSize, attachment.AttachmentID));
+                context.Response.ContentType = "text/html";
+                context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
 
-                if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
-                List<string> segments = UploadUtils.GetUrlSegments(context);
-                TeamSupport.Data.Quarantine.UploadHandlerQ.ProcessRequest(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID, context, _id, _ratingImage, segments);
-
-
-
+                //if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
+                //List<string> segments = UploadUtils.GetUrlSegments(context);
+                //TeamSupport.Data.Quarantine.UploadHandlerQ.ProcessRequest(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID, context, _id, _ratingImage, segments);
             }
             catch (Exception ex)
             {

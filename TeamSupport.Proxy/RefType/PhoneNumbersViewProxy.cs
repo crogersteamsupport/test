@@ -14,10 +14,11 @@ namespace TeamSupport.Data
     {
         public PhoneNumbersViewItemProxy() { }
         public PhoneNumbersViewItemProxy(ReferenceType referenceType) { }
+        public PhoneNumbersViewItemProxy(References refType) : this((ReferenceType)refType) { }
         [DataMember] public int PhoneID { get; set; }
         [DataMember] public int? PhoneTypeID { get; set; }
         [DataMember] public int RefID { get; set; }
-        [DataMember] protected References RefType { get; set; }
+    [DataMember] public ReferenceType RefType { get; set; }
         [DataMember] public string PhoneNumber { get; set; }
         [DataMember] public string FormattedPhoneNumber { get; set; }
         [DataMember] public string Extension { get; set; }
@@ -51,20 +52,20 @@ namespace TeamSupport.Data
 
     internal class OrganizationsPhoneNumbersViewItemProxy : PhoneNumbersViewItemProxy
     {
-        public OrganizationsPhoneNumbersViewItemProxy() : base(ReferenceType.Organizations)
+        public OrganizationsPhoneNumbersViewItemProxy() : base(References.Organizations)
         {
         }
     }
     internal class ContactsPhoneNumbersViewItemProxy : PhoneNumbersViewItemProxy
     {
-        public ContactsPhoneNumbersViewItemProxy() : base(ReferenceType.Contacts)
+        public ContactsPhoneNumbersViewItemProxy() : base(References.Contacts)
         {
         }
     }
 
     internal class UsersPhoneNumbersViewItemProxy : PhoneNumbersViewItemProxy
     {
-        public UsersPhoneNumbersViewItemProxy() : base(ReferenceType.Users)
+        public UsersPhoneNumbersViewItemProxy() : base(References.Users)
         {
         }
     }

@@ -11,8 +11,6 @@ namespace TeamSupport.Data
   
   public partial class Action : BaseItem
   {
-    // class ActionProxy moved to class library TeamSupport.Proxy
-
     public ActionProxy GetProxy()
     {
       ActionProxy result = new ActionProxy();

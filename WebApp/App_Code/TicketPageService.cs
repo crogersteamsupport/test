@@ -1762,10 +1762,8 @@ namespace TSWebServices
                 }
             }
 
-            {
-                int actionID = item.item.RefID;
-                item.Attachments = Model_API.Read<AttachmentProxy[]>(actionID);
-            }
+            int actionID = item.item.RefID;
+            item.Attachments = Model_API.Read<AttachmentProxy[]>(actionID);
 
             return item;
         }
@@ -1799,9 +1797,7 @@ namespace TSWebServices
         private AttachmentProxy[] GetActionAttachments(int actionID, LoginUser loginUser)
         {
             // Read action attachments
-            {
-                return Model_API.Read<AttachmentProxy[]>(actionID);
-            }
+            return Model_API.Read<AttachmentProxy[]>(actionID);
         }
 
 
@@ -1846,26 +1842,22 @@ namespace TSWebServices
 
         private void CopyInsertedKBAttachments(int actionID, int insertedKBTicketID)
         {
+            AttachmentProxy[] results;
+            Model_API.ReadActionAttachmentsForTicket(insertedKBTicketID, ActionAttachmentsByTicketID.KnowledgeBase, out results);
+            foreach (AttachmentProxy attachment in results)
             {
-                AttachmentProxy[] results;
-                Model_API.ReadActionAttachmentsForTicket(insertedKBTicketID, ActionAttachmentsByTicketID.KnowledgeBase, out results);
-                foreach (AttachmentProxy attachment in results)
-                {
-                    attachment.AttachmentID = 0;    // not used
-                    string originalAttachmentRefID = ((ActionAttachmentProxy)attachment).ActionID.ToString();
-                    string clonedActionAttachmentPath = attachment.Path.Substring(0, attachment.Path.IndexOf(@"\Actions\") + @"\Actions\".Length)
-                                    + actionID.ToString()
-                                    + attachment.Path.Substring(attachment.Path.IndexOf(originalAttachmentRefID) + originalAttachmentRefID.Length);
-                    if (!Directory.Exists(Path.GetDirectoryName(clonedActionAttachmentPath)))
-                        Directory.CreateDirectory(Path.GetDirectoryName(clonedActionAttachmentPath));
-                    File.Copy(attachment.Path, clonedActionAttachmentPath);
-                    attachment.Path = clonedActionAttachmentPath;
+                attachment.AttachmentID = 0;    // not used
+                string originalAttachmentRefID = ((ActionAttachmentProxy)attachment).ActionID.ToString();
+                string clonedActionAttachmentPath = attachment.Path.Substring(0, attachment.Path.IndexOf(@"\Actions\") + @"\Actions\".Length)
+                                + actionID.ToString()
+                                + attachment.Path.Substring(attachment.Path.IndexOf(originalAttachmentRefID) + originalAttachmentRefID.Length);
+                if (!Directory.Exists(Path.GetDirectoryName(clonedActionAttachmentPath)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(clonedActionAttachmentPath));
+                File.Copy(attachment.Path, clonedActionAttachmentPath);
+                attachment.Path = clonedActionAttachmentPath;
 
-                    Model_API.Create(attachment);
-                }
-                return;
+                Model_API.Create(attachment);
             }
-
         }
 
     }

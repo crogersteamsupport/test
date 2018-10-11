@@ -11,6 +11,7 @@ namespace TeamSupport.IDTree
     {
         ChatModel chat;
         public int ChatID { get; private set; }
+        int IAttachmentDestination.RefID => ChatID;
 
         public ChatModel(ChatModel action, int chatID) : base(action)
         {
@@ -32,7 +33,7 @@ namespace TeamSupport.IDTree
             Verify($"SELECT ChatID FROM Chats WITH (NOLOCK) WHERE ChatID={ChatID}");
         }
 
-        string IAttachmentDestination.AttachmentPath
+        public string AttachmentPath
         {
             get
             {

@@ -17,6 +17,10 @@ namespace TeamSupport.Data
     [DataMember] public int CurrentStatusID { get; set; }
     [DataMember] public int NextStatusID { get; set; }
     [DataMember] public int Position { get; set; }
+    //[DataMember] public DateTime DateCreated { get; set; }
+    //[DataMember] public DateTime DateModified { get; set; }
+    //[DataMember] public int CreatorID { get; set; }
+    //[DataMember] public int ModifierID { get; set; }
           
   }
 }

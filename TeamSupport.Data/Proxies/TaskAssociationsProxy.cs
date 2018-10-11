@@ -8,12 +8,12 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  
+ 
   public partial class TaskAssociation : BaseItem
   {
     public TaskAssociationProxy GetProxy()
     {
-      TaskAssociationProxy result = new TaskAssociationProxy(RefType);
+      TaskAssociationProxy result = new TaskAssociationProxy();
       result.CreatorID = this.CreatorID;
       //result.RefType = this.;
       result.RefID = this.RefID;

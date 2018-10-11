@@ -12,6 +12,7 @@ namespace TeamSupport.IDTree
     {
         public OrganizationModel Organization { get; private set; }
         public int UserID { get; private set; }
+        int IAttachmentDestination.RefID => UserID;
 
         public UserModel(ConnectionContext connection) : this(connection.Organization, connection.Authentication.UserID, false)
         {
@@ -33,10 +34,10 @@ namespace TeamSupport.IDTree
         }
 
         // slow :(
-        public UserProxy UserProxy()
-        {
-            return ExecuteQuery<UserProxy>($"SELECT * FROM Users WHERE UserID={UserID}").First();
-        }
+        //public UserProxy UserProxy()
+        //{
+        //    return ExecuteQuery<UserProxy>($"SELECT * FROM Users WHERE UserID={UserID}").First();
+        //}
 
         public override void Verify()
         {
@@ -52,7 +53,7 @@ namespace TeamSupport.IDTree
         {
             return ExecuteQuery<bool>($"SELECT MarkDeleted FROM Users WITH (NOLOCK) WHERE UserID={UserID}").First();
         }
-        //string IAttachmentDestination.AttachmentPath
+        //public string AttachmentPath
         //{
         //    get
         //    {
@@ -66,7 +67,7 @@ namespace TeamSupport.IDTree
         //    }
         //}
 
-        string IAttachmentDestination.AttachmentPath
+        public string AttachmentPath
         {
             get
             {

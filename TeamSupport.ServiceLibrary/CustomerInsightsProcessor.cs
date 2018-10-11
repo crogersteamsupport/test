@@ -33,6 +33,12 @@ namespace TeamSupport.ServiceLibrary
 	private bool	_noMoreRemainingContactCalls = false;
 	private bool	_noMoreRemainingCompanyCalls = false;
 
+    public CustomerInsightsProcessor()
+    {
+        if (Environment.UserInteractive)
+            Run();
+    }
+
     public override void Run()
     {
       try
@@ -431,7 +437,7 @@ namespace TeamSupport.ServiceLibrary
                 string logoPath = TeamSupport.Data.Quarantine.ServiceQ.GetAttachmentPath10(LoginUser, (int)currentCompanyInfo.ParentID);
                 string logoFullPath = string.Format("{0}\\{1}.png", logoPath, currentCompanyInfo.OrganizationID);
 
-                if (CustomerInsightsUtilities.DownloadImage(customerInsightsOrganizationInfo.logo, logoFullPath, currentCompanyInfo.OrganizationID, TeamSupport.Data.ReferenceType.Organizations, LoginUser, out resultMessage))
+                if (CustomerInsightsUtilities.DownloadImage(customerInsightsOrganizationInfo.logo, logoFullPath, currentCompanyInfo.OrganizationID, AttachmentProxy.References.Organizations, LoginUser, out resultMessage))
                 {
                     string description = string.Format("TeamSupport System updated Logo for '{0}'", currentCompanyInfo.Name);
                     ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Organizations, currentCompanyInfo.OrganizationID, description);
@@ -569,7 +575,7 @@ namespace TeamSupport.ServiceLibrary
                 string logoPath = TeamSupport.Data.Quarantine.ServiceQ.GetAttachmentPath12(LoginUser, organizationParentId);
                 string logoFullPath = string.Format("{0}\\{1}avatar.jpg", logoPath, currentContactInfo.UserID.ToString());
 
-                if (CustomerInsightsUtilities.DownloadImage(photoUrl, logoFullPath, currentContactInfo.OrganizationID, TeamSupport.Data.ReferenceType.Contacts, LoginUser, out resultMessage))
+                if (CustomerInsightsUtilities.DownloadImage(photoUrl, logoFullPath, currentContactInfo.OrganizationID, AttachmentProxy.References.Contacts, LoginUser, out resultMessage))
                 {
                     string description = "TeamSupport System updated Photo for  '" + currentContactInfo.DisplayName + "'";
                     ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, currentContactInfo.UserID, description);

@@ -12,11 +12,11 @@ namespace TeamSupport.Data
 {
   [DataContract(Namespace="http://teamsupport.com/")]
   [KnownType(typeof(UserProxy))]
-  [Table(Name = "Users")]
-  public class UserProxy
+    [Table(Name = "Users")]
+    public class UserProxy
   {
     public UserProxy() {}
-    [DataMember, Column] public int UserID { get; set; }
+    [DataMember, Column(DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true)] public int UserID { get; set; }
     [DataMember, Column] public string Email { get; set; }
     [DataMember, Column] public string FirstName { get; set; }
     [DataMember, Column] public string MiddleName { get; set; }

@@ -12,6 +12,7 @@ namespace TeamSupport.IDTree
     {
         OrganizationModel Organization;
         public int TaskID { get; private set; }
+        int IAttachmentDestination.RefID => TaskID;
 
         public TaskModel(OrganizationModel organization, int taskID) : base(organization)
         {
@@ -33,7 +34,7 @@ namespace TeamSupport.IDTree
         }
 
         // C:\TSData\Organizations\1078\Tasks\57269\file.txt
-        string IAttachmentDestination.AttachmentPath
+        public string AttachmentPath
         {
             get
             {

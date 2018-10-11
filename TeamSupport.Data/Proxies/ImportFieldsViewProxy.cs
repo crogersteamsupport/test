@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
+  
   public partial class ImportFieldsViewItem : BaseItem
   {
     public ImportFieldsViewItemProxy GetProxy()

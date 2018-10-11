@@ -10,13 +10,14 @@ namespace TeamSupport.Data
 {
     [DataContract(Namespace = "http://teamsupport.com/")]
     [KnownType(typeof(TaskAssociationsViewItemProxy))]
-    public abstract class TaskAssociationsViewItemProxy
+  public class TaskAssociationsViewItemProxy
     {
         public TaskAssociationsViewItemProxy() { }
         public TaskAssociationsViewItemProxy(ReferenceType referenceType) { }
+        public TaskAssociationsViewItemProxy(References refType) : this((ReferenceType)refType) { }
         [DataMember] public int TaskID { get; set; }
         [DataMember] public int RefID { get; set; }
-        [DataMember] protected References RefType { get; set; }
+    [DataMember] public int RefType { get; set; }
         [DataMember] public int? TicketNumber { get; set; }
         [DataMember] public string TicketName { get; set; }
         [DataMember] public string User { get; set; }
@@ -61,55 +62,55 @@ namespace TeamSupport.Data
 
     internal class OrganizationsTaskAssociationsViewItemProxy : TaskAssociationsViewItemProxy
     {
-        public OrganizationsTaskAssociationsViewItemProxy() : base(ReferenceType.Organizations)
+        public OrganizationsTaskAssociationsViewItemProxy() : base(References.Organizations)
         {
         }
     }
     internal class ContactsTaskAssociationsViewItemProxy : TaskAssociationsViewItemProxy
     {
-        public ContactsTaskAssociationsViewItemProxy() : base(ReferenceType.Contacts)
+        public ContactsTaskAssociationsViewItemProxy() : base(References.Contacts)
         {
         }
     }
     internal class CompanyActivityTaskAssociationsViewItemProxy : TaskAssociationsViewItemProxy
     {
-        public CompanyActivityTaskAssociationsViewItemProxy() : base(ReferenceType.CompanyActivity)
+        public CompanyActivityTaskAssociationsViewItemProxy() : base(References.CompanyActivity)
         {
         }
     }
     internal class GroupsTaskAssociationsViewItemProxy : TaskAssociationsViewItemProxy
     {
-        public GroupsTaskAssociationsViewItemProxy() : base(ReferenceType.Groups)
+        public GroupsTaskAssociationsViewItemProxy() : base(References.Groups)
         {
         }
     }
     internal class ContactActivityTaskAssociationsViewItemProxy : TaskAssociationsViewItemProxy
     {
-        public ContactActivityTaskAssociationsViewItemProxy() : base(ReferenceType.Tasks)
+        public ContactActivityTaskAssociationsViewItemProxy() : base(References.Tasks)
         {
         }
     }
     internal class TasksTaskAssociationsViewItemProxy : TaskAssociationsViewItemProxy
     {
-        public TasksTaskAssociationsViewItemProxy() : base(ReferenceType.Tasks)
+        public TasksTaskAssociationsViewItemProxy() : base(References.Tasks)
         {
         }
     }
     internal class ProductsTaskAssociationsViewItemProxy : TaskAssociationsViewItemProxy
     {
-        public ProductsTaskAssociationsViewItemProxy() : base(ReferenceType.Products)
+        public ProductsTaskAssociationsViewItemProxy() : base(References.Products)
         {
         }
     }
     internal class UsersTaskAssociationsViewItemProxy : TaskAssociationsViewItemProxy
     {
-        public UsersTaskAssociationsViewItemProxy() : base(ReferenceType.Users)
+        public UsersTaskAssociationsViewItemProxy() : base(References.Users)
         {
         }
     }
     internal class TicketsTaskAssociationsViewItemProxy : TaskAssociationsViewItemProxy
     {
-        public TicketsTaskAssociationsViewItemProxy() : base(ReferenceType.Tickets)
+        public TicketsTaskAssociationsViewItemProxy() : base(References.Tickets)
         {
         }
     }

@@ -10,13 +10,14 @@ namespace TeamSupport.Data
 {
     [DataContract(Namespace = "http://teamsupport.com/")]
     [KnownType(typeof(UserNoteSettingProxy))]
-    public abstract class UserNoteSettingProxy
+  public class UserNoteSettingProxy
     {
         public UserNoteSettingProxy() { }
+        public UserNoteSettingProxy(References refType) : this((ReferenceType) refType) { }
         public UserNoteSettingProxy(ReferenceType referenceType) { }
         [DataMember] public int UserID { get; set; }
         [DataMember] public int RefID { get; set; }
-        [DataMember] protected References RefType { get; set; }
+    [DataMember] public ReferenceType RefType { get; set; }
         [DataMember] public bool IsDismissed { get; set; }
         [DataMember] public bool IsSnoozed { get; set; }
         [DataMember] public DateTime SnoozeTime { get; set; }
@@ -42,7 +43,7 @@ namespace TeamSupport.Data
 
     public class UserUserNoteSetting : UserNoteSettingProxy
     {
-        public UserUserNoteSetting() : base(ReferenceType.Users)
+        public UserUserNoteSetting() : base(References.Users)
         {
 
         }
@@ -50,7 +51,7 @@ namespace TeamSupport.Data
 
     public class OrganizationsUserNoteSetting : UserNoteSettingProxy
     {
-        public OrganizationsUserNoteSetting() : base(ReferenceType.Organizations)
+        public OrganizationsUserNoteSetting() : base(References.Organizations)
         {
 
         }

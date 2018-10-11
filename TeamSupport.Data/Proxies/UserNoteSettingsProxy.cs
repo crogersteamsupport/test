@@ -8,20 +8,22 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-    public partial class UserNoteSetting : BaseItem
+  
+  public partial class UserNoteSetting : BaseItem
+  {
+    public UserNoteSettingProxy GetProxy()
     {
-        public UserNoteSettingProxy GetProxy()
-        {
-            UserNoteSettingProxy result = UserNoteSettingProxy.ClassFactory((UserNoteSettingProxy.References)this.RefType); ;
-            result.IsSnoozed = this.IsSnoozed;
-            result.IsDismissed = this.IsDismissed;
-            result.RefID = this.RefID;
-            result.UserID = this.UserID;
-
-            result.SnoozeTime = DateTime.SpecifyKind(this.SnoozeTimeUtc, DateTimeKind.Utc);
-
-
-            return result;
-        }
-    }
+      UserNoteSettingProxy result = new UserNoteSettingProxy();
+      result.IsSnoozed = this.IsSnoozed;
+      result.IsDismissed = this.IsDismissed;
+      result.RefType = this.RefType;
+      result.RefID = this.RefID;
+      result.UserID = this.UserID;
+       
+      result.SnoozeTime = DateTime.SpecifyKind(this.SnoozeTimeUtc, DateTimeKind.Utc);
+       
+       
+      return result;
+    }	
+  }
 }

@@ -289,7 +289,7 @@ namespace TSWebServices
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public void AddLike(WatercoolerLikeProxy[] likes, int messageID, int messageParentID, string orgID)
+        public void AddLike(WatercoolerLikProxy[] likes, int messageID, int messageParentID, string orgID)
         {
             LoginUser loginUser = new LoginUser(connString, -1, -1, null);
             try

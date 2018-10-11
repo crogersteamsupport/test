@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-  
+ 
   public partial class TagLink : BaseItem
   {
     public TagLinkProxy GetProxy()

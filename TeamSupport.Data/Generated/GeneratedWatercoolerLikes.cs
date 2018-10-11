@@ -113,9 +113,9 @@ namespace TeamSupport.Data
 
     #region Public Methods
 
-    public WatercoolerLikeProxy[] GetWatercoolerLikProxies()
+    public WatercoolerLikProxy[] GetWatercoolerLikProxies()
     {
-      List<WatercoolerLikeProxy> list = new List<WatercoolerLikeProxy>();
+      List<WatercoolerLikProxy> list = new List<WatercoolerLikProxy>();
 
       foreach (WatercoolerLike item in this)
       {

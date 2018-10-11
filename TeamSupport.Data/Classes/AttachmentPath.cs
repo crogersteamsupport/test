@@ -197,7 +197,6 @@ namespace TeamSupport.Data
         case Folder.OrganizationAttachments: result = AttachmentProxy.References.Organizations; break;
         case Folder.UserAttachments: result = AttachmentProxy.References.Users; break;
         case Folder.AssetAttachments: result = AttachmentProxy.References.Assets; break;
-        case Folder.Imports: result = AttachmentProxy.References.Imports; break;
 		case Folder.CustomerHubLogo: result = AttachmentProxy.References.CustomerHubLogo; break;
         case Folder.ChatUploads: result = AttachmentProxy.References.ChatAttachments; break;
         case Folder.Tasks: result = AttachmentProxy.References.Tasks; break;

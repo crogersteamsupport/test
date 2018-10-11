@@ -222,21 +222,7 @@ namespace TeamSupport.Data
 
 			foreach (CRMLinkErrorProxy crmLinkError in GetCRMLinkErrorProxies().ToList())
 			{
-                ActionLogProxy actionLogProxy = null;
-                switch (crmLinkError.ObjectType)
-                {
-                    case "ticket":
-                        actionLogProxy = new TicketsActionLogProxy();
-                        break;
-                    case "action":
-                        actionLogProxy = new ActionsActionLogProxy();
-                        break;
-                    default:
-                        actionLogProxy = new TicketsActionLogProxy();
-                        break;
-                }
-
-                
+				ActionLogProxy actionLogProxy = new ActionLogProxy();
 				actionLogProxy.ModifierID = (int)SystemUser.CRM;
 				actionLogProxy.CreatorID = (int)SystemUser.CRM;
 				actionLogProxy.Description = string.Format("{0}{1}",

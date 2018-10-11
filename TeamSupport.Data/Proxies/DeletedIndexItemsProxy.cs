@@ -8,18 +8,20 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
-    public partial class DeletedIndexItem : BaseItem
+  
+  public partial class DeletedIndexItem : BaseItem
+  {
+    public DeletedIndexItemProxy GetProxy()
     {
-        public DeletedIndexItemProxy GetProxy()
-        {
-            DeletedIndexItemProxy result = DeletedIndexItemProxy.ClassFactory((DeletedIndexItemProxy.References)this.RefType);
-            result.RefID = this.RefID;
-            result.DeletedIndexID = this.DeletedIndexID;
-
-            result.DateDeleted = DateTime.SpecifyKind(this.DateDeletedUtc, DateTimeKind.Utc);
-
-
-            return result;
-        }
-    }
+      DeletedIndexItemProxy result = new DeletedIndexItemProxy();
+      result.RefType = this.RefType;
+      result.RefID = this.RefID;
+      result.DeletedIndexID = this.DeletedIndexID;
+       
+      result.DateDeleted = DateTime.SpecifyKind(this.DateDeletedUtc, DateTimeKind.Utc);
+       
+       
+      return result;
+    }	
+  }
 }

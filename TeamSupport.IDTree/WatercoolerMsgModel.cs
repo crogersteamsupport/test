@@ -11,6 +11,7 @@ namespace TeamSupport.IDTree
     {
         OrganizationModel Organization;
         public int MessageID { get; private set; }
+        int IAttachmentDestination.RefID => MessageID;
 
         public WatercoolerMsgModel(OrganizationModel organization, int messageID) : base(organization)
         {
@@ -32,7 +33,7 @@ namespace TeamSupport.IDTree
         }
 
         // C:\TSData\Organizations\1078\Tasks\57269\file.txt
-        string IAttachmentDestination.AttachmentPath
+        public string AttachmentPath
         {
             get
             {

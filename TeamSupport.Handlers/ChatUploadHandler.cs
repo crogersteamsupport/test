@@ -30,22 +30,14 @@ namespace TeamSupport.Handlers
             context.Response.ContentType = "text/html";
             try
             {
-
-                {
-                    List<AttachmentProxy> proxies = ModelAPI.AttachmentAPI.CreateAttachments(context, out _result);
-                    //if (proxies != null)    // SCOT fall through if not supported by RefType infrastructure
-                    {
-                        context.Response.Clear();
-                        context.Response.ContentType = "text/plain";
-                        List<UploadResult> result = new List<UploadResult>();
-                        foreach (AttachmentProxy attachment in proxies)
-                            result.Add(new UploadResult(attachment.FileName, attachment.FileType, attachment.FileSize, attachment.AttachmentID));
-                        context.Response.ContentType = "text/html";
-                        context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
-                        return;
-                    }
-                }
-
+                context.Response.Clear();
+                context.Response.ContentType = "text/plain";
+                List<UploadResult> result = new List<UploadResult>();
+                List<AttachmentProxy> proxies = ModelAPI.AttachmentAPI.CreateAttachments(context, out _result);
+                foreach (AttachmentProxy attachment in proxies)
+                    result.Add(new UploadResult(attachment.FileName, attachment.FileType, attachment.FileSize, attachment.AttachmentID));
+                context.Response.ContentType = "text/html";
+                    context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
             }
             catch (Exception ex)
             {

@@ -14,9 +14,10 @@ namespace TeamSupport.Data
     {
         public DeletedIndexItemProxy() { }
         public DeletedIndexItemProxy(ReferenceType referenceType) { }
+        public DeletedIndexItemProxy(References refType) : this((ReferenceType)refType) { }
         [DataMember] public int DeletedIndexID { get; set; }
         [DataMember] public int RefID { get; set; }
-        [DataMember] protected References RefType { get; set; }
+    [DataMember] public ReferenceType RefType { get; set; }
         [DataMember] public DateTime DateDeleted { get; set; }
 
         public static DeletedIndexItemProxy ClassFactory(References refType)
@@ -34,6 +35,7 @@ namespace TeamSupport.Data
         }
         public enum References
         {
+            Assets = ReferenceType.Assets,
             Organizations = ReferenceType.Organizations,
             Contacts = ReferenceType.Contacts,
             Notes = ReferenceType.Notes,
@@ -46,42 +48,42 @@ namespace TeamSupport.Data
 
     internal class ContactsDeletedIndexItemProxy : DeletedIndexItemProxy
     {
-        public ContactsDeletedIndexItemProxy() : base(ReferenceType.Contacts)
+        public ContactsDeletedIndexItemProxy() : base(References.Contacts)
         {
         }
     }
 
     internal class AssetDeletedIndexItemProxy : DeletedIndexItemProxy
     {
-        public AssetDeletedIndexItemProxy() : base(ReferenceType.Assets)
+        public AssetDeletedIndexItemProxy() : base(References.Assets)
         {
         }
     }
 
     internal class NotesDeletedIndexItemProxy : DeletedIndexItemProxy
     {
-        public NotesDeletedIndexItemProxy() : base(ReferenceType.Notes)
+        public NotesDeletedIndexItemProxy() : base(References.Notes)
         {
         }
     }
 
     internal class OrganizationsDeletedIndexItemProxy : DeletedIndexItemProxy
     {
-        public OrganizationsDeletedIndexItemProxy() : base(ReferenceType.Organizations)
+        public OrganizationsDeletedIndexItemProxy() : base(References.Organizations)
         {
         }
     }
 
     internal class ProductsDeletedIndexItemProxy : DeletedIndexItemProxy
     {
-        public ProductsDeletedIndexItemProxy() : base(ReferenceType.Products)
+        public ProductsDeletedIndexItemProxy() : base(References.Products)
         {
         }
     }
 
     internal class TicketsDeletedIndexItemProxy : DeletedIndexItemProxy
     {
-        public TicketsDeletedIndexItemProxy() : base(ReferenceType.Tickets)
+        public TicketsDeletedIndexItemProxy() : base(References.Tickets)
         {
         }
     }

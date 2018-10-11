@@ -11,6 +11,8 @@ namespace TeamSupport.IDTree
     {
         public OrganizationModel Organization { get; private set; }
         public int AssetID { get; private set; }
+        int IAttachmentDestination.RefID => AssetID;
+
         public AssetModel(OrganizationModel organization, int assetID) : base(organization)
         {
             Organization = organization;
@@ -32,7 +34,7 @@ namespace TeamSupport.IDTree
             return new AssetModel(connection, id);
         }
 
-        string IAttachmentDestination.AttachmentPath
+        public string AttachmentPath
         {
             get
             {

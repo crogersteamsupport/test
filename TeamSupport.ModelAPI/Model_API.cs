@@ -18,35 +18,19 @@ namespace TeamSupport.ModelAPI
     /// <summary> CRUD interface to DataAPI - Create, Read, Update, Delete proxy </summary>
     public static class Model_API
     {
-        public static T GetIDTree<T>(int id) where T : class
+        /// <summary> Find all the organizations associated with a ticket </summary>
+        public static OrganizationTicketModel[] GetOrganizationTickets(int ticketID)
         {
             try
             {
                 using (ConnectionContext connection = new ConnectionContext())
                 {
-                    switch (typeof(T).Name)
-                    {
-                        case "TicketModel":
-                            return new TicketModel(connection, id) as T;
-                        default:
-                            if (Debugger.IsAttached) Debugger.Break();
-                            break;
-                    }
+                    TicketModel ticketModel = new TicketModel(connection, ticketID);
+                    return OrganizationTicketModel.GetOrganizationTickets(ticketModel);
                 }
-            }
-            catch (AuthenticationException ex)
-            {
-                // TODO - tell user they don't have permission
-                Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
-            }
-            catch (System.Data.ConstraintException ex)
-            {
-                // TODO - data integrity failure
-                Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
             }
             catch (Exception ex)
             {
-                // TODO - tell user we failed to read
                 Data_API.LogMessage(ActionLogType.Insert, ReferenceType.None, 0, "choke", ex);
             }
             return null;
@@ -62,7 +46,6 @@ namespace TeamSupport.ModelAPI
                 using (ConnectionContext connection = new ConnectionContext())
                 {
                     switch (typeof(T).Name)
-
                     {
                         case "ActionProxy":
                             {
@@ -90,6 +73,9 @@ namespace TeamSupport.ModelAPI
             }
         }
 
+        /// <summary>
+        /// Read the proxy given the RefID
+        /// </summary>
         public static T ReadRefTypeProxyByRefID<T>(int id) where T : class
         {
             T t = null;
@@ -110,7 +96,8 @@ namespace TeamSupport.ModelAPI
             }
             catch (Exception ex)
             {
-                int logid = Data_API.LogException(new IDTree.AuthenticationModel(), ex, "ReadByRefID Exception" + ex.Source);
+                // we use this method to check if it exists
+                //int logid = Data_API.LogException(new IDTree.AuthenticationModel(), ex, "ReadByRefID Exception" + ex.Source);
             }
             return t;
         }
@@ -147,7 +134,7 @@ namespace TeamSupport.ModelAPI
                             //t = DataAPI.DataAPI.Read<T>(new TicketNode(connection, id));
                             break;
                         case "AttachmentProxy":
-                            t = Data_API.ReadRefTypeProxyByID<AttachmentProxy>(connection, id) as T;
+                            t = Data_API.ReadRefTypeProxy<AttachmentProxy>(connection, id) as T;
                             break;
                         case "AttachmentProxy[]":
                             t = Data_API.Read<T>(new ActionModel(connection, id));
@@ -255,14 +242,6 @@ namespace TeamSupport.ModelAPI
         //}
 
 
-        /// <summary> ??? </summary>
-        public static int AttachmentIDFromGUID(Guid guid)
-        {
-            using (ConnectionContext connection = new ConnectionContext())
-            {
-                return connection._db.ExecuteQuery<int>($"SELECT AttachmentID FROM Attachments WHERE AttachmentGUID={guid}").Min();
-            }
-        }
 
         #region Tickets
         public static string MergeTickets(int destinationTicketID, int sourceTicketID)
@@ -299,6 +278,9 @@ namespace TeamSupport.ModelAPI
         #region ActionAttachments
 
 
+        /// <summary>
+        /// Get a list of all the action attachments for this ticket - include only the latest for each filename
+        /// </summary>
         public static void ReadActionAttachmentsForTicket(int ticketID, ActionAttachmentsByTicketID ticketActionAttachments, out AttachmentProxy[] attachments)
         {
             attachments = null;

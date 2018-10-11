@@ -7,23 +7,23 @@ using System.Data.Linq;
 using System.IO;
 using System.Web;
 using System.Diagnostics;
-using TeamSupport.Proxy;
 using TeamSupport.Data;
 using System.Web.Security;
 
 namespace TeamSupport.IDTree
 {
-    // interface to model class that supports attachments 
+    /// <summary> interface to model class that supports attachments </summary>
     public interface IAttachmentDestination
     {
         string AttachmentPath { get; }
-        //IDNode AsIDNode { get; }    // back door to map class to IDNode at compile time
+        int RefID { get; }
     }
 
 
+    /// <summary> Model to verify AttachmetID </summary>
     public class AttachmentModel : IDNode
     {
-        // hard coded index into FilePaths table ???
+        // hard coded index into FilePaths table
         public const int AttachmentPathIndex = 3;
 
         public IAttachmentDestination AttachedTo { get; protected set; }  // what are we attached to?
@@ -34,6 +34,7 @@ namespace TeamSupport.IDTree
         {
             AttachmentID = id;
             AttachedTo = attachedTo;
+            Verify();
         }
 
         public AttachmentModel(ConnectionContext connection, AttachmentProxy attachment) : base(connection)
@@ -50,7 +51,7 @@ namespace TeamSupport.IDTree
         public override void Verify()
         {
             // also check if AttachedTo is valid?
-            Verify($"SELECT AttachmentID FROM Attachments WITH (NOLOCK) WHERE AttachmentID={AttachmentID} AND OrganizationID={Connection.OrganizationID}");
+            Verify($"SELECT AttachmentID FROM Attachments WITH (NOLOCK) WHERE AttachmentID={AttachmentID} AND RefID={AttachedTo.RefID}");
         }
     }
 

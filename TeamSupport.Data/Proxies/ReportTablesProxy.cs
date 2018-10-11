@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 
 namespace TeamSupport.Data
 {
+  
   public partial class ReportTable : BaseItem
   {
     public ReportTableProxy GetProxy()

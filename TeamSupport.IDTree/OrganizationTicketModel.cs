@@ -24,9 +24,10 @@ namespace TeamSupport.IDTree
                 Verify();
         }
 
+        /// <summary> find all the contact organizations associated with a ticket </summary>
         public static OrganizationTicketModel[] GetOrganizationTickets(TicketModel ticket)
         {
-            //$"Select Organizationid From OrganizationTickets WITH (NOLOCK) WHERE TicketId = {ticket.TicketID}"
+            //$"Select OrganizationID From OrganizationTickets WITH (NOLOCK) WHERE TicketId = {ticket.TicketID}"
             int[] customerIDs = IDReader.Read(TicketChild.Customers, ticket);
             OrganizationTicketModel[] organizationTickets = new OrganizationTicketModel[customerIDs.Length];
             for (int i = 0; i < customerIDs.Length; ++i)

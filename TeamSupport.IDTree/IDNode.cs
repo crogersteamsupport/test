@@ -48,17 +48,7 @@ namespace TeamSupport.IDTree
             throw new System.Data.ConstraintException(String.Format($"{query} not found")); // error - a join of the records to authentication just doesn't add up
         }
 
-        public static IAttachmentDestination GetModel<T>(ConnectionContext connection, T proxy) where T : class
-        {
-            switch (proxy)
-            {
-                case ActionAttachmentProxy attachment:
-                    return new ActionModel(connection, attachment.RefID);
-                case TaskAttachmentProxy attachment:
-                    return new TaskModel(connection, attachment.RefID);
-            }
-            return null;
-        }
+
 
     }
 }

@@ -16,7 +16,7 @@ namespace TeamSupport.ServiceLibrary
 {
   public class CustomerInsightsUtilities
   {
-    public static bool DownloadImage(string imageUrl, string savePath, int organizationId, TeamSupport.Data.ReferenceType refType, TeamSupport.Data.LoginUser user, out string resultMessage)
+    public static bool DownloadImage(string imageUrl, string savePath, int organizationId, AttachmentProxy.References refType, TeamSupport.Data.LoginUser user, out string resultMessage)
     {
       resultMessage = string.Empty;
       Image imageDownloaded = null;
@@ -44,7 +44,8 @@ namespace TeamSupport.ServiceLibrary
                 {
                     resultMessage = string.Format("Image saved: {0}", savePath);
 
-                    TeamSupport.Data.Quarantine.ServiceQ.CreateAttachment(savePath, organizationId, (AttachmentProxy.References)refType, user, httpWebResponse);
+                    //ModelAPI.AttachmentAPI.CreateAttachment(savePath, organizationId, refType, user.UserID, httpWebResponse);
+                    TeamSupport.Data.Quarantine.ServiceQ.CreateAttachment(savePath, organizationId, refType, user, httpWebResponse);
                 }
             }
               else
@@ -64,7 +65,7 @@ namespace TeamSupport.ServiceLibrary
     }
 
 
-        public static string MakeHttpWebRequest(string requestUrl, string apiKey, TeamSupport.Data.Logs log, Settings settings, string apiCallCountKey, ref int currentApiCallCount)
+    public static string MakeHttpWebRequest(string requestUrl, string apiKey, TeamSupport.Data.Logs log, Settings settings, string apiCallCountKey, ref int currentApiCallCount)
     {
       string responseText = string.Empty;
       HttpWebRequest request = WebRequest.Create(requestUrl) as HttpWebRequest;

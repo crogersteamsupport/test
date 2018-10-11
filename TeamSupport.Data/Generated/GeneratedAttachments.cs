@@ -609,10 +609,8 @@ namespace TeamSupport.Data
       return new Attachment(row, this);
     }
     
-    [Obsolete ("Use ModelAPI", false)]
     public virtual void LoadByAttachmentID(int attachmentID)
     {
-      if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();  // redirect origin to use ModelAPI
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText = "SET NOCOUNT OFF; SELECT [AttachmentID], [OrganizationID], [FileName], [FileType], [FileSize], [Path], [Description], [DateCreated], [DateModified], [CreatorID], [ModifierID], [RefType], [RefID], [SentToJira], [AttachmentGUID], [ProductFamilyID], [SentToTFS], [SentToSnow], [FilePathID] FROM [dbo].[Attachments] WHERE ([AttachmentID] = @AttachmentID);";
@@ -622,7 +620,6 @@ namespace TeamSupport.Data
       }
     }
     
-    [Obsolete ("Use ModelAPI", false)]
     public static Attachment GetAttachment(LoginUser loginUser, int attachmentID)
     {
       Attachments attachments = new Attachments(loginUser);
