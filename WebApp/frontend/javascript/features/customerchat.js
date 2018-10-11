@@ -110,15 +110,14 @@ function SetupDeflectionListener(organizationID, customerHubID) {
     function doneTyping() {
         $('#deflection-results').html('');
         if ($input.val()) {
-            deflector.FetchDeflections(organizationID, $input.val(), customerHubID, function(result) {
-                debugger;
-                var deflectionResults = JSON.parse(result.Result);
+            deflector.FetchDeflections(organizationID, $input.val(), customerHubID, function (data) {
+                var deflectionResults = JSON.parse(data.Result);
                 if (deflectionResults.length > 0) {
                     $('#deflection-results').append('<h4>Suggested Solutions</h4>');
                 }
 
                 for (x = 0; x < deflectionResults.length; x++) {
-                    $('#deflection-results').append('<a target="_blank" class="list-group-item" href="' + returnURL + '/knowledgeBase/' + deflectionResults[x].TicketId + '">' + deflectionResults[x].Name + '</a>');
+                    $('#deflection-results').append('<a target="_blank" class="list-group-item" href="' + deflectionResults[x].ReturnURL + '">' + deflectionResults[x].Name + '</a>');
                 }
             });
         }
