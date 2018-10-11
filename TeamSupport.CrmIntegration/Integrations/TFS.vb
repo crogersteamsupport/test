@@ -11,60 +11,67 @@ Imports TFSLibrary = TeamSupport.ServiceLibrary.TFS
 
 Namespace TeamSupport
 	Namespace CrmIntegration
-		Public Module MyExtensions
+		Public Module TFSExtensions
 			<Extension()>
 			Public Sub Add(Of T)(ByRef arr As T(), item As T)
 				Array.Resize(arr, arr.Length + 1)
 				arr(arr.Length - 1) = item
 			End Sub
+
+			<Extension()>
+			Public Function SplitBy(Of T)(ByRef source As List(Of T), ByVal splitSize As Integer) As List(Of List(Of T))
+				Return source.Select(Function(x, i) New With {.Index = i, .Value = x}) _
+				.GroupBy(Function(x) x.Index \ splitSize) _
+				.Select(Function(x) x.Select(Function(v) v.Value).ToList()).ToList()
+			End Function
 		End Module
 
 		Public Class TFS
 			Inherits Integration
 
 			Private _baseURI As String
-            'Private _encodedCredentials As String
-            Private _tfs As TFSLibrary = New TFSLibrary()
-            Private _tfsExceptionMessageFormat As String = "TFS Error Message: {0}"
-            Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
-                MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.Jira)
-            End Sub
+			'Private _encodedCredentials As String
+			Private _tfs As TFSLibrary = New TFSLibrary()
+			Private _tfsExceptionMessageFormat As String = "TFS Error Message: {0}"
+			Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
+				MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.Jira)
+			End Sub
 
-            Public Overrides Function PerformSync() As Boolean
-                Dim Success As Boolean = True
+			Public Overrides Function PerformSync() As Boolean
+				Dim Success As Boolean = True
 
-                If ValidateSyncData() Then
-                    Success = SyncTickets()
-                Else
-                    Success = False
-                End If
+				If ValidateSyncData() Then
+					Success = SyncTickets()
+				Else
+					Success = False
+				End If
 
-                Return Success
-            End Function
+				Return Success
+			End Function
 
-            Private Function ValidateSyncData() As Boolean
-                Dim result As Boolean = True
+			Private Function ValidateSyncData() As Boolean
+				Dim result As Boolean = True
 
-                If CRMLinkRow.HostName Is Nothing Then
-                    result = False
-                    AddLog("HostName is missing and it is required to sync.")
-                Else
-                    Dim protocol As String = String.Empty
-                    If CRMLinkRow.HostName.Length > 4 AndAlso CRMLinkRow.HostName.Substring(0, 4).ToLower() <> "http" Then
-                        protocol = "https://"
-                    End If
-                    _baseURI = protocol + CRMLinkRow.HostName
-                End If
+				If CRMLinkRow.HostName Is Nothing Then
+					result = False
+					AddLog("HostName is missing and it is required to sync.")
+				Else
+					Dim protocol As String = String.Empty
+					If CRMLinkRow.HostName.Length > 4 AndAlso CRMLinkRow.HostName.Substring(0, 4).ToLower() <> "http" Then
+						protocol = "https://"
+					End If
+					_baseURI = protocol + CRMLinkRow.HostName
+				End If
 
-                If CRMLinkRow.SecurityToken1 Is Nothing Then
-                    If CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password Is Nothing Then
-                        result = False
-                        AddLog("The API Token and the Username and or Password are missing and they are required to sync.")
-                    End If
-                End If
+				If CRMLinkRow.SecurityToken1 Is Nothing Then
+					If CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password Is Nothing Then
+						result = False
+						AddLog("The API Token and the Username and or Password are missing and they are required to sync.")
+					End If
+				End If
 
-                'Make sure credentials are good
-                If (result) Then
+				'Make sure credentials are good
+				If (result) Then
 					Try
 						Dim logFile As String = Log.Path & "\" & Log.FileNamePath
 						If (Not String.IsNullOrEmpty(CRMLinkRow.SecurityToken1)) Then
@@ -211,24 +218,23 @@ Namespace TeamSupport
 					'//vv we might end up doing this in batches too. We'll see. Well now we have!! vsts only returns a max of 200 results
 					Dim batch As Integer = 1
 					Dim vstsMaxResults As Integer = 200
-					Dim workItemsList As TFSLibrary.WorkItems = New TFSLibrary.WorkItems() ' = _tfs.GetWorkItemsBy(tfsIdList, CRMLinkRow.LastLinkUtc)
+					Dim workItemsList As TFSLibrary.WorkItems = New TFSLibrary.WorkItems()
 					Dim workItemsBatch As TFSLibrary.WorkItems = New TFSLibrary.WorkItems()
+					Dim tfsIdListBatches As List(Of List(Of Integer)) = tfsIdList.SplitBy(vstsMaxResults)
 
-					Do
-						workItemsBatch = _tfs.GetWorkItemsBy(tfsIdList.Skip((batch - 1) * vstsMaxResults).Take(vstsMaxResults).ToList(), CRMLinkRow.LastLinkUtc)
+					For Each batchIds As List(Of Integer) In tfsIdListBatches
+						workItemsBatch = _tfs.GetWorkItemsBy(batchIds, CRMLinkRow.LastLinkUtc)
 
-						If (batch = 1) Then
+						If (workItemsList Is Nothing OrElse workItemsList.value Is Nothing OrElse workItemsList.value.Count = 0) Then
 							workItemsList = workItemsBatch
 						Else
-							For Each x In workItemsBatch.value
-								workItemsList.value.Add(x)
+							For Each singleWorkItem In workItemsBatch.value
+								workItemsList.value.Add(singleWorkItem)
 							Next
 						End If
+					Next
 
-						batch += 1
-					Loop Until tfsIdList.Skip((batch - 1) * vstsMaxResults).Count = 0
-
-					If (workItemsList IsNot Nothing AndAlso workItemsList.count > 0) Then
+					If (workItemsList IsNot Nothing AndAlso workItemsList.value IsNot Nothing AndAlso workItemsList.count > 0) Then
 						workItemsList.count = workItemsList.value.Count
 						numberOfWorkItemsToPull += workItemsList.count
 						result = workItemsList
