@@ -52,6 +52,33 @@ namespace TeamSupport.ModelAPI
             return result;
         }
 
+        public static void CreateAttachment(string savePath, int organizationId, AttachmentProxy.References refType, int userID, System.Net.HttpWebResponse httpWebResponse)
+        {
+            try
+            {
+                using (ConnectionContext connection = new ConnectionContext())
+                {
+
+                    AttachmentProxy attachment = AttachmentProxy.ClassFactory(refType);
+                    attachment.RefID = userID;
+                    attachment.OrganizationID = organizationId;
+                    attachment.FileName = Path.GetFileName(savePath);
+                    attachment.Path = savePath;
+                    attachment.FileType = string.IsNullOrEmpty(httpWebResponse.ContentType) ? "application/octet-stream" : httpWebResponse.ContentType;
+                    attachment.FileSize = httpWebResponse.ContentLength;
+
+                    IAttachmentDestination model = ClassFactory(connection, attachment);
+                    Data_API.Create(model as IDNode, attachment);
+                }
+            }
+            catch (Exception ex)
+            {
+                // TODO - tell user we failed 
+                Data_API.LogMessage(ActionLogType.Insert, (ReferenceType)refType, 0, "choke", ex);
+            }
+        }
+
+
         public static IAttachmentDestination ClassFactory(ConnectionContext connection, AttachmentProxy proxy)
         {
             return ClassFactory(connection, proxy.RefType, proxy.RefID);

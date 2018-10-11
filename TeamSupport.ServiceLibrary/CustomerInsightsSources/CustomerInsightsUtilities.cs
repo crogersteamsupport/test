@@ -16,7 +16,7 @@ namespace TeamSupport.ServiceLibrary
 {
   public class CustomerInsightsUtilities
   {
-    public static bool DownloadImage(string imageUrl, string savePath, int organizationId, TeamSupport.Data.ReferenceType refType, TeamSupport.Data.LoginUser user, out string resultMessage)
+    public static bool DownloadImage(string imageUrl, string savePath, int organizationId, AttachmentProxy.References refType, TeamSupport.Data.LoginUser user, out string resultMessage)
     {
       resultMessage = string.Empty;
       Image imageDownloaded = null;
@@ -44,7 +44,8 @@ namespace TeamSupport.ServiceLibrary
                 {
                     resultMessage = string.Format("Image saved: {0}", savePath);
 
-                    TeamSupport.Data.Quarantine.ServiceQ.CreateAttachment(savePath, organizationId, (AttachmentProxy.References)refType, user, httpWebResponse);
+                    //ModelAPI.AttachmentAPI.CreateAttachment(savePath, organizationId, refType, user.UserID, httpWebResponse);
+                    TeamSupport.Data.Quarantine.ServiceQ.CreateAttachment(savePath, organizationId, refType, user, httpWebResponse);
                 }
             }
               else
@@ -63,6 +64,46 @@ namespace TeamSupport.ServiceLibrary
       return imageDownloaded != null;
     }
 
+
+        public static bool DownloadImage1(string imageUrl, string savePath, int organizationId, AttachmentProxy.References refType, TeamSupport.Data.LoginUser user, out string resultMessage)
+        {
+            resultMessage = string.Empty;
+            Image imageDownloaded = null;
+
+            try
+            {
+                HttpWebRequest httpWebRequest = (HttpWebRequest)HttpWebRequest.Create(imageUrl);
+                using (HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse())
+                using (Stream stream = httpWebResponse.GetResponseStream())
+                {
+                    if (!(httpWebResponse.StatusCode == HttpStatusCode.OK && httpWebResponse.ContentType.Contains("image")))
+                        return false;
+
+                    imageDownloaded = Image.FromStream(stream);
+                    if(imageDownloaded == null)
+                    {
+                        resultMessage = "The image was not downloaded, but no error was thrown.";
+                        return false;
+                    }
+
+                    if (!DownloadCheckingIfDifferent(imageDownloaded, savePath, ImageFormat.Png))
+                    {
+                        resultMessage = "The image is the same as the current one. It was not downloaded.";
+                        return false;
+                    }
+
+                    resultMessage = string.Format("Image saved: {0}", savePath);
+                    TeamSupport.Data.Quarantine.ServiceQ.CreateAttachment(savePath, organizationId, refType, user, httpWebResponse);
+                    //ModelAPI.AttachmentAPI.CreateAttachment(savePath, organizationId, refType, user.UserID, httpWebResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                resultMessage = string.Format("{0}\n{1}", ex.Message, ex.StackTrace);
+            }
+
+            return imageDownloaded != null;
+        }
 
         public static string MakeHttpWebRequest(string requestUrl, string apiKey, TeamSupport.Data.Logs log, Settings settings, string apiCallCountKey, ref int currentApiCallCount)
     {
