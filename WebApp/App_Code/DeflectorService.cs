@@ -52,48 +52,96 @@ namespace TSWebServices {
         {
             try
             {
-                //if (customerHubID != null) {
-                //   GetHubProductsList((int)customerHubID);
+                List<DeflectorReturn> filteredList = new List<DeflectorReturn>();
+
+                //Customer Hub
+                if (customerHubID != null)
+                {
+                    var deflectorMatches = await FetchDeflectionsAsync(organization, phrase);
+                    filteredList = GetHubDeflectionResults((int)customerHubID, JsonConvert.DeserializeObject<List<DeflectorReturn>>(deflectorMatches));
+                }
+                ////Portal
+                //else if (!String.IsNullOrEmpty(portalName))
+                //{
+
                 //}
 
-                //Step 1: Check for the CustomerHubID
-                //Step 2: Look up the hub 
-                //Step 4: Check for the product line and lookup products
-                //Step 5: Check the hub setting for product association flag
-
-                //List<int> products = new List<int>();
-                //Get product list from the hub to match against and ship with an optional array
-                return await FetchDeflectionsAsync(organization, phrase);
+                return JsonConvert.SerializeObject(filteredList);
             }
             catch (Exception ex)
             {
                 ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
                 return "[]";
             }
-
         }
 
-        public string GetHubDeflectionProductsList(int customerHubID) {
-            string result = "";
+        private List<DeflectorReturn> GetHubDeflectionResults(int customerHubID, List<DeflectorReturn> deflectorMatches) {
+            string baseHubURL = SystemSettings.GetHubURL();
+            List<DeflectorReturn> result = new List<DeflectorReturn>();
 
-            //use the customer hub to enforce product line association - for the record I think this is a bad idea
-            CustomerHubs hubHelper = new CustomerHubs(LoginUser.Anonymous);
-            hubHelper.LoadByCustomerHubID((int)customerHubID);
+            //if we want to open this up to multiple hubs, we can pass the parent organizationID and modify the query to "unlock" the record set
+            List<DataRow> whiteListTickets = GetWhiteListHubTicketPaths((int)customerHubID);
+            
+            result = deflectorMatches.Join(whiteListTickets,
+                        deflectorMatch => deflectorMatch.TicketID,
+                        whiteListItem => (int)whiteListItem["TicketID"],
+                        (deflectorMatch, whiteListItem) => new DeflectorReturn {
+                            TicketID = deflectorMatch.TicketID,
+                            Name = deflectorMatch.Name,
+                            ReturnURL = formatHubKBURL(deflectorMatch.TicketID, (string)whiteListItem["CNameURL"], (string)whiteListItem["PortalName"], baseHubURL)
+                        }).ToList();
 
-            CustomerHubFeatureSettings hubFeatureSettingsHelper = new CustomerHubFeatureSettings(LoginUser.Anonymous);
-            hubFeatureSettingsHelper.LoadByCustomerHubID(customerHubID);
+            //a ranking system can be utilized here if we open this up to multiple hubs
 
-            if (hubHelper.Any() && hubHelper[0].ProductFamilyID != null && hubFeatureSettingsHelper[0].EnableAnonymousProductAssociation)
+            return result;
+        }
+
+        private string formatHubKBURL(int ticketID, string cnameURL, string portalName, string baseHubURL) {
+            return "https://" + (!string.IsNullOrEmpty(cnameURL) ? cnameURL : portalName + "." + baseHubURL) + "/knowledgeBase/" + ticketID.ToString();
+        }
+
+        private List<DataRow> GetWhiteListHubTicketPaths(int customerHubID) {
+            List<DataRow> result = new List<DataRow>();
+
+            using (SqlConnection connection = new SqlConnection(LoginUser.Anonymous.ConnectionString))
             {
-                Products productHelper = new Products(LoginUser.Anonymous);
-                productHelper.LoadByProductFamilyID((int)hubHelper[0].ProductFamilyID);
-            }
+                DataTable dt = new DataTable();
 
-            //if (hubHelper.Any() && hubHelper[0].ProductFamilyID != null)
-            //{
-            //    Products productHelper = new Products(LoginUser.Anonymous);
-            //    productHelper.LoadByProductFamilyID((int)hubHelper[0].ProductFamilyID);
-            //}
+                SqlCommand command = new SqlCommand();
+                command.Connection = connection;
+                command.CommandType = CommandType.Text;
+                command.CommandText = @"SELECT TicketID, CNameURL, PortalName
+                                        FROM [Tickets] AS Tickets
+                                        INNER JOIN [CustomerHubs] AS Hubs
+	                                        ON Tickets.OrganizationID = Hubs.OrganizationID
+                                        INNER JOIN [CustomerHubFeatureSettings] AS HubFeatures
+	                                        ON Hubs.CustomerHubID = HubFeatures.CustomerHubID
+		                                        AND HubFeatures.EnableKnowledgeBase = 1 
+		                                        AND HubFeatures.EnableAnonymousProductAssociation = 0
+		                                        AND HubFeatures.EnableCustomerSpecificKB = 0
+                                        LEFT JOIN Products AS Products
+	                                        ON Products.ProductFamilyID = Hubs.ProductFamilyID
+                                        WHERE 
+	                                        IsKnowledgeBase = 1 
+	                                        AND IsVisibleOnPortal = 1
+	                                        AND Hubs.CustomerHubID = @CustomerHubID
+	                                        AND (Hubs.ProductFamilyID IS NULL OR Products.ProductFamilyID IS NOT NULL)";
+                command.Parameters.AddWithValue("@CustomerHubID", customerHubID);
+                connection.Open();
+                using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                {
+                    try
+                    {
+                        adapter.Fill(dt);
+                        result.AddRange(dt.AsEnumerable().Select(x => x).ToList());
+                    }
+                    catch (Exception ex)
+                    {
+                        ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Deflector");
+                        return null;
+                    }
+                }
+            }
 
             return result;
         }
@@ -118,11 +166,11 @@ namespace TSWebServices {
             Tags.LoadByReference(ReferenceType.Tickets, ticketID);
             DeflectorService Deflection = new DeflectorService();
 
-            List<DeflectorItem> deflectorIndexList = new List<DeflectorItem>();
+            List<DeflectorIndex> deflectorIndexList = new List<DeflectorIndex>();
 
             foreach (var Tag in Tags)
             {
-                deflectorIndexList.Add(new DeflectorItem
+                deflectorIndexList.Add(new DeflectorIndex
                 {
                     TicketID = Ticket.TicketID,
                     Name = Ticket.Name,
@@ -307,7 +355,7 @@ namespace TSWebServices {
 
         public async Task<string> DeleteTagAsync(int organizationID, string value)
         {
-            var item = new DeflectorItem
+            var item = new DeflectorIndex
             {
                 OrganizationID = organizationID,
                 Value = value
@@ -329,7 +377,7 @@ namespace TSWebServices {
             }
             try
             {
-                using (WebResponse response = request.GetResponse())
+                using (WebResponse response = await request.GetResponseAsync())
                 {
                     if (request.HaveResponse && response != null)
                     {
@@ -375,7 +423,7 @@ namespace TSWebServices {
         private async Task<string> TestDeflectorAPIAsync(string tag)
         {
             string ResponseText = null;
-            string PingUrl = "http://localhost:64871/api/deflector/check";
+            string PingUrl = ConfigurationManager.AppSettings["DeflectorBaseURL"] + "/deflector/check";
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PingUrl);
             request.Method = "GET";
             request.KeepAlive = false;
@@ -427,7 +475,7 @@ namespace TSWebServices {
         //}
 
         [DataContract]
-        public class DeflectorItem {
+        public class DeflectorIndex {
             [DataMember]
             public int TicketID { get; set; }
             [DataMember]
@@ -442,6 +490,16 @@ namespace TSWebServices {
             public string Value { get; set; }
         }
 
+        [DataContract]
+        public class DeflectorReturn
+        {
+            [DataMember]
+            public int TicketID { get; set; }
+            [DataMember]
+            public string Name { get; set; }
+            [DataMember]
+            public string ReturnURL { get; set; }
+        }
     }
 
 }
