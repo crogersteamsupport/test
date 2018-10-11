@@ -1,22 +1,22 @@
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Chat.aspx.cs" Inherits="Chat_ChatInit" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="ChatInit.aspx.cs" Inherits="Chat_ChatInit" %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title></title>
     <link href="/frontend/css/core/flexbox.css" rel="stylesheet" />
-    <link href="/frontend/css/features/customerchat.css" rel="stylesheet" />
+    <link href="/frontend/css/features/customerchat-init.css?1539270950" rel="stylesheet" />
     <script src="https://js.pusher.com/3.1/pusher.min.js"></script>
     <script src="/frontend/library/jquery-1.11.0.min.js" type="text/javascript"></script>
     <script src="/frontend/library/jquery.placeholder.js" type="text/javascript"></script>
-    <script src="/frontend/javascript/features/deflector.js?10" type="text/javascript"></script>
+    <script src="/frontend/javascript/features/deflector.js?1539270950" type="text/javascript"></script>
     <script src="../vcr/1_9_0/Js/Ts/ts.utils.js"></script>
-    <script src="/frontend/javascript/features/customerchat.js"></script>
+    <script src="/frontend/javascript/features/customerchat-init.js?1539270950"></script>
 </head>
 
 <body>
 
-    <div style="width:100%;">
+    <div style="max-width:100%;width:100%;">
 
         <div class="flexbox column">
             <div cla="flex" style="padding:5px 10px;background-color:#2e3f52;color:white;">
@@ -71,7 +71,7 @@
                 </div>
             </div>
 
-            <div class="flexbox column" style="width:100%;">
+            <div class="flexbox column" style="max-width:100%;padding:5px;">
                 <div class="flex">
                     <div style="text-align:right;">
                         <button type="submit" class="btn btn-default" style="margin-top:10px;">Submit New Ticket</button>

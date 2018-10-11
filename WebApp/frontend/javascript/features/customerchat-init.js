@@ -115,9 +115,8 @@ function SetupDeflectionListener(organizationID, customerHubID) {
                 if (deflectionResults.length > 0) {
                     $('#deflection-results').append('<h4>Suggested Solutions</h4>');
                 }
-
                 for (x = 0; x < deflectionResults.length; x++) {
-                    $('#deflection-results').append('<a target="_blank" class="list-group-item" href="' + deflectionResults[x].ReturnURL + '">' + deflectionResults[x].Name + '</a>');
+                    $('#deflection-results').append('<p><a target="_blank" class="list-group-item" href="' + deflectionResults[x].ReturnURL + '">' + deflectionResults[x].Name + '</a></p>');
                 }
             });
         }
