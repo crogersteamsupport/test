@@ -1,7 +1,7 @@
 ﻿Imports Newtonsoft.Json.Linq
 Imports System.ComponentModel
 Imports System.IO
-Imports System.Net
+Imports System.Runtime.CompilerServices
 Imports System.Reflection
 Imports System.Text
 Imports TeamSupport.Data
@@ -11,6 +11,14 @@ Imports TFSLibrary = TeamSupport.ServiceLibrary.TFS
 
 Namespace TeamSupport
 	Namespace CrmIntegration
+		Public Module MyExtensions
+			<Extension()>
+			Public Sub Add(Of T)(ByRef arr As T(), item As T)
+				Array.Resize(arr, arr.Length + 1)
+				arr(arr.Length - 1) = item
+			End Sub
+		End Module
+
 		Public Class TFS
 			Inherits Integration
 
@@ -94,6 +102,11 @@ Namespace TeamSupport
 				If ticketLinkToTFS.Any AndAlso ticketLinkToTFS.Count > 0 Then
 					Try
 						workItemsToPullAsTickets = GetWorkItemsToPullAsTickets(ticketLinkToTFS, numberOfWorkItemsToPullAsTickets)
+					Catch tfsEx As TFSLibrary.TFSClientException
+						Dim tfsExMessage As String = String.Empty
+						tfsExMessage = tfsEx.ErrorResponse.ErrorMessage + vbNewLine + "EventId: " + tfsEx.ErrorResponse.eventId.ToString() + ". TypeKey: " + tfsEx.ErrorResponse.typeKey
+						_exception = New IntegrationException(tfsExMessage, tfsEx)
+						Return False
 					Catch ex As Exception
 						Log.Write(Exception.Message)
 						Log.Write(Exception.StackTrace)
@@ -195,11 +208,28 @@ Namespace TeamSupport
 
 				'Search only for the tfs ids we have, those are the ones linked and the only ones that we need to check for updates
 				If (tfsIdList.Count > 0) Then
-					'//vv we might end up doing this in batches too. We'll see.
-					Dim workItemsList As TFSLibrary.WorkItems = _tfs.GetWorkItemsBy(tfsIdList, CRMLinkRow.LastLinkUtc)
+					'//vv we might end up doing this in batches too. We'll see. Well now we have!! vsts only returns a max of 200 results
+					Dim batch As Integer = 1
+					Dim vstsMaxResults As Integer = 200
+					Dim workItemsList As TFSLibrary.WorkItems = New TFSLibrary.WorkItems() ' = _tfs.GetWorkItemsBy(tfsIdList, CRMLinkRow.LastLinkUtc)
+					Dim workItemsBatch As TFSLibrary.WorkItems = New TFSLibrary.WorkItems()
+
+					Do
+						workItemsBatch = _tfs.GetWorkItemsBy(tfsIdList.Skip((batch - 1) * vstsMaxResults).Take(vstsMaxResults).ToList(), CRMLinkRow.LastLinkUtc)
+
+						If (batch = 1) Then
+							workItemsList = workItemsBatch
+						Else
+							For Each x In workItemsBatch.value
+								workItemsList.value.Add(x)
+							Next
+						End If
+
+						batch += 1
+					Loop Until tfsIdList.Skip((batch - 1) * vstsMaxResults).Count = 0
 
 					If (workItemsList IsNot Nothing AndAlso workItemsList.count > 0) Then
-						'ToDo //vv is there anything else we need from this Function??
+						workItemsList.count = workItemsList.value.Count
 						numberOfWorkItemsToPull += workItemsList.count
 						result = workItemsList
 					End If
