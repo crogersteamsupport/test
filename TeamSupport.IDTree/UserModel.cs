@@ -53,7 +53,7 @@ namespace TeamSupport.IDTree
         {
             return ExecuteQuery<bool>($"SELECT MarkDeleted FROM Users WITH (NOLOCK) WHERE UserID={UserID}").First();
         }
-        //string IAttachmentDestination.AttachmentPath
+        //public string AttachmentPath
         //{
         //    get
         //    {
@@ -67,7 +67,7 @@ namespace TeamSupport.IDTree
         //    }
         //}
 
-        string IAttachmentDestination.AttachmentPath
+        public string AttachmentPath
         {
             get
             {

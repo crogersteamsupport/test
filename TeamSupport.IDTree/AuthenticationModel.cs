@@ -58,6 +58,7 @@ namespace TeamSupport.IDTree
         {
             _userData = userData.Split('|');
             ConnectionString = connectionString;
+            OrganizationID = int.Parse(_userData[1]);
         }
 
         public static AuthenticationModel AuthenticationModelTest(string userData, string connectionString)

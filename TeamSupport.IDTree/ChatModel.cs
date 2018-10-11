@@ -33,7 +33,7 @@ namespace TeamSupport.IDTree
             Verify($"SELECT ChatID FROM Chats WITH (NOLOCK) WHERE ChatID={ChatID}");
         }
 
-        string IAttachmentDestination.AttachmentPath
+        public string AttachmentPath
         {
             get
             {

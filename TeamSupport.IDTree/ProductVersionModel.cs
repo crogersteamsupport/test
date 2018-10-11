@@ -29,7 +29,7 @@ namespace TeamSupport.IDTree
         {
         }
 
-        string IAttachmentDestination.AttachmentPath
+        public string AttachmentPath
         {
             get
             {

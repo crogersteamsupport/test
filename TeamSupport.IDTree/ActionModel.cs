@@ -55,7 +55,9 @@ namespace TeamSupport.IDTree
 
         public bool CanEdit() { return Connection.CanEdit() || (Connection.User.UserID == CreatorID()); }
 
-        string IAttachmentDestination.AttachmentPath
+
+        public string AttachmentPath
+
         {
             get
             {
